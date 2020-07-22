@@ -37,7 +37,16 @@ namespace scorpioweb.Controllers
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private List<SelectListItem> listaNoSi = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="No", Value="1"},
+              new SelectListItem{ Text="Si", Value="2"}
+            };
         #endregion
+
+
+
+
 
         #region -Constructor-
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
@@ -76,7 +85,7 @@ namespace scorpioweb.Controllers
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            
+
 
             if (searchString != null)
             {
@@ -118,7 +127,7 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
-            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber?? 1, pageSize));
+            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         public async Task<IActionResult> ListadoSupervisor(
@@ -230,7 +239,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         public async Task<IActionResult> MenuMCSCP()
-        {            
+        {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
@@ -496,7 +505,7 @@ namespace scorpioweb.Controllers
                     List<Municipios> municipios = _context.Municipios.ToList();
                     municipio = (municipios.FirstOrDefault(x => x.Id == Int32.Parse(id)).Municipio).ToUpper();
                 }
-            }            
+            }
             return municipio;
         }
 
@@ -847,11 +856,13 @@ namespace scorpioweb.Controllers
             return View(persona);
         }
 
+       
 
         #region -Edita Datos Generales-
         // GET: Personas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            
             if (id == null)
             {
                 return NotFound();
@@ -871,21 +882,27 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region LeerEscribir
-            List<SelectListItem> listaNoSi;
-            listaNoSi = new List<SelectListItem>
-            {
-              new SelectListItem{ Text="No", Value="1"},
-              new SelectListItem{ Text="Si", Value="2"}
-            };
-
             ViewBag.listaLeerEscribir = listaNoSi;
 
-            foreach(var item in listaNoSi){
-              if(normaliza(item.Text) == persona.LeerEscribir)
-              {
-                ViewBag.idLeerEscribir = item.Value;
-                break;
-              }
+            foreach (var item in listaNoSi)
+            {
+                if (normaliza(item.Text) == persona.LeerEscribir)
+                {
+                    ViewBag.idLeerEscribir = item.Value;
+                    break;
+                }
+            }
+            #endregion
+            #region Consum sustancias
+            ViewBag.listaConsumoSustancias = listaNoSi;
+
+            foreach (var item in listaNoSi)
+            {
+                if (normaliza(item.Text) == persona.ConsumoSustancias)
+                {
+                    ViewBag.idConsumoSustancias = item.Value;
+                    break;
+                }
             }
             #endregion
 
