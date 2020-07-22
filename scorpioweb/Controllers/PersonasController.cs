@@ -878,19 +878,43 @@ namespace scorpioweb.Controllers
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
 
+            //ViewBag.listaGenero = listaNoSi;
+            //ViewBag.idGenero = BuscaId(listaNoSi, persona.Genero);
+
+            //ViewBag.listaLnpais = listaNoSi;
+            //ViewBag.idLnpais = BuscaId(listaNoSi, persona.Lnpais);
+
             #region lnEstado
             List<Estados> listaEstados = new List<Estados>();
-            listaEstados = (from table in _context.Estados
-                            select table).ToList();
+                  listaEstados = (from table in _context.Estados
+                                  select table).ToList();
 
-            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
-            ViewBag.ListadoEstados = listaEstados;
+                  listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+                  ViewBag.ListadoEstados = listaEstados;
 
-            ViewBag.idEstado = persona.Lnestado;
-            #endregion
+                  ViewBag.idEstado = persona.Lnestado;
+      #endregion
+
+            //ViewBag.listaLnmunicipio = listaNoSi;
+            //ViewBag.idLnmunicipio = BuscaId(listaNoSi, persona.Lnmunicipio);
+
+            //ViewBag.listaEstadoCivil = listaNoSi;
+            //ViewBag.idEstadoCivil = BuscaId(listaNoSi, persona.EstadoCivil);
+
+            ViewBag.listaOtroIdioma = listaNoSi;
+            ViewBag.idOtroIdioma = BuscaId(listaNoSi, persona.OtroIdioma);
 
             ViewBag.listaLeerEscribir = listaNoSi;
             ViewBag.idLeerEscribir = BuscaId(listaNoSi, persona.LeerEscribir);
+
+            ViewBag.listaTraductor = listaNoSi;
+            ViewBag.idTraductor = BuscaId(listaNoSi, persona.Traductor);
+
+            ViewBag.listaHijos = listaNoSi;
+            ViewBag.idHijos = BuscaId(listaNoSi, persona.Hijos);
+
+            ViewBag.listaPropiedades = listaNoSi;
+            ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
 
             #region Consum sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;

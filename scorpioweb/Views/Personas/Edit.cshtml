@@ -38,6 +38,12 @@
                 <input asp-for="Genero" class="form-control" />
                 <span asp-validation-for="Genero" class="text-danger"></span>
             </div>
+            @*<div class="form-group col-md-4">
+                <label class="control-label">Género</label>
+                <select class="form-control" name="Genero"
+                    asp-items="@(new SelectList(ViewBag.listaGenero, "Value", "Text", @ViewBag.idGenero))">
+                </select>
+            </div>*@
             <div class="form-group col-md-4">
                 <label asp-for="Edad" class="control-label"></label>
                 <input asp-for="Edad" class="form-control" />
@@ -53,12 +59,24 @@
                 <input asp-for="Lnpais" class="form-control" />
                 <span asp-validation-for="Lnpais" class="text-danger"></span>
             </div>
+            @*<div class="form-group">
+                <label class="control-label">País</label>
+                <select class="form-control" name="Lnpais"
+                    asp-items="@(new SelectList(ViewBag.listaLnpais, "Value", "Text", @ViewBag.idLnpais))">
+                </select>
+            </div>*@
             <div class="form-group" id="Estado">
                 <label class="control-label">Estado</label>
                 <select class="form-control" name="lnEstado" id="lnEstado"
                         asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado",@ViewBag.idEstado))">
                 </select>
             </div>
+            @*<div class="form-group">
+                <label class="control-label">Municipio</label>
+                <select class="form-control" name="Lnmunicipio"
+                    asp-items="@(new SelectList(ViewBag.listaLnmunicipio, "Value", "Text", @ViewBag.idLnmunicipio))">
+                </select>
+            </div>*@
             <div class="form-group">
                 <label class="control-label">Localidad de nacimiento</label>
                 <input asp-for="Lnlocalidad" class="form-control" />
@@ -69,15 +87,22 @@
                 <input asp-for="EstadoCivil" class="form-control" />
                 <span asp-validation-for="EstadoCivil" class="text-danger"></span>
             </div>
+            @*<div class="form-group">
+                <label class="control-label">Estado Civil</label>
+                <select class="form-control" name="EstadoCivil"
+                     asp-items="@(new SelectList(ViewBag.listaEstadoCivil, "Value", "Text", @ViewBag.idEstadoCivil))">
+                </select>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Duracion" class="control-label"></label>
                 <input asp-for="Duracion" class="form-control" />
                 <span asp-validation-for="Duracion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="OtroIdioma" class="control-label"></label>
-                <input asp-for="OtroIdioma" class="form-control" />
-                <span asp-validation-for="OtroIdioma" class="text-danger"></span>
+                <label class="control-label">¿Habla otro idioma, lengua o dialecto, distinto al español?</label>
+                <select class="form-control" name="OtroIdioma"
+                        asp-items="@(new SelectList(ViewBag.listaOtroIdioma, "Value", "Text", @ViewBag.idOtroIdioma))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="EspecifiqueIdioma" class="control-label"></label>
@@ -96,9 +121,10 @@
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="Traductor" class="control-label"></label>
-                <input asp-for="Traductor" class="form-control" />
-                <span asp-validation-for="Traductor" class="text-danger"></span>
+                <label class="control-label">¿Requiere de traductor o interprete?</label>
+                <select class="form-control" name="Traductor"
+                    asp-items="@(new SelectList(ViewBag.listaTraductor, "Value", "Text", @ViewBag.idTraductor))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="EspecifiqueTraductor" class="control-label"></label>
@@ -116,9 +142,10 @@
                 <span asp-validation-for="Celular" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Hijos" class="control-label"></label>
-                <input asp-for="Hijos" class="form-control" />
-                <span asp-validation-for="Hijos" class="text-danger"></span>
+                <label class="control-label">¿Tiene hijos?</label>
+                <select class="form-control" name="Hijos"
+                    asp-items="@(new SelectList(ViewBag.listaHijos, "Value", "Text", @ViewBag.idHijos))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Nhijos" class="control-label"></label>
@@ -131,9 +158,10 @@
                 <span asp-validation-for="NpersonasVive" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Propiedades" class="control-label"></label>
-                <input asp-for="Propiedades" class="form-control" />
-                <span asp-validation-for="Propiedades" class="text-danger"></span>
+                <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
+                <select class="form-control" name="Propiedades"
+                    asp-items="@(new SelectList(ViewBag.listaPropiedades, "Value", "Text", @ViewBag.idPropiedades))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Curp" class="control-label"></label>
