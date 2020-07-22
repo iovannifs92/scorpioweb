@@ -856,7 +856,15 @@ namespace scorpioweb.Controllers
             return View(persona);
         }
 
-       
+        String BuscaId(List<SelectListItem> lista, String texto)
+        {
+          foreach (var item in lista){
+            if (normaliza(item.Text) == texto){
+              return item.Value;
+            }
+          }
+          return "";
+        }
 
         #region -Edita Datos Generales-
         // GET: Personas/Edit/5
@@ -881,18 +889,9 @@ namespace scorpioweb.Controllers
             ViewBag.idEstado = persona.Lnestado;
             #endregion
 
-            #region LeerEscribir
             ViewBag.listaLeerEscribir = listaNoSi;
+            ViewBag.idLeerEscribir = BuscaId(listaNoSi, persona.LeerEscribir);
 
-            foreach (var item in listaNoSi)
-            {
-                if (normaliza(item.Text) == persona.LeerEscribir)
-                {
-                    ViewBag.idLeerEscribir = item.Value;
-                    break;
-                }
-            }
-            #endregion
             #region Consum sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
 
