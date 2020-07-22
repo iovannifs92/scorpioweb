@@ -859,6 +859,7 @@ namespace scorpioweb.Controllers
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
 
+            #region lnEstado
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
                             select table).ToList();
@@ -866,10 +867,27 @@ namespace scorpioweb.Controllers
             listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListadoEstados = listaEstados;
 
-            //ViewBag.Countries = new SelectList(countries.GetCountries(), "id", "countryName", "82");
-
-            //ViewBag.DDEstados = new SelectList(listaEstados, "Id", "Estados", persona.Lnestado);
             ViewBag.idEstado = persona.Lnestado;
+            #endregion
+
+            #region LeerEscribir
+            List<SelectListItem> listaNoSi;
+            listaNoSi = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="No", Value="1"},
+              new SelectListItem{ Text="Si", Value="2"}
+            };
+
+            ViewBag.listaLeerEscribir = listaNoSi;
+
+            foreach(var item in listaNoSi){
+              if(normaliza(item.Text) == persona.LeerEscribir)
+              {
+                ViewBag.idLeerEscribir = item.Value;
+                break;
+              }
+            }
+            #endregion
 
             if (persona == null)
             {
