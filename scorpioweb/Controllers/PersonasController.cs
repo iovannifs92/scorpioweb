@@ -870,7 +870,7 @@ namespace scorpioweb.Controllers
         // GET: Personas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            
+
             if (id == null)
             {
                 return NotFound();
@@ -878,28 +878,95 @@ namespace scorpioweb.Controllers
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
 
-            //ViewBag.listaGenero = listaNoSi;
-            //ViewBag.idGenero = BuscaId(listaNoSi, persona.Genero);
+            #region PAIS          
+            List<SelectListItem> ListaPais;
+            ListaPais = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="México", Value="MEXICO"},
+              new SelectListItem{ Text="Estados Unidos", Value="ESTADOS UNIDOS"},
+              new SelectListItem{ Text="Canada", Value="CANADA"},
+              new SelectListItem{ Text="Colombia", Value="COLOMBIA"},
+              new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
+              new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
+              new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
 
-            //ViewBag.listaLnpais = listaNoSi;
-            //ViewBag.idLnpais = BuscaId(listaNoSi, persona.Lnpais);
+            ViewBag.listaLnpais = ListaPais;
+
+            foreach (var item in ListaPais)
+            {
+                if (item.Value == persona.Lnpais)
+                {
+                    ViewBag.idLnpais = item.Value;
+                    break;
+                }
+            }
+            #endregion
 
             #region lnEstado
             List<Estados> listaEstados = new List<Estados>();
-                  listaEstados = (from table in _context.Estados
-                                  select table).ToList();
+            listaEstados = (from table in _context.Estados
+                            select table).ToList();
 
-                  listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
-                  ViewBag.ListadoEstados = listaEstados;
+            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListadoEstados = listaEstados;
+            ViewBag.idEstado = persona.Lnestado;
+            #endregion
 
-                  ViewBag.idEstado = persona.Lnestado;
-      #endregion
+            #region lnMinucipio
+            List<Municipios> listaMunicipio = new List<Municipios>();
+            listaMunicipio = (from table in _context.Municipios
+                              select table).ToList();
 
-            //ViewBag.listaLnmunicipio = listaNoSi;
-            //ViewBag.idLnmunicipio = BuscaId(listaNoSi, persona.Lnmunicipio);
+            listaMunicipio.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            ViewBag.listaLnmunicipio = listaMunicipio;
+            ViewBag.idLnmunicipio = persona.Lnmunicipio;
+            #endregion
 
-            //ViewBag.listaEstadoCivil = listaNoSi;
-            //ViewBag.idEstadoCivil = BuscaId(listaNoSi, persona.EstadoCivil);
+            #region EstadoCivil
+            List<SelectListItem> ListaEstadoCivil;
+            ListaEstadoCivil = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Soltero (a)", Value="1"},
+              new SelectListItem{ Text="Casado (a)", Value="2"},
+              new SelectListItem{ Text="Unión libre", Value="3"},
+              new SelectListItem{ Text="Viudo (a)", Value="4"},
+              new SelectListItem{ Text="Divorciado (a)", Value="5"}
+            };
+
+            ViewBag.listaEstadoCivil = ListaEstadoCivil;
+
+            foreach (var item in ListaEstadoCivil)
+            {
+                if (item.Text == persona.EstadoCivil)
+                {
+                    ViewBag.idEstadoCivil = item.Value;
+                    break;
+                }
+            }
+            #endregion
+            
+            #region GENERO          
+            List<SelectListItem> ListaGenero;
+            ListaGenero = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Masculino", Value="M"},
+              new SelectListItem{ Text="Femenino", Value="F"},
+              new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
+            };
+
+                  ViewBag.listaGenero = ListaGenero;
+
+            foreach (var item in ListaGenero)
+            {
+                if (item.Value == persona.Genero)
+                {
+                    ViewBag.idGenero = item.Value;
+                    break;
+                }
+            }
+            #endregion
 
             ViewBag.listaOtroIdioma = listaNoSi;
             ViewBag.idOtroIdioma = BuscaId(listaNoSi, persona.OtroIdioma);
@@ -916,17 +983,9 @@ namespace scorpioweb.Controllers
             ViewBag.listaPropiedades = listaNoSi;
             ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
 
-            #region Consum sustancias
+            #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
-
-            foreach (var item in listaNoSi)
-            {
-                if (normaliza(item.Text) == persona.ConsumoSustancias)
-                {
-                    ViewBag.idConsumoSustancias = item.Value;
-                    break;
-                }
-            }
+            ViewBag.idConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
             #endregion
 
             if (persona == null)
