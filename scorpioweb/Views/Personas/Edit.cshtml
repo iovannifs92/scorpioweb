@@ -1,5 +1,532 @@
 ﻿@model scorpioweb.Models.Persona
 
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+
+        //#region -Municipios-
+        var items = "<option value='0'>Selecciona</option>";
+        $('#lnMunicipio').html(items);
+        $('#municipioD').html(items);
+
+        $('#lnEstado').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#lnEstado';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#lnMunicipio").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#lnMunicipio').html(items);
+            });
+        });
+        $('#lnPais').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                $("#lnEstado").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#lnMunicipio').html(items);
+                $("#lnMunicipio").val(0);
+                $("#Estado").css("display", "none");
+                $("#Municipio").css("display", "none");
+                $("#Pais, #Localidad").removeClass("col-md-3");
+                $("#Pais, #Localidad").addClass("col-md-6");
+            }
+            else {
+                $("#Estado").css("display", "block");
+                $("#Municipio").css("display", "block");
+                $("#Pais, #Localidad").removeClass("col-md-6");
+                $("#Pais, #Localidad").addClass("col-md-3");
+            }
+
+        });
+
+        /*Combobox Domicilio*/
+        $('#estadoD').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#estadoD';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#municipioD").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#municipioD').html(items);
+            });
+        });
+        $('#paisD').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                 $("#estadoD").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#municipioD').html(items);
+                $("#municipioD").val(0);
+                $("#EstadoD").css("display", "none");
+                $("#MunicipioD").css("display", "none");
+                $("#PaisD").removeClass("col-md-4");
+                $("#PaisD").addClass("col-md-12");
+            }
+            else {
+                $("#EstadoD").css("display", "block");
+                $("#MunicipioD").css("display", "block");
+                $("#PaisD").removeClass("col-md-12");
+                $("#PaisD").addClass("col-md-4");
+            }
+
+        });
+
+        /*Combobox Domicilio Secundario*/
+        $('#estadoDDS').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#estadoDDS';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#municipioDDS").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#municipioDDS').html(items);
+            });
+        });
+        $('#paisDDS').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                 $("#estadoDDS").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#municipioDDS').html(items);
+                $("#municipioDDS").val(0);
+                $("#EstadoDDS").css("display", "none");
+                $("#MunicipioDDS").css("display", "none");
+                $("#PaisDDS").removeClass("col-md-4");
+                $("#PaisDDS").addClass("col-md-12");
+            }
+            else {
+                $("#EstadoDDS").css("display", "block");
+                $("#MunicipioDDS").css("display", "block");
+                $("#PaisDDS").removeClass("col-md-12");
+                $("#PaisDDS").addClass("col-md-4");
+            }
+
+        });
+        //#endregion
+
+        //#region -Modales-
+        $("#cuentaDomicilioSecundario").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            //alert("opcion: "+opcion);
+            if (opcion == "SI") {
+                $('#modalDomicilioSecundario').modal('show')
+            }
+            else {
+                $('#modalDomicilioSecundario').modal('hidden')
+            }
+        });
+
+        $("#consumoSustancias").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            //alert("opcion: "+opcion);
+            if (opcion == "Si") {
+                $('#modalConsumoSustancias').modal('show')
+            }
+            else {
+                $('#modalConsumoSustancias').modal('hidden')
+            }
+        });
+
+        $("#AsientoFamiliar").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            document.getElementById("textoAFR").innerHTML = "Asiento Familiar";
+            if (opcion == "Si") {
+                tipo = 1;
+                $('#modalAsientoFamiliar').modal('show')
+            }
+            else {
+                tipo = 0;
+                $('#modalAsientoFamiliar').modal('hidden')
+            }
+        });
+        $("#ReferenciasPersonales").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            document.getElementById("textoAFR").innerHTML = "Referencia";
+            if (opcion == "Si") {
+                tipo = 2;
+                $('#modalAsientoFamiliar').modal('show')
+            }
+            else {
+                tipo = 0;
+                $('#modalAsientoFamiliar').modal('hidden')
+            }
+        });
+
+
+        $("#familiaresFuera").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            if (opcion == "SI") {
+                $('#modalFamiliaresExtranjero').modal('show')
+            }
+            else {
+                $('#modalFamiliaresExtranjero').modal('hidden')
+            }
+        });
+
+        //#endregion
+
+        //#region -changeDisplay-
+        $('#vividoFuera').change(function () {
+            var vivido = $(this).children("option:selected").val();
+            if (vivido == "SI") {
+                $("#lugaresVivido").css("display", "block");
+                $("#tiempoVivido").css("display", "block");
+                $("#motivoVivido").css("display", "block");
+            }
+            else {
+                $("#lugaresVivido").css("display", "none");
+                $("#tiempoVivido").css("display", "none");
+                $("#motivoVivido").css("display", "none");
+            }
+
+        });
+
+        $('#viajaHabitual').change(function () {
+            var viaje = $(this).children("option:selected").val();
+            if (viaje == "SI") {
+                $("#lugaresViaje").css("display", "block");
+                $("#tiempoViaje").css("display", "block");
+                $("#motivoViaje").css("display", "block");
+            }
+            else {
+                $("#lugaresViaje").css("display", "none");
+                $("#tiempoViaje").css("display", "none");
+                $("#motivoViaje").css("display", "none");
+            }
+
+        });
+
+        $('#documentacionSalirPais').change(function () {
+            var doc = $(this).children("option:selected").val();
+            if (doc == "SI") {
+                $("#pasaporte").css("display", "block");
+                $("#visa").css("display", "block");
+            }
+            else {
+                $("#pasaporteDentro option:contains(No)").attr('selected', true);
+                $("#visaDentro option:contains(No)").attr('selected', true);
+                $("#pasaporte").css("display", "none");
+                $("#visa").css("display", "none");
+            }
+
+        });
+        $('#familiaresFuera').change(function () {
+            var fam = $(this).children("option:selected").val();
+            if (fam == "SI") {
+                $("#cuantosFamiliares").css("display", "block");
+            }
+            else {
+                $("#cuantosFamiliares").css("display", "none");
+                $("#cuantosFamiliaresDentro").value(0);
+            }
+        });
+
+        $('#sexo').change(function () {
+            var gen = $(this).children("option:selected").val();
+            if (gen == "F") {
+                $("#embarazo").css("display", "block");
+            }
+            else {
+                $("#embarazo").css("display", "none");
+            }
+        });
+
+        $('#enfermedad').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#especifiqueEnfermedad").css("display", "block");
+                $("#tratamiento").css("display", "block");
+            }
+            else {
+                $("#especifiqueEnfermedad").css("display", "none");
+                $("#tratamiento").css("display", "none");
+            }
+
+        });
+        $('#embarazoLactancia').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#tiempoEmbarazo").css("display", "block");
+                $("#tratamiento").css("display", "block");
+            }
+            else {
+                $("#tiempoEmbarazo").css("display", "none");
+                $("#tratamiento").css("display", "none");
+            }
+
+        });
+        $('#discapacidad').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#especifiqueDiscapacidad").css("display", "block");
+            }
+            else {
+                $("#especifiqueDiscapacidad").css("display", "none");
+            }
+
+        });
+        $('#servicioMedico').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#especifiqueServicioMedico").css("display", "block");
+                $("#institucionServicioMedico").css("display", "block");
+            }
+            else {
+                $("#especifiqueServicioMedico").css("display", "none");
+                $("#especificaServicioMedico").css("display", "none");
+            }
+
+        });
+
+        $('#AFDependencia').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#AFDependenciaExplica").css("display", "block");
+            }
+            else {
+                $("#AFDependenciaExplica").css("display", "none");
+            }
+
+        });
+
+        $('#AFVivenJuntos').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFDireccionFamiliar").css("display", "block");
+            }
+            else {
+                $("#AFDireccionFamiliar").css("display", "none");
+            }
+
+        });
+
+        $('#AFEnteradoProceso').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFPuedeEnterarse").css("display", "block");
+            }
+            else {
+                $("#AFPuedeEnterarse").css("display", "none");
+            }
+
+        });
+
+        $('#FEEnteradoProceso').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#FEPuedeEnterarse").css("display", "block");
+            }
+            else {
+                $("#FEPuedeEnterarse").css("display", "none");
+            }
+
+        });
+
+        //#endregion
+    });
+
+
+
+    $(document).ready(function () {
+        $('#btnGuardarSustancia').on("click", function (e) {
+            e.preventDefault();
+            //alert("tipo: " + tipo);
+            var s = document.getElementById("sustancia");
+            var f = document.getElementById("frecuenciaS");
+            var sustancia = s.options[s.selectedIndex].value;
+            var frecuencia = f.options[f.selectedIndex].value;
+            var cantidad = document.getElementById("cantidadS").value;
+            var ultimoC = document.getElementById("ultimoConsumo").value;
+            var observaciones = document.getElementById("observacionesConsumo").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/guardarSustancia",
+                traditional: true,
+                data: {
+                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
+                        document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
+                        document.ready = document.getElementById("cantidadS").value = '';
+                        document.ready = document.getElementById("ultimoConsumo").value = '';
+                        document.ready = document.getElementById("observacionesConsumo").value = '';
+                        var otraSustancia = confirm("¿Consume alguna otra sustancia?");
+                        if (otraSustancia == true) {
+                            alert("Coloque los datos correspondientes a la nueva susutancia");
+                        } else {
+                            $("#modalConsumoSustancias").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $('#btnGuardarFamiliar').on("click", function (e) {
+            e.preventDefault();
+            var r = document.getElementById("AFRelacion");
+            var g = document.getElementById("AFSexo");
+            var d = document.getElementById("AFDependencia");
+            var v = document.getElementById("AFVivenJuntos");
+            var p = document.getElementById("AFEnteradoProceso");
+            var e = document.getElementById("AFPuedeEnterarseO");
+
+            var nombre = document.getElementById("AFNombre").value;
+            var relacion = r.options[r.selectedIndex].value; /////////////////
+            var edad = document.getElementById("AFEdad").value;
+            var sexo = g.options[g.selectedIndex].value; /////////////////
+            var dependencia = d.options[d.selectedIndex].value;/////////////////
+            var explicaDependencia = document.getElementById("AFDependenciaExplicaO").value;
+            var vivenJuntos = v.options[v.selectedIndex].value;/////////////////
+            var direccion = document.getElementById("AFDireccionFamiliarO").value;
+            var telefono = document.getElementById("AFtelefonoFamiliar").value;
+            var horarioLocalizacion = document.getElementById("AFLocalizacion").value;
+            var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
+            var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            var observaciones = document.getElementById("AFobservacionesConsumo").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/guardarFamiliar",
+                traditional: true,
+                data: {
+                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("AFNombre").value = '';
+                        document.ready = document.getElementById("AFRelacion").value = 'MAMA';
+                        document.ready = document.getElementById("AFEdad").value = '0';
+                        document.ready = document.getElementById("AFSexo").value = 'M';
+                        document.ready = document.getElementById("AFDependencia").value = 'NO';
+                        document.ready = document.getElementById("AFDependenciaExplicaO").value = '';
+                        document.ready = document.getElementById("AFVivenJuntos").value = 'SI';
+                        document.ready = document.getElementById("AFDireccionFamiliarO").value = '';
+                        document.ready = document.getElementById("AFtelefonoFamiliar").value = '';
+                        document.ready = document.getElementById("AFLocalizacion").value = '';
+                        document.ready = document.getElementById("AFEnteradoProceso").value = 'SI';
+                        document.ready = document.getElementById("AFPuedeEnterarseO").value = 'NA';
+                        document.ready = document.getElementById("AFobservacionesConsumo").value = '';
+                        $("#AFDependenciaExplica").css("display", "none");
+                        $("#AFDireccionFamiliar").css("display", "none");
+                        $("#AFPuedeEnterarse").css("display", "none");
+
+                        var otraSustancia = confirm("¿Agregar otra persona?");
+                        if (otraSustancia == true) {
+                            alert("Coloque los datos correspondientes");
+                        } else {
+                            $("#modalAsientoFamiliar").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $('#btnGuardarFamiliarExtranjero').on("click", function (e) {
+            e.preventDefault();
+            var r = document.getElementById("FERelacion");
+            var g = document.getElementById("FESexo");
+            var t = document.getElementById("FETiempo");
+            var pa = document.getElementById("FEPais");
+            var f = document.getElementById("FEFrecuencia");
+            var p = document.getElementById("FEEnteradoProceso");
+            var e = document.getElementById("FEPuedeEnterarseO");
+
+            var nombre = document.getElementById("FENombre").value;
+            var relacion = r.options[r.selectedIndex].value; /////////////////
+            var edad = document.getElementById("FEEdad").value;
+            var sexo = g.options[g.selectedIndex].value; /////////////////
+            var tiempo = t.options[t.selectedIndex].value;/////////////////
+            var pais = pa.options[pa.selectedIndex].value;/////////////////
+            var estado = document.getElementById("FEEstado").value;
+            var telefono = document.getElementById("FETelefonoFamiliar").value;
+            var frecuencia = f.options[f.selectedIndex].value;/////////////////
+            var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
+            var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            var observaciones = document.getElementById("FEobservaciones").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/guardarFamiliarExtranjero",
+                traditional: true,
+                data: {
+                    datosFE: [nombre, relacion, edad, sexo, tiempo, pais, estado, telefono, frecuencia, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("FENombre").value = '';
+                        document.ready = document.getElementById("FERelacion").value = 'MAMA';
+                        document.ready = document.getElementById("FEEdad").value = '0';
+                        document.ready = document.getElementById("FESexo").value = 'M';
+                        document.ready = document.getElementById("FETiempo").value = 'MENOS DE 1 AÑO';
+                        document.ready = document.getElementById("FEPais").value = 'MEXICO';
+                        document.ready = document.getElementById("FEEstado").value = '';
+                        document.ready = document.getElementById("FETelefonoFamiliar").value = '';
+                        document.ready = document.getElementById("FEFrecuencia").value = 'DIARIAMENTE';
+                        document.ready = document.getElementById("FEEnteradoProceso").value = 'SI';
+                        document.ready = document.getElementById("FEPuedeEnterarse").value = 'NA';
+                        document.ready = document.getElementById("FEobservaciones").value = '';
+
+                        $("#FEPuedeEnterarse").css("display", "none");
+
+                        var otroFamiliar = confirm("¿Agregar otra persona?");
+                        if (otroFamiliar == true) {
+                            alert("Coloque los datos correspondientes");
+                        } else {
+                            $("#modalFamiliaresExtranjero").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+    });
+
+</script>
+
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
 }
@@ -60,23 +587,23 @@
                 <span asp-validation-for="Lnpais" class="text-danger"></span>
             </div>
             @*<div class="form-group">
-                <label class="control-label">País</label>
-                <select class="form-control" name="Lnpais"
-                    asp-items="@(new SelectList(ViewBag.listaLnpais, "Value", "Text", @ViewBag.idLnpais))">
-                </select>
-            </div>*@
+            <label class="control-label">País de nacimiento</label>
+            <select class="form-control" name="Lnpais"
+                asp-items="@(new SelectList(ViewBag.listaLnpais, "Value", "Text", @ViewBag.idLnpais))">
+            </select>
+        </div>*@
             <div class="form-group" id="Estado">
                 <label class="control-label">Estado</label>
                 <select class="form-control" name="lnEstado" id="lnEstado"
                         asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado",@ViewBag.idEstado))">
                 </select>
             </div>
-            @*<div class="form-group">
+            <div class="form-group">
                 <label class="control-label">Municipio</label>
-                <select class="form-control" name="Lnmunicipio"
-                    asp-items="@(new SelectList(ViewBag.listaLnmunicipio, "Value", "Text", @ViewBag.idLnmunicipio))">
+                <select class="form-control" name="lnMunicipio" id="lnMunicipio"
+                        asp-items="@(new SelectList(ViewBag.ListadoMunicipios, "Id", "Municipio", @ViewBag.Lnmunicipio))">
                 </select>
-            </div>*@
+            </div>
             <div class="form-group">
                 <label class="control-label">Localidad de nacimiento</label>
                 <input asp-for="Lnlocalidad" class="form-control" />
@@ -88,11 +615,11 @@
                 <span asp-validation-for="EstadoCivil" class="text-danger"></span>
             </div>
             @*<div class="form-group">
-                <label class="control-label">Estado Civil</label>
-                <select class="form-control" name="EstadoCivil"
-                     asp-items="@(new SelectList(ViewBag.listaEstadoCivil, "Value", "Text", @ViewBag.idEstadoCivil))">
-                </select>
-            </div>*@
+            <label class="control-label">Estado Civil</label>
+            <select class="form-control" name="EstadoCivil"
+                 asp-items="@(new SelectList(ViewBag.listaEstadoCivil, "Value", "Text", @ViewBag.idEstadoCivil))">
+            </select>
+        </div>*@
             <div class="form-group">
                 <label asp-for="Duracion" class="control-label"></label>
                 <input asp-for="Duracion" class="form-control" />
@@ -123,7 +650,7 @@
             <div class="form-group">
                 <label class="control-label">¿Requiere de traductor o interprete?</label>
                 <select class="form-control" name="Traductor"
-                    asp-items="@(new SelectList(ViewBag.listaTraductor, "Value", "Text", @ViewBag.idTraductor))">
+                        asp-items="@(new SelectList(ViewBag.listaTraductor, "Value", "Text", @ViewBag.idTraductor))">
                 </select>
             </div>
             <div class="form-group">
@@ -144,7 +671,7 @@
             <div class="form-group">
                 <label class="control-label">¿Tiene hijos?</label>
                 <select class="form-control" name="Hijos"
-                    asp-items="@(new SelectList(ViewBag.listaHijos, "Value", "Text", @ViewBag.idHijos))">
+                        asp-items="@(new SelectList(ViewBag.listaHijos, "Value", "Text", @ViewBag.idHijos))">
                 </select>
             </div>
             <div class="form-group">
@@ -160,7 +687,7 @@
             <div class="form-group">
                 <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
                 <select class="form-control" name="Propiedades"
-                    asp-items="@(new SelectList(ViewBag.listaPropiedades, "Value", "Text", @ViewBag.idPropiedades))">
+                        asp-items="@(new SelectList(ViewBag.listaPropiedades, "Value", "Text", @ViewBag.idPropiedades))">
                 </select>
             </div>
             <div class="form-group">

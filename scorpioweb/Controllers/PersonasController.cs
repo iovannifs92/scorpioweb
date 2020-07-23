@@ -38,10 +38,10 @@ namespace scorpioweb.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
-            {
-              new SelectListItem{ Text="No", Value="1"},
-              new SelectListItem{ Text="Si", Value="2"}
-            };
+        {
+            new SelectListItem{ Text="No", Value="1"},
+            new SelectListItem{ Text="Si", Value="2"}
+        };
         #endregion
 
 
@@ -884,19 +884,29 @@ namespace scorpioweb.Controllers
             //ViewBag.listaLnpais = listaNoSi;
             //ViewBag.idLnpais = BuscaId(listaNoSi, persona.Lnpais);
 
-            #region lnEstado
+            #region Lnestado
             List<Estados> listaEstados = new List<Estados>();
-                  listaEstados = (from table in _context.Estados
-                                  select table).ToList();
+            listaEstados = (from table in _context.Estados
+                            select table).ToList();
 
-                  listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
-                  ViewBag.ListadoEstados = listaEstados;
+            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListadoEstados = listaEstados;
 
-                  ViewBag.idEstado = persona.Lnestado;
-      #endregion
+            ViewBag.idEstado = persona.Lnestado;
+            #endregion
 
-            //ViewBag.listaLnmunicipio = listaNoSi;
-            //ViewBag.idLnmunicipio = BuscaId(listaNoSi, persona.Lnmunicipio);
+            #region Lnmunicipio
+            int Lnestado = Int32.Parse(persona.Lnestado);
+            List<Municipios> listaMunicipios = new List<Municipios>();
+            //listaMunicipios = (from table in _context.Municipios
+            //                  where table.EstadosId == Lnestado
+            //                   select table).ToList();
+
+            listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            ViewBag.ListadoMunicipios = listaMunicipios;
+
+            ViewBag.idMunicipio = persona.Lnmunicipio;
+            #endregion
 
             //ViewBag.listaEstadoCivil = listaNoSi;
             //ViewBag.idEstadoCivil = BuscaId(listaNoSi, persona.EstadoCivil);
