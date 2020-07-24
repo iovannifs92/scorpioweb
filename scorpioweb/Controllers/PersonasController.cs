@@ -1037,6 +1037,32 @@ namespace scorpioweb.Controllers
             }
             ViewData["Nombre"] = nombre;
             var domicilio = await _context.Domicilio.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
+
+            #region TIPODOMICILIO          
+            List<SelectListItem> LiatatDomicilio;
+            LiatatDomicilio = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Rentada", Value="RENTADA"},
+              new SelectListItem{ Text="Prestada", Value="PRESTADA"},
+              new SelectListItem{ Text="Propia", Value="PROPIA"},
+              new SelectListItem{ Text="Familiar", Value="FAMILIAR"},
+              new SelectListItem{ Text="Situación de calle", Value="SITUACION DE CALLE"},
+              new SelectListItem{ Text="Irregular", Value="IRREGULAR"},
+            };
+
+            ViewBag.listatDomicilio = LiatatDomicilio;
+
+            foreach (var item in LiatatDomicilio)
+            {
+                if (item.Value == domicilio.TipoDomicilio)
+            {
+                    ViewBag.idtDomicilio = item.Value;
+                    break;
+               }
+            }
+            #endregion
+
+
             if (domicilio == null)
             {
                 return NotFound();
