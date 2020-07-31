@@ -42,6 +42,12 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="No", Value="1"},
             new SelectListItem{ Text="Si", Value="2"}
         };
+        private List<SelectListItem> listaNoSiNA = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="NA", Value="1"},
+            new SelectListItem{ Text="No", Value="2"},
+            new SelectListItem{ Text="Si", Value="3"}
+        };
         #endregion
 
 
@@ -879,6 +885,10 @@ namespace scorpioweb.Controllers
             }
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            if (persona == null)
+            {
+                return NotFound();
+            }
 
             #region PAIS          
             List<SelectListItem> ListaPais;
@@ -927,7 +937,6 @@ namespace scorpioweb.Controllers
                                    select table).ToList();
             }
 
-            listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
             ViewBag.ListadoMunicipios = listaMunicipios;
 
             ViewBag.idMunicipio = persona.Lnmunicipio;
@@ -997,10 +1006,6 @@ namespace scorpioweb.Controllers
             ViewBag.idConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
             #endregion
 
-            if (persona == null)
-            {
-                return NotFound();
-            }
             return View(persona);
         }
 
@@ -1099,6 +1104,27 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaEstudia = listaNoSi;
+            ViewBag.idEstudia = BuscaId(listaNoSi, estudios.Estudia);
+
+            #region GradoEstudios
+            List<SelectListItem> ListaGradoEstudios;
+            ListaGradoEstudios = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Primaria", Value="PRIMARIA"},
+              new SelectListItem{ Text="Secundaria", Value="SECUNDARIA"},
+              new SelectListItem{ Text="Bachillerato", Value="BACHILLERATO"},
+              new SelectListItem{ Text="TSU", Value="TSU"},
+              new SelectListItem{ Text="Licenciatura", Value="LICENCIATURA"},
+              new SelectListItem{ Text="Maestría", Value="MAESTRÍA"},
+              new SelectListItem{ Text="Doctorado", Value="DOCTORADO"}
+            };
+
+            ViewBag.listaGradoEstudios = ListaGradoEstudios;
+            ViewBag.idGradoEstudios = BuscaId(ListaGradoEstudios, estudios.GradoEstudios);
+            #endregion
+
             return View(estudios);
         }
 
@@ -1151,6 +1177,69 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaTrabaja = listaNoSi;
+            ViewBag.idTrabaja = BuscaId(listaNoSi, trabajo.Trabaja);
+
+            #region TipoOcupacion
+            List<SelectListItem> ListaTipoOcupacion;
+            ListaTipoOcupacion = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "NA", Value = "NA" },
+                new SelectListItem{ Text = "Funcionarios, directores y jefes", Value = "FUNCIONARIO, DIRECTOR Y JEFE" },
+                new SelectListItem{ Text = "Profesionistas y técnicos", Value = "PROFESIONISTA O TÉCNICO" },
+                new SelectListItem{ Text = "Trabajadores auxiliares en actividades administrativas", Value = "TRABAJADORES AUXILIARES EN ACTIVIDADES ADMINISTRATIVAS" },
+                new SelectListItem{ Text = "Comerciantes, empleados en ventas y agentes de ventas", Value = "COMERCIANTES, EMPLEADOS DE VENTA Y AGENTES DE VENTAS" },
+                new SelectListItem{ Text = "Trabajadores en servicios personales y vigilancia", Value = "TRABAJADORES EN SERVICIOS PERSONALES Y VIGILANCIA" },
+                new SelectListItem{ Text = "Trabajadores en actividades agrícolas, ganaderas, forestales, caza y pesca", Value = "TRABAJADORES EN ACTIVIDADES AGRICOLAS, GANADERAS, FORESTALES, CAZA Y PESCA" },
+                new SelectListItem{ Text = "Trabajadores artesanales", Value = "TRABAJADORES ARTESANALES" },
+                new SelectListItem{ Text = "Operadores de maquinaria industrial, ensambladores, choferes y conductores de transporte", Value = "OPERADORES DE MAQUINARIA INDUSTRIAL, ENSAMBLADORES, CHOFERES Y CONDUCTORES DE TRANSPORTE" },
+                new SelectListItem{ Text = "Trabajadores en actividades elementales y de apoyo", Value = "TRABAJADORES EN ACTIVIDADES ELEMENTALES Y DE APOYO" }
+            };
+
+            ViewBag.listaTipoOcupacion = ListaTipoOcupacion;
+            ViewBag.idTipoOcupacion = BuscaId(ListaTipoOcupacion, trabajo.TipoOcupacion);
+            #endregion
+
+            ViewBag.listaEnteradoProceso = listaNoSiNA;
+            ViewBag.idEnteradoProceso = BuscaId(listaNoSi, trabajo.EnteradoProceso);
+
+            ViewBag.listaSePuedeEnterar = listaNoSiNA;
+            ViewBag.idSePuedeEnterar = BuscaId(listaNoSi, trabajo.SePuedeEnterar);
+
+            #region TiempoTrabajando
+            List<SelectListItem> ListaTiempoTrabajando;
+            ListaTiempoTrabajando = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 5 y 9 años", Value = "ENTRE 2 Y 5 AÑOS" },
+                new SelectListItem{ Text = "Entre 2 y 4 años", Value = "ENTRE 2 Y 4 AÑOS" },
+                new SelectListItem{ Text = "Más de un año menos de 2", Value = "MAS DE UN AÑO Y MENOS DE 2" },
+                new SelectListItem{ Text = "Entre 6 meses y 1 año", Value = "ENTRE 6 MESES Y 1 AÑO" },
+                new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },
+                new SelectListItem{ Text = "Tiene menos de 3 meses sin actividad laboral", Value = "SIN TRABAJO DURANTE MENOS DE 3 MESES" },
+                new SelectListItem{ Text = "Tiene más de 3 meses sin actividad laboral", Value = "SIN TRABAJO DURANTE MAS DE 3 MESES" }
+            };
+
+            ViewBag.listaTiempoTrabajando = ListaTiempoTrabajando;
+            ViewBag.idTiempoTrabajando = BuscaId(ListaTiempoTrabajando, trabajo.TiempoTrabajano);
+            #endregion
+
+            #region TemporalidadSalario
+            List<SelectListItem> ListaTemporalidadSalario;
+            ListaTemporalidadSalario = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "NA", Value = "NA" },
+                new SelectListItem{ Text = "Diario", Value = "DIARIO" },
+                new SelectListItem{ Text = "Semanal", Value = "SEMANAL" },
+                new SelectListItem{ Text = "Quincenal", Value = "QUINCENAL" },
+                new SelectListItem{ Text = "Mensual", Value = "MENSUAL" }
+            };
+
+            ViewBag.listaTemporalidadSalario = ListaTemporalidadSalario;
+            ViewBag.idTemporalidadSalario = BuscaId(ListaTemporalidadSalario, trabajo.TemporalidadSalario);
+            #endregion
+
             return View(trabajo);
         }
 

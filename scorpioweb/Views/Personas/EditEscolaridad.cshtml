@@ -14,9 +14,16 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdEstudios" />
             <div class="form-group">
-                <label asp-for="Estudia" class="control-label"></label>
-                <input asp-for="Estudia" class="form-control" />
-                <span asp-validation-for="Estudia" class="text-danger"></span>
+                <label class="control-label">¿Actualmente estudia?</label>
+                <select class="form-control" name="Estudia"
+                        asp-items="@(new SelectList(ViewBag.listaEstudia, "Value", "Text", @ViewBag.idEstudia))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Último grado de estudios</label>
+                <select class="form-control" name="GradoEstudios"
+                        asp-items="@(new SelectList(ViewBag.listaGradoEstudios, "Value", "Text", @ViewBag.idGradoEstudios))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="GradoEstudios" class="control-label"></label>
