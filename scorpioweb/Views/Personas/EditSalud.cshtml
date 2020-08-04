@@ -72,7 +72,7 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="IdSaludFisica" />
                 <div class="form-group col-md-12">
-                    <label class="control-label">¿Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
+                    <label class="control-label">¿ Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
                     <select class="form-control" id="enfermedad"
                             asp-items="@(new SelectList(ViewBag.listaEnfermedad, "Value", "Text", @ViewBag.idEnfermedad))">
                     </select>
