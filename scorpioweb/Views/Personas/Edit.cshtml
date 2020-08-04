@@ -3,32 +3,57 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
+        //#region -Municipios-
+        var items = "<option value='0'>Selecciona</option>";
+        $('#municipioD').html(items);
+
+        $('#lnEstado').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#lnEstado';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#lnMunicipio").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#lnMunicipio').html(items);
+            });
+        });
+
         $('#lnpais').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                 $("#lnEstado").val(0);
                 var items = "<option value='0'>Selecciona</option>";
-                ////$('#lnMunicipio').html(items);
-                ////$("#lnMunicipio").val(0);
+                $('#lnMunicipio').html(items);
+                $("#lnMunicipio").val(0);
                 $("#Estado").css("display", "none");
-                //$("#Municipio").css("display", "none");
+                $("#Municipio").css("display", "none");
                 $("#Pais, #Localidad").removeClass("col-md-3");
                 $("#Pais, #Localidad").addClass("col-md-6");
             }
             else {
                 $("#Estado").css("display", "block");
-                //$("#Municipio").css("display", "block");
+                $("#Municipio").css("display", "block");
                 $("#Pais, #Localidad").removeClass("col-md-6");
                 $("#Pais, #Localidad").addClass("col-md-3");
             }
-
         });
 
 
+        $('#sexo').change(function () {
+            var gen = $(this).children("option:selected").val();
+            if (gen == "F") {
+                $("#embarazo").css("display", "block");
+            }
+            else {
+                $("#embarazo").css("display", "none");
+            }
+        });
+        //#endregion
     });
-
-
-
 </script>
 
 @{
@@ -66,7 +91,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Género</label>
-                <select class="form-control" name="Genero"
+                <select class="form-control" name="sexo" id="sexo"
                         asp-items="@(new SelectList(ViewBag.listaGenero, "Value", "Text", @ViewBag.idGenero))">
                 </select>
             </div>
@@ -77,11 +102,11 @@
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Fecha de nacimiento</label>
-                <input asp-for="Fnacimiento" class="form-control" />
+                <input asp-for="Fnacimiento" type="date" class="form-control" />
                 <span asp-validation-for="Fnacimiento" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-3" id="Pais">
-                <label class="control-label">País</label>
+                <label class="control-label">País de nacimiento</label>
                 <select class="form-control" name="Lnpais" id="lnpais"
                         asp-items="@(new SelectList(ViewBag.listaLnpais, "Value", "Text", @ViewBag.idLnpais))">
                 </select>
@@ -89,23 +114,23 @@
             <div class="form-group col-lg-3" id="Estado">
                 <label class="control-label">Estado</label>
                 <select class="form-control" name="lnEstado" id="lnEstado"
-                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado",@ViewBag.idEstado))">
+                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id", "Estado", @ViewBag.idEstado))">
                 </select>
             </div>
-            @*<div class="form-group">
+            <div class="form-group col-lg-3" id="Municipio">
                 <label class="control-label">Municipio</label>
-                <select class="form-control" name="Lnmunicipio" id="Lnmunicipio"
-                    asp-items="@(new SelectList(ViewBag.listaLnmunicipio, "Value", "Text", @ViewBag.idLnmunicipio))">
+                <select class="form-control" name="lnMunicipio" id="lnMunicipio"
+                        asp-items="@(new SelectList(ViewBag.ListadoMunicipios, "Id", "Municipio",  @ViewBag.idMunicipio))">
                 </select>
-            </div>*@
-            <div class="form-group col-lg-6">
+            </div>
+            <div class="form-group col-lg-3">
                 <label class="control-label">Localidad de nacimiento</label>
                 <input asp-for="Lnlocalidad" class="form-control" />
                 <span asp-validation-for="Lnlocalidad" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-6">
-                <label class="control-label">Estado Cvil</label>
-                <select class="form-control" name="EstadoCivil"id="EstadoCivil"
+                <label class="control-label">Estado Civil</label>
+                <select class="form-control" name="EstadoCivil"
                         asp-items="@(new SelectList(ViewBag.listaEstadoCivil, "Value","Text",@ViewBag.idEstadoCivil))">
                 </select>
             </div>
@@ -130,7 +155,7 @@
                 <input asp-for="DatosGeneralescol" class="form-control" />
                 <span asp-validation-for="DatosGeneralescol" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group col-lg-12">
                 <label class="control-label">¿Sabe leer y escribir?</label>
                 <select class="form-control" name="LeerEscribir"
                         asp-items="@(new SelectList(ViewBag.listaLeerEscribir, "Value","Text",@ViewBag.idLeerEscribir))">
@@ -139,7 +164,7 @@
             <div class="form-group col-lg-6">
                 <label class="control-label">¿Requiere de traductor o interprete?</label>
                 <select class="form-control" name="Traductor"
-                    asp-items="@(new SelectList(ViewBag.listaTraductor, "Value", "Text", @ViewBag.idTraductor))">
+                        asp-items="@(new SelectList(ViewBag.listaTraductor, "Value", "Text", @ViewBag.idTraductor))">
                 </select>
             </div>
             <div class="form-group col-lg-6">
@@ -149,18 +174,18 @@
             </div>
             <div class="form-group col-lg-6">
                 <label class="control-label">Telefono Fijo</label>
-                <input asp-for="TelefonoFijo" class="form-control" />
+                <input asp-for="TelefonoFijo" class="form-control"type="tel" pattern="[0-9]{10}" maxlength="10" />
                 <span asp-validation-for="TelefonoFijo" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-6">
                 <label asp-for="Celular" class="control-label"></label>
-                <input asp-for="Celular" class="form-control" />
+                <input asp-for="Celular" class="form-control" type="tel" pattern="[0-9]{10}" maxlength="10" />
                 <span asp-validation-for="Celular" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-6">
                 <label class="control-label">¿Tiene hijos?</label>
                 <select class="form-control" name="Hijos"
-                    asp-items="@(new SelectList(ViewBag.listaHijos, "Value", "Text", @ViewBag.idHijos))">
+                        asp-items="@(new SelectList(ViewBag.listaHijos, "Value", "Text", @ViewBag.idHijos))">
                 </select>
             </div>
             <div class="form-group col-lg-6">
@@ -173,13 +198,13 @@
                 <input asp-for="NpersonasVive" class="form-control" />
                 <span asp-validation-for="NpersonasVive" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group col-lg-12">
                 <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
                 <select class="form-control" name="Propiedades"
-                    asp-items="@(new SelectList(ViewBag.listaPropiedades, "Value", "Text", @ViewBag.idPropiedades))">
+                        asp-items="@(new SelectList(ViewBag.listaPropiedades, "Value", "Text", @ViewBag.idPropiedades))">
                 </select>
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group col-lg-12">
                 <label asp-for="Curp" class="control-label"></label>
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
@@ -195,7 +220,12 @@
                 <input asp-for="UltimaActualización" class="form-control" />
                 <span asp-validation-for="UltimaActualización" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group col-lg-12">
+                <label asp-for="UltimaActualización" class="control-label"></label>
+                <input asp-for="UltimaActualización" class="form-control" />
+                <span asp-validation-for="UltimaActualización" class="text-danger"></span>
+            </div>
+            <div class="form-group col-lg-12">
                 <label asp-for="Supervisor" class="control-label"></label>
                 <input asp-for="Supervisor" class="form-control" />
                 <span asp-validation-for="Supervisor" class="text-danger"></span>

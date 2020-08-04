@@ -9,41 +9,42 @@
 <h3>@ViewData["Nombre"]</h3>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div>
         <form asp-action="EditActividadesSociales">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdActividadSocial" />
-            <div class="form-group">
-                <label asp-for="TipoActividad" class="control-label"></label>
+            <div class="form-group col-md-6">
+                <label class="control-label">Tipo de actividad</label>
                 <input asp-for="TipoActividad" class="form-control" />
                 <span asp-validation-for="TipoActividad" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-6">
                 <label asp-for="Horario" class="control-label"></label>
                 <input asp-for="Horario" class="form-control" />
                 <span asp-validation-for="Horario" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Lugar" class="control-label"></label>
+            <div class="form-group col-md-12">
+                <label class="control-label">Lugar donde realiza su actividad</label>
                 <input asp-for="Lugar" class="form-control" />
                 <span asp-validation-for="Lugar" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+            <div class="form-group col-md-12">
+                <label class="control-label">Teléfono (10 dígitos)</label>
+                <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SePuedeEnterar" class="control-label"></label>
-                <input asp-for="SePuedeEnterar" class="form-control" />
-                <span asp-validation-for="SePuedeEnterar" class="text-danger"></span>
+            <div class="form-group col-md-6">
+                <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
+                <select class="form-control" name="SePuedeEnterar"
+                        asp-items="@(new SelectList(ViewBag.listaSePuedeEnterar, "Value", "Text", @ViewBag.idSePuedeEnterar))">
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="Referencia" class="control-label"></label>
+            <div class="form-group col-md-6">
+                <label class="control-label">Especificar persona de referencia</label>
                 <input asp-for="Referencia" class="form-control" />
                 <span asp-validation-for="Referencia" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label asp-for="Observaciones" class="control-label"></label>
                 <input asp-for="Observaciones" class="form-control" />
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
