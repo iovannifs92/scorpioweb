@@ -1,85 +1,150 @@
 ﻿@model scorpioweb.Models.Saludfisica
 
-@{
-    ViewData["Title"] = "Edit";
-    Layout = "/Views/Shared/_Layout.cshtml";
-}
+    <script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#enfermedad').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "2") {
+                $("#especifiqueEnfermedad").css("display", "block");
+                $("#tratamiento").css("display", "block");
+            }
+            else {
+                $("#especifiqueEnfermedad").css("display", "none");
+                $("#tratamiento").css("display", "none");
+            }
 
-<h2>Salud Física</h2>
-<h3>@ViewData["Nombre"]</h3>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditSalud">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdSaludFisica" />
-            <div class="form-group">
-                <label asp-for="Enfermedad" class="control-label"></label>
-                <input asp-for="Enfermedad" class="form-control" />
-                <span asp-validation-for="Enfermedad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EspecifiqueEnfermedad" class="control-label"></label>
-                <input asp-for="EspecifiqueEnfermedad" class="form-control" />
-                <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmbarazoLactancia" class="control-label"></label>
-                <input asp-for="EmbarazoLactancia" class="form-control" />
-                <span asp-validation-for="EmbarazoLactancia" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tiempo" class="control-label"></label>
-                <input asp-for="Tiempo" class="form-control" />
-                <span asp-validation-for="Tiempo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tratamiento" class="control-label"></label>
-                <input asp-for="Tratamiento" class="form-control" />
-                <span asp-validation-for="Tratamiento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Discapacidad" class="control-label"></label>
-                <input asp-for="Discapacidad" class="form-control" />
-                <span asp-validation-for="Discapacidad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EspecifiqueDiscapacidad" class="control-label"></label>
-                <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
-                <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ServicioMedico" class="control-label"></label>
-                <input asp-for="ServicioMedico" class="form-control" />
-                <span asp-validation-for="ServicioMedico" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EspecifiqueServicioMedico" class="control-label"></label>
-                <input asp-for="EspecifiqueServicioMedico" class="form-control" />
-                <span asp-validation-for="EspecifiqueServicioMedico" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InstitucionServicioMedico" class="control-label"></label>
-                <input asp-for="InstitucionServicioMedico" class="form-control" />
-                <span asp-validation-for="InstitucionServicioMedico" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Observaciones" class="control-label"></label>
-                <input asp-for="Observaciones" class="form-control" />
-                <span asp-validation-for="Observaciones" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PersonaIdPersona" class="control-label"></label>
-                <input asp-for="PersonaIdPersona" class="form-control" />
-                <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Guardar cambios" class="btn btn-success" />
-            </div>
-        </form>
+        });
+        $('#embarazoLactancia').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "2") {
+                $("#tiempoEmbarazo").css("display", "block");
+                $("#tratamiento").css("display", "block");
+            }
+            else {
+                $("#tiempoEmbarazo").css("display", "none");
+                $("#tratamiento").css("display", "none");
+            }
+
+        });
+        $('#discapacidad').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "2") {
+                $("#especifiqueDiscapacidad").css("display", "block");
+            }
+            else {
+                $("#especifiqueDiscapacidad").css("display", "none");
+            }
+
+        });
+        $('#servicioMedico').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "2") {
+                $("#especifiqueServicioMedico").css("display", "block");
+                $("#institucionServicioMedico").css("display", "block");
+            }
+            else {
+                $("#especifiqueServicioMedico").css("display", "none");
+                $("#institucionServicioMedico").css("display", "none");
+            }
+
+        });
+    });
+    </script>
+
+
+
+
+
+
+
+    @{
+        ViewData["Title"] = "Edit";
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Salud Física</h2>
+    <h3>@ViewData["Nombre"]</h3>
+    <hr />
+    <div class="row">
+        <div>
+            <form asp-action="EditSalud">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IdSaludFisica" />
+                <div class="form-group col-md-12">
+                    <label class="control-label">¿Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
+                    <select class="form-control" id="enfermedad"
+                            asp-items="@(new SelectList(ViewBag.listaEnfermedad, "Value", "Text", @ViewBag.idEnfermedad))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="especifiqueEnfermedad">
+                    <label class="control-label">Especifique Enfermedad</label>
+                    <input asp-for="EspecifiqueEnfermedad" class="form-control" />
+                    <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12" id="embarazo" style="display:none">
+                    <label class="control-label">¿Está embarazada o en período de lactancia?</label>
+                    <select class="form-control" name="embarazoLactancia" id="embarazoLactancia"
+                            asp-items="@(new SelectList(ViewBag.listaEmbarazoLactancia, "Value", "Text", @ViewBag.idEmbarazoLactancia))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="tiempoEmbarazo">
+                    <label class="control-label">Tiempo</label>
+                    <input asp-for="Tiempo" class="form-control" />
+                    <span asp-validation-for="Tiempo" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="tratamiento">
+                    <label class="control-label">Tratamiento médico indicado</label>
+                    <input asp-for="Tratamiento" class="form-control" />
+                    <span asp-validation-for="Tratamiento" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">¿Tiene alguna condición física que requiera cuidados especiales?</label>
+                    <select class="form-control" id="discapacidad" name="discapacidad"
+                            asp-items="@(new SelectList(ViewBag.listaDiscapacidad, "Value", "Text", @ViewBag.idDiscapacidad))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="especifiqueDiscapacidad">
+                    <label class="control-label">Específique la discapacidad</label>
+                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
+                    <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">¿Cuenta con servicio médico?</label>
+                    <select class="form-control" name="ServicioMedico" id="servicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaServicioMedico, "Value", "Text", @ViewBag.idServicioMedico))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" style="display:none"  id="especifiqueServicioMedico">
+                    <label class="control-label">¿Qué tipo de servicio tiene?</label>
+                    <select class="form-control" name="EspecifiqueServicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaEspecifiqueServicioMedico, "Value", "Text", @ViewBag.idEspecifiqueServicioMedico))">
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6" style="display:none" id="institucionServicioMedico">
+                    <label class="control-label">Institución prestadora de servicio</label>
+                    <select class="form-control" name="InstitucionServicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaInstitucionServicioMedico, "Value", "Text", @ViewBag.idInstitucionServicioMedico))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label asp-for="Observaciones" class="control-label"></label>
+                    <input asp-for="Observaciones" class="form-control" />
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <label asp-for="PersonaIdPersona" class="control-label"></label>
+                    <input asp-for="PersonaIdPersona" class="form-control" />
+                    <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="MenuEdicion" asp-route-id="@Model.PersonaIdPersona">Regresar</a>
-</div>
+    <div>
+        <a asp-action="MenuEdicion" asp-route-id="@Model.PersonaIdPersona">Regresar</a>
+    </div>

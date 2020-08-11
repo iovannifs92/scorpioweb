@@ -10,91 +10,94 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-lg-12">
         <form asp-action="EditDomicilio">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdDomicilio" />
             <div class="form-group">
-                <label asp-for="TipoDomicilio" class="control-label"></label>
-                <input asp-for="TipoDomicilio" class="form-control" />
-                <span asp-validation-for="TipoDomicilio" class="text-danger"></span>
+                <label class="control-label">Tipo de Domicilio</label>
+                <select class="form-control" name="tDomicilio" id="tDomicilio"
+                asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text", @ViewBag.idtDomicilio))">
+                </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-5">
                 <label asp-for="Calle" class="control-label"></label>
                 <input asp-for="Calle" class="form-control" />
                 <span asp-validation-for="Calle" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-2">
                 <label asp-for="No" class="control-label"></label>
                 <input asp-for="No" class="form-control" />
                 <span asp-validation-for="No" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TipoUbicacion" class="control-label"></label>
+            <div class="form-group col-lg-5">
+                <label class="control-label">Colonia/Fraccionamiento</label>
                 <input asp-for="TipoUbicacion" class="form-control" />
                 <span asp-validation-for="TipoUbicacion" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NombreCf" class="control-label"></label>
+            <div class="form-group col-lg-12">
+                <label class="control-label">Nombre de Colonia/Fraccionamiento</label>
                 <input asp-for="NombreCf" class="form-control" />
                 <span asp-validation-for="NombreCf" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-4">
                 <label asp-for="Pais" class="control-label"></label>
                 <input asp-for="Pais" class="form-control" />
                 <span asp-validation-for="Pais" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-4">
                 <label asp-for="Estado" class="control-label"></label>
                 <input asp-for="Estado" class="form-control" />
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-4">
                 <label asp-for="Municipio" class="control-label"></label>
                 <input asp-for="Municipio" class="form-control" />
                 <span asp-validation-for="Municipio" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-4">
                 <label asp-for="Temporalidad" class="control-label"></label>
                 <input asp-for="Temporalidad" class="form-control" />
                 <span asp-validation-for="Temporalidad" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ResidenciaHabitual" class="control-label"></label>
-                <input asp-for="ResidenciaHabitual" class="form-control" />
-                <span asp-validation-for="ResidenciaHabitual" class="text-danger"></span>
+            <div class="form-group col-lg-4">
+                <label class="control-label">Tipo de Domicilio</label>
+                <select class="form-control" name="ResidenciaHabitual" id="ResidenciaHabitual"
+                        asp-items="@(new SelectList(ViewBag.listaResidenciaHabitual, "Value", "Text", @ViewBag.idResidenciaHabitual))">
+                </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-4">
                 <label asp-for="Cp" class="control-label"></label>
                 <input asp-for="Cp" class="form-control" />
                 <span asp-validation-for="Cp" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <label asp-for="Referencias" class="control-label"></label>
                 <input asp-for="Referencias" class="form-control" />
                 <span asp-validation-for="Referencias" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <label asp-for="Horario" class="control-label"></label>
                 <input asp-for="Horario" class="form-control" />
                 <span asp-validation-for="Horario" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DomcilioSecundario" class="control-label"></label>
-                <input asp-for="DomcilioSecundario" class="form-control" />
-                <span asp-validation-for="DomcilioSecundario" class="text-danger"></span>
+            <div class="form-group col-lg-12">
+                <label class="control-label">¿Este domicilio es su residencia habitual?</label>
+                <select class="form-control" name="DomcilioSecundario" id="DomcilioSecundario"
+                        asp-items="@(new SelectList(ViewBag.listaDomcilioSecundario, "Value", "Text", @ViewBag.idDomcilioSecundario))">
+                </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <label asp-for="Observaciones" class="control-label"></label>
                 <input asp-for="Observaciones" class="form-control" />
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <label asp-for="PersonaIdPersona" class="control-label"></label>
                 <input asp-for="PersonaIdPersona" class="form-control" />
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <input type="submit" value="Guardar cambios" class="btn btn-success" />
             </div>
         </form>

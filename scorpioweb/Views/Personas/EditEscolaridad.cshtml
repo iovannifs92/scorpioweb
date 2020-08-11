@@ -9,41 +9,43 @@
 <h3>@ViewData["Nombre"]</h3>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div>
         <form asp-action="EditEscolaridad">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdEstudios" />
-            <div class="form-group">
-                <label asp-for="Estudia" class="control-label"></label>
-                <input asp-for="Estudia" class="form-control" />
-                <span asp-validation-for="Estudia" class="text-danger"></span>
+            <div class="form-group col-md-3">
+                <label class="control-label">¿Actualmente estudia?</label>
+                <select class="form-control" name="Estudia"
+                        asp-items="@(new SelectList(ViewBag.listaEstudia, "Value", "Text", @ViewBag.idEstudia))">
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="GradoEstudios" class="control-label"></label>
-                <input asp-for="GradoEstudios" class="form-control" />
-                <span asp-validation-for="GradoEstudios" class="text-danger"></span>
+            <div class="form-group col-md-3">
+                <label class="control-label">Último grado de estudios</label>
+                <select class="form-control" name="GradoEstudios"
+                        asp-items="@(new SelectList(ViewBag.listaGradoEstudios, "Value", "Text", @ViewBag.idGradoEstudios))">
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="InstitucionE" class="control-label"></label>
+            <div class="form-group col-md-6">
+                <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
                 <input asp-for="InstitucionE" class="form-control" />
                 <span asp-validation-for="InstitucionE" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label asp-for="Horario" class="control-label"></label>
                 <input asp-for="Horario" class="form-control" />
                 <span asp-validation-for="Horario" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-6">
                 <label asp-for="Direccion" class="control-label"></label>
                 <input asp-for="Direccion" class="form-control" />
                 <span asp-validation-for="Direccion" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+            <div class="form-group col-md-6">
+                <label class="control-label">Teléfono (10 dígitos)</label>
+                <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label asp-for="Observaciones" class="control-label"></label>
                 <input asp-for="Observaciones" class="form-control" />
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
