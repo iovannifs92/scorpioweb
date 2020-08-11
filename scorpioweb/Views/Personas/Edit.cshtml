@@ -11,6 +11,7 @@
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#lnEstado';
             //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            //public JsonResult GetMunicipio(int EstadoId)
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
                 var items = '';

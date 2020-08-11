@@ -425,13 +425,18 @@ namespace scorpioweb.Controllers
         public JsonResult GetMunicipio(int EstadoId)
         {
             TempData["message"] = DateTime.Now;
-
-
             List<Municipios> municipiosList = new List<Municipios>();
 
-            municipiosList = (from Municipios in _context.Municipios
-                              where Municipios.EstadosId == EstadoId
-                              select Municipios).ToList();
+            if (EstadoId != 0) {                
+
+                municipiosList = (from Municipios in _context.Municipios
+                                  where Municipios.EstadosId == EstadoId
+                                  select Municipios).ToList();
+            }
+            else
+            {
+                municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            }
 
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
         }
@@ -543,8 +548,8 @@ namespace scorpioweb.Controllers
                 persona.Edad = edad;
                 persona.Fnacimiento = fNacimiento;
                 persona.Lnpais = lnPais;
-                persona.Lnestado = generaEstado(lnEstado);
-                persona.Lnmunicipio = generaMunicipio(lnMunicipio);
+                persona.Lnestado = lnEstado;
+                persona.Lnmunicipio = lnMunicipio;
                 persona.Lnlocalidad = lnLocalidad;
                 persona.EstadoCivil = estadoCivil;
                 persona.Duracion = duracion;
@@ -570,8 +575,8 @@ namespace scorpioweb.Controllers
                 domicilio.No = normaliza(no);
                 domicilio.NombreCf = normaliza(nombreCF);
                 domicilio.Pais = paisD;
-                domicilio.Estado = generaEstado(estadoD);
-                domicilio.Municipio = generaMunicipio(municipioD);
+                domicilio.Estado = estadoD;
+                domicilio.Municipio = municipioD;
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = normaliza(cp);
@@ -588,8 +593,8 @@ namespace scorpioweb.Controllers
                 domiciliosecundario.No = normaliza(noDS);
                 domiciliosecundario.NombreCf = normaliza(nombreCFDS);
                 domiciliosecundario.Pais = paisDDS;
-                domiciliosecundario.Estado = generaEstado(estadoDDS);
-                domiciliosecundario.Municipio = generaMunicipio(municipioDDS);
+                domiciliosecundario.Estado = estadoDDS;
+                domiciliosecundario.Municipio = municipioDDS;
                 domiciliosecundario.Temporalidad = temporalidadDS;
                 domiciliosecundario.ResidenciaHabitual = normaliza(residenciaHabitualDS);
                 domiciliosecundario.Cp = normaliza(cpDS);
@@ -911,7 +916,6 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
 
-            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListadoEstados = listaEstados;
 
             ViewBag.idEstado = persona.Lnestado;
