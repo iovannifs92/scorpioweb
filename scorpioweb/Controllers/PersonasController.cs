@@ -932,6 +932,8 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
 
+            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+
             ViewBag.ListadoEstados = listaEstados;
 
             ViewBag.idEstado = persona.Lnestado;
@@ -946,6 +948,8 @@ namespace scorpioweb.Controllers
                                    where table.EstadosId == Lnestado
                                    select table).ToList();
             }
+
+            listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
 
             ViewBag.ListadoMunicipios = listaMunicipios;
 
