@@ -53,7 +53,68 @@
             }
         });
         //#endregion
+
+        //#region -Modales-
+           $("#consumoSustancias").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            //alert("opcion: "+opcion);
+            if (opcion == "SI") {
+                $('#modalConsumoSustancias').modal('show')
+            }
+            else {
+                $('#modalConsumoSustancias').modal('hidden')
+            }
+        });
+        //#endregion
     });
+
+    //region GuardarMODALS
+    $(document).ready(function () {
+        $('#btnGuardarSustancia').on("click", function (e) {
+            e.preventDefault();
+            alert("tipo: ");
+            var s = document.getElementById("sustancia");
+            var f = document.getElementById("frecuenciaS");
+            var sustancia = s.options[s.selectedIndex].value;
+            var frecuencia = f.options[f.selectedIndex].value;
+            var cantidad = document.getElementById("cantidadS").value;
+            var ultimoC = document.getElementById("ultimoConsumo").value;
+            var observaciones = document.getElementById("observacionesConsumo").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/guardarSustancia",
+                traditional: true,
+                data: {
+                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
+                        document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
+                        document.ready = document.getElementById("cantidadS").value = '';
+                        document.ready = document.getElementById("ultimoConsumo").value = '';
+                        document.ready = document.getElementById("observacionesConsumo").value = '';
+                        var otraSustancia = confirm("¿Consume alguna otra sustancia?");
+                        if (otraSustancia == true) {
+                            alert("Coloque los datos correspondientes a la nueva susutancia");
+                        } else {
+                            $("#modalConsumoSustancias").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+    });
+        //endregion
 </script>
 
 @{
@@ -71,8 +132,8 @@
             <input type="hidden" asp-for="IdPersona" />
             <div class="form-group col-md-4">
                 <label asp-for="Paterno" class="control-label"></label>
-                <input asp-for="Paterno" class="form-control" />
-                <span asp-validation-for="Paterno" class="text-danger"></span>
+                <input asp-for="Paterno" class="form-control" style="text-transform:uppercase"  />
+                <span asp-validation-for="Paterno" class="text-danger" ></span>
             </div>
             <div class="form-group col-md-4">
                 <label asp-for="Materno" class="control-label"></label>
@@ -82,23 +143,24 @@
             <div class="form-group col-md-4">
                 <label asp-for="Nombre" class="control-label"></label>
                 <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+                <span asp-validation-for="Nombre" class="text-danger" ></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Alias" class="control-label"></label>
                 <input asp-for="Alias" class="form-control" />
                 <span asp-validation-for="Alias" class="text-danger"></span>
+                <span asp-validation-for="Alias" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Género</label>
-                <select class="form-control" name="sexo" id="sexo"
+                <select class="form-control" name="Genero" id="Genero"
                         asp-items="@(new SelectList(ViewBag.listaGenero, "Value", "Text", @ViewBag.idGenero))">
                 </select>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Edad" class="control-label"></label>
                 <input asp-for="Edad" class="form-control" />
-                <span asp-validation-for="Edad" class="text-danger"></span>
+                <span asp-validation-for="Edad" type="number" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Fecha de nacimiento</label>
@@ -130,7 +192,7 @@
             </div>
             <div class="form-group col-lg-6">
                 <label class="control-label">Estado Civil</label>
-                <select class="form-control" name="EstadoCivil"
+                <select class="form-control" name="estadoCivil" id="estadoCivil"
                         asp-items="@(new SelectList(ViewBag.listaEstadoCivil, "Value","Text",@ViewBag.idEstadoCivil))">
                 </select>
             </div>
@@ -174,7 +236,7 @@
             </div>
             <div class="form-group col-lg-6">
                 <label class="control-label">Telefono Fijo</label>
-                <input asp-for="TelefonoFijo" class="form-control"type="tel" pattern="[0-9]{10}" maxlength="10" />
+                <input asp-for="TelefonoFijo" class="form-control" type="tel" pattern="[0-9]{10}" maxlength="10" />
                 <span asp-validation-for="TelefonoFijo" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-6">
@@ -211,7 +273,7 @@
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Consume Sustancias</label>
-                <select class="form-control" name="ConsumoSustancias"
+                <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
                         asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
                 </select>
             </div>
@@ -239,5 +301,71 @@
 
 <div>
     <a asp-action="MenuEdicion" asp-route-id="@Model.IdPersona">Regresar</a>
+</div>
+
+
+
+
+<!-- Modal Consumo de sustancias Secundario -->
+<div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Consumo de sustancias</h5>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label class="control-label">Sustancia</label>
+                    <select class="form-control" name="sustancia" id="sustancia">
+                        <option value="ALCOHOL">Alcohol</option>
+                        <option value="MARIHUANA">Marihuana</option>
+                        <option value="COCAINA">Cocaína</option>
+                        <option value="HEROINA">Heroína</option>
+                        <option value="PVC">PVC</option>
+                        <option value="SOLVENTES">Solventes</option>
+                        <option value="FARMACOS">Fármacos</option>
+                        <option value="CEMENTO">Cemento</option>
+                        <option value="CRACK">Crack</option>
+                        <option value="ACIDOS">Ácidos</option>
+                        <option value="TABACO">Tabaco</option>
+                        <option value="METANFETAMINAS">Metanfetaminas</option>
+                        <option value="OTRO">OTRO</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Frecuencia de consumo</label>
+                    <select class="form-control" name="frecuenciaS" id="frecuenciaS">
+                        <option value="DIARIO">Diario</option>
+                        <option value="SEMANAL">Semanal</option>
+                        <option value="QUINCENAL">Quincenal</option>
+                        <option value="MENSUAL">Mensual</option>
+                        <option value="BIMESTRAL">Bimestral</option>
+                        <option value="TRIMESTRAL">Trimestral</option>
+                        <option value="SEMESTRAL">Semestral</option>
+                        <option value="ANUAL">Anual</option>
+                        <option value="OCASIONALMENTE">Ocasionalmente</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Cantidad</label>
+                    <input class="form-control" maxlength="200" name="cantidadS" type="text" id="cantidadS" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Último consumo</label>
+                    <input required name="ultimoConsumo" id="ultimoConsumo" type="date" class="form-control" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="observaciones">Observaciones</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumo" id="observacionesConsumo"></textarea>
+                    <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">Guardar sustancia</button>
+            </div>
+        </div>
+    </div>
 </div>
 

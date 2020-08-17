@@ -35,8 +35,8 @@
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
-                <select class="form-control" name="SePuedeEnterar"
-                        asp-items="@(new SelectList(ViewBag.listaSePuedeEnterar, "Value", "Text", @ViewBag.idSePuedeEnterar))">
+                <select class="form-control" name="SePuedeEnterar" id="SePuedeEnterar"
+                        asp-items="@(new SelectList(ViewBag.listasePuedeEnterarASr, "Value", "Text", @ViewBag.idsePuedeEnterarAS))">
                 </select>
             </div>
             <div class="form-group col-md-6">
