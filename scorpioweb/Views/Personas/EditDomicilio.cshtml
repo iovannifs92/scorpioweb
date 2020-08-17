@@ -111,10 +111,11 @@
                         asp-items="@(new SelectList(ViewBag.ListaMunicipio, "Id", "Municipio",  @ViewBag.idMunicipioD))">
                 </select>
             </div>
-            <div class="form-group col-lg-4">
-                <label asp-for="Temporalidad" class="control-label"></label>
-                <input asp-for="Temporalidad" class="form-control" />
-                <span asp-validation-for="Temporalidad" class="text-danger"></span>
+            <div class="form-group col-md-4" id="Temporalidad">
+                <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
+                <select class="form-control" name="Temporalidad" id="Temporalidad"
+                        asp-items="@(new SelectList(ViewBag.ListaTemporalidad,  "Value", "Text", @ViewBag.idTemporalidadD))">
+                </select>
             </div>
             <div class="form-group col-lg-4">
                 <label class="control-label">Tipo de Domicilio</label>
