@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0" />
     <PackageReference Include="Rotativa.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Syncfusion.HtmlToPdfConverter.QtWebKit.Net.Core" Version="18.1.0.52" />
