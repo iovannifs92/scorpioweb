@@ -1139,6 +1139,20 @@ namespace scorpioweb.Controllers
             ViewBag.idMunicipioD = domicilio.Municipio;
             #endregion
 
+            #region TemporalidadDomicilio
+            List<SelectListItem> ListaDomicilioT;
+            ListaDomicilioT = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 5 y 10 años", Value = "ENTRE 5 Y 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 2 y 5 años", Value = "ENTRE 2 Y 5 AÑOS" },
+                new SelectListItem{ Text = "Entre 6 meses y 2 año", Value = "ENTRE 6 MESES Y 2 AÑO" },
+                new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },                
+            };
+
+            ViewBag.ListaTemporalidad = ListaDomicilioT;
+            ViewBag.idTemporalidadD = BuscaId(ListaDomicilioT, domicilio.Temporalidad);
+            #endregion
 
 
             ViewBag.listaResidenciaHabitual = listaSiNo;
@@ -1301,13 +1315,16 @@ namespace scorpioweb.Controllers
             ViewBag.listaEnteradoProceso = listaNoSiNA;
             ViewBag.idEnteradoProceso = BuscaId(listaNoSiNA, trabajo.EnteradoProceso);
 
+            ViewBag.listasePuedeEnterarT = listaNoSiNA;
+            ViewBag.idsePuedeEnterart = BuscaId(listaNoSiNA, trabajo.SePuedeEnterar);
+
             #region TiempoTrabajando
             List<SelectListItem> ListaTiempoTrabajando;
             ListaTiempoTrabajando = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
-                new SelectListItem{ Text = "Entre 5 y 9 años", Value = "ENTRE 2 Y 5 AÑOS" },
                 new SelectListItem{ Text = "Entre 2 y 4 años", Value = "ENTRE 2 Y 4 AÑOS" },
+                 new SelectListItem{ Text = "Entre 5 y 9 años", Value = "ENTRE 5 Y 9 AÑOS" },
                 new SelectListItem{ Text = "Más de un año menos de 2", Value = "MAS DE UN AÑO Y MENOS DE 2" },
                 new SelectListItem{ Text = "Entre 6 meses y 1 año", Value = "ENTRE 6 MESES Y 1 AÑO" },
                 new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },
