@@ -877,7 +877,7 @@ namespace scorpioweb.Controllers
         {
             foreach (var item in lista)
             {
-                if (normaliza(item.Text) == texto)
+                if (normaliza(item.Value) == normaliza(texto))
                 {
                     return item.Value;
                 }
@@ -960,23 +960,15 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaEstadoCivil;
             ListaEstadoCivil = new List<SelectListItem>
             {
-              new SelectListItem{ Text="Soltero (a)", Value="Soltero (a)"},
-              new SelectListItem{ Text="Casado (a)", Value="Casado (a)"},
-              new SelectListItem{ Text="Union libre", Value="Union libre"},
-              new SelectListItem{ Text="Viudo (a)", Value="Viudo (a)"},
-              new SelectListItem{ Text="Divorciado (a)", Value="Divorciado (a)"}
+              new SelectListItem{ Text="Soltero (a)", Value="SOLTERO (A)"},
+              new SelectListItem{ Text="Casado (a)", Value="CASADO (A)"},
+              new SelectListItem{ Text="Union libre", Value="UNION LIBRE"},
+              new SelectListItem{ Text="Viudo (a)", Value="VIUDO (A)"},
+              new SelectListItem{ Text="Divorciado (a)", Value="DIVORCIADO (A)"}
             };
 
             ViewBag.listaEstadoCivil = ListaEstadoCivil;
-
-            foreach (var item in ListaEstadoCivil)
-            {
-                if (item.Text == persona.EstadoCivil)
-                {
-                    ViewBag.idEstadoCivil = item.Value;
-                    break;
-                }
-            }
+            ViewBag.idEstadoCivil = BuscaId(ListaEstadoCivil, persona.EstadoCivil);
             #endregion
 
             #region GENERO          
@@ -989,15 +981,8 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.listaGenero = ListaGenero;
+            ViewBag.idGenero = BuscaId(ListaGenero, persona.Genero);
 
-            foreach (var item in ListaGenero)
-            {
-                if (item.Value == persona.Genero)
-                {
-                    ViewBag.idGenero = item.Value;
-                    break;
-                }
-            }
             #endregion
 
             ViewBag.listaOtroIdioma = listaNoSi;
@@ -1546,8 +1531,8 @@ namespace scorpioweb.Controllers
             ListaEspecifiqueServicioMedico = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "NA", Value = "NA" },
-                new SelectListItem{ Text = "Seguro Médico", Value = "SEGURO MEDICO" },
-                new SelectListItem{ Text = "Derecho habiente", Value = "DERECHO HABIENTE" }
+                new SelectListItem{ Text = "Derecho habiente", Value = "DERECHO HABIENTE" },
+                new SelectListItem{ Text = "Seguro Médico", Value = "SEGURO MEDICO" }
             };
 
             ViewBag.listaEspecifiqueServicioMedico = ListaEspecifiqueServicioMedico;
