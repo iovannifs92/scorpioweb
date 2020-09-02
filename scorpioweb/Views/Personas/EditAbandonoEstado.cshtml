@@ -3,9 +3,9 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        $('#vividoFuera').change(function () {
+        $('#VividoFuera').change(function () {
             var vivido = $(this).children("option:selected").val();
-            if (vivido == "2") {
+            if (vivido == "SI") {
                 $("#lugaresVivido").css("display", "block");
                 $("#tiempoVivido").css("display", "block");
                 $("#motivoVivido").css("display", "block");
@@ -18,9 +18,9 @@
 
         });
 
-        $('#viajaHabitual').change(function () {
+        $('#ViajaHabitual').change(function () {
             var viaje = $(this).children("option:selected").val();
-            if (viaje == "2") {
+            if (viaje == "SI") {
                 $("#lugaresViaje").css("display", "block");
                 $("#tiempoViaje").css("display", "block");
                 $("#motivoViaje").css("display", "block");
@@ -33,9 +33,9 @@
 
         });
 
-        $('#documentacionSalirPais').change(function () {
+        $('#DocumentacionSalirPais').change(function () {
             var doc = $(this).children("option:selected").val();
-            if (doc == "2") {
+            if (doc == "SI") {
                 $("#pasaporte").css("display", "block");
                 $("#visa").css("display", "block");
             }
@@ -58,8 +58,23 @@
             }
         });
 
-        
+
         //#endregion
+        //#region MODALS
+        $("#familiaresFuera").change(function () {
+            var opcion = $(this).children("option:selected").val();
+            if (opcion == "SI") {
+                $('#modalFamiliaresExtranjero').modal('show')
+            }
+            else {
+                $('#modalFamiliaresExtranjero').modal('hidden')
+            }
+        });
+        //#endregion
+
+
+
+
     });
 </script>
 
@@ -83,28 +98,28 @@
             <input type="hidden" asp-for="IdAbandonoEstado" />
             <div class="form-group">
                 <label class="control-label">¿Ha vivido en otro estado o país?</label>
-                <select class="form-control" id="vividoFuera"
+                <select class="form-control" id="VividoFuera" name="VividoFuera"
                         asp-items="@(new SelectList(ViewBag.listaVividoFuera, "Value", "Text", @ViewBag.idVividoFuera))">
                 </select>
             </div>
             <div class="form-group" style="display:none" id="lugaresVivido">
                 <label class="control-label">Si ha vivido fuera especificar que lugares</label>
-                <input asp-for="LugaresVivido" class="form-control" name="AElugaresVivido" />
+                <input asp-for="LugaresVivido" class="form-control" name="LugaresVivido" />
                 <span asp-validation-for="LugaresVivido" class="text-danger"></span>
             </div>
             <div class="form-group" style="display:none" id="tiempoVivido">
                 <label class="control-label">Tiempo que vivio en esos lugares</label>
-                <input asp-for="TiempoVivido" class="form-control" name="AEtiempoVivido" />
+                <input asp-for="TiempoVivido" class="form-control" name="TiempoVivido" />
                 <span asp-validation-for="TiempoVivido" class="text-danger"></span>
             </div>
             <div class="form-group" style="display:none" id="motivoVivido">
                 <label class="control-label">Motivo</label>
-                <input asp-for="MotivoVivido" class="form-control" name="AEmotivoViaje" />
+                <input asp-for="MotivoVivido" class="form-control" name="MotivoVivido" />
                 <span asp-validation-for="MotivoVivido" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
-                <select class="form-control" id="viajaHabitual"
+                <select class="form-control" id="ViajaHabitual" name="ViajaHabitual"
                         asp-items="@(new SelectList(ViewBag.listaViajaHabitual, "Value", "Text", @ViewBag.idViajaHabitual))">
                 </select>
             </div>
@@ -118,14 +133,14 @@
                 <input asp-for="TiempoViaje" class="form-control" />
                 <span asp-validation-for="TiempoViaje" class="text-danger"></span>
             </div>
-            <div class="form-group" style="display:none" id="motivoViaje"
+            <div class="form-group" style="display:none" id="motivoViaje">
                 <label class="control-label">Motivo por el que viaja</label>
                 <input asp-for="MotivoViaje" class="form-control" />
                 <span asp-validation-for="MotivoViaje" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
-                <select class="form-control" id="documentacionSalirPais"
+                <select class="form-control" id="DocumentacionSalirPais" name="DocumentacionSalirPais   "
                         asp-items="@(new SelectList(ViewBag.listaDocumentacionSalirPais, "Value", "Text", @ViewBag.idDocumentacionSalirPais))">
                 </select>
             </div>
@@ -138,13 +153,13 @@
 
             <div class="form-group" style="display:none" id="visa">
                 <label class="control-label">¿Cuenta con visa?</label>
-                <select class="form-control"  id="visaDentro" name="visa"
+                <select class="form-control" id="visaDentro" name="visa"
                         asp-items="@(new SelectList(ViewBag.listaVisa, "Value", "Text", @ViewBag.idVisa))">
                 </select>
             </div>
             <div class="form-group">
                 <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
-                <select class="form-control" name="FamiliaresFuera"
+                <select class="form-control" name="FamiliaresFuera" id="familiaresFuera"
                         asp-items="@(new SelectList(ViewBag.listaFamiliaresFuera, "Value", "Text", @ViewBag.idFamiliaresFuera))">
                 </select>
             </div>
@@ -162,4 +177,113 @@
 
 <div>
     <a asp-action="MenuEdicion" asp-route-id="@Model.PersonaIdPersona">Regresar</a>
+</div>
+
+<!-- Modal Familiares en el extranjero -->
+<div class="modal fade" id="modalFamiliaresExtranjero" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="color:#000; background-color:#fff; border-color:#fff;">
+                <h5 class="modal-title" style="font-size: 30px; color:#000;">Familiar en el extranjero</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Nombre</label>
+                    <input class="form-control" maxlength="150" name="FENombre" type="text" id="FENombre" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Edad</label>
+                    <input class="form-control" value="0" name="FEEdad" type="text" id="FEEdad" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Genero</label>
+                    <select required class="form-control" name="FESexo" id="FESexo">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="N">Prefiero no decirlo</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Relación</label>
+                    <select class="form-control" name="FERelacion" id="FERelacion">
+                        <option value="MAMA">Máma</option>
+                        <option value="PAPA">Pápa</option>
+                        <option value="HERMANO (A)">Hermano(a)</option>
+                        <option value="HIJO (A)">Hijo(a)</option>
+                        <option value="ABUELO (A)">Abuelo(a)</option>
+                        <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
+                        <option value="AMIGO">Amigo</option>
+                        <option value="CONOCIDO">Conocido</option>
+                        <option value="OTRO">OTRO</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Tiempo de conocerlo</label>
+                    <select class="form-control" name="FETiempo" id="FETiempo">
+                        <option value="MENOS DE 1 AÑO">Menos de un año</option>
+                        <option value="ENTRE 1 Y 2 AÑOS">Entre 1 y 2 años</option>
+                        <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años(a)</option>
+                        <option value="MÁS DE 5 AÑOS">Más de 5 años</option>
+                        <option value="TODA LA VIDA">Toda la vida</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">País</label>
+                    <select class="form-control" name="FEPais" id="FEPais">
+                        <option value="MEXICO">México</option>
+                        <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                        <option value="CANADA">Canada</option>
+                        <option value="COLOMBIA">Colombia</option>
+                        <option value="EL SALVADOR">El Salvador</option>
+                        <option value="GUATEMALA">Guatemala</option>
+                        <option value="CHILE">Chile</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Estado</label>
+                    <input class="form-control" maxlength="70" name="FEEstado" type="text" id="FEEstado" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Teléfono (10 dígitos)</label>
+                    <input name="FETelefonoFamiliar" id="FETelefonoFamiliar" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Frecuencia de contacto</label>
+                    <select class="form-control" name="FEFrecuencia" id="FEFrecuencia">
+                        <option value="DIARIAMENTE">Diariamente</option>
+                        <option value="UNA VEZ A LA SEMANA">Una vez a la semana</option>
+                        <option value="UNA VEZ CADA 15 DIAS">Una vez cada 15 días</option>
+                        <option value="UNA VEZ AL MES">Una vez al mes</option>
+                        <option value="UNA VEZ AL AÑO">Una vez al año</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">¿Enterado de su proceso penal?</label>
+                    <select required class="form-control" name="FEEnteradoProceso" id="FEEnteradoProceso">
+                        <option value="SI">Si</option>
+                        <option value="NO">No</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:none;" id="FEPuedeEnterarse">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select required class="form-control" name="FEPuedeEnterarse" id="FEPuedeEnterarseO">
+                        <option value="NA">NA</option>
+                        <option value="NO">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="FEobservaciones">Observaciones</label>
+                    <textarea maxlength="200" class="form-control" rows="2" name="FEobservaciones" id="FEobservaciones"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" style="background-color:#fff; color:#000; border-color:#000;" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">Guardar familiar</button>
+            </div>
+        </div>
+    </div>
 </div>

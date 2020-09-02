@@ -1,5 +1,54 @@
 ﻿@model scorpioweb.Models.Domicilio
 
+
+    <script type="text/javascript">
+        var tipo = 0;
+    $(document).ready(function () {
+        //#region -Municipios-
+        var items = "<option value='0'>Selecciona</option>";
+        $('#municipioD').html(items);
+        $('#estadoD').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#estadoD';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#municipioD").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#municipioD').html(items);
+            });
+        });
+        $('#paisD').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                 $("#estadoD").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#municipioD').html(items);
+                $("#municipioD").val(0);
+                $("#EstadoD").css("display", "none");
+                $("#MunicipioD").css("display", "none");
+                $("#PaisD").removeClass("col-md-4");
+                $("#PaisD").addClass("col-md-12");
+            }
+            else {
+                $("#EstadoD").css("display", "block");
+                $("#MunicipioD").css("display", "block");
+                $("#PaisD").removeClass("col-md-12");
+                $("#PaisD").addClass("col-md-4");
+            }
+
+        });
+
+        //#endregion
+    });
+    </script>
+
+
+
+
 @{
     ViewData["Title"] = "EditDomicilio";
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -8,16 +57,19 @@
 <h2>Domicilio</h2>
 <h3>@ViewData["Nombre"]</h3>
 
+
+
+
 <hr />
 <div class="row">
     <div class="col-lg-12">
         <form asp-action="EditDomicilio">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdDomicilio" />
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <label class="control-label">Tipo de Domicilio</label>
-                <select class="form-control" name="tDomicilio" id="tDomicilio"
-                asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text", @ViewBag.idtDomicilio))">
+                <select class="form-control" name="tipoDomicilio" id="tipoDomicilio"
+                        asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text", @ViewBag.idtDomicilio))">
                 </select>
             </div>
             <div class="form-group col-lg-5">
@@ -40,25 +92,30 @@
                 <input asp-for="NombreCf" class="form-control" />
                 <span asp-validation-for="NombreCf" class="text-danger"></span>
             </div>
-            <div class="form-group col-lg-4">
-                <label asp-for="Pais" class="control-label"></label>
-                <input asp-for="Pais" class="form-control" />
-                <span asp-validation-for="Pais" class="text-danger"></span>
+            <div class="form-group col-md-4" id="PaisD">
+                <label class="control-label">País</label>
+                <select class="form-control" name="Pais" id="paisD"
+                        asp-items="@(new SelectList(ViewBag.ListaPaisD, "Value", "Text", @ViewBag.idPaisD))">
+                </select>
             </div>
-            <div class="form-group col-lg-4">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+
+            <div class="form-group col-md-4" id="EstadoD">
+                <label class="control-label">Estado</label>
+                <select class="form-control" name="Estado" id="estadoD"
+                        asp-items="@(new SelectList(ViewBag.ListaEstadoD, "Id", "Estado", @ViewBag.idEstadoD))">
+                </select>
             </div>
-            <div class="form-group col-lg-4">
-                <label asp-for="Municipio" class="control-label"></label>
-                <input asp-for="Municipio" class="form-control" />
-                <span asp-validation-for="Municipio" class="text-danger"></span>
+            <div class="form-group col-md-4" id="MunicipioD">
+                <label class="control-label">Municipio</label>
+                <select class="form-control" name="Municipio" id="municipioD"
+                        asp-items="@(new SelectList(ViewBag.ListaMunicipio, "Id", "Municipio",  @ViewBag.idMunicipioD))">
+                </select>
             </div>
-            <div class="form-group col-lg-4">
-                <label asp-for="Temporalidad" class="control-label"></label>
-                <input asp-for="Temporalidad" class="form-control" />
-                <span asp-validation-for="Temporalidad" class="text-danger"></span>
+            <div class="form-group col-md-4" id="Temporalidad">
+                <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
+                <select class="form-control" name="Temporalidad" id="Temporalidad"
+                        asp-items="@(new SelectList(ViewBag.ListaTemporalidad,  "Value", "Text", @ViewBag.idTemporalidadD))">
+                </select>
             </div>
             <div class="form-group col-lg-4">
                 <label class="control-label">Tipo de Domicilio</label>
@@ -82,9 +139,9 @@
                 <span asp-validation-for="Horario" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-12">
-                <label class="control-label">¿Este domicilio es su residencia habitual?</label>
-                <select class="form-control" name="DomcilioSecundario" id="DomcilioSecundario"
-                        asp-items="@(new SelectList(ViewBag.listaDomcilioSecundario, "Value", "Text", @ViewBag.idDomcilioSecundario))">
+                <label class="control-label">¿Cuenta con domicilio secundario?</label>
+                <select asp-for="DomcilioSecundario" class="form-control" name="DomcilioSecundario" id="DomcilioSecundario"
+                        asp-items="@(new SelectList(ViewBag.listacuentaDomicilioSecundario, "Value", "Text", @ViewBag.idcuentaDomicilioSecundario))">
                 </select>
             </div>
             <div class="form-group col-lg-12">

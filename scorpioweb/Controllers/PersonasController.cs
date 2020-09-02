@@ -39,20 +39,20 @@ namespace scorpioweb.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
         {
-            new SelectListItem{ Text="No", Value="1"},
-            new SelectListItem{ Text="Si", Value="2"}
+            new SelectListItem{ Text="No", Value="NO"},
+            new SelectListItem{ Text="Si", Value="SI"}
         };
         private List<SelectListItem> listaNoSiNA = new List<SelectListItem>
         {
-            new SelectListItem{ Text="NA", Value="1"},
-            new SelectListItem{ Text="No", Value="2"},
-            new SelectListItem{ Text="Si", Value="3"}
+            new SelectListItem{ Text="NA", Value="NA"},
+            new SelectListItem{ Text="No", Value="NO"},
+            new SelectListItem{ Text="Si", Value="SI"}
         };
 
         private List<SelectListItem> listaSiNo = new List<SelectListItem>
         {
-            new SelectListItem{ Text="Si", Value="1"},
-            new SelectListItem{ Text="NO", Value="2"}
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"}
         };
         #endregion
 
@@ -877,7 +877,7 @@ namespace scorpioweb.Controllers
         {
             foreach (var item in lista)
             {
-                if (normaliza(item.Text) == texto)
+                if (normaliza(item.Value) == normaliza(texto))
                 {
                     return item.Value;
                 }
@@ -932,6 +932,8 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
 
+            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+
             ViewBag.ListadoEstados = listaEstados;
 
             ViewBag.idEstado = persona.Lnestado;
@@ -947,6 +949,8 @@ namespace scorpioweb.Controllers
                                    select table).ToList();
             }
 
+            listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+
             ViewBag.ListadoMunicipios = listaMunicipios;
 
             ViewBag.idMunicipio = persona.Lnmunicipio;
@@ -956,23 +960,15 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaEstadoCivil;
             ListaEstadoCivil = new List<SelectListItem>
             {
-              new SelectListItem{ Text="Soltero (a)", Value="1"},
-              new SelectListItem{ Text="Casado (a)", Value="2"},
-              new SelectListItem{ Text="Unión libre", Value="3"},
-              new SelectListItem{ Text="Viudo (a)", Value="4"},
-              new SelectListItem{ Text="Divorciado (a)", Value="5"}
+              new SelectListItem{ Text="Soltero (a)", Value="SOLTERO (A)"},
+              new SelectListItem{ Text="Casado (a)", Value="CASADO (A)"},
+              new SelectListItem{ Text="Union libre", Value="UNION LIBRE"},
+              new SelectListItem{ Text="Viudo (a)", Value="VIUDO (A)"},
+              new SelectListItem{ Text="Divorciado (a)", Value="DIVORCIADO (A)"}
             };
 
             ViewBag.listaEstadoCivil = ListaEstadoCivil;
-
-            foreach (var item in ListaEstadoCivil)
-            {
-                if (item.Text == persona.EstadoCivil)
-                {
-                    ViewBag.idEstadoCivil = item.Value;
-                    break;
-                }
-            }
+            ViewBag.idEstadoCivil = BuscaId(ListaEstadoCivil, persona.EstadoCivil);
             #endregion
 
             #region GENERO          
@@ -985,15 +981,8 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.listaGenero = ListaGenero;
+            ViewBag.idGenero = BuscaId(ListaGenero, persona.Genero);
 
-            foreach (var item in ListaGenero)
-            {
-                if (item.Value == persona.Genero)
-                {
-                    ViewBag.idGenero = item.Value;
-                    break;
-                }
-            }
             #endregion
 
             ViewBag.listaOtroIdioma = listaNoSi;
@@ -1021,8 +1010,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)
-        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)        {
             if (id != persona.IdPersona)
             {
                 return NotFound();
@@ -1086,11 +1074,81 @@ namespace scorpioweb.Controllers
             }
             #endregion
 
+
+            #region PAIS          
+            List<SelectListItem> ListaPaisD;
+            ListaPaisD = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="México", Value="MEXICO"},
+              new SelectListItem{ Text="Estados Unidos", Value="ESTADOS UNIDOS"},
+              new SelectListItem{ Text="Canada", Value="CANADA"},
+              new SelectListItem{ Text="Colombia", Value="COLOMBIA"},
+              new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
+              new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
+              new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListaPaisD = ListaPaisD;
+
+            foreach (var item in ListaPaisD)
+            {
+                if (item.Value == domicilio.Pais)
+                {
+                    ViewBag.idPaisD = item.Value;
+                    break;
+                }
+            }
+            #endregion
+            
+            #region Destado
+            List<Estados> listaEstadosD = new List<Estados>();
+            listaEstadosD = (from table in _context.Estados
+                            select table).ToList();
+
+            listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListaEstadoD = listaEstadosD;
+
+            ViewBag.idEstadoD = domicilio.Estado;
+            #endregion
+
+            #region Lnmunicipio
+            int estadoD;
+            bool success = Int32.TryParse(domicilio.Estado, out estadoD);
+            List<Municipios> listaMunicipiosD = new List<Municipios>();
+            if (success)
+            {
+                listaMunicipiosD = (from table in _context.Municipios
+                                   where table.EstadosId == estadoD
+                                   select table).ToList();
+            }
+
+            ViewBag.ListaMunicipio = listaMunicipiosD;
+
+            ViewBag.idMunicipioD = domicilio.Municipio;
+            #endregion
+
+            #region TemporalidadDomicilio
+            List<SelectListItem> ListaDomicilioT;
+            ListaDomicilioT = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 5 y 10 años", Value = "ENTRE 5 Y 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 2 y 5 años", Value = "ENTRE 2 Y 5 AÑOS" },
+                new SelectListItem{ Text = "Entre 6 meses y 2 año", Value = "ENTRE 6 MESES Y 2 AÑO" },
+                new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },                
+            };
+
+            ViewBag.ListaTemporalidad = ListaDomicilioT;
+            ViewBag.idTemporalidadD = BuscaId(ListaDomicilioT, domicilio.Temporalidad);
+            #endregion
+
+
             ViewBag.listaResidenciaHabitual = listaSiNo;
             ViewBag.idResidenciaHabitual = BuscaId(listaSiNo, domicilio.ResidenciaHabitual);
 
-            ViewBag.listaDomcilioSecundario = listaNoSi;
-            ViewBag.idResidenciaHabitual = BuscaId(listaNoSi, domicilio.DomcilioSecundario);
+            ViewBag.listacuentaDomicilioSecundario = listaNoSi;
+            ViewBag.idcuentaDomicilioSecundario = BuscaId(listaNoSi, domicilio.DomcilioSecundario);
 
 
             if (domicilio == null)
@@ -1244,18 +1302,18 @@ namespace scorpioweb.Controllers
             #endregion
 
             ViewBag.listaEnteradoProceso = listaNoSiNA;
-            ViewBag.idEnteradoProceso = BuscaId(listaNoSi, trabajo.EnteradoProceso);
+            ViewBag.idEnteradoProceso = BuscaId(listaNoSiNA, trabajo.EnteradoProceso);
 
-            ViewBag.listaSePuedeEnterar = listaNoSiNA;
-            ViewBag.idSePuedeEnterar = BuscaId(listaNoSi, trabajo.SePuedeEnterar);
+            ViewBag.listasePuedeEnterarT = listaNoSiNA;
+            ViewBag.idsePuedeEnterart = BuscaId(listaNoSiNA, trabajo.SePuedeEnterar);
 
             #region TiempoTrabajando
             List<SelectListItem> ListaTiempoTrabajando;
             ListaTiempoTrabajando = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
-                new SelectListItem{ Text = "Entre 5 y 9 años", Value = "ENTRE 2 Y 5 AÑOS" },
                 new SelectListItem{ Text = "Entre 2 y 4 años", Value = "ENTRE 2 Y 4 AÑOS" },
+                 new SelectListItem{ Text = "Entre 5 y 9 años", Value = "ENTRE 5 Y 9 AÑOS" },
                 new SelectListItem{ Text = "Más de un año menos de 2", Value = "MAS DE UN AÑO Y MENOS DE 2" },
                 new SelectListItem{ Text = "Entre 6 meses y 1 año", Value = "ENTRE 6 MESES Y 1 AÑO" },
                 new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },
@@ -1331,8 +1389,8 @@ namespace scorpioweb.Controllers
             ViewData["Nombre"] = nombre;
             var actividadsocial = await _context.Actividadsocial.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
 
-            ViewBag.listaSePuedeEnterar = listaNoSiNA;
-            ViewBag.idSePuedeEnterar = BuscaId(listaNoSi, actividadsocial.SePuedeEnterar);
+            ViewBag.listasePuedeEnterarASr = listaNoSiNA;
+            ViewBag.idsePuedeEnterarAS = BuscaId(listaNoSiNA, actividadsocial.SePuedeEnterar);
 
             if (actividadsocial == null)
             {
@@ -1445,14 +1503,16 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Editar Salud-
-        public async Task<IActionResult> EditSalud(string nombre, int? id)
+        public async Task<IActionResult> EditSalud(string nombre, string genero, int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
             ViewData["Nombre"] = nombre;
+            ViewData["Genero"] = genero;
             var saludfisica = await _context.Saludfisica.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
+            
 
             ViewBag.listaEnfermedad = listaNoSi;
             ViewBag.idEnfermedad = BuscaId(listaNoSi, saludfisica.Enfermedad);
@@ -1471,8 +1531,8 @@ namespace scorpioweb.Controllers
             ListaEspecifiqueServicioMedico = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "NA", Value = "NA" },
-                new SelectListItem{ Text = "Seguro Médico", Value = "SEGURO MEDICO" },
-                new SelectListItem{ Text = "Derecho habiente", Value = "DERECHO HABIENTE" }
+                new SelectListItem{ Text = "Derecho habiente", Value = "DERECHO HABIENTE" },
+                new SelectListItem{ Text = "Seguro Médico", Value = "SEGURO MEDICO" }
             };
 
             ViewBag.listaEspecifiqueServicioMedico = ListaEspecifiqueServicioMedico;
