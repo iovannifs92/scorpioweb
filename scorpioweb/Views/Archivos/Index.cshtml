@@ -1,0 +1,108 @@
+﻿@model IEnumerable<scorpioweb.Models.Archivo>
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NoArchivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CausaPenal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Delito)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sentencia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Situacion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaAcuerdo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CarpetaEjecucion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Observaciones)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Envia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prestado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AreaPrestamo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaPrestamo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NoArchivo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CausaPenal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Delito)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sentencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Situacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaAcuerdo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Observaciones)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Envia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prestado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AreaPrestamo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaPrestamo)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdArchivo">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdArchivo">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdArchivo">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

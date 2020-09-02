@@ -1,0 +1,97 @@
+﻿@model scorpioweb.Models.Archivo
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Manage/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Archivo</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NoArchivo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NoArchivo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CausaPenal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CausaPenal)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Delito)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Delito)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Sentencia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Sentencia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Situacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Situacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaAcuerdo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaAcuerdo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CarpetaEjecucion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CarpetaEjecucion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Observaciones)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Observaciones)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Envia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Envia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Prestado)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Prestado)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AreaPrestamo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AreaPrestamo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaPrestamo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaPrestamo)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdArchivo">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,46 @@
+﻿@model scorpioweb.Models.Causapenal
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Causapenal</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Cnpp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Cnpp)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Juez)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Juez)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Cambio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Cambio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CausaPenal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CausaPenal)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="IdCausaPenal" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
