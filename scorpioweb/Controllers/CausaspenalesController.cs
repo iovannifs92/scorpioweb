@@ -89,9 +89,9 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,CausaPenal")] Causapenal causapenal)
+        public async Task<IActionResult> Edit(int id, Causapenal causapenal, int idReal, string cnpp, string juez, string cambio, string cp)
         {
-            if (id != causapenal.IdCausaPenal)
+            if (id != idReal)
             {
                 return NotFound();
             }
@@ -100,6 +100,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    causapenal.Cnpp = cnpp;
+                    causapenal.Juez = juez;
+                    causapenal.Cambio = cambio;
+                    causapenal.CausaPenal = cp;
+                    causapenal.IdCausaPenal = idReal;
                     _context.Update(causapenal);
                     await _context.SaveChangesAsync();
                 }
