@@ -89,9 +89,9 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Causapenal causapenal, int idReal, string cnpp, string juez, string cambio, string cp)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,CausaPenal")] Causapenal causa)
         {
-            if (id != idReal)
+            if (id != causa.IdCausaPenal)
             {
                 return NotFound();
             }
@@ -100,17 +100,12 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    causapenal.Cnpp = cnpp;
-                    causapenal.Juez = juez;
-                    causapenal.Cambio = cambio;
-                    causapenal.CausaPenal = cp;
-                    causapenal.IdCausaPenal = idReal;
-                    _context.Update(causapenal);
+                    _context.Update(causa);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CausapenalExists(causapenal.IdCausaPenal))
+                    if (!CausapenalExists(causa.IdCausaPenal))
                     {
                         return NotFound();
                     }
@@ -121,7 +116,7 @@ namespace scorpioweb.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(causapenal);
+            return View(causa);
         }
 
         // GET: Causaspenales/Delete/5
