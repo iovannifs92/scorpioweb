@@ -17,35 +17,35 @@
     <div class=" card-group" style="padding-top:2%">
         @if (adminUser)
         {
-    <div class="col-md-3 card text-center">
+            <div class="col-md-3 card text-center">
 
-        <div class="card-body">
-            <h4 class="card-title">
-                <a asp-controller="Personas" asp-action="AsignacionSupervision">
-                    <img class="card-img-top" src="~/images/asignacion.png" alt="Card image cap" style="padding-bottom:5%;" />
-                    Asignación de supervisión
-                </a>
-            </h4>
-            <p class="card-text">
-                Asignación de nuevas supervisiónes
-            </p>
-        </div>
-    </div>}
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a asp-controller="Personas" asp-action="AsignacionSupervision">
+                            <img class="card-img-top" src="~/images/asignacion.png" alt="Card image cap" style="padding-bottom:5%;" />
+                            Asignación de supervisión
+                        </a>
+                    </h4>
+                    <p class="card-text">
+                        Asignación de nuevas supervisiónes
+                    </p>
+                </div>
+            </div>}
         <div class="col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
                     @if (adminUser)
                     {
-        <a asp-controller="Personas" asp-action="Index">
-            <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-            Supervisados
-        </a> }
-    else
-    {
-    <a asp-controller="Personas" asp-action="ListadoSupervisor">
-        <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-        Supervisados
-    </a>}
+                        <a asp-controller="Personas" asp-action="Index">
+                            <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                            Supervisados
+                        </a> }
+                    else
+                    {
+                        <a asp-controller="Personas" asp-action="ListadoSupervisor">
+                            <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                            Supervisados
+                        </a>}
                 </h4>
                 <p class="card-text">
                     Base de datos de todos los supervisados
@@ -68,13 +68,13 @@
         <div class="col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
-                    <a href="#">
-                        <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
+                    <a asp-controller="Causaspenales" asp-action="ControlCP">
+                        <img class="card-img-bottom" src="~/images/revision.png" alt="Card image cap" style="padding-bottom:5%;">
                         Control de causas penales
                     </a>
                 </h4>
                 <p class="card-text">
-                    Control y asgnación de casusas penales 
+                    Control y asgnación de casusas penales
                 </p>
             </div>
         </div>
@@ -83,7 +83,7 @@
                 <h4 class="card-title">
                     <a href="#">
                         <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Control de Supervisión 
+                        Control de Supervisión
                     </a>
                 </h4>
                 <p class="card-text">

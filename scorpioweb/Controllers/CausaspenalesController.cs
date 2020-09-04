@@ -152,5 +152,11 @@ namespace scorpioweb.Controllers
         {
             return _context.Causapenal.Any(e => e.IdCausaPenal == id);
         }
+
+        // GET: Causaspenales
+        public IActionResult ControlCP()
+        {
+            return View();
+        }
     }
 }
