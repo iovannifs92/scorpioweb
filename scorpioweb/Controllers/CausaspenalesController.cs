@@ -11,7 +11,22 @@ namespace scorpioweb.Controllers
 {
     public class CausaspenalesController : Controller
     {
+        #region
         private readonly penas2Context _context;
+        private List<SelectListItem> listaSiNo = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"}
+        };
+        public string normaliza(string normalizar)
+        {
+            if (!String.IsNullOrEmpty(normalizar))
+            {
+                normalizar = normalizar.ToUpper();
+            }
+            return normalizar;
+        }
+        #endregion
 
         public CausaspenalesController(penas2Context context)
         {
@@ -68,6 +83,18 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
+        String BuscaId(List<SelectListItem> lista, String texto)
+        {
+            foreach (var item in lista)
+            {
+                if (normaliza(item.Value) == normaliza(texto))
+                {
+                    return item.Value;
+                }
+            }
+            return "";
+        }
+
         // GET: Causaspenales/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -81,6 +108,14 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaCnpp = listaSiNo;
+            ViewBag.idCnpp = BuscaId(listaSiNo, causapenal.Cnpp);
+
+            ViewBag.listaCambio = listaSiNo;
+            ViewBag.idCambio = BuscaId(listaSiNo, causapenal.Cambio);
+
+
             return View(causapenal);
         }
 
