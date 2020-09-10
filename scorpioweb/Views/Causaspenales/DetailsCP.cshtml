@@ -1,0 +1,36 @@
+﻿@model IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>
+
+@{
+    ViewData["Title"] = "DetailsCP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Detalles</h2>
+
+<tbody>
+    @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
+    {
+        <tr>
+            <td colspan="3">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</td>
+        </tr>
+        break;
+    }
+
+    <div>
+        <hr />
+        <h4>Causas Penales</h4>
+    </div>
+
+    @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
+    {
+        <tr>
+            <td colspan="3">@item.causaPenalVM.CausaPenal</td>
+        </tr>
+        <br />
+    }
+</tbody>
+
+@*<div>
+        <a asp-action="Edit" asp-route-id="@Model.IdCausaPenal">Edit</a> |
+        <a asp-action="AsignacionCP">Back to List</a>
+    </div>*@
