@@ -11,7 +11,22 @@ namespace scorpioweb.Controllers
 {
     public class CausaspenalesController : Controller
     {
+        #region
         private readonly penas2Context _context;
+        private List<SelectListItem> listaSiNo = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"}
+        };
+        public string normaliza(string normalizar)
+        {
+            if (!String.IsNullOrEmpty(normalizar))
+            {
+                normalizar = normalizar.ToUpper();
+            }
+            return normalizar;
+        }
+        #endregion
 
         public CausaspenalesController(penas2Context context)
         {
@@ -68,6 +83,18 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
+        String BuscaId(List<SelectListItem> lista, String texto)
+        {
+            foreach (var item in lista)
+            {
+                if (normaliza(item.Value) == normaliza(texto))
+                {
+                    return item.Value;
+                }
+            }
+            return "";
+        }
+
         // GET: Causaspenales/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -81,6 +108,14 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaCnpp = listaSiNo;
+            ViewBag.idCnpp = BuscaId(listaSiNo, causapenal.Cnpp);
+
+            ViewBag.listaCambio = listaSiNo;
+            ViewBag.idCambio = BuscaId(listaSiNo, causapenal.Cambio);
+
+
             return View(causapenal);
         }
 
@@ -205,33 +240,9 @@ namespace scorpioweb.Controllers
 
         #region -Detalles CP-
 
-        // GET: Personas/Details/5
+        // GET: Causaspenales/DetailsCP/14
         public async Task<IActionResult> DetailsCP(int? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var persona = await _context.Persona
-            //    .SingleOrDefaultAsync(m => m.IdPersona == id);
-
-            //List<Causapenal> causaPenal = _context.Causapenal.ToList();
-
-            //ViewData["joinTables"] = from personaTable in causaPenal
-            //                         where personaTable.IdPersona == id
-            //                         select new PersonaViewModel
-            //                         {
-            //                             causaPenal = personaTable
-            //                         };
-
-            //if (persona == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View();
-
             if (id == null)
             {
                 return NotFound();
@@ -243,18 +254,6 @@ namespace scorpioweb.Controllers
             #region -To List databases-
 
             List<Persona> personaVM = _context.Persona.ToList();
-            List<Domicilio> domicilioVM = _context.Domicilio.ToList();
-            List<Estudios> estudiosVM = _context.Estudios.ToList();
-            List<Estados> estados = _context.Estados.ToList();
-            List<Municipios> municipios = _context.Municipios.ToList();
-            List<Domiciliosecundario> domicilioSecundarioVM = _context.Domiciliosecundario.ToList();
-            List<Consumosustancias> consumoSustanciasVM = _context.Consumosustancias.ToList();
-            List<Trabajo> trabajoVM = _context.Trabajo.ToList();
-            List<Actividadsocial> actividadSocialVM = _context.Actividadsocial.ToList();
-            List<Abandonoestado> abandonoEstadoVM = _context.Abandonoestado.ToList();
-            List<Saludfisica> saludFisicaVM = _context.Saludfisica.ToList();
-            List<Familiaresforaneos> familiaresForaneosVM = _context.Familiaresforaneos.ToList();
-            List<Asientofamiliar> asientoFamiliarVM = _context.Asientofamiliar.ToList();
             List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
 
@@ -262,85 +261,16 @@ namespace scorpioweb.Controllers
 
             #region -Jointables-
             ViewData["joinTables"] = from personaTable in personaVM
-                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                     join estudios in estudiosVM on persona.IdPersona equals estudios.PersonaIdPersona
-                                     join trabajo in trabajoVM on persona.IdPersona equals trabajo.PersonaIdPersona
-                                     join actividaSocial in actividadSocialVM on persona.IdPersona equals actividaSocial.PersonaIdPersona
-                                     join abandonoEstado in abandonoEstadoVM on persona.IdPersona equals abandonoEstado.PersonaIdPersona
-                                     join saludFisica in saludFisicaVM on persona.IdPersona equals saludFisica.PersonaIdPersona
                                      join personaCausaPenal in personaCausaPenalVM on persona.IdPersona equals personaCausaPenal.PersonaIdPersona
                                      join causaPenal in causaPenalVM on personaCausaPenal.CausaPenalIdCausaPenal equals causaPenal.IdCausaPenal
-                                     //join nacimientoEstado in estados on (Int32.Parse(persona.Lnestado)) equals nacimientoEstado.Id
-                                     //join nacimientoMunicipio in municipios on (Int32.Parse(persona.Lnmunicipio)) equals nacimientoMunicipio.Id
-                                     //join domicilioEstado in estados on (Int32.Parse(domicilio.Estado)) equals domicilioEstado.Id
-                                     //join domicilioMunicipio in municipios on (Int32.Parse(domicilio.Municipio)) equals domicilioMunicipio.Id
                                      where personaTable.IdPersona == id
                                      select new PersonaCausaPenalViewModel
                                      {
                                          personaVM = personaTable,
-                                         /*domicilioVM = domicilio,
-                                         estudiosVM = estudios,
-                                         trabajoVM = trabajo,
-                                         actividadSocialVM = actividaSocial,
-                                         abandonoEstadoVM = abandonoEstado,
-                                         saludFisicaVM = saludFisica,*/
                                          causaPenalVM = causaPenal
-                                         //estadosVMPersona=nacimientoEstado,
-                                         //municipiosVMPersona=nacimientoMunicipio,
-                                         //estadosVMDomicilio = domicilioEstado,
-                                         //municipiosVMDomicilio= domicilioMunicipio,
                                      };
 
             #endregion
-
-            //#region -JoinTables null-
-            //ViewData["joinTablesDomSec"] = from personaTable in personaVM
-            //                               join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-            //                               join domicilioSec in domicilioSecundarioVM.DefaultIfEmpty() on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
-            //                               where personaTable.IdPersona == id
-            //                               select new PersonaViewModel
-            //                               {
-            //                                   domicilioSecundarioVM = domicilioSec
-            //                               };
-
-            //ViewData["joinTablesConsumoSustancias"] = from personaTable in personaVM
-            //                                          join sustancias in consumoSustanciasVM on persona.IdPersona equals sustancias.PersonaIdPersona
-            //                                          where personaTable.IdPersona == id
-            //                                          select new PersonaViewModel
-            //                                          {
-            //                                              consumoSustanciasVM = sustancias
-            //                                          };
-
-            //ViewData["joinTablesFamiliaresForaneos"] = from personaTable in personaVM
-            //                                           join familiarForaneo in familiaresForaneosVM on persona.IdPersona equals familiarForaneo.PersonaIdPersona
-            //                                           where personaTable.IdPersona == id
-            //                                           select new PersonaViewModel
-            //                                           {
-            //                                               familiaresForaneosVM = familiarForaneo
-            //                                           };
-
-            //ViewData["joinTablesFamiliares"] = from personaTable in personaVM
-            //                                   join familiar in asientoFamiliarVM on persona.IdPersona equals familiar.PersonaIdPersona
-            //                                   where personaTable.IdPersona == id && familiar.Tipo == "FAMILIAR"
-            //                                   select new PersonaViewModel
-            //                                   {
-            //                                       asientoFamiliarVM = familiar
-            //                                   };
-
-            //ViewData["joinTablesReferencia"] = from personaTable in personaVM
-            //                                   join referencia in asientoFamiliarVM on persona.IdPersona equals referencia.PersonaIdPersona
-            //                                   where personaTable.IdPersona == id && referencia.Tipo == "REFERENCIA"
-            //                                   select new PersonaViewModel
-            //                                   {
-            //                                       asientoFamiliarVM = referencia
-            //                                   };
-
-
-            //ViewBag.Referencia = ((ViewData["joinTablesReferencia"] as IEnumerable<scorpioweb.Models.PersonaViewModel>).Count()).ToString();
-
-            //ViewBag.Familiar = ((ViewData["joinTablesFamiliares"] as IEnumerable<scorpioweb.Models.PersonaViewModel>).Count()).ToString();
-            //#endregion
-
 
             if (persona == null)
             {
@@ -348,8 +278,6 @@ namespace scorpioweb.Controllers
             }
 
             return View();
-
-            //return View(await _context.Persona.ToListAsync());
         }
         #endregion
 

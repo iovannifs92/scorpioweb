@@ -15,9 +15,10 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCausaPenal" />
             <div class="form-group">
-                <label asp-for="Cnpp" class="control-label"></label>
-                <input asp-for="Cnpp" class="form-control" />
-                <span asp-validation-for="Cnpp" class="text-danger"></span>
+                <label class="control-label">Cnpp</label>
+                <select class="form-control" name="Cnpp"
+                        asp-items="@(new SelectList(ViewBag.listaCnpp, "Value", "Text", @ViewBag.idCnpp))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Juez" class="control-label"></label>
@@ -25,9 +26,10 @@
                 <span asp-validation-for="Juez" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Cambio" class="control-label"></label>
-                <input asp-for="Cambio" class="form-control" />
-                <span asp-validation-for="Cambio" class="text-danger"></span>
+                <label class="control-label">Cambio</label>
+                <select class="form-control" name="Cambio"
+                        asp-items="@(new SelectList(ViewBag.listaCambio, "Value", "Text", @ViewBag.idCambio))">
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="CausaPenal" class="control-label"></label>
