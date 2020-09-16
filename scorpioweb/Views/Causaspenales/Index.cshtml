@@ -8,7 +8,7 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Crea nueva Causa Penal</a>
 </p>
 <table class="table">
     <thead>
@@ -23,12 +23,16 @@
                     @Html.DisplayNameFor(model => model.Cambio)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(model => model.Distrito)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.CausaPenal)
                 </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
+                    
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -41,10 +45,17 @@
                 @Html.DisplayFor(modelItem => item.Cambio)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Distrito)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.CausaPenal)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdCausaPenal">Edit</a> |
+                @Html.DisplayFor(modelItem => item.IdCausaPenal)
+            </td>
+            <td>
+                <a asp-action="delitos" asp-route-id="@item.IdCausaPenal">Edit delito</a> |
+                <a asp-action="Edit" asp-route-id="@item.IdCausaPenal">Edit causa</a> |
                 <a asp-action="Details" asp-route-id="@item.IdCausaPenal">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.IdCausaPenal">Delete</a>
             </td>

@@ -32,6 +32,11 @@
                 </select>
             </div>
             <div class="form-group">
+                <label asp-for="Distrito" class="control-label"></label>
+                <input asp-for="Distrito" class="form-control" />
+                <span asp-validation-for="Distrito" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="CausaPenal" class="control-label"></label>
                 <input asp-for="CausaPenal" class="form-control" />
                 <span asp-validation-for="CausaPenal" class="text-danger"></span>

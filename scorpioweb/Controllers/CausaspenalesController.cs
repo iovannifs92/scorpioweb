@@ -12,12 +12,16 @@ namespace scorpioweb.Controllers
     public class CausaspenalesController : Controller
     {
         #region
+        
+        public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
         private List<SelectListItem> listaSiNo = new List<SelectListItem>
+
         {
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
-        };
+        };     
+        
         public string normaliza(string normalizar)
         {
             if (!String.IsNullOrEmpty(normalizar))
@@ -49,6 +53,8 @@ namespace scorpioweb.Controllers
 
             var causapenal = await _context.Causapenal
                 .SingleOrDefaultAsync(m => m.IdCausaPenal == id);
+
+            
             if (causapenal == null)
             {
                 return NotFound();
@@ -56,6 +62,22 @@ namespace scorpioweb.Controllers
 
             return View(causapenal);
         }
+
+        #region MODAL DELITO
+        public ActionResult GuardarDelito(string[] datosDelito)
+        {
+            string currentUser = User.Identity.Name;
+            datosDelito.DefaultIfEmpty();
+            for (int i = 0; i < datosDelito.Length; i++)
+            {
+
+                datosDelitos.Add(new List<String> { datosDelito[i], currentUser });
+            }
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+
+        }
+        #endregion
 
         // GET: Causaspenales/Create
         public IActionResult Create()
@@ -68,12 +90,44 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Causapenal causapenal, string cnpp, string juez, string cambio, string cp)
+        public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez,  string distrito, string cambio, string cp, string delitoM)
         {
+            string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
+
+                #region -Delitos-
+                int idCausaPenal = ((from table in _context.Causapenal
+                                  select table).Count()) + 1;
+                causapenal.IdCausaPenal = idCausaPenal;
+                for (int i = 0; i < datosDelitos.Count; i = i + 3)
+                {
+                    if (datosDelitos[i][1] == currentUser)
+                    { 
+                        delitoDB.Tipo = datosDelitos[i][0];
+                        delitoDB.Modalidad = datosDelitos[i + 1][0];
+                        delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
+                        delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
+
+                        _context.Add(delitoDB);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                for (int i = 0; i < datosDelitos.Count; i++)
+                {
+                    if (datosDelitos[i][1] == currentUser)
+                    {
+                        datosDelitos.RemoveAt(i);
+                        i--;
+                    }
+                }
+                #endregion
+
+
                 causapenal.Cnpp = cnpp;
                 causapenal.Juez = juez;
+                causapenal.Distrito = distrito;
                 causapenal.Cambio = cambio;
                 causapenal.CausaPenal = cp;
                 _context.Add(causapenal);
@@ -124,7 +178,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,CausaPenal")] Causapenal causa)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
         {
             if (id != causa.IdCausaPenal)
             {
@@ -188,10 +242,87 @@ namespace scorpioweb.Controllers
             return _context.Causapenal.Any(e => e.IdCausaPenal == id);
         }
 
+        private bool DelitolExists(int id)
+        {
+            return _context.Delito.Any(e => e.IdDelito == id);
+        }
+
         // GET: Causaspenales
         public IActionResult ControlCP()
         {
             return View();
         }
+
+       
+        
+
+        // GET: Causaspenales
+        public async Task<IActionResult> delitos(int? id)
+        {
+            var IdCausaPenal = id;
+            if (IdCausaPenal == null)
+            {
+                return NotFound();
+            }
+            var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
+
+            if (causapenal == null)
+            {
+                return NotFound();
+            }
+            List<Delito> delitoVM = _context.Delito.ToList();
+            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
+
+            #region -Jointables-
+            ViewData["joinTablesDelito"] = 
+                                     from causapenalTable in causaPenalVM
+                                     join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
+                                     where causapenalTable.IdCausaPenal == IdCausaPenal
+                                     select new CausaDelitoViewModel
+                                     {
+                                         delitoVM = delitoTabla
+                                     };
+
+            ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+
+            #endregion
+
+            return View();
+        }
+        // POST: Causaspenales/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> delitos(int id, [Bind("IdDelito,Tipo,Modalidad,EspecificarDelito,CausaPenalIdCausaPenal")] Delito delito)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(delito);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!DelitolExists(delito.IdDelito))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
+
     }
 }
