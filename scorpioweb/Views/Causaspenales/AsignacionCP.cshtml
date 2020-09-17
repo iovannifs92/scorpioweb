@@ -4,6 +4,20 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+@*<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#btnAsignar').on("click", function (e) {
+            e.preventDefault();
+
+            var cp = document.getElementById("selectPersonas");
+            var idPersona = cp.options[cp.selectedIndex].value;
+
+            
+        });
+    });
+</script>*@
+
 <h2>Asignación de Causa Penal</h2>
 
 <form asp-action="AsignacionCP" method="get">
@@ -11,7 +25,7 @@
         <p>
             Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
             <input type="submit" value="Buscar" class="btn btn-default" /> |
-            <a asp-action="AsignacionCP">Regresar a listado completo</a>
+            <a asp-action="AsignacionCP">Regresar al listado completo</a>
         </p>
     </div>
 </form>
@@ -32,9 +46,37 @@
                     @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
-                    <a asp-action="Modal" asp-route-id="@item.IdPersona">Asignación</a> |
-                    <a asp-action="DetailsCP" asp-route-id="@item.IdPersona">Detalles</a>
-                    @*<a asp-action="DetailsCP" asp-route-id="@item.IdCausaPenal">Details</a>*@
+                    <!-- Button trigger modal -->
+                    @*<a data-toggle="modal" data-target="#Modal">
+            Asignación
+        </a>*@
+
+                    <!-- Modal -->
+                    @*<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="ModalLabel">Asignación</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label class="control-label">Causas Penales</label>
+                        <select class="form-control" id="selectPersonas"
+                                asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btnAsignar">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                    <a asp-action="Asignacion" asp-route-id="@item.IdPersona">Asignación</a>
+                    |
+    <a asp-action="DetailsCP" asp-route-id="@item.IdPersona">Personas Detalles</a>
                 </td>
             </tr>
         }

@@ -92,6 +92,7 @@
                     datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
                 },
                 success: function (response) {
+                    alert(response.success);
                     if (response.success) {
                         alert(response.responseText);
                         document.ready = document.getElementById("sustancia").value = 'ALCOHOL';

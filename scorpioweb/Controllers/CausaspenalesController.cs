@@ -12,6 +12,8 @@ namespace scorpioweb.Controllers
     public class CausaspenalesController : Controller
     {
         #region
+        public static List<List<string>> datosPersonas = new List<List<string>>();
+
         private readonly penas2Context _context;
         private List<SelectListItem> listaSiNo = new List<SelectListItem>
         {
@@ -68,10 +70,29 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Causapenal causapenal, string cnpp, string juez, string cambio, string cp)
+        public async Task<IActionResult> Create(Causapenal causapenal, Delito personaCausaPenalDB, string cnpp, string juez, string cambio, string cp)
         {
             if (ModelState.IsValid)
             {
+                string currentUser = User.Identity.Name;
+
+                #region -asignacion causa penal a persona-
+                int idCausaPenal = ((from table in _context.Causapenal
+                                     select table).Count()) + 1;
+                causapenal.IdCausaPenal = idCausaPenal;
+                for (int i = 0; i < datosPersonas.Count; i = i + 1)
+                {
+                    if (datosPersonas[i][1] == currentUser)
+                    {
+                        personaCausaPenalDB.Tipo = datosPersonas[i][0];
+                        personaCausaPenalDB.CausaPenalIdCausaPenal = idCausaPenal;
+
+                        _context.Add(personaCausaPenalDB);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                #endregion
+
                 causapenal.Cnpp = cnpp;
                 causapenal.Juez = juez;
                 causapenal.Cambio = cambio;
@@ -238,8 +259,82 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        #region -Detalles CP-
+        #region Asignacion
+        //GET: CausasPenales/AsignacionCP/14
+        public async Task<IActionResult> Asignacion(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var persona = await _context.Persona
+                .SingleOrDefaultAsync(m => m.IdPersona == id);
+
+            List<Persona> listaPersonas = new List<Persona>();
+            listaPersonas = (from table in _context.Persona
+                             select table).ToList();
+
+            //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
+            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = "Selecciona" });
+            ViewBag.personas = listaPersonas;
+
+            if (persona == null)
+            {
+                return NotFound();
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Asignacion(int id, [Bind("personaVM")] PersonaCausaPenalViewModel personaCausaPenalVM)
+        {
+            /*if (id != personaCausaPenalVM.PersonaIdPersona)
+            {
+                return NotFound();
+            }*/
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(personaCausaPenalVM);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    /*if (!PersonaExists(abandonoestado.PersonaIdPersona))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }*/
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(personaCausaPenalVM);
+        }
+        #endregion
+
+        #region botton asignar
+        public ActionResult AsignarPersona(string[] datosPersona)
+        {
+            string currentUser = User.Identity.Name;
+            datosPersona.DefaultIfEmpty();
+            for (int i = 0; i < datosPersona.Length; i++)
+            {
+                datosPersonas.Add(new List<String> { datosPersona[i], currentUser });
+            }
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+        }
+        #endregion
+
+        #region Detalles CP
         // GET: Causaspenales/DetailsCP/14
         public async Task<IActionResult> DetailsCP(int? id)
         {

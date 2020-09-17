@@ -1,4 +1,5 @@
-﻿@model IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>
+﻿@*Detalles Persona*@
+@model IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>
 
 @{
     ViewData["Title"] = "DetailsCP";
@@ -11,7 +12,7 @@
     @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
     {
         <tr>
-            <td colspan="3">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</td>
+            <td colspan="3">@item.causaPenalVM.CausaPenal</td>
         </tr>
         break;
     }
@@ -24,13 +25,13 @@
     @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
     {
         <tr>
-            <td colspan="3">@item.causaPenalVM.CausaPenal</td>
+            <td colspan="3">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</td>
         </tr>
         <br />
     }
 </tbody>
+<hr />
 
-@*<div>
-        <a asp-action="Edit" asp-route-id="@Model.IdCausaPenal">Edit</a> |
-        <a asp-action="AsignacionCP">Back to List</a>
-    </div>*@
+<div>
+    <a asp-action="AsignacionCP">Regresar al listado completo</a>
+</div>

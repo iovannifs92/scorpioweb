@@ -1,0 +1,52 @@
+﻿@model scorpioweb.Models.Persona
+
+@{
+    ViewData["Title"] = "Asignacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#btnAsignar').on("click", function (e) {
+            e.preventDefault();
+
+            var cp = document.getElementById("selectPersonas");
+            var idPersona = cp.options[cp.selectedIndex].value;
+alert(idPersona);
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/AsignarPersona",
+                traditional: true,
+                data: {
+                    datosPersona: [idPersona],
+                },
+                success: function (response) {
+                    if (response.success) {
+alert(response.responsetext+",");
+                        document.ready = document.getelementbyid("selectPersonas").value = '';
+                    } else {
+                        alert(response.responsetext);
+                    }
+                },
+                error: function (response) {
+                    alert("hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+    });
+</script>
+
+<h2>Asignacion</h2>
+
+<div class="form-group col-lg-6">
+    <label class="control-label">Personas</label>
+    <select class="form-control" id="selectPersonas"
+            asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
+    </select>
+</div>
+
+<div class="form-group col-lg-12">
+    <input type="submit" value="Asignar" class="btn btn-success" id="btnAsignar"/>
+</div>
