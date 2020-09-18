@@ -9,6 +9,7 @@ namespace scorpioweb.Models
         public string Cnpp { get; set; }
         public string Juez { get; set; }
         public string Cambio { get; set; }
+        public string Distrito { get; set; }
         public string CausaPenal { get; set; }
     }
 }

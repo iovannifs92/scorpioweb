@@ -1,0 +1,56 @@
+﻿@model IEnumerable<scorpioweb.Models.PersonaViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Index</h2>
+<tbody>
+    <div>
+
+    </div>
+
+    @{int i = 0;}
+    @foreach (var myItem in ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
+    {
+  
+
+    }
+    @foreach (var item in ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
+    {
+
+        i++;
+        <tr>
+            <div class="form-group col-md-12">
+                <form asp-action="delitos">
+                    <div>
+                        <h4>Delito <span>@i</span> </h4>
+                    </div>
+                    <div class="form-group">
+                        <input name="IdDelito" id="IdDelito" value="@item.delitoVM.IdDelito" class="form-control" style="display:none " readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Tipo</label>
+                        <input name="Tipo" id="Tipo" value="@item.delitoVM.Tipo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Modalidad</label>
+                        <input name="Modalidad" id="Modalidad" value=" @item.delitoVM.Modalidad" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Especifique delito</label>
+                        <input name="EspecificarDelito" id="EspecificarDelito" value="@item.delitoVM.EspecificarDelito" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input name="CausaPenalIdCausaPenal" id="CausaPenalIdCausaPenal" value="@item.delitoVM.CausaPenalIdCausaPenal" class="form-control" style="display:none" readonly />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" id="btnguardarEdit" value="Save" class="PremireButton" />
+                    </div>
+                </form>
+            </div>
+        </tr>
+
+    }
+
+</tbody>
