@@ -4,17 +4,16 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Index</h2>
 <tbody>
-    <div>
 
-    </div>
 
     @{int i = 0;}
-    @foreach (var myItem in ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
+    @foreach (var item in ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
     {
-  
-
+        <div>
+            <h1>Causa Penal No <td colspan="3">@item.delitoVM.CausaPenalIdCausaPenal</h1>
+        </div>
+        break;
     }
     @foreach (var item in ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
     {
