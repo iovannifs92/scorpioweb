@@ -5,6 +5,47 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script type="text/javascript">
+        var tipo = 0;
+        $(document).ready(function () {
+            $('#btnGuardarDelito').on("click", function (e) {
+                e.preventDefault();
+
+                var tipodel = document.getElementById("tipoD").value;
+                var modalidad = document.getElementById("modalidadD").value;
+                var especificarD = document.getElementById("Edelito").value;
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Causaspenales/GuardarDelito",
+                    traditional: true,
+                    data: {
+                        datosDelito: [tipodel, modalidad, especificarD],
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.responseText);
+                            document.ready = document.getElementById("tipoD").value = '';
+                            document.ready = document.getElementById("modalidadD").value = '';
+                            document.ready = document.getElementById("Edelito").value = '';
+                            var otraDelito = confirm("¿Agregar otro delito?");
+                            if (otraDelito == true) {
+                                alert("Coloque los datos correspondientes");
+                            } else {
+                                $("#modalDelito").modal('hide');
+                            }
+                        } else {
+                            alert(response.responseText);
+                        }
+                    },
+                    error: function (response) {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                });
+            });
+        });
+</script>
+
 <h2>Edit</h2>
 
 <h4>Causapenal</h4>
@@ -42,6 +83,11 @@
                 <span asp-validation-for="CausaPenal" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDelito">Agrager delito a Causa Penal</button>
+            </div>
+
+            <a asp-action="delitos" asp-route-id="@Model.IdCausaPenal" class="btn btn-primary">Editar delito</a>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
@@ -51,4 +97,37 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h1 class="modal-title" style="font-size: 30px; color:#fff;" id="exampleModalLongTitle">Delito</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tipo</label>
+                <input required name="tipoD" id="tipoD" type="text" class="form-control" />
+            </div>
+            <div class="form-grou col-md-12">
+                <label class="control-label">Modalidad</label>
+                <input required name="modalidadD" id="modalidadD" type="text" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Especifique Delito</label>
+                <input required name="Edelito" id="Edelito" type="text" class="form-control" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 

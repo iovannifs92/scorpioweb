@@ -6,28 +6,35 @@
 }
 
 <h2>Index</h2>
-
+<p>
+    @using (Html.BeginForm("Index", "Causaspenales", FormMethod.Get))
+    {
+        <b>Busca por penal: </b>
+        @Html.TextBox("search")
+        <input type="submit" value="search" />
+    }
+</p>
 <p>
     <a asp-action="Create" class="btn btn-primary">Crea nueva Causa Penal</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Cnpp)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Juez)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Cambio)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Distrito)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CausaPenal)
-                </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cnpp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Juez)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cambio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Distrito)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CausaPenal)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -65,3 +72,4 @@
 }
     </tbody>
 </table>
+

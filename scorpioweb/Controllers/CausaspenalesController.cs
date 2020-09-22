@@ -12,7 +12,7 @@ namespace scorpioweb.Controllers
     public class CausaspenalesController : Controller
     {
         #region
-        public static List<List<string>> datosPersonas = new List<List<string>>();
+        public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
         private List<SelectListItem> listaSiNo = new List<SelectListItem>
@@ -20,8 +20,8 @@ namespace scorpioweb.Controllers
         {
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
-        };     
-        
+        };
+
         public string normaliza(string normalizar)
         {
             if (!String.IsNullOrEmpty(normalizar))
@@ -38,9 +38,9 @@ namespace scorpioweb.Controllers
         }
 
         // GET: Causaspenales
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Causapenal.ToListAsync());
+        public async Task<IActionResult> Index(string searchBy, string search)
+        {          
+                return View(await _context.Causapenal.Where(x => x.CausaPenal.StartsWith(search) || search == null || search == "").ToListAsync());          
         }
 
         // GET: Causaspenales/Details/5
@@ -54,7 +54,7 @@ namespace scorpioweb.Controllers
             var causapenal = await _context.Causapenal
                 .SingleOrDefaultAsync(m => m.IdCausaPenal == id);
 
-            
+
             if (causapenal == null)
             {
                 return NotFound();
@@ -90,35 +90,19 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, Delito personaCausaPenalDB, string cnpp, string juez,  string distrito, string cambio, string cp, string delitoM)
+        public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp, string delitoM)
         {
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
+                #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
                                      select table).Count()) + 1;
-
-                //#region -asignacion causa penal a persona-
-                //causapenal.IdCausaPenal = idCausaPenal;
-                //for (int i = 0; i < datosPersonas.Count; i = i + 1)
-                //{
-                //    if (datosPersonas[i][1] == currentUser)
-                //    {
-                //        personaCausaPenalDB.Tipo = datosPersonas[i][0];
-                //        personaCausaPenalDB.CausaPenalIdCausaPenal = idCausaPenal;
-
-                //        _context.Add(personaCausaPenalDB);
-                //        await _context.SaveChangesAsync();
-                //    }
-                //}
-                //#endregion
-
-                #region -Delitos-
                 causapenal.IdCausaPenal = idCausaPenal;
                 for (int i = 0; i < datosDelitos.Count; i = i + 3)
                 {
                     if (datosDelitos[i][1] == currentUser)
-                    { 
+                    {
                         delitoDB.Tipo = datosDelitos[i][0];
                         delitoDB.Modalidad = datosDelitos[i + 1][0];
                         delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
@@ -192,12 +176,44 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
+        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB)
         {
             if (id != causa.IdCausaPenal)
             {
                 return NotFound();
             }
+            string currentUser = User.Identity.Name;
+            #region -Delitos-
+            var IdCausaPenal = id;
+
+            int idCausaPenal = ((from table in _context.Causapenal
+                                 select table).Count());
+            causa.IdCausaPenal = idCausaPenal;
+            for (int i = 0; i < datosDelitos.Count; i = i + 3)
+            {
+                if (datosDelitos[i][1] == currentUser)
+                {
+                    delitoDB.Tipo = datosDelitos[i][0];
+                    delitoDB.Modalidad = datosDelitos[i + 1][0];
+                    delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
+                    delitoDB.CausaPenalIdCausaPenal = id;
+
+                    _context.Add(delitoDB);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            for (int i = 0; i < datosDelitos.Count; i++)
+            {
+                if (datosDelitos[i][1] == currentUser)
+                {
+                    datosDelitos.RemoveAt(i);
+                    i--;
+                }
+            }
+            #endregion
+
+
 
             if (ModelState.IsValid)
             {
@@ -249,65 +265,10 @@ namespace scorpioweb.Controllers
             _context.Causapenal.Remove(causapenal);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        //GET: CausasPenales/AsignacionCP
-        public async Task<IActionResult> AsignacionCP(
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageNumber)
-        {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
-
-            if (searchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-
-
-            ViewData["CurrentFilter"] = searchString;
-
-            var personas = from p in _context.Persona
-                           where p.Supervisor == User.Identity.Name
-                           select p;
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                personas = personas.Where(p => p.Paterno.Contains(searchString)
-                                        || p.Materno.Contains(searchString)
-                                        || p.Nombre.Contains(searchString));
-            }
-
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    personas = personas.OrderByDescending(p => p.Paterno);
-                    break;
-                case "Date":
-                    personas = personas.OrderBy(p => p.UltimaActualización);
-                    break;
-                case "date_desc":
-                    personas = personas.OrderByDescending(p => p.UltimaActualización);
-                    break;
-                default:
-                    personas = personas.OrderBy(p => p.Paterno);
-                    break;
-            }
-
-            int pageSize = 10;
-            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
-        }
+        }    
 
         #region Asignacion
-        //GET: CausasPenales/AsignacionCP/14
+        //GET: CausasPenales/Asignacion/14
         public async Task<IActionResult> Asignacion(int? id)
         {
             if (id == null)
@@ -336,79 +297,35 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, int CausaPenalIdCausaPenal, int PersonaIdPersona)
-//(int id, [Bind("IdPersona")] PersonaCausaPenalViewModel personaCausaPenalVM)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, int id)
         {
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
                 int idPersonaCausaPenal = ((from table in _context.Personacausapenal
-                                        select table).Count()) + 1;
+                                            select table).Count()) + 1;
 
-                #region -asignacion causa penal a persona-
                 personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
-                //for (int i = 0; i < datosPersonas.Count; i = i + 1)
-                //{
-                //    if (datosPersonas[i][1] == currentUser)
-                //    {
-                //        personaCausaPenalDB.Tipo = datosPersonas[i][0];
-                //        personaCausaPenalDB.CausaPenalIdCausaPenal = idCausaPenal;
+                personacausapenal.PersonaIdPersona = Int32.Parse(selectedPersona[0]);
+                personacausapenal.CausaPenalIdCausaPenal = id;
 
-                //        _context.Add(personaCausaPenalDB);
-                //        await _context.SaveChangesAsync();
-                //    }
-                //}
-                #endregion
-
-                personacausapenal.CausaPenalIdCausaPenal = CausaPenalIdCausaPenal;
-                personacausapenal.PersonaIdPersona = PersonaIdPersona;
                 _context.Add(personacausapenal);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(personacausapenal);
         }
+        #endregion
 
-        /*if (id != personaCausaPenalVM.PersonaIdPersona)
-        {
-            return NotFound();
-        }*/
-
-        //if (ModelState.IsValid)
-        //{
-        //    try
-        //    {
-        //        _context.Update(personaCausaPenalVM);
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        /*if (!PersonaExists(abandonoestado.PersonaIdPersona))
-        {
-            return NotFound();
-        }
-        else
-        {
-            throw;
-        }*/
-        //    }
-        //    return RedirectToAction(nameof(Index));
-        //}
-        //return View(personaCausaPenalVM);
-    //}
-                #endregion
-
-                #region botton asignar
-                public ActionResult AsignarPersona(string[] datosPersona)
+        #region boton asignar
+        public ActionResult AsignarPersona(string[] datosPersona)
         {
             string currentUser = User.Identity.Name;
-            datosPersona.DefaultIfEmpty();
-            for (int i = 0; i < datosPersona.Length; i++)
+            if (datosPersona.Length > 0)
             {
-                datosPersonas.Add(new List<String> { datosPersona[i], currentUser });
+                selectedPersona = new List<String> { datosPersona[0], currentUser };
             }
-
-            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+            return Json(new { success = true, responseText = "Persona seleccionada" });
         }
         #endregion
 
@@ -459,8 +376,37 @@ namespace scorpioweb.Controllers
         }
 
         // GET: Causaspenales
-        public IActionResult ControlCP()
+        public async Task<IActionResult> CreateDelito(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp, string delitoM)
         {
+            string currentUser = User.Identity.Name;
+            #region -Delitos-
+            int idCausaPenal = ((from table in _context.Causapenal
+                                 select table).Count()) + 1;
+            causapenal.IdCausaPenal = idCausaPenal;
+            for (int i = 0; i < datosDelitos.Count; i = i + 3)
+            {
+                if (datosDelitos[i][1] == currentUser)
+                {
+                    delitoDB.Tipo = datosDelitos[i][0];
+                    delitoDB.Modalidad = datosDelitos[i + 1][0];
+                    delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
+                    delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
+
+                    _context.Add(delitoDB);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            for (int i = 0; i < datosDelitos.Count; i++)
+            {
+                if (datosDelitos[i][1] == currentUser)
+                {
+                    datosDelitos.RemoveAt(i);
+                    i--;
+                }
+            }
+            #endregion
+
             return View();
         }
 
@@ -469,7 +415,7 @@ namespace scorpioweb.Controllers
             return _context.Causapenal.Any(e => e.IdCausaPenal == id);
         }       
 
-        // GET: Causaspenales
+        // GET: Causaspenales/Editar delitos
         public async Task<IActionResult> delitos(int? id)
         {
             var IdCausaPenal = id;
@@ -487,7 +433,7 @@ namespace scorpioweb.Controllers
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
 
             #region -Jointables-
-            ViewData["joinTablesDelito"] = 
+            ViewData["joinTablesDelito"] =
                                      from causapenalTable in causaPenalVM
                                      join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
                                      where causapenalTable.IdCausaPenal == IdCausaPenal
@@ -502,12 +448,12 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-        // POST: Causaspenales/Edit/5
+        // POST: Causaspenales/Editdellitos
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> delitos(int id, [Bind("IdDelito,CausaPenalIdCausaPenal")] Delito delito)
+        public async Task<IActionResult> delitos(int id, [Bind("IdDelito,Tipo,Modalidad,EspecificarDelito,CausaPenalIdCausaPenal")] Delito delito)
         {
             if (id == null)
             {

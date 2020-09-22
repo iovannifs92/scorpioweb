@@ -24,7 +24,7 @@
                 success: function (response) {
                     if (response.success) {
                         alert(response.responseText);
-                        document.ready = document.getelementbyid("selectPersonas").value = '';
+                        document.ready = document.getelementbyid("selectPerpersonasonas").value = '';
                     } else {
                         alert(response.responseText);
                     }
@@ -39,16 +39,20 @@
 
 <h2>Asignación</h2>
 
-<div class="form-group col-lg-6">
-    <label class="control-label">Personas</label>
-    <select class="form-control" id="selectPersonas"
-            asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
-    </select>
-</div>
-
 <div class="form-group col-lg-12">
-    <input type="submit" value="Asignar" class="btn btn-success" id="btnAsignar" />
-    <hr />
-    <a asp-action="Index">Regresar al listado completo</a>
+    <div class="form-group col-lg-6">
+        <label class="control-label">Personas</label>
+        <select class="form-control" id="selectPersonas" name="persona_idPersona"
+                asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
+        </select>
+    </div>
+    <div class="form-group  col-lg-12">
+        <input type="submit" value="Save" class="btn btn-default" id="btnAsignar" />
+        <form asp-action="Asignacion">
+            <input type="submit" value="Asignar" class="btn btn-success" />
+            <hr />
+            <a asp-action="Index">Regresar al listado completo</a>
+        </form>
+    </div>
 </div>
 
