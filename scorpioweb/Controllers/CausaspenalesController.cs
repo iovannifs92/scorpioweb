@@ -287,6 +287,8 @@ namespace scorpioweb.Controllers
             listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = "Selecciona" });
             ViewBag.personas = listaPersonas;
 
+            selectedPersona = new List<string>();//Se inicializa la persona seleccionada
+
             if (persona == null)
             {
                 return NotFound();
@@ -300,13 +302,25 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, int id)
         {
             string currentUser = User.Identity.Name;
+
             if (ModelState.IsValid)
             {
+                if(selectedPersona.Count == 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                int idPersona = Int32.Parse(selectedPersona[0]);
+                //Por el "Selecciona"
+                if (idPersona == 0) {
+                    return RedirectToAction(nameof(Index));
+                }
+
                 int idPersonaCausaPenal = ((from table in _context.Personacausapenal
                                             select table).Count()) + 1;
 
                 personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
-                personacausapenal.PersonaIdPersona = Int32.Parse(selectedPersona[0]);
+                personacausapenal.PersonaIdPersona = idPersona;
                 personacausapenal.CausaPenalIdCausaPenal = id;
 
                 _context.Add(personacausapenal);
