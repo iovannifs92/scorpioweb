@@ -9,7 +9,7 @@
 <p>
     @using (Html.BeginForm("Index", "Causaspenales", FormMethod.Get))
     {
-        <b>Busca por penal: </b>
+        <b>Busca por Causa Penal: </b>
         @Html.TextBox("search")
         <input type="submit" value="search" />
     }
@@ -35,6 +35,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.CausaPenal)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdCausaPenal)
+            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -42,30 +46,33 @@
 
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Cnpp)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Juez)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Cambio)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Distrito)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CausaPenal)
-                </td>
-              
-                <td>
-                    @*<a asp-action="delitos" asp-route-id="@item.IdCausaPenal">Edit delito</a> |*@
-                    <a asp-action="Edit" asp-route-id="@item.IdCausaPenal">Edit causa</a> |
-                    <a asp-action="Details" asp-route-id="@item.IdCausaPenal">Details</a> 
-                    @*<a asp-action="Delete" asp-route-id="@item.IdCausaPenal">Delete</a>*@
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cnpp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Juez)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cambio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Distrito)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CausaPenal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdCausaPenal)
+            </td>
+
+            <td>
+                @*<a asp-action="delitos" asp-route-id="@item.IdCausaPenal">Edit delito</a> |*@
+                <a asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">Edit causa</a> |
+                <a asp-action="Details" asp-route-id="@item.IdCausaPenal">Details</a>
+                @*<a asp-action="Delete" asp-route-id="@item.IdCausaPenal">Delete</a>*@
+            </td>
+        </tr>
         }
     </tbody>
 </table>

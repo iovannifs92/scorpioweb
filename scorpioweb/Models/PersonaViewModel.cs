@@ -24,5 +24,6 @@ namespace scorpioweb.Models
         public Saludfisica saludFisicaVM { get; set; }
         public Familiaresforaneos familiaresForaneosVM { get; set; }
         public Asientofamiliar asientoFamiliarVM { get; set; }
+        public Delito delitoDM { get; set; }
     }
 }

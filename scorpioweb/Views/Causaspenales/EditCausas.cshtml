@@ -1,0 +1,103 @@
+﻿@model IEnumerable<scorpioweb.Models.CausaDelitoViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@foreach (var item in ViewData["joinTablesCausa"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
+{
+    <div class="row">
+        <div>
+            <h1>Causa Penal No <td colspan="3">@item.causaPenalVM.IdCausaPenal</h1>
+        </div>
+        <div class="form-group col-md-4">
+            <form asp-action="EditCausas">
+                <div class="form-group">
+                    <input name="IdCausaPenal" id="IdCausaPenal" value="@item.causaPenalVM.IdCausaPenal" class="form-control" style="display:none " readonly />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Cnpp</label>
+                    <select class="form-control" name="Cnpp"
+                            asp-items="@(new SelectList(ViewBag.listaCnpp, "Value", "Text", @ViewBag.idCnpp))">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Juez</label>
+                    <input name="Juez" id="Juez" value="@item.causaPenalVM.Juez" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Cambio</label>
+                    <select class="form-control" name="Cambio"
+                            asp-items="@(new SelectList(ViewBag.listaCambio, "Value", "Text", @ViewBag.idCambio))">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Distrito</label>
+                    <input name="Distrito" id="Distrito" value="@item.causaPenalVM.Distrito" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">CausaPenal</label>
+                    <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-default">Crear Delito</a>
+                </div>
+                <div class="form-group">
+                    <td colspan="2">@ViewBag.Delitos</td>
+                    @if (ViewBag.Delitos != "0")
+                    {
+                        <a data-toggle="modal" data-target="#modalDelito">Ver Delitos</a>
+                    }
+                    </div>
+                <div class="form-group">
+                    <input type="submit" id="btnguardarEdit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    break;
+}
+
+
+<!-- Modal Familiares Extranjero -->
+<div class="modal fade" id="modalDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Delitos asociados a la causa</h5>
+            </div>
+            <div class="modal-body">
+                @foreach (var item in ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
+                {
+                    <table class="table table-bordered">
+                        <tr>
+                            <td style="width: 25%;" class="estiloAbandonoEstado">Tipo</td>
+                            <td style="width: 65%;">@item.delitoVM.Tipo</td>
+                        </tr>
+                        <tr>
+                            <td class="estiloAbandonoEstado">Modalidad</td>
+                            <td>@item.delitoVM.Modalidad</td>
+                            <td style="border-right: solid White;
+                                       border-bottom: solid White;
+                                       border-top: solid White;" >
+                            <a class="btn btn-primary" asp-action="Delito" asp-route-id="@item.delitoVM.IdDelito">Editar</a></td>
+                        </tr>
+                        <tr>
+                            <td class="estiloAbandonoEstado">Especifique delito</td>
+                            <td>@item.delitoVM.EspecificarDelito</td>                            
+                        </tr>
+                    </table>
+                 
+                }
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

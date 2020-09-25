@@ -1,5 +1,4 @@
-﻿/*#region Tablas*/
-.estiloDG {
+﻿.estiloDG {
     background-color: #0078A7;
     color: #fff
 }
@@ -113,5 +112,9 @@
     #salud:hover {
         background-color: #61C9F2;
     }
+#boton {
+    border: solid White;
+}
+
 /*#endregion MenuEdicion*/
 
