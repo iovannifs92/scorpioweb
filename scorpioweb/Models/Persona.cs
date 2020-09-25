@@ -35,5 +35,10 @@ namespace scorpioweb.Models
         public string ConsumoSustancias { get; set; }
         public DateTime? UltimaActualización { get; set; }
         public string Supervisor { get; set; }
+        public string NombreCompleto {
+            get {
+                return this.Nombre + " " + this.Paterno + " " + this.Materno;
+            }
+        }
     }
 }

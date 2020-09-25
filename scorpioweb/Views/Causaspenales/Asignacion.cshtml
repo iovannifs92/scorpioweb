@@ -1,0 +1,59 @@
+﻿@model scorpioweb.Models.Persona
+
+@{
+    ViewData["Title"] = "Asignacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#selectPersonas').on("change", function (e) {
+            e.preventDefault();
+
+            var cp = document.getElementById("selectPersonas");
+            var idPersona = cp.options[cp.selectedIndex].value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/AsignarPersona",
+                traditional: true,
+                data: {
+                    datosPersona: [idPersona],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);//"Persona seleccionada" 
+                        document.ready = document.getelementbyid("selectPerpersonasonas").value = '';
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+    });
+</script>
+
+<h2>Asignación</h2>
+
+<div class="form-group col-lg-12">
+    <div class="form-group col-lg-6">
+        <label class="control-label">Personas</label>
+        <form asp-action="Asignacion">
+            <select type="submit" class="form-control" id="selectPersonas" name="persona_idPersona"
+                    asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
+            </select>
+        </form>
+    </div>
+    <div class="form-group  col-lg-12">
+        <form asp-action="Asignacion">
+            <input type="submit" value="Asignar" class="btn btn-success" />
+            <hr />
+            <a asp-action="Index">Regresar al listado completo</a>
+        </form>
+    </div>
+</div>
+

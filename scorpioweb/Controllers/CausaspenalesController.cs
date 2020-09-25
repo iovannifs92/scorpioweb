@@ -12,7 +12,7 @@ namespace scorpioweb.Controllers
     public class CausaspenalesController : Controller
     {
         #region
-
+        public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
         private List<SelectListItem> listaSiNo = new List<SelectListItem>
@@ -95,7 +95,6 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-
                 #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
                                      select table).Count()) + 1;
@@ -124,7 +123,6 @@ namespace scorpioweb.Controllers
                 }
                 #endregion
 
-
                 causapenal.Cnpp = cnpp;
                 causapenal.Juez = juez;
                 causapenal.Distrito = distrito;
@@ -148,66 +146,6 @@ namespace scorpioweb.Controllers
             }
             return "";
         }
-
-        // GET: Causaspenales/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
-            if (causapenal == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.listaCnpp = listaSiNo;
-            ViewBag.idCnpp = BuscaId(listaSiNo, causapenal.Cnpp);
-
-            ViewBag.listaCambio = listaSiNo;
-            ViewBag.idCambio = BuscaId(listaSiNo, causapenal.Cambio);
-
-
-            return View(causapenal);
-        }
-        // POST: Causaspenales/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
-        {
-            if (id != causa.IdCausaPenal)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(causa);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CausapenalExists(causa.IdCausaPenal))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View();
-        }
-
-
 
         // GET: Causaspenales/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -236,91 +174,129 @@ namespace scorpioweb.Controllers
             _context.Causapenal.Remove(causapenal);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
+        }    
 
-        private bool CausapenalExists(int id)
-        {
-            return _context.Causapenal.Any(e => e.IdCausaPenal == id);
-        }
-
-        private bool DelitolExists(int id)
-        {
-            return _context.Delito.Any(e => e.IdDelito == id);
-        }
-
-       
-        // GET: Causaspenales/Editar delitos
-        public async Task<IActionResult> delitos(int? id)
-        {
-            var IdCausaPenal = id;
-            if (IdCausaPenal == null)
-            {
-                return NotFound();
-            }
-            var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
-
-            if (causapenal == null)
-            {
-                return NotFound();
-            }
-            List<Delito> delitoVM = _context.Delito.ToList();
-            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
-
-            #region -Jointables-
-            ViewData["joinTablesCausaDelito"] =
-                                     from causapenalTable in causaPenalVM
-                                     join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
-                                     where causapenalTable.IdCausaPenal == IdCausaPenal
-                                     select new CausaDelitoViewModel
-                                     {
-                                         delitoVM = delitoTabla,
-                                         causaPenalVM = causapenalTable
-
-                                     };
-
-            //ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
-
-
-            
-            #endregion
-
-            return View();
-        }
-        // POST: Causaspenales/Editdellitos
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> delitos(int id, [Bind("IdDelito,Tipo,Modalidad,EspecificarDelito,CausaPenalIdCausaPenal")] Delito delito)
+        #region Asignacion
+        //GET: CausasPenales/Asignacion/14
+        public async Task<IActionResult> Asignacion(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var persona = await _context.Persona
+                .SingleOrDefaultAsync(m => m.IdPersona == id);
+
+            List<Persona> listaPersonas = new List<Persona>();
+            listaPersonas = (from table in _context.Persona
+                             select table).ToList();
+
+            //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
+            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = "Selecciona" });
+            ViewBag.personas = listaPersonas;
+
+            selectedPersona = new List<string>();//Se inicializa la persona seleccionada
+
+            if (persona == null)
             {
-                try
-                {
-                    _context.Update(delito);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DelitolExists(delito.IdDelito))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction("Edit", "Causaspenales", new { @id = id });
+                return NotFound();
             }
+
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, int id)
+        {
+            string currentUser = User.Identity.Name;
+
+            if (ModelState.IsValid)
+            {
+                if(selectedPersona.Count == 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                int idPersona = Int32.Parse(selectedPersona[0]);
+                //Por el "Selecciona"
+                if (idPersona == 0) {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                int idPersonaCausaPenal = ((from table in _context.Personacausapenal
+                                            select table).Count()) + 1;
+
+                personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
+                personacausapenal.PersonaIdPersona = idPersona;
+                personacausapenal.CausaPenalIdCausaPenal = id;
+
+                _context.Add(personacausapenal);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(personacausapenal);
+        }
+        #endregion
+
+        #region boton asignar
+        public ActionResult AsignarPersona(string[] datosPersona)
+        {
+            string currentUser = User.Identity.Name;
+            if (datosPersona.Length > 0)
+            {
+                selectedPersona = new List<String> { datosPersona[0], currentUser };
+            }
+            return Json(new { success = true, responseText = "Persona seleccionada" });
+        }
+        #endregion
+
+        #region Detalles CP
+        // GET: Causaspenales/DetailsCP/14
+        public async Task<IActionResult> DetailsCP(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var causapenal = await _context.Causapenal
+                .SingleOrDefaultAsync(m => m.IdCausaPenal == id);
+
+            #region -To List databases-
+
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
+            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
+
+            #endregion
+
+            #region -Jointables-
+            ViewData["joinTables"] = from personaTable in personaVM
+                                     join personaCausaPenalTable in personaCausaPenalVM on personaTable.IdPersona equals personaCausaPenalTable.PersonaIdPersona
+                                     join causaPenalTable in causaPenalVM on personaCausaPenalTable.CausaPenalIdCausaPenal equals causaPenalTable.IdCausaPenal
+                                     where causaPenalTable.IdCausaPenal == id
+                                     select new PersonaCausaPenalViewModel
+                                     {
+                                         personaVM = personaTable,
+                                         causaPenalVM = causaPenalTable
+                                     };
+            #endregion
+
+            if (causapenal == null)
+            {
+                return NotFound();
+            }
+
+            return View();
+        }
+        #endregion
+
+        private bool DelitolExists(int id)
+        {
+            return _context.Delito.Any(e => e.IdDelito == id);
+        }
 
         // GET: Causaspenales/Create
         public IActionResult CreateDelito(int? id)
@@ -344,11 +320,15 @@ namespace scorpioweb.Controllers
                 
                 _context.Add(delitoDB);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("EditCausas", "Causaspenales", new { @id = id });
             }
             return View();
         }
 
+        private bool CausapenalExists(int id)
+        {
+            return _context.Causapenal.Any(e => e.IdCausaPenal == id);
+        }       
 
         // GET: Causaspenales/Editar delitos
         public async Task<IActionResult> EditCausas(int? id)
@@ -435,7 +415,8 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("index", "Causaspenales", new { @id = id });
+                //return RedirectToAction("index", "Causaspenales", new { @id = id });
+                return RedirectToAction(nameof(Index));
             }
             return View();
         }
@@ -467,6 +448,7 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+            var idcausa = delito.CausaPenalIdCausaPenal;
 
             if (ModelState.IsValid)
             {
@@ -486,10 +468,9 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("EditCausas", "Causaspenales", new { @id = idcausa });
             }
             return View();
         }
-
     }
 }

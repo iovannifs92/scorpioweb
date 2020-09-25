@@ -29,19 +29,14 @@
                 <span asp-validation-for="EspecificarDelito" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CausaPenalIdCausaPenal" class="control-label"></label>
-                <input asp-for="CausaPenalIdCausaPenal" class="form-control" />
-                <span asp-validation-for="CausaPenalIdCausaPenal" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Guardar" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="EditCausas" asp-route-id="@Model.CausaPenalIdCausaPenal">Regresar a Causa</a>
 </div>
 
 @section Scripts {
