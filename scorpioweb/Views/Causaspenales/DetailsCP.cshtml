@@ -8,30 +8,60 @@
 
 <h2>Detalles</h2>
 
-<tbody>
+
     @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
     {
         <tr>
-            <td colspan="3">@item.causaPenalVM.CausaPenal</td>
+            <td colspan="3"><p>Causa penal</p>@item.causaPenalVM.CausaPenal</td>
         </tr>
         break;
     }
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.personaVM.Paterno)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.personaVM.Materno)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.personaVM.Nombre)
+                </th>
+                </th>
 
-    <div>
+
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Materno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Paterno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+                </td>
+
+                <td>
+                    @*<a asp-action="delitos" asp-route-id="@item.IdCausaPenal">Edit delito</a> |*@
+                   
+                    <a href="/Personas/Details/@item.personaVM.IdPersona">Detalles</a>
+
+                    @*<a asp-action="Delete" asp-route-id="@item.IdCausaPenal">Delete</a>*@
+                </td>
+            </tr>
+            }
+        </tbody>
+        </table>
         <hr />
-        <h4>Personas</h4>
-    </div>
 
-    @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
-    {
-        <tr>
-            <td colspan="3">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</td>
-        </tr>
-        <br />
-    }
-</tbody>
-<hr />
-
-<div>
-    <a asp-action="Index">Regresar al listado completo</a>
-</div>
+        <div>
+            <a asp-action="Index">Regresar al listado completo</a>
+        </div>

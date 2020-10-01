@@ -4,10 +4,10 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Control de causas penales</h2>
-<p>
-    <a asp-action="Create" class="btn btn-primary">Crea nueva Causa Penal</a>
-</p>
+    <h2>Control de causas penales</h2>
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Crea nueva Causa Penal</a>
+    </p>
 
 <form asp-action="ListadeCausas" method="get">
     <div class="form-actions no-color">
@@ -37,7 +37,6 @@
             <th>
                 <a asp-action="ListadeCausas" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
             </th>
-
         </tr>
     </thead>
     <tbody>
@@ -59,7 +58,7 @@
             <th>
                 @Html.DisplayFor(modelItem => item.CausaPenal)
             </th>
-           
+
             <td>
                 <a asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">Editar Causa</a> |
                 <a asp-action="Details" asp-route-id="@item.IdCausaPenal">Detalles</a> |
@@ -90,3 +89,4 @@
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
+

@@ -38,10 +38,119 @@ namespace scorpioweb.Controllers
         }
 
         // GET: Causaspenales
-        public async Task<IActionResult> Index(string searchBy, string search)
-        {          
-                return View(await _context.Causapenal.Where(x => x.CausaPenal.StartsWith(search) || search == null || search == "").ToListAsync());          
+        public async Task<IActionResult> Index(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var personas = from p in _context.Causapenal
+
+                           select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                personas = personas.Where(p => p.CausaPenal.Contains(searchString)
+                                        || p.Juez.Contains(searchString)
+                                        || p.Cambio.Contains(searchString)
+                                        || p.Distrito.Contains(searchString)
+                                        || p.Cnpp.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                case "Date":
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+                case "date_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                default:
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+            }
+
+            int pageSize = 10;
+            return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+
+        public async Task<IActionResult> ListadeCausas(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var personas = from p in _context.Causapenal
+
+                           select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                personas = personas.Where(p => p.CausaPenal.Contains(searchString)
+                                        || p.Juez.Contains(searchString)
+                                        || p.Cambio.Contains(searchString)
+                                        || p.Distrito.Contains(searchString)
+                                        || p.Cnpp.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                case "Date":
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+                case "date_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                default:
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+            }
+
+            int pageSize = 10;
+            return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
 
         // GET: Causaspenales/Details/5
         public async Task<IActionResult> Details(int? id)
