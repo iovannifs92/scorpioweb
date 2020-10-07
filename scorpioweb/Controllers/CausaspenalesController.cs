@@ -11,7 +11,7 @@ namespace scorpioweb.Controllers
 {
     public class CausaspenalesController : Controller
     {
-        #region
+        #region -Variables Globales-
         public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
@@ -21,6 +21,8 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
+        
+        #endregion
 
         public string normaliza(string normalizar)
         {
@@ -30,20 +32,133 @@ namespace scorpioweb.Controllers
             }
             return normalizar;
         }
-        #endregion
+        
 
         public CausaspenalesController(penas2Context context)
         {
             _context = context;
         }
 
-        // GET: Causaspenales
-        public async Task<IActionResult> Index(string searchBy, string search)
-        {          
-                return View(await _context.Causapenal.Where(x => x.CausaPenal.StartsWith(search) || search == null || search == "").ToListAsync());          
+        #region -Index-
+        public async Task<IActionResult> Index(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var personas = from p in _context.Causapenal
+
+                           select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                personas = personas.Where(p => p.CausaPenal.Contains(searchString)
+                                        || p.Juez.Contains(searchString)
+                                        || p.Cambio.Contains(searchString)
+                                        || p.Distrito.Contains(searchString)
+                                        || p.Cnpp.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                case "Date":
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+                case "date_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                default:
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+            }
+
+            int pageSize = 10;
+            return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        // GET: Causaspenales/Details/5
+        #endregion
+
+        #region -Lista de Causas-
+        public async Task<IActionResult> ListadeCausas(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var personas = from p in _context.Causapenal
+
+                           select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                personas = personas.Where(p => p.CausaPenal.Contains(searchString)
+                                        || p.Juez.Contains(searchString)
+                                        || p.Cambio.Contains(searchString)
+                                        || p.Distrito.Contains(searchString)
+                                        || p.Cnpp.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                case "Date":
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+                case "date_desc":
+                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    break;
+                default:
+                    personas = personas.OrderBy(p => p.CausaPenal);
+                    break;
+            }
+
+            int pageSize = 10;
+            return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+        #endregion
+
+
+        #region -Details-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -62,8 +177,9 @@ namespace scorpioweb.Controllers
 
             return View(causapenal);
         }
+        #endregion
 
-        #region MODAL DELITO
+        #region -Modal Delito-
         public ActionResult GuardarDelito(string[] datosDelito)
         {
             string currentUser = User.Identity.Name;
@@ -78,16 +194,13 @@ namespace scorpioweb.Controllers
 
         }
         #endregion
-       
-        // GET: Causaspenales/Create
+
+        #region -Create-
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Causaspenales/CreateCusaPenal
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp, string delitoM)
@@ -134,7 +247,7 @@ namespace scorpioweb.Controllers
             }
             return View(causapenal);
         }
-
+        #endregion
         String BuscaId(List<SelectListItem> lista, String texto)
         {
             foreach (var item in lista)
@@ -147,7 +260,7 @@ namespace scorpioweb.Controllers
             return "";
         }
 
-        // GET: Causaspenales/Delete/5
+        #region -Delete-
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -165,7 +278,7 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
-        // POST: Causaspenales/Delete/5
+       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -174,10 +287,10 @@ namespace scorpioweb.Controllers
             _context.Causapenal.Remove(causapenal);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }    
+        }
+        #endregion
 
-        #region Asignacion
-        //GET: CausasPenales/Asignacion/14
+        #region -Asignacion-
         public async Task<IActionResult> Asignacion(int? id)
         {
             if (id == null)
@@ -209,9 +322,10 @@ namespace scorpioweb.Controllers
 
             //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
             listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = ""});
+
             ViewBag.personas = listaPersonas;
 
-            selectedPersona = new List<string>();//Se inicializa la persona seleccionada
+            selectedPersona = new List<string>();
 
             if (persona == null)
             {
@@ -255,7 +369,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region boton asignar
+        #region -AsignarPersona-
         public ActionResult AsignarPersona(string[] datosPersona)
         {
             string currentUser = User.Identity.Name;
@@ -267,8 +381,8 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region Detalles CP
-        // GET: Causaspenales/DetailsCP/14
+        #region -DetailsCP-
+
         public async Task<IActionResult> DetailsCP(int? id)
         {
             if (id == null)
@@ -313,14 +427,12 @@ namespace scorpioweb.Controllers
             return _context.Delito.Any(e => e.IdDelito == id);
         }
 
-        // GET: Causaspenales/Create
+        #region -DetailsCP-
         public IActionResult CreateDelito(int? id)
         {
             return View();
         }
-        // POST: Causaspenales/CreateCusaPenal
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDelito(int id, Delito delitoDB, string Tipo, string Modalidad, string EspecificarDelito)
@@ -339,13 +451,14 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
+        #endregion
 
         private bool CausapenalExists(int id)
         {
             return _context.Causapenal.Any(e => e.IdCausaPenal == id);
-        }       
+        }
 
-        // GET: Causaspenales/Editar delitos
+        #region -EditCausas-
         public async Task<IActionResult> EditCausas(int? id)
         
         {
@@ -400,9 +513,7 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-        // POST: Causaspenales/Editdellitos
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
@@ -430,12 +541,14 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                //return RedirectToAction("index", "Causaspenales", new { @id = id });
+                
                 return RedirectToAction(nameof(Index));
             }
             return View();
         }
-        // GET: Causaspenales/Create
+        #endregion
+
+        #region -Delito-
         public async Task<IActionResult> Delito(int? id)
         {
 
@@ -452,9 +565,6 @@ namespace scorpioweb.Controllers
             return View(delito);
         }
 
-        // POST: Causaspenales/CreateCusaPenal
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delito(int id, [Bind("IdDelito,Tipo,Modalidad,EspecificarDelito,CausaPenalIdCausaPenal")] Delito delito)
@@ -487,5 +597,6 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
+        #endregion
     }
 }

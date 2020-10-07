@@ -473,6 +473,10 @@ namespace scorpioweb.Controllers
             {
                 normalizar = normalizar.ToUpper();
             }
+            else
+            {
+                normalizar = "S/d";
+            }
             return normalizar;
         }
 
@@ -1016,6 +1020,22 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            persona.Paterno = normaliza(persona.Paterno);
+            persona.Materno = normaliza(persona.Materno);
+            persona.Nombre = normaliza(persona.Nombre);
+            persona.Alias = normaliza(persona.Alias);
+            persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
+            persona.Duracion = normaliza(persona.Duracion);
+            persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
+            persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
+            persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
+            persona.Curp = normaliza(persona.Curp);
+
+
+
+
+
+
             if (ModelState.IsValid)
             {
                 try
@@ -1166,6 +1186,15 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+        
+            domicilio.Calle = normaliza(domicilio.Calle);
+            domicilio.No = normaliza(domicilio.No);
+            domicilio.NombreCf = normaliza(domicilio.NombreCf);
+            domicilio.Cp = normaliza(domicilio.Cp);
+            domicilio.Referencias = normaliza(domicilio.Referencias);
+            domicilio.Horario = normaliza(domicilio.Horario);
+            domicilio.Observaciones = normaliza(domicilio.Observaciones);
+
 
             if (ModelState.IsValid)
             {
@@ -1239,6 +1268,13 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            estudios.InstitucionE = normaliza(estudios.InstitucionE);
+            estudios.Horario = normaliza(estudios.Horario);
+            estudios.Direccion = normaliza(estudios.Direccion); 
+            estudios.Observaciones = normaliza(estudios.Observaciones);
+
+
 
             if (ModelState.IsValid)
             {
@@ -1354,6 +1390,13 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+            
+            trabajo.Puesto = normaliza(trabajo.Puesto);
+            trabajo.EmpledorJefe = normaliza(trabajo.EmpledorJefe);
+            trabajo.Salario = normaliza(trabajo.Salario);
+            trabajo.Direccion = normaliza(trabajo.Direccion);
+            trabajo.Horario = normaliza(trabajo.Horario);
+            trabajo.Observaciones = normaliza(trabajo.Observaciones);
 
             if (ModelState.IsValid)
             {
@@ -1407,6 +1450,14 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            actividadsocial.TipoActividad = normaliza(actividadsocial.TipoActividad);
+            actividadsocial.Horario = normaliza(actividadsocial.Horario);
+            actividadsocial.Lugar = normaliza(actividadsocial.Lugar);
+            actividadsocial.Referencia = normaliza(actividadsocial.Referencia);
+            actividadsocial.Observaciones = normaliza(actividadsocial.Observaciones);
+
+
 
             if (ModelState.IsValid)
             {
@@ -1477,6 +1528,16 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            abandonoestado.LugaresVivido = normaliza(abandonoestado.LugaresVivido);
+            abandonoestado.TiempoVivido = normaliza(abandonoestado.TiempoVivido);
+            abandonoestado.MotivoVivido = normaliza(abandonoestado.MotivoVivido);
+            abandonoestado.LugaresViaje = normaliza(abandonoestado.LugaresViaje);
+            abandonoestado.TiempoViaje = normaliza(abandonoestado.TiempoViaje);
+            abandonoestado.MotivoViaje = normaliza(abandonoestado.MotivoViaje);
+            
+
+
 
             if (ModelState.IsValid)
             {
@@ -1572,6 +1633,14 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            saludfisica.EspecifiqueEnfermedad = normaliza(saludfisica.EspecifiqueEnfermedad);
+            saludfisica.Tratamiento = normaliza(saludfisica.Tratamiento);
+            saludfisica.EspecifiqueDiscapacidad = normaliza(saludfisica.EspecifiqueDiscapacidad);
+            saludfisica.Observaciones = normaliza(saludfisica.Observaciones);
+            saludfisica.Tiempo = normaliza(saludfisica.Tiempo);
+
+
 
             if (ModelState.IsValid)
             {
