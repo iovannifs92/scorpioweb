@@ -189,11 +189,26 @@ namespace scorpioweb.Controllers
                 .SingleOrDefaultAsync(m => m.IdPersona == id);
 
             List<Persona> listaPersonas = new List<Persona>();
-            listaPersonas = (from table in _context.Persona
-                             select table).ToList();
+            List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
+
+            listaPersonasAsignadas = (
+                from personaCausaPenalTable in personaCausaPenalVM
+                where personaCausaPenalTable.CausaPenalIdCausaPenal == id
+                select personaCausaPenalTable
+                ).ToList();
+
+            listaPersonas = (
+                from personaTable in personaVM
+                where listaPersonasAsignadas.All(
+                    per => per.PersonaIdPersona != personaTable.IdPersona
+                    )
+                select personaTable
+                ).ToList();
 
             //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
-            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = "Selecciona" });
+            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = ""});
             ViewBag.personas = listaPersonas;
 
             selectedPersona = new List<string>();//Se inicializa la persona seleccionada
