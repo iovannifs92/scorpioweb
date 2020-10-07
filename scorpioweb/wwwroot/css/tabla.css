@@ -3,6 +3,11 @@
     color: #fff
 }
 
+.estiloForzado {
+    background-color: white;
+    color: black
+}
+
 .estiloDomicilio {
     background-color: #415667;
     color: #fff
@@ -43,15 +48,6 @@
     font-size: 30px;
 }
 
-#datosGenerales {
-    background-color: #0078A7;
-    color: #fff;
-    border-color: #fff;
-}
-
-    #datosGenerales:hover {
-        background-color: #005273;
-    }
 
 #domicilio {
     background-color: #415667;

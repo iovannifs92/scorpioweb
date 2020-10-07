@@ -194,9 +194,6 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-        // POST: Causaspenales/CreateCusaPenal
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp, string delitoM)
@@ -256,7 +253,6 @@ namespace scorpioweb.Controllers
             return "";
         }
 
-        // GET: Causaspenales/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -274,7 +270,6 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
-        // POST: Causaspenales/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -286,7 +281,6 @@ namespace scorpioweb.Controllers
         }    
 
         #region Asignacion
-        //GET: CausasPenales/Asignacion/14
         public async Task<IActionResult> Asignacion(int? id)
         {
             if (id == null)
@@ -470,9 +464,7 @@ namespace scorpioweb.Controllers
                                      select new CausaDelitoViewModel
                                      {
                                          causaPenalVM = causapenalTable
-                                     };
-
-            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+                                     };            
             #endregion
 
 
@@ -488,12 +480,24 @@ namespace scorpioweb.Controllers
                                      {
                                          delitoVM = delitoTabla,
                                          causaPenalVM = causapenalTable
-
                                      };
+
+            var delito= from causapenalTable in causaPenalVM
+                        join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
+                        where causapenalTable.IdCausaPenal == IdCausaPenal
+                        select new CausaDelitoViewModel
+                        {
+                            delitoVM = delitoTabla,
+                            causaPenalVM = causapenalTable
+                        };
+
+
+            ViewBag.Delitos = (delito.ToList()).Count();
 
 
             return View();
         }
+
         // POST: Causaspenales/Editdellitos
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.

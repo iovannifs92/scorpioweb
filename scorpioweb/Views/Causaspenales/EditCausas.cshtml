@@ -9,7 +9,7 @@
 {
     <div class="row">
         <div>
-            <h1>Causa Penal No <td colspan="3">@item.causaPenalVM.IdCausaPenal</h1>
+            <h1>Causa Penal @item.causaPenalVM.CausaPenal</h1>
         </div>
         <div class="form-group col-md-4">
             <form asp-action="EditCausas">
@@ -41,19 +41,17 @@
                     <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-default">Crear Delito</a>
-                </div>
-                <div class="form-group">
-                    <td colspan="2">@ViewBag.Delitos</td>
-                    @if (ViewBag.Delitos != "0")
+                    <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-success">Crear Delito</a>
+                    @if (ViewBag.Delitos != 0)
                     {
-                        <a data-toggle="modal" data-target="#modalDelito">Ver Delitos</a>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">Ver Delitos</button>
                     }
-                    </div>
+                </div>
                 <div class="form-group">
                     <input type="submit" id="btnguardarEdit" value="Guardar" class="btn btn-primary" />
                 </div>
             </form>
+            <a asp-action="Index">Regresar a lista</a>
         </div>
     </div>
 

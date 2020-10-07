@@ -6,14 +6,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Detalles</h2>
+
 
 
     @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
     {
-        <tr>
-            <td colspan="3"><p>Causa penal</p>@item.causaPenalVM.CausaPenal</td>
-        </tr>
+        <h2>Personas Dentro de la CP @item.causaPenalVM.CausaPenal</h2>
         break;
     }
     <table class="table">
