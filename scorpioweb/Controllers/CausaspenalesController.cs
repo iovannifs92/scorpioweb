@@ -11,7 +11,7 @@ namespace scorpioweb.Controllers
 {
     public class CausaspenalesController : Controller
     {
-        #region
+        #region -Variables Globales-
         public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
@@ -21,6 +21,8 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
+        
+        #endregion
 
         public string normaliza(string normalizar)
         {
@@ -30,14 +32,14 @@ namespace scorpioweb.Controllers
             }
             return normalizar;
         }
-        #endregion
+        
 
         public CausaspenalesController(penas2Context context)
         {
             _context = context;
         }
 
-        // GET: Causaspenales
+        #region -Index-
         public async Task<IActionResult> Index(
            string sortOrder,
            string currentFilter,
@@ -94,7 +96,9 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
+        #endregion
 
+        #region -Lista de Causas-
         public async Task<IActionResult> ListadeCausas(
            string sortOrder,
            string currentFilter,
@@ -151,8 +155,10 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
+        #endregion
 
-        // GET: Causaspenales/Details/5
+
+        #region -Details-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -171,8 +177,9 @@ namespace scorpioweb.Controllers
 
             return View(causapenal);
         }
+        #endregion
 
-        #region MODAL DELITO
+        #region -Modal Delito-
         public ActionResult GuardarDelito(string[] datosDelito)
         {
             string currentUser = User.Identity.Name;
@@ -187,8 +194,8 @@ namespace scorpioweb.Controllers
 
         }
         #endregion
-       
-        // GET: Causaspenales/Create
+
+        #region -Create-
         public IActionResult Create()
         {
             return View();
@@ -240,7 +247,7 @@ namespace scorpioweb.Controllers
             }
             return View(causapenal);
         }
-
+        #endregion
         String BuscaId(List<SelectListItem> lista, String texto)
         {
             foreach (var item in lista)
@@ -253,6 +260,7 @@ namespace scorpioweb.Controllers
             return "";
         }
 
+        #region -Delete-
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -270,6 +278,7 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
+       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -278,9 +287,10 @@ namespace scorpioweb.Controllers
             _context.Causapenal.Remove(causapenal);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }    
+        }
+        #endregion
 
-        #region Asignacion
+        #region -Asignacion-
         public async Task<IActionResult> Asignacion(int? id)
         {
             if (id == null)
@@ -295,11 +305,11 @@ namespace scorpioweb.Controllers
             listaPersonas = (from table in _context.Persona
                              select table).ToList();
 
-            //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
+            
             listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = "Selecciona" });
             ViewBag.personas = listaPersonas;
 
-            selectedPersona = new List<string>();//Se inicializa la persona seleccionada
+            selectedPersona = new List<string>();
 
             if (persona == null)
             {
@@ -343,7 +353,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region boton asignar
+        #region -AsignarPersona-
         public ActionResult AsignarPersona(string[] datosPersona)
         {
             string currentUser = User.Identity.Name;
@@ -355,8 +365,8 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region Detalles CP
-        // GET: Causaspenales/DetailsCP/14
+        #region -DetailsCP-
+
         public async Task<IActionResult> DetailsCP(int? id)
         {
             if (id == null)
@@ -401,14 +411,12 @@ namespace scorpioweb.Controllers
             return _context.Delito.Any(e => e.IdDelito == id);
         }
 
-        // GET: Causaspenales/Create
+        #region -DetailsCP-
         public IActionResult CreateDelito(int? id)
         {
             return View();
         }
-        // POST: Causaspenales/CreateCusaPenal
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDelito(int id, Delito delitoDB, string Tipo, string Modalidad, string EspecificarDelito)
@@ -427,13 +435,14 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
+        #endregion
 
         private bool CausapenalExists(int id)
         {
             return _context.Causapenal.Any(e => e.IdCausaPenal == id);
-        }       
+        }
 
-        // GET: Causaspenales/Editar delitos
+        #region -EditCausas-
         public async Task<IActionResult> EditCausas(int? id)
         
         {
@@ -464,7 +473,9 @@ namespace scorpioweb.Controllers
                                      select new CausaDelitoViewModel
                                      {
                                          causaPenalVM = causapenalTable
-                                     };            
+                                     };
+
+            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
             #endregion
 
 
@@ -480,27 +491,13 @@ namespace scorpioweb.Controllers
                                      {
                                          delitoVM = delitoTabla,
                                          causaPenalVM = causapenalTable
+
                                      };
-
-            var delito= from causapenalTable in causaPenalVM
-                        join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
-                        where causapenalTable.IdCausaPenal == IdCausaPenal
-                        select new CausaDelitoViewModel
-                        {
-                            delitoVM = delitoTabla,
-                            causaPenalVM = causapenalTable
-                        };
-
-
-            ViewBag.Delitos = (delito.ToList()).Count();
 
 
             return View();
         }
-
-        // POST: Causaspenales/Editdellitos
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
@@ -528,12 +525,14 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                //return RedirectToAction("index", "Causaspenales", new { @id = id });
+                
                 return RedirectToAction(nameof(Index));
             }
             return View();
         }
-        // GET: Causaspenales/Create
+        #endregion
+
+        #region -Delito-
         public async Task<IActionResult> Delito(int? id)
         {
 
@@ -550,9 +549,6 @@ namespace scorpioweb.Controllers
             return View(delito);
         }
 
-        // POST: Causaspenales/CreateCusaPenal
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delito(int id, [Bind("IdDelito,Tipo,Modalidad,EspecificarDelito,CausaPenalIdCausaPenal")] Delito delito)
@@ -585,5 +581,6 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
+        #endregion
     }
 }
