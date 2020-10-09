@@ -1,0 +1,51 @@
+﻿@model IEnumerable<scorpioweb.Models.SupervisionPyCP>
+
+@{
+    ViewData["Title"] = "MenuEdicion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/css/tabla.css">
+
+
+
+@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
+{
+    <h2 class="blockquote text-center" style="padding-top:3%;">@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno  @item.causapenalVM.CausaPenal</h2> 
+    break;
+} 
+
+<div class="container">
+    <br>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="Edit"  id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Revocasion</a>
+        </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditDomicilio"  id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Fraciones Impuestas</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditEscolaridad"  id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciones</a>
+        </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditTrabajo" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Cierre de caso</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditActividadesSociales"  id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Planeación Estrategica</a>
+        </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditAbandonoEstado"  id="abandonoEstado" class="btn btn-primary btn-lg btn-block btn-huge">AER</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditSalud" id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Suspension Seguimiento</a>
+        </div>
+    </div>
+</div>
+
+<br />
+<a asp-action="Index" style="font-size:20px;">Regresar a lista de usuarios</a>

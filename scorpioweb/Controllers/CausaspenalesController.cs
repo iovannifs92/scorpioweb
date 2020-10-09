@@ -63,13 +63,13 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var personas = from p in _context.Causapenal
+            var causa = from p in _context.Causapenal
 
                            select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.CausaPenal.Contains(searchString)
+                causa = causa.Where(p => p.CausaPenal.Contains(searchString)
                                         || p.Juez.Contains(searchString)
                                         || p.Cambio.Contains(searchString)
                                         || p.Distrito.Contains(searchString)
@@ -79,21 +79,21 @@ namespace scorpioweb.Controllers
             switch (sortOrder)
             {
                 case "name_desc":
-                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    causa = causa.OrderByDescending(p => p.CausaPenal);
                     break;
                 case "Date":
-                    personas = personas.OrderBy(p => p.CausaPenal);
+                    causa = causa.OrderBy(p => p.CausaPenal);
                     break;
                 case "date_desc":
-                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    causa = causa.OrderByDescending(p => p.CausaPenal);
                     break;
                 default:
-                    personas = personas.OrderBy(p => p.CausaPenal);
+                    causa = causa.OrderBy(p => p.CausaPenal);
                     break;
             }
 
             int pageSize = 10;
-            return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         #endregion
@@ -122,13 +122,12 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var personas = from p in _context.Causapenal
-
+            var causa = from p in _context.Causapenal
                            select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.CausaPenal.Contains(searchString)
+                causa = causa.Where(p => p.CausaPenal.Contains(searchString)
                                         || p.Juez.Contains(searchString)
                                         || p.Cambio.Contains(searchString)
                                         || p.Distrito.Contains(searchString)
@@ -138,21 +137,21 @@ namespace scorpioweb.Controllers
             switch (sortOrder)
             {
                 case "name_desc":
-                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    causa = causa.OrderByDescending(p => p.CausaPenal);
                     break;
                 case "Date":
-                    personas = personas.OrderBy(p => p.CausaPenal);
+                    causa = causa.OrderBy(p => p.CausaPenal);
                     break;
                 case "date_desc":
-                    personas = personas.OrderByDescending(p => p.CausaPenal);
+                    causa = causa.OrderByDescending(p => p.CausaPenal);
                     break;
                 default:
-                    personas = personas.OrderBy(p => p.CausaPenal);
+                    causa = causa.OrderBy(p => p.CausaPenal);
                     break;
             }
 
             int pageSize = 10;
-            return View(await PaginatedList<Causapenal>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         #endregion

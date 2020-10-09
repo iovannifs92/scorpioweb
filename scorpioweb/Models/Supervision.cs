@@ -12,5 +12,7 @@ namespace scorpioweb.Models
         public int PersonaIdPersona { get; set; }
         public string EstadoCumplimiento { get; set; }
         public int CausaPenalIdCausaPenal { get; set; }
+        public Persona personaVM { get; set; }
+
     }
 }
