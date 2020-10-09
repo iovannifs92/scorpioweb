@@ -301,11 +301,32 @@ namespace scorpioweb.Controllers
                 .SingleOrDefaultAsync(m => m.IdPersona == id);
 
             List<Persona> listaPersonas = new List<Persona>();
-            listaPersonas = (from table in _context.Persona
-                             select table).ToList();
+            List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
 
-            
-            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = "Selecciona" });
+            //SQL nested query
+            //select idPersona from penas2.persona p
+            //where idPersona <> all(
+            //select persona_idPersona from penas2.personacausapenal
+            //where penas2.personacausapenal.CausaPenal_idCausaPenal = 1)
+            listaPersonasAsignadas = (
+                from personaCausaPenalTable in personaCausaPenalVM
+                where personaCausaPenalTable.CausaPenalIdCausaPenal == id
+                select personaCausaPenalTable
+                ).ToList();
+
+            listaPersonas = (
+                from personaTable in personaVM
+                where listaPersonasAsignadas.All(
+                    per => per.PersonaIdPersona != personaTable.IdPersona
+                    )
+                select personaTable
+                ).ToList();
+
+            //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
+            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = ""});
+
             ViewBag.personas = listaPersonas;
 
             selectedPersona = new List<string>();
@@ -320,7 +341,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, int id)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, int id)
         {
             string currentUser = User.Identity.Name;
 
@@ -332,7 +353,7 @@ namespace scorpioweb.Controllers
                 }
 
                 int idPersona = Int32.Parse(selectedPersona[0]);
-                //Por el "Selecciona"
+                //Por el la primera opcion vacia
                 if (idPersona == 0) {
                     return RedirectToAction(nameof(Index));
                 }
@@ -344,7 +365,24 @@ namespace scorpioweb.Controllers
                 personacausapenal.PersonaIdPersona = idPersona;
                 personacausapenal.CausaPenalIdCausaPenal = id;
 
+                #region agregar 1 entrada a Supervision
+                int idSupervision = ((from table in _context.Supervision
+                                      select table).Count()) + 1;
+                supervision.IdSupervision = idSupervision;
+                supervision.PersonaIdPersona = idPersona;
+                supervision.CausaPenalIdCausaPenal = id;
+                #endregion
+
+                #region agregar 1 entrada a SuspensionSeguimiento
+                int idSuspensionSeguimiento = ((from table in _context.Suspensionseguimiento
+                                                select table).Count()) + 1;
+                suspensionseguimiento.IdSuspensionSeguimiento = idSuspensionSeguimiento;
+                suspensionseguimiento.SupervisionIdSupervision = idSupervision;
+                #endregion
+
                 _context.Add(personacausapenal);
+                _context.Add(supervision);
+                _context.Add(suspensionseguimiento);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

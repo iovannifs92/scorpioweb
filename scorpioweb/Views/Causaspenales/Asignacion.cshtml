@@ -1,11 +1,13 @@
-﻿@model scorpioweb.Models.Persona
+﻿@*https://jqueryui.com/autocomplete/#combobox template del combobox*@
+
+@model scorpioweb.Models.Persona
 
 @{
     ViewData["Title"] = "Asignacion";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Asignación</h2>
+<h2 class="blockquote text-center" style="padding-top:3%;" >Asignación</h2>
 
 <!doctype html>
 <html lang="en">
@@ -168,8 +170,8 @@
                 }
             });
 
-            $("#combobox").combobox({ 
-                select: function (event, ui) { 
+            $("#combobox").combobox({
+                select: function (event, ui) {
                     //e.preventDefault();//deja de funcionar con esta linea
 
                     var cp = document.getElementById("combobox");
@@ -194,7 +196,7 @@
                             alert("hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                         }
                     });
-                } 
+                }
             });
 
             $("#toggle").on("click", function () {
@@ -206,12 +208,13 @@
 <body>
     <div class="form-group col-lg-12">
         <div class="form-group col-lg-6">
-            <label class="control-label">Personas</label>
+            <label class="control-label">Busca Persona</label>
             <form asp-action="Asignacion">
-                <select type="submit" class="form-control" id="combobox" name="persona_idPersona"
+                <select type="submit" class="form-control" id="combobox" name="persona_idPersona" style="display:none;"
                         asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
                 </select>
             </form>
+            <h6 style="color:#808080">Escribe para filtrar persona</h6>
         </div>
         <div class="form-group  col-lg-12">
             <form asp-action="Asignacion">
@@ -222,7 +225,7 @@
         </div>
     </div>
 
-    <button id="toggle">show underlying select(autocompletar)</button>
+    <button id="toggle" style="display:none;">show underlying select(autocompletar)</button>
 
 </body>
 </html>
