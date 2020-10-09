@@ -342,7 +342,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, int id)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, int id)
         {
             string currentUser = User.Identity.Name;
 
@@ -374,16 +374,56 @@ namespace scorpioweb.Controllers
                 supervision.CausaPenalIdCausaPenal = id;
                 #endregion
 
-                #region agregar 1 entrada a SuspensionSeguimiento
+                #region agregar 1 entrada a Suspensionseguimiento
                 int idSuspensionSeguimiento = ((from table in _context.Suspensionseguimiento
                                                 select table).Count()) + 1;
                 suspensionseguimiento.IdSuspensionSeguimiento = idSuspensionSeguimiento;
                 suspensionseguimiento.SupervisionIdSupervision = idSupervision;
                 #endregion
 
+                #region agregar 1 entrada a Aer
+                int idAer = ((from table in _context.Aer
+                              select table).Count()) + 1;
+                aer.IdAer = idAer;
+                aer.SupervisionIdSupervision = idSupervision;
+                #endregion
+
+                #region agregar 1 entrada a Planeacionestrategica
+                int idPlaneacionestrategica = ((from table in _context.Planeacionestrategica
+                                                select table).Count()) + 1;
+                planeacionestrategica.IdPlaneacionEstrategica = idPlaneacionestrategica;
+                planeacionestrategica.SupervisionIdSupervision = idSupervision;
+                #endregion
+
+                #region agregar 1 entrada a Cierredecaso
+                int idCierredecaso = ((from table in _context.Cierredecaso
+                                       select table).Count()) + 1;
+                cierredecaso.IdCierreDeCaso = idCierredecaso;
+                cierredecaso.SupervisionIdSupervision = idSupervision;
+                #endregion
+
+                #region agregar 1 entrada a Cambiodeobligaciones
+                int idCambiodeobligaciones = ((from table in _context.Cambiodeobligaciones
+                                               select table).Count()) + 1;
+                cambiodeobligaciones.IdCambiodeObligaciones = idCambiodeobligaciones;
+                cambiodeobligaciones.SupervisionIdSupervision = idSupervision;
+                #endregion
+
+                #region agregar 1 entrada a Revocacion
+                int idRevocacion = ((from table in _context.Revocacion
+                                     select table).Count()) + 1;
+                revocacion.IdRevocacion = idRevocacion;
+                revocacion.SupervisionIdSupervision = idSupervision;
+                #endregion
+
                 _context.Add(personacausapenal);
                 _context.Add(supervision);
                 _context.Add(suspensionseguimiento);
+                _context.Add(aer);
+                _context.Add(planeacionestrategica);
+                _context.Add(cierredecaso);
+                _context.Add(cambiodeobligaciones);
+                _context.Add(revocacion);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
