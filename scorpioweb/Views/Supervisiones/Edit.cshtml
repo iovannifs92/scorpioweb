@@ -1,0 +1,59 @@
+﻿@model scorpioweb.Models.Supervision
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>Supervision</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdSupervision" />
+            <div class="form-group">
+                <label asp-for="Inicio" class="control-label"></label>
+                <input asp-for="Inicio" class="form-control" />
+                <span asp-validation-for="Inicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Termino" class="control-label"></label>
+                <input asp-for="Termino" class="form-control" />
+                <span asp-validation-for="Termino" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EstadoSupervision" class="control-label"></label>
+                <input asp-for="EstadoSupervision" class="form-control" />
+                <span asp-validation-for="EstadoSupervision" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PersonaIdPersona" class="control-label"></label>
+                <input asp-for="PersonaIdPersona" class="form-control" />
+                <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EstadoCumplimiento" class="control-label"></label>
+                <input asp-for="EstadoCumplimiento" class="form-control" />
+                <span asp-validation-for="EstadoCumplimiento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CausaPenalIdCausaPenal" class="control-label"></label>
+                <input asp-for="CausaPenalIdCausaPenal" class="form-control" />
+                <span asp-validation-for="CausaPenalIdCausaPenal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -45,37 +45,40 @@
             </th>
         </tr>
     </thead>
+
     <tbody>
+
+
         @foreach (var item in Model)
         {
-        <tr>
-            <th>
-                @Html.DisplayFor(modelItem => item.IdSupervision)
-            </th>
-            <td>
-                @Html.DisplayFor(modelItem => item.Inicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Termino)
-            </td>
-            <th>
-                @Html.DisplayFor(modelItem => item.EstadoSupervision)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.EstadoCumplimiento)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.PersonaIdPersona)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.CausaPenalIdCausaPenal)
-            </th>
-            <td>
-                <a asp-action="Supervision" asp-route-id="@item.IdSupervision">Edicion</a> |
-                @*<a asp-action="Details" asp-route-id="@item.IdSupervision">Details</a> |*@
-                @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
-            </td>
-        </tr>
+            <tr>
+                <th>
+                    @Html.DisplayFor(modelItem => item.IdSupervision)
+                </th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Inicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Termino)
+                </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.EstadoSupervision)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.EstadoCumplimiento)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.PersonaIdPersona)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.CausaPenalIdCausaPenal)
+                </th>
+                <td>
+                    <a asp-action="Supervision" asp-route-id="@item.IdSupervision">Edicion</a> |
+                    @*<a asp-action="Details" asp-route-id="@item.IdSupervision">Details</a> |*@
+                    @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
+                </td>
+            </tr>
         }
     </tbody>
 </table>
