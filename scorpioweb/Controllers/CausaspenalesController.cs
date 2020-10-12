@@ -413,11 +413,13 @@ namespace scorpioweb.Controllers
                 int idRevocacion = ((from table in _context.Revocacion
                                      select table).Count()) + 1;
                 revocacion.IdRevocacion = idRevocacion;
-                revocacion.SupervisionIdSupervision = idSupervision;
+                revocacion.SupervisionIdSupervision =  idSupervision;
                 #endregion
 
                 _context.Add(personacausapenal);
                 _context.Add(supervision);
+                await _context.SaveChangesAsync();
+                //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
                 _context.Add(suspensionseguimiento);
                 _context.Add(aer);
                 _context.Add(planeacionestrategica);
