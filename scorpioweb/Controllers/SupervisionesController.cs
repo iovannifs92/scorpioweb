@@ -162,6 +162,52 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Graficos-
+        public IActionResult Reports()
+        {
+            Random rnd = new Random();
+            var lstModel = new List<SimpleReportViewModel>();
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Hombres",
+                Quantity = 100
+            });
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Mujeres",
+                Quantity = 150
+            });
+            /*lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Marketing",
+                Quantity = rnd.Next(10)
+            });
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Human Resource",
+                Quantity = rnd.Next(10)
+            });
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Research and Development",
+                Quantity = rnd.Next(10)
+            });
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Acconting",
+                Quantity = rnd.Next(10)
+            });
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Support",
+                Quantity = rnd.Next(10)
+            });
+            lstModel.Add(new SimpleReportViewModel
+            {
+                DimensionOne = "Logistics",
+                Quantity = rnd.Next(10)
+            });*/
+            return View(lstModel);
+        }
         #endregion
     }
 }
