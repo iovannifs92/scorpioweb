@@ -163,15 +163,15 @@ namespace scorpioweb.Controllers
 
         #region -PersonaSupervicion-
         public async Task<IActionResult> PersonaSupervision(
-           string sortOrder,
-           string currentFilter,
-           string searchString,
-           int? pageNumber, int? id)
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder)? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder)? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder)? "estado_cumplimiento_desc" : "";
 
             if (searchString != null)
             {
@@ -183,49 +183,45 @@ namespace scorpioweb.Controllers
             }
 
 
-            ViewData["CurrentFilter"] = searchString;
+ViewData["CurrentFilter"] = searchString;
 
-            var super = from s in _context.Supervision
-
-                        select s;
+            var filter = from p in _context.Persona
+                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                         where p.Supervisor == User.Identity.Name
+                         select new SupervisionPyCP
+                         {
+                             personaVM = p,
+                             supervisionVM = s,
+                             causapenalVM = cp
+                         };
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                super = super.Where(s => s.EstadoSupervision.Contains(searchString)
-                                        || s.EstadoCumplimiento.Contains(searchString));
+                filter = filter.Where(spcp => spcp.personaVM.Paterno.Contains(searchString) ||
+                                              spcp.personaVM.Materno.Contains(searchString) ||
+                                              spcp.personaVM.Nombre.Contains(searchString) ||
+                                              spcp.causapenalVM.CausaPenal.Contains(searchString));
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    super = super.OrderByDescending(p => p.EstadoSupervision);
+                    filter = filter.OrderByDescending(spcp => spcp.personaVM.Paterno);
                     break;
-                case "Date":
-                    super = super.OrderBy(p => p.EstadoCumplimiento);
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.causapenalVM.CausaPenal);
+                    break;
+                case "estado_cumplimiento_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoCumplimiento);
+                    break;
+                default:
+                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
                     break;
             }
 
-
-            List<Supervision> SupervisionVM = _context.Supervision.ToList();
-            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
-            List<Persona> personaVM = _context.Persona.ToList();
-            #region -Jointables-
-            ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
-                                                join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
-                                                join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
-                                                where supervisiontable.IdSupervision == id
-
-                                                select new SupervisionPyCP
-                                                {
-                                                    causapenalVM = causapenaltable,
-                                                    supervisionVM = supervisiontable,
-                                                    personaVM = personatable
-                                                };
-            #endregion
-
-
             int pageSize = 10;
-            return View(await PaginatedList<Supervision>.CreateAsync(super.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<SupervisionPyCP>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
         #region -Supervision-
