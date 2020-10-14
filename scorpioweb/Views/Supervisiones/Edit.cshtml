@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h2>Edit</h2>
+<h2>Supervisión</h2>
 
-<h4>Supervision</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,7 +23,7 @@
                 <span asp-validation-for="Termino" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Estado de Supervision</label>
+                <label class="control-label">Estado de Supervisión</label>
                 <select class="form-control" name="EstadoSupervision"
                         asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Value", "Text", @ViewBag.idEstadoSupervision))">
                 </select>

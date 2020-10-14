@@ -341,7 +341,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, int id)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, int id)
         {
             string currentUser = User.Identity.Name;
 
@@ -412,7 +412,14 @@ namespace scorpioweb.Controllers
                 int idRevocacion = ((from table in _context.Revocacion
                                      select table).Count()) + 1;
                 revocacion.IdRevocacion = idRevocacion;
-                revocacion.SupervisionIdSupervision =  idSupervision;
+                revocacion.SupervisionIdSupervision = idSupervision;
+                #endregion
+
+                #region agregar 1 entrada a Fraccionesimpuestas
+                int idFraccionesimpuestas = ((from table in _context.Fraccionesimpuestas
+                                     select table).Count()) + 1;
+                fraccionesimpuestas.IdFracciones = idFraccionesimpuestas;
+                fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 _context.Add(personacausapenal);
@@ -425,6 +432,7 @@ namespace scorpioweb.Controllers
                 _context.Add(cierredecaso);
                 _context.Add(cambiodeobligaciones);
                 _context.Add(revocacion);
+                _context.Add(fraccionesimpuestas);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

@@ -223,25 +223,66 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -PersonaSupervicion-
-        public ActionResult PersonaSupervision()
+        public async Task<IActionResult> PersonaSupervision(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
         {
-            List<Supervision> SupervisionVM = _context.Supervision.ToList();
-            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
-            List<Persona> personaVM = _context.Persona.ToList();
-            #region -Jointables-
-            ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
-                                                join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
-                                                join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
 
-                                                select new SupervisionPyCP
-                                                {
-                                                    causapenalVM = causapenaltable,
-                                                    supervisionVM = supervisiontable,
-                                                    personaVM = personatable
-                                                };
-           
-            #endregion
-            return View();
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var filter = from p in _context.Persona
+                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                         where p.Supervisor == User.Identity.Name
+                         select new SupervisionPyCP
+                         {
+                             personaVM = p,
+                             supervisionVM = s,
+                             causapenalVM = cp
+                         };
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                filter = filter.Where(spcp => spcp.personaVM.Paterno.Contains(searchString) ||
+                                              spcp.personaVM.Materno.Contains(searchString) ||
+                                              spcp.personaVM.Nombre.Contains(searchString) ||
+                                              spcp.causapenalVM.CausaPenal.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.personaVM.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.causapenalVM.CausaPenal);
+                    break;
+                case "estado_cumplimiento_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoCumplimiento);
+                    break;
+                default:
+                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    break;
+            }
+
+            int pageSize = 10;
+            return View(await PaginatedList<SupervisionPyCP>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
 
@@ -499,6 +540,20 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+            #region Autorizo
+            List<SelectListItem> ListaFigraJudicial;
+            ListaFigraJudicial = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "SCP", Value = "SCP" },
+                new SelectListItem{ Text = "MC", Value = "MC" }
+                };
+
+            ViewBag.listaFiguraJudicial = ListaFigraJudicial;
+            ViewBag.idFiguraJudicial = BuscaId(ListaFigraJudicial, supervision.FiguraJudicial);
+            #endregion
+
+
+
             return View(supervision);
         }
 
@@ -717,6 +772,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
+
 
 
 
