@@ -14,29 +14,31 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCierreDeCaso" />
             <div class="form-group">
-                <label asp-for="SeCerroCaso" class="control-label"></label>
-                <input asp-for="SeCerroCaso" class="form-control" />
-                <span asp-validation-for="SeCerroCaso" class="text-danger"></span>
+                <label class="control-label">Se cerro el Caso</label>
+                <select class="form-control" name="SeCerroCaso"
+                        asp-items="@(new SelectList(ViewBag.listaSeCerroCaso, "Value", "Text", @ViewBag.idSeCerroCaso))">
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="ComoConcluyo" class="control-label"></label>
+                <label class="control-label">Como Concluyo</label>
                 <input asp-for="ComoConcluyo" class="form-control" />
                 <span asp-validation-for="ComoConcluyo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NoArchivo" class="control-label"></label>
+                <label class="control-label">No de Archivo</label>
                 <input asp-for="NoArchivo" class="form-control" />
                 <span asp-validation-for="NoArchivo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FechaAprobacion" class="control-label"></label>
+                <label class="control-label">Fecha de Aprobacion</label>
                 <input asp-for="FechaAprobacion" class="form-control" />
                 <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Autorizo" class="control-label"></label>
-                <input asp-for="Autorizo" class="form-control" />
-                <span asp-validation-for="Autorizo" class="text-danger"></span>
+                <label class="control-label">Quien Autorizo</label>
+                <select class="form-control" name="Autorizo"
+                        asp-items="@(new SelectList(ViewBag.listaAutorizo, "Value", "Text", @ViewBag.idAutorizo))">
+                </select>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">

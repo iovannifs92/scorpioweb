@@ -14,17 +14,18 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCambiodeObligaciones" />
             <div class="form-group">
-                <label asp-for="SeDioCambio" class="control-label"></label>
-                <input asp-for="SeDioCambio" class="form-control" />
-                <span asp-validation-for="SeDioCambio" class="text-danger"></span>
+                <label class="control-label">Se dio Cambio</label>
+                <select class="form-control" name="SeDioCambio"
+                        asp-items="@(new SelectList(ViewBag.listaSediocambio, "Value", "Text", @ViewBag.idSediocambio))">
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="FechaAprobacion" class="control-label"></label>
+                <label class="control-label">Fecha de Aprobacion</label>
                 <input asp-for="FechaAprobacion" class="form-control" />
                 <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MotivoAprobacion" class="control-label"></label>
+                <label class="control-label"> Motivo de Aprobacion</label>
                 <input asp-for="MotivoAprobacion" class="form-control" />
                 <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
             </div>

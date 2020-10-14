@@ -11,7 +11,36 @@ namespace scorpioweb.Controllers
 {
     public class SupervisionesController : Controller
     {
+        #region -Variables globales-
         private readonly penas2Context _context;
+        private List<SelectListItem> listaNaSiNo = new List<SelectListItem>
+
+        {
+            new SelectListItem{ Text="Na", Value="NA"},
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"}
+        };
+        public string normaliza(string normalizar)
+        {
+            if (!String.IsNullOrEmpty(normalizar))
+            {
+                normalizar = normalizar.ToUpper();
+            }
+            return normalizar;
+        }
+        String BuscaId(List<SelectListItem> lista, String texto)
+        {
+            foreach (var item in lista)
+            {
+                if (normaliza(item.Value) == normaliza(texto))
+                {
+                    return item.Value;
+                }
+            }
+            return "";
+        }
+        #endregion
+
 
         public SupervisionesController(penas2Context context)
         {
@@ -79,6 +108,38 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            #region Estado Suprvición
+            List<SelectListItem> ListaEstadoS;
+            ListaEstadoS = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
+                new SelectListItem{ Text = "Vigentes", Value = "VIGENTE" },
+                new SelectListItem{ Text = "Pendiente", Value = "PENDIENTE" },
+                };
+
+            ViewBag.listaEstadoSupervision = ListaEstadoS;
+            ViewBag.idEstadoSupervision = BuscaId(ListaEstadoS, supervision.EstadoSupervision);
+            #endregion
+
+
+
+            #region Estado Cumplimiento
+            List<SelectListItem> ListaEstadoC;
+            ListaEstadoC = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Cumpliendo", Value = "Cumpliendo" },
+                new SelectListItem{ Text = "Cumplimiento Parcial", Value = "VIGENTE" },
+                new SelectListItem{ Text = "Incumplimiento Total", Value = "PENDIENTE" },
+                };
+
+            ViewBag.listaEstadoCumplimiento = ListaEstadoC;
+            ViewBag.idEstadoCumplimiento = BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
+            #endregion
+
+
+
+
             return View(supervision);
         }
 
@@ -162,50 +223,8 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -PersonaSupervicion-
-        public async Task<IActionResult> PersonaSupervision(
-           string sortOrder,
-           string currentFilter,
-           string searchString,
-           int? pageNumber, int? id)
+        public ActionResult PersonaSupervision()
         {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
-
-            if (searchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
-
-
-            ViewData["CurrentFilter"] = searchString;
-
-            var super = from s in _context.Supervision
-
-                        select s;
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                super = super.Where(s => s.EstadoSupervision.Contains(searchString)
-                                        || s.EstadoCumplimiento.Contains(searchString));
-            }
-
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    super = super.OrderByDescending(p => p.EstadoSupervision);
-                    break;
-                case "Date":
-                    super = super.OrderBy(p => p.EstadoCumplimiento);
-                    break;
-            }
-
-
             List<Supervision> SupervisionVM = _context.Supervision.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
             List<Persona> personaVM = _context.Persona.ToList();
@@ -213,7 +232,6 @@ namespace scorpioweb.Controllers
             ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
                                                 join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
                                                 join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
-                                                where supervisiontable.IdSupervision == id
 
                                                 select new SupervisionPyCP
                                                 {
@@ -221,13 +239,12 @@ namespace scorpioweb.Controllers
                                                     supervisionVM = supervisiontable,
                                                     personaVM = personatable
                                                 };
+           
             #endregion
-
-
-            int pageSize = 10;
-            return View(await PaginatedList<Supervision>.CreateAsync(super.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View();
         }
         #endregion
+
         #region -Supervision-
         public async Task<IActionResult> Supervision(int? id)
         {
@@ -265,6 +282,8 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+      
+
 
 
 
@@ -281,12 +300,42 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaCuentaEvaluacion = listaNaSiNo;
+            ViewBag.idCuentaEvaluacion = BuscaId(listaNaSiNo, supervision.CuentaEvaluacion);
+
+
+
+            #region Riesgo
+            List<SelectListItem> ListaEstadoC;
+            ListaEstadoC = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Baja", Value = "BAJA" },
+                new SelectListItem{ Text = "Media", Value = "MEDIA" },
+                new SelectListItem{ Text = "Alta", Value = "ALTA" }
+                };
+
+            ViewBag.listaRiesgoDetectado = ListaEstadoC;
+            ViewBag.idRiesgoDetectado = BuscaId(ListaEstadoC, supervision.RiesgoDetectado);
+
+            ViewBag.listaRiesgoSustraccion = ListaEstadoC;
+            ViewBag.idRiesgoSustraccion = BuscaId(ListaEstadoC, supervision.RiesgoSustraccion);
+
+            ViewBag.listaRiesgoObstaculizacion = ListaEstadoC;
+            ViewBag.idRiesgoObstaculizacion = BuscaId(ListaEstadoC, supervision.RiesgoObstaculizacion);
+
+            ViewBag.listaRiesgoVictima = ListaEstadoC;
+            ViewBag.idRiesgoVictima = BuscaId(ListaEstadoC, supervision.RiesgoVictima);
+            #endregion
+
+
+
             return View(supervision);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAer(int id, [Bind("IdAer,CuentaEvaluacion,EvaluadorCaso,RiesgoDetectado,RiesgoSustraccion,RiesgoObstaculizacion,RiesgoVictima,SupervisionIdSupervision")] Aer aer)
+        public async Task<IActionResult> EditAer(int id, [Bind("IdAer,CuentaEvaluacion,FechaEntrega,EvaluadorCaso,RiesgoDetectado,RiesgoSustraccion,RiesgoObstaculizacion,RiesgoVictima,SupervisionIdSupervision")] Aer aer)
         {
             if (id != aer.SupervisionIdSupervision)
             {
@@ -330,6 +379,10 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaSediocambio = listaNaSiNo;
+            ViewBag.idSediocambio = BuscaId(listaNaSiNo, supervision.SeDioCambio);
+
             return View(supervision);
         }
 
@@ -379,6 +432,24 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+
+            ViewBag.listaSeCerroCaso = listaNaSiNo;
+            ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, supervision.SeCerroCaso);
+            #region Autorizo
+            List<SelectListItem> ListaAutorizo;
+            ListaAutorizo = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Director", Value = "DIRECTOR" },
+                new SelectListItem{ Text = "Coordinador", Value = "COORDINADOR" }
+                };
+
+            ViewBag.listaAutorizo = ListaAutorizo;
+            ViewBag.idAutorizo = BuscaId(ListaAutorizo, supervision.Autorizo);
+            #endregion
+
+
+
             return View(supervision);
         }
 
@@ -477,6 +548,30 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+
+            ViewBag.listaPlanSupervision = listaNaSiNo;
+            ViewBag.idPlanSupervision = BuscaId(listaNaSiNo, supervision.PlanSupervision);
+
+
+            #region Estado Suprvición
+            List<SelectListItem> ListaPeriodicidadFirma;
+            ListaPeriodicidadFirma = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Diaria", Value = "DIARIA" },
+                new SelectListItem{ Text = "Semanal", Value = "SEMANAL" },
+                new SelectListItem{ Text = "Mensual", Value = "MENSUAL" },
+                new SelectListItem{ Text = "Bimestral", Value = "BIMESTRAL" },
+                new SelectListItem{ Text = "Trimestral", Value = "TRIMESTRAL" },
+                new SelectListItem{ Text = "Semestral", Value = "SEMESTRAL" },
+                new SelectListItem{ Text = "Anual", Value = "ANUAL" },
+                };
+
+            ViewBag.listaPeriodicidadFirma = ListaPeriodicidadFirma;
+            ViewBag.idPeriodicidadFirma = BuscaId(ListaPeriodicidadFirma, supervision.PeriodicidadFirma);
+            #endregion
+
+
             return View(supervision);
         }
 
@@ -526,6 +621,13 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaRevocado = listaNaSiNo;
+            ViewBag.idRevocado = BuscaId(listaNaSiNo, supervision.Revocado);
+
+
+
+
             return View(supervision);
         }
 
@@ -575,6 +677,11 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.listaSuspendido = listaNaSiNo;
+            ViewBag.idSuspendido = BuscaId(listaNaSiNo, supervision.Suspendido);
+
+
             return View(supervision);
         }
 
@@ -607,7 +714,7 @@ namespace scorpioweb.Controllers
                 }
                 return RedirectToAction(nameof(PersonaSupervision));
             }
-            return View(suspensionseguimiento);
+            return View();
         }
         #endregion
 

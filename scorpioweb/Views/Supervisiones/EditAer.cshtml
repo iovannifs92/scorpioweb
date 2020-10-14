@@ -14,43 +14,48 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdAer" />
             <div class="form-group">
-                <label asp-for="CuentaEvaluacion" class="control-label"></label>
-                <input asp-for="CuentaEvaluacion" class="form-control" />
-                <span asp-validation-for="CuentaEvaluacion" class="text-danger"></span>
+                <label class="control-label">Cuentacon Evaluacion</label>
+                <select class="form-control" name="CuentaEvaluacion"
+                        asp-items="@(new SelectList(ViewBag.listaCuentaEvaluacion, "Value", "Text", @ViewBag.idCuentaEvaluacion))">
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="FechaEntrega" class="control-label"></label>
+                <label class="control-label">Fecha de Entrega</label>
                 <input asp-for="FechaEntrega" class="form-control" />
                 <span asp-validation-for="FechaEntrega" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EvaluadorCaso" class="control-label"></label>
+                <label class="control-label">Evaluador de Caso</label>
                 <input asp-for="EvaluadorCaso" class="form-control" />
                 <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="RiesgoDetectado" class="control-label"></label>
-                <input asp-for="RiesgoDetectado" class="form-control" />
-                <span asp-validation-for="RiesgoDetectado" class="text-danger"></span>
+                <label class="control-label">Periodicidad de Firma</label>
+                <select class="form-control" name="RiesgoDetectado"
+                        asp-items="@(new SelectList(ViewBag.listaRiesgoDetectado, "Value", "Text", @ViewBag.idRiesgoDetectado))">
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="RiesgoSustraccion" class="control-label"></label>
-                <input asp-for="RiesgoSustraccion" class="form-control" />
-                <span asp-validation-for="RiesgoSustraccion" class="text-danger"></span>
+                <label class="control-label">Riesgo Sustraccion</label>
+                <select class="form-control" name="RiesgoSustraccion"
+                        asp-items="@(new SelectList(ViewBag.listaRiesgoSustraccion, "Value", "Text", @ViewBag.idRiesgoSustraccion))">
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="RiesgoObstaculizacion" class="control-label"></label>
-                <input asp-for="RiesgoObstaculizacion" class="form-control" />
-                <span asp-validation-for="RiesgoObstaculizacion" class="text-danger"></span>
+                <label class="control-label">Riesgo Obstaculizacion</label>
+                <select class="form-control" name="RiesgoObstaculizacion"
+                        asp-items="@(new SelectList(ViewBag.listaRiesgoObstaculizacion, "Value", "Text", @ViewBag.idRiesgoObstaculizacion))">
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="RiesgoVictima" class="control-label"></label>
-                <input asp-for="RiesgoVictima" class="form-control" />
-                <span asp-validation-for="RiesgoVictima" class="text-danger"></span>
+                <label class="control-label">Riesgo Victima</label>
+                <select class="form-control" name="RiesgoVictima"
+                        asp-items="@(new SelectList(ViewBag.listaRiesgoVictima, "Value", "Text", @ViewBag.idRiesgoVictima))">
+                </select>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Guardar" class="btn btn-default" />
             </div>
         </form>
     </div>
