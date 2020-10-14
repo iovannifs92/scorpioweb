@@ -4,9 +4,8 @@
     ViewData["Title"] = "EditAer";
 }
 
-<h2>EditAer</h2>
+<h2>AER</h2>
 
-<h4>Aer</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,7 +13,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdAer" />
             <div class="form-group">
-                <label class="control-label">Cuentacon Evaluacion</label>
+                <label class="control-label">Cuenta con Evaluación</label>
                 <select class="form-control" name="CuentaEvaluacion"
                         asp-items="@(new SelectList(ViewBag.listaCuentaEvaluacion, "Value", "Text", @ViewBag.idCuentaEvaluacion))">
                 </select>
@@ -36,19 +35,19 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Sustraccion</label>
+                <label class="control-label">Riesgo Sustracción</label>
                 <select class="form-control" name="RiesgoSustraccion"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoSustraccion, "Value", "Text", @ViewBag.idRiesgoSustraccion))">
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Obstaculizacion</label>
+                <label class="control-label">Riesgo Obstaculización</label>
                 <select class="form-control" name="RiesgoObstaculizacion"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoObstaculizacion, "Value", "Text", @ViewBag.idRiesgoObstaculizacion))">
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Victima</label>
+                <label class="control-label">Riesgo Víctima</label>
                 <select class="form-control" name="RiesgoVictima"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoVictima, "Value", "Text", @ViewBag.idRiesgoVictima))">
                 </select>

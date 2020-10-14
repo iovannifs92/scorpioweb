@@ -4,9 +4,8 @@
     ViewData["Title"] = "EditCierredecaso";
 }
 
-<h2>EditCierredecaso</h2>
+<h2>Cierre de caso</h2>
 
-<h4>Cierredecaso</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,23 +13,23 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCierreDeCaso" />
             <div class="form-group">
-                <label class="control-label">Se cerro el Caso</label>
+                <label class="control-label">Se Cerro el Caso</label>
                 <select class="form-control" name="SeCerroCaso"
                         asp-items="@(new SelectList(ViewBag.listaSeCerroCaso, "Value", "Text", @ViewBag.idSeCerroCaso))">
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Como Concluyo</label>
+                <label class="control-label">Como Concluyó</label>
                 <input asp-for="ComoConcluyo" class="form-control" />
                 <span asp-validation-for="ComoConcluyo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">No de Archivo</label>
+                <label class="control-label">Número de Archivo</label>
                 <input asp-for="NoArchivo" class="form-control" />
                 <span asp-validation-for="NoArchivo" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Fecha de Aprobacion</label>
+                <label class="control-label">Fecha de Aprobación</label>
                 <input asp-for="FechaAprobacion" class="form-control" />
                 <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
             </div>

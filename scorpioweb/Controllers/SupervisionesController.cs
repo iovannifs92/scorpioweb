@@ -16,7 +16,7 @@ namespace scorpioweb.Controllers
         private List<SelectListItem> listaNaSiNo = new List<SelectListItem>
 
         {
-            new SelectListItem{ Text="Na", Value="NA"},
+            new SelectListItem{ Text="NA", Value="NA"},
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
@@ -114,7 +114,7 @@ namespace scorpioweb.Controllers
             ListaEstadoS = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
-                new SelectListItem{ Text = "Vigentes", Value = "VIGENTE" },
+                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
                 new SelectListItem{ Text = "Pendiente", Value = "PENDIENTE" },
                 };
 
