@@ -26,10 +26,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.personaVM.Nombre)
                 </th>
-                </th>
-
-
-                <th></th>
             </tr>
         </thead>
 
@@ -48,11 +44,7 @@
                 </td>
 
                 <td>
-                    @*<a asp-action="delitos" asp-route-id="@item.IdCausaPenal">Edit delito</a> |*@
-                   
                     <a href="/Personas/Details/@item.personaVM.IdPersona">Detalles</a>
-
-                    @*<a asp-action="Delete" asp-route-id="@item.IdCausaPenal">Delete</a>*@
                 </td>
             </tr>
             }

@@ -1,8 +1,106 @@
-﻿
+﻿@model PaginatedList<scorpioweb.Models.Supervision>
+
 @{
-    ViewData["Title"] = "PersonaSupervision";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<h2>PersonaSupervision</h2>
+<h2>Personas Supervision</h2>
+@*<p>
+        <a asp-action="Create">Nueva entrevista encuadre</a>
+    </p>*@
+
+<form asp-action="PersonaSupervision" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Buscar" class="btn btn-default" /> |
+            <a asp-action="ListadoSupervisor">Regresar al listado completo</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Id Supervision</a>
+            </th>
+            <th>
+                Supervisor
+            </th>
+            <th>
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Inicio</a>
+            </th>
+            <th>
+                Termino
+            </th>
+            <th>
+                Estado de supervision
+            </th>
+            <th>
+                PersonaIdPersona
+            </th>
+            <th>
+                CausaPenalIdCausaPenal
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th>
+                    @Html.DisplayFor(modelItem => item.IdSupervision)
+                </th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Inicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Termino)
+                </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.EstadoSupervision)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.EstadoCumplimiento)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.PersonaIdPersona)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.CausaPenalIdCausaPenal)
+                </th>
+                <td>
+                    <a asp-action="Supervision" asp-route-id="@item.IdSupervision">Edicion</a> |
+                    @*<a asp-action="Details" asp-route-id="@item.IdSupervision">Details</a> |*@
+                    @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasNextPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+
 
