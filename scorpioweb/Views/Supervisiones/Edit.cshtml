@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h2>Edit</h2>
+<h2>Supervisión</h2>
 
-<h4>Supervision</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,23 +23,25 @@
                 <span asp-validation-for="Termino" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EstadoSupervision" class="control-label"></label>
-                <input asp-for="EstadoSupervision" class="form-control" />
-                <span asp-validation-for="EstadoSupervision" class="text-danger"></span>
+                <label class="control-label">Estado de Supervisión</label>
+                <select class="form-control" name="EstadoSupervision"
+                        asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Value", "Text", @ViewBag.idEstadoSupervision))">
+                </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display:none " readonly>
                 <label asp-for="PersonaIdPersona" class="control-label"></label>
                 <input asp-for="PersonaIdPersona" class="form-control" />
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EstadoCumplimiento" class="control-label"></label>
-                <input asp-for="EstadoCumplimiento" class="form-control" />
-                <span asp-validation-for="EstadoCumplimiento" class="text-danger"></span>
+                <label class="control-label">Estado de Cumplimiento</label>
+                <select class="form-control" name="EstadoCumplimiento"
+                        asp-items="@(new SelectList(ViewBag.listaEstadoCumplimiento, "Value", "Text", @ViewBag.idEstadoCumplimiento))">
+                </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display:none " readonly>
                 <label asp-for="CausaPenalIdCausaPenal" class="control-label"></label>
-                <input asp-for="CausaPenalIdCausaPenal" class="form-control" />
+                <input asp-for="CausaPenalIdCausaPenal" class="form-control" style="display:none " readonly />
                 <span asp-validation-for="CausaPenalIdCausaPenal" class="text-danger"></span>
             </div>
             <div class="form-group">

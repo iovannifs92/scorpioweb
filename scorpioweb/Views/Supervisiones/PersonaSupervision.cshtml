@@ -1,20 +1,18 @@
-﻿@model PaginatedList<scorpioweb.Models.Supervision>
+﻿@model PaginatedList<scorpioweb.Models.SupervisionPyCP>
+
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Personas Supervision</h2>
-@*<p>
-        <a asp-action="Create">Nueva entrevista encuadre</a>
-    </p>*@
+<h2>Personas Supervisión</h2>
 
 <form asp-action="PersonaSupervision" method="get">
     <div class="form-actions no-color">
         <p>
-            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            Búsqueda por nombre o causa penal: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
             <input type="submit" value="Buscar" class="btn btn-default" /> |
-            <a asp-action="ListadoSupervisor">Regresar al listado completo</a>
+            <a asp-action="PersonaSupervision">Regresar al listado completo</a>
         </p>
     </div>
 </form>
@@ -23,60 +21,31 @@
     <thead>
         <tr>
             <th>
-                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Id Supervision</a>
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
             </th>
             <th>
-                Supervisor
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
             </th>
             <th>
-                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Inicio</a>
-            </th>
-            <th>
-                Termino
-            </th>
-            <th>
-                Estado de supervision
-            </th>
-            <th>
-                PersonaIdPersona
-            </th>
-            <th>
-                CausaPenalIdCausaPenal
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoCumplimientoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de supervisión</a>
             </th>
         </tr>
     </thead>
-
     <tbody>
-
-
         @foreach (var item in Model)
         {
             <tr>
-                <th>
-                    @Html.DisplayFor(modelItem => item.IdSupervision)
-                </th>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Inicio)
+                    @Html.DisplayFor(modelItem => item.personaVM.Nombre) @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Termino)
+                    @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </td>
                 <th>
-                    @Html.DisplayFor(modelItem => item.EstadoSupervision)
-                </th>
-                <th>
-                    @Html.DisplayFor(modelItem => item.EstadoCumplimiento)
-                </th>
-                <th>
-                    @Html.DisplayFor(modelItem => item.PersonaIdPersona)
-                </th>
-                <th>
-                    @Html.DisplayFor(modelItem => item.CausaPenalIdCausaPenal)
+                    @Html.DisplayFor(modelItem => item.supervisionVM.EstadoCumplimiento)
                 </th>
                 <td>
-                    <a asp-action="Supervision" asp-route-id="@item.IdSupervision">Edicion</a> |
-                    @*<a asp-action="Details" asp-route-id="@item.IdSupervision">Details</a> |*@
-                    @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
+                    <a href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">Edición</a>
                 </td>
             </tr>
         }
@@ -84,23 +53,22 @@
 </table>
 
 @{
-    var prevDisabled = !Model.HasNextPage ? "disabled" : "";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<a asp-action="Index"
+<a asp-action="PersonaSupervision"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
-<a asp-action="Index"
+<a asp-action="PersonaSupervision"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
-
 
