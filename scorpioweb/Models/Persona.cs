@@ -37,7 +37,7 @@ namespace scorpioweb.Models
         public string Supervisor { get; set; }
         public string NombreCompleto {
             get {
-                return this.Nombre + " " + this.Paterno + " " + this.Materno;
+                return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
     }

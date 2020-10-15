@@ -323,6 +323,7 @@ namespace scorpioweb.Controllers
                 where listaPersonasAsignadas.All(
                     per => per.PersonaIdPersona != personaTable.IdPersona
                     )
+                orderby personaTable.Paterno
                 select personaTable
                 ).ToList();
 
@@ -479,6 +480,7 @@ namespace scorpioweb.Controllers
                                      join personaCausaPenalTable in personaCausaPenalVM on personaTable.IdPersona equals personaCausaPenalTable.PersonaIdPersona
                                      join causaPenalTable in causaPenalVM on personaCausaPenalTable.CausaPenalIdCausaPenal equals causaPenalTable.IdCausaPenal
                                      where causaPenalTable.IdCausaPenal == id
+                                     orderby personaTable.Paterno
                                      select new PersonaCausaPenalViewModel
                                      {
                                          personaVM = personaTable,
