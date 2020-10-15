@@ -1,10 +1,27 @@
 ﻿@model scorpioweb.Models.Revocacion
-
+    <script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#Revocado').change(function () {
+            var dat = $(this).children("option:selected").val();
+           if (dat == "SI") {
+               $("#DivFechaAprobacion").css("display", "block");
+               $("#DivMotivoRevocacion").css("display", "block");
+            }
+            else {
+               $("#DivFechaAprobacion").css("display", "none");
+               $("#DivMotivoRevocacion").css("display", "none");
+            }
+        });
+    });
+    </script>
 @{
     ViewData["Title"] = "EditRevocacion";
 }
 
+
 <h2>Revocación</h2>
+
 
 <hr />
 <div class="row">
@@ -14,30 +31,31 @@
             <input type="hidden" asp-for="IdRevocacion" />
             <div class="form-group">
                 <label class="control-label">Revocado</label>
-                <select class="form-control" name="Revocado"
+                <select class="form-control" name="Revocado" id="Revocado"
                         asp-items="@(new SelectList(ViewBag.listaRevocado, "Value", "Text", @ViewBag.idRevocado))">
                 </select>
             </div>
-            <div class="form-group">
-                <label class="control-label">Fecha de Aprobacion</label>
+            <div class="form-group" id="DivFechaAprobacion">
+                <label class="control-label">Fecha de Aprobación</label>
                 <input asp-for="FechaAprobacion" class="form-control" />
                 <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group" id="DivMotivoRevocacion">
                 <label class="control-label">Motivo de Revocación</label>
                 <input asp-for="MotivoRevocacion" class="form-control" />
                 <span asp-validation-for="MotivoRevocacion" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Guardar" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="PersonaSupervision">Regresar a lista</a>
 </div>
 
 @section Scripts {

@@ -128,9 +128,9 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaEstadoC;
             ListaEstadoC = new List<SelectListItem>
             {
-                new SelectListItem{ Text = "Cumpliendo", Value = "Cumpliendo" },
-                new SelectListItem{ Text = "Cumplimiento Parcial", Value = "VIGENTE" },
-                new SelectListItem{ Text = "Incumplimiento Total", Value = "PENDIENTE" },
+                new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
+                new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
+                new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
                 };
 
             ViewBag.listaEstadoCumplimiento = ListaEstadoC;
@@ -262,6 +262,7 @@ namespace scorpioweb.Controllers
                 filter = filter.Where(spcp => spcp.personaVM.Paterno.Contains(searchString) ||
                                               spcp.personaVM.Materno.Contains(searchString) ||
                                               spcp.personaVM.Nombre.Contains(searchString) ||
+                                              spcp.supervisionVM.EstadoSupervision.Contains(searchString) ||
                                               spcp.causapenalVM.CausaPenal.Contains(searchString));
             }
 

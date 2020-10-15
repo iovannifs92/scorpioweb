@@ -1,10 +1,35 @@
 ﻿@model scorpioweb.Models.Cierredecaso
 
+    <script type="text/javascript">
+        var tipo = 0;
+        $(document).ready(function () {
+            $('#SeCerroCaso').change(function () {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
+                    $("#DivComoConcluyo").css("display", "block");
+                    $("#DivNoArchivo").css("display", "block");
+                    $("#DivFechaAprobacion").css("display", "block");
+                    $("#DivAutorizo").css("display", "block");
+                }
+                else {
+                    $("#DivComoConcluyo").css("display", "none");
+                    $("#DivNoArchivo").css("display", "none");
+                    $("#DivFechaAprobacion").css("display", "none");
+                    $("#DivAutorizo").css("display", "none");
+                }
+            });
+
+
+        });
+    </script>
+
+
 @{
     ViewData["Title"] = "EditCierredecaso";
 }
 
 <h2>Cierre de caso</h2>
+
 
 <hr />
 <div class="row">
@@ -13,27 +38,27 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCierreDeCaso" />
             <div class="form-group">
-                <label class="control-label">Se Cerro el Caso</label>
-                <select class="form-control" name="SeCerroCaso"
+                <label class="control-label">Se cerro el Caso</label>
+                <select class="form-control" name="SeCerroCaso" id="SeCerroCaso"
                         asp-items="@(new SelectList(ViewBag.listaSeCerroCaso, "Value", "Text", @ViewBag.idSeCerroCaso))">
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display:none" id="DivComoConcluyo">
                 <label class="control-label">Como Concluyó</label>
                 <input asp-for="ComoConcluyo" class="form-control" />
                 <span asp-validation-for="ComoConcluyo" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display:none" id="DivNoArchivo">
                 <label class="control-label">Número de Archivo</label>
                 <input asp-for="NoArchivo" class="form-control" />
                 <span asp-validation-for="NoArchivo" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display:none" id="DivFechaAprobacion">
                 <label class="control-label">Fecha de Aprobación</label>
                 <input asp-for="FechaAprobacion" class="form-control" />
                 <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display:none" id="DivAutorizo">
                 <label class="control-label">Quien Autorizo</label>
                 <select class="form-control" name="Autorizo"
                         asp-items="@(new SelectList(ViewBag.listaAutorizo, "Value", "Text", @ViewBag.idAutorizo))">
@@ -41,14 +66,14 @@
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Guardar" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="PersonaSupervision">Regresar a lista</a>
 </div>
 
 @section Scripts {

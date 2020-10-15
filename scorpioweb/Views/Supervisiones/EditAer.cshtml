@@ -1,11 +1,33 @@
 ﻿@model scorpioweb.Models.Aer
 
+
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#CuentaEvaluacion').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#DivMotivoNoPlaneacion").css("display", "block");
+                $("#DivEvaluadorCaso").css("display", "block");
+            }
+            else {
+                $("#DivFechaEntrega").css("display", "none");
+                $("#DivEvaluadorCaso").css("display", "none");
+            }
+        });
+    });
+</script>
+
+
+
+
 @{
-    ViewData["Title"] = "EditAer";
+    ViewData["Title"] = "EditPlaneacionestrategica";
 }
 
-<h2>AER</h2>
+<h2>Aer</h2>
 
+<h4></h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,22 +36,22 @@
             <input type="hidden" asp-for="IdAer" />
             <div class="form-group">
                 <label class="control-label">Cuenta con Evaluación</label>
-                <select class="form-control" name="CuentaEvaluacion"
+                <select class="form-control" name="CuentaEvaluacion" id="CuentaEvaluacion"
                         asp-items="@(new SelectList(ViewBag.listaCuentaEvaluacion, "Value", "Text", @ViewBag.idCuentaEvaluacion))">
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="DivFechaEntrega">
                 <label class="control-label">Fecha de Entrega</label>
                 <input asp-for="FechaEntrega" class="form-control" />
                 <span asp-validation-for="FechaEntrega" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="DivEvaluadorCaso">
                 <label class="control-label">Evaluador de Caso</label>
                 <input asp-for="EvaluadorCaso" class="form-control" />
                 <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Periodicidad de Firma</label>
+                <label class="control-label">Riesgo detectado</label>
                 <select class="form-control" name="RiesgoDetectado"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoDetectado, "Value", "Text", @ViewBag.idRiesgoDetectado))">
                 </select>
@@ -47,7 +69,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Víctima</label>
+                <label class="control-label">Riesgo Victima</label>
                 <select class="form-control" name="RiesgoVictima"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoVictima, "Value", "Text", @ViewBag.idRiesgoVictima))">
                 </select>
@@ -61,9 +83,8 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="PersonaSupervision">Regresar a lista</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
