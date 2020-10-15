@@ -20,14 +20,11 @@
         });
     </script>
 
-
-
-
     @{
         ViewData["Title"] = "EditPlaneacionestrategica";
     }
 
-<h2>Planeacion estrategica</h2>
+<h2>Planeación estrategica</h2>
 
     <h4></h4>
     <hr />
@@ -43,7 +40,7 @@
                     </select>
                 </div>
                 <div class="form-group" id="DivMotivoNoPlaneacion">
-                    <label class="control-label">Motivo de no Planeacion</label>
+                    <label class="control-label">Motivo de no Planeación</label>
                     <input asp-for="MotivoNoPlaneacion" class="form-control" />
                     <span asp-validation-for="MotivoNoPlaneacion" class="text-danger"></span>
                 </div>
@@ -53,7 +50,7 @@
                     <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Ultimo Informe</label>
+                    <label class="control-label">Último Informe</label>
                     <input asp-for="UltimoInforme" class="form-control" />
                     <span asp-validation-for="UltimoInforme" class="text-danger"></span>
                 </div>
@@ -90,10 +87,9 @@
             </form>
         </div>
     </div>
-
-    <div>
-        <a asp-action="PersonaSupervision">Regresar a lista</a>
-    </div>
+<div>
+    <a asp-action="PersonaSupervision">Regresar a lista</a>
+</div>
 
     @section Scripts {
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -35,7 +35,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdAer" />
             <div class="form-group">
-                <label class="control-label">Cuentacon Evaluacion</label>
+                <label class="control-label">Cuenta con Evaluación</label>
                 <select class="form-control" name="CuentaEvaluacion" id="CuentaEvaluacion"
                         asp-items="@(new SelectList(ViewBag.listaCuentaEvaluacion, "Value", "Text", @ViewBag.idCuentaEvaluacion))">
                 </select>
@@ -51,19 +51,19 @@
                 <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Periodicidad de Firma</label>
+                <label class="control-label">Riesgo detectado</label>
                 <select class="form-control" name="RiesgoDetectado"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoDetectado, "Value", "Text", @ViewBag.idRiesgoDetectado))">
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Sustraccion</label>
+                <label class="control-label">Riesgo Sustracción</label>
                 <select class="form-control" name="RiesgoSustraccion"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoSustraccion, "Value", "Text", @ViewBag.idRiesgoSustraccion))">
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Obstaculizacion</label>
+                <label class="control-label">Riesgo Obstaculización</label>
                 <select class="form-control" name="RiesgoObstaculizacion"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoObstaculizacion, "Value", "Text", @ViewBag.idRiesgoObstaculizacion))">
                 </select>
