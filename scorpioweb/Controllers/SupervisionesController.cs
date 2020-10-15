@@ -228,6 +228,7 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<Supervision>.CreateAsync(super.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
+
         #region -Supervision-
         public async Task<IActionResult> Supervision(int? id)
         {
@@ -264,9 +265,6 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
-
-
-
 
         #region -Aer-
         public async Task<IActionResult> EditAer(int? id)

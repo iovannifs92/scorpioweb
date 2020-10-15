@@ -290,12 +290,14 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Asignacion-
-        public async Task<IActionResult> Asignacion(int? id)
+        public async Task<IActionResult> Asignacion(int? id, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.CausaPenal = cp;
 
             var persona = await _context.Persona
                 .SingleOrDefaultAsync(m => m.IdPersona == id);

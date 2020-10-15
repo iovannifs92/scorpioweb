@@ -7,7 +7,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="blockquote text-center" style="padding-top:3%;" >Asignación</h2>
+<h2 class="blockquote text-center" style="padding-top:3%;" >Asignación de la Causa Penal @ViewBag.CausaPenal</h2>
 
 <!doctype html>
 <html lang="en">
@@ -172,8 +172,6 @@
 
             $("#combobox").combobox({
                 select: function (event, ui) {
-                    //e.preventDefault();//deja de funcionar con esta linea
-
                     var cp = document.getElementById("combobox");
                     var idPersona = cp.options[cp.selectedIndex].value;
                     $.ajax({
@@ -220,7 +218,7 @@
             <form asp-action="Asignacion">
                 <input type="submit" value="Asignar" class="btn btn-success" />
                 <hr />
-                <a asp-action="Index">Regresar al listado completo</a>
+                <a asp-controller="Causaspenales" asp-action="ListadeCausas">Regresar al listado completo</a>
             </form>
         </div>
     </div>

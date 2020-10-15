@@ -62,7 +62,7 @@
             <td>
                 <a asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">Editar Causa</a> |
                 <a asp-action="DetailsCP" asp-route-id="@item.IdCausaPenal">Personas Asignadas</a> |
-                <a asp-action="Asignacion" asp-route-id="@item.IdCausaPenal">Asignación</a>
+                <a asp-action="Asignacion" asp-route-id="@item.IdCausaPenal" asp-route-cp="@item.CausaPenal">Asignación</a>
             </td>
         </tr>
         }
