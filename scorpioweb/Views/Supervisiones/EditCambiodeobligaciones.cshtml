@@ -1,64 +1,65 @@
 ﻿@model scorpioweb.Models.Cambiodeobligaciones
 
-    <script type="text/javascript">
-        var tipo = 0;
-        $(document).ready(function () {
-            $('#SeDioCambio').change(function () {
-                var dat = $(this).children("option:selected").val();
-                if (dat == "SI") {
-                    $("#DivMotivoAprobacion").css("display", "block");
-                    $("#DivFechaAprobacion").css("display", "block");
-                }
-                else {
-                    $("#DivMotivoAprobacion").css("display", "none");
-                    $("#DivFechaAprobacion").css("display", "none");
-                }
-            });
-
-
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#SeDioCambio').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#DivMotivoAprobacion").css("display", "block");
+                $("#DivFechaAprobacion").css("display", "block");
+            }
+            else {
+                $("#DivMotivoAprobacion").css("display", "none");
+                $("#DivFechaAprobacion").css("display", "none");
+            }
         });
-    </script>
 
-    @{
-        ViewData["Title"] = "EditCambiodeobligaciones";
-    }
 
-    <h2>Cambio de obligaciones</h2>
+    });
+</script>
 
-    <h4></h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form asp-action="EditCambiodeobligaciones">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="IdCambiodeObligaciones" />
-                <div class="form-group">
-                    <label class="control-label">Se dio Cambio</label>
-                    <select class="form-control" name="SeDioCambio" id="SeDioCambio"
-                            asp-items="@(new SelectList(ViewBag.listaSediocambio, "Value", "Text", @ViewBag.idSediocambio))">
-                    </select>
-                </div>
-                <div class="form-group"  style="display:none" id="DivFechaAprobacion">
-                    <label class="control-label">Fecha de Aprobacion</label>
-                    <input asp-for="FechaAprobacion" class="form-control" />
-                    <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
-                </div>
-                <div class="form-group"  style="display:none"  id="DivMotivoAprobacion">
-                    <label class="control-label"> Motivo de Aprobacion</label>
-                    <input asp-for="MotivoAprobacion" class="form-control" />
-                    <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
-                </div>
-                <input type="hidden" asp-for="SupervisionIdSupervision" />
-                    <div class="form-group">
-                        <input type="submit" value="Guardar" class="btn btn-default" />
-                    </div>
-            </form>
-        </div>
+@{
+    ViewData["Title"] = "EditCambiodeobligaciones";
+}
+
+<h2>Cambio de obligaciones</h2>
+<h4>Nombre: @ViewBag.nombre</h4>
+<h4>Cp: @ViewBag.cp</h4>
+<h4></h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditCambiodeobligaciones">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdCambiodeObligaciones" />
+            <div class="form-group">
+                <label class="control-label">Se dio Cambio</label>
+                <select class="form-control" name="SeDioCambio" id="SeDioCambio"
+                        asp-items="@(new SelectList(ViewBag.listaSediocambio, "Value", "Text", @ViewBag.idSediocambio))">
+                </select>
+            </div>
+            <div class="form-group" style="display:none" id="DivFechaAprobacion">
+                <label class="control-label">Fecha de Aprobacion</label>
+                <input asp-for="FechaAprobacion" class="form-control" />
+                <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="display:none" id="DivMotivoAprobacion">
+                <label class="control-label"> Motivo de Aprobacion</label>
+                <input asp-for="MotivoAprobacion" class="form-control" />
+                <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="SupervisionIdSupervision" />
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-default" />
+            </div>
+        </form>
     </div>
+</div>
 <div>
     <a asp-action="PersonaSupervision">Regresar a lista</a>
 </div>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

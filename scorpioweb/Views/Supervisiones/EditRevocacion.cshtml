@@ -1,27 +1,28 @@
 ﻿@model scorpioweb.Models.Revocacion
-    <script type="text/javascript">
+<script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
         $('#Revocado').change(function () {
             var dat = $(this).children("option:selected").val();
-           if (dat == "SI") {
-               $("#DivFechaAprobacion").css("display", "block");
-               $("#DivMotivoRevocacion").css("display", "block");
+            if (dat == "SI") {
+                $("#DivFechaAprobacion").css("display", "block");
+                $("#DivMotivoRevocacion").css("display", "block");
             }
             else {
-               $("#DivFechaAprobacion").css("display", "none");
-               $("#DivMotivoRevocacion").css("display", "none");
+                $("#DivFechaAprobacion").css("display", "none");
+                $("#DivMotivoRevocacion").css("display", "none");
             }
         });
     });
-    </script>
+</script>
 @{
     ViewData["Title"] = "EditRevocacion";
 }
 
 
 <h2>Revocación</h2>
-
+<h4>Nombre: @ViewBag.nombre</h4>
+<h4>Cp: @ViewBag.cp</h4>
 
 <hr />
 <div class="row">
