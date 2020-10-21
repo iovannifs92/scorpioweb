@@ -1,0 +1,61 @@
+﻿@model scorpioweb.Models.Fraccionesimpuestas
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Fraccionesimpuestas</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Tipo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tipo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Autoridad)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Autoridad)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaInicio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaInicio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaTermino)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaTermino)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Estado)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Estado)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Evidencia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Evidencia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FiguraJudicial)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FiguraJudicial)
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>
