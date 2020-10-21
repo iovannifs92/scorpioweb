@@ -144,12 +144,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Edit-
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }            
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
             if (supervision == null)
@@ -305,6 +308,7 @@ namespace scorpioweb.Controllers
            string currentFilter,
            string searchString,
            int? pageNumber)
+
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -358,7 +362,6 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
                     break;
             }
-
             int pageSize = 10;
             return View(await PaginatedList<SupervisionPyCP>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -402,12 +405,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Aer-
-        public async Task<IActionResult> EditAer(int? id)
+        public async Task<IActionResult> EditAer(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Aer.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -481,12 +487,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCambiodeobligaciones-
-        public async Task<IActionResult>  EditCambiodeobligaciones(int? id)
+        public async Task<IActionResult>  EditCambiodeobligaciones(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Cambiodeobligaciones.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -534,12 +543,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCierredecaso-
-        public async Task<IActionResult> EditCierredecaso(int? id)
+        public async Task<IActionResult> EditCierredecaso(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Cierredecaso.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -720,12 +732,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditPlaneacionestrategica-
-        public async Task<IActionResult> EditPlaneacionestrategica(int? id)
+        public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Planeacionestrategica.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -793,13 +808,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Revocacion-
-        public async Task<IActionResult> EditRevocacion(int? id)
+        public async Task<IActionResult> EditRevocacion(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
             var supervision = await _context.Revocacion.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
             {
@@ -849,12 +866,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditSuspensionseguimiento-
-        public async Task<IActionResult> EditSuspensionseguimiento(int? id)
+        public async Task<IActionResult> EditSuspensionseguimiento(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Suspensionseguimiento.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
