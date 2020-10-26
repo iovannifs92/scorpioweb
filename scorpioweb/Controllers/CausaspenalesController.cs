@@ -327,9 +327,6 @@ namespace scorpioweb.Controllers
                 select personaTable
                 ).ToList();
 
-            //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
-            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = ""});
-
             ViewBag.personas = listaPersonas;
 
             selectedPersona = new List<string>();
