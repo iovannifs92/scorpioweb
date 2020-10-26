@@ -1,27 +1,27 @@
 ﻿@model scorpioweb.Models.Cierredecaso
 
-    <script type="text/javascript">
-        var tipo = 0;
-        $(document).ready(function () {
-            $('#SeCerroCaso').change(function () {
-                var dat = $(this).children("option:selected").val();
-                if (dat == "SI") {
-                    $("#DivComoConcluyo").css("display", "block");
-                    $("#DivNoArchivo").css("display", "block");
-                    $("#DivFechaAprobacion").css("display", "block");
-                    $("#DivAutorizo").css("display", "block");
-                }
-                else {
-                    $("#DivComoConcluyo").css("display", "none");
-                    $("#DivNoArchivo").css("display", "none");
-                    $("#DivFechaAprobacion").css("display", "none");
-                    $("#DivAutorizo").css("display", "none");
-                }
-            });
-
-
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#SeCerroCaso').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#DivComoConcluyo").css("display", "block");
+                $("#DivNoArchivo").css("display", "block");
+                $("#DivFechaAprobacion").css("display", "block");
+                $("#DivAutorizo").css("display", "block");
+            }
+            else {
+                $("#DivComoConcluyo").css("display", "none");
+                $("#DivNoArchivo").css("display", "none");
+                $("#DivFechaAprobacion").css("display", "none");
+                $("#DivAutorizo").css("display", "none");
+            }
         });
-    </script>
+
+
+    });
+</script>
 
 
 @{
@@ -29,7 +29,8 @@
 }
 
 <h2>Cierre de caso</h2>
-
+<h4>Nombre: @ViewBag.nombre</h4>
+<h4>Cp: @ViewBag.cp</h4>
 
 <hr />
 <div class="row">

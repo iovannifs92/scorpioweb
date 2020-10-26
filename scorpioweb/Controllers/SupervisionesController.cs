@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,39 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
+
+        private List<SelectListItem> listaFracciones = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="I", Value="I"},
+            new SelectListItem{ Text="II", Value="II"},
+            new SelectListItem{ Text="III", Value="III"},
+            new SelectListItem{ Text="IV", Value="IV"},
+            new SelectListItem{ Text="V", Value="V"},
+            new SelectListItem{ Text="VI", Value="VI"},
+            new SelectListItem{ Text="VII", Value="VII"},
+            new SelectListItem{ Text="VIII", Value="VIII"},
+            new SelectListItem{ Text="IX", Value="IX"},
+            new SelectListItem{ Text="X", Value="X"},
+            new SelectListItem{ Text="XI", Value="XI"},
+            new SelectListItem{ Text="XII", Value="XII"},
+            new SelectListItem{ Text="XIII", Value="XIII"},
+            new SelectListItem{ Text="XIV", Value="XIV"}
+        };
+
+        private List<SelectListItem> listaCumplimiento=new List<SelectListItem>
+        {
+            new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
+            new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
+            new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
+        };
+
+        private List<SelectListItem> listaFiguraJudicial = new List<SelectListItem>
+        {
+            new SelectListItem{ Text = "MC", Value = "MC" },
+            new SelectListItem{ Text = "SCP", Value = "SCP" },
+        };
+
+
         public string normaliza(string normalizar)
         {
             if (!String.IsNullOrEmpty(normalizar))
@@ -38,6 +72,20 @@ namespace scorpioweb.Controllers
                 }
             }
             return "";
+        }
+        #endregion
+
+        #region -Metodos Generales-
+        public static DateTime validateDatetime(string value)
+        {
+            try
+            {
+                return DateTime.Parse(value, new System.Globalization.CultureInfo("pt-BR"));
+            }
+            catch
+            {
+                return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
+            }
         }
         #endregion
 
@@ -96,12 +144,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Edit-
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
-            }
+            }            
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
             if (supervision == null)
@@ -131,37 +182,57 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
                 new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
                 new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
-                };
+            };
 
             ViewBag.listaEstadoCumplimiento = ListaEstadoC;
             ViewBag.idEstadoCumplimiento = BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
             #endregion
 
-
-
-
             return View(supervision);
         }
+        #endregion
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
+        #region -Editar y borrar fracciones-        
+
+        public async Task<IActionResult> AddOrEdit(int id)
         {
-            if (id != supervision.IdSupervision)
+            if (id == 0)
+            {
+                return View();
+            }
+
+            var fraccionesimpuestas = await _context.Fraccionesimpuestas.SingleOrDefaultAsync(m => m.IdFracciones == id);
+            if (fraccionesimpuestas == null)
             {
                 return NotFound();
             }
 
+            ViewBag.listaFracciones = listaFracciones;
+            ViewBag.idFraccion = BuscaId(listaFracciones, fraccionesimpuestas.Tipo);
+
+            ViewBag.listaCumplimiento = listaCumplimiento;
+            ViewBag.idCumplimiento = BuscaId(listaCumplimiento, fraccionesimpuestas.Estado);
+
+            ViewBag.listaFiguraJudicial = listaFiguraJudicial;
+            ViewBag.idFiguraJudicial = BuscaId(listaFiguraJudicial, fraccionesimpuestas.FiguraJudicial);
+
+            return View(fraccionesimpuestas);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddOrEdit([Bind("IdFracciones,Tipo,Autoridad,FechaInicio,FechaTermino,Estado,Evidencia,FiguraJudicial,SupervisionIdSupervision")] Fraccionesimpuestas fraccionesimpuestas)
+        {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(supervision);
+                    _context.Update(fraccionesimpuestas);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SupervisionExists(supervision.IdSupervision))
+                    if (!SupervisionExists(fraccionesimpuestas.SupervisionIdSupervision))
                     {
                         return NotFound();
                     }
@@ -170,11 +241,20 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/"+fraccionesimpuestas.SupervisionIdSupervision,"Supervisiones");
             }
-            return View(supervision);
+            return View(fraccionesimpuestas);
         }
 
+
+        public async Task<IActionResult> DeleteFraccion(int? id)
+        {
+            var fraccionesimpuestas = await _context.Fraccionesimpuestas.SingleOrDefaultAsync(m => m.IdFracciones == id);
+            _context.Fraccionesimpuestas.Remove(fraccionesimpuestas);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
+        }
         #endregion
 
         #region -Delete-
@@ -228,6 +308,7 @@ namespace scorpioweb.Controllers
            string currentFilter,
            string searchString,
            int? pageNumber)
+
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -281,7 +362,6 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
                     break;
             }
-
             int pageSize = 10;
             return View(await PaginatedList<SupervisionPyCP>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -324,18 +404,16 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-      
-
-
-
-
         #region -Aer-
-        public async Task<IActionResult> EditAer(int? id)
+        public async Task<IActionResult> EditAer(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Aer.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -409,12 +487,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCambiodeobligaciones-
-        public async Task<IActionResult>  EditCambiodeobligaciones(int? id)
+        public async Task<IActionResult>  EditCambiodeobligaciones(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Cambiodeobligaciones.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -462,12 +543,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCierredecaso-
-        public async Task<IActionResult> EditCierredecaso(int? id)
+        public async Task<IActionResult> EditCierredecaso(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Cierredecaso.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -529,33 +613,25 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Fraccionesimpuestas-
-        public async Task<IActionResult> EditFraccionesimpuestas(int? id)
+        public IActionResult EditFraccionesimpuestas(int? id, string nombre)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var supervision = await _context.Fraccionesimpuestas.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
-            if (supervision == null)
-            {
-                return NotFound();
-            }
-            #region Autorizo
-            List<SelectListItem> ListaFigraJudicial;
-            ListaFigraJudicial = new List<SelectListItem>
-            {
-                new SelectListItem{ Text = "SCP", Value = "SCP" },
-                new SelectListItem{ Text = "MC", Value = "MC" }
-                };
+            ViewBag.nombre = nombre;
 
-            ViewBag.listaFiguraJudicial = ListaFigraJudicial;
-            ViewBag.idFiguraJudicial = BuscaId(ListaFigraJudicial, supervision.FiguraJudicial);
-            #endregion
+            List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
 
+            ViewData["fracciones"] = from fracciones in fraccionesImpuestas
+                                     where fracciones.SupervisionIdSupervision == id
+                                     orderby fracciones.FechaInicio
+                                     select fracciones;
 
+            ViewBag.IdSupervisionGuardar = id;
 
-            return View(supervision);
+            return View();
         }
 
         [HttpPost]
@@ -589,15 +665,82 @@ namespace scorpioweb.Controllers
             }
             return View(fraccionesimpuestas);
         }
+
+        public async Task<IActionResult> CrearFracciones(Fraccionesimpuestas fraccionesImpuestas, string[] datosFracciones)
+        {
+            for (int i=0; i<14;i++)
+            {
+                if (bool.Parse(datosFracciones[i]) == true)
+                {
+                    fraccionesImpuestas.SupervisionIdSupervision = Int32.Parse(datosFracciones[14]);
+                    fraccionesImpuestas.FiguraJudicial = datosFracciones[15];
+                    fraccionesImpuestas.FechaInicio = validateDatetime(datosFracciones[16]);
+                    fraccionesImpuestas.FechaTermino = validateDatetime(datosFracciones[17]);
+                    fraccionesImpuestas.Estado = datosFracciones[18];
+                    switch (i)
+                    {
+                        case 0:
+                            fraccionesImpuestas.Tipo = "I";
+                            break;
+                        case 1:
+                            fraccionesImpuestas.Tipo = "II";
+                            break;
+                        case 2:
+                            fraccionesImpuestas.Tipo = "III";
+                            break;
+                        case 3:
+                            fraccionesImpuestas.Tipo = "IV";
+                            break;
+                        case 4:
+                            fraccionesImpuestas.Tipo = "V";
+                            break;
+                        case 5:
+                            fraccionesImpuestas.Tipo = "VI";
+                            break;
+                        case 6:
+                            fraccionesImpuestas.Tipo = "VII";
+                            break;
+                        case 7:
+                            fraccionesImpuestas.Tipo = "VIII";
+                            break;
+                        case 8:
+                            fraccionesImpuestas.Tipo = "IX";
+                            break;
+                        case 9:
+                            fraccionesImpuestas.Tipo = "X";
+                            break;
+                        case 10:
+                            fraccionesImpuestas.Tipo = "XI";
+                            break;
+                        case 11:
+                            fraccionesImpuestas.Tipo = "XII";
+                            break;
+                        case 12:
+                            fraccionesImpuestas.Tipo = "XIII";
+                            break;
+                        case 13:
+                            fraccionesImpuestas.Tipo = "XIV";
+                            break;
+                    }
+                    _context.Add(fraccionesImpuestas);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return View();
+            //return RedirectToAction(nameof(Index));
+        }
         #endregion
 
         #region -EditPlaneacionestrategica-
-        public async Task<IActionResult> EditPlaneacionestrategica(int? id)
+        public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Planeacionestrategica.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -643,7 +786,7 @@ namespace scorpioweb.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {                    
                     _context.Update(planeacionestrategica);
                     await _context.SaveChangesAsync();
                 }
@@ -665,13 +808,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Revocacion-
-        public async Task<IActionResult> EditRevocacion(int? id)
+        public async Task<IActionResult> EditRevocacion(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
             var supervision = await _context.Revocacion.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
             {
@@ -721,12 +866,15 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditSuspensionseguimiento-
-        public async Task<IActionResult> EditSuspensionseguimiento(int? id)
+        public async Task<IActionResult> EditSuspensionseguimiento(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
 
             var supervision = await _context.Suspensionseguimiento.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)

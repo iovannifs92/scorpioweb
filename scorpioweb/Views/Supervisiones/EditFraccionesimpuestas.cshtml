@@ -4,61 +4,259 @@
     ViewData["Title"] = "EditFraccionesimpuestas";
 }
 
-<h2>Fracciones impuestas</h2>
+<script>
+    $(document).ready(function () {
+        $('#btnGuardarFraccion').on("click", function (e) {
+            e.preventDefault();
+            //alert("tipo: " + tipo);
+            var IdSupervision = document.getElementById("IdSupervision").value;
+            var fj = document.getElementById("FiguraJudicial");
+            var c = document.getElementById("cumplimiento");
+            var FiguraJudicial = fj.options[fj.selectedIndex].value;
+            var cumplimiento = c.options[c.selectedIndex].value;
+            var f1 = document.getElementById("f1").checked;
+            var f2 = document.getElementById("f2").checked;
+            var f3 = document.getElementById("f3").checked;
+            var f4 = document.getElementById("f4").checked;
+            var f5 = document.getElementById("f5").checked;
+            var f6 = document.getElementById("f6").checked;
+            var f7 = document.getElementById("f7").checked;
+            var f8 = document.getElementById("f8").checked;
+            var f9 = document.getElementById("f9").checked;
+            var f10 = document.getElementById("f10").checked;
+            var f11 = document.getElementById("f11").checked;
+            var f12 = document.getElementById("f12").checked;
+            var f13 = document.getElementById("f13").checked;
+            var f14 = document.getElementById("f14").checked;
+            var FechaInicio = document.getElementById("FechaInicio").value;
+            var FechaTermino = document.getElementById("FechaTermino").value;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Supervisiones/CrearFracciones",
+                traditional: true,
+                data: {
+                    datosFracciones: [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, IdSupervision, FiguraJudicial, FechaInicio, FechaTermino, cumplimiento],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    location.reload();
+                }
+            });
+        });
+    });
+
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url+"?id="+id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+                
+            }
+        })
+    }
+
+</script>
+
+<h2>Fracciones impuestas @ViewBag.nombre</h2>
 
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditFraccionesimpuestas">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdFracciones" />
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tipo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Autoridad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaInicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaTermino)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Evidencia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FiguraJudicial)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Fraccionesimpuestas>)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tipo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Autoridad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaTermino)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Evidencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FiguraJudicial)
+                </td>
+                <td>                    
+                    <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
+                        <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
+                            <i class="fa fa-pencil"></i> Editar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    </form>                      
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
+        Añadir Fracciones
+    </button>
+    <a asp-action="PersonaSupervision">Regresar a lista</a>
+</div>
+
+
+
+<!-- Modal Creacion de nueva fraccion -->
+<div class="modal fade" id="modalNuevaFraccion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Nueva Fracción</h5>
             </div>
-            <div class="form-group">
-                <label asp-for="Autoridad" class="control-label"></label>
-                <input asp-for="Autoridad" class="form-control" />
-                <span asp-validation-for="Autoridad" class="text-danger"></span>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Id Supervision</label>
+                    <input readonly name="IdSupervision" id="IdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" />
+                </div>
+                <div class="form-group" style="padding-top:1%;">
+                    <label class="control-label">Figura Judicial</label>
+                    <select class="form-control" name="FiguraJudicial" id="FiguraJudicial">
+                        <option value="MC">MC</option>
+                        <option value="SCP">SCP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Fracciones impuestas</label><br />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f1" value="option1">
+                        <label class="form-check-label" for="f1">I</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f2" value="option2">
+                        <label class="form-check-label" for="f2">II</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f3" value="option1">
+                        <label class="form-check-label" for="f3">III</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f4" value="option2">
+                        <label class="form-check-label" for="f4">IV</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f5" value="option2">
+                        <label class="form-check-label" for="f5">V</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f6" value="option6">
+                        <label class="form-check-label" for="f6">VI</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f7" value="option7">
+                        <label class="form-check-label" for="f7">VII</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f8" value="option8">
+                        <label class="form-check-label" for="f8">VIII</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f9" value="option9">
+                        <label class="form-check-label" for="f9">IX</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f10" value="option10">
+                        <label class="form-check-label" for="f10">X</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f11" value="option11">
+                        <label class="form-check-label" for="f11">XI</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f12" value="option12">
+                        <label class="form-check-label" for="f12">XII</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f13" value="option13">
+                        <label class="form-check-label" for="f13">XIII</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f14" value="option14">
+                        <label class="form-check-label" for="f14">XIV</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Fecha de inicio</label>
+                    <input name="FechaInicio" id="FechaInicio" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Fecha de termino</label>
+                    <input name="FechaTermino" id="FechaTermino" class="form-control" type="date" />
+                </div>
+                <div class="form-group" style="padding-top:1%;">
+                    <label class="control-label">Estado de cumplimiento</label>
+                    <select class="form-control" name="cumplimiento" id="cumplimiento">
+                        <option value="CUMPLIMIENTO">CUMPLIMIENTO</option>
+                        <option value="INCUMPLIMIENTO">INCUMPLIMIENTO</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="control-label">Fecha de Inicio</label>
-                <input asp-for="FechaInicio" class="form-control" />
-                <span asp-validation-for="FechaInicio" class="text-danger"></span>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFraccion" name="btnGuardarFraccion">Guardar Fracción</button>
             </div>
-            <div class="form-group">
-                <label class="control-label">Fecha de Término</label>
-                <input asp-for="FechaTermino" class="form-control" />
-                <span asp-validation-for="FechaTermino" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Evidencia" class="control-label"></label>
-                <input asp-for="Evidencia" class="form-control" />
-                <span asp-validation-for="Evidencia" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Figura Judicial</label>
-                <select class="form-control" name="FiguraJudicial"
-                        asp-items="@(new SelectList(ViewBag.listaFiguraJudicial, "Value", "Text", @ViewBag.idFiguraJudicial))">
-                </select>
-            </div>
-            <input type="hidden" asp-for="SupervisionIdSupervision" />
-            <div class="form-group">
-                <input type="submit" value="Guardar" class="btn btn-default" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="PersonaSupervision">Regresar a lista</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
