@@ -13,6 +13,7 @@ namespace scorpioweb.Controllers
     {
         #region -Variables globales-
         private readonly penas2Context _context;
+        public static List<string> datosSupervision = new List<string>();
         private List<SelectListItem> listaNaSiNo = new List<SelectListItem>
 
         {
@@ -39,7 +40,28 @@ namespace scorpioweb.Controllers
             }
             return "";
         }
+
+
         #endregion
+
+
+
+
+
+        public ActionResult guardarSupervision(string[] datosS)
+        {
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosS.Length; i++)
+            {
+                datosSupervision = new List<String> { datosS[i], currentUser };
+            }
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Boton para guaradar los cambios" });
+
+        }
+
+
+       
 
 
         public SupervisionesController(penas2Context context)
@@ -75,14 +97,14 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Create-
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
+        public async Task<IActionResult> Create([Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision, SupervisionPyCP datosSupervisionDB)
         {
             if (ModelState.IsValid)
             {
@@ -90,6 +112,18 @@ namespace scorpioweb.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            string currentUser = User.Identity.Name;
+
+            #region -idSuper-
+            int idSuper = ((from table in _context.Supervision
+                            select table).Count()) + 1;
+            supervision.IdSupervision = idSuper;
+            #endregion
+
+           
+
+
             return View(supervision);
         }
 
@@ -217,7 +251,16 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
-
+        public static IEnumerable<Supervision> supervisions = new List<Supervision> {
+                new Supervision {
+                    IdSupervision = 1,
+                    EstadoSupervision = "Red"
+                },
+                new Supervision {
+                    IdSupervision = 2,
+                    EstadoSupervision = "Blue"
+                }
+            };
         #region -MenuSupervision-
         public IActionResult MenuSupervision()
         {
@@ -230,7 +273,9 @@ namespace scorpioweb.Controllers
            string sortOrder,
            string currentFilter,
            string searchString,
-           int? pageNumber)
+           string estadoSuper,
+           int? pageNumber
+           )
 
         {
             ViewData["CurrentSort"] = sortOrder;
@@ -247,9 +292,6 @@ namespace scorpioweb.Controllers
                 searchString = currentFilter;
             }
 
-
-            ViewData["CurrentFilter"] = searchString;
-
             var filter = from p in _context.Persona
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                          join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
@@ -261,14 +303,26 @@ namespace scorpioweb.Controllers
                              causapenalVM = cp
                          };
 
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 filter = filter.Where(spcp => spcp.personaVM.Paterno.Contains(searchString) ||
                                               spcp.personaVM.Materno.Contains(searchString) ||
                                               spcp.personaVM.Nombre.Contains(searchString) ||
                                               spcp.supervisionVM.EstadoSupervision.Contains(searchString) ||
-                                              spcp.causapenalVM.CausaPenal.Contains(searchString));
+                                              spcp.causapenalVM.CausaPenal.Contains(searchString) ||
+                                              spcp.supervisionVM.EstadoSupervision.Contains(estadoSuper)
+                                              );
             }
+
+
+           
+
+
+
 
             switch (sortOrder)
             {
@@ -285,9 +339,80 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
                     break;
             }
+
+
+            #region Estado Suprvición
+            List<SelectListItem> ListaEstadoS;
+            ListaEstadoS = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
+                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
+                new SelectListItem{ Text = "Pendiente", Value = "PENDIENTE" },
+                };
+
+            ViewBag.listaEstadoSupervision = ListaEstadoS;
+            ViewBag.idEstadoSupervision = BuscaId(ListaEstadoS, estadoSuper);
+            #endregion
+
+
+
             int pageSize = 10;
             return View(await PaginatedList<SupervisionPyCP>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PersonaSupervision(int id)
+        {
+            string currentUser = User.Identity.Name;
+
+            if (ModelState.IsValid)
+            {
+                if (datosSupervision.Count == 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                var supervisionE = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
+                if (supervisionE == null)
+                {
+                    return NotFound();
+                }
+
+                supervisionE.EstadoSupervision = datosSupervision[0];
+
+                _context.Update(supervisionE);
+                await _context.SaveChangesAsync();
+                
+                return RedirectToAction(nameof(PersonaSupervision));
+            }
+            return View();
+        }
+
+
+        //public IActionResult ActualizaEstado(int id, string estadosupervision, DateTime inicio, DateTime termino, string estadoSupervision, int personaIdPersona, string estadoCumplimiento, int causaPenalIdCausaPenal)
+        //{
+        //    var supervision = new Supervision
+        //    {
+        //        IdSupervision = id,
+        //        EstadoSupervision = estadosupervision,
+        //        Inicio = inicio,
+        //        Termino = termino,
+        //        EstadoCumplimiento = estadoCumplimiento,
+        //        CausaPenalIdCausaPenal = causaPenalIdCausaPenal,
+        //        PersonaIdPersona = personaIdPersona
+
+        //    };
+
+        //    _context.Supervision.Attach(supervision).Property(x => x.EstadoSupervision).IsModified = true;
+        //    _context.SaveChanges();
+        //    return View();
+
+        //}
+
+
+
         #endregion
 
         #region -Supervision-
@@ -326,11 +451,6 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
-
-      
-
-
-
 
         #region -Aer-
         public async Task<IActionResult> EditAer(int? id, string nombre, string cp)
@@ -625,7 +745,7 @@ namespace scorpioweb.Controllers
             ViewBag.idPlanSupervision = BuscaId(listaNaSiNo, supervision.PlanSupervision);
 
 
-            #region Estado Suprvición
+            #region Liata de supervision
             List<SelectListItem> ListaPeriodicidadFirma;
             ListaPeriodicidadFirma = new List<SelectListItem>
             {
@@ -793,9 +913,6 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
-
-
-
 
         #region -Graficos-
         #endregion
