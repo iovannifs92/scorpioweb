@@ -57,9 +57,6 @@ namespace scorpioweb.Controllers
         #endregion
 
 
-
-
-
         #region -Constructor-
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
