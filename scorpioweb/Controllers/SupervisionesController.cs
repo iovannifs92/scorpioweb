@@ -224,6 +224,39 @@ namespace scorpioweb.Controllers
 
             return View(supervision);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
+        {
+            if (id != supervision.IdSupervision)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(supervision);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SupervisionExists(supervision.IdSupervision))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(PersonaSupervision));
+            }
+            return View(supervision);
+        }
+
         #endregion
 
         #region -Editar y borrar fracciones-        
@@ -418,19 +451,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            #region Estado Suprvición
-            List<SelectListItem> ListaEstadoS;
-            ListaEstadoS = new List<SelectListItem>
-            {
-                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
-                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
-                new SelectListItem{ Text = "Pendiente", Value = "PENDIENTE" },
-                };
-
-            ViewBag.listaEstadoSupervision = ListaEstadoS;
-            ViewBag.idEstadoSupervision = BuscaId(ListaEstadoS, estadoSuper);
-            #endregion
-
+            
 
 
             int pageSize = 10;
@@ -441,55 +462,30 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PersonaSupervision(int id)
+        public async Task<IActionResult> PersonaSupervision(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
         {
-            string currentUser = User.Identity.Name;
-
             if (ModelState.IsValid)
             {
-                if (datosSupervision.Count == 0)
+                try
                 {
-                    return RedirectToAction(nameof(Index));
+                    _context.Update(supervision);
+                    await _context.SaveChangesAsync();
                 }
-                var supervisionE = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
-                if (supervisionE == null)
+                catch (DbUpdateConcurrencyException)
                 {
-                    return NotFound();
+                    if (!SupervisionExists(supervision.IdSupervision))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-
-                supervisionE.EstadoSupervision = datosSupervision[0];
-
-                _context.Update(supervisionE);
-                await _context.SaveChangesAsync();
-                
                 return RedirectToAction(nameof(PersonaSupervision));
             }
-            return View();
+            return View(supervision);
         }
-
-
-        //public IActionResult ActualizaEstado(int id, string estadosupervision, DateTime inicio, DateTime termino, string estadoSupervision, int personaIdPersona, string estadoCumplimiento, int causaPenalIdCausaPenal)
-        //{
-        //    var supervision = new Supervision
-        //    {
-        //        IdSupervision = id,
-        //        EstadoSupervision = estadosupervision,
-        //        Inicio = inicio,
-        //        Termino = termino,
-        //        EstadoCumplimiento = estadoCumplimiento,
-        //        CausaPenalIdCausaPenal = causaPenalIdCausaPenal,
-        //        PersonaIdPersona = personaIdPersona
-
-        //    };
-
-        //    _context.Supervision.Attach(supervision).Property(x => x.EstadoSupervision).IsModified = true;
-        //    _context.SaveChanges();
-        //    return View();
-
-        //}
-
-
-
         #endregion
 
         #region -Supervision-
