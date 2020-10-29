@@ -1,11 +1,11 @@
 ﻿@model PaginatedList<scorpioweb.Models.SupervisionPyCP>
-
+    
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Personas Supervisión</h2>
+<h2>Personas Supervisión </h2>
 
 <form asp-action="PersonaSupervision" method="get">
     <div class="form-actions no-color">
@@ -31,7 +31,7 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody>  
         @foreach (var item in Model)
         {
             <tr>
@@ -42,11 +42,44 @@
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </td>
                 <th>
-                    @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+                    <form asp-action="PersonaSupervision" asp-route-id="@item.supervisionVM.IdSupervision">
+                        <input type="hidden" asp-for="@item.supervisionVM.IdSupervision" name="IdSupervision" />
+                        <input type="hidden" asp-for="@item.supervisionVM.EstadoCumplimiento" name="EstadoCumplimiento" />
+                        <input type="hidden" asp-for="@item.supervisionVM.CausaPenalIdCausaPenal" name="CausaPenalIdCausaPenal" />
+                        <input type="hidden" asp-for="@item.supervisionVM.PersonaIdPersona" name="PersonaIdPersona" />
+                        <input type="hidden" asp-for="@item.supervisionVM.Inicio" name="Inicio" />
+                        <input type="hidden" asp-for="@item.supervisionVM.Termino" name="Termino" />
+                        @if (item.supervisionVM.EstadoSupervision == "PENDIENTE")
+                        {
+                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="VIGENTE">VIGENTE</option>
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                            </select>
+
+                        }
+                        @if (item.supervisionVM.EstadoSupervision == "CONCLUIDO")
+                        {
+                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="VIGENTE">VIGENTE</option>
+
+                            </select>
+                        }
+                        @if (item.supervisionVM.EstadoSupervision == "VIGENTE")
+                        {
+                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
+                                <option value="VIGENTE">VIGENTE</option>
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                            </select>
+                        }
+                        <input type="submit" value="Guardar Cambios" class="btn btn-primary" />
+                    </form>
                 </th>
-      
                 <td>
-                    <a href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">Edición</a>
+                    <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">Edición</a>
                 </td>
             </tr>
         }

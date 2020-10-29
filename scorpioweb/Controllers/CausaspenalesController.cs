@@ -307,11 +307,6 @@ namespace scorpioweb.Controllers
             List<Persona> personaVM = _context.Persona.ToList();
             List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
 
-            //SQL nested query
-            //select idPersona from penas2.persona p
-            //where idPersona <> all(
-            //select persona_idPersona from penas2.personacausapenal
-            //where penas2.personacausapenal.CausaPenal_idCausaPenal = 1)
             listaPersonasAsignadas = (
                 from personaCausaPenalTable in personaCausaPenalVM
                 where personaCausaPenalTable.CausaPenalIdCausaPenal == id
