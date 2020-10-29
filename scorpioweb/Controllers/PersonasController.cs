@@ -35,6 +35,7 @@ namespace scorpioweb.Controllers
         public static List<List<string>> datosFamiliares = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
+        public static int idPersona;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
@@ -839,6 +840,41 @@ namespace scorpioweb.Controllers
             return View(persona);
         }
 
+        #endregion
+
+        #region -Entrevista-
+        public ActionResult Entrevista()
+        {
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+            ViewBag.personas = personas.ToList();
+
+            idPersona = 0;
+
+            return View();
+        }
+
+        [HttpPost, ActionName("Entrevista")]
+        [ValidateAntiForgeryToken]
+        public IActionResult EntrevistaPost()
+        {
+            string currentUser = User.Identity.Name;
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("MenuEdicion", "Personas", new { @id = idPersona });
+            }
+            return View();
+        }
+        #endregion
+
+        #region -Seleccionada-
+        public ActionResult Seleccionada(string[] datosPersona)
+        {
+            idPersona = Int32.Parse(datosPersona[0]);
+            return Json(new { success = true, responseText = "Persona seleccionada" });
+        }
         #endregion
 
         #region -Reportes-

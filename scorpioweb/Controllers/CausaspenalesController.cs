@@ -531,8 +531,7 @@ namespace scorpioweb.Controllers
         }
 
         #region -EditCausas-
-        public async Task<IActionResult> EditCausas(int? id)
-        
+        public async Task<IActionResult> EditCausas(int? id)     
         {
             var IdCausaPenal = id;
             if (IdCausaPenal == null)
