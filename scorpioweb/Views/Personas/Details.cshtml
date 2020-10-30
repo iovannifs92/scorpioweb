@@ -8,14 +8,6 @@
 
 @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
 {
-<div style="text-align:right">@Html.ActionLink("Genera Estado", "generaEstado", new { id = "" })</div>
-    <div class="btn">
-        @{Html.BeginForm("ExportToPDF","Personas", FormMethod.Post);
-            {
-                <input type="submit" class="btn-danger" value="Exportar a pdf" />
-            }
-        }
-    </div>
     <div class="table-responsive-lg">
         <div class="container">
             <div class="panel-group">

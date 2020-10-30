@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
+using SautinSoft.Document;
+
 
 namespace scorpioweb.Controllers
 {
@@ -86,6 +88,40 @@ namespace scorpioweb.Controllers
             {
                 return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
             }
+        }
+        #endregion
+
+        #region -CrearDocumento-
+        public void crearDocumento(string nombre)
+        {
+            string templatePath = "wwwroot/Documentos/template.docx";
+            string resultPath = "wwwroot/Documentos/" + nombre + ".docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            var dataSource = new[] { new { Nombre = nombre, Fecha = DateTime.Now.ToString("dd MMMMM yyyy") } };
+
+            var dataSource2 = new
+            {
+                f1 = "FRACCION I",
+                f2 = "FRACCION II",
+                f3 = "FRACCION III",
+                f4 = "FRACCION IV",
+                f5 = "FRACCION V",
+                f6 = "FRACCION VI",
+                f7 = "FRACCION VII"
+            };
+
+
+            dc.MailMerge.Execute(dataSource);
+
+            dc.MailMerge.ClearOptions = SautinSoft.Document.MailMerging.MailMergeClearOptions.RemoveEmptyTableRows;
+            dc.MailMerge.Execute(dataSource2, "Fracciones");
+            dc.Save(resultPath);
+
+            Response.Redirect("https://localhost:44359/Documentos/"+nombre+".docx");
+
+
         }
         #endregion
 
