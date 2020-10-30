@@ -307,11 +307,6 @@ namespace scorpioweb.Controllers
             List<Persona> personaVM = _context.Persona.ToList();
             List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
 
-            //SQL nested query
-            //select idPersona from penas2.persona p
-            //where idPersona <> all(
-            //select persona_idPersona from penas2.personacausapenal
-            //where penas2.personacausapenal.CausaPenal_idCausaPenal = 1)
             listaPersonasAsignadas = (
                 from personaCausaPenalTable in personaCausaPenalVM
                 where personaCausaPenalTable.CausaPenalIdCausaPenal == id
@@ -326,9 +321,6 @@ namespace scorpioweb.Controllers
                 orderby personaTable.Paterno
                 select personaTable
                 ).ToList();
-
-            //Nombre se puede cambiar a cualquier nombre de columna manteniendo el funcionamiento
-            listaPersonas.Insert(0, new Persona { IdPersona = 0, Nombre = ""});
 
             ViewBag.personas = listaPersonas;
 
@@ -534,8 +526,7 @@ namespace scorpioweb.Controllers
         }
 
         #region -EditCausas-
-        public async Task<IActionResult> EditCausas(int? id)
-        
+        public async Task<IActionResult> EditCausas(int? id)     
         {
             var IdCausaPenal = id;
             if (IdCausaPenal == null)
