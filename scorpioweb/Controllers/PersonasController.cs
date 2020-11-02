@@ -18,6 +18,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using SautinSoft.Document;
 
 namespace scorpioweb.Controllers
 {
@@ -35,6 +36,7 @@ namespace scorpioweb.Controllers
         public static List<List<string>> datosFamiliares = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
+        public static int idPersona;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
@@ -841,19 +843,194 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -Entrevista-
+        public ActionResult Entrevista()
+        {
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+            ViewBag.personas = personas.ToList();
+
+            idPersona = 0;
+
+            return View();
+        }
+
+        [HttpPost, ActionName("Entrevista")]
+        [ValidateAntiForgeryToken]
+        public IActionResult EntrevistaPost()
+        {
+            string currentUser = User.Identity.Name;
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("MenuEdicion", "Personas", new { @id = idPersona });
+            }
+            return View();
+        }
+        #endregion
+
+        #region -Seleccionada-
+        public ActionResult Seleccionada(string[] datosPersona)
+        {
+            idPersona = Int32.Parse(datosPersona[0]);
+            return Json(new { success = true, responseText = "Persona seleccionada" });
+        }
+        #endregion
+
         #region -Reportes-
         public ActionResult ReportePersona()
         {
             return View();
         }
 
-        public ActionResult Imprimir(int id)
+        public void Imprimir(int? id)
         {
-            var PDFResult = new ViewAsPdf("Details")
-            {
-                FileName = "Reporte.PDF"
-            };
-            return PDFResult;
+            var persona = _context.Persona
+               .SingleOrDefault(m => m.IdPersona == id);
+
+            #region -To List databases-
+
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Domicilio> domicilioVM = _context.Domicilio.ToList();
+            List<Estudios> estudiosVM = _context.Estudios.ToList();
+            List<Estados> estados = _context.Estados.ToList();
+            List<Municipios> municipios = _context.Municipios.ToList();
+            List<Domiciliosecundario> domicilioSecundarioVM = _context.Domiciliosecundario.ToList();
+            List<Consumosustancias> consumoSustanciasVM = _context.Consumosustancias.ToList();
+            List<Trabajo> trabajoVM = _context.Trabajo.ToList();
+            List<Actividadsocial> actividadSocialVM = _context.Actividadsocial.ToList();
+            List<Abandonoestado> abandonoEstadoVM = _context.Abandonoestado.ToList();
+            List<Saludfisica> saludFisicaVM = _context.Saludfisica.ToList();
+            List<Familiaresforaneos> familiaresForaneosVM = _context.Familiaresforaneos.ToList();
+            List<Asientofamiliar> asientoFamiliarVM = _context.Asientofamiliar.ToList();
+
+            #endregion
+
+            #region -Jointables-
+            List<PersonaViewModel> vistaPersona = (from personaTable in personaVM
+                                                   join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                                   join estudios in estudiosVM on persona.IdPersona equals estudios.PersonaIdPersona
+                                                   join trabajo in trabajoVM on persona.IdPersona equals trabajo.PersonaIdPersona
+                                                   join actividaSocial in actividadSocialVM on persona.IdPersona equals actividaSocial.PersonaIdPersona
+                                                   join abandonoEstado in abandonoEstadoVM on persona.IdPersona equals abandonoEstado.PersonaIdPersona
+                                                   join saludFisica in saludFisicaVM on persona.IdPersona equals saludFisica.PersonaIdPersona
+                                                   join nacimientoEstado in estados on (Int32.Parse(persona.Lnestado)) equals nacimientoEstado.Id
+                                                   join nacimientoMunicipio in municipios on (Int32.Parse(persona.Lnmunicipio)) equals nacimientoMunicipio.Id
+                                                   join domicilioEstado in estados on (Int32.Parse(domicilio.Estado)) equals domicilioEstado.Id
+                                                   join domicilioMunicipio in municipios on (Int32.Parse(domicilio.Municipio)) equals domicilioMunicipio.Id
+                                                   where personaTable.IdPersona == id
+                                                   select new PersonaViewModel
+                                                   {
+                                                       personaVM = personaTable,
+                                                       domicilioVM = domicilio,
+                                                       estudiosVM = estudios,
+                                                       trabajoVM = trabajo,
+                                                       actividadSocialVM = actividaSocial,
+                                                       abandonoEstadoVM = abandonoEstado,
+                                                       saludFisicaVM = saludFisica,
+                                                       estadosVMPersona = nacimientoEstado,
+                                                       municipiosVMPersona = nacimientoMunicipio,
+                                                       estadosVMDomicilio = domicilioEstado,
+                                                       municipiosVMDomicilio = domicilioMunicipio
+                                                   }).ToList();
+
+            #endregion
+
+            #region -GeneraDocumento-
+            string templatePath = "wwwroot/Documentos/templateEntrevista.docx";
+            string resultPath = "wwwroot/Documentos/entrevista.docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            var dataSource = new[] { new {
+                nombre = vistaPersona[0].personaVM.Paterno+" "+ vistaPersona[0].personaVM.Materno +" "+ vistaPersona[0].personaVM.Nombre,
+                genero = vistaPersona[0].personaVM.Genero,
+                lnacimiento=vistaPersona[0].personaVM.Lnlocalidad+", "+ vistaPersona[0].municipiosVMPersona.Municipio +", "+ vistaPersona[0].estadosVMPersona.Estado+", "+vistaPersona[0].personaVM.Lnpais,
+                fnacimiento=(Convert.ToDateTime(vistaPersona[0].personaVM.Fnacimiento)).ToString("dd MMMM yyyy"),
+                edad=vistaPersona[0].personaVM.Edad,
+                estadocivil=vistaPersona[0].personaVM.EstadoCivil,
+                duracionestadocivil=vistaPersona[0].personaVM.Duracion,
+                hablaidioma=vistaPersona[0].personaVM.OtroIdioma,
+                especifiqueidioma=vistaPersona[0].personaVM.EspecifiqueIdioma,
+                leerescribir=vistaPersona[0].personaVM.LeerEscribir,
+                traductor=vistaPersona[0].personaVM.Traductor,
+                especifiquetraductor=vistaPersona[0].personaVM.EspecifiqueTraductor,
+                telefono=vistaPersona[0].personaVM.TelefonoFijo,
+                celular=vistaPersona[0].personaVM.Celular,
+                hijos=vistaPersona[0].personaVM.Hijos,
+                cuantoshijos=vistaPersona[0].personaVM.Nhijos,
+                personasvive=vistaPersona[0].personaVM.NpersonasVive,
+                otraspropiedades=vistaPersona[0].personaVM.Propiedades,
+                curp=vistaPersona[0].personaVM.Curp,
+                consumosustancias=vistaPersona[0].personaVM.ConsumoSustancias,
+                tipopropiedad=vistaPersona[0].domicilioVM.TipoDomicilio,
+                direccion=vistaPersona[0].domicilioVM.Calle+" "+vistaPersona[0].domicilioVM.No+", "+vistaPersona[0].domicilioVM.NombreCf+" CP "+vistaPersona[0].domicilioVM.Cp+", "+vistaPersona[0].estadosVMDomicilio.Estado+", "+vistaPersona[0].municipiosVMDomicilio.Municipio+", "+vistaPersona[0].domicilioVM.Pais,
+                tiempoendomicilio=vistaPersona[0].domicilioVM.Temporalidad,
+                residenciahabitual=vistaPersona[0].domicilioVM.ResidenciaHabitual,
+                referenciasdomicilio=vistaPersona[0].domicilioVM.Referencias,
+                horariodomicilio=vistaPersona[0].domicilioVM.Horario,
+                observacionesdomicilio=vistaPersona[0].domicilioVM.Observaciones,
+                domiciliosecundario=vistaPersona[0].domicilioVM.DomcilioSecundario,
+                estudia=vistaPersona[0].estudiosVM.Estudia,
+                gradoestudios=vistaPersona[0].estudiosVM.GradoEstudios,
+                institucionestudios=vistaPersona[0].estudiosVM.InstitucionE,
+                horarioescuela=vistaPersona[0].estudiosVM.Horario,
+                direccionescuela=vistaPersona[0].estudiosVM.Direccion,
+                telefonoescuela=vistaPersona[0].estudiosVM.Telefono,
+                observacionesescolaridad=vistaPersona[0].estudiosVM.Observaciones,
+                trabaja=vistaPersona[0].trabajoVM.Trabaja,
+                tipoocupacion=vistaPersona[0].trabajoVM.TipoOcupacion,
+                puesto=vistaPersona[0].trabajoVM.Puesto,
+                empleador=vistaPersona[0].trabajoVM.EmpledorJefe,
+                enteradoprocesotrabajo=vistaPersona[0].trabajoVM.EnteradoProceso,
+                sepuedeenterartrabajo=vistaPersona[0].trabajoVM.SePuedeEnterar,
+                tiempotrabajando=vistaPersona[0].trabajoVM.TiempoTrabajano,
+                salario=(Convert.ToInt32(vistaPersona[0].trabajoVM.Salario)/100).ToString("C",CultureInfo.CurrentCulture),
+                temporalidadpago=vistaPersona[0].trabajoVM.TemporalidadSalario,
+                direcciontrabajo=vistaPersona[0].trabajoVM.Direccion,
+                horariotrabajo=vistaPersona[0].trabajoVM.Horario,
+                telefonotrabajo=vistaPersona[0].trabajoVM.Telefono,
+                observacionestrabajo=vistaPersona[0].trabajoVM.Observaciones,
+                tipoactividad=vistaPersona[0].actividadSocialVM.TipoActividad,
+                horarioactividad=vistaPersona[0].actividadSocialVM.Horario,
+                lugaractividad=vistaPersona[0].actividadSocialVM.Lugar,
+                telefonoactividad=vistaPersona[0].actividadSocialVM.Telefono,
+                sepuedeenteraractividad=vistaPersona[0].actividadSocialVM.SePuedeEnterar,
+                referenciaactividad=vistaPersona[0].actividadSocialVM.Referencia,
+                observacionesactividad=vistaPersona[0].actividadSocialVM.Observaciones,
+                vividofuera=vistaPersona[0].abandonoEstadoVM.VividoFuera,
+                lugaresvivido=vistaPersona[0].abandonoEstadoVM.LugaresVivido,
+                temporalidadviajes=vistaPersona[0].abandonoEstadoVM.TiempoVivido,
+                motivovivido=vistaPersona[0].abandonoEstadoVM.MotivoVivido,
+                viajahabitualmente=vistaPersona[0].abandonoEstadoVM.ViajaHabitual,
+                lugaresviaje=vistaPersona[0].abandonoEstadoVM.LugaresViaje,
+                tiempoviajes=vistaPersona[0].abandonoEstadoVM.TiempoViaje,
+                motivoviajes=vistaPersona[0].abandonoEstadoVM.MotivoViaje,
+                documentacion=vistaPersona[0].abandonoEstadoVM.DocumentacionSalirPais,
+                pasaporte=vistaPersona[0].abandonoEstadoVM.Pasaporte,
+                visa=vistaPersona[0].abandonoEstadoVM.Visa,
+                familiaresfuera=vistaPersona[0].abandonoEstadoVM.FamiliaresFuera,
+                enfermedades=vistaPersona[0].saludFisicaVM.Enfermedad,
+                especenfermedad=vistaPersona[0].saludFisicaVM.EspecifiqueEnfermedad,
+                tratamientomedico=vistaPersona[0].saludFisicaVM.Tratamiento,
+                discapacidad=vistaPersona[0].saludFisicaVM.Discapacidad,
+                especdiscapacidad=vistaPersona[0].saludFisicaVM.EspecifiqueDiscapacidad,
+                serviciomedico=vistaPersona[0].saludFisicaVM.ServicioMedico,
+                tiposervicio=vistaPersona[0].saludFisicaVM.EspecifiqueServicioMedico,
+                institucionsalud=vistaPersona[0].saludFisicaVM.InstitucionServicioMedico,
+                observacionessalud=vistaPersona[0].saludFisicaVM.Observaciones
+
+            } };
+
+            dc.MailMerge.Execute(dataSource);
+            dc.Save(resultPath);
+
+            Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
+            #endregion
+
+
+
         }
         #endregion
 

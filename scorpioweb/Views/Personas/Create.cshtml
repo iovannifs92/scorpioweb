@@ -902,7 +902,10 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:#415667; color:#fff">Cerrar</button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                            <i class="fa fa-close"></i>
+                                            Cerrar
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1173,9 +1176,9 @@
                                 </select>
                             </div>
                             @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                                <label class="control-label">¿Cuántos familiares?</label>
-                                <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                            </div>*@
+                            <label class="control-label">¿Cuántos familiares?</label>
+                            <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                        </div>*@
                         </div>
                     </div>
                     <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1257,8 +1260,13 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Guardar Registro" class="btn btn-default" />
+            <div class="col-md-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -1322,14 +1330,20 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">Guardar sustancia</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Aiento Familiar -->
+<!-- Modal Asiento Familiar -->
 <div class="modal fade" id="modalAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -1420,8 +1434,14 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardarFamiliar" name="btnGuardarFamiliar">Guardar Familiar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFamiliar" name="btnGuardarFamiliar">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
@@ -1529,16 +1549,22 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" style="background-color:#fff; color:#000; border-color:#000;" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">Guardar familiar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-
-
 <div>
-    <a asp-action="Index">Regresar a lista de usuarios</a>
+    <a class="btn btn-link" asp-action="Index">
+        Regresar a lista de usuarios
+    </a>
 </div>
 

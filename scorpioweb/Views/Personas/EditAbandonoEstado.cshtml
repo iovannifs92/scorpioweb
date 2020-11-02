@@ -78,11 +78,6 @@
     });
 </script>
 
-
-
-
-
-
 @{
     ViewData["Title"] = "EditAbandonoEstado";
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -91,6 +86,7 @@
 <h2>Abandono Estado</h2>
 <h3>@ViewData["Nombre"]</h3>
 <hr />
+
 <div class="row">
     <div class="col-md-12">
         <form asp-action="EditAbandonoEstado">
@@ -236,15 +232,18 @@
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </form>
     </div>
-</div>
 
-<div>
-    <a asp-action="MenuEdicion" asp-route-id="@Model.PersonaIdPersona">Regresar</a>
-</div>
+
+<a asp-action="MenuEdicion" asp-route-id="@Model.PersonaIdPersona" class="btn btn-link">
+    Regresar
+</a>
 
 <!-- Modal Familiares en el extranjero -->
 <div class="modal fade" id="modalFamiliaresExtranjero" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -348,8 +347,14 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" style="background-color:#fff; color:#000; border-color:#000;" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">Guardar familiar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
