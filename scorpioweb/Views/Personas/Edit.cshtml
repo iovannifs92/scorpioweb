@@ -128,7 +128,7 @@
 
 <hr />
 <div class="row">
-    <div>
+    <div class="col-md-12">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdPersona" />
@@ -295,14 +295,19 @@
                 <span asp-validation-for="Supervisor" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">
-                <input type="submit" value="Guardar Cambios" class="btn btn-success" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="MenuEdicion" asp-route-id="@Model.IdPersona">Regresar</a>
+    <a asp-action="MenuEdicion" asp-route-id="@Model.IdPersona" class="btn btn-link">
+        Regresar
+    </a>
 </div>
 
 
@@ -364,8 +369,14 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">Guardar sustancia</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
             </div>
         </div>
     </div>

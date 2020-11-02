@@ -13,8 +13,13 @@
     <div class="form-actions no-color">
         <p>
             Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Buscar" class="btn btn-default" /> |
-            <a asp-action="ListadoSupervisor">Regresar al listado completo</a>
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="Index" class="btn btn-link">
+                Regresar al listado completo
+            </a>
         </p>
     </div>
 </form>
@@ -50,8 +55,12 @@
                     @Html.DisplayFor(modelItem => item.UltimaActualización)
                 </th>
                 <td>
-                    <a asp-action="MenuEdicion" asp-route-id="@item.IdPersona">Editar</a> |
-                    <a asp-action="Details" asp-route-id="@item.IdPersona">Details</a> |
+                    <a asp-action="MenuEdicion" asp-route-id="@item.IdPersona" class="btn btn-link">
+                        Editar
+                    </a> |
+                    <a asp-action="Details" asp-route-id="@item.IdPersona" class="btn btn-link">
+                        Detalles
+                     </a>
                     @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
                 </td>
             </tr>
