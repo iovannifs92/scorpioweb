@@ -102,61 +102,128 @@
                         asp-items="@(new SelectList(ViewBag.listaVividoFuera, "Value", "Text", @ViewBag.idVividoFuera))">
                 </select>
             </div>
-            <div class="form-group" style="display:none" id="lugaresVivido">
-                <label class="control-label">Si ha vivido fuera especificar que lugares</label>
-                <input asp-for="LugaresVivido" class="form-control" name="LugaresVivido" />
-                <span asp-validation-for="LugaresVivido" class="text-danger"></span>
-            </div>
-            <div class="form-group" style="display:none" id="tiempoVivido">
-                <label class="control-label">Tiempo que vivio en esos lugares</label>
-                <input asp-for="TiempoVivido" class="form-control" name="TiempoVivido" />
-                <span asp-validation-for="TiempoVivido" class="text-danger"></span>
-            </div>
-            <div class="form-group" style="display:none" id="motivoVivido">
-                <label class="control-label">Motivo</label>
-                <input asp-for="MotivoVivido" class="form-control" name="MotivoVivido" />
-                <span asp-validation-for="MotivoVivido" class="text-danger"></span>
-            </div>
+
+            @if (ViewBag.vfuera == "SI")
+            {
+                <div class="form-group" id="lugaresVivido">
+                    <label class="control-label">Si ha vivido fuera especificar que lugares</label>
+                    <input asp-for="LugaresVivido" class="form-control" name="LugaresVivido" />
+                    <span asp-validation-for="LugaresVivido" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="tiempoVivido">
+                    <label class="control-label">Tiempo que vivio en esos lugares</label>
+                    <input asp-for="TiempoVivido" class="form-control" name="TiempoVivido" />
+                    <span asp-validation-for="TiempoVivido" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display:none" id="motivoVivido">
+                    <label class="control-label">Motivo</label>
+                    <input asp-for="MotivoVivido" class="form-control" name="MotivoVivido" />
+                    <span asp-validation-for="MotivoVivido" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group" style="display:none" id="lugaresVivido">
+                    <label class="control-label">Si ha vivido fuera especificar que lugares</label>
+                    <input asp-for="LugaresVivido" class="form-control" name="LugaresVivido" />
+                    <span asp-validation-for="LugaresVivido" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display:none" id="tiempoVivido">
+                    <label class="control-label">Tiempo que vivio en esos lugares</label>
+                    <input asp-for="TiempoVivido" class="form-control" name="TiempoVivido" />
+                    <span asp-validation-for="TiempoVivido" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display:none" id="motivoVivido">
+                    <label class="control-label">Motivo</label>
+                    <input asp-for="MotivoVivido" class="form-control" name="MotivoVivido" />
+                    <span asp-validation-for="MotivoVivido" class="text-danger"></span>
+                </div>
+            }
+
             <div class="form-group">
                 <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
                 <select class="form-control" id="ViajaHabitual" name="ViajaHabitual"
                         asp-items="@(new SelectList(ViewBag.listaViajaHabitual, "Value", "Text", @ViewBag.idViajaHabitual))">
                 </select>
             </div>
-            <div class="form-group" style="display:none" id="lugaresViaje">
-                <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
-                <input asp-for="LugaresViaje" class="form-control" />
-                <span asp-validation-for="LugaresViaje" class="text-danger"></span>
-            </div>
-            <div class="form-group" style="display:none" id="tiempoViaje">
-                <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
-                <input asp-for="TiempoViaje" class="form-control" />
-                <span asp-validation-for="TiempoViaje" class="text-danger"></span>
-            </div>
-            <div class="form-group" style="display:none" id="motivoViaje">
-                <label class="control-label">Motivo por el que viaja</label>
-                <input asp-for="MotivoViaje" class="form-control" />
-                <span asp-validation-for="MotivoViaje" class="text-danger"></span>
-            </div>
+
+            @if (ViewBag.vlugar == "SI")
+            {
+                <div class="form-group" id="lugaresViaje">
+                    <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
+                    <input asp-for="LugaresViaje" class="form-control" />
+                    <span asp-validation-for="LugaresViaje" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="tiempoViaje">
+                    <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
+                    <input asp-for="TiempoViaje" class="form-control" />
+                    <span asp-validation-for="TiempoViaje" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="motivoViaje">
+                    <label class="control-label">Motivo por el que viaja</label>
+                    <input asp-for="MotivoViaje" class="form-control" />
+                    <span asp-validation-for="MotivoViaje" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group" style="display:none" id="lugaresViaje">
+                    <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
+                    <input asp-for="LugaresViaje" class="form-control" />
+                    <span asp-validation-for="LugaresViaje" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display:none" id="tiempoViaje">
+                    <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
+                    <input asp-for="TiempoViaje" class="form-control" />
+                    <span asp-validation-for="TiempoViaje" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display:none" id="motivoViaje">
+                    <label class="control-label">Motivo por el que viaja</label>
+                    <input asp-for="MotivoViaje" class="form-control" />
+                    <span asp-validation-for="MotivoViaje" class="text-danger"></span>
+                </div>
+            }
+
             <div class="form-group">
                 <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
                 <select class="form-control" id="DocumentacionSalirPais" name="DocumentacionSalirPais   "
                         asp-items="@(new SelectList(ViewBag.listaDocumentacionSalirPais, "Value", "Text", @ViewBag.idDocumentacionSalirPais))">
                 </select>
             </div>
-            <div class="form-group" style="display:none" id="pasaporte">
-                <label class="control-label">¿Cuenta con pasaporte?</label>
-                <select class="form-control" id="pasaporteDentro" name="pasaporte"
-                        asp-items="@(new SelectList(ViewBag.listaPasaporte, "Value", "Text", @ViewBag.idPasaporte))">
-                </select>
-            </div>
 
-            <div class="form-group" style="display:none" id="visa">
-                <label class="control-label">¿Cuenta con visa?</label>
-                <select class="form-control" id="visaDentro" name="visa"
-                        asp-items="@(new SelectList(ViewBag.listaVisa, "Value", "Text", @ViewBag.idVisa))">
-                </select>
-            </div>
+            @if (ViewBag.ducument == "SI")
+            {
+                <div class="form-group" id="pasaporte">
+                    <label class="control-label">¿Cuenta con pasaporte?</label>
+                    <select class="form-control" id="pasaporteDentro" name="pasaporte"
+                            asp-items="@(new SelectList(ViewBag.listaPasaporte, "Value", "Text", @ViewBag.idPasaporte))">
+                    </select>
+                </div>
+
+                <div class="form-group" id="visa">
+                    <label class="control-label">¿Cuenta con visa?</label>
+                    <select class="form-control" id="visaDentro" name="visa"
+                            asp-items="@(new SelectList(ViewBag.listaVisa, "Value", "Text", @ViewBag.idVisa))">
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="form-group" style="display:none" id="pasaporte">
+                    <label class="control-label">¿Cuenta con pasaporte?</label>
+                    <select class="form-control" id="pasaporteDentro" name="pasaporte"
+                            asp-items="@(new SelectList(ViewBag.listaPasaporte, "Value", "Text", @ViewBag.idPasaporte))">
+                    </select>
+                </div>
+
+                <div class="form-group" style="display:none" id="visa">
+                    <label class="control-label">¿Cuenta con visa?</label>
+                    <select class="form-control" id="visaDentro" name="visa"
+                            asp-items="@(new SelectList(ViewBag.listaVisa, "Value", "Text", @ViewBag.idVisa))">
+                    </select>
+                </div>
+            }
+
             <div class="form-group">
                 <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
                 <select class="form-control" name="FamiliaresFuera" id="familiaresFuera"

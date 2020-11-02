@@ -5,38 +5,6 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-    <script type="text/javascript">
-        var tipo = 0;
-        $(document).ready(function () {
-            $('#supervisionE').on("change", function (e) {
-                e.preventDefault();
-                var s = document.getElementById("supervisionE");
-                var supervisionE = s.options[s.selectedIndex].value;
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/Supervisiones/guardarSupervision",
-                    traditional: true,
-                    data: {
-                        datosS: [supervisionE],
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            alert(response.responseText);
-                           
-                        } else {
-                            alert(response.responseText);
-                        }
-                    },
-                    error: function (response) {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                    }
-                });
-            });
-        });
-    </script>
-
-
 <h2>Personas Supervisión </h2>
 
 <form asp-action="PersonaSupervision" method="get">
@@ -63,32 +31,58 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody>  
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)  </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
-            </td>
-            <th>
-                <form asp-action="PersonaSupervision" >
-                    <select class="form-control" name="supervisionE" id="supervisionE"
-                            asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Value", "Text", @item.supervisionVM.EstadoSupervision))">
-                    </select>
-                </form>
-            </th>
-            <th>
-                <form asp-action="PersonaSupervision" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-id="@item.supervisionVM.EstadoCumplimiento" >
-                    <input type="submit" value="Guardar Estado de Supervisión" class="btn btn-primary" />
-                </form>
-
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
+                </td>
+                <td>
+                    <form asp-action="PersonaSupervision" asp-route-id="@item.supervisionVM.IdSupervision">
+                        <input type="hidden" asp-for="@item.supervisionVM.IdSupervision" name="IdSupervision" />
+                        <input type="hidden" asp-for="@item.supervisionVM.EstadoCumplimiento" name="EstadoCumplimiento" />
+                        <input type="hidden" asp-for="@item.supervisionVM.CausaPenalIdCausaPenal" name="CausaPenalIdCausaPenal" />
+                        <input type="hidden" asp-for="@item.supervisionVM.PersonaIdPersona" name="PersonaIdPersona" />
+                        <input type="hidden" asp-for="@item.supervisionVM.Inicio" name="Inicio" />
+                        <input type="hidden" asp-for="@item.supervisionVM.Termino" name="Termino" />
+                        @if (item.supervisionVM.EstadoSupervision == "PENDIENTE")
+                        {
+                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="VIGENTE">VIGENTE</option>
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                            </select>
+                        }
+                        @if (item.supervisionVM.EstadoSupervision == "CONCLUIDO")
+                        {
+                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="VIGENTE">VIGENTE</option>
+                            </select>
+                        }
+                        @if (item.supervisionVM.EstadoSupervision == "VIGENTE")
+                        {
+                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
+                                <option value="VIGENTE">VIGENTE</option>
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                            </select>
+                        }
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar Cambios
+                    </button>
+                    </form>
+                </td>
+                <th>
+                    <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                        <i class="fa fa-pencil"></i> Edición</a>
                 </th>
-            <td>
-                <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">Edición</a>
-            </td>
-        </tr>
+            </tr>
         }
     </tbody>
 </table>

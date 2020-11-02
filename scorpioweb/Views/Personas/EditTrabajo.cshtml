@@ -5,6 +5,46 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+    <script type="text/javascript">
+        var tipo = 0;
+        $(document).ready(function () {
+            $('#trabajo').change(function () {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
+                    $("#DivTipoOcupacion").css("display", "block");
+                    $("#DivPuesto").css("display", "block");
+                    $("#DivEmpledorJefe").css("display", "block");
+                    $("#DivEnteradoProceso").css("display", "block");
+                    $("#DivSePuedeEnterar").css("display", "block");
+                    $("#DivTiempoTrabajando").css("display", "block");
+                    $("#DivSalario").css("display", "block");
+                    $("#DivTemporalidadSalario").css("display", "block");
+                    $("#DivDireccion").css("display", "block");
+                    $("#DivHorario").css("display", "block");
+                    $("#DivTelefono").css("display", "block");
+                    $("#DivObservaciones").css("display", "block");
+                }
+                else {
+                    $("#DivTipoOcupacion").css("display", "none");
+                    $("#DivPuesto").css("display", "none");
+                    $("#DivEmpledorJefe").css("display", "none");
+                    $("#DivEnteradoProceso").css("display", "none");
+                    $("#DivSePuedeEnterar").css("display", "none");
+                    $("#DivTiempoTrabajando").css("display", "none");
+                    $("#DivSalario").css("display", "none");
+                    $("#DivTemporalidadSalario").css("display", "none");
+                    $("#DivDireccion").css("display", "none");
+                    $("#DivHorario").css("display", "none");
+                    $("#DivTelefono").css("display", "none");
+                    $("#DivObservaciones").css("display", "none");
+                }
+            });
+
+        });
+    </script>
+
+
+
 <h2>Trabajo</h2>
 <h3>@ViewData["Nombre"]</h3>
 
@@ -15,81 +55,153 @@
             <input type="hidden" asp-for="IdTrabajo" />
             <div class="form-group col-md-4">
                 <label class="control-label">¿Trabaja actualmente?</label>
-                <select class="form-control" name="Trabaja"
+                <select class="form-control" name="Trabaja" id="trabajo"
                         asp-items="@(new SelectList(ViewBag.listaTrabaja, "Value", "Text", @ViewBag.idTrabaja))">
                 </select>
             </div>
-            <div class="form-group col-md-8">
-                <label class="control-label">Tipo de ocupación</label>
-                <select class="form-control" name="TipoOcupacion"
-                        asp-items="@(new SelectList(ViewBag.listaTipoOcupacion, "Value", "Text", @ViewBag.idTipoOcupacion))">
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <label asp-for="Puesto" class="control-label"></label>
-                <input asp-for="Puesto" class="form-control" />
-                <span asp-validation-for="Puesto" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6">
-                <label asp-for="EmpledorJefe" class="control-label"></label>
-                <input asp-for="EmpledorJefe" class="form-control" />
-                <span asp-validation-for="EmpledorJefe" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6">
-                <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
-                <select class="form-control" name="EnteradoProceso"
-                        asp-items="@(new SelectList(ViewBag.listaEnteradoProceso, "Value", "Text", @ViewBag.idEnteradoProceso))">
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <label class="control-label">¿Se puede enterar?</label>
-                <select class="form-control" name="SePuedeEnterar"
-                        asp-items="@(new SelectList(ViewBag.listaSePuedeEnterart, "Value", "Text", @ViewBag.idSePuedeEnterart))">
-                </select>
-            </div>
+            @if (ViewBag.trabaja == "SI")
+            {
+                <div class="form-group col-md-8" id="DivTipoOcupacion">
+                    <label class="control-label">Tipo de ocupación</label>
+                    <select class="form-control" name="TipoOcupacion"
+                            asp-items="@(new SelectList(ViewBag.listaTipoOcupacion, "Value", "Text", @ViewBag.idTipoOcupacion))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivPuesto">
+                    <label asp-for="Puesto" class="control-label"></label>
+                    <input asp-for="Puesto" class="form-control" />
+                    <span asp-validation-for="Puesto" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" id="DivEmpledorJefe">
+                    <label asp-for="EmpledorJefe" class="control-label"></label>
+                    <input asp-for="EmpledorJefe" class="form-control" />
+                    <span asp-validation-for="EmpledorJefe" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" id="DivEnteradoProceso">
+                    <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
+                    <select class="form-control" name="EnteradoProceso"
+                            asp-items="@(new SelectList(ViewBag.listaEnteradoProceso, "Value", "Text", @ViewBag.idEnteradoProceso))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivSePuedeEnterar">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select class="form-control" name="SePuedeEnterar"
+                            asp-items="@(new SelectList(ViewBag.listaSePuedeEnterart, "Value", "Text", @ViewBag.idSePuedeEnterart))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" id="DivTiempoTrabajando">
+                    <label class="control-label">Tiempo</label>
+                    <select class="form-control" name="TiempoTrabajando"
+                            asp-items="@(new SelectList(ViewBag.listaTiempoTrabajando, "Value", "Text", @ViewBag.idTiempoTrabajando))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivSalario">
+                    <label asp-for="Salario" class="control-label"></label>
+                    <input asp-for="Salario" class="form-control" />
+                    <span asp-validation-for="Salario" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" id="DivTemporalidadSalario">
+                    <label class="control-label">Cada cuando le pagan</label>
+                    <select class="form-control" name="TemporalidadSalario"
+                            asp-items="@(new SelectList(ViewBag.listaTemporalidadSalario, "Value", "Text", @ViewBag.idTemporalidadSalario))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" id="DivDireccion">
+                    <label asp-for="Direccion" class="control-label"></label>
+                    <input asp-for="Direccion" class="form-control" />
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" id="DivHorario">
+                    <label asp-for="Horario" class="control-label"></label>
+                    <input asp-for="Horario" class="form-control" />
+                    <span asp-validation-for="Horario" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" id="DivTelefono">
+                    <label asp-for="Telefono" class="control-label"></label>
+                    <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12" id="DivObservaciones">
+                    <label asp-for="Observaciones" class="control-label"></label>
+                    <input asp-for="Observaciones" class="form-control" />
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group col-md-8" style="display:none" id="DivTipoOcupacion">
+                    <label class="control-label">Tipo de ocupación</label>
+                    <select class="form-control" name="TipoOcupacion"
+                            asp-items="@(new SelectList(ViewBag.listaTipoOcupacion, "Value", "Text", @ViewBag.idTipoOcupacion))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6"  style="display:none" id="DivPuesto">
+                    <label asp-for="Puesto" class="control-label"></label>
+                    <input asp-for="Puesto" class="form-control" />
+                    <span asp-validation-for="Puesto" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" style="display:none" id="DivEmpledorJefe">
+                    <label asp-for="EmpledorJefe" class="control-label"></label>
+                    <input asp-for="EmpledorJefe" class="form-control" />
+                    <span asp-validation-for="EmpledorJefe" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" style="display:none" id="DivEnteradoProceso">
+                    <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
+                    <select class="form-control" name="EnteradoProceso"
+                            asp-items="@(new SelectList(ViewBag.listaEnteradoProceso, "Value", "Text", @ViewBag.idEnteradoProceso))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" style="display:none" id="DivSePuedeEnterar">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select class="form-control" name="SePuedeEnterar"
+                            asp-items="@(new SelectList(ViewBag.listaSePuedeEnterart, "Value", "Text", @ViewBag.idSePuedeEnterart))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="DivTiempoTrabajando">
+                    <label class="control-label">Tiempo</label>
+                    <select class="form-control" name="TiempoTrabajando"
+                            asp-items="@(new SelectList(ViewBag.listaTiempoTrabajando, "Value", "Text", @ViewBag.idTiempoTrabajando))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" style="display:none" id="DivSalario">
+                    <label asp-for="Salario" class="control-label"></label>
+                    <input asp-for="Salario" class="form-control" />
+                    <span asp-validation-for="Salario" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" style="display:none" id="DivTemporalidadSalario">
+                    <label class="control-label">Cada cuando le pagan</label>
+                    <select class="form-control" name="TemporalidadSalario"
+                            asp-items="@(new SelectList(ViewBag.listaTemporalidadSalario, "Value", "Text", @ViewBag.idTemporalidadSalario))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="DivDireccion">
+                    <label asp-for="Direccion" class="control-label"></label>
+                    <input asp-for="Direccion" class="form-control" />
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6" style="display:none" id="DivHorario">
+                    <label asp-for="Horario" class="control-label"></label>
+                    <input asp-for="Horario" class="form-control" />
+                    <span asp-validation-for="Horario" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6"  style="display:none" id="DivTelefono">
+                    <label asp-for="Telefono" class="control-label"></label>
+                    <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12"  style="display:none" id="DivObservaciones">
+                    <label asp-for="Observaciones" class="control-label"></label>
+                    <input asp-for="Observaciones" class="form-control" />
+                    <span asp-validation-for="Observaciones" class="text-danger"></span>
+                </div>
+            }
+
             <div class="form-group col-md-12">
-                <label class="control-label">Tiempo</label>
-                <select class="form-control" name="TiempoTrabajando"
-                        asp-items="@(new SelectList(ViewBag.listaTiempoTrabajando, "Value", "Text", @ViewBag.idTiempoTrabajando))">
-                </select>
-            </div>
-            <div class="form-group col-md-6">
-                <label asp-for="Salario" class="control-label"></label>
-                <input asp-for="Salario" class="form-control" />
-                <span asp-validation-for="Salario" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6">
-                <label class="control-label">Cada cuando le pagan</label>
-                <select class="form-control" name="TemporalidadSalario"
-                        asp-items="@(new SelectList(ViewBag.listaTemporalidadSalario, "Value", "Text", @ViewBag.idTemporalidadSalario))">
-                </select>
-            </div>
-            <div class="form-group col-md-12">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6">
-                <label asp-for="Horario" class="control-label"></label>
-                <input asp-for="Horario" class="form-control" />
-                <span asp-validation-for="Horario" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12">
-                <label asp-for="Observaciones" class="control-label"></label>
-                <input asp-for="Observaciones" class="form-control" />
-                <span asp-validation-for="Observaciones" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="PersonaIdPersona" class="control-label"></label>
                 <input asp-for="PersonaIdPersona" class="form-control" />
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-lg-12">
                 <input type="submit" value="Guardar cambios" class="btn btn-success" />
             </div>
         </form>

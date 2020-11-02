@@ -1000,6 +1000,10 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaPropiedades = listaNoSi;
             ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
+            ViewBag.pais = persona.Lnpais;
+            ViewBag.idioma = persona.OtroIdioma;
+            ViewBag.traductor = persona.Traductor;
+            ViewBag.Hijos = persona.Hijos;
 
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
@@ -1167,6 +1171,7 @@ namespace scorpioweb.Controllers
             ViewBag.listacuentaDomicilioSecundario = listaNoSi;
             ViewBag.idcuentaDomicilioSecundario = BuscaId(listaNoSi, domicilio.DomcilioSecundario);
 
+            ViewBag.pais = domicilio.Pais;
 
             if (domicilio == null)
             {
@@ -1339,6 +1344,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listasePuedeEnterarT = listaNoSiNA;
             ViewBag.idsePuedeEnterart = BuscaId(listaNoSiNA, trabajo.SePuedeEnterar);
+            ViewBag.trabaja = trabajo.Trabaja;
 
             #region TiempoTrabajando
             List<SelectListItem> ListaTiempoTrabajando;
@@ -1508,6 +1514,10 @@ namespace scorpioweb.Controllers
             ViewBag.listaFamiliaresFuera = listaNoSi;
             ViewBag.idFamiliaresFuera = BuscaId(listaNoSi, abandonoestado.FamiliaresFuera);
 
+            ViewBag.vfuera = abandonoestado.VividoFuera;
+            ViewBag.vlugar = abandonoestado.ViajaHabitual;
+            ViewBag.document = abandonoestado.DocumentacionSalirPais;
+
 
 
             if (abandonoestado == null)
@@ -1583,6 +1593,10 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaServicioMedico = listaNoSi;
             ViewBag.idServicioMedico = BuscaId(listaNoSi, saludfisica.ServicioMedico);
+
+            ViewBag.enfermedad = saludfisica.Enfermedad;
+            ViewBag.especial = saludfisica.Discapacidad;
+            ViewBag.smedico = saludfisica.ServicioMedico;
 
             #region EspecifiqueServicioMedico
             List<SelectListItem> ListaEspecifiqueServicioMedico;

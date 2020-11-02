@@ -1,56 +1,58 @@
 ﻿@model scorpioweb.Models.Saludfisica
 
-<script type="text/javascript">
-    var tipo = 0;
-    $(document).ready(function () {
-        $('#enfermedad').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#especifiqueEnfermedad").css("display", "block");
-                $("#tratamiento").css("display", "block");
-            }
-            else {
-                $("#especifiqueEnfermedad").css("display", "none");
-                $("#tratamiento").css("display", "none");
-            }
-        });
+    <script type="text/javascript">
+        var tipo = 0;
+        $(document).ready(function () {
+            $('#enfermedad').change(function () {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
+                    $("#especifiqueEnfermedad").css("display", "block");
+                    $("#tratamiento").css("display", "block");
+                }
+                else {
+                    $("#especifiqueEnfermedad").css("display", "none");
+                    $("#tratamiento").css("display", "none");
+                }
+            });
 
-        $('#embarazoLactancia').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#tiempoEmbarazo").css("display", "block");
-                $("#tratamiento").css("display", "block");
-            }
-            else {
-                $("#tiempoEmbarazo").css("display", "none");
-                $("#tratamiento").css("display", "none");
-            }
+            $('#embarazoLactancia').change(function () {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
+                    $("#tiempoEmbarazo").css("display", "block");
+                    $("#tratamiento").css("display", "block");
+                }
+                else {
+                    $("#tiempoEmbarazo").css("display", "none");
+                    $("#tratamiento").css("display", "none");
+                }
 
-        });
-        $('#discapacidad').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#especifiqueDiscapacidad").css("display", "block");
-            }
-            else {
-                $("#especifiqueDiscapacidad").css("display", "none");
-            }
+            });
+            $('#discapacidad').change(function () {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
+                    $("#especifiqueDiscapacidad").css("display", "block");
+                }
+                else {
+                    $("#especifiqueDiscapacidad").css("display", "none");
+                }
 
-        });
-        $('#servicioMedico').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#especifiqueServicioMedico").css("display", "block");
-                $("#institucionServicioMedico").css("display", "block");
-            }
-            else {
-                $("#especifiqueServicioMedico").css("display", "none");
-                $("#institucionServicioMedico").css("display", "none");
-            }
+            });
+            $('#servicioMedico').change(function () {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
+                    $("#especifiqueServicioMedico").css("display", "block");
+                    $("#institucionServicioMedico").css("display", "block");
+                }
+                else {
+                    $("#especifiqueServicioMedico option:contains(NA)").attr('selected', true);
+                    $("#institucionServicioMedico option:contains(NA)").attr('selected', true);
+                    $("#especifiqueServicioMedico").css("display", "none");
+                    $("#institucionServicioMedico").css("display", "none");
+                }
 
+            });
         });
-    });
-</script>
+    </script>
 @{
     ViewData["Title"] = "Edit";
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -70,60 +72,112 @@
                         asp-items="@(new SelectList(ViewBag.listaEnfermedad, "Value", "Text", @ViewBag.idEnfermedad))">
                 </select>
             </div>
-            <div class="form-group col-md-12" style="display:none" id="especifiqueEnfermedad">
-                <label class="control-label">Especifique Enfermedad</label>
-                <input asp-for="EspecifiqueEnfermedad" class="form-control" />
-                <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
-            </div>
-            @if (ViewData["Genero"].ToString() == "F") { 
-            <div class="form-group col-md-12" id="embarazo">
-                <label class="control-label">¿Está embarazada o en período de lactancia?</label>
-                <select class="form-control" name="embarazoLactancia" id="embarazoLactancia"
-                        asp-items="@(new SelectList(ViewBag.listaEmbarazoLactancia, "Value", "Text", @ViewBag.idEmbarazoLactancia))">
-                </select>
-            </div>
+            @if (ViewBag.enfermedad == "SI")
+            {
+                <div class="form-group col-md-12" id="especifiqueEnfermedad">
+                    <label class="control-label">Especifique Enfermedad</label>
+                    <input asp-for="EspecifiqueEnfermedad" class="form-control" />
+                    <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12" id="tratamiento">
+                    <label class="control-label">Tratamiento médico indicado</label>
+                    <input asp-for="Tratamiento" class="form-control" />
+                    <span asp-validation-for="Tratamiento" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group col-md-12" style="display:none" id="especifiqueEnfermedad">
+                    <label class="control-label">Especifique Enfermedad</label>
+                    <input asp-for="EspecifiqueEnfermedad" class="form-control" />
+                    <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12" style="display:none" id="tratamiento">
+                    <label class="control-label">Tratamiento médico indicado</label>
+                    <input asp-for="Tratamiento" class="form-control" />
+                    <span asp-validation-for="Tratamiento" class="text-danger"></span>
+                </div>
             }
 
-            <div class="form-group col-md-12" style="display:none" id="tiempoEmbarazo">
-                <label class="control-label">Tiempo</label>
-                <input asp-for="Tiempo" class="form-control" />
-                <span asp-validation-for="Tiempo" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12" style="display:none" id="tratamiento">
-                <label class="control-label">Tratamiento médico indicado</label>
-                <input asp-for="Tratamiento" class="form-control" />
-                <span asp-validation-for="Tratamiento" class="text-danger"></span>
-            </div>
+            @if (ViewData["Genero"].ToString() == "F")
+            {
+                <div class="form-group col-md-12" id="embarazo">
+                    <label class="control-label">¿Está embarazada o en período de lactancia?</label>
+                    <select class="form-control" name="embarazoLactancia" id="embarazoLactancia"
+                            asp-items="@(new SelectList(ViewBag.listaEmbarazoLactancia, "Value", "Text", @ViewBag.idEmbarazoLactancia))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12" id="tiempoEmbarazo">
+                    <label class="control-label">Tiempo</label>
+                    <input asp-for="Tiempo" class="form-control" />
+                    <span asp-validation-for="Tiempo" class="text-danger"></span>
+                </div>
+            }
+
+
+
             <div class="form-group col-md-12">
                 <label class="control-label">¿Tiene alguna condición física que requiera cuidados especiales?</label>
                 <select class="form-control" id="discapacidad" name="discapacidad"
                         asp-items="@(new SelectList(ViewBag.listaDiscapacidad, "Value", "Text", @ViewBag.idDiscapacidad))">
                 </select>
             </div>
-            <div class="form-group col-md-12" style="display:none" id="especifiqueDiscapacidad">
-                <label class="control-label">Específique la discapacidad</label>
-                <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
-                <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
-            </div>
+            @if (ViewBag.especial == "SI")
+            {
+                <div class="form-group col-md-12" id="especifiqueDiscapacidad">
+                    <label class="control-label">Específique la discapacidad</label>
+                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
+                    <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group col-md-12" style="display:none" id="especifiqueDiscapacidad">
+                    <label class="control-label">Específique la discapacidad</label>
+                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
+                    <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
+                </div>
+            }
+
             <div class="form-group col-md-12">
                 <label class="control-label">¿Cuenta con servicio médico?</label>
                 <select class="form-control" name="ServicioMedico" id="servicioMedico"
                         asp-items="@(new SelectList(ViewBag.listaServicioMedico, "Value", "Text", @ViewBag.idServicioMedico))">
                 </select>
             </div>
-            <div class="form-group col-md-6" style="display:none" id="especifiqueServicioMedico">
-                <label class="control-label">¿Qué tipo de servicio tiene?</label>
-                <select class="form-control" name="EspecifiqueServicioMedico"
-                        asp-items="@(new SelectList(ViewBag.listaEspecifiqueServicioMedico, "Value", "Text", @ViewBag.idEspecifiqueServicioMedico))">
-                </select>
-            </div>
+            @if (ViewBag.smedico == "SI")
+            {
+                <div class="form-group col-md-6" id="especifiqueServicioMedico">
+                    <label class="control-label">¿Qué tipo de servicio tiene?</label>
+                    <select class="form-control" name="EspecifiqueServicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaEspecifiqueServicioMedico, "Value", "Text", @ViewBag.idEspecifiqueServicioMedico))">
+                    </select>
+                </div>
 
-            <div class="form-group col-md-6" style="display:none" id="institucionServicioMedico">
-                <label class="control-label">Institución prestadora de servicio</label>
-                <select class="form-control" name="InstitucionServicioMedico"
-                        asp-items="@(new SelectList(ViewBag.listaInstitucionServicioMedico, "Value", "Text", @ViewBag.idInstitucionServicioMedico))">
-                </select>
-            </div>
+                <div class="form-group col-md-6" id="institucionServicioMedico">
+                    <label class="control-label">Institución prestadora de servicio</label>
+                    <select class="form-control" name="InstitucionServicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaInstitucionServicioMedico, "Value", "Text", @ViewBag.idInstitucionServicioMedico))">
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="form-group col-md-6" style="display:none" id="especifiqueServicioMedico">
+                    <label class="control-label">¿Qué tipo de servicio tiene?</label>
+                    <select class="form-control" name="EspecifiqueServicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaEspecifiqueServicioMedico, "Value", "Text", @ViewBag.idEspecifiqueServicioMedico))">
+                    </select>
+                </div>
+
+                <div class="form-group col-md-6" style="display:none" id="institucionServicioMedico">
+                    <label class="control-label">Institución prestadora de servicio</label>
+                    <select class="form-control" name="InstitucionServicioMedico"
+                            asp-items="@(new SelectList(ViewBag.listaInstitucionServicioMedico, "Value", "Text", @ViewBag.idInstitucionServicioMedico))">
+                    </select>
+                </div>
+            }
+
             <div class="form-group col-md-12">
                 <label asp-for="Observaciones" class="control-label"></label>
                 <input asp-for="Observaciones" class="form-control" />
