@@ -221,8 +221,6 @@
 </head>
 <body>
     <div class="form-group col-lg-12">
-<<<<<<< HEAD
-
         <div class="form-group col-lg-6">
             <label class="control-label">Busca Persona</label>
             <form asp-action="Asignacion">
@@ -241,28 +239,7 @@
                 <a asp-controller="Causaspenales" asp-action="ListadeCausas">Regresar al listado completo</a>
             </form>
         </div>
-=======
-        <label class="control-label">Busca Persona</label>
     </div>
-    <form asp-action="Asignacion">
-        <select type="submit" class="form-control" id="combobox" name="persona_idPersona" style="display:none;"
-                asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
-        </select>
-    </form>
-    <div class="form-group col-lg-12">
-        <hr />
-        <span style="color:#808080">Escribe para filtrar persona</span>
->>>>>>> 94fc087f39ad8ea2bedaf6f77307276c94488c04
-    </div>
-
-    <div class="form-group  col-lg-12">
-        <form asp-action="Asignacion">
-            <input type="submit" value="Asignar" class="btn btn-success" />
-        </form>
-        <hr />
-        <a asp-controller="Causaspenales" asp-action="ListadeCausas">Regresar al listado completo</a>
-    </div>
-
     <button id="toggle" style="display:none;">show underlying select</button>
 </body>
 </html>

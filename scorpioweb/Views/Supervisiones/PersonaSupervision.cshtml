@@ -11,7 +11,10 @@
     <div class="form-actions no-color">
         <p>
             Búsqueda por nombre o causa penal: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Buscar" class="btn btn-default" /> |
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button> |
             <a asp-action="PersonaSupervision">Regresar al listado completo</a>
         </p>
     </div>
@@ -41,11 +44,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </td>
-<<<<<<< HEAD
                 <td>
-=======
-                <th>
->>>>>>> 94fc087f39ad8ea2bedaf6f77307276c94488c04
                     <form asp-action="PersonaSupervision" asp-route-id="@item.supervisionVM.IdSupervision">
                         <input type="hidden" asp-for="@item.supervisionVM.IdSupervision" name="IdSupervision" />
                         <input type="hidden" asp-for="@item.supervisionVM.EstadoCumplimiento" name="EstadoCumplimiento" />
@@ -60,10 +59,6 @@
                                 <option value="VIGENTE">VIGENTE</option>
                                 <option value="CONCLUIDO">CONCLUIDO</option>
                             </select>
-<<<<<<< HEAD
-=======
-
->>>>>>> 94fc087f39ad8ea2bedaf6f77307276c94488c04
                         }
                         @if (item.supervisionVM.EstadoSupervision == "CONCLUIDO")
                         {
@@ -71,7 +66,7 @@
                                 <option value="CONCLUIDO">CONCLUIDO</option>
                                 <option value="PENDIENTE">PENDIENTE</option>
                                 <option value="VIGENTE">VIGENTE</option>
-<<<<<<< HEAD
+
                             </select>
                         }
                         @if (item.supervisionVM.EstadoSupervision == "VIGENTE")
@@ -92,25 +87,6 @@
                     <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
                         <i class="fa fa-pencil"></i> Edición</a>
                 </th>
-=======
-
-                            </select>
-                        }
-                        @if (item.supervisionVM.EstadoSupervision == "VIGENTE")
-                        {
-                            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision">
-                                <option value="VIGENTE">VIGENTE</option>
-                                <option value="PENDIENTE">PENDIENTE</option>
-                                <option value="CONCLUIDO">CONCLUIDO</option>
-                            </select>
-                        }
-                        <input type="submit" value="Guardar Cambios" class="btn btn-primary" />
-                    </form>
-                </th>
-                <td>
-                    <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">Edición</a>
-                </td>
->>>>>>> 94fc087f39ad8ea2bedaf6f77307276c94488c04
             </tr>
         }
     </tbody>

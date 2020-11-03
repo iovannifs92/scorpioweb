@@ -15,7 +15,10 @@
     <div class="form-actions no-color">
         <p>
             Búsqueda: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Buscar" class="btn btn-default" /> |
+                      <button type="submit" class="btn btn-default">
+                          <i class="fa fa-search"></i>
+                          Buscar
+                      </button> |
             <a asp-action="ListadeCausas">Regresar al listado completo</a>
         </p>
     </div>
