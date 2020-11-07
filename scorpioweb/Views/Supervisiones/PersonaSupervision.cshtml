@@ -11,7 +11,10 @@
     <div class="form-actions no-color">
         <p>
             Búsqueda por nombre o causa penal: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Buscar" class="btn btn-default" /> |
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button> |
             <a asp-action="PersonaSupervision">Regresar al listado completo</a>
         </p>
     </div>
@@ -41,7 +44,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </td>
-                <th>
+                <td>
                     <form asp-action="PersonaSupervision" asp-route-id="@item.supervisionVM.IdSupervision">
                         <input type="hidden" asp-for="@item.supervisionVM.IdSupervision" name="IdSupervision" />
                         <input type="hidden" asp-for="@item.supervisionVM.EstadoCumplimiento" name="EstadoCumplimiento" />
@@ -56,7 +59,6 @@
                                 <option value="VIGENTE">VIGENTE</option>
                                 <option value="CONCLUIDO">CONCLUIDO</option>
                             </select>
-
                         }
                         @if (item.supervisionVM.EstadoSupervision == "CONCLUIDO")
                         {
@@ -75,12 +77,16 @@
                                 <option value="CONCLUIDO">CONCLUIDO</option>
                             </select>
                         }
-                        <input type="submit" value="Guardar Cambios" class="btn btn-primary" />
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar Cambios
+                    </button>
                     </form>
-                </th>
-                <td>
-                    <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">Edición</a>
                 </td>
+                <th>
+                    <a type="button" class="btn btn-default" id="domicilio" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                        <i class="fa fa-pencil"></i> Edición</a>
+                </th>
             </tr>
         }
     </tbody>
