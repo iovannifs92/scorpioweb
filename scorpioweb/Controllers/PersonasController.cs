@@ -1228,12 +1228,12 @@ namespace scorpioweb.Controllers
             if (consumosustancias.Count > 0)
             {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
+                contadorSustancia++;
             }
             else
             {
                 ViewBag.idSustancia = "ALCOHOL";
             }
-            contadorSustancia++;
             #endregion
 
             return View(persona);
