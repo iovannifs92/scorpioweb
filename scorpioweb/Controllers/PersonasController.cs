@@ -37,6 +37,7 @@ namespace scorpioweb.Controllers
         public static List<List<string>> datosReferencias = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
         public static int idPersona;
+        public static List<Consumosustancias> consumosustancias;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
@@ -396,6 +397,25 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = true, responseText = "Datos Guardados con éxito" });
 
+        }
+
+
+        public ActionResult siguienteSustancia(string[] datosConsumo)
+        {
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosConsumo.Length; i++)
+            {
+                datosSustancias.Add(new List<String> { datosConsumo[i], currentUser });
+            }
+
+            if (contadorSustancia == consumosustancias.Count)
+            {
+                return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+            }
+            else
+            {
+                return Json(new { success = true, responseText = consumosustancias[contadorSustancia++].Sustancia });
+            }
         }
 
         public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
@@ -1074,6 +1094,7 @@ namespace scorpioweb.Controllers
             }
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            consumosustancias = await _context.Consumosustancias.Where(m => m.PersonaIdPersona == id).ToListAsync();
             if (persona == null)
             {
                 return NotFound();
@@ -1181,6 +1202,34 @@ namespace scorpioweb.Controllers
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
             ViewBag.idConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
+
+            List<SelectListItem> ListaSustancia;
+            ListaSustancia = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Alcohol", Value="ALCOHOL"},
+              new SelectListItem{ Text="Marihuana", Value="MARIHUANA"},
+              new SelectListItem{ Text="Cocaína", Value="COCAINA"},
+              new SelectListItem{ Text="Heroína", Value="HEROINA"},
+              new SelectListItem{ Text="PVC", Value="PVC"},
+              new SelectListItem{ Text="Solventes", Value="SOLVENTES"},
+              new SelectListItem{ Text="Fármacos", Value="FARMACOS"},
+              new SelectListItem{ Text="Cemento", Value="CEMENTO"},
+              new SelectListItem{ Text="Crack", Value="CRACK"},
+              new SelectListItem{ Text="Ácidos", Value="ACIDOS"},
+              new SelectListItem{ Text="Tabaco", Value="TABACO"},
+              new SelectListItem{ Text="Metanfetaminas", Value="METANFETAMINAS"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaSustancia = ListaSustancia;
+            if (consumosustancias.Count > 0)
+            {
+                ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
+            }
+            else
+            {
+                ViewBag.idSustancia = "ALCOHOL";
+            }
+            contadorSustancia++;
             #endregion
 
             return View(persona);
@@ -1188,7 +1237,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona, List<Consumosustancias> consumosustancias)        {
             if (id != persona.IdPersona)
             {
                 return NotFound();
@@ -1205,10 +1254,7 @@ namespace scorpioweb.Controllers
             persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
             persona.Curp = normaliza(persona.Curp);
 
-
-
-
-
+//            consumosustancias[0].Sustancia = normaliza(consumosustancias[0].Sustancia);
 
             if (ModelState.IsValid)
             {

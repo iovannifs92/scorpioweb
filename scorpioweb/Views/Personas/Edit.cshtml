@@ -73,7 +73,6 @@
     $(document).ready(function () {
         $('#btnGuardarSustancia').on("click", function (e) {
             e.preventDefault();
-            alert("tipo: ");
             var s = document.getElementById("sustancia");
             var f = document.getElementById("frecuenciaS");
             var sustancia = s.options[s.selectedIndex].value;
@@ -92,7 +91,6 @@
                     datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
                 },
                 success: function (response) {
-                    alert(response.success);
                     if (response.success) {
                         alert(response.responseText);
                         document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
@@ -115,8 +113,44 @@
                 }
             });
         });
+        $('#btnSiguienteSustancia').on("click", function (e) {
+            e.preventDefault();
+            var s = document.getElementById("sustancia");
+            var f = document.getElementById("frecuenciaS");
+            var sustancia = s.options[s.selectedIndex].value;
+            var frecuencia = f.options[f.selectedIndex].value;
+            var cantidad = document.getElementById("cantidadS").value;
+            var ultimoC = document.getElementById("ultimoConsumo").value;
+            var observaciones = document.getElementById("observacionesConsumo").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/siguienteSustancia",
+                traditional: true,
+                data: {
+                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        if (response.responseText == "Datos Guardados con éxito") {
+                            $("#modalConsumoSustancias").modal('hide');
+                        }
+                        else {
+                            document.ready = document.getElementById("sustancia").value = response.responseText;
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
     });
-        //endregion
+    //endregion
 </script>
 
 @{
@@ -323,20 +357,8 @@
             <div class="modal-body">
                 <div>
                     <label class="control-label">Sustancia</label>
-                    <select class="form-control" name="sustancia" id="sustancia">
-                        <option value="ALCOHOL">Alcohol</option>
-                        <option value="MARIHUANA">Marihuana</option>
-                        <option value="COCAINA">Cocaína</option>
-                        <option value="HEROINA">Heroína</option>
-                        <option value="PVC">PVC</option>
-                        <option value="SOLVENTES">Solventes</option>
-                        <option value="FARMACOS">Fármacos</option>
-                        <option value="CEMENTO">Cemento</option>
-                        <option value="CRACK">Crack</option>
-                        <option value="ACIDOS">Ácidos</option>
-                        <option value="TABACO">Tabaco</option>
-                        <option value="METANFETAMINAS">Metanfetaminas</option>
-                        <option value="OTRO">OTRO</option>
+                    <select class="form-control" name="sustancia" id="sustancia"
+                            asp-items="@(new SelectList(ViewBag.listaSustancia, "Value","Text",@ViewBag.idSustancia))">
                     </select>
                 </div>
                 <div style="padding-top:1%;">
@@ -373,9 +395,9 @@
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>
-                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">
+                <button type="submit" class="btn btn-primary" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
                     <i class="fa fa-save"></i>
-                    Guardar
+                    Siguiente
                 </button>
             </div>
         </div>
