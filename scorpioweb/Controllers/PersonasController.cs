@@ -31,7 +31,7 @@ namespace scorpioweb.Controllers
 
         #region -Variables Globales-
         private readonly penas2Context _context;
-        public static int contadorSustancia = 0;
+        public static int contadorSustancia;
         public static List<List<string>> datosSustancias = new List<List<string>>();
         public static List<List<string>> datosFamiliares = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
@@ -1225,6 +1225,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.listaSustancia = ListaSustancia;
+            contadorSustancia = 0;
             if (consumosustancias.Count > 0)
             {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
@@ -1241,27 +1242,68 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona, List<Consumosustancias> consumosustancias)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona, Consumosustancias consumosustanciasBD)        {
+            string currentUser = User.Identity.Name;
+
             if (id != persona.IdPersona)
             {
                 return NotFound();
             }
 
-            persona.Paterno = normaliza(persona.Paterno);
-            persona.Materno = normaliza(persona.Materno);
-            persona.Nombre = normaliza(persona.Nombre);
-            persona.Alias = normaliza(persona.Alias);
-            persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
-            persona.Duracion = normaliza(persona.Duracion);
-            persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
-            persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
-            persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
-            persona.Curp = normaliza(persona.Curp);
-
-//            consumosustancias[0].Sustancia = normaliza(consumosustancias[0].Sustancia);
-
             if (ModelState.IsValid)
             {
+                persona.Paterno = normaliza(persona.Paterno);
+                persona.Materno = normaliza(persona.Materno);
+                persona.Nombre = normaliza(persona.Nombre);
+                persona.Alias = normaliza(persona.Alias);
+                persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
+                persona.Duracion = normaliza(persona.Duracion);
+                persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
+                persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
+                persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
+                persona.Curp = normaliza(persona.Curp);
+
+                #region -ConsumoSustancias-
+                for (int i = 0; i < datosSustancias.Count; i = i + 5)
+                {
+                    if (datosSustancias[i][1] == currentUser)
+                    {
+                        consumosustanciasBD.IdConsumoSustancias = consumosustancias[i / 5].IdConsumoSustancias;
+                        consumosustanciasBD.Sustancia = datosSustancias[i][0];
+                        consumosustanciasBD.Frecuencia = datosSustancias[i + 1][0];
+                        consumosustanciasBD.Cantidad = normaliza(datosSustancias[i + 2][0]);
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
+                        consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
+                        consumosustanciasBD.PersonaIdPersona = id;
+                        try
+                        {
+                            _context.Update(consumosustanciasBD);
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!PersonaExists(consumosustanciasBD.PersonaIdPersona))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < datosSustancias.Count; i++)
+                {
+                    if (datosSustancias[i][1] == currentUser)
+                    {
+                        datosSustancias.RemoveAt(i);
+                        i--;
+                    }
+                }
+                #endregion
+
                 try
                 {
                     _context.Update(persona);
