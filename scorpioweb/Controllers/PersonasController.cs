@@ -33,6 +33,7 @@ namespace scorpioweb.Controllers
         private readonly penas2Context _context;
         public static int contadorSustancia;
         public static List<List<string>> datosSustancias = new List<List<string>>();
+        public static List<List<string>> datosSustanciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliares = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
@@ -399,13 +400,12 @@ namespace scorpioweb.Controllers
 
         }
 
-
         public ActionResult siguienteSustancia(string[] datosConsumo)
         {
             string currentUser = User.Identity.Name;
             for (int i = 0; i < datosConsumo.Length; i++)
             {
-                datosSustancias.Add(new List<String> { datosConsumo[i], currentUser });
+                datosSustanciasEditadas.Add(new List<String> { datosConsumo[i], currentUser });
             }
 
             if (contadorSustancia == consumosustancias.Count)
@@ -414,7 +414,14 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                return Json(new { success = true, responseText = consumosustancias[contadorSustancia++].Sustancia });
+                return Json(new { success = true,
+                    responseText = "Siguiente Sustancia",
+                    sustancia = consumosustancias[contadorSustancia].Sustancia,
+                    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+                    cantidad = consumosustancias[contadorSustancia].Cantidad,
+                    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+                    observacionesConsumo = consumosustancias[contadorSustancia++].Observaciones
+                }); ;
             }
         }
 
@@ -1207,6 +1214,9 @@ namespace scorpioweb.Controllers
             ViewBag.listaConsumoSustancias = listaNoSi;
             ViewBag.idConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
 
+            contadorSustancia = 0;
+
+            #region sustancia
             List<SelectListItem> ListaSustancia;
             ListaSustancia = new List<SelectListItem>
             {
@@ -1225,11 +1235,9 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.listaSustancia = ListaSustancia;
-            contadorSustancia = 0;
             if (consumosustancias.Count > 0)
             {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
-                contadorSustancia++;
             }
             else
             {
@@ -1237,12 +1245,73 @@ namespace scorpioweb.Controllers
             }
             #endregion
 
+            #region frecuencia
+            List<SelectListItem> ListaFrecuencia;
+            ListaFrecuencia = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Diario", Value="DIARIO"},
+              new SelectListItem{ Text="Semanal", Value="SEMANAL"},
+              new SelectListItem{ Text="Quincenal", Value="QUINCENAL"},
+              new SelectListItem{ Text="Mensual", Value="MENSUAL"},
+              new SelectListItem{ Text="Bimestral", Value="BIMESTRAL"},
+              new SelectListItem{ Text="Trimestral", Value="TRIMESTRAL"},
+              new SelectListItem{ Text="Semestral", Value="SEMESTRAL"},
+              new SelectListItem{ Text="Anual", Value="ANUAL"},
+              new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
+            };
+            ViewBag.listaFrecuencia = ListaFrecuencia;
+            if (consumosustancias.Count > 0)
+            {
+                ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustancias[contadorSustancia].Frecuencia);
+            }
+            else
+            {
+                ViewBag.idFrecuencia = "DIARIO";
+            }
+            #endregion
+
+            #region cantidad
+            if (consumosustancias.Count > 0)
+            {
+                ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
+            }
+            else
+            {
+                ViewBag.cantidad = null;
+            }
+            #endregion
+
+            #region ultimo consumo
+            if (consumosustancias.Count > 0)
+            {
+                ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
+            }
+            else
+            {
+                ViewBag.ultimoConsumo = null;
+            }
+            #endregion
+
+            #region observaciones
+            if (consumosustancias.Count > 0)
+            {
+                ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
+            }
+            else
+            {
+                ViewBag.observaciones = null;
+            }
+            #endregion
+
+            contadorSustancia++;
+            #endregion
+
             return View(persona);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona, Consumosustancias consumosustanciasBD)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)        {
             string currentUser = User.Identity.Name;
 
             if (id != persona.IdPersona)
@@ -1264,17 +1333,21 @@ namespace scorpioweb.Controllers
                 persona.Curp = normaliza(persona.Curp);
 
                 #region -ConsumoSustancias-
-                for (int i = 0; i < datosSustancias.Count; i = i + 5)
+                //Sustancias editadas
+                for (int i = 0; i < datosSustanciasEditadas.Count; i = i + 5)
                 {
-                    if (datosSustancias[i][1] == currentUser)
+                    if (datosSustanciasEditadas[i][1] == currentUser)
                     {
+                        Consumosustancias consumosustanciasBD = new Consumosustancias();
+
                         consumosustanciasBD.IdConsumoSustancias = consumosustancias[i / 5].IdConsumoSustancias;
-                        consumosustanciasBD.Sustancia = datosSustancias[i][0];
-                        consumosustanciasBD.Frecuencia = datosSustancias[i + 1][0];
-                        consumosustanciasBD.Cantidad = normaliza(datosSustancias[i + 2][0]);
-                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
-                        consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
+                        consumosustanciasBD.Sustancia = datosSustanciasEditadas[i][0];
+                        consumosustanciasBD.Frecuencia = datosSustanciasEditadas[i + 1][0];
+                        consumosustanciasBD.Cantidad = normaliza(datosSustanciasEditadas[i + 2][0]);
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustanciasEditadas[i + 3][0]);
+                        consumosustanciasBD.Observaciones = normaliza(datosSustanciasEditadas[i + 4][0]);
                         consumosustanciasBD.PersonaIdPersona = id;
+
                         try
                         {
                             _context.Update(consumosustanciasBD);
@@ -1291,6 +1364,34 @@ namespace scorpioweb.Controllers
                                 throw;
                             }
                         }
+                    }
+                }
+
+
+                for (int i = 0; i < datosSustanciasEditadas.Count; i++)
+                {
+                    if (datosSustanciasEditadas[i][1] == currentUser)
+                    {
+                        datosSustanciasEditadas.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                //Sustancias agregadas
+                for (int i = 0; i < datosSustancias.Count; i = i + 5)
+                {
+                    if (datosSustancias[i][1] == currentUser)
+                    {
+                        Consumosustancias consumosustanciasBD = new Consumosustancias();
+
+                        consumosustanciasBD.Sustancia = datosSustancias[i][0];
+                        consumosustanciasBD.Frecuencia = datosSustancias[i + 1][0];
+                        consumosustanciasBD.Cantidad = normaliza(datosSustancias[i + 2][0]);
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
+                        consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
+                        consumosustanciasBD.PersonaIdPersona = id;
+                        _context.Add(consumosustanciasBD);
+                        await _context.SaveChangesAsync();
                     }
                 }
 

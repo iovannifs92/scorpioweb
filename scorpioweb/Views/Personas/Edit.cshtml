@@ -50,7 +50,7 @@
         $('#OtroIdioma').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
-                $("#DivEspecifiqueIdioma").css("display", "block"); 
+                $("#DivEspecifiqueIdioma").css("display", "block");
                 $("#DivOtroIdioma").removeClass("col-md-12");
                 $("#DivOtroIdioma").addClass("col-lg-6");
             }
@@ -103,15 +103,23 @@
         //#endregion
 
         //#region -Modales-
-           $("#consumoSustancias").change(function () {
+        $("#consumoSustancias").change(function () {
             var opcion = $(this).children("option:selected").val();
             //alert("opcion: "+opcion);
             if (opcion == "SI") {
-                $('#modalConsumoSustancias').modal('show')
+                $('#modalEditarSustancias').modal('show')
             }
             else {
-                $('#modalConsumoSustancias').modal('hidden')
+                $('#modalEditarSustancias').modal('hidden')
             }
+        });
+        $("#btnAgregarSustancia").click(function () {
+            document.ready = document.getElementById("sustanciaA").value = 'ALCOHOL';
+            document.ready = document.getElementById("frecuenciaA").value = 'DIARIO';
+            document.ready = document.getElementById("cantidadA").value = '';
+            document.ready = document.getElementById("ultimoConsumoA").value = '';
+            document.ready = document.getElementById("observacionesConsumoA").value = '';
+            $('#modalAgregarSustancias').modal('show')
         });
         //#endregion
     });
@@ -120,13 +128,13 @@
     $(document).ready(function () {
         $('#btnGuardarSustancia').on("click", function (e) {
             e.preventDefault();
-            var s = document.getElementById("sustancia");
-            var f = document.getElementById("frecuenciaS");
+            var s = document.getElementById("sustanciaA");
+            var f = document.getElementById("frecuenciaA");
             var sustancia = s.options[s.selectedIndex].value;
             var frecuencia = f.options[f.selectedIndex].value;
-            var cantidad = document.getElementById("cantidadS").value;
-            var ultimoC = document.getElementById("ultimoConsumo").value;
-            var observaciones = document.getElementById("observacionesConsumo").value;
+            var cantidad = document.getElementById("cantidadA").value;
+            var ultimoC = document.getElementById("ultimoConsumoA").value;
+            var observaciones = document.getElementById("observacionesConsumoA").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
 
             $.ajax({
@@ -140,16 +148,16 @@
                 success: function (response) {
                     if (response.success) {
                         alert(response.responseText);
-                        document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
-                        document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
-                        document.ready = document.getElementById("cantidadS").value = '';
-                        document.ready = document.getElementById("ultimoConsumo").value = '';
-                        document.ready = document.getElementById("observacionesConsumo").value = '';
+                        document.ready = document.getElementById("sustanciaA").value = 'ALCOHOL';
+                        document.ready = document.getElementById("frecuenciaA").value = 'DIARIO';
+                        document.ready = document.getElementById("cantidadA").value = '';
+                        document.ready = document.getElementById("ultimoConsumoA").value = '';
+                        document.ready = document.getElementById("observacionesConsumoA").value = '';
                         var otraSustancia = confirm("¿Consume alguna otra sustancia?");
                         if (otraSustancia == true) {
                             alert("Coloque los datos correspondientes a la nueva susutancia");
                         } else {
-                            $("#modalConsumoSustancias").modal('hide');
+                            $("#modalAgregarSustancias").modal('hide');
                         }
                     } else {
                         alert(response.responseText);
@@ -160,15 +168,57 @@
                 }
             });
         });
+        //$('#btnBorrarSustancia').on("click", function (e) {
+        //    e.preventDefault();
+        //    var s = document.getElementById("sustancia");
+        //    var f = document.getElementById("frecuenciaS");
+        //    var sustancia = s.options[s.selectedIndex].value;
+        //    var frecuencia = f.options[f.selectedIndex].value;
+        //    var cantidad = document.getElementById("cantidadS").value;
+        //    var ultimoC = document.getElementById("ultimoConsumo").value;
+        //    var observaciones = document.getElementById("observacionesConsumo").value;
+        //    //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+        //    $.ajax({
+        //        type: "POST",
+        //        dataType: "json",
+        //        url: "/Personas/guardarSustancia",
+        //        traditional: true,
+        //        data: {
+        //            datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
+        //        },
+        //        success: function (response) {
+        //            if (response.success) {
+        //                alert(response.responseText);
+        //                document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
+        //                document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
+        //                document.ready = document.getElementById("cantidadS").value = '';
+        //                document.ready = document.getElementById("ultimoConsumo").value = '';
+        //                document.ready = document.getElementById("observacionesConsumo").value = '';
+        //                var otraSustancia = confirm("¿Consume alguna otra sustancia?");
+        //                if (otraSustancia == true) {
+        //                    alert("Coloque los datos correspondientes a la nueva susutancia");
+        //                } else {
+        //                    $("#modalConsumoSustancias").modal('hide');
+        //                }
+        //            } else {
+        //                alert(response.responseText);
+        //            }
+        //        },
+        //        error: function (response) {
+        //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+        //        }
+        //    });
+        //});
         $('#btnSiguienteSustancia').on("click", function (e) {
             e.preventDefault();
-            var s = document.getElementById("sustancia");
-            var f = document.getElementById("frecuenciaS");
+            var s = document.getElementById("sustanciaE");
+            var f = document.getElementById("frecuenciaE");
             var sustancia = s.options[s.selectedIndex].value;
             var frecuencia = f.options[f.selectedIndex].value;
-            var cantidad = document.getElementById("cantidadS").value;
-            var ultimoC = document.getElementById("ultimoConsumo").value;
-            var observaciones = document.getElementById("observacionesConsumo").value;
+            var cantidad = document.getElementById("cantidadE").value;
+            var ultimoC = document.getElementById("ultimoConsumoE").value;
+            var observaciones = document.getElementById("observacionesConsumoE").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
 
             $.ajax({
@@ -182,10 +232,14 @@
                 success: function (response) {
                     if (response.success) {
                         if (response.responseText == "Datos Guardados con éxito") {
-                            $("#modalConsumoSustancias").modal('hide');
+                            $("#modalEditarSustancias").modal('hide');
                         }
                         else {
-                            document.ready = document.getElementById("sustancia").value = response.responseText;
+                            document.ready = document.getElementById("sustanciaE").value = response.sustancia;
+                            document.ready = document.getElementById("frecuenciaE").value = response.frecuencia;
+                            document.ready = document.getElementById("cantidadE").value = response.cantidad;
+                            document.ready = document.getElementById("ultimoConsumoE").value = response.ultimoConsumo;
+                            document.ready = document.getElementById("observacionesConsumoE").value = response.observacionesConsumo;
                         }
                     } else {
                         alert(response.responseText);
@@ -481,11 +535,64 @@
     </a>
 </div>
 
+<!-- Modal Editar consumo de sustancias -->
+<div class="modal fade" id="modalEditarSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="padding-top: 8px; font-size: 30px">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Consumo de sustancias</h5>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label class="control-label">Sustancia</label>
+                    <select class="form-control" name="sustanciaE" id="sustanciaE"
+                            asp-items="@(new SelectList(ViewBag.listaSustancia, "Value", "Text", @ViewBag.idSustancia))">
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Frecuencia de consumo</label>
+                    <select class="form-control" name="frecuenciaE" id="frecuenciaE"
+                            asp-items="@(new SelectList(ViewBag.listaFrecuencia, "Value", "Text", @ViewBag.idFrecuencia))">
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Cantidad</label>
+                    <input class="form-control" maxlength="200" name="cantidadE" type="text" id="cantidadE" value=@ViewBag.cantidad />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Último consumo</label>
+                    <input required name="ultimoConsumoE" id="ultimoConsumoE" type="date" class="form-control" value=@ViewBag.ultimoConsumo?.Date.ToString("yyyy-MM-dd") />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="observaciones">Observaciones</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoE" id="observacionesConsumoE">@ViewBag.observaciones</textarea>
+                    <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
+                </div>
+            </div>
 
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAgregarSustancia">
+                    <i class="fa fa-plus"></i>
+                    Agregar Sustancia
+                </button>
+                @*<button type="button" class="btn btn-danger" id="btnBorrarSustancia">
+                        <i class="fa fa-eraser"></i>
+                        Borrar Sustancia
+                    </button>*@
+                <button type="submit" class="btn btn-success" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
+                    <i class="fa fa-save"></i>
+                    Siguiente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-<!-- Modal Consumo de sustancias Secundario -->
-<div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<!-- Modal Agregar consumo de sustancias -->
+<div class="modal fade" id="modalAgregarSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#0078A7;">
@@ -494,13 +601,25 @@
             <div class="modal-body">
                 <div>
                     <label class="control-label">Sustancia</label>
-                    <select class="form-control" name="sustancia" id="sustancia"
-                            asp-items="@(new SelectList(ViewBag.listaSustancia, "Value","Text",@ViewBag.idSustancia))">
+                    <select class="form-control" name="sustanciaA" id="sustanciaA">
+                        <option value="ALCOHOL">Alcohol</option>
+                        <option value="MARIHUANA">Marihuana</option>
+                        <option value="COCAINA">Cocaína</option>
+                        <option value="HEROINA">Heroína</option>
+                        <option value="PVC">PVC</option>
+                        <option value="SOLVENTES">Solventes</option>
+                        <option value="FARMACOS">Fármacos</option>
+                        <option value="CEMENTO">Cemento</option>
+                        <option value="CRACK">Crack</option>
+                        <option value="ACIDOS">Ácidos</option>
+                        <option value="TABACO">Tabaco</option>
+                        <option value="METANFETAMINAS">Metanfetaminas</option>
+                        <option value="OTRO">Otro</option>
                     </select>
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Frecuencia de consumo</label>
-                    <select class="form-control" name="frecuenciaS" id="frecuenciaS">
+                    <select class="form-control" name="frecuenciaA" id="frecuenciaA">
                         <option value="DIARIO">Diario</option>
                         <option value="SEMANAL">Semanal</option>
                         <option value="QUINCENAL">Quincenal</option>
@@ -514,15 +633,15 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Cantidad</label>
-                    <input class="form-control" maxlength="200" name="cantidadS" type="text" id="cantidadS" />
+                    <input class="form-control" maxlength="200" name="cantidadA" type="text" id="cantidadA" />
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Último consumo</label>
-                    <input required name="ultimoConsumo" id="ultimoConsumo" type="date" class="form-control" />
+                    <input required name="ultimoConsumoA" id="ultimoConsumoA" type="date" class="form-control" />
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="observaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumo" id="observacionesConsumo"></textarea>
+                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoA" id="observacionesConsumoA"></textarea>
                     <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
                 </div>
             </div>
@@ -532,12 +651,11 @@
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>
-                <button type="submit" class="btn btn-primary" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
+                <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">
                     <i class="fa fa-save"></i>
-                    Siguiente
+                    Guardar
                 </button>
             </div>
         </div>
     </div>
 </div>
-
