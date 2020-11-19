@@ -55,12 +55,14 @@
                     @Html.DisplayFor(modelItem => item.UltimaActualización)
                 </th>
                 <td>
-                    <a asp-action="MenuEdicion" asp-route-id="@item.IdPersona" class="btn btn-link">
+                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
+                        <i class="fa fa-pencil"></i>
                         Editar
-                    </a> |
-                    <a asp-action="Details" asp-route-id="@item.IdPersona" class="btn btn-link">
+                    </a>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                        <i class="fa fa-eye"></i>
                         Detalles
-                     </a>
+                    </a>
                     @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
                 </td>
             </tr>

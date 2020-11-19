@@ -498,16 +498,47 @@
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Consume Sustancias</label>
-                <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
-                        asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
-                </select>
+            <div>
+                <label class="control-label col-md-12">Consume Sustancias</label>
+                <div class="form-group col-md-2">
+                    <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
+                            asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <button type="button" class="btn btn-primary" id="btnEditarSustancias">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </button>
+                </div>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Ultima Actualización</label>
-                <input asp-for="UltimaActualización" class="form-control" />
-                <span asp-validation-for="UltimaActualización" class="text-danger"></span>
+            <div>
+                <label class="control-label col-md-12">¿Tiene familiares?</label>
+                <div class="form-group col-md-2">
+                    <select class="form-control" name="Familiares" id="Familiares"
+                            asp-items="@(new SelectList(ViewBag.listaFamiliares, "Value", "Text", @ViewBag.idFamiliares))">
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <button type="button" class="btn btn-primary" id="btnEditarFamiliares">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="control-label col-md-12">¿Tiene referencias?</label>
+                <div class="form-group col-md-2">
+                    <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales"
+                            asp-items="@(new SelectList(ViewBag.listaReferenciasPersonales, "Value", "Text", @ViewBag.idReferenciasPersonales))">
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <button type="button" class="btn btn-primary" id="btnEditarReferencias">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </button>
+                </div>
             </div>
             <div class="form-group col-lg-12">
                 <label asp-for="UltimaActualización" class="control-label"></label>
@@ -574,7 +605,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnAgregarSustancia">
+                <button type="button" class="btn btn-success" id="btnAgregarSustancia">
                     <i class="fa fa-plus"></i>
                     Agregar Sustancia
                 </button>
@@ -582,7 +613,7 @@
                         <i class="fa fa-eraser"></i>
                         Borrar Sustancia
                     </button>*@
-                <button type="submit" class="btn btn-success" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
+                <button type="submit" class="btn btn-primary" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
                     <i class="fa fa-save"></i>
                     Siguiente
                 </button>

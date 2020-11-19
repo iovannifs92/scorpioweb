@@ -562,7 +562,7 @@ namespace scorpioweb.Controllers
             string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
-            string propiedades, string CURP, string consumoSustancias,
+            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad,
             string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string cuentaDomicilioSecundario,
             string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,
@@ -608,6 +608,8 @@ namespace scorpioweb.Controllers
                 persona.Propiedades = normaliza(propiedades);
                 persona.Curp = normaliza(CURP);
                 persona.ConsumoSustancias = normaliza(consumoSustancias);
+                persona.Familiares = normaliza(familiares);
+                persona.ReferenciasPersonales = normaliza(referenciasPersonales);
                 persona.UltimaActualización = DateTime.Now;
                 #endregion
 
@@ -991,6 +993,8 @@ namespace scorpioweb.Controllers
                 otraspropiedades=vistaPersona[0].personaVM.Propiedades,
                 curp=vistaPersona[0].personaVM.Curp,
                 consumosustancias=vistaPersona[0].personaVM.ConsumoSustancias,
+                familiares=vistaPersona[0].personaVM.Familiares,
+                referenciasPersonales=vistaPersona[0].personaVM.ReferenciasPersonales,
                 tipopropiedad=vistaPersona[0].domicilioVM.TipoDomicilio,
                 direccion=vistaPersona[0].domicilioVM.Calle+" "+vistaPersona[0].domicilioVM.No+", "+vistaPersona[0].domicilioVM.NombreCf+" CP "+vistaPersona[0].domicilioVM.Cp+", "+vistaPersona[0].estadosVMDomicilio.Estado+", "+vistaPersona[0].municipiosVMDomicilio.Municipio+", "+vistaPersona[0].domicilioVM.Pais,
                 tiempoendomicilio=vistaPersona[0].domicilioVM.Temporalidad,
@@ -1306,12 +1310,18 @@ namespace scorpioweb.Controllers
             contadorSustancia++;
             #endregion
 
+            ViewBag.listaFamiliares = listaSiNo;
+            ViewBag.idFamiliares = BuscaId(listaSiNo, persona.Familiares);
+
+            ViewBag.listaReferenciasPersonales = listaSiNo;
+            ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, persona.ReferenciasPersonales);
+
             return View(persona);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor")] Persona persona)        {
             string currentUser = User.Identity.Name;
 
             if (id != persona.IdPersona)
@@ -1404,6 +1414,9 @@ namespace scorpioweb.Controllers
                     }
                 }
                 #endregion
+
+                persona.Familiares = normaliza(persona.Familiares);
+                persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
 
                 try
                 {

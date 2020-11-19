@@ -33,6 +33,8 @@ namespace scorpioweb.Models
         public string Propiedades { get; set; }
         public string Curp { get; set; }
         public string ConsumoSustancias { get; set; }
+        public string Familiares { get; set; }
+        public string ReferenciasPersonales { get; set; }
         public DateTime? UltimaActualización { get; set; }
         public string Supervisor { get; set; }
         public string NombreCompleto {
