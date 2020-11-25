@@ -32,6 +32,8 @@ namespace scorpioweb.Controllers
         #region -Variables Globales-
         private readonly penas2Context _context;
         public static int contadorSustancia;
+        public static int contadorFamiliares;
+        public static int contadorReferencias;
         public static List<List<string>> datosSustancias = new List<List<string>>();
         public static List<List<string>> datosSustanciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliares = new List<List<string>>();
@@ -39,6 +41,8 @@ namespace scorpioweb.Controllers
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
         public static int idPersona;
         public static List<Consumosustancias> consumosustancias;
+        public static List<Asientofamiliar> familiares;
+        public static List<Asientofamiliar> referenciaspersonales;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
@@ -1106,6 +1110,8 @@ namespace scorpioweb.Controllers
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
             consumosustancias = await _context.Consumosustancias.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            familiares = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "FAMILIAR").ToListAsync();
+            referenciaspersonales = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "REFERENCIA").ToListAsync();
             if (persona == null)
             {
                 return NotFound();
@@ -1220,101 +1226,140 @@ namespace scorpioweb.Controllers
 
             contadorSustancia = 0;
 
-            #region sustancia
             List<SelectListItem> ListaSustancia;
             ListaSustancia = new List<SelectListItem>
             {
-              new SelectListItem{ Text="Alcohol", Value="ALCOHOL"},
-              new SelectListItem{ Text="Marihuana", Value="MARIHUANA"},
-              new SelectListItem{ Text="Cocaína", Value="COCAINA"},
-              new SelectListItem{ Text="Heroína", Value="HEROINA"},
-              new SelectListItem{ Text="PVC", Value="PVC"},
-              new SelectListItem{ Text="Solventes", Value="SOLVENTES"},
-              new SelectListItem{ Text="Fármacos", Value="FARMACOS"},
-              new SelectListItem{ Text="Cemento", Value="CEMENTO"},
-              new SelectListItem{ Text="Crack", Value="CRACK"},
-              new SelectListItem{ Text="Ácidos", Value="ACIDOS"},
-              new SelectListItem{ Text="Tabaco", Value="TABACO"},
-              new SelectListItem{ Text="Metanfetaminas", Value="METANFETAMINAS"},
-              new SelectListItem{ Text="Otro", Value="OTRO"},
+                new SelectListItem{ Text="Alcohol", Value="ALCOHOL"},
+                new SelectListItem{ Text="Marihuana", Value="MARIHUANA"},
+                new SelectListItem{ Text="Cocaína", Value="COCAINA"},
+                new SelectListItem{ Text="Heroína", Value="HEROINA"},
+                new SelectListItem{ Text="PVC", Value="PVC"},
+                new SelectListItem{ Text="Solventes", Value="SOLVENTES"},
+                new SelectListItem{ Text="Fármacos", Value="FARMACOS"},
+                new SelectListItem{ Text="Cemento", Value="CEMENTO"},
+                new SelectListItem{ Text="Crack", Value="CRACK"},
+                new SelectListItem{ Text="Ácidos", Value="ACIDOS"},
+                new SelectListItem{ Text="Tabaco", Value="TABACO"},
+                new SelectListItem{ Text="Metanfetaminas", Value="METANFETAMINAS"},
+                new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.listaSustancia = ListaSustancia;
-            if (consumosustancias.Count > 0)
-            {
-                ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
-            }
-            else
-            {
-                ViewBag.idSustancia = "ALCOHOL";
-            }
-            #endregion
 
-            #region frecuencia
             List<SelectListItem> ListaFrecuencia;
             ListaFrecuencia = new List<SelectListItem>
             {
-              new SelectListItem{ Text="Diario", Value="DIARIO"},
-              new SelectListItem{ Text="Semanal", Value="SEMANAL"},
-              new SelectListItem{ Text="Quincenal", Value="QUINCENAL"},
-              new SelectListItem{ Text="Mensual", Value="MENSUAL"},
-              new SelectListItem{ Text="Bimestral", Value="BIMESTRAL"},
-              new SelectListItem{ Text="Trimestral", Value="TRIMESTRAL"},
-              new SelectListItem{ Text="Semestral", Value="SEMESTRAL"},
-              new SelectListItem{ Text="Anual", Value="ANUAL"},
-              new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
+                new SelectListItem{ Text="Diario", Value="DIARIO"},
+                new SelectListItem{ Text="Semanal", Value="SEMANAL"},
+                new SelectListItem{ Text="Quincenal", Value="QUINCENAL"},
+                new SelectListItem{ Text="Mensual", Value="MENSUAL"},
+                new SelectListItem{ Text="Bimestral", Value="BIMESTRAL"},
+                new SelectListItem{ Text="Trimestral", Value="TRIMESTRAL"},
+                new SelectListItem{ Text="Semestral", Value="SEMESTRAL"},
+                new SelectListItem{ Text="Anual", Value="ANUAL"},
+                new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
             };
             ViewBag.listaFrecuencia = ListaFrecuencia;
+
             if (consumosustancias.Count > 0)
-            {
+            {  
+                ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
                 ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustancias[contadorSustancia].Frecuencia);
-            }
-            else
-            {
-                ViewBag.idFrecuencia = "DIARIO";
-            }
-            #endregion
-
-            #region cantidad
-            if (consumosustancias.Count > 0)
-            {
                 ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
-            }
-            else
-            {
-                ViewBag.cantidad = null;
-            }
-            #endregion
-
-            #region ultimo consumo
-            if (consumosustancias.Count > 0)
-            {
                 ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
-            }
-            else
-            {
-                ViewBag.ultimoConsumo = null;
-            }
-            #endregion
-
-            #region observaciones
-            if (consumosustancias.Count > 0)
-            {
                 ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
             }
             else
             {
+                ViewBag.idSustancia = "ALCOHOL";
+                ViewBag.idFrecuencia = "DIARIO";
+                ViewBag.cantidad = null;
+                ViewBag.ultimoConsumo = null;
                 ViewBag.observaciones = null;
             }
-            #endregion
 
             contadorSustancia++;
             #endregion
 
+            #region Familiares
             ViewBag.listaFamiliares = listaSiNo;
             ViewBag.idFamiliares = BuscaId(listaSiNo, persona.Familiares);
 
+            contadorFamiliares = 0;
+
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Máma", Value="MAMA"},
+                new SelectListItem{ Text="Pápa", Value="PAPA"},
+                new SelectListItem{ Text="Esposo(a)", Value="ESPOSO (A)"},
+                new SelectListItem{ Text="Hermano(a)", Value="HERMANO (A)"},
+                new SelectListItem{ Text="Hijo(a)", Value="HIJO (A)"},
+                new SelectListItem{ Text="Abuelo(a)", Value="ABUELO (A)"},
+                new SelectListItem{ Text="Familiar 1 nivel", Value="FAMILIAR 1 NIVEL"},
+                new SelectListItem{ Text="Amigo", Value="AMIGO"},
+                new SelectListItem{ Text="Conocido", Value="CONOCIDO"},
+                new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaRelacion = ListaRelacion;
+
+            List<SelectListItem> ListaSexo;
+            ListaSexo = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Masculino", Value="M"},
+                new SelectListItem{ Text="Femenino", Value="F"},
+                new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
+            };
+            ViewBag.listaSexo = ListaSexo;
+
+            ViewBag.listaDependencia = listaNoSi;
+            ViewBag.listaVivenJuntos = listaSiNo;
+            ViewBag.listaEnteradoProceso = listaSiNo;
+            ViewBag.listaPuedeEnterarse = listaNoSiNA;
+
+            if (familiares.Count > 0)
+            {
+                ViewBag.nombre = familiares[contadorFamiliares].Nombre;
+                ViewBag.idRelacion = BuscaId(ListaRelacion, familiares[contadorFamiliares].Relacion);
+                ViewBag.edad = familiares[contadorFamiliares].Edad;
+                ViewBag.idSexo = BuscaId(ListaSexo, familiares[contadorFamiliares].Sexo); ;
+                ViewBag.idDependencia = BuscaId(listaNoSi, familiares[contadorFamiliares].Dependencia);
+                ViewBag.dependenciaExplica = familiares[contadorFamiliares].DependenciaExplica;
+                ViewBag.idVivenJuntos = BuscaId(listaSiNo, familiares[contadorFamiliares].VivenJuntos);
+                ViewBag.domicilio = familiares[contadorFamiliares].Domicilio;
+                ViewBag.telefono = familiares[contadorFamiliares].Telefono;
+                ViewBag.horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion;
+                ViewBag.idEnteradoProceso = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
+                ViewBag.idPuedeEnterarse = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
+                ViewBag.AFobservaciones = familiares[contadorFamiliares].Observaciones;
+            }
+            else
+            {
+                ViewBag.nombre = null;
+                ViewBag.idRelacion = "MAMA";
+                ViewBag.edad = 0;
+                ViewBag.idSexo = "M";
+                ViewBag.idDependencia = "NO";
+                ViewBag.dependenciaExplica = null;
+                ViewBag.idVivenJuntos = "SI";
+                ViewBag.domicilio = null;
+                ViewBag.telefono = null;
+                ViewBag.horarioLocalizacion = null;
+                ViewBag.idEnteradoProceso = "SI";
+                ViewBag.idPuedeEnterarse = "NA";
+                ViewBag.AFobservaciones = null;
+            }
+
+            contadorFamiliares++;
+            #endregion
+
+            #region Referencias
             ViewBag.listaReferenciasPersonales = listaSiNo;
             ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, persona.ReferenciasPersonales);
+
+            contadorReferencias = 0;
+
+            contadorReferencias++;
+            #endregion
 
             return View(persona);
         }
