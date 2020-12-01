@@ -1,8 +1,87 @@
 ﻿@model scorpioweb.Models.Persona
 
-<script type="text/javascript">
+    <script type="text/javascript">
     var tipo = 0;
-    $(document).ready(function () {
+        $(document).ready(function () {
+        //#region inicializar
+        //#region Editar Sustancias
+        var consumoSustancias = document.getElementById("consumoSustancias")
+        var btnEditarSustancias = document.getElementById("btnEditarSustancias")
+        if (consumoSustancias.value == "SI") {
+            btnEditarSustancias.style.display = "block"
+        }
+        else {
+            btnEditarSustancias.style.display = "none"
+        }
+        //#endregion
+
+        //#region Editar Familiares
+        var Familiares = document.getElementById("Familiares")
+        var btnEditarFamiliares = document.getElementById("btnEditarFamiliares")
+        if (Familiares.value == "SI") {
+            btnEditarFamiliares.style.display = "block"
+        }
+        else {
+            btnEditarFamiliares.style.display = "none"
+        }
+        //#endregion
+
+        //#region Editar Referencias
+        var ReferenciasPersonales = document.getElementById("ReferenciasPersonales")
+        var btnEditarReferencias = document.getElementById("btnEditarReferencias")
+        if (ReferenciasPersonales.value == "SI") {
+            btnEditarReferencias.style.display = "block"
+        }
+        else {
+            btnEditarReferencias.style.display = "none"
+        }
+        //#endregion
+
+        //#region referencias display
+        var Dependencia = document.getElementById("AFDependenciaE")
+        var DependenciaExplica = document.getElementById("AFDependenciaExplicaE")
+        if (Dependencia.value == "SI") {
+            DependenciaExplica.style.display = "block"
+        }
+        else {
+            DependenciaExplica.style.display = "none"
+        }
+        //#endregion
+
+        //#region viven juntos display
+        var VivenJuntos = document.getElementById("AFVivenJuntosE")
+        var Domicilio = document.getElementById("AFDireccionFamiliarE")
+        if (VivenJuntos.value == "NO") {
+            Domicilio.style.display = "block"
+        }
+        else {
+            Domicilio.style.display = "none"
+        }
+        //#endregion
+
+        //#region enterado proceso display
+        var EnteradoProceso = document.getElementById("AFEnteradoProcesoE")
+        var PuedeEnterarse = document.getElementById("AFPuedeEnterarseE")
+        if (EnteradoProceso.value == "NO") {
+            PuedeEnterarse.style.display = "block"
+        }
+        else {
+            PuedeEnterarse.style.display = "none"
+        }
+
+        $('#AFEnteradoProcesoE').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFPuedeEnterarseE").css("display", "block");
+            }
+            else {
+                $("#AFPuedeEnterarseE").css("display", "none");
+            }
+
+        });
+        //#endregion
+        //#endregion
+
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#municipioD').html(items);
@@ -105,22 +184,190 @@
         //#region -Modales-
         $("#consumoSustancias").change(function () {
             var opcion = $(this).children("option:selected").val();
-            //alert("opcion: "+opcion);
             if (opcion == "SI") {
-                $('#modalEditarSustancias').modal('show')
+                $('#modalAgregarSustancias').modal('show')
             }
             else {
-                $('#modalEditarSustancias').modal('hidden')
+                $('#modalAgregarSustancias').modal('hidden')
+            }
+        });
+        $("#Familiares").change(function () {
+            var opcion = $(this).children("option:selected").val()
+            document.getElementById("textoAFRAgregar").innerHTML = "Asiento Familiar"
+            if (opcion == "SI") {
+                tipo = 1;
+                $('#modalAgregarAsientoFamiliar').modal('show')
+            }
+            else {
+                tipo = 0;
+                $('#modalAgregarAsientoFamiliar').modal('hidden')
+            }
+        });
+        $("#ReferenciasPersonales").change(function () {
+            var opcion = $(this).children("option:selected").val()
+            document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
+            if (opcion == "SI") {
+                tipo = 2;
+                $('#modalAgregarAsientoFamiliar').modal('show')
+            }
+            else {
+                tipo = 0;
+                $('#modalAgregarAsientoFamiliar').modal('hidden')
             }
         });
         $("#btnAgregarSustancia").click(function () {
-            document.ready = document.getElementById("sustanciaA").value = 'ALCOHOL';
-            document.ready = document.getElementById("frecuenciaA").value = 'DIARIO';
-            document.ready = document.getElementById("cantidadA").value = '';
-            document.ready = document.getElementById("ultimoConsumoA").value = '';
-            document.ready = document.getElementById("observacionesConsumoA").value = '';
+            document.ready = document.getElementById("sustanciaA").value = 'ALCOHOL'
+            document.ready = document.getElementById("frecuenciaA").value = 'DIARIO'
+            document.ready = document.getElementById("cantidadA").value = ''
+            document.ready = document.getElementById("ultimoConsumoA").value = ''
+            document.ready = document.getElementById("observacionesConsumoA").value = ''
             $('#modalAgregarSustancias').modal('show')
         });
+        $("#btnEditarSustancias").click(function () {
+            $('#modalEditarSustancias').modal('show')
+        });
+        $("#btnAgregarFamiliar").click(function () {
+            if (tipo == 1) {
+                document.getElementById("textoAFRAgregar").innerHTML = "Asiento Familiar"
+            }
+            else {
+                document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
+            }
+
+            document.ready = document.getElementById("AFNombreA").value = '';
+            document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
+            document.ready = document.getElementById("AFEdadA").value = '0';
+            document.ready = document.getElementById("AFSexoA").value = 'M';
+            document.ready = document.getElementById("AFDependenciaA").value = 'NO';
+            document.ready = document.getElementById("AFDependenciaExplicaOA").value = '';
+            document.ready = document.getElementById("AFVivenJuntosA").value = 'SI';
+            document.ready = document.getElementById("AFDireccionFamiliarOA").value = '';
+            document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
+            document.ready = document.getElementById("AFLocalizacionA").value = '';
+            document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
+            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+            document.ready = document.getElementById("AFobservacionesA").value = '';
+            $("#AFDependenciaExplicaA").css("display", "none");
+            $("#AFDireccionFamiliarA").css("display", "none");
+            $("#AFPuedeEnterarseA").css("display", "none");
+            $('#modalAgregarAsientoFamiliar').modal('show')
+        });
+        $("#btnEditarFamiliares").click(function () {
+            document.getElementById("textoAFREditar").innerHTML = "Asiento Familiar"
+            tipo = 1;
+
+            document.getElementById("AFNombreE").value = '@ViewBag.nombreF';
+            document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionF';
+            document.getElementById("AFEdadE").value = '@ViewBag.edadF';
+            document.getElementById("AFSexoE").value = '@ViewBag.idSexoF';
+            document.getElementById("AFDependenciaE").value = '@ViewBag.idDependenciaF';
+            document.getElementById("AFDependenciaExplicaOE").value = '@ViewBag.dependenciaExplicaF';
+            document.getElementById("AFVivenJuntosE").value = '@ViewBag.idVivenJuntosF';
+            document.getElementById("AFDireccionFamiliarOE").value = '@ViewBag.domicilioF';
+            document.getElementById("AFtelefonoFamiliarE").value = '@ViewBag.telefonoF';
+            document.getElementById("AFLocalizacionE").value = '@ViewBag.horarioLocalizacionF';
+            document.getElementById("AFEnteradoProcesoE").value = '@ViewBag.idEnteradoProcesoF';
+            document.getElementById("AFPuedeEnterarseOE").value = '@ViewBag.idPuedeEnterarseF';
+            document.getElementById("AFobservacionesE").value = '@ViewBag.AFobservacionesF';
+            $("#AFDependenciaExplicaE").css("display", "none");
+            $("#AFDireccionFamiliarE").css("display", "none");
+            $("#AFPuedeEnterarseE").css("display", "none");
+            $('#modalEditarAsientoFamiliar').modal('show')
+        });
+        $("#btnEditarReferencias").click(function () {
+            document.getElementById("textoAFREditar").innerHTML = "Referencia"
+            tipo = 2;
+
+            document.getElementById("AFNombreE").value = '@ViewBag.nombreR';
+            document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionR';
+            document.getElementById("AFEdadE").value = '@ViewBag.edadR';
+            document.getElementById("AFSexoE").value = '@ViewBag.idSexoR';
+            document.getElementById("AFDependenciaE").value = '@ViewBag.idDependenciaR';
+            document.getElementById("AFDependenciaExplicaOE").value = '@ViewBag.dependenciaExplicaR';
+            document.getElementById("AFVivenJuntosE").value = '@ViewBag.idVivenJuntosR';
+            document.getElementById("AFDireccionFamiliarOE").value = '@ViewBag.domicilioR';
+            document.getElementById("AFtelefonoFamiliarE").value = '@ViewBag.telefonoR';
+            document.getElementById("AFLocalizacionE").value = '@ViewBag.horarioLocalizacionR';
+            document.getElementById("AFEnteradoProcesoE").value = '@ViewBag.idEnteradoProcesoR';
+            document.getElementById("AFPuedeEnterarseOE").value = '@ViewBag.idPuedeEnterarseR';
+            document.getElementById("AFobservacionesE").value = '@ViewBag.AFobservacionesR';
+            $("#AFDependenciaExplicaE").css("display", "none");
+            $("#AFDireccionFamiliarE").css("display", "none");
+            $("#AFPuedeEnterarseE").css("display", "none");
+            $('#modalEditarAsientoFamiliar').modal('show')
+        });
+        //#endregion
+
+        //#region -changeDisplay-
+        //#region editar
+        $('#AFDependenciaE').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#AFDependenciaExplicaE").css("display", "block");
+            }
+            else {
+                $("#AFDependenciaExplicaE").css("display", "none");
+            }
+
+        });
+
+        $('#AFVivenJuntosE').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFDireccionFamiliarE").css("display", "block");
+            }
+            else {
+                $("#AFDireccionFamiliarE").css("display", "none");
+            }
+
+        });
+
+        $('#AFEnteradoProcesoE').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFPuedeEnterarseE").css("display", "block");
+            }
+            else {
+                $("#AFPuedeEnterarseE").css("display", "none");
+            }
+
+        });
+        //#endregion
+
+        //#region agregar
+        $('#AFDependenciaA').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#AFDependenciaExplicaA").css("display", "block");
+            }
+            else {
+                $("#AFDependenciaExplicaA").css("display", "none");
+            }
+
+        });
+
+        $('#AFVivenJuntosA').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFDireccionFamiliarA").css("display", "block");
+            }
+            else {
+                $("#AFDireccionFamiliarA").css("display", "none");
+            }
+
+        });
+
+        $('#AFEnteradoProcesoA').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "NO") {
+                $("#AFPuedeEnterarseA").css("display", "block");
+            }
+            else {
+                $("#AFPuedeEnterarseA").css("display", "none");
+            }
+
+        });
+        //#endregion
         //#endregion
     });
 
@@ -250,9 +497,142 @@
                 }
             });
         });
+        $('#btnGuardarFamiliar').on("click", function (e) {
+            e.preventDefault();
+            var r = document.getElementById("AFRelacionA");
+            var g = document.getElementById("AFSexoA");
+            var d = document.getElementById("AFDependenciaA");
+            var v = document.getElementById("AFVivenJuntosA");
+            var p = document.getElementById("AFEnteradoProcesoA");
+            var e = document.getElementById("AFPuedeEnterarseOA");
+
+            var nombre = document.getElementById("AFNombreA").value;
+            var relacion = r.options[r.selectedIndex].value; /////////////////
+            var edad = document.getElementById("AFEdadA").value;
+            var sexo = g.options[g.selectedIndex].value; /////////////////
+            var dependencia = d.options[d.selectedIndex].value;/////////////////
+            var explicaDependencia = document.getElementById("AFDependenciaExplicaOA").value;
+            var vivenJuntos = v.options[v.selectedIndex].value;/////////////////
+            var direccion = document.getElementById("AFDireccionFamiliarOA").value;
+            var telefono = document.getElementById("AFtelefonoFamiliarA").value;
+            var horarioLocalizacion = document.getElementById("AFLocalizacionA").value;
+            var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
+            var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            var observaciones = document.getElementById("AFobservacionesConsumoA").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/guardarFamiliar",
+                traditional: true,
+                data: {
+                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("AFNombreA").value = '';
+                        document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
+                        document.ready = document.getElementById("AFEdadA").value = '0';
+                        document.ready = document.getElementById("AFSexoA").value = 'M';
+                        document.ready = document.getElementById("AFDependenciaA").value = 'NO';
+                        document.ready = document.getElementById("AFDependenciaExplicaOA").value = '';
+                        document.ready = document.getElementById("AFVivenJuntosA").value = 'SI';
+                        document.ready = document.getElementById("AFDireccionFamiliarOA").value = '';
+                        document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
+                        document.ready = document.getElementById("AFLocalizacionA").value = '';
+                        document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
+                        document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+                        document.ready = document.getElementById("AFobservacionesA").value = '';
+                        $("#AFDependenciaExplicaA").css("display", "none");
+                        $("#AFDireccionFamiliarA").css("display", "none");
+                        $("#AFPuedeEnterarseA").css("display", "none");
+
+                        var otraSustancia = confirm("¿Agregar otra persona?");
+                        if (otraSustancia == true) {
+                            alert("Coloque los datos correspondientes");
+                        } else {
+                            $("#modalAgregarAsientoFamiliar").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+        $('#btnSiguienteFamiliar').on("click", function (e) {
+            e.preventDefault();
+            var r = document.getElementById("AFRelacionE");
+            var g = document.getElementById("AFSexoE");
+            var d = document.getElementById("AFDependenciaE");
+            var v = document.getElementById("AFVivenJuntosE");
+            var p = document.getElementById("AFEnteradoProcesoE");
+            var e = document.getElementById("AFPuedeEnterarseOE");
+
+            var nombre = document.getElementById("AFNombreE").value;
+            var relacion = r.options[r.selectedIndex].value; /////////////////
+            var edad = document.getElementById("AFEdadE").value;
+            var sexo = g.options[g.selectedIndex].value; /////////////////
+            var dependencia = d.options[d.selectedIndex].value;/////////////////
+            var explicaDependencia = document.getElementById("AFDependenciaExplicaOE").value;
+            var vivenJuntos = v.options[v.selectedIndex].value;/////////////////
+            var direccion = document.getElementById("AFDireccionFamiliarOE").value;
+            var telefono = document.getElementById("AFtelefonoFamiliarE").value;
+            var horarioLocalizacion = document.getElementById("AFLocalizacionE").value;
+            var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
+            var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            var observaciones = document.getElementById("AFobservacionesE").value;
+            //var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/siguienteFamiliar",
+                traditional: true,
+                data: {
+                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        if (response.responseText == "Datos Guardados con éxito") {
+                            $("#modalEditarAsientoFamiliar").modal('hide');
+                        }
+                        else {
+                            document.ready = document.getElementById("AFNombreE").value = response.nombre;
+                            document.ready = document.getElementById("AFRelacionE").value = response.relacion;
+                            document.ready = document.getElementById("AFEdadE").value = '0';
+                            document.ready = document.getElementById("AFSexoE").value = 'M';
+                            document.ready = document.getElementById("AFDependenciaE").value = 'NO';
+                            document.ready = document.getElementById("AFDependenciaExplicaOE").value = '';
+                            document.ready = document.getElementById("AFVivenJuntosE").value = 'SI';
+                            document.ready = document.getElementById("AFDireccionFamiliarOE").value = '';
+                            document.ready = document.getElementById("AFtelefonoFamiliarE").value = '';
+                            document.ready = document.getElementById("AFLocalizacionE").value = '';
+                            document.ready = document.getElementById("AFEnteradoProcesoE").value = 'SI';
+                            document.ready = document.getElementById("AFPuedeEnterarseOE").value = 'NA';
+                            document.ready = document.getElementById("AFobservacionesConsumoE").value = '';
+                            $("#AFDependenciaExplicaE").css("display", "none");
+                            $("#AFDireccionFamiliarE").css("display", "none");
+                            $("#AFPuedeEnterarseE").css("display", "none");
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
     });
     //endregion
-</script>
+    </script>
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -498,16 +878,47 @@
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Consume Sustancias</label>
-                <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
-                        asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
-                </select>
+            <div>
+                <label class="control-label col-md-12">Consume Sustancias</label>
+                <div class="form-group col-md-2">
+                    <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
+                            asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <button type="button" class="btn btn-primary" style="display:none;" id="btnEditarSustancias">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </button>
+                </div>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Ultima Actualización</label>
-                <input asp-for="UltimaActualización" class="form-control" />
-                <span asp-validation-for="UltimaActualización" class="text-danger"></span>
+            <div>
+                <label class="control-label col-md-12">¿Tiene familiares?</label>
+                <div class="form-group col-md-2">
+                    <select class="form-control" name="Familiares" id="Familiares"
+                            asp-items="@(new SelectList(ViewBag.listaFamiliares, "Value", "Text", @ViewBag.idFamiliares))">
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <button type="button" class="btn btn-primary" id="btnEditarFamiliares">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="control-label col-md-12">¿Tiene referencias?</label>
+                <div class="form-group col-md-2">
+                    <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales"
+                            asp-items="@(new SelectList(ViewBag.listaReferenciasPersonales, "Value", "Text", @ViewBag.idReferenciasPersonales))">
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <button type="button" class="btn btn-primary" id="btnEditarReferencias">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </button>
+                </div>
             </div>
             <div class="form-group col-lg-12">
                 <label asp-for="UltimaActualización" class="control-label"></label>
@@ -574,16 +985,12 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="btnAgregarSustancia">
+                <button type="button" class="btn btn-success" id="btnAgregarSustancia" name="btnAgregarSustancia">
                     <i class="fa fa-plus"></i>
-                    Agregar Sustancia
+                    Agregar
                 </button>
-                @*<button type="button" class="btn btn-danger" id="btnBorrarSustancia">
-                        <i class="fa fa-eraser"></i>
-                        Borrar Sustancia
-                    </button>*@
-                <button type="submit" class="btn btn-success" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
-                    <i class="fa fa-save"></i>
+                <button type="submit" class="btn btn-primary" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
+                    <i class="fa fa-arrow-right"></i>
                     Siguiente
                 </button>
             </div>
@@ -652,6 +1059,198 @@
                     Cerrar
                 </button>
                 <button type="button" class="btn btn-primary" id="btnGuardarSustancia" name="btnGuardarSustancia">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Asiento Familiar -->
+<div class="modal fade" id="modalEditarAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFREditar"></h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Nombre</label>
+                    <input class="form-control" maxlength="150" name="AFNombreE" type="text" id="AFNombreE" value="@ViewBag.nombre" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Relación</label>
+                    <select class="form-control" name="AFRelacionE" id="AFRelacionE"
+                            asp-items="@(new SelectList(ViewBag.listaRelacion, "Value", "Text", @ViewBag.idRelacion))">
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Edad</label>
+                    <input class="form-control" name="AFEdadE" type="text" id="AFEdadE" value="@ViewBag.edad" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Genero</label>
+                    <select required class="form-control" name="AFSexoE" id="AFSexoE"
+                            asp-items="@(new SelectList(ViewBag.listaSexo, "Value", "Text", @ViewBag.idSexo))">
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Depende en algo de él?</label>
+                    <select required class="form-control" name="AFDependenciaE" id="AFDependenciaE"
+                            asp-items="@(new SelectList(ViewBag.listaDependencia, "Value", "Text", @ViewBag.idDependencia))">
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFDependenciaExplicaE">
+                    <label class="control-label" for="AFDependenciaExplicaE">Explicar en que depende de él y cada cuanto</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFDependenciaExplicaOE" id="AFDependenciaExplicaOE">@ViewBag.dependenciaExplica</textarea>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Vive con él?</label>
+                    <select required class="form-control" name="AFVivenJuntosE" id="AFVivenJuntosE"
+                            asp-items="@(new SelectList(ViewBag.listaVivenJuntos, "Value", "Text", @ViewBag.idVivenJuntos))">
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFDireccionFamiliarE">
+                    <label class="control-label">Dirección</label>
+                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOE" id="AFDireccionFamiliarOE" type="text" value="@ViewBag.domicilio" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Teléfono (10 dígitos)</label>
+                    <input name="AFtelefonoFamiliarE" id="AFtelefonoFamiliarE" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" value="@ViewBag.telefono" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="AFDependenciaExplica">Días y horarios en que se encuentra</label>
+                    <textarea maxlength="200" class="form-control" rows="2" name="AFLocalizacionE" id="AFLocalizacionE">@ViewBag.horarioLocalizacion</textarea>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Enterado de su proceso penal?</label>
+                    <select required class="form-control" name="AFEnteradoProcesoE" id="AFEnteradoProcesoE"
+                            asp-items="@(new SelectList(ViewBag.listaEnteradoProceso, "Value", "Text", @ViewBag.idEnteradoProceso))">
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFPuedeEnterarseE">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select required class="form-control" name="AFPuedeEnterarseOE" id="AFPuedeEnterarseOE"
+                            asp-items="@(new SelectList(ViewBag.listaPuedeEnterarse, "Value", "Text", @ViewBag.idPuedeEnterarse))">
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="AFobservaciones">Observaciones</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFobservacionesE" id="AFobservacionesE">@ViewBag.AFobservaciones</textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnAgregarFamiliar" name="btnAgregarFamiliar">
+                    <i class="fa fa-plus"></i>
+                    Agregar
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnSiguienteFamiliar" name="btnSiguienteFamiliar">
+                    <i class="fa fa-arrow-right"></i>
+                    Siguiente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Asiento Familiar -->
+<div class="modal fade" id="modalAgregarAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFRAgregar"></h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Nombre</label>
+                    <input class="form-control" maxlength="150" name="AFNombreA" type="text" id="AFNombreA" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Relación</label>
+                    <select class="form-control" name="AFRelacionA" id="AFRelacionA">
+                        <option value="MAMA">Máma</option>
+                        <option value="PAPA">Pápa</option>
+                        <option value="ESPOSO (A)">Esposo(a)</option>
+                        <option value="HERMANO (A)">Hermano(a)</option>
+                        <option value="HIJO (A)">Hijo(a)</option>
+                        <option value="ABUELO (A)">Abuelo(a)</option>
+                        <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
+                        <option value="AMIGO">Amigo</option>
+                        <option value="CONOCIDO">Conocido</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Edad</label>
+                    <input class="form-control" value="0" name="AFEdadA" type="text" id="AFEdadA" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Genero</label>
+                    <select required class="form-control" name="AFSexoA" id="AFSexoA">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="N">Prefiero no decirlo</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Depende en algo de él?</label>
+                    <select required class="form-control" name="AFDependenciaA" id="AFDependenciaA">
+                        <option value="NO">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFDependenciaExplicaA">
+                    <label class="control-label" for="AFDependenciaExplicaA">Explicar en que depende de él y cada cuanto</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFDependenciaExplicaOA" id="AFDependenciaExplicaOA"></textarea>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Vive con él?</label>
+                    <select required class="form-control" name="AFVivenJuntosA" id="AFVivenJuntosA">
+                        <option value="SI">Si</option>
+                        <option value="NO">No</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFDireccionFamiliarA">
+                    <label class="control-label">Dirección</label>
+                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOA" id="AFDireccionFamiliarOA" type="text" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Teléfono (10 dígitos)</label>
+                    <input name="AFtelefonoFamiliarA" id="AFtelefonoFamiliarA" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="AFDependenciaExplica">Días y horarios en que se encuentra</label>
+                    <textarea maxlength="200" class="form-control" rows="2" name="AFLocalizacionA" id="AFLocalizacionA"></textarea>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Enterado de su proceso penal?</label>
+                    <select required class="form-control" name="AFEnteradoProcesoA" id="AFEnteradoProcesoA">
+                        <option value="SI">Si</option>
+                        <option value="NO">No</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFPuedeEnterarseA">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select required class="form-control" name="AFPuedeEnterarseOA" id="AFPuedeEnterarseOA">
+                        <option value="NA">NA</option>
+                        <option value="NO">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="AFobservaciones">Observaciones</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFobservacionesA" id="AFobservacionesA"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFamiliar" name="btnGuardarFamiliar">
                     <i class="fa fa-save"></i>
                     Guardar
                 </button>

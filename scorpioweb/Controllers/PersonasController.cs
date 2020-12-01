@@ -32,13 +32,19 @@ namespace scorpioweb.Controllers
         #region -Variables Globales-
         private readonly penas2Context _context;
         public static int contadorSustancia;
+        public static int contadorFamiliares;
+        public static int contadorReferencias;
         public static List<List<string>> datosSustancias = new List<List<string>>();
         public static List<List<string>> datosSustanciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliares = new List<List<string>>();
+        public static List<List<string>> datosFamiliaresEditados = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
+        public static List<List<string>> datosReferenciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
         public static int idPersona;
         public static List<Consumosustancias> consumosustancias;
+        public static List<Asientofamiliar> familiares;
+        public static List<Asientofamiliar> referenciaspersonales;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
@@ -425,13 +431,13 @@ namespace scorpioweb.Controllers
             else
             {
                 return Json(new { success = true,
-                    responseText = "Siguiente Sustancia",
+                    responseText = "Siguiente",
                     sustancia = consumosustancias[contadorSustancia].Sustancia,
                     frecuencia = consumosustancias[contadorSustancia].Frecuencia,
                     cantidad = consumosustancias[contadorSustancia].Cantidad,
                     ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
                     observacionesConsumo = consumosustancias[contadorSustancia++].Observaciones
-                }); ;
+                });
             }
         }
 
@@ -456,6 +462,78 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = true, responseText = "Datos Guardados con éxito" });
 
+        }
+
+        public ActionResult siguienteFamiliar(string[] datosFamiliar, int tipoGuardado)
+        {
+            string currentUser = User.Identity.Name;
+
+            if (tipoGuardado == 1)
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosFamiliaresEditados.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+
+                if (contadorFamiliares == familiares.Count)
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = familiares[contadorFamiliares].Nombre,
+                        relacion = familiares[contadorFamiliares].Relacion,
+                        edad = familiares[contadorFamiliares].Edad,
+                        sexo = familiares[contadorFamiliares].Sexo,
+                        dependencia = familiares[contadorFamiliares].Dependencia,
+                        explicaDependencia = familiares[contadorFamiliares].DependenciaExplica,
+                        vivenJuntos = familiares[contadorFamiliares].VivenJuntos,
+                        direccion = familiares[contadorFamiliares].Domicilio,
+                        telefono = familiares[contadorFamiliares].Telefono,
+                        horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion,
+                        enteradoProceso = familiares[contadorFamiliares].EnteradoProceso,
+                        puedeEnterarse = familiares[contadorFamiliares].PuedeEnterarse,
+                        observaciones = familiares[contadorFamiliares++].Observaciones
+                    });
+                }
+            }
+            else
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosReferenciasEditadas.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+
+                if (contadorReferencias == referenciaspersonales.Count)
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = referenciaspersonales[contadorReferencias].Nombre,
+                        relacion = referenciaspersonales[contadorReferencias].Relacion,
+                        edad = referenciaspersonales[contadorReferencias].Edad,
+                        sexo = referenciaspersonales[contadorReferencias].Sexo,
+                        dependencia = referenciaspersonales[contadorReferencias].Dependencia,
+                        explicaDependencia = referenciaspersonales[contadorReferencias].DependenciaExplica,
+                        vivenJuntos = referenciaspersonales[contadorReferencias].VivenJuntos,
+                        direccion = referenciaspersonales[contadorReferencias].Domicilio,
+                        telefono = referenciaspersonales[contadorReferencias].Telefono,
+                        horarioLocalizacion = referenciaspersonales[contadorReferencias].HorarioLocalizacion,
+                        enteradoProceso = referenciaspersonales[contadorReferencias].EnteradoProceso,
+                        puedeEnterarse = referenciaspersonales[contadorReferencias].PuedeEnterarse,
+                        observaciones = referenciaspersonales[contadorReferencias++].Observaciones
+                    });
+                }
+            }
         }
 
         public ActionResult guardarFamiliarExtranjero(string[] datosFE)
@@ -595,7 +673,7 @@ namespace scorpioweb.Controllers
             string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
-            string propiedades, string CURP, string consumoSustancias,
+            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad,
             string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string cuentaDomicilioSecundario,
             string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,
@@ -641,6 +719,8 @@ namespace scorpioweb.Controllers
                 persona.Propiedades = normaliza(propiedades);
                 persona.Curp = normaliza(CURP);
                 persona.ConsumoSustancias = normaliza(consumoSustancias);
+                persona.Familiares = normaliza(familiares);
+                persona.ReferenciasPersonales = normaliza(referenciasPersonales);
                 persona.UltimaActualización = DateTime.Now;
                 #endregion
 
@@ -1024,6 +1104,8 @@ namespace scorpioweb.Controllers
                 otraspropiedades=vistaPersona[0].personaVM.Propiedades,
                 curp=vistaPersona[0].personaVM.Curp,
                 consumosustancias=vistaPersona[0].personaVM.ConsumoSustancias,
+                familiares=vistaPersona[0].personaVM.Familiares,
+                referenciasPersonales=vistaPersona[0].personaVM.ReferenciasPersonales,
                 tipopropiedad=vistaPersona[0].domicilioVM.TipoDomicilio,
                 direccion=vistaPersona[0].domicilioVM.Calle+" "+vistaPersona[0].domicilioVM.No+", "+vistaPersona[0].domicilioVM.NombreCf+" CP "+vistaPersona[0].domicilioVM.Cp+", "+vistaPersona[0].estadosVMDomicilio.Estado+", "+vistaPersona[0].municipiosVMDomicilio.Municipio+", "+vistaPersona[0].domicilioVM.Pais,
                 tiempoendomicilio=vistaPersona[0].domicilioVM.Temporalidad,
@@ -1135,6 +1217,8 @@ namespace scorpioweb.Controllers
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
             consumosustancias = await _context.Consumosustancias.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            familiares = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "FAMILIAR").ToListAsync();
+            referenciaspersonales = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "REFERENCIA").ToListAsync();
             if (persona == null)
             {
                 return NotFound();
@@ -1249,94 +1333,169 @@ namespace scorpioweb.Controllers
 
             contadorSustancia = 0;
 
-            #region sustancia
             List<SelectListItem> ListaSustancia;
             ListaSustancia = new List<SelectListItem>
             {
-              new SelectListItem{ Text="Alcohol", Value="ALCOHOL"},
-              new SelectListItem{ Text="Marihuana", Value="MARIHUANA"},
-              new SelectListItem{ Text="Cocaína", Value="COCAINA"},
-              new SelectListItem{ Text="Heroína", Value="HEROINA"},
-              new SelectListItem{ Text="PVC", Value="PVC"},
-              new SelectListItem{ Text="Solventes", Value="SOLVENTES"},
-              new SelectListItem{ Text="Fármacos", Value="FARMACOS"},
-              new SelectListItem{ Text="Cemento", Value="CEMENTO"},
-              new SelectListItem{ Text="Crack", Value="CRACK"},
-              new SelectListItem{ Text="Ácidos", Value="ACIDOS"},
-              new SelectListItem{ Text="Tabaco", Value="TABACO"},
-              new SelectListItem{ Text="Metanfetaminas", Value="METANFETAMINAS"},
-              new SelectListItem{ Text="Otro", Value="OTRO"},
+                new SelectListItem{ Text="Alcohol", Value="ALCOHOL"},
+                new SelectListItem{ Text="Marihuana", Value="MARIHUANA"},
+                new SelectListItem{ Text="Cocaína", Value="COCAINA"},
+                new SelectListItem{ Text="Heroína", Value="HEROINA"},
+                new SelectListItem{ Text="PVC", Value="PVC"},
+                new SelectListItem{ Text="Solventes", Value="SOLVENTES"},
+                new SelectListItem{ Text="Fármacos", Value="FARMACOS"},
+                new SelectListItem{ Text="Cemento", Value="CEMENTO"},
+                new SelectListItem{ Text="Crack", Value="CRACK"},
+                new SelectListItem{ Text="Ácidos", Value="ACIDOS"},
+                new SelectListItem{ Text="Tabaco", Value="TABACO"},
+                new SelectListItem{ Text="Metanfetaminas", Value="METANFETAMINAS"},
+                new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.listaSustancia = ListaSustancia;
-            if (consumosustancias.Count > 0)
+
+            List<SelectListItem> ListaFrecuencia;
+            ListaFrecuencia = new List<SelectListItem>
             {
+                new SelectListItem{ Text="Diario", Value="DIARIO"},
+                new SelectListItem{ Text="Semanal", Value="SEMANAL"},
+                new SelectListItem{ Text="Quincenal", Value="QUINCENAL"},
+                new SelectListItem{ Text="Mensual", Value="MENSUAL"},
+                new SelectListItem{ Text="Bimestral", Value="BIMESTRAL"},
+                new SelectListItem{ Text="Trimestral", Value="TRIMESTRAL"},
+                new SelectListItem{ Text="Semestral", Value="SEMESTRAL"},
+                new SelectListItem{ Text="Anual", Value="ANUAL"},
+                new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
+            };
+            ViewBag.listaFrecuencia = ListaFrecuencia;
+
+            if (consumosustancias.Count > 0)
+            {  
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
+                ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustancias[contadorSustancia].Frecuencia);
+                ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
+                ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
+                ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
+                contadorSustancia++;
             }
             else
             {
                 ViewBag.idSustancia = "ALCOHOL";
-            }
-            #endregion
-
-            #region frecuencia
-            List<SelectListItem> ListaFrecuencia;
-            ListaFrecuencia = new List<SelectListItem>
-            {
-              new SelectListItem{ Text="Diario", Value="DIARIO"},
-              new SelectListItem{ Text="Semanal", Value="SEMANAL"},
-              new SelectListItem{ Text="Quincenal", Value="QUINCENAL"},
-              new SelectListItem{ Text="Mensual", Value="MENSUAL"},
-              new SelectListItem{ Text="Bimestral", Value="BIMESTRAL"},
-              new SelectListItem{ Text="Trimestral", Value="TRIMESTRAL"},
-              new SelectListItem{ Text="Semestral", Value="SEMESTRAL"},
-              new SelectListItem{ Text="Anual", Value="ANUAL"},
-              new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
-            };
-            ViewBag.listaFrecuencia = ListaFrecuencia;
-            if (consumosustancias.Count > 0)
-            {
-                ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustancias[contadorSustancia].Frecuencia);
-            }
-            else
-            {
                 ViewBag.idFrecuencia = "DIARIO";
-            }
-            #endregion
-
-            #region cantidad
-            if (consumosustancias.Count > 0)
-            {
-                ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
-            }
-            else
-            {
                 ViewBag.cantidad = null;
-            }
-            #endregion
-
-            #region ultimo consumo
-            if (consumosustancias.Count > 0)
-            {
-                ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
-            }
-            else
-            {
                 ViewBag.ultimoConsumo = null;
-            }
-            #endregion
-
-            #region observaciones
-            if (consumosustancias.Count > 0)
-            {
-                ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
-            }
-            else
-            {
                 ViewBag.observaciones = null;
             }
             #endregion
 
-            contadorSustancia++;
+            #region Familiares
+            ViewBag.listaFamiliares = listaSiNo;
+            ViewBag.idFamiliares = BuscaId(listaSiNo, persona.Familiares);
+
+            contadorFamiliares = 0;
+
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Máma", Value="MAMA"},
+                new SelectListItem{ Text="Pápa", Value="PAPA"},
+                new SelectListItem{ Text="Esposo(a)", Value="ESPOSO (A)"},
+                new SelectListItem{ Text="Hermano(a)", Value="HERMANO (A)"},
+                new SelectListItem{ Text="Hijo(a)", Value="HIJO (A)"},
+                new SelectListItem{ Text="Abuelo(a)", Value="ABUELO (A)"},
+                new SelectListItem{ Text="Familiar 1 nivel", Value="FAMILIAR 1 NIVEL"},
+                new SelectListItem{ Text="Amigo", Value="AMIGO"},
+                new SelectListItem{ Text="Conocido", Value="CONOCIDO"},
+                new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaRelacion = ListaRelacion;
+
+            List<SelectListItem> ListaSexo;
+            ListaSexo = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Masculino", Value="M"},
+                new SelectListItem{ Text="Femenino", Value="F"},
+                new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
+            };
+            ViewBag.listaSexo = ListaSexo;
+
+            ViewBag.listaDependencia = listaNoSi;
+            ViewBag.listaVivenJuntos = listaSiNo;
+            ViewBag.listaEnteradoProceso = listaSiNo;
+            ViewBag.listaPuedeEnterarse = listaNoSiNA;
+
+            if (familiares.Count > 0)
+            {
+                ViewBag.nombreF = familiares[contadorFamiliares].Nombre;
+                ViewBag.idRelacionF = BuscaId(ListaRelacion, familiares[contadorFamiliares].Relacion);
+                ViewBag.edadF = familiares[contadorFamiliares].Edad;
+                ViewBag.idSexoF = BuscaId(ListaSexo, familiares[contadorFamiliares].Sexo); ;
+                ViewBag.idDependenciaF = BuscaId(listaNoSi, familiares[contadorFamiliares].Dependencia);
+                ViewBag.dependenciaExplicaF = familiares[contadorFamiliares].DependenciaExplica;
+                ViewBag.idVivenJuntosF = BuscaId(listaSiNo, familiares[contadorFamiliares].VivenJuntos);
+                ViewBag.domicilioF = familiares[contadorFamiliares].Domicilio;
+                ViewBag.telefonoF = familiares[contadorFamiliares].Telefono;
+                ViewBag.horarioLocalizacionF = familiares[contadorFamiliares].HorarioLocalizacion;
+                ViewBag.idEnteradoProcesoF = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
+                ViewBag.idPuedeEnterarseF = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
+                ViewBag.AFobservacionesF = familiares[contadorFamiliares].Observaciones;
+                contadorFamiliares++;
+            }
+            else
+            {
+                ViewBag.nombreF = null;
+                ViewBag.idRelacionF = "MAMA";
+                ViewBag.edadF = 0;
+                ViewBag.idSexoF = "M";
+                ViewBag.idDependenciaF = "NO";
+                ViewBag.dependenciaExplicaF = null;
+                ViewBag.idVivenJuntosF = "SI";
+                ViewBag.domicilioF = null;
+                ViewBag.telefonoF = null;
+                ViewBag.horarioLocalizacionF = null;
+                ViewBag.idEnteradoProcesoF = "SI";
+                ViewBag.idPuedeEnterarseF = "NA";
+                ViewBag.AFobservacionesF = null;
+            }
+            #endregion
+
+            #region Referencias
+            ViewBag.listaReferenciasPersonales = listaSiNo;
+            ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, persona.ReferenciasPersonales);
+
+            contadorReferencias = 0;
+
+            if (referenciaspersonales.Count > 0)
+            {
+                ViewBag.nombreR = referenciaspersonales[contadorReferencias].Nombre;
+                ViewBag.idRelacionR = BuscaId(ListaRelacion, referenciaspersonales[contadorReferencias].Relacion);
+                ViewBag.edadR = referenciaspersonales[contadorReferencias].Edad;
+                ViewBag.idSexoR = BuscaId(ListaSexo, referenciaspersonales[contadorReferencias].Sexo); ;
+                ViewBag.idDependenciaR = BuscaId(listaNoSi, referenciaspersonales[contadorReferencias].Dependencia);
+                ViewBag.dependenciaExplicaR = referenciaspersonales[contadorReferencias].DependenciaExplica;
+                ViewBag.idVivenJuntosR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].VivenJuntos);
+                ViewBag.domicilioR = referenciaspersonales[contadorReferencias].Domicilio;
+                ViewBag.telefonoR = referenciaspersonales[contadorReferencias].Telefono;
+                ViewBag.horarioLocalizacionR = referenciaspersonales[contadorReferencias].HorarioLocalizacion;
+                ViewBag.idEnteradoProcesoR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].EnteradoProceso);
+                ViewBag.idPuedeEnterarseR = BuscaId(listaNoSiNA, referenciaspersonales[contadorReferencias].PuedeEnterarse);
+                ViewBag.AFobservacionesR = referenciaspersonales[contadorReferencias].Observaciones;
+                contadorReferencias++;
+            }
+            else
+            {
+                ViewBag.nombreR = null;
+                ViewBag.idRelacionR = "MAMA";
+                ViewBag.edadR = 0;
+                ViewBag.idSexoR = "M";
+                ViewBag.idDependenciaR = "NO";
+                ViewBag.dependenciaExplicaR = null;
+                ViewBag.idVivenJuntosR = "SI";
+                ViewBag.domicilioR = null;
+                ViewBag.telefonoR = null;
+                ViewBag.horarioLocalizacionR = null;
+                ViewBag.idEnteradoProcesoR = "SI";
+                ViewBag.idPuedeEnterarseR = "NA";
+                ViewBag.AFobservacionesR = null;
+            }
             #endregion
 
             return View(persona);
@@ -1344,7 +1503,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor")] Persona persona)        {
             string currentUser = User.Identity.Name;
 
             if (id != persona.IdPersona)
@@ -1437,6 +1596,9 @@ namespace scorpioweb.Controllers
                     }
                 }
                 #endregion
+
+                persona.Familiares = normaliza(persona.Familiares);
+                persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
 
                 try
                 {

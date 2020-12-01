@@ -140,7 +140,7 @@
             }
         });
 
-        $("#AsientoFamiliar").change(function () {
+        $("#Familiares").change(function () {
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Asiento Familiar";
             if (opcion == "Si") {
@@ -696,7 +696,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Añadir Familiares</label>
-                                <select class="form-control" name="AsientoFamiliar" id="AsientoFamiliar">
+                                <select class="form-control" name="Familiares" id="Familiares">
                                     <option value="No">No</option>
                                     <option value="Si">Si</option>
                                 </select>
@@ -1367,7 +1367,7 @@
                         <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
                         <option value="AMIGO">Amigo</option>
                         <option value="CONOCIDO">Conocido</option>
-                        <option value="OTRO">OTRO</option>
+                        <option value="OTRO">Otro</option>
                     </select>
                 </div>
                 <div class="form-group col-md-4">
@@ -1482,7 +1482,7 @@
                         <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
                         <option value="AMIGO">Amigo</option>
                         <option value="CONOCIDO">Conocido</option>
-                        <option value="OTRO">OTRO</option>
+                        <option value="OTRO">Otro</option>
                     </select>
                 </div>
                 <div class="form-group col-md-6">
