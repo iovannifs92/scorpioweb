@@ -1980,14 +1980,14 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DomiciliosecundarioExists(domiciliosecundario.IdDomicilioSecundario))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //if (!DomiciliosecundarioExists(domiciliosecundario.IdDomicilioSecundario))
+                    //{
+                    //    return NotFound();
+                    //}
+                    //else
+                    //{
+                    //    throw;
+                    //}
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -2650,15 +2650,15 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FamiliaresforaneosExists(familiaresforaneos.IdFamiliaresForaneos))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                    //if (!FamiliaresforaneosExists(familiaresforaneos.IdFamiliaresForaneos))
+                    //{
+                    //    return NotFound();
+                    //}
+                    //else
+                    //{
+                    //    throw;
 
-                    }
+                    //}
                 }
                 return RedirectToAction("EditAbandonoEstado/" + familiaresforaneos.PersonaIdPersona, "Personas");
             }
