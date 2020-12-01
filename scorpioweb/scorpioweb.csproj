@@ -8,6 +8,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200625003843_update.cs" />
     <Compile Remove="Migrations\20200625003843_update.Designer.cs" />
+    <Compile Remove="Migrations\20201102175557_AddRutaFoto.cs" />
+    <Compile Remove="Migrations\20201102175557_AddRutaFoto.Designer.cs" />
+    <Compile Remove="Migrations\20201112182713_rutafoto.cs" />
+    <Compile Remove="Migrations\20201112182713_rutafoto.Designer.cs" />
   </ItemGroup>
 
 
@@ -23,10 +27,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0" />
+    <PackageReference Include="QRCoder" Version="1.3.9" />
     <PackageReference Include="Rotativa.AspNetCore" Version="1.1.1" />
     <PackageReference Include="sautinsoft.document" Version="5.0.10.23" />
     <PackageReference Include="Syncfusion.HtmlToPdfConverter.QtWebKit.Net.Core" Version="18.1.0.52" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="TemplateEngine.Docx" Version="1.1.5" />
     <PackageReference Include="ZXing.Net" Version="0.16.5" />
   </ItemGroup>

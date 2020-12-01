@@ -8,17 +8,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System.Globalization;
-using Rotativa;
-using Rotativa.AspNetCore;
-using Syncfusion.HtmlConverter;
-using Syncfusion.Pdf;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using SautinSoft.Document;
+using SautinSoft.Document.Drawing;
+using QRCoder;
+using System.Drawing;
+using Size = SautinSoft.Document.Drawing.Size;
 
 namespace scorpioweb.Controllers
 {
@@ -69,22 +68,6 @@ namespace scorpioweb.Controllers
             this.userManager = userManager;
         }
         #endregion
-
-        public IActionResult ExportToPDF()
-        {
-            //Initialize HTML to PDF converter 
-            HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
-            WebKitConverterSettings settings = new WebKitConverterSettings();
-            //Set WebKit path
-            settings.WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesWindows");
-            //Assign WebKit settings to HTML converter
-            htmlConverter.ConverterSettings = settings;
-            //Convert URL to PDF
-            PdfDocument document = htmlConverter.Convert("https://localhost:44359/Firmas/GeneraQR");
-            MemoryStream stream = new MemoryStream();
-            document.Save(stream);
-            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "Output.pdf");
-        }
 
         // GET: Personas
         public async Task<IActionResult> Index(
@@ -474,7 +457,7 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                normalizar = "S/d";
+                normalizar = "S-D";
             }
             return normalizar;
         }
@@ -547,7 +530,8 @@ namespace scorpioweb.Controllers
             string vividoFuera, string lugaresVivido, string tiempoVivido, string motivoVivido, string viajaHabitual, string lugaresViaje, string tiempoViaje,
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
-            string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud)//[Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización")]
+            string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud,
+            IFormFile fotografia)//[Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización")]
         {
             string currentUser = User.Identity.Name;
 
@@ -565,7 +549,7 @@ namespace scorpioweb.Controllers
                 persona.Lnpais = lnPais;
                 persona.Lnestado = lnEstado;
                 persona.Lnmunicipio = lnMunicipio;
-                persona.Lnlocalidad = lnLocalidad;
+                persona.Lnlocalidad =normaliza(lnLocalidad);
                 persona.EstadoCivil = estadoCivil;
                 persona.Duracion = duracion;
                 persona.OtroIdioma = normaliza(otroIdioma);
@@ -580,7 +564,7 @@ namespace scorpioweb.Controllers
                 persona.NpersonasVive = nPersonasVive;
                 persona.Propiedades = normaliza(propiedades);
                 persona.Curp = normaliza(CURP);
-                persona.ConsumoSustancias = normaliza(consumoSustancias);
+                persona.ConsumoSustancias = normaliza(consumoSustancias);              
                 persona.UltimaActualización = DateTime.Now;
                 #endregion
 
@@ -700,6 +684,14 @@ namespace scorpioweb.Controllers
                 actividadsocial.PersonaIdPersona = idPersona;
                 abandonoEstado.PersonaIdPersona = idPersona;
                 saludfisica.PersonaIdPersona = idPersona;
+
+                #region -Guardar Foto-
+                string file_name =persona.IdPersona+"_"+persona.Paterno+"_"+persona.Nombre+".jpg";
+                persona.rutaFoto = file_name;
+                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);                
+                #endregion
+
                 #endregion
 
                 #region -ConsumoSustancias-
@@ -834,7 +826,8 @@ namespace scorpioweb.Controllers
                 _context.Add(actividadsocial);
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
-                await _context.SaveChangesAsync();
+                await fotografia.CopyToAsync(stream);
+                await _context.SaveChangesAsync();                
                 return RedirectToAction(nameof(Index));
                 #endregion
             }
@@ -883,6 +876,38 @@ namespace scorpioweb.Controllers
         {
             return View();
         }
+
+        public string normalizaDinero(string normalizar)
+        {
+            if (!String.IsNullOrEmpty(normalizar))
+            {
+                try
+                {
+                    normalizar = ((Convert.ToInt32(normalizar) / 100)).ToString("C", CultureInfo.CurrentCulture);
+                }
+                catch(System.FormatException e)
+                {
+                    return normalizar;
+                }                
+            }
+            else
+            {
+                normalizar = "S-D";
+            }
+            return normalizar;
+        }
+
+        #region -Crea QR-
+        public void creaQR(int? id)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+            qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+        }
+        #endregion
 
         public void Imprimir(int? id)
         {
@@ -934,12 +959,19 @@ namespace scorpioweb.Controllers
                                                        estadosVMDomicilio = domicilioEstado,
                                                        municipiosVMDomicilio = domicilioMunicipio
                                                    }).ToList();
-
             #endregion
 
+            creaQR(id);
+
             #region -GeneraDocumento-
-            string templatePath = "wwwroot/Documentos/templateEntrevista.docx";
-            string resultPath = "wwwroot/Documentos/entrevista.docx";
+            string templatePath = this._hostingEnvironment.WebRootPath+"\\Documentos\\templateEntrevista.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath+"\\Documentos\\entrevista.docx";
+            string rutaFoto = ((vistaPersona[0].personaVM.Genero == ("M")) ? "hombre.png" : "mujer.png");
+            if (vistaPersona[0].personaVM.rutaFoto != null)
+            {
+                rutaFoto = vistaPersona[0].personaVM.rutaFoto;
+            }
+            string picPath = this._hostingEnvironment.WebRootPath + "\\Fotos\\" + rutaFoto;
 
             DocumentCore dc = DocumentCore.Load(templatePath);
 
@@ -986,7 +1018,7 @@ namespace scorpioweb.Controllers
                 enteradoprocesotrabajo=vistaPersona[0].trabajoVM.EnteradoProceso,
                 sepuedeenterartrabajo=vistaPersona[0].trabajoVM.SePuedeEnterar,
                 tiempotrabajando=vistaPersona[0].trabajoVM.TiempoTrabajano,
-                salario=(Convert.ToInt32(vistaPersona[0].trabajoVM.Salario)/100).ToString("C",CultureInfo.CurrentCulture),
+                salario= normalizaDinero(vistaPersona[0].trabajoVM.Salario),
                 temporalidadpago=vistaPersona[0].trabajoVM.TemporalidadSalario,
                 direcciontrabajo=vistaPersona[0].trabajoVM.Direccion,
                 horariotrabajo=vistaPersona[0].trabajoVM.Horario,
@@ -1023,7 +1055,26 @@ namespace scorpioweb.Controllers
 
             } };
 
+
+            dc.MailMerge.FieldMerging += (sender, e) =>
+              {
+                  if (e.FieldName == "foto")
+                  {
+                      e.Inlines.Clear();
+                      e.Inlines.Add(new Picture(dc, picPath) { Layout = new InlineLayout(new Size(100, 100)) });
+                      e.Cancel = false;
+                  }
+                  if (e.FieldName == "QR")
+                  {
+                      e.Inlines.Clear();
+                      e.Inlines.Add(new Picture(dc, this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg") { Layout = new InlineLayout(new Size(100, 100)) });
+                      e.Cancel = false;
+                  }
+              };
+            
             dc.MailMerge.Execute(dataSource);
+            
+
             dc.Save(resultPath);
 
             Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
@@ -1032,7 +1083,7 @@ namespace scorpioweb.Controllers
 
 
         }
-        #endregion
+        #endregion        
 
         #region -Edicion-        
 
@@ -1873,6 +1924,14 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        private static MemoryStream BitmapToBytes(Bitmap img)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                return stream;
+            }
+        }
 
         private bool PersonaExists(int id)
         {

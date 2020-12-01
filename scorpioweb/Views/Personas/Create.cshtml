@@ -538,7 +538,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create">
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data">
             <div class="container">
                 <div class="panel-group">
                     <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
@@ -1173,9 +1173,9 @@
                                 </select>
                             </div>
                             @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                                <label class="control-label">¿Cuántos familiares?</label>
-                                <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                            </div>*@
+                            <label class="control-label">¿Cuántos familiares?</label>
+                            <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                        </div>*@
                         </div>
                     </div>
                     <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1257,6 +1257,9 @@
                     </div>
                 </div>
             </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
+            </div>            
             <div class="form-group">
                 <input type="submit" value="Guardar Registro" class="btn btn-default" />
             </div>

@@ -7,7 +7,7 @@ namespace scorpioweb.Models
     {
         public int IdFracciones { get; set; }
         public string Tipo { get; set; }
-        public string Autoridad { get; set; }
+        public string Autoridad { get; set; }        
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaTermino { get; set; }
         public string Estado { get; set; }

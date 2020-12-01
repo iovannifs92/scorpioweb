@@ -4,12 +4,22 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
-<h2>Detalles</h2>
+
 
 @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
 {
+    var rutaFoto =((item.personaVM.Genero==("M")) ? "hombre.png" : "mujer.png");
+    if (item.personaVM.rutaFoto!=null)
+    {
+        rutaFoto = item.personaVM.rutaFoto;
+    }
+    
     <div class="table-responsive-lg">
         <div class="container">
+            <div class="row" style="text-align:center; padding-top:1%">
+                <img src="~/Fotos/@rutaFoto" class="img-thumbnail" width="200" height="200">
+                <h2>@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
+            </div>            
             <div class="panel-group">
                 <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
                     <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;">
@@ -19,10 +29,6 @@
                     </div>
                     <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
                         <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloDG" style="width:20%">Nombre</td>
-                                <td style="background-color: white; color: black" colspan="3">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</td>
-                            </tr>
                             <tr>
                                 <td class="estiloDG">Género</td>
                                 <td style="background-color: white; color: black">@item.personaVM.Genero</td>

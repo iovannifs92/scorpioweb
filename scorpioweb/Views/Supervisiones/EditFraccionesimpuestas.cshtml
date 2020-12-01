@@ -74,20 +74,23 @@
 <h2>Fracciones impuestas @ViewBag.nombre</h2>
 
 <hr />
-<table class="table">
-    <thead>
+<table class="table" style="text-align:center">
+    <thead style="text-align:center">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Tipo)
+                MC/SCP
+            </th>
+            <th>
+                Fracción
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Autoridad)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FechaInicio)
+                Fecha de inicio
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FechaTermino)
+                Fecha  de termino
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Estado)
@@ -95,58 +98,71 @@
             <th>
                 @Html.DisplayNameFor(model => model.Evidencia)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FiguraJudicial)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Fraccionesimpuestas>)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tipo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Autoridad)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FechaInicio)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FechaTermino)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Evidencia)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FiguraJudicial)
-                </td>
-                <td>                    
-                    <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
-                        <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
-                            <i class="fa fa-pencil"></i> Editar
-                        </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Borrar
-                        </button>
-                    </form>                      
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FiguraJudicial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tipo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Autoridad)
+            </td>
+            <td>
+                @if (item.FechaInicio != null)
+                {
+                    @(item.FechaInicio.Value.ToString("dd MMMM yyyy"))
+                }
+            </td>
+            <td>
+                @if (item.FechaTermino != null)
+                {
+                    @if (DateTime.Now < item.FechaTermino)
+                    {
+                        @item.FechaTermino.Value.ToString("dd MMMM yyyy")
+                    }
+                    else
+                    {
+                        <span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>
+                    }
+                }
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Evidencia)
+            </td>
+            <td>
+                <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Borrar
+                    </button>
+                </form>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
 
 <div>
+    <a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>
     <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
-        Añadir Fracciones
+        <i class="fa fa-plus"></i> Añadir Fracciones
     </button>
-    <a asp-action="PersonaSupervision">Regresar a lista</a>
 </div>
+<br />
+<a asp-action="PersonaSupervision">Regresar a lista</a>
 
 
 

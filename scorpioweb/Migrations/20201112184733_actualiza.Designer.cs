@@ -11,9 +11,10 @@ using System;
 namespace scorpioweb.Migrations
 {
     [DbContext(typeof(penas2Context))]
-    partial class penas2ContextModelSnapshot : ModelSnapshot
+    [Migration("20201112184733_actualiza")]
+    partial class actualiza
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -113,8 +113,9 @@ namespace scorpioweb.Controllers
             }
             ViewBag.libros = listaLibro;
 
-            var count = (from table in _context.Firmas                         
-                         select table).Count();
+            //var count = (from table in _context.Firmas                         
+            //             select table).Count();
+            var count = 1;
 
             char[] nom = (nombre.ToUpper()).ToCharArray();
             String codigo = lib +""+ nom[0] +""+ (count + 1) + "-" + Convert.ToInt32(DateTime.Now.ToString("ddMM"));

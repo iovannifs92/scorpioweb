@@ -8,12 +8,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
 using SautinSoft.Document;
-
+using Microsoft.AspNetCore.Hosting;
+using SautinSoft.Document.Drawing;
+using QRCoder;
+using System.Drawing;
+using Size = SautinSoft.Document.Drawing.Size;
+using System.IO;
 
 namespace scorpioweb.Controllers
 {
     public class SupervisionesController : Controller
     {
+        #region -Constructor-
+        private readonly IHostingEnvironment _hostingEnvironment;
+        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment)
+        {
+            _context = context;
+            _hostingEnvironment = hostingEnvironment;
+        }
+        #endregion
+
         #region -Variables globales-
         private readonly penas2Context _context;
         public static List<string> datosSupervision = new List<string>();
@@ -45,7 +59,7 @@ namespace scorpioweb.Controllers
 
         private List<SelectListItem> listaCumplimiento=new List<SelectListItem>
         {
-            new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
+            new SelectListItem{ Text = "Cumplimiento", Value = "CUMPLIMIENTO" },
             new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
             new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
         };
@@ -81,6 +95,18 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Metodos Generales-
+
+        #region -Crea QR-
+        public void creaQR(int? id)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+            qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+        }
+        #endregion
         public static DateTime validateDatetime(string value)
         {
             try
@@ -95,14 +121,20 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -CrearDocumento-
-        public void crearDocumento(string nombre)
+        public void crearDocumento(int id)
         {
+            List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
+
+            ViewData["fracciones"] = from fracciones in fraccionesImpuestas
+                                     where fracciones.SupervisionIdSupervision == id
+                                     orderby fracciones.IdFracciones
+                                     select fracciones;
             string templatePath = "wwwroot/Documentos/template.docx";
-            string resultPath = "wwwroot/Documentos/" + nombre + ".docx";
+            string resultPath = "wwwroot/Documentos/template.docx";
 
             DocumentCore dc = DocumentCore.Load(templatePath);
 
-            var dataSource = new[] { new { Nombre = nombre, Fecha = DateTime.Now.ToString("dd MMMMM yyyy") } };
+            var dataSource = new[] { new { Nombre = "IOVANNI FERNANDEZ SANCHEZ", Fecha = DateTime.Now.ToString("dd MMMMM yyyy") } };
 
             var dataSource2 = new
             {
@@ -122,14 +154,11 @@ namespace scorpioweb.Controllers
             dc.MailMerge.Execute(dataSource2, "Fracciones");
             dc.Save(resultPath);
 
-            Response.Redirect("https://localhost:44359/Documentos/"+nombre+".docx");
+            Response.Redirect("https://localhost:44359/Documentos/"+"template.docx");
 
 
         }
         #endregion
-
-
-
 
 
         public ActionResult guardarSupervision(string[] datosS)
@@ -143,16 +172,7 @@ namespace scorpioweb.Controllers
             return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Boton para guaradar los cambios" });
 
         }
-
-
        
-
-
-        public SupervisionesController(penas2Context context)
-        {
-            _context = context;
-        }
-
         #region -Index-
         public async Task<IActionResult> Index()
         {
@@ -295,6 +315,36 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -menuOficios-
+        public IActionResult GeneraOficios(int id)
+        {
+            ViewBag.idSupervision = id;
+
+            return View();
+        }
+
+        public void tipoOficio(int id, int tipo)
+        {
+            var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == id);
+
+            var persona = _context.Persona
+                .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
+
+            var causaPenal = _context.Causapenal
+                .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
+
+            List<Delito> delito = _context.Delito.Where(x => x.CausaPenalIdCausaPenal == causaPenal.IdCausaPenal).ToList();
+            List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.Where(x => x.SupervisionIdSupervision == supervision.IdSupervision).ToList();
+
+            switch (tipo)
+            {
+                case 1:                    
+                    break;
+            }
+        }
+        #endregion
+
         #region -Editar y borrar fracciones-        
 
         public async Task<IActionResult> AddOrEdit(int id)
@@ -397,6 +447,7 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
+
         public static IEnumerable<Supervision> supervisions = new List<Supervision> {
                 new Supervision {
                     IdSupervision = 1,
@@ -407,6 +458,7 @@ namespace scorpioweb.Controllers
                     EstadoSupervision = "Blue"
                 }
             };
+
         #region -MenuSupervision-
         public IActionResult MenuSupervision()
         {
@@ -560,6 +612,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
+
 
         #region -Aer-
         public async Task<IActionResult> EditAer(int? id, string nombre, string cp)
@@ -783,7 +836,7 @@ namespace scorpioweb.Controllers
 
             ViewData["fracciones"] = from fracciones in fraccionesImpuestas
                                      where fracciones.SupervisionIdSupervision == id
-                                     orderby fracciones.FechaInicio
+                                     orderby fracciones.IdFracciones
                                      select fracciones;
 
             ViewBag.IdSupervisionGuardar = id;
@@ -1081,7 +1134,6 @@ namespace scorpioweb.Controllers
 
         #region -Graficos-
         #endregion
-
 
     }
 }

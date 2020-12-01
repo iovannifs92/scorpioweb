@@ -32,10 +32,11 @@ namespace scorpioweb.Controllers
         [HttpPost]
         public IActionResult Upload(IFormFile photo)
         {
-            var path = Path.Combine(this.ihostingEnvironment.WebRootPath, "images", photo.FileName);
-            var stream = new FileStream(path, FileMode.Create);
+            string file_name = "Nombre" + DateTime.Now.ToString("Mdyyyy")+".jpg";
+            var uploads = Path.Combine(this.ihostingEnvironment.WebRootPath, "Fotos");
+            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
             photo.CopyToAsync(stream);
-            ViewBag.photo = photo.FileName;
+            ViewBag.photo = file_name;
             return View("Success");
         }
     }
