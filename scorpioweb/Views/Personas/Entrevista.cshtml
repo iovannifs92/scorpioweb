@@ -229,10 +229,12 @@
                 asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
         </select>
     </form>
-    <div class="form-group col-lg-12">
+    <div class="form-group">
         <hr/>
         <p>
-            <a asp-action="Create">Nueva entrevista de encuadre</a>
+            <a asp-action="Create" class="btn btn-link">
+                Nueva entrevista de encuadre
+            </a>
         </p>
      </div>
 

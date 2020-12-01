@@ -388,13 +388,17 @@
                 </div>
             </div>
         </div>
-        @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
-        <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaVM.IdPersona"><i class="fa fa-print"></i> Imprimir</a>
+        <div class="col-md-12">
+            @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
+            <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaVM.IdPersona"><i class="fa fa-print"></i> Imprimir</a>
+        </div>
     </div>
 }
 <br />
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-link" asp-action="Index">
+        Regresar a lista de usuarios
+    </a>
 </div>
 
 <!-- Modal Consumo de sustancias -->
@@ -430,7 +434,10 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <a class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
             </div>
         </div>
     </div>
@@ -511,7 +518,10 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <a class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
             </div>
         </div>
     </div>
@@ -591,7 +601,10 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <a class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
             </div>
         </div>
     </div>
@@ -644,7 +657,10 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <a class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
             </div>
         </div>
     </div>
@@ -704,7 +720,10 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <a class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
             </div>
         </div>
     </div>

@@ -30,12 +30,20 @@ namespace scorpioweb.Controllers
 
         #region -Variables Globales-
         private readonly penas2Context _context;
-        public static int contadorSustancia = 0;
+        public static int contadorSustancia;
+        public static int contadorFamiliares;
+        public static int contadorReferencias;
         public static List<List<string>> datosSustancias = new List<List<string>>();
+        public static List<List<string>> datosSustanciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliares = new List<List<string>>();
+        public static List<List<string>> datosFamiliaresEditados = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
+        public static List<List<string>> datosReferenciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
         public static int idPersona;
+        public static List<Consumosustancias> consumosustancias;
+        public static List<Asientofamiliar> familiares;
+        public static List<Asientofamiliar> referenciaspersonales;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
@@ -68,6 +76,7 @@ namespace scorpioweb.Controllers
             this.userManager = userManager;
         }
         #endregion
+
 
         // GET: Personas
         public async Task<IActionResult> Index(
@@ -381,6 +390,31 @@ namespace scorpioweb.Controllers
 
         }
 
+        public ActionResult siguienteSustancia(string[] datosConsumo)
+        {
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosConsumo.Length; i++)
+            {
+                datosSustanciasEditadas.Add(new List<String> { datosConsumo[i], currentUser });
+            }
+
+            if (contadorSustancia == consumosustancias.Count)
+            {
+                return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+            }
+            else
+            {
+                return Json(new { success = true,
+                    responseText = "Siguiente",
+                    sustancia = consumosustancias[contadorSustancia].Sustancia,
+                    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+                    cantidad = consumosustancias[contadorSustancia].Cantidad,
+                    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+                    observacionesConsumo = consumosustancias[contadorSustancia++].Observaciones
+                });
+            }
+        }
+
         public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
         {
             string currentUser = User.Identity.Name;
@@ -402,6 +436,78 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = true, responseText = "Datos Guardados con éxito" });
 
+        }
+
+        public ActionResult siguienteFamiliar(string[] datosFamiliar, int tipoGuardado)
+        {
+            string currentUser = User.Identity.Name;
+
+            if (tipoGuardado == 1)
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosFamiliaresEditados.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+
+                if (contadorFamiliares == familiares.Count)
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = familiares[contadorFamiliares].Nombre,
+                        relacion = familiares[contadorFamiliares].Relacion,
+                        edad = familiares[contadorFamiliares].Edad,
+                        sexo = familiares[contadorFamiliares].Sexo,
+                        dependencia = familiares[contadorFamiliares].Dependencia,
+                        explicaDependencia = familiares[contadorFamiliares].DependenciaExplica,
+                        vivenJuntos = familiares[contadorFamiliares].VivenJuntos,
+                        direccion = familiares[contadorFamiliares].Domicilio,
+                        telefono = familiares[contadorFamiliares].Telefono,
+                        horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion,
+                        enteradoProceso = familiares[contadorFamiliares].EnteradoProceso,
+                        puedeEnterarse = familiares[contadorFamiliares].PuedeEnterarse,
+                        observaciones = familiares[contadorFamiliares++].Observaciones
+                    });
+                }
+            }
+            else
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosReferenciasEditadas.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+
+                if (contadorReferencias == referenciaspersonales.Count)
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = referenciaspersonales[contadorReferencias].Nombre,
+                        relacion = referenciaspersonales[contadorReferencias].Relacion,
+                        edad = referenciaspersonales[contadorReferencias].Edad,
+                        sexo = referenciaspersonales[contadorReferencias].Sexo,
+                        dependencia = referenciaspersonales[contadorReferencias].Dependencia,
+                        explicaDependencia = referenciaspersonales[contadorReferencias].DependenciaExplica,
+                        vivenJuntos = referenciaspersonales[contadorReferencias].VivenJuntos,
+                        direccion = referenciaspersonales[contadorReferencias].Domicilio,
+                        telefono = referenciaspersonales[contadorReferencias].Telefono,
+                        horarioLocalizacion = referenciaspersonales[contadorReferencias].HorarioLocalizacion,
+                        enteradoProceso = referenciaspersonales[contadorReferencias].EnteradoProceso,
+                        puedeEnterarse = referenciaspersonales[contadorReferencias].PuedeEnterarse,
+                        observaciones = referenciaspersonales[contadorReferencias++].Observaciones
+                    });
+                }
+            }
         }
 
         public ActionResult guardarFamiliarExtranjero(string[] datosFE)
@@ -434,6 +540,29 @@ namespace scorpioweb.Controllers
 
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
         }
+
+        public JsonResult GetMunicipioED(int EstadoId)
+        {
+            TempData["message"] = DateTime.Now;
+            List<Municipios> municipiosList = new List<Municipios>();
+
+            if (EstadoId != 0)
+            {
+
+                municipiosList = (from Municipios in _context.Municipios
+                                  where Municipios.EstadosId == EstadoId
+                                  select Municipios).ToList();
+            }
+            else
+            {
+                municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            }
+            municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            return Json(new SelectList(municipiosList, "Id", "Municipio"));
+        }
+
+
+
 
         // GET: Personas/Create
         [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin")]
@@ -518,7 +647,7 @@ namespace scorpioweb.Controllers
             string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
-            string propiedades, string CURP, string consumoSustancias,
+            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad,
             string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string cuentaDomicilioSecundario,
             string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,
@@ -564,7 +693,9 @@ namespace scorpioweb.Controllers
                 persona.NpersonasVive = nPersonasVive;
                 persona.Propiedades = normaliza(propiedades);
                 persona.Curp = normaliza(CURP);
-                persona.ConsumoSustancias = normaliza(consumoSustancias);              
+                persona.ConsumoSustancias = normaliza(consumoSustancias);
+                persona.Familiares = normaliza(familiares);
+                persona.ReferenciasPersonales = normaliza(referenciasPersonales);
                 persona.UltimaActualización = DateTime.Now;
                 #endregion
 
@@ -996,6 +1127,8 @@ namespace scorpioweb.Controllers
                 otraspropiedades=vistaPersona[0].personaVM.Propiedades,
                 curp=vistaPersona[0].personaVM.Curp,
                 consumosustancias=vistaPersona[0].personaVM.ConsumoSustancias,
+                familiares=vistaPersona[0].personaVM.Familiares,
+                referenciasPersonales=vistaPersona[0].personaVM.ReferenciasPersonales,
                 tipopropiedad=vistaPersona[0].domicilioVM.TipoDomicilio,
                 direccion=vistaPersona[0].domicilioVM.Calle+" "+vistaPersona[0].domicilioVM.No+", "+vistaPersona[0].domicilioVM.NombreCf+" CP "+vistaPersona[0].domicilioVM.Cp+", "+vistaPersona[0].estadosVMDomicilio.Estado+", "+vistaPersona[0].municipiosVMDomicilio.Municipio+", "+vistaPersona[0].domicilioVM.Pais,
                 tiempoendomicilio=vistaPersona[0].domicilioVM.Temporalidad,
@@ -1125,6 +1258,9 @@ namespace scorpioweb.Controllers
             }
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            consumosustancias = await _context.Consumosustancias.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            familiares = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "FAMILIAR").ToListAsync();
+            referenciaspersonales = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "REFERENCIA").ToListAsync();
             if (persona == null)
             {
                 return NotFound();
@@ -1228,10 +1364,180 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaPropiedades = listaNoSi;
             ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
+            ViewBag.pais = persona.Lnpais;
+            ViewBag.idioma = persona.OtroIdioma;
+            ViewBag.traductor = persona.Traductor;
+            ViewBag.Hijos = persona.Hijos;
 
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
             ViewBag.idConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
+
+            contadorSustancia = 0;
+
+            List<SelectListItem> ListaSustancia;
+            ListaSustancia = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Alcohol", Value="ALCOHOL"},
+                new SelectListItem{ Text="Marihuana", Value="MARIHUANA"},
+                new SelectListItem{ Text="Cocaína", Value="COCAINA"},
+                new SelectListItem{ Text="Heroína", Value="HEROINA"},
+                new SelectListItem{ Text="PVC", Value="PVC"},
+                new SelectListItem{ Text="Solventes", Value="SOLVENTES"},
+                new SelectListItem{ Text="Fármacos", Value="FARMACOS"},
+                new SelectListItem{ Text="Cemento", Value="CEMENTO"},
+                new SelectListItem{ Text="Crack", Value="CRACK"},
+                new SelectListItem{ Text="Ácidos", Value="ACIDOS"},
+                new SelectListItem{ Text="Tabaco", Value="TABACO"},
+                new SelectListItem{ Text="Metanfetaminas", Value="METANFETAMINAS"},
+                new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaSustancia = ListaSustancia;
+
+            List<SelectListItem> ListaFrecuencia;
+            ListaFrecuencia = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Diario", Value="DIARIO"},
+                new SelectListItem{ Text="Semanal", Value="SEMANAL"},
+                new SelectListItem{ Text="Quincenal", Value="QUINCENAL"},
+                new SelectListItem{ Text="Mensual", Value="MENSUAL"},
+                new SelectListItem{ Text="Bimestral", Value="BIMESTRAL"},
+                new SelectListItem{ Text="Trimestral", Value="TRIMESTRAL"},
+                new SelectListItem{ Text="Semestral", Value="SEMESTRAL"},
+                new SelectListItem{ Text="Anual", Value="ANUAL"},
+                new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
+            };
+            ViewBag.listaFrecuencia = ListaFrecuencia;
+
+            if (consumosustancias.Count > 0)
+            {  
+                ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
+                ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustancias[contadorSustancia].Frecuencia);
+                ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
+                ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
+                ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
+                contadorSustancia++;
+            }
+            else
+            {
+                ViewBag.idSustancia = "ALCOHOL";
+                ViewBag.idFrecuencia = "DIARIO";
+                ViewBag.cantidad = null;
+                ViewBag.ultimoConsumo = null;
+                ViewBag.observaciones = null;
+            }
+            #endregion
+
+            #region Familiares
+            ViewBag.listaFamiliares = listaSiNo;
+            ViewBag.idFamiliares = BuscaId(listaSiNo, persona.Familiares);
+
+            contadorFamiliares = 0;
+
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Máma", Value="MAMA"},
+                new SelectListItem{ Text="Pápa", Value="PAPA"},
+                new SelectListItem{ Text="Esposo(a)", Value="ESPOSO (A)"},
+                new SelectListItem{ Text="Hermano(a)", Value="HERMANO (A)"},
+                new SelectListItem{ Text="Hijo(a)", Value="HIJO (A)"},
+                new SelectListItem{ Text="Abuelo(a)", Value="ABUELO (A)"},
+                new SelectListItem{ Text="Familiar 1 nivel", Value="FAMILIAR 1 NIVEL"},
+                new SelectListItem{ Text="Amigo", Value="AMIGO"},
+                new SelectListItem{ Text="Conocido", Value="CONOCIDO"},
+                new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaRelacion = ListaRelacion;
+
+            List<SelectListItem> ListaSexo;
+            ListaSexo = new List<SelectListItem>
+            {
+                new SelectListItem{ Text="Masculino", Value="M"},
+                new SelectListItem{ Text="Femenino", Value="F"},
+                new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
+            };
+            ViewBag.listaSexo = ListaSexo;
+
+            ViewBag.listaDependencia = listaNoSi;
+            ViewBag.listaVivenJuntos = listaSiNo;
+            ViewBag.listaEnteradoProceso = listaSiNo;
+            ViewBag.listaPuedeEnterarse = listaNoSiNA;
+
+            if (familiares.Count > 0)
+            {
+                ViewBag.nombreF = familiares[contadorFamiliares].Nombre;
+                ViewBag.idRelacionF = BuscaId(ListaRelacion, familiares[contadorFamiliares].Relacion);
+                ViewBag.edadF = familiares[contadorFamiliares].Edad;
+                ViewBag.idSexoF = BuscaId(ListaSexo, familiares[contadorFamiliares].Sexo); ;
+                ViewBag.idDependenciaF = BuscaId(listaNoSi, familiares[contadorFamiliares].Dependencia);
+                ViewBag.dependenciaExplicaF = familiares[contadorFamiliares].DependenciaExplica;
+                ViewBag.idVivenJuntosF = BuscaId(listaSiNo, familiares[contadorFamiliares].VivenJuntos);
+                ViewBag.domicilioF = familiares[contadorFamiliares].Domicilio;
+                ViewBag.telefonoF = familiares[contadorFamiliares].Telefono;
+                ViewBag.horarioLocalizacionF = familiares[contadorFamiliares].HorarioLocalizacion;
+                ViewBag.idEnteradoProcesoF = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
+                ViewBag.idPuedeEnterarseF = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
+                ViewBag.AFobservacionesF = familiares[contadorFamiliares].Observaciones;
+                contadorFamiliares++;
+            }
+            else
+            {
+                ViewBag.nombreF = null;
+                ViewBag.idRelacionF = "MAMA";
+                ViewBag.edadF = 0;
+                ViewBag.idSexoF = "M";
+                ViewBag.idDependenciaF = "NO";
+                ViewBag.dependenciaExplicaF = null;
+                ViewBag.idVivenJuntosF = "SI";
+                ViewBag.domicilioF = null;
+                ViewBag.telefonoF = null;
+                ViewBag.horarioLocalizacionF = null;
+                ViewBag.idEnteradoProcesoF = "SI";
+                ViewBag.idPuedeEnterarseF = "NA";
+                ViewBag.AFobservacionesF = null;
+            }
+            #endregion
+
+            #region Referencias
+            ViewBag.listaReferenciasPersonales = listaSiNo;
+            ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, persona.ReferenciasPersonales);
+
+            contadorReferencias = 0;
+
+            if (referenciaspersonales.Count > 0)
+            {
+                ViewBag.nombreR = referenciaspersonales[contadorReferencias].Nombre;
+                ViewBag.idRelacionR = BuscaId(ListaRelacion, referenciaspersonales[contadorReferencias].Relacion);
+                ViewBag.edadR = referenciaspersonales[contadorReferencias].Edad;
+                ViewBag.idSexoR = BuscaId(ListaSexo, referenciaspersonales[contadorReferencias].Sexo); ;
+                ViewBag.idDependenciaR = BuscaId(listaNoSi, referenciaspersonales[contadorReferencias].Dependencia);
+                ViewBag.dependenciaExplicaR = referenciaspersonales[contadorReferencias].DependenciaExplica;
+                ViewBag.idVivenJuntosR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].VivenJuntos);
+                ViewBag.domicilioR = referenciaspersonales[contadorReferencias].Domicilio;
+                ViewBag.telefonoR = referenciaspersonales[contadorReferencias].Telefono;
+                ViewBag.horarioLocalizacionR = referenciaspersonales[contadorReferencias].HorarioLocalizacion;
+                ViewBag.idEnteradoProcesoR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].EnteradoProceso);
+                ViewBag.idPuedeEnterarseR = BuscaId(listaNoSiNA, referenciaspersonales[contadorReferencias].PuedeEnterarse);
+                ViewBag.AFobservacionesR = referenciaspersonales[contadorReferencias].Observaciones;
+                contadorReferencias++;
+            }
+            else
+            {
+                ViewBag.nombreR = null;
+                ViewBag.idRelacionR = "MAMA";
+                ViewBag.edadR = 0;
+                ViewBag.idSexoR = "M";
+                ViewBag.idDependenciaR = "NO";
+                ViewBag.dependenciaExplicaR = null;
+                ViewBag.idVivenJuntosR = "SI";
+                ViewBag.domicilioR = null;
+                ViewBag.telefonoR = null;
+                ViewBag.horarioLocalizacionR = null;
+                ViewBag.idEnteradoProcesoR = "SI";
+                ViewBag.idPuedeEnterarseR = "NA";
+                ViewBag.AFobservacionesR = null;
+            }
             #endregion
 
             return View(persona);
@@ -1239,30 +1545,103 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor")] Persona persona)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor")] Persona persona)        {
+            string currentUser = User.Identity.Name;
+
             if (id != persona.IdPersona)
             {
                 return NotFound();
             }
 
-            persona.Paterno = normaliza(persona.Paterno);
-            persona.Materno = normaliza(persona.Materno);
-            persona.Nombre = normaliza(persona.Nombre);
-            persona.Alias = normaliza(persona.Alias);
-            persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
-            persona.Duracion = normaliza(persona.Duracion);
-            persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
-            persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
-            persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
-            persona.Curp = normaliza(persona.Curp);
-
-
-
-
-
-
             if (ModelState.IsValid)
             {
+                persona.Paterno = normaliza(persona.Paterno);
+                persona.Materno = normaliza(persona.Materno);
+                persona.Nombre = normaliza(persona.Nombre);
+                persona.Alias = normaliza(persona.Alias);
+                persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
+                persona.Duracion = normaliza(persona.Duracion);
+                persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
+                persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
+                persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
+                persona.Curp = normaliza(persona.Curp);
+
+                #region -ConsumoSustancias-
+                //Sustancias editadas
+                for (int i = 0; i < datosSustanciasEditadas.Count; i = i + 5)
+                {
+                    if (datosSustanciasEditadas[i][1] == currentUser)
+                    {
+                        Consumosustancias consumosustanciasBD = new Consumosustancias();
+
+                        consumosustanciasBD.IdConsumoSustancias = consumosustancias[i / 5].IdConsumoSustancias;
+                        consumosustanciasBD.Sustancia = datosSustanciasEditadas[i][0];
+                        consumosustanciasBD.Frecuencia = datosSustanciasEditadas[i + 1][0];
+                        consumosustanciasBD.Cantidad = normaliza(datosSustanciasEditadas[i + 2][0]);
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustanciasEditadas[i + 3][0]);
+                        consumosustanciasBD.Observaciones = normaliza(datosSustanciasEditadas[i + 4][0]);
+                        consumosustanciasBD.PersonaIdPersona = id;
+
+                        try
+                        {
+                            _context.Update(consumosustanciasBD);
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!PersonaExists(consumosustanciasBD.PersonaIdPersona))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                }
+
+
+                for (int i = 0; i < datosSustanciasEditadas.Count; i++)
+                {
+                    if (datosSustanciasEditadas[i][1] == currentUser)
+                    {
+                        datosSustanciasEditadas.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                //Sustancias agregadas
+                for (int i = 0; i < datosSustancias.Count; i = i + 5)
+                {
+                    if (datosSustancias[i][1] == currentUser)
+                    {
+                        Consumosustancias consumosustanciasBD = new Consumosustancias();
+
+                        consumosustanciasBD.Sustancia = datosSustancias[i][0];
+                        consumosustanciasBD.Frecuencia = datosSustancias[i + 1][0];
+                        consumosustanciasBD.Cantidad = normaliza(datosSustancias[i + 2][0]);
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
+                        consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
+                        consumosustanciasBD.PersonaIdPersona = id;
+                        _context.Add(consumosustanciasBD);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                for (int i = 0; i < datosSustancias.Count; i++)
+                {
+                    if (datosSustancias[i][1] == currentUser)
+                    {
+                        datosSustancias.RemoveAt(i);
+                        i--;
+                    }
+                }
+                #endregion
+
+                persona.Familiares = normaliza(persona.Familiares);
+                persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
+
                 try
                 {
                     _context.Update(persona);
@@ -1395,6 +1774,8 @@ namespace scorpioweb.Controllers
             ViewBag.listacuentaDomicilioSecundario = listaNoSi;
             ViewBag.idcuentaDomicilioSecundario = BuscaId(listaNoSi, domicilio.DomcilioSecundario);
 
+            ViewBag.pais = domicilio.Pais;
+            ViewBag.domi = domicilio.DomcilioSecundario;
 
             if (domicilio == null)
             {
@@ -1442,6 +1823,216 @@ namespace scorpioweb.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(domicilio);
+        }
+        #endregion
+
+      
+
+        #region Edit Dmicilio Secundario
+        
+        
+
+
+        
+        public async Task<IActionResult> EditDomSecundario2(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var domisecu = await _context.Domicilio.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
+
+            #region -To List databases-
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Domicilio> domicilioVM = _context.Domicilio.ToList();
+            List<Domiciliosecundario> domiciliosecundarioVM = _context.Domiciliosecundario.ToList();
+            #endregion
+
+            #region -Jointables-
+            ViewData["joinTablesDomcilioSec"] = from personaTable in personaVM
+                                           join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.IdDomicilio
+                                           join domicilioSec in domiciliosecundarioVM on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
+                                           where personaTable.IdPersona == id
+                                           select new PersonaViewModel
+                                           {
+                                               domicilioSecundarioVM = domicilioSec
+                                           };
+            #endregion
+
+            #region TIPODOMICILIO          
+            List<SelectListItem> LiatatDomicilio;
+            LiatatDomicilio = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Rentada", Value="RENTADA"},
+              new SelectListItem{ Text="Prestada", Value="PRESTADA"},
+              new SelectListItem{ Text="Propia", Value="PROPIA"},
+              new SelectListItem{ Text="Familiar", Value="FAMILIAR"},
+              new SelectListItem{ Text="Situación de calle", Value="SITUACION DE CALLE"},
+              new SelectListItem{ Text="Irregular", Value="IRREGULAR"},
+            };
+
+            ViewBag.listatDomicilio = LiatatDomicilio;
+            ViewBag.idtDomicilio = BuscaId(LiatatDomicilio, domisecu.TipoDomicilio);
+            #endregion
+
+            #region PAIS          
+            List<SelectListItem> ListaPaisD;
+            ListaPaisD = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="México", Value="MEXICO"},
+              new SelectListItem{ Text="Estados Unidos", Value="ESTADOS UNIDOS"},
+              new SelectListItem{ Text="Canada", Value="CANADA"},
+              new SelectListItem{ Text="Colombia", Value="COLOMBIA"},
+              new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
+              new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
+              new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListaPaisED = ListaPaisD;
+            ViewBag.idPaisED = BuscaId(ListaPaisD, domisecu.Pais);
+            ViewBag.ListaPaisM = ListaPaisD;
+            ViewBag.idPaisM = BuscaId(ListaPaisD, domisecu.Pais);
+            #endregion
+
+            #region Destado
+            List<Estados> listaEstadosD = new List<Estados>();
+            listaEstadosD = (from table in _context.Estados
+                             select table).ToList();
+
+            List<Domiciliosecundario> listadomiciliosecundarios = new List<Domiciliosecundario>();
+            listadomiciliosecundarios = (from table in _context.Domiciliosecundario
+                                         select table).ToList();
+
+
+            listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListaEstadoED = listaEstadosD;
+            ViewBag.idEstadoED = domisecu.Estado;
+            ViewBag.ListaEstadoM = listaEstadosD;
+            ViewBag.idEstadoM = domisecu.Estado;
+            #endregion
+
+            #region Lnmunicipio
+            int estadoD;
+            bool success = Int32.TryParse(domisecu.Estado, out estadoD);
+            List<Municipios> listaMunicipiosD = new List<Municipios>();
+            if (success)
+            {
+                listaMunicipiosD = (from table in _context.Municipios
+                                    where table.EstadosId == estadoD
+                                    select table).ToList();
+            }
+
+            ViewBag.ListaMunicipioED = listaMunicipiosD;
+            ViewBag.idMunicipioED = domisecu.Municipio;
+
+            ViewBag.Pais = domisecu.Pais;
+            #endregion
+
+            #region MunicipioMED
+            List<Municipios> listaMunicipiosMED = new List<Municipios>();
+            listaMunicipiosMED = (from table in _context.Municipios
+                                  select table).ToList();
+
+            listaMunicipiosMED.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            ViewBag.ListaMunicipioM = listaMunicipiosMED;
+            ViewBag.idMunicipioM = domisecu.Municipio;
+            #endregion
+
+            #region TemporalidadDomicilio
+            List<SelectListItem> ListaDomicilioT;
+            ListaDomicilioT = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 5 y 10 años", Value = "ENTRE 5 Y 10 AÑOS" },
+                new SelectListItem{ Text = "Entre 2 y 5 años", Value = "ENTRE 2 Y 5 AÑOS" },
+                new SelectListItem{ Text = "Entre 6 meses y 2 año", Value = "ENTRE 6 MESES Y 2 AÑO" },
+                new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },
+            };
+
+            ViewBag.ListaTemporalidad = ListaDomicilioT;
+            ViewBag.idTemporalidad = BuscaId(ListaDomicilioT, domisecu.Temporalidad);
+
+
+
+            ViewBag.listaResidenciaHabitual = listaSiNo;
+            ViewBag.idResidenciaHabitual = BuscaId(listaSiNo, domisecu.ResidenciaHabitual);
+
+            #endregion
+            if (domisecu == null)
+            {
+                return NotFound();
+            }
+
+            return View(domisecu);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDomSecundario([Bind("IdDomicilioSecundario,IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,Motivo,Observaciones")] Domiciliosecundario domiciliosecundario, Domicilio domicilio)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(domiciliosecundario);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!DomiciliosecundarioExists(domiciliosecundario.IdDomicilioSecundario))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
+
+       
+
+        public async Task<IActionResult> DeleteConfirmedDom(int? id)
+        {
+            var domseundario = await _context.Domiciliosecundario.SingleOrDefaultAsync(m => m.IdDomicilioSecundario == id);
+            _context.Domiciliosecundario.Remove(domseundario);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("EditDomicilio/" + domseundario.IdDomicilio, "Personas");
+        }
+
+        public async Task<IActionResult> CrearDomicilioSecundario(Domiciliosecundario domiciliosecundario, string[] datosDomicilio)
+        {
+            domiciliosecundario.IdDomicilio = Int32.Parse(datosDomicilio[0]);
+            domiciliosecundario.TipoDomicilio = datosDomicilio[1];
+            domiciliosecundario.Calle = datosDomicilio[2];
+            domiciliosecundario.No = datosDomicilio[3];
+            domiciliosecundario.TipoUbicacion = datosDomicilio[4];
+            domiciliosecundario.NombreCf = datosDomicilio[5];
+            domiciliosecundario.Pais = datosDomicilio[6];
+            domiciliosecundario.Estado = datosDomicilio[7];
+            domiciliosecundario.Municipio = datosDomicilio[8];
+            domiciliosecundario.Temporalidad = datosDomicilio[9];
+            domiciliosecundario.ResidenciaHabitual = datosDomicilio[10];
+            domiciliosecundario.Cp = datosDomicilio[11];
+            domiciliosecundario.Referencias = datosDomicilio[12];
+            domiciliosecundario.Motivo = datosDomicilio[13];
+            domiciliosecundario.Horario = datosDomicilio[14];
+            domiciliosecundario.Observaciones = datosDomicilio[15];
+
+            var query = (from a in _context.Domicilio
+                         where a.IdDomicilio == domiciliosecundario.IdDomicilio
+                         select a).FirstOrDefault();
+            query.DomcilioSecundario = "SI";
+                    _context.SaveChanges();
+
+            _context.Add(domiciliosecundario);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("EditDomicilio/" + domiciliosecundario.IdDomicilio, "Personas");
         }
         #endregion
 
@@ -1567,6 +2158,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listasePuedeEnterarT = listaNoSiNA;
             ViewBag.idsePuedeEnterart = BuscaId(listaNoSiNA, trabajo.SePuedeEnterar);
+            ViewBag.trabaja = trabajo.Trabaja;
 
             #region TiempoTrabajando
             List<SelectListItem> ListaTiempoTrabajando;
@@ -1735,6 +2327,11 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaFamiliaresFuera = listaNoSi;
             ViewBag.idFamiliaresFuera = BuscaId(listaNoSi, abandonoestado.FamiliaresFuera);
+                
+            ViewBag.vfuera = abandonoestado.VividoFuera;
+            ViewBag.vlugar = abandonoestado.ViajaHabitual;
+            ViewBag.document = abandonoestado.DocumentacionSalirPais;
+            ViewBag.Abandono = abandonoestado.FamiliaresFuera;
 
 
 
@@ -1788,6 +2385,327 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -EditFamiliaresForaneos-
+
+        public async Task<IActionResult> EditFamiliaresForaneos(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var familiaresforaneos = await _context.Familiaresforaneos.Where(m => m.PersonaIdPersona == id).FirstOrDefaultAsync();
+            ViewBag.idFamiliarF = familiaresforaneos.PersonaIdPersona;
+            #region GENERO          
+            List<SelectListItem> ListaGenero;
+            ListaGenero = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Masculino", Value="M"},
+              new SelectListItem{ Text="Femenino", Value="F"},
+              new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
+            };
+            ViewBag.listaGenero = ListaGenero;
+            ViewBag.idGenero = BuscaId(ListaGenero, familiaresforaneos.Sexo);
+            #endregion
+
+
+            #region Relacion
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Máma", Value="MAMA"},
+              new SelectListItem{ Text="Pápa", Value="PAPA"},
+              new SelectListItem{ Text="Esposo (a)", Value="ESPOSO (A)"},
+              new SelectListItem{ Text="Hermano (a)", Value="HERMAN0 (A)"},
+              new SelectListItem{ Text="Hijo (a)", Value="HIJO (A)"},
+              new SelectListItem{ Text="Abelo (a)", Value="ABUELO (A)"},
+              new SelectListItem{ Text="Familiar 1 Nivel", Value="FAMILIAR 1 NIVEL"},
+              new SelectListItem{ Text="Amigo", Value="AMIGO"},
+              new SelectListItem{ Text="Conocido", Value="CONOCIDO (A)"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaRelacion = ListaRelacion;
+            ViewBag.idRelacion = BuscaId(ListaRelacion, familiaresforaneos.Relacion);
+            #endregion
+
+            #region Tiempo de conocerlo
+            List<SelectListItem> ListaTiempo;
+            ListaTiempo = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Menos de un año", Value="MENOS DE 1 AÑO"},
+              new SelectListItem{ Text="Entre 1 y 2 años", Value="ENTRE 1 Y 2 AÑOS"},
+              new SelectListItem{ Text="Entre 2 y 5 años(a)", Value="ENTRE 2 Y 5 AÑOS"},
+              new SelectListItem{ Text="Más de 5 años", Value="MÁS DE 5 AÑOS"},
+              new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
+            };
+            ViewBag.listTiempo = ListaTiempo;
+            ViewBag.idTiempo = BuscaId(ListaTiempo, familiaresforaneos.TiempoConocerlo);
+            #endregion
+
+            #region PAIS          
+            List<SelectListItem> ListaPaisD;
+            ListaPaisD = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="México", Value="MEXICO"},
+              new SelectListItem{ Text="Estados Unidos", Value="ESTADOS UNIDOS"},
+              new SelectListItem{ Text="Canada", Value="CANADA"},
+              new SelectListItem{ Text="Colombia", Value="COLOMBIA"},
+              new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
+              new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
+              new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListaPais = ListaPaisD;
+            ViewBag.idPais = BuscaId(ListaPaisD, familiaresforaneos.Pais);
+            #endregion
+
+            #region Destado
+            List<Estados> listaEstado = new List<Estados>();
+            listaEstado = (from table in _context.Estados
+                           select table).ToList();
+
+            listaEstado.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListaEstado = listaEstado;
+            ViewBag.idEstado = familiaresforaneos.Estado;
+            #endregion
+            #region Frecuencia de contacto
+            List<SelectListItem> ListaFrecuencia;
+            ListaFrecuencia = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Diariamente", Value="DIARIAMENTE"},
+              new SelectListItem{ Text="Una vez a la semana", Value="UNA VEZ A LA SEMANA"},
+              new SelectListItem{ Text="Una vez cada 15 días", Value="UNA VEZ CADA 15 DIAS"},
+              new SelectListItem{ Text="Una vez al mes", Value="UNA VEZ AL MES"},
+              new SelectListItem{ Text=" Una vez al año", Value="UNA VEZ AL AÑO"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListFrecuencia = ListaFrecuencia;
+            ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, familiaresforaneos.Pais);
+            #endregion
+
+            ViewBag.listaProseso = listaNoSi;
+            ViewBag.idProseso = BuscaId(listaNoSi, familiaresforaneos.EnteradoProceso);
+
+            ViewBag.listaEnterar = listaNoSiNA;
+            ViewBag.idEnterar = BuscaId(listaNoSiNA, familiaresforaneos.PuedeEnterarse);
+            ViewBag.Pais = familiaresforaneos.Pais;
+
+
+
+            if (familiaresforaneos == null)
+            {
+                return NotFound();
+            }
+            return View(familiaresforaneos);
+        }
+
+
+
+
+        public async Task<IActionResult> EditFamiliaresForaneos2(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var familiaresforaneos = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+
+            #region -To List databases-
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Familiaresforaneos> familiaresforaneosVM = _context.Familiaresforaneos.ToList();
+     
+            #endregion
+
+            #region -Jointables-
+            ViewData["joinTableFamiliarF"] = from personaTable in personaVM
+                                                join familiarf in familiaresforaneosVM on personaTable.IdPersona equals familiarf.PersonaIdPersona
+                                                where familiarf.PersonaIdPersona == id
+                                                select new PersonaViewModel
+                                                {
+                                                    familiaresForaneosVM = familiarf
+                                                };
+            #endregion
+
+        
+            #region GENERO          
+            List<SelectListItem> ListaGenero;
+            ListaGenero = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Masculino", Value="M"},
+              new SelectListItem{ Text="Femenino", Value="F"},
+              new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
+            };
+            ViewBag.listaGenero = ListaGenero;
+         
+            #endregion
+
+
+            #region Relacion
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Máma", Value="MAMA"},
+              new SelectListItem{ Text="Pápa", Value="PAPA"},
+              new SelectListItem{ Text="Esposo (a)", Value="ESPOSO (A)"},
+              new SelectListItem{ Text="Hermano (a)", Value="HERMAN0 (A)"},
+              new SelectListItem{ Text="Hijo (a)", Value="HIJO (A)"},
+              new SelectListItem{ Text="Abelo (a)", Value="ABUELO (A)"},
+              new SelectListItem{ Text="Familiar 1 Nivel", Value="FAMILIAR 1 NIVEL"},
+              new SelectListItem{ Text="Amigo", Value="AMIGO"},
+              new SelectListItem{ Text="Conocido", Value="CONOCIDO (A)"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.listaRelacion = ListaRelacion;
+         
+            #endregion
+
+            #region Tiempo de conocerlo
+            List<SelectListItem> ListaTiempo;
+            ListaTiempo = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Menos de un año", Value="MENOS DE 1 AÑO"},
+              new SelectListItem{ Text="Entre 1 y 2 años", Value="ENTRE 1 Y 2 AÑOS"},
+              new SelectListItem{ Text="Entre 2 y 5 años(a)", Value="ENTRE 2 Y 5 AÑOS"},
+              new SelectListItem{ Text="Más de 5 años", Value="MÁS DE 5 AÑOS"},
+              new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
+            };
+            ViewBag.listTiempo = ListaTiempo;
+        
+            #endregion
+
+            #region PAIS          
+            List<SelectListItem> ListaPaisD;
+            ListaPaisD = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="México", Value="MEXICO"},
+              new SelectListItem{ Text="Estados Unidos", Value="ESTADOS UNIDOS"},
+              new SelectListItem{ Text="Canada", Value="CANADA"},
+              new SelectListItem{ Text="Colombia", Value="COLOMBIA"},
+              new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
+              new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
+              new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListaPais = ListaPaisD;
+       
+            #endregion
+
+            #region Destado
+            List<Estados> listaEstado = new List<Estados>();
+            listaEstado = (from table in _context.Estados
+                           select table).ToList();
+
+            listaEstado.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListaEstado = listaEstado;
+        
+            #endregion
+            #region Frecuencia de contacto
+            List<SelectListItem> ListaFrecuencia;
+            ListaFrecuencia = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Diariamente", Value="DIARIAMENTE"},
+              new SelectListItem{ Text="Una vez a la semana", Value="UNA VEZ A LA SEMANA"},
+              new SelectListItem{ Text="Una vez cada 15 días", Value="UNA VEZ CADA 15 DIAS"},
+              new SelectListItem{ Text="Una vez al mes", Value="UNA VEZ AL MES"},
+              new SelectListItem{ Text=" Una vez al año", Value="UNA VEZ AL AÑO"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListFrecuencia = ListaFrecuencia;
+     
+            #endregion
+
+            ViewBag.listaProseso = listaNoSi;
+    
+
+            ViewBag.listaEnterar = listaNoSiNA;
+       
+  
+
+            #endregion
+            if (familiaresforaneos == null)
+            {
+                return NotFound();
+            }
+
+            return View(familiaresforaneos);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditFamiliaresForaneos(int id, [Bind("IdFamiliaresForaneos,Nombre,Edad,Sexo,Relacion,TiempoConocerlo,Pais,Estado,Telefono,FrecuenciaContacto,EnteradoProceso,PuedeEnterarse,Observaciones,PersonaIdPersona")] Familiaresforaneos familiaresforaneos)
+        {
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(familiaresforaneos);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FamiliaresforaneosExists(familiaresforaneos.IdFamiliaresForaneos))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+
+                    }
+                }
+                return RedirectToAction("EditAbandonoEstado/" + familiaresforaneos.PersonaIdPersona, "Personas");
+            }
+            return View(familiaresforaneos);
+        }
+
+        public async Task<IActionResult> DeleteConfirmedFamiiarF(int? id)
+        {
+            var familiarf = await _context.Familiaresforaneos.SingleOrDefaultAsync(m => m.IdFamiliaresForaneos == id);
+            _context.Familiaresforaneos.Remove(familiarf);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("EditAbandonoEstado/" + familiarf.PersonaIdPersona, "Personas");
+        }
+
+        public async Task<IActionResult> CrearFamiliarforaneo(Familiaresforaneos familiaresforaneos, string[] datosFamiliarF)
+        {
+
+            familiaresforaneos.PersonaIdPersona = Int32.Parse(datosFamiliarF[0]);
+            familiaresforaneos.Nombre = datosFamiliarF[1];
+            familiaresforaneos.Edad = Int32.Parse(datosFamiliarF[2]);
+            familiaresforaneos.Sexo = datosFamiliarF[3];
+            familiaresforaneos.Relacion = datosFamiliarF[4];
+            familiaresforaneos.TiempoConocerlo = datosFamiliarF[5];
+            familiaresforaneos.Pais = datosFamiliarF[6];
+            familiaresforaneos.Estado = datosFamiliarF[7];
+            familiaresforaneos.Telefono = datosFamiliarF[8];
+            familiaresforaneos.FrecuenciaContacto = datosFamiliarF[9];
+            familiaresforaneos.EnteradoProceso = datosFamiliarF[10];
+            familiaresforaneos.PuedeEnterarse = datosFamiliarF[11];
+            familiaresforaneos.Observaciones = datosFamiliarF[12];
+
+            var query = (from a in _context.Abandonoestado
+                         where a.PersonaIdPersona == familiaresforaneos.PersonaIdPersona
+                         select a).FirstOrDefault();
+            query.FamiliaresFuera = "SI";
+            _context.SaveChanges();
+
+            _context.Add(familiaresforaneos);
+            await _context.SaveChangesAsync();
+
+            return View();
+        }
+
+
+        #endregion
+
+
         #region -Editar Salud-
         public async Task<IActionResult> EditSalud(string nombre, string genero, int? id)
         {
@@ -1811,6 +2729,10 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaServicioMedico = listaNoSi;
             ViewBag.idServicioMedico = BuscaId(listaNoSi, saludfisica.ServicioMedico);
+
+            ViewBag.enfermedad = saludfisica.Enfermedad;
+            ViewBag.especial = saludfisica.Discapacidad;
+            ViewBag.smedico = saludfisica.ServicioMedico;
 
             #region EspecifiqueServicioMedico
             List<SelectListItem> ListaEspecifiqueServicioMedico;
@@ -1891,7 +2813,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #endregion
 
         #region -Borrar-
         // GET: Personas/Delete/5

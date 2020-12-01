@@ -633,6 +633,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaCuentaEvaluacion = listaNaSiNo;
             ViewBag.idCuentaEvaluacion = BuscaId(listaNaSiNo, supervision.CuentaEvaluacion);
+            ViewBag.eveluacion = supervision.CuentaEvaluacion;
 
 
 
@@ -697,7 +698,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCambiodeobligaciones-
-        public async Task<IActionResult>  EditCambiodeobligaciones(int? id, string nombre, string cp)
+        public async Task<IActionResult>  EditCambiodeobligaciones(int? id, string nombre, string cp, string cambio)
         {
             if (id == null)
             {
@@ -715,6 +716,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaSediocambio = listaNaSiNo;
             ViewBag.idSediocambio = BuscaId(listaNaSiNo, supervision.SeDioCambio);
+            ViewBag.cambio = supervision.SeDioCambio;
 
             return View(supervision);
         }
@@ -772,6 +774,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaSeCerroCaso = listaNaSiNo;
             ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, supervision.SeCerroCaso);
+            ViewBag.cierre = supervision.SeCerroCaso;
             #region Autorizo
             List<SelectListItem> ListaAutorizo;
             ListaAutorizo = new List<SelectListItem>
@@ -961,6 +964,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaPlanSupervision = listaNaSiNo;
             ViewBag.idPlanSupervision = BuscaId(listaNaSiNo, supervision.PlanSupervision);
+            ViewBag.plan = supervision.PlanSupervision;
 
 
             #region Liata de supervision
@@ -1035,6 +1039,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaRevocado = listaNaSiNo;
             ViewBag.idRevocado = BuscaId(listaNaSiNo, supervision.Revocado);
+            ViewBag.revocado = supervision.Revocado;
 
 
 
@@ -1094,7 +1099,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaSuspendido = listaNaSiNo;
             ViewBag.idSuspendido = BuscaId(listaNaSiNo, supervision.Suspendido);
-
+            ViewBag.suspe = supervision.Suspendido;
 
             return View(supervision);
         }

@@ -183,7 +183,11 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="IdPersona" />
-        <input type="submit" value="Delete" class="btn btn-default" /> |
-        <a asp-action="Index">Back to List</a>
+        <button type="submit" class="btn btn-danger">
+            Borrar
+        </button>
+        <a class="btn btn-link" asp-action="Index">
+            Regresar a lista de usuarios
+        </a>
     </form>
 </div>

@@ -7,7 +7,7 @@
         $('#CuentaEvaluacion').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
-                $("#DivMotivoNoPlaneacion").css("display", "block");
+                $("#DivFechaEntrega").css("display", "block");
                 $("#DivEvaluadorCaso").css("display", "block");
             }
             else {
@@ -17,17 +17,13 @@
         });
     });
 </script>
-
-
-
-
 @{
-    ViewData["Title"] = "EditPlaneacionestrategica";
+    ViewData["Title"] = "EditAer";
 }
 
-<h2>Aer</h2>
+<h2>AER</h2>
 <h4>Nombre: @ViewBag.nombre</h4>
-<h4>Cp: @ViewBag.cp</h4>
+<h4>CP: @ViewBag.cp</h4>
 <h4></h4>
 <hr />
 <div class="row">
@@ -41,16 +37,33 @@
                         asp-items="@(new SelectList(ViewBag.listaCuentaEvaluacion, "Value", "Text", @ViewBag.idCuentaEvaluacion))">
                 </select>
             </div>
-            <div class="form-group" id="DivFechaEntrega">
-                <label class="control-label">Fecha de Entrega</label>
-                <input asp-for="FechaEntrega" class="form-control" />
-                <span asp-validation-for="FechaEntrega" class="text-danger"></span>
-            </div>
-            <div class="form-group" id="DivEvaluadorCaso">
-                <label class="control-label">Evaluador de Caso</label>
-                <input asp-for="EvaluadorCaso" class="form-control" />
-                <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
-            </div>
+            @if (ViewBag.eveluacion == "SI")
+            {
+                <div class="form-group" id="DivFechaEntrega">
+                    <label class="control-label">Fecha de Entrega</label>
+                    <input asp-for="FechaEntrega" class="form-control" />
+                    <span asp-validation-for="FechaEntrega" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="DivEvaluadorCaso">
+                    <label class="control-label">Evaluador de Caso</label>
+                    <input asp-for="EvaluadorCaso" class="form-control" />
+                    <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
+                </div>
+            }
+            @if (ViewBag.eveluacion == "NO" || ViewBag.evaluacion == "NA")
+            {
+                <div class="form-group" id="DivFechaEntrega" style="display: none;">
+                    <label class="control-label">Fecha de Entrega</label>
+                    <input asp-for="FechaEntrega" class="form-control" />
+                    <span asp-validation-for="FechaEntrega" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="DivEvaluadorCaso" style="display: none;">
+                    <label class="control-label">Evaluador de Caso</label>
+                    <input asp-for="EvaluadorCaso" class="form-control" />
+                    <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
+                </div>
+            }
+
             <div class="form-group">
                 <label class="control-label">Riesgo detectado</label>
                 <select class="form-control" name="RiesgoDetectado"
@@ -70,14 +83,16 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Riesgo Victima</label>
+                <label class="control-label">Riesgo Víctima</label>
                 <select class="form-control" name="RiesgoVictima"
                         asp-items="@(new SelectList(ViewBag.listaRiesgoVictima, "Value", "Text", @ViewBag.idRiesgoVictima))">
                 </select>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
-                <input type="submit" value="Guardar" class="btn btn-default" />
+                <button type="submit" value="" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
             </div>
         </form>
     </div>

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<scorpioweb.Models.CausaDelitoViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Causa Penal";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -41,14 +41,20 @@
                     <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-success">Crear Delito</a>
+                    <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-success">
+                       <i class="fa fa-plus"></i>  Crear Delito
+                    </a>
                     @if (ViewBag.Delitos != 0)
                     {
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">Ver Delitos</button>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                            <i class="fa fa-eye"></i> Ver Delitos
+                        </button>
                     }
                 </div>
                 <div class="form-group">
-                    <input type="submit" id="btnguardarEdit" value="Guardar" class="btn btn-primary" />
+                    <button type="submit" id="btnguardarEdit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
                 </div>
             </form>
             <a asp-action="Index">Regresar a lista</a>
@@ -71,19 +77,22 @@
                 {
                     <table class="table table-bordered">
                         <tr>
-                            <td style="width: 25%;" class="estiloAbandonoEstado">Tipo</td>
+                            <td style="width: 25%;background-color: #E2E2E2;border-color: #fff;color: #000;">Tipo</td>
                             <td style="width: 65%;">@item.delitoVM.Tipo</td>
                         </tr>
                         <tr>
-                            <td class="estiloAbandonoEstado">Modalidad</td>
+                            <td style="background-color: #E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
                             <td>@item.delitoVM.Modalidad</td>
                             <td style="border-right: solid White;
                                        border-bottom: solid White;
                                        border-top: solid White;" >
-                            <a class="btn btn-primary" asp-action="Delito" asp-route-id="@item.delitoVM.IdDelito">Editar</a></td>
+                                <a class="btn btn-primary" asp-action="Delito" asp-route-id="@item.delitoVM.IdDelito">
+                                    <i class="fa fa-pencil"></i> Editar
+                                </a>
+                            </td>
                         </tr>
                         <tr>
-                            <td class="estiloAbandonoEstado">Especifique delito</td>
+                            <td style="background-color: #E2E2E2;border-color: #fff;color: #000;">Especifique delito</td>
                             <td>@item.delitoVM.EspecificarDelito</td>                            
                         </tr>
                     </table>
@@ -92,7 +101,9 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-close"></i> Cerrar
+                </button>
             </div>
         </div>
     </div>

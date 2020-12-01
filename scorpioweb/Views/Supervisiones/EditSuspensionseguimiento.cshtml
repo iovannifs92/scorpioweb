@@ -10,7 +10,7 @@
                 $("#DivMotivoSuspension").css("display", "block");
             }
             else {
-                $("#DivFechaEntrega").css("display", "none");
+                $("#DivFechaAprobacion").css("display", "none");
                 $("#DivMotivoSuspension").css("display", "none");
             }
         });
@@ -22,9 +22,9 @@
     ViewData["Title"] = "Suspensionseguimiento";
 }
 
-<h2>Suspension seguimiento</h2>
+<h2>Suspensión seguimiento</h2>
 <h4>Nombre: @ViewBag.nombre</h4>
-<h4>Cp: @ViewBag.cp</h4>
+<h4>CPS: @ViewBag.cp</h4>
 <h4></h4>
 <hr />
 <div class="row">
@@ -38,19 +38,38 @@
                         asp-items="@(new SelectList(ViewBag.listaSuspendido, "Value", "Text", @ViewBag.idSuspendido))">
                 </select>
             </div>
-            <div class="form-group" id="DivFechaAprobacion">
-                <label class="control-label">Fecha de Aprobación</label>
-                <input asp-for="FechaAprobacion" class="form-control" />
-                <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
-            </div>
-            <div class="form-group" id="DivMotivoSuspension">
-                <label class="control-label">Motivo de Suspensión</label>
-                <input asp-for="MotivoSuspension" class="form-control" />
-                <span asp-validation-for="MotivoSuspension" class="text-danger"></span>
-            </div>
+            @if (ViewBag.suspe == "SI")
+            {
+                <div class="form-group" id="DivFechaAprobacion">
+                    <label class="control-label">Fecha de Aprobación</label>
+                    <input asp-for="FechaAprobacion" class="form-control" />
+                    <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="DivMotivoSuspension">
+                    <label class="control-label">Motivo de Suspensión</label>
+                    <input asp-for="MotivoSuspension" class="form-control" />
+                    <span asp-validation-for="MotivoSuspension" class="text-danger"></span>
+                </div>
+            }
+            @if (ViewBag.suspes == "NO" || ViewBag.suspes == "NA" )
+            {
+                <div class="form-group" style="display:none" id="DivFechaAprobacion">
+                    <label class="control-label">Fecha de Aprobación</label>
+                    <input asp-for="FechaAprobacion" class="form-control" />
+                    <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display:none" id="DivMotivoSuspension">
+                    <label class="control-label">Motivo de Suspensión</label>
+                    <input asp-for="MotivoSuspension" class="form-control" />
+                    <span asp-validation-for="MotivoSuspension" class="text-danger"></span>
+                </div>
+            }
+
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
-                <input type="submit" value="Guardar" class="btn btn-default" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
             </div>
         </form>
     </div>
