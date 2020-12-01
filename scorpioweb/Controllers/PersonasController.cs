@@ -37,7 +37,9 @@ namespace scorpioweb.Controllers
         public static List<List<string>> datosSustancias = new List<List<string>>();
         public static List<List<string>> datosSustanciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliares = new List<List<string>>();
+        public static List<List<string>> datosFamiliaresEditados = new List<List<string>>();
         public static List<List<string>> datosReferencias = new List<List<string>>();
+        public static List<List<string>> datosReferenciasEditadas = new List<List<string>>();
         public static List<List<string>> datosFamiliaresExtranjero = new List<List<string>>();
         public static int idPersona;
         public static List<Consumosustancias> consumosustancias;
@@ -419,13 +421,13 @@ namespace scorpioweb.Controllers
             else
             {
                 return Json(new { success = true,
-                    responseText = "Siguiente Sustancia",
+                    responseText = "Siguiente",
                     sustancia = consumosustancias[contadorSustancia].Sustancia,
                     frecuencia = consumosustancias[contadorSustancia].Frecuencia,
                     cantidad = consumosustancias[contadorSustancia].Cantidad,
                     ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
                     observacionesConsumo = consumosustancias[contadorSustancia++].Observaciones
-                }); ;
+                });
             }
         }
 
@@ -450,6 +452,78 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = true, responseText = "Datos Guardados con éxito" });
 
+        }
+
+        public ActionResult siguienteFamiliar(string[] datosFamiliar, int tipoGuardado)
+        {
+            string currentUser = User.Identity.Name;
+
+            if (tipoGuardado == 1)
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosFamiliaresEditados.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+
+                if (contadorFamiliares == familiares.Count)
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = familiares[contadorFamiliares].Nombre,
+                        relacion = familiares[contadorFamiliares].Relacion,
+                        edad = familiares[contadorFamiliares].Edad,
+                        sexo = familiares[contadorFamiliares].Sexo,
+                        dependencia = familiares[contadorFamiliares].Dependencia,
+                        explicaDependencia = familiares[contadorFamiliares].DependenciaExplica,
+                        vivenJuntos = familiares[contadorFamiliares].VivenJuntos,
+                        direccion = familiares[contadorFamiliares].Domicilio,
+                        telefono = familiares[contadorFamiliares].Telefono,
+                        horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion,
+                        enteradoProceso = familiares[contadorFamiliares].EnteradoProceso,
+                        puedeEnterarse = familiares[contadorFamiliares].PuedeEnterarse,
+                        observaciones = familiares[contadorFamiliares++].Observaciones
+                    });
+                }
+            }
+            else
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosReferenciasEditadas.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+
+                if (contadorReferencias == referenciaspersonales.Count)
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = referenciaspersonales[contadorReferencias].Nombre,
+                        relacion = referenciaspersonales[contadorReferencias].Relacion,
+                        edad = referenciaspersonales[contadorReferencias].Edad,
+                        sexo = referenciaspersonales[contadorReferencias].Sexo,
+                        dependencia = referenciaspersonales[contadorReferencias].Dependencia,
+                        explicaDependencia = referenciaspersonales[contadorReferencias].DependenciaExplica,
+                        vivenJuntos = referenciaspersonales[contadorReferencias].VivenJuntos,
+                        direccion = referenciaspersonales[contadorReferencias].Domicilio,
+                        telefono = referenciaspersonales[contadorReferencias].Telefono,
+                        horarioLocalizacion = referenciaspersonales[contadorReferencias].HorarioLocalizacion,
+                        enteradoProceso = referenciaspersonales[contadorReferencias].EnteradoProceso,
+                        puedeEnterarse = referenciaspersonales[contadorReferencias].PuedeEnterarse,
+                        observaciones = referenciaspersonales[contadorReferencias++].Observaciones
+                    });
+                }
+            }
         }
 
         public ActionResult guardarFamiliarExtranjero(string[] datosFE)
@@ -1267,6 +1341,7 @@ namespace scorpioweb.Controllers
                 ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
                 ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
                 ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
+                contadorSustancia++;
             }
             else
             {
@@ -1276,8 +1351,6 @@ namespace scorpioweb.Controllers
                 ViewBag.ultimoConsumo = null;
                 ViewBag.observaciones = null;
             }
-
-            contadorSustancia++;
             #endregion
 
             #region Familiares
@@ -1318,38 +1391,37 @@ namespace scorpioweb.Controllers
 
             if (familiares.Count > 0)
             {
-                ViewBag.nombre = familiares[contadorFamiliares].Nombre;
-                ViewBag.idRelacion = BuscaId(ListaRelacion, familiares[contadorFamiliares].Relacion);
-                ViewBag.edad = familiares[contadorFamiliares].Edad;
-                ViewBag.idSexo = BuscaId(ListaSexo, familiares[contadorFamiliares].Sexo); ;
-                ViewBag.idDependencia = BuscaId(listaNoSi, familiares[contadorFamiliares].Dependencia);
-                ViewBag.dependenciaExplica = familiares[contadorFamiliares].DependenciaExplica;
-                ViewBag.idVivenJuntos = BuscaId(listaSiNo, familiares[contadorFamiliares].VivenJuntos);
-                ViewBag.domicilio = familiares[contadorFamiliares].Domicilio;
-                ViewBag.telefono = familiares[contadorFamiliares].Telefono;
-                ViewBag.horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion;
-                ViewBag.idEnteradoProceso = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
-                ViewBag.idPuedeEnterarse = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
-                ViewBag.AFobservaciones = familiares[contadorFamiliares].Observaciones;
+                ViewBag.nombreF = familiares[contadorFamiliares].Nombre;
+                ViewBag.idRelacionF = BuscaId(ListaRelacion, familiares[contadorFamiliares].Relacion);
+                ViewBag.edadF = familiares[contadorFamiliares].Edad;
+                ViewBag.idSexoF = BuscaId(ListaSexo, familiares[contadorFamiliares].Sexo); ;
+                ViewBag.idDependenciaF = BuscaId(listaNoSi, familiares[contadorFamiliares].Dependencia);
+                ViewBag.dependenciaExplicaF = familiares[contadorFamiliares].DependenciaExplica;
+                ViewBag.idVivenJuntosF = BuscaId(listaSiNo, familiares[contadorFamiliares].VivenJuntos);
+                ViewBag.domicilioF = familiares[contadorFamiliares].Domicilio;
+                ViewBag.telefonoF = familiares[contadorFamiliares].Telefono;
+                ViewBag.horarioLocalizacionF = familiares[contadorFamiliares].HorarioLocalizacion;
+                ViewBag.idEnteradoProcesoF = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
+                ViewBag.idPuedeEnterarseF = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
+                ViewBag.AFobservacionesF = familiares[contadorFamiliares].Observaciones;
+                contadorFamiliares++;
             }
             else
             {
-                ViewBag.nombre = null;
-                ViewBag.idRelacion = "MAMA";
-                ViewBag.edad = 0;
-                ViewBag.idSexo = "M";
-                ViewBag.idDependencia = "NO";
-                ViewBag.dependenciaExplica = null;
-                ViewBag.idVivenJuntos = "SI";
-                ViewBag.domicilio = null;
-                ViewBag.telefono = null;
-                ViewBag.horarioLocalizacion = null;
-                ViewBag.idEnteradoProceso = "SI";
-                ViewBag.idPuedeEnterarse = "NA";
-                ViewBag.AFobservaciones = null;
+                ViewBag.nombreF = null;
+                ViewBag.idRelacionF = "MAMA";
+                ViewBag.edadF = 0;
+                ViewBag.idSexoF = "M";
+                ViewBag.idDependenciaF = "NO";
+                ViewBag.dependenciaExplicaF = null;
+                ViewBag.idVivenJuntosF = "SI";
+                ViewBag.domicilioF = null;
+                ViewBag.telefonoF = null;
+                ViewBag.horarioLocalizacionF = null;
+                ViewBag.idEnteradoProcesoF = "SI";
+                ViewBag.idPuedeEnterarseF = "NA";
+                ViewBag.AFobservacionesF = null;
             }
-
-            contadorFamiliares++;
             #endregion
 
             #region Referencias
@@ -1358,7 +1430,39 @@ namespace scorpioweb.Controllers
 
             contadorReferencias = 0;
 
-            contadorReferencias++;
+            if (referenciaspersonales.Count > 0)
+            {
+                ViewBag.nombreR = referenciaspersonales[contadorReferencias].Nombre;
+                ViewBag.idRelacionR = BuscaId(ListaRelacion, referenciaspersonales[contadorReferencias].Relacion);
+                ViewBag.edadR = referenciaspersonales[contadorReferencias].Edad;
+                ViewBag.idSexoR = BuscaId(ListaSexo, referenciaspersonales[contadorReferencias].Sexo); ;
+                ViewBag.idDependenciaR = BuscaId(listaNoSi, referenciaspersonales[contadorReferencias].Dependencia);
+                ViewBag.dependenciaExplicaR = referenciaspersonales[contadorReferencias].DependenciaExplica;
+                ViewBag.idVivenJuntosR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].VivenJuntos);
+                ViewBag.domicilioR = referenciaspersonales[contadorReferencias].Domicilio;
+                ViewBag.telefonoR = referenciaspersonales[contadorReferencias].Telefono;
+                ViewBag.horarioLocalizacionR = referenciaspersonales[contadorReferencias].HorarioLocalizacion;
+                ViewBag.idEnteradoProcesoR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].EnteradoProceso);
+                ViewBag.idPuedeEnterarseR = BuscaId(listaNoSiNA, referenciaspersonales[contadorReferencias].PuedeEnterarse);
+                ViewBag.AFobservacionesR = referenciaspersonales[contadorReferencias].Observaciones;
+                contadorReferencias++;
+            }
+            else
+            {
+                ViewBag.nombreR = null;
+                ViewBag.idRelacionR = "MAMA";
+                ViewBag.edadR = 0;
+                ViewBag.idSexoR = "M";
+                ViewBag.idDependenciaR = "NO";
+                ViewBag.dependenciaExplicaR = null;
+                ViewBag.idVivenJuntosR = "SI";
+                ViewBag.domicilioR = null;
+                ViewBag.telefonoR = null;
+                ViewBag.horarioLocalizacionR = null;
+                ViewBag.idEnteradoProcesoR = "SI";
+                ViewBag.idPuedeEnterarseR = "NA";
+                ViewBag.AFobservacionesR = null;
+            }
             #endregion
 
             return View(persona);
