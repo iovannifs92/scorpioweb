@@ -489,6 +489,8 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+
+
         private bool DelitolExists(int id)
         {
             return _context.Delito.Any(e => e.IdDelito == id);

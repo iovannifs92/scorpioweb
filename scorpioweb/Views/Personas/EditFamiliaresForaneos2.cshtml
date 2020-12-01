@@ -1,0 +1,365 @@
+﻿@{
+    Layout = null;
+}
+    <script type="text/javascript">
+
+        $('#Pais').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry == "MEXICO") {
+                $("#DivEstado").css("display", "block");
+                $("#DivPais").removeClass("col-md-12");
+                $("#DivPais").addClass("col-md-6");
+
+            }
+            else {
+
+                $("#Estado").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $("#DivEstado").css("display", "none");
+                $("#DivPais").removeClass("col-md-6");
+                $("DivPais").addClass("col-md-12");
+            }
+
+        });
+
+         @*//#region Mensaje de confirmacion delboton de borrar familar
+        function update() {
+            if (window.confirm("Desea Elimiar el Familiar Foranneo?")) {
+                this.form.action ='/Personas/DeleteConfirmedFamiiarF/@Model.PersonaIdPersona';
+                return true;
+            } else {
+                return false;
+            }
+         }
+        //#endregion*@
+         //* Modal EditdomicilioSecundario*/
+        $('#estadoEDS').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#estadoEDS';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#municipioEDS").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#municipioEDS').html(items);
+            });
+        });
+        $('#paisEDS').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                 $("#estadoEDS").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#municipioEDS').html(items);
+                $("#municipioEDS").val(0);
+                $("#DivEstadoEDS").css("display", "none");
+                $("#DivMunicipioEDS").css("display", "none");
+                $("#DivPaisEDS").removeClass("col-md-4");
+                $("DivPaisEDS").addClass("col-md-12");
+            }
+            else {
+                $("#DivEstadoEDS").css("display", "block");
+                $("#DivMunicipioEDS").css("display", "block");
+                $("#DivPaisEDS").removeClass("col-md-12");
+                $("#DivPaisEDS").addClass("col-md-4");
+            }
+
+        });
+        //#endregion
+
+        //region Guardar PlusAddFamiliarForaneo
+        $('#btnGuardarFamiliarExtranjero').on("click", function (e) {
+            e.preventDefault();
+            alert("entrado al Botton");
+            var PersonaIdPersona = document.getElementById("PersonaIdPersona").value;
+            var Nombre = document.getElementById("FENombre").value;
+            var Edad = document.getElementById("FEEdad").value;
+            var s = document.getElementById("FESexo");
+            var Sexo = s.options[s.selectedIndex].value;
+            var r = document.getElementById("FERelacion");
+            var Relacion = r.options[r.selectedIndex].value;
+            var td = document.getElementById("FETiempo");
+            var TiempoConocerlo = td.options[td.selectedIndex].value;
+            var p = document.getElementById("FEPais");
+            var Pais = p.options[p.selectedIndex].value;
+            var Estado = document.getElementById("FEEstado").value;
+            var Telefono = document.getElementById("FETelefonoFamiliar").value;
+            var f = document.getElementById("FEFrecuencia");
+            var FrecuenciaContacto = f.options[f.selectedIndex].value;
+            var pro = document.getElementById("FEEnteradoProceso");
+            var EnteradoProceso = pro.options[pro.selectedIndex].value;
+            var ent = document.getElementById("FEPuedeEnterarse");
+            var PuedeEnterarse = ent.options[ent.selectedIndex].value;
+            var Observaciones = document.getElementById("FEobservacioness").value;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/CrearFamiliarforaneo",
+                traditional: true,
+                data: {
+                        datosFamiliarF: [PersonaIdPersona, Nombre, Edad, Sexo, Relacion, TiempoConocerlo, Pais, Estado, Telefono, FrecuenciaContacto, EnteradoProceso, PuedeEnterarse, Observaciones],
+                      },
+                success: function (data) {
+                    alert("Datos Guardados con exito");
+                    location.reload();
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    location.reload();
+                }
+            });
+        });
+        //#endregion
+
+
+
+    </script>
+
+@{int i = 0;}
+@foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
+{
+    i++;
+    <div class="form-group col-md-12">
+        <form asp-action="EditFamiliaresForaneos">
+            <div>
+                <h4>Domicilio Secundario<span>@i</span> </h4>
+            </div>
+            <div class="form-group col-md-6">
+                <input name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
+            </div>
+            <div class="form-group col-lg-6">
+                <input name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
+            </div>
+
+            <div class="form-group col-md-12">
+                <label class="control-label">Nombre</label>
+                <input name="Nombre" id="Nombre" value=" @item.familiaresForaneosVM.Nombre" class="form-control" />
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Edad</label>
+                <input name="Edad" id="Edad" value="@item.familiaresForaneosVM.Edad" class="form-control" />
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Genero</label>
+                <select class="form-control" name="Sexo" id="Sexo"
+                        asp-items="@(new SelectList(ViewBag.listaGenero, "Value", "Text", @item.familiaresForaneosVM.Sexo))">
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Relación</label>
+                <select class="form-control" name="Relacion" id="Relacion"
+                        asp-items="@(new SelectList(ViewBag.listaRelacion, "Value", "Text", @item.familiaresForaneosVM.Relacion))">
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tiempo de conocerlo</label>
+                <select class="form-control" name="TiempoConocerlo" id="TiempoConocerlo"
+                        asp-items="@(new SelectList(ViewBag.listTiempo, "Value", "Text", @item.familiaresForaneosVM.TiempoConocerlo))">
+                </select>
+            </div>
+            @if (item.familiaresForaneosVM.Pais == "MEXICO")
+            {
+                <div class="form-group col-md-6" id="DivPais">
+                    <label class="control-label">Pais</label>
+                    <select class="form-control" name="Pais" id="Pais"
+                            asp-items="@(new SelectList(ViewBag.ListaPais, "Value", "Text", @item.familiaresForaneosVM.Pais))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivEstado">
+                    <label class="control-label">Estado</label>
+                    <select class="form-control" name="Estado" id="Estado"
+                            asp-items="@(new SelectList(ViewBag.ListaEstado, "Id", "Estado",@item.familiaresForaneosVM.Estado))">
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="form-group col-md-12" id="DivPais">
+                    <label class="control-label">Pais</label>
+                    <select class="form-control" name="Pais" id="Pais"
+                            asp-items="@(new SelectList(ViewBag.ListaPais, "Value", "Text", @item.familiaresForaneosVM.Pais))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivEstado" style="display:none">
+                    <label class="control-label">Estado</label>
+                    <select class="form-control" name="Estado" id="Estado"
+                            asp-items="@(new SelectList(ViewBag.ListaEstado, "Id", "Estado",@item.familiaresForaneosVM.Estado))">
+                    </select>
+                </div>
+            }
+
+            <div class="form-group col-md-6">
+                <label class="control-label">Telefono</label>
+                <input name="Telefono" id="Telefono" value="@item.familiaresForaneosVM.Telefono" class="form-control" />
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Frecuencia de Contacto</label>
+                <select class="form-control" name="FrecuenciaContacto" id="FrecuenciaContacto"
+                        asp-items="@(new SelectList(ViewBag.ListFrecuencia, "Value", "Text", @item.familiaresForaneosVM.FrecuenciaContacto))">
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Enterado de Proceso</label>
+                <select class="form-control" name="EnteradoProceso" id="EnteradoProceso"
+                        asp-items="@(new SelectList(ViewBag.listaProseso, "Value", "Text", @item.familiaresForaneosVM.EnteradoProceso))">
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Puede Enterarse del Proseso</label>
+                <select class="form-control" name="PuedeEnterarse" id="PuedeEnterarse"
+                        asp-items="@(new SelectList(ViewBag.listaEnterar, "Value", "Text", @item.familiaresForaneosVM.PuedeEnterarse))">
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Observaciones</label>
+                <input name="Observaciones" id="Observaciones" value="@item.familiaresForaneosVM.Observaciones" class="form-control" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+                <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalFamiliaresExtranjero" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Añadir Domicilio
+                </button>
+                <button asp-action="DeleteConfirmedFamiiarF" asp-route-id="@item.familiaresForaneosVM.IdFamiliaresForaneos" onclick="return update();" class="btn btn-danger" type="submit">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
+            </div>
+        </form>
+    </div>
+    <hr width=90>
+}
+
+<!-- Modal Familiares en el extranjero -->
+<div class="modal fade" id="modalFamiliaresExtranjero" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Familiar en el extranjero</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" name="IdFamiliaresForaneos" type="text" class="form-control" />
+                </div>
+                @foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
+                {
+                    <div class="form-group">
+                        <label class="control-label">Persona IdPersona</label>
+                        <input readonly name="PersonaIdPersona" id="PersonaIdPersona" class="form-control" value="@item.familiaresForaneosVM.PersonaIdPersona" />
+                    </div>
+                    break;
+                }
+                <div class="form-group col-md-12">
+                    <label class="control-label">Nombre</label>
+                    <input class="form-control" maxlength="150" name="FENombre" type="text" id="FENombre"></input>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Edad</label>
+                    <input class="form-control" value="0" name="FEEdad" type="text" id="FEEdad" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Genero</label>
+                    <select required class="form-control" name="FESexo" id="FESexo">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="N">Prefiero no decirlo</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Relación</label>
+                    <select class="form-control" name="FERelacion" id="FERelacion">
+                        <option value="MAMA">Máma</option>
+                        <option value="PAPA">Pápa</option>
+                        <option value="HERMANO (A)">Hermano(a)</option>
+                        <option value="HIJO (A)">Hijo(a)</option>
+                        <option value="ABUELO (A)">Abuelo(a)</option>
+                        <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
+                        <option value="AMIGO">Amigo</option>
+                        <option value="CONOCIDO">Conocido</option>
+                        <option value="OTRO">OTRO</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Tiempo de conocerlo</label>
+                    <select class="form-control" name="FETiempo" id="FETiempo">
+                        <option value="MENOS DE 1 AÑO">Menos de un año</option>
+                        <option value="ENTRE 1 Y 2 AÑOS">Entre 1 y 2 años</option>
+                        <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años(a)</option>
+                        <option value="MÁS DE 5 AÑOS">Más de 5 años</option>
+                        <option value="TODA LA VIDA">Toda la vida</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">País</label>
+                    <select class="form-control" name="FEPais" id="FEPais">
+                        <option value="MEXICO">México</option>
+                        <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                        <option value="CANADA">Canada</option>
+                        <option value="COLOMBIA">Colombia</option>
+                        <option value="EL SALVADOR">El Salvador</option>
+                        <option value="GUATEMALA">Guatemala</option>
+                        <option value="CHILE">Chile</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Estado</label>
+                    <input class="form-control" maxlength="70" name="FEEstado" type="text" id="FEEstado" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Teléfono (10 dígitos)</label>
+                    <input name="FETelefonoFamiliar" id="FETelefonoFamiliar" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Frecuencia de contacto</label>
+                    <select class="form-control" name="FEFrecuencia" id="FEFrecuencia">
+                        <option value="DIARIAMENTE">Diariamente</option>
+                        <option value="UNA VEZ A LA SEMANA">Una vez a la semana</option>
+                        <option value="UNA VEZ CADA 15 DIAS">Una vez cada 15 días</option>
+                        <option value="UNA VEZ AL MES">Una vez al mes</option>
+                        <option value="UNA VEZ AL AÑO">Una vez al año</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">¿Enterado de su proceso penal?</label>
+                    <select required class="form-control" name="FEEnteradoProceso" id="FEEnteradoProceso">
+                        <option value="SI">Si</option>
+                        <option value="NO">No</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select required class="form-control" name="FEPuedeEnterarse" id="FEPuedeEnterarse">
+                        <option value="NA">NA</option>
+                        <option value="NO">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label" for="FEobservaciones">Observaciones</label>
+                    <textarea maxlength="200" class="form-control" rows="2" name="FEobservacioness" id="FEobservacioness"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
