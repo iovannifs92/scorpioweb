@@ -851,7 +851,7 @@ namespace scorpioweb.Controllers
                 }
                 #endregion
 
-                #region -AsientoFamiliar-
+                #region -Familiares-
                 for (int i = 0; i < datosFamiliares.Count; i = i + 13)
                 {
                     if (datosFamiliares[i][1] == currentUser)
@@ -873,6 +873,15 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.PersonaIdPersona = idPersona;
                         _context.Add(asientoFamiliar);
                         await _context.SaveChangesAsync();
+                    }
+                }
+
+                for (int i = 0; i < datosFamiliares.Count; i++)
+                {
+                    if (datosFamiliares[i][1] == currentUser)
+                    {
+                        datosFamiliares.RemoveAt(i);
+                        i--;
                     }
                 }
                 #endregion
@@ -902,8 +911,6 @@ namespace scorpioweb.Controllers
                     }
                 }
 
-
-
                 for (int i = 0; i < datosReferencias.Count; i++)
                 {
                     if (datosReferencias[i][1] == currentUser)
@@ -912,7 +919,6 @@ namespace scorpioweb.Controllers
                         i--;
                     }
                 }
-
                 #endregion
 
                 #region -Familiares Extranjero-
@@ -1565,6 +1571,9 @@ namespace scorpioweb.Controllers
                 persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
                 persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
                 persona.Curp = normaliza(persona.Curp);
+                persona.ConsumoSustancias = normaliza(persona.ConsumoSustancias);
+                persona.Familiares = normaliza(persona.Familiares);
+                persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
 
                 #region -ConsumoSustancias-
                 //Sustancias editadas
@@ -1639,8 +1648,187 @@ namespace scorpioweb.Controllers
                 }
                 #endregion
 
-                persona.Familiares = normaliza(persona.Familiares);
-                persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
+                #region -Familiares-
+                //Familiares editados
+                for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 13)
+                {
+                    if (datosFamiliaresEditados[i][1] == currentUser)
+                    {
+                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
+
+                        asientoFamiliar.IdAsientoFamiliar = familiares[i / 13].IdAsientoFamiliar;
+                        asientoFamiliar.Nombre = normaliza(datosFamiliaresEditados[i][0]);
+                        asientoFamiliar.Relacion = datosFamiliaresEditados[i + 1][0];
+                        asientoFamiliar.Edad = Int32.Parse(datosFamiliaresEditados[i + 2][0]);
+                        asientoFamiliar.Sexo = datosFamiliaresEditados[i + 3][0];
+                        asientoFamiliar.Dependencia = datosFamiliaresEditados[i + 4][0];
+                        asientoFamiliar.DependenciaExplica = normaliza(datosFamiliaresEditados[i + 5][0]);
+                        asientoFamiliar.VivenJuntos = datosFamiliaresEditados[i + 6][0];
+                        asientoFamiliar.Domicilio = normaliza(datosFamiliaresEditados[i + 7][0]);
+                        asientoFamiliar.Telefono = datosFamiliaresEditados[i + 8][0];
+                        asientoFamiliar.HorarioLocalizacion = normaliza(datosFamiliaresEditados[i + 9][0]);
+                        asientoFamiliar.EnteradoProceso = datosFamiliaresEditados[i + 10][0];
+                        asientoFamiliar.PuedeEnterarse = datosFamiliaresEditados[i + 11][0];
+                        asientoFamiliar.Observaciones = normaliza(datosFamiliaresEditados[i + 12][0]);
+                        asientoFamiliar.Tipo = "FAMILIAR";
+                        asientoFamiliar.PersonaIdPersona = id;
+
+                        try
+                        {
+                            _context.Update(asientoFamiliar);
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                }
+
+
+                for (int i = 0; i < datosFamiliaresEditados.Count; i++)
+                {
+                    if (datosFamiliaresEditados[i][1] == currentUser)
+                    {
+                        datosFamiliaresEditados.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                //Familiares agregados
+                for (int i = 0; i < datosFamiliares.Count; i = i + 13)
+                {
+                    if (datosFamiliares[i][1] == currentUser)
+                    {
+                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
+
+                        asientoFamiliar.Nombre = normaliza(datosFamiliares[i][0]);
+                        asientoFamiliar.Relacion = datosFamiliares[i + 1][0];
+                        asientoFamiliar.Edad = Int32.Parse(datosFamiliares[i + 2][0]);
+                        asientoFamiliar.Sexo = datosFamiliares[i + 3][0];
+                        asientoFamiliar.Dependencia = datosFamiliares[i + 4][0];
+                        asientoFamiliar.DependenciaExplica = normaliza(datosFamiliares[i + 5][0]);
+                        asientoFamiliar.VivenJuntos = datosFamiliares[i + 6][0];
+                        asientoFamiliar.Domicilio = normaliza(datosFamiliares[i + 7][0]);
+                        asientoFamiliar.Telefono = datosFamiliares[i + 8][0];
+                        asientoFamiliar.HorarioLocalizacion = normaliza(datosFamiliares[i + 9][0]);
+                        asientoFamiliar.EnteradoProceso = datosFamiliares[i + 10][0];
+                        asientoFamiliar.PuedeEnterarse = datosFamiliares[i + 11][0];
+                        asientoFamiliar.Observaciones = normaliza(datosFamiliares[i + 12][0]);
+                        asientoFamiliar.Tipo = "FAMILIAR";
+                        asientoFamiliar.PersonaIdPersona = id;
+                        _context.Add(asientoFamiliar);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                for (int i = 0; i < datosFamiliares.Count; i++)
+                {
+                    if (datosFamiliares[i][1] == currentUser)
+                    {
+                        datosFamiliares.RemoveAt(i);
+                        i--;
+                    }
+                }
+                #endregion
+
+                #region -Referencias-
+                //Referencias editadas
+                for (int i = 0; i < datosReferenciasEditadas.Count; i = i + 13)
+                {
+                    if (datosReferenciasEditadas[i][1] == currentUser)
+                    {
+                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
+
+                        asientoFamiliar.IdAsientoFamiliar = referenciaspersonales[i / 13].IdAsientoFamiliar;
+                        asientoFamiliar.Nombre = normaliza(datosReferenciasEditadas[i][0]);
+                        asientoFamiliar.Relacion = datosReferenciasEditadas[i + 1][0];
+                        asientoFamiliar.Edad = Int32.Parse(datosReferenciasEditadas[i + 2][0]);
+                        asientoFamiliar.Sexo = datosReferenciasEditadas[i + 3][0];
+                        asientoFamiliar.Dependencia = datosReferenciasEditadas[i + 4][0];
+                        asientoFamiliar.DependenciaExplica = normaliza(datosReferenciasEditadas[i + 5][0]);
+                        asientoFamiliar.VivenJuntos = datosReferenciasEditadas[i + 6][0];
+                        asientoFamiliar.Domicilio = normaliza(datosReferenciasEditadas[i + 7][0]);
+                        asientoFamiliar.Telefono = datosReferenciasEditadas[i + 8][0];
+                        asientoFamiliar.HorarioLocalizacion = normaliza(datosReferenciasEditadas[i + 9][0]);
+                        asientoFamiliar.EnteradoProceso = datosReferenciasEditadas[i + 10][0];
+                        asientoFamiliar.PuedeEnterarse = datosReferenciasEditadas[i + 11][0];
+                        asientoFamiliar.Observaciones = normaliza(datosReferenciasEditadas[i + 12][0]);
+                        asientoFamiliar.Tipo = "REFERENCIA";
+                        asientoFamiliar.PersonaIdPersona = id;
+
+                        try
+                        {
+                            _context.Update(asientoFamiliar);
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                }
+
+
+                for (int i = 0; i < datosReferenciasEditadas.Count; i++)
+                {
+                    if (datosReferenciasEditadas[i][1] == currentUser)
+                    {
+                        datosReferenciasEditadas.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                //Referencias agregadas
+                for (int i = 0; i < datosReferencias.Count; i = i + 13)
+                {
+                    if (datosReferencias[i][1] == currentUser)
+                    {
+                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
+
+                        asientoFamiliar.Nombre = normaliza(datosReferencias[i][0]);
+                        asientoFamiliar.Relacion = datosReferencias[i + 1][0];
+                        asientoFamiliar.Edad = Int32.Parse(datosReferencias[i + 2][0]);
+                        asientoFamiliar.Sexo = datosReferencias[i + 3][0];
+                        asientoFamiliar.Dependencia = datosReferencias[i + 4][0];
+                        asientoFamiliar.DependenciaExplica = normaliza(datosReferencias[i + 5][0]);
+                        asientoFamiliar.VivenJuntos = datosReferencias[i + 6][0];
+                        asientoFamiliar.Domicilio = normaliza(datosReferencias[i + 7][0]);
+                        asientoFamiliar.Telefono = datosReferencias[i + 8][0];
+                        asientoFamiliar.HorarioLocalizacion = normaliza(datosReferencias[i + 9][0]);
+                        asientoFamiliar.EnteradoProceso = datosReferencias[i + 10][0];
+                        asientoFamiliar.PuedeEnterarse = datosReferencias[i + 11][0];
+                        asientoFamiliar.Observaciones = normaliza(datosReferencias[i + 12][0]);
+                        asientoFamiliar.Tipo = "REFERENCIA";
+                        asientoFamiliar.PersonaIdPersona = id;
+                        _context.Add(asientoFamiliar);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                for (int i = 0; i < datosReferencias.Count; i++)
+                {
+                    if (datosReferencias[i][1] == currentUser)
+                    {
+                        datosReferencias.RemoveAt(i);
+                        i--;
+                    }
+                }
+                #endregion
 
                 try
                 {

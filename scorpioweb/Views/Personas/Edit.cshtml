@@ -518,7 +518,7 @@
             var horarioLocalizacion = document.getElementById("AFLocalizacionA").value;
             var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
-            var observaciones = document.getElementById("AFobservacionesConsumoA").value;
+            var observaciones = document.getElementById("AFobservacionesA").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
 
             $.ajax({
@@ -616,7 +616,7 @@
                             document.ready = document.getElementById("AFLocalizacionE").value = '';
                             document.ready = document.getElementById("AFEnteradoProcesoE").value = 'SI';
                             document.ready = document.getElementById("AFPuedeEnterarseOE").value = 'NA';
-                            document.ready = document.getElementById("AFobservacionesConsumoE").value = '';
+                            document.ready = document.getElementById("AFobservacionesE").value = '';
                             $("#AFDependenciaExplicaE").css("display", "none");
                             $("#AFDireccionFamiliarE").css("display", "none");
                             $("#AFPuedeEnterarseE").css("display", "none");
