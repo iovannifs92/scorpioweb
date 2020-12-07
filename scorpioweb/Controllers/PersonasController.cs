@@ -1621,6 +1621,8 @@ namespace scorpioweb.Controllers
                 }
 
                 //Sustancias agregadas
+                int idConsumoSustancias = ((from table in _context.Consumosustancias
+                                            select table).Count());
                 for (int i = 0; i < datosSustancias.Count; i = i + 5)
                 {
                     if (datosSustancias[i][1] == currentUser)
@@ -1633,6 +1635,7 @@ namespace scorpioweb.Controllers
                         consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
                         consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
                         consumosustanciasBD.PersonaIdPersona = id;
+                        consumosustanciasBD.IdConsumoSustancias = ++idConsumoSustancias;
                         _context.Add(consumosustanciasBD);
                         await _context.SaveChangesAsync();
                     }
@@ -1649,6 +1652,8 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 #region -Familiares-
+                int idAsientoFamiliar = ((from table in _context.Asientofamiliar
+                                            select table).Count());
                 //Familiares editados
                 for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 13)
                 {
@@ -1724,6 +1729,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.Observaciones = normaliza(datosFamiliares[i + 12][0]);
                         asientoFamiliar.Tipo = "FAMILIAR";
                         asientoFamiliar.PersonaIdPersona = id;
+                        asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
                         _context.Add(asientoFamiliar);
                         await _context.SaveChangesAsync();
                     }
@@ -1815,6 +1821,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.Observaciones = normaliza(datosReferencias[i + 12][0]);
                         asientoFamiliar.Tipo = "REFERENCIA";
                         asientoFamiliar.PersonaIdPersona = id;
+                        asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
                         _context.Add(asientoFamiliar);
                         await _context.SaveChangesAsync();
                     }
