@@ -6,7 +6,7 @@ namespace scorpioweb.Models
     public partial class Victima
     {
         public int IdVictima { get; set; }
-        public string Nombre { get; set; }
+        public string NombreV { get; set; }
         public string Edad { get; set; }
         public string Telefono { get; set; }
         public string ConoceDetenido { get; set; }

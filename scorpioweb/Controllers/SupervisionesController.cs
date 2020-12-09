@@ -31,6 +31,7 @@ namespace scorpioweb.Controllers
         #region -Variables globales-
         private readonly penas2Context _context;
         public static List<string> datosSupervision = new List<string>();
+
         private List<SelectListItem> listaNaSiNo = new List<SelectListItem>
 
         {
@@ -39,6 +40,12 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="No", Value="NO"}
         };
 
+        private List<SelectListItem> listaSiNoNa = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"},
+            new SelectListItem{ Text="NA", Value="NA"}
+        };
         private List<SelectListItem> listaFracciones = new List<SelectListItem>
         {
             new SelectListItem{ Text="I", Value="I"},
@@ -1123,6 +1130,99 @@ namespace scorpioweb.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!SupervisionExists(suspensionseguimiento.SupervisionIdSupervision))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(PersonaSupervision));
+            }
+            return View();
+        }
+        #endregion
+
+        #region -EditVictima-
+        public async Task<IActionResult> Editvictima(int? id, string nombre, string cp)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+
+            var supervision = await _context.Victima.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
+            if (supervision == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.ConoceDetenido = listaSiNoNa;
+            ViewBag.idConoceDetenido = BuscaId(listaSiNoNa, supervision.ConoceDetenido);
+
+
+            #region Relacion
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Máma", Value="MAMA"},
+              new SelectListItem{ Text="Pápa", Value="PAPA"},
+              new SelectListItem{ Text="Esposo (a)", Value="ESPOSO (A)"},
+              new SelectListItem{ Text="Hermano (a)", Value="HERMAN0 (A)"},
+              new SelectListItem{ Text="Hijo (a)", Value="HIJO (A)"},
+              new SelectListItem{ Text="Abelo (a)", Value="ABUELO (A)"},
+              new SelectListItem{ Text="Familiar 1 Nivel", Value="FAMILIAR 1 NIVEL"},
+              new SelectListItem{ Text="Amigo", Value="AMIGO"},
+              new SelectListItem{ Text="Conocido", Value="CONOCIDO (A)"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.TipoRelacion = ListaRelacion;
+            ViewBag.idTipoRelacion = BuscaId(ListaRelacion, supervision.TipoRelacion);
+            #endregion
+
+
+            List<SelectListItem> ListaTiempo;
+            ListaTiempo = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Menos de un año", Value="MENOS DE 1 AÑO"},
+              new SelectListItem{ Text="Entre 1 y 2 años", Value="ENTRE 1 Y 2 AÑOS"},
+              new SelectListItem{ Text="Entre 2 y 5 años(a)", Value="ENTRE 2 Y 5 AÑOS"},
+              new SelectListItem{ Text="Más de 5 años", Value="MÁS DE 5 AÑOS"},
+              new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
+            };
+            ViewBag.TiempoConocerlo = ListaTiempo;
+            ViewBag.idTiempoConocerlo = BuscaId(ListaTiempo, supervision.TiempoConocerlo);
+
+            ViewBag.ViveSupervisado = listaNaSiNo;
+            ViewBag.idViveSupervisado = BuscaId(listaNaSiNo, supervision.ViveSupervisado);
+
+
+            return View(supervision);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editvictima(int id, [Bind("IdVictima,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,SupervisionIdSupervision")] Victima victima)
+        {
+            if (id != victima.SupervisionIdSupervision)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(victima);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SupervisionExists(victima.SupervisionIdSupervision))
                     {
                         return NotFound();
                     }

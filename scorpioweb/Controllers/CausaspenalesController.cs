@@ -336,7 +336,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, int id)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id)
         {
             string currentUser = User.Identity.Name;
 
@@ -417,6 +417,13 @@ namespace scorpioweb.Controllers
                 fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
                 #endregion
 
+                #region agregar 1 entrada a Victima
+                int idVictima = ((from table in _context.Victima
+                                  select table).Count()) + 1;
+                victima.IdVictima = idVictima;
+                victima.SupervisionIdSupervision = idSupervision;
+                #endregion
+
                 _context.Add(personacausapenal);
                 _context.Add(supervision);
                 await _context.SaveChangesAsync();
@@ -428,6 +435,7 @@ namespace scorpioweb.Controllers
                 _context.Add(cambiodeobligaciones);
                 _context.Add(revocacion);
                 _context.Add(fraccionesimpuestas);
+                _context.Add(victima);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

@@ -17,41 +17,46 @@
 }
 @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
 {
-    <div class="container">
-        <br>
-        <div class="row">
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Supervisión</a>
-            </div>
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditFraccionesimpuestas" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno  @item.causapenalVM.CausaPenal" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Fracciónes Impuestas</a>
-            </div>
+<div class="container">
+    <br>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Supervisión</a>
         </div>
-        <div class="row">
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditCambiodeobligaciones" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
-            </div>
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditCierredecaso" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Cierre de caso</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Planeación Estrategica</a>
-            </div>
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditAer" asp-route-id="@item.supervisionVM.IdSupervision" id="abandonoEstado" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal"v class="btn btn-primary btn-lg btn-block btn-huge">AER</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditRevocacion" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Revocación</a>
-            </div>
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditSuspensionseguimiento" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Suspensión Seguimiento</a>
-            </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditFraccionesimpuestas" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno  @item.causapenalVM.CausaPenal" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Fracciónes Impuestas</a>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditCambiodeobligaciones" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
+        </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditCierredecaso" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Cierre de caso</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Planeación Estrategica</a>
+        </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditAer" asp-route-id="@item.supervisionVM.IdSupervision" id="abandonoEstado" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" v class="btn btn-primary btn-lg btn-block btn-huge">AER</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditRevocacion" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Revocación</a>
+        </div>
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditSuspensionseguimiento" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Suspensión Seguimiento</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a asp-action="EditVictima" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Victima</a>
+        </div>
+    </div>
+</div>
     break;
 }
 
