@@ -1038,11 +1038,12 @@ namespace scorpioweb.Controllers
         public void creaQR(int? id)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("10.6.60.190/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);            
             qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+            fs.Close();
         }
         #endregion
 
@@ -1212,7 +1213,6 @@ namespace scorpioweb.Controllers
               };
             
             dc.MailMerge.Execute(dataSource);
-            
 
             dc.Save(resultPath);
 
