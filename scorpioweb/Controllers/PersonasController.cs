@@ -1216,7 +1216,8 @@ namespace scorpioweb.Controllers
 
             dc.Save(resultPath);
 
-            Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
+            Response.Redirect("http://10.6.60.190/Documentos/entrevista.docx");
             #endregion
 
 
