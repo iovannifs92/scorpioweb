@@ -1,5 +1,11 @@
 ﻿@*https://jqueryui.com/autocomplete/#combobox template del combobox*@
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+
+
 
 @model scorpioweb.Models.Persona
 
@@ -16,8 +22,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @*<title>jQuery UI Autocomplete - Combobox</title>*@
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
     <style>
         .custom-combobox {
             position: relative;
@@ -41,8 +45,7 @@
             width: 300px;
         }
     </style>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
     <script>
         $(function () {
             $.widget("custom.combobox", {
@@ -201,7 +204,7 @@
                             datosPersona: [idPersona],
                         },
                         success: function (response) {
-                            if (response.success) {    
+                            if (response.success) {
                                 var f = document.getElementById("form");
                                 f.submit();
                             } else {
@@ -226,19 +229,19 @@
         <label class="control-label">Busque a la persona dentro de la lista de imputados</label>
     </div>
     <form asp-action="Entrevista" id="form">
-        <select type="submit" class="form-control" id="combobox" name="persona_idPersona" style="display:none;"
+        <select type="submit" class="form-control" @*id="combobox"*@ name="persona_idPersona" id="persona_idPersona" @*style="display:none;"*@
                 asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
         </select>
     </form>
     <div class="form-group">
-        <hr/>
+        <hr />
         <p>
             <a asp-action="Create" class="btn btn-link">
                 Nueva entrevista de encuadre
             </a>
         </p>
-     </div>
+    </div>
 
-     <button id="toggle" style="display:none;">show underlying select</button>
+    <button id="toggle" style="display:none;">show underlying select</button>
 </body>
 </html>

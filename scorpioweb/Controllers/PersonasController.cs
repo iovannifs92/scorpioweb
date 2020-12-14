@@ -978,6 +978,7 @@ namespace scorpioweb.Controllers
         {
             var personas = from p in _context.Persona
                            where p.Supervisor != null
+                           orderby p.Paterno
                            select p;
 
             ViewBag.personas = personas.ToList();

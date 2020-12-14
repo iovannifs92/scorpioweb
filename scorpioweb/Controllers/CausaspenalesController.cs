@@ -93,6 +93,7 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
+            var i= PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize);
             return View(await PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -336,18 +337,19 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id, int persona_idPersona)
         {
             string currentUser = User.Identity.Name;
 
             if (ModelState.IsValid)
             {
-                if(selectedPersona.Count == 0)
+                if(/*selectedPersona.Count == 0*/persona_idPersona==0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
 
-                int idPersona = Int32.Parse(selectedPersona[0]);
+                //int idPersona = Int32.Parse(selectedPersona[0]);
+                int idPersona = persona_idPersona;
                 //Por el la primera opcion vacia
                 if (idPersona == 0) {
                     return RedirectToAction(nameof(Index));
