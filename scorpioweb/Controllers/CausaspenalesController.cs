@@ -567,9 +567,7 @@ namespace scorpioweb.Controllers
                                          causaPenalVM = causapenalTable
                                      };
 
-            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
             #endregion
-
 
             List<Delito> delitoVMV = _context.Delito.ToList();
             List<Causapenal> causaPenalVMV = _context.Causapenal.ToList();
@@ -585,7 +583,13 @@ namespace scorpioweb.Controllers
                                          causaPenalVM = causapenalTable
 
                                      };
-
+            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+            if((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0){
+                ViewBag.tieneDelitos = false;
+            }else
+            {
+                ViewBag.tieneDelitos = true;
+            }
 
             return View();
         }

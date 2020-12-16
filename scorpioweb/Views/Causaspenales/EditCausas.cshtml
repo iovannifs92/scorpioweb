@@ -42,11 +42,18 @@
                 </div>
                 <div class="form-group">
                     <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-success">
-                       <i class="fa fa-plus"></i>  Crear Delito
+                        <i class="fa fa-plus"></i>  Crear Delito
                     </a>
-                    @if (ViewBag.Delitos != 0)
+                    @if (ViewBag.tieneDelitos == true)
                     {
                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                            <i class="fa fa-eye"></i> Ver Delitos
+                        </button>
+
+                    }
+                    else
+                    {
+                        <button style="display:none" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
                             <i class="fa fa-eye"></i> Ver Delitos
                         </button>
                     }

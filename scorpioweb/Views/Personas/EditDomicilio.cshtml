@@ -281,19 +281,19 @@
                 <input asp-for="Horario" class="form-control" />
                 <span asp-validation-for="Horario" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-11" id="DivDomcilioSecundario">
+            <div class="form-group col-md-11 col-sm-11 col-xs-9" id="DivDomcilioSecundario">
                 <label class="control-label">¿Cuenta con domicilio secundario?</label>
                 <select asp-for="DomcilioSecundario" class="form-control" name="DomcilioSecundario" id="DomcilioSecundario"
                         asp-items="@(new SelectList(ViewBag.listacuentaDomicilioSecundario, "Value", "Text", @ViewBag.idcuentaDomicilioSecundario))"></select>
             </div>
             @if (ViewBag.domi == "SI")
             {
-                <div class="form-group col-md-1" id="DivbtnAdd" style="display:none">
+                <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnAdd" style="display:none">
                     <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalAddDomSecundario1" class="btn btn-success">
-                        <i class="fa fa-plus"></i> AñadirFF
+                        <i class="fa fa-plus"></i> Añadir DS
                     </button>
                 </div>
-                <div class="form-group col-md-1" id="DivbtnEditar" style="padding-top:25px;">
+                <div class="form-group col-md-1 col-sm-1  col-xs-3" id="DivbtnEditar" style="padding-top:25px;">
                     <a id="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personas",null,Context.Request.Scheme)','Edita Domicilo Secundario',@Model.PersonaIdPersona)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
@@ -301,14 +301,14 @@
             }
             else
             {
-                <div class="form-group col-md-1" id="DivbtnEditar" style="display:none;">
+                <div class="form-group col-md-1 col-sm-1  col-1 col-xs-3" id="DivbtnEditar" style="display:none;">
                     <a id="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personas",null,Context.Request.Scheme)','Edita Domicilo Secundario',@Model.PersonaIdPersona)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </div>
-                <div class="form-group col-md-1" id="DivbtnAdd" style="padding-top:25px;">
+                <div class="form-group col-md-1 %col-sm-1 col-xs-3" id="DivbtnAdd" style="padding-top:25px;">
                     <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalAddDomSecundario1" class="btn btn-success">
-                        <i class="fa fa-plus"></i> AñadirFF
+                        <i class="fa fa-plus"></i> Añadir DS
                     </button>
                 </div>
             }
