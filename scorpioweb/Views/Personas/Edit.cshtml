@@ -226,6 +226,26 @@
             $('#modalAgregarSustancias').modal('show')
         });
         $("#btnEditarSustancias").click(function () {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/editarSustancias",
+                traditional: true,
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+
+            document.getElementById("sustanciaE").value = '@ViewBag.idSustancia';
+            document.getElementById("frecuenciaE").value = '@ViewBag.idFrecuencia';
+            document.getElementById("cantidadE").value = '@ViewBag.cantidad';
+            document.getElementById("ultimoConsumoE").value = '@ViewBag.ultimoConsumo';
+            document.getElementById("observacionesConsumoE").value = '@ViewBag.Observaciones';
             $('#modalEditarSustancias').modal('show')
         });
         $("#btnAgregarFamiliar").click(function () {
@@ -258,6 +278,24 @@
             document.getElementById("textoAFREditar").innerHTML = "Asiento Familiar"
             tipo = 1;
 
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/editarFamiliares",
+                traditional: true,
+                data: {
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+
             document.getElementById("AFNombreE").value = '@ViewBag.nombreF';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionF';
             document.getElementById("AFEdadE").value = '@ViewBag.edadF';
@@ -279,6 +317,24 @@
         $("#btnEditarReferencias").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Referencia"
             tipo = 2;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/editarFamiliares",
+                traditional: true,
+                data: {
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
 
             document.getElementById("AFNombreE").value = '@ViewBag.nombreR';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionR';

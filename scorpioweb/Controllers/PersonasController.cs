@@ -415,6 +415,14 @@ namespace scorpioweb.Controllers
             }
         }
 
+        public ActionResult editarSustancias()
+        {
+            contadorSustancia = 1;//por cargar la 1er sustancia
+            datosSustanciasEditadas = new List<List<string>>();//por si no se vacian las listas despues de guardar
+
+            return Json(new { success = true });
+        }
+
         public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
         {
             string currentUser = User.Identity.Name;
@@ -508,6 +516,21 @@ namespace scorpioweb.Controllers
                     });
                 }
             }
+        }
+
+        public ActionResult editarFamiliares(int tipoGuardado)
+        {
+            if (tipoGuardado == 1)
+            {
+                contadorFamiliares = 1;
+                datosFamiliaresEditados = new List<List<string>>();
+            }
+            else
+            {
+                contadorReferencias = 1;
+                datosReferenciasEditadas = new List<List<string>>();
+            }
+            return Json(new { success = true });
         }
 
         public ActionResult guardarFamiliarExtranjero(string[] datosFE)
@@ -815,14 +838,14 @@ namespace scorpioweb.Controllers
                 actividadsocial.PersonaIdPersona = idPersona;
                 abandonoEstado.PersonaIdPersona = idPersona;
                 saludfisica.PersonaIdPersona = idPersona;
-
+                
                 #region -Guardar Foto-
                 string file_name =persona.IdPersona+"_"+persona.Paterno+"_"+persona.Nombre+".jpg";
                 persona.rutaFoto = file_name;
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
                 var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);                
                 #endregion
-
+                
                 #endregion
 
                 #region -ConsumoSustancias-
@@ -1099,7 +1122,7 @@ namespace scorpioweb.Controllers
             #endregion
 
             creaQR(id);
-
+            
             #region -GeneraDocumento-
             string templatePath = this._hostingEnvironment.WebRootPath+"\\Documentos\\templateEntrevista.docx";
             string resultPath = this._hostingEnvironment.WebRootPath+"\\Documentos\\entrevista.docx";
@@ -1218,8 +1241,6 @@ namespace scorpioweb.Controllers
 
             Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
             #endregion
-
-
 
         }
         #endregion        
