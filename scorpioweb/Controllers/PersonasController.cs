@@ -1344,7 +1344,6 @@ namespace scorpioweb.Controllers
             listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
 
             ViewBag.ListadoMunicipios = listaMunicipios;
-
             ViewBag.idMunicipio = persona.Lnmunicipio;
             #endregion
 
@@ -1948,7 +1947,6 @@ namespace scorpioweb.Controllers
 
             listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoD = listaEstadosD;
-
             ViewBag.idEstadoD = domicilio.Estado;
             #endregion
 
@@ -1963,8 +1961,8 @@ namespace scorpioweb.Controllers
                                    select table).ToList();
             }
 
-            ViewBag.ListaMunicipio = listaMunicipiosD;
-
+            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            ViewBag.ListaMunicipioD = listaMunicipiosD;
             ViewBag.idMunicipioD = domicilio.Municipio;
             #endregion
 
@@ -2046,10 +2044,6 @@ namespace scorpioweb.Controllers
 
         #region Edit Dmicilio Secundario
         
-        
-
-
-        
         public async Task<IActionResult> EditDomSecundario2(int? id)
         {
             if (id == null)
@@ -2108,6 +2102,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.ListaPaisED = ListaPaisD;
             ViewBag.idPaisED = BuscaId(ListaPaisD, domisecu.Pais);
+           
             ViewBag.ListaPaisM = ListaPaisD;
             ViewBag.idPaisM = BuscaId(ListaPaisD, domisecu.Pais);
             #endregion
@@ -2125,6 +2120,7 @@ namespace scorpioweb.Controllers
             listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoED = listaEstadosD;
             ViewBag.idEstadoED = domisecu.Estado;
+
             ViewBag.ListaEstadoM = listaEstadosD;
             ViewBag.idEstadoM = domisecu.Estado;
             #endregion
@@ -2143,18 +2139,12 @@ namespace scorpioweb.Controllers
             ViewBag.ListaMunicipioED = listaMunicipiosD;
             ViewBag.idMunicipioED = domisecu.Municipio;
 
+            ViewBag.ListaMunicipioM = listaMunicipiosD;
+            ViewBag.idMunicipioM = domisecu.Municipio;
+
             ViewBag.Pais = domisecu.Pais;
             #endregion
 
-            #region MunicipioMED
-            List<Municipios> listaMunicipiosMED = new List<Municipios>();
-            listaMunicipiosMED = (from table in _context.Municipios
-                                  select table).ToList();
-
-            listaMunicipiosMED.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
-            ViewBag.ListaMunicipioM = listaMunicipiosMED;
-            ViewBag.idMunicipioM = domisecu.Municipio;
-            #endregion
 
             #region TemporalidadDomicilio
             List<SelectListItem> ListaDomicilioT;
@@ -2266,6 +2256,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            ViewBag.estudia = estudios.Estudia;
             ViewBag.listaEstudia = listaSiNo;
             ViewBag.idEstudia = BuscaId(listaSiNo, estudios.Estudia);
             
@@ -2285,6 +2276,44 @@ namespace scorpioweb.Controllers
             ViewBag.listaGradoEstudios = ListaGradoEstudios;
             ViewBag.idGradoEstudios = BuscaId(ListaGradoEstudios, estudios.GradoEstudios);
             #endregion
+
+
+            List<Estudios> estudiosVM = _context.Estudios.ToList();
+            List<Persona> personaVM = _context.Persona.ToList();
+
+
+            ViewData["joinTablesPersonaEstudia"] =
+                                     from personaTable in personaVM
+                                     join estudiosTabla in estudiosVM on personaTable.IdPersona equals estudiosTabla.PersonaIdPersona
+                                     where personaTable.IdPersona == idPersona
+                                     select new PersonaViewModel
+                                     {
+                                         personaVM = personaTable,
+                                         estudiosVM = estudiosTabla
+
+                                     };
+            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+
+            
+
+
+            if ((ViewData["joinTablesPersonaEstudia"] as IEnumerable<scorpioweb.Models.PersonaViewModel>).Count() == 0)
+            {
+                ViewBag.RA = false;
+            }
+            else
+            {
+                ViewBag.RA = true;
+            }
+
+            //List<SelectListItem> ListaTrueFalse;
+            //ListaTrueFalse = new List<SelectListItem>
+            //{
+            //  new SelectListItem{ Text="SI", Value="True"},
+            //  new SelectListItem{ Text="NO", Value="Flse"}
+            //};
+            //ViewBag.listaTr = ListaTrueFalse;
+            //ViewBag.idGradoEstudios = BuscaId(ListaTrueFalse, ViewBag.RA);
 
             return View(estudios);
         }
@@ -2914,6 +2943,7 @@ namespace scorpioweb.Controllers
 
             _context.Add(familiaresforaneos);
             await _context.SaveChangesAsync();
+       
 
             return View();
         }

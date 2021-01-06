@@ -5,8 +5,7 @@
         var tipo = 0;
     $(document).ready(function () {
         //#region -Municipios-
-        var items = "<option value='0'>Selecciona</option>";
-        $('#municipioD').html(items);
+        
         $('#estadoD').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#estadoD';
@@ -52,12 +51,11 @@
             else {
                 $("#DivbtnAdd").css("display", "block");
                 $("#DivbtnAdd").css("padding", "25px");
-                $("#DivbtnEditar").css("display", "none"); f
-
-
+                $("#DivbtnEditar").css("display", "none"); 
             }
 
         });
+        //Para abrir vista temporal en modal 
         showModal = (url, title, id) => {
             $.ajax({
                 type: "GET",
@@ -76,13 +74,12 @@
         //#endregion
         //*Combobox Modal AdddomicilioSecundario*/
         var items = "<option value='0'>Selecciona</option>";
-            $('#MunicipioM').html(items);
+        $('#MunicipioM').html(items);
+
         $('#EstadoM').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipioED";
             var ddlsource = '#EstadoM';
-            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
-                //alert("entrando en JSON");
                 var items = '';
                 $("#MunicipioM").empty();
 
@@ -114,13 +111,14 @@
 
         });
         //#endregion
-        //region Guardar AdddomicilioModal
+        //region Guardar AdddomicilioModal en caso de que 
+        //no tenga domicilios secundarios para agregar el primero 
         $('#btnAddDomiSecu').on("click", function (e) {
             e.preventDefault();
-            var IdDomicilio = document.getElementById("IdDomicilio").value;
+            alert("Entrando a boton");
+            var IdDomicilio = document.getElementById("IdDomicilioM").value;
             var td = document.getElementById("TipoDomicilioM");
             var TipoDomicilio = td.options[td.selectedIndex].value;
-            //alert("json" + TipoDomicilio);
             var Calle = document.getElementById("CalleM").value;
             var No = document.getElementById("NoM").value;
             var TipoUbicacion = document.getElementById("TipoUbicacionM").value;
@@ -140,7 +138,6 @@
             var Motivo = document.getElementById("MotivoM").value;
             var Horario = document.getElementById("HorarioM").value;
             var Observaciones = document.getElementById("ObservacionesM").value;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -154,7 +151,6 @@
                     location.reload();
                 },
                 error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                     location.reload();
                 }
             });
@@ -228,7 +224,7 @@
                 <div class="form-group col-md-4" id="MunicipioD">
                     <label class="control-label">Municipio</label>
                     <select class="form-control" name="Municipio" id="municipioD"
-                            asp-items="@(new SelectList(ViewBag.ListaMunicipio, "Id", "Municipio",  @ViewBag.idMunicipioD))">
+                            asp-items="@(new SelectList(ViewBag.ListaMunicipioD, "Id", "Municipio",  @ViewBag.idMunicipioD))">
                     </select>
                 </div>
             }
@@ -249,7 +245,7 @@
                 <div class="form-group col-md-4" style="display:none" id="MunicipioD">
                     <label class="control-label">Municipio</label>
                     <select class="form-control" name="Municipio" id="municipioD"
-                            asp-items="@(new SelectList(ViewBag.ListaMunicipio, "Id", "Municipio",  @ViewBag.idMunicipioD))">
+                            asp-items="@(new SelectList(ViewBag.ListaMunicipioD, "Id", "Municipio",  @ViewBag.idMunicipioD))">
                     </select>
                 </div>
             }
@@ -267,7 +263,7 @@
                 </select>
             </div>
             <div class="form-group col-lg-4">
-                <label asp-for="Cp" class="control-label"></label>
+                <label class="control-label">Código Postal</label>
                 <input asp-for="Cp" class="form-control" />
                 <span asp-validation-for="Cp" class="text-danger"></span>
             </div>
@@ -290,7 +286,7 @@
             {
                 <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnAdd" style="display:none">
                     <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalAddDomSecundario1" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Añadir DS
+                        <i class="fa fa-plus"></i> Añadir
                     </button>
                 </div>
                 <div class="form-group col-md-1 col-sm-1  col-xs-3" id="DivbtnEditar" style="padding-top:25px;">
@@ -308,7 +304,7 @@
                 </div>
                 <div class="form-group col-md-1 %col-sm-1 col-xs-3" id="DivbtnAdd" style="padding-top:25px;">
                     <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalAddDomSecundario1" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Añadir DS
+                        <i class="fa fa-plus"></i> Añadir Do
                     </button>
                 </div>
             }
@@ -339,7 +335,7 @@
 </div>
 
 
-<!-- Modal Creacion de nuevo domicilio <i class="fa fa-arrow-right" aria-hidden="true">-->
+<!-- Modal Creacion de nuevo domicilio  entra cuando no hay domicilios secndarios -->
 <div class="modal fade" id="modalAddDomSecundario1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
@@ -353,7 +349,7 @@
                 </div>
                 <div class="form-group">
                         <label class="control-label">Id Domicilio</label>
-                        <input readonly name="IdDomicilio" id="IdDomicilio" class="form-control" value="@Model.IdDomicilio" />
+                        <input readonly name="IdDomicilioM" id="IdDomicilioM" class="form-control" value="@Model.PersonaIdPersona" />
                  </div>
                 <div class="form-group col-md-12">
                     <label class="control-label">TipoDomicilio</label>
@@ -397,7 +393,7 @@
                 <div class="form-group col-md-6" id="DivMunicipioM">
                     <label class="control-label">Minucipio</label>
                     <select class="form-control" name="Municipio" id="MunicipioM"
-                            asp-items="@(new SelectList( ViewBag.ListaMunicipio, "Id", "Municipio"))">
+                            asp-items="@(new SelectList( ViewBag.ListaMunicipioD, "Id", "Municipio"))">
                     </select>
                 </div>
                 <div class="form-group col-md-12">
@@ -418,7 +414,7 @@
                     </select>
                 </div>
                 <div class="form-group col-md-12">
-                    <label class="control-label">Cp</label>
+                    <label class="control-label">Código Postal</label>
                     <input id="CpM" name="Cp" type="text" class="form-control" />
                 </div>
                 <div class="form-group col-md-12">
@@ -434,7 +430,7 @@
                     <input id="MotivoM" name="Motivo" type="text" class="form-control" />
                 </div>
                 <div class="form-group col-md-12">
-                    <label class="control-label">Ovservaciones</label>
+                    <label class="control-label">Observaciones</label>
                     <input id="ObservacionesM" name="observa" type="text" class="form-control" />
                 </div>
                 <div class="modal-footer">
