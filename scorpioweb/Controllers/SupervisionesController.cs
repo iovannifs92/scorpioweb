@@ -833,14 +833,17 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Fraccionesimpuestas-
-        public IActionResult EditFraccionesimpuestas(int? id, string nombre)
+        public IActionResult EditFraccionesimpuestas(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+
             ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+
 
             List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
 
@@ -1236,6 +1239,118 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
+
+        #region --Bitacora--
+        public async Task<IActionResult> ListaBitacora(int? id, string nombre, string cp)
+        {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+
+            List<Bitacora> bitacora = _context.Bitacora.ToList();
+
+            ViewData["Bitacora"] = from table in bitacora
+                                   where table.SupervisionIdSupervision == id
+                                   orderby table.IdBitacora
+                                   select table;
+
+            ViewBag.IdSupervisionGuardar = id;
+
+            return View();
+        }
+
+        public IActionResult CreateBitacora()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,SupervisionIdSupervision")] Bitacora bitacora)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(bitacora);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(bitacora);
+        }
+
+        public async Task<IActionResult> EditBitacora(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
+            if (bitacora == null)
+            {
+                return NotFound();
+            }
+
+            #region ListaTipoPersona
+            List<SelectListItem> ListaTipoPersona;
+            ListaTipoPersona = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Supervisado", Value="SUPERVISADO"},
+              new SelectListItem{ Text="Víctima", Value="VICTIMA"},
+
+            };
+            ViewBag.TipoPersona = ListaTipoPersona;
+            ViewBag.idTipoPersona = BuscaId(ListaTipoPersona, bitacora.TipoPersona);
+            #endregion
+
+            #region ListaTipoVisita
+            List<SelectListItem> ListaTipoVisita;
+            ListaTipoVisita = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Presencial", Value="PRESENCIAL"},
+              new SelectListItem{ Text="Telfónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="Whatsapp", Value="WHATSAPP"},
+
+            };
+            ViewBag.TipoVisita = ListaTipoVisita;
+            ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
+            #endregion
+
+            return View(bitacora);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,SupervisionIdSupervision")] Bitacora bitacora)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(bitacora);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!BitacoraExists(bitacora.SupervisionIdSupervision))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+            }
+            return View(bitacora);
+        }
+
+        private bool BitacoraExists(int id)
+        {
+            return _context.Bitacora.Any(e => e.IdBitacora == id);
+        }
+
+        #endregion
+
 
         #region -Graficos-
         #endregion
