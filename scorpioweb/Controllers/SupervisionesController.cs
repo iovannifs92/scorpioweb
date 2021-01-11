@@ -1305,8 +1305,8 @@ namespace scorpioweb.Controllers
             ListaTipoVisita = new List<SelectListItem>
             {
               new SelectListItem{ Text="Presencial", Value="PRESENCIAL"},
-              new SelectListItem{ Text="Telfónica", Value="TELEFONICA"},
-              new SelectListItem{ Text="Whatsapp", Value="WHATSAPP"},
+              new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
 
             };
             ViewBag.TipoVisita = ListaTipoVisita;
