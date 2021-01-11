@@ -954,24 +954,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public async Task<IActionResult> guardarRegistro(Bitacora bitacora, string[] datosRegistro)
-        {
-            bitacora.SupervisionIdSupervision = Int32.Parse(datosRegistro[0]);
-            bitacora.TipoPersona = normaliza(datosRegistro[1]);
-            bitacora.Texto = normaliza(datosRegistro[2]);
-            bitacora.TipoVisita = normaliza(datosRegistro[3]);
-
-            bitacora.Fecha = DateTime.Now;
-
-            int idBitacora = ((from table in _context.Bitacora
-                              select table).Count()) + 1;
-            bitacora.IdBitacora = idBitacora;
-
-            _context.Add(bitacora);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-        }
+       
 
             #region -EditPlaneacionestrategica-
             public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
@@ -1276,23 +1259,25 @@ namespace scorpioweb.Controllers
 
             return View();
         }
+        public async Task<IActionResult> guardarRegistro(Bitacora bitacora, string[] datosRegistro)
+        {
+            bitacora.SupervisionIdSupervision = Int32.Parse(datosRegistro[0]);
+            bitacora.TipoPersona = normaliza(datosRegistro[1]);
+            bitacora.Texto = normaliza(datosRegistro[2]);
+            bitacora.TipoVisita = normaliza(datosRegistro[3]);
 
-        public IActionResult CreateBitacora()
-        {
-            return View();
+            bitacora.Fecha = DateTime.Now;
+
+            int idBitacora = ((from table in _context.Bitacora
+                               select table).Count()) + 1;
+            bitacora.IdBitacora = idBitacora;
+
+            _context.Add(bitacora);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,SupervisionIdSupervision")] Bitacora bitacora)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(bitacora);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(bitacora);
-        }
+
 
         public async Task<IActionResult> EditBitacora(int? id)
         {
@@ -1340,6 +1325,8 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,SupervisionIdSupervision")] Bitacora bitacora)
         {
+            bitacora.Texto = normaliza(bitacora.Texto);
+
             if (ModelState.IsValid)
             {
                 try
