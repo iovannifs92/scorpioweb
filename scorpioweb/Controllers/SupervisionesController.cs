@@ -954,8 +954,27 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -EditPlaneacionestrategica-
-        public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
+        public async Task<IActionResult> guardarRegistro(Bitacora bitacora, string[] datosRegistro)
+        {
+            bitacora.SupervisionIdSupervision = Int32.Parse(datosRegistro[0]);
+            bitacora.TipoPersona = normaliza(datosRegistro[1]);
+            bitacora.Texto = normaliza(datosRegistro[2]);
+            bitacora.TipoVisita = normaliza(datosRegistro[3]);
+
+            bitacora.Fecha = DateTime.Now;
+
+            int idBitacora = ((from table in _context.Bitacora
+                              select table).Count()) + 1;
+            bitacora.IdBitacora = idBitacora;
+
+            _context.Add(bitacora);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+        }
+
+            #region -EditPlaneacionestrategica-
+            public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
         {
             if (id == null)
             {
