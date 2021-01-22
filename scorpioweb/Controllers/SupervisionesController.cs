@@ -1259,14 +1259,20 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-        public async Task<IActionResult> guardarRegistro(Bitacora bitacora, string[] datosRegistro)
+        public async Task<IActionResult> guardarRegistro(Bitacora bitacora, string[] datosRegistro, Persona persona)
         {
             bitacora.SupervisionIdSupervision = Int32.Parse(datosRegistro[0]);
             bitacora.TipoPersona = normaliza(datosRegistro[1]);
             bitacora.Texto = normaliza(datosRegistro[2]);
             bitacora.TipoVisita = normaliza(datosRegistro[3]);
-
             bitacora.Fecha = DateTime.Now;
+
+            //#region -Guardar Foto-
+            //string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
+            //persona.rutaFoto = file_name;
+            //var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+            //var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+            //#endregion
 
             int idBitacora = ((from table in _context.Bitacora
                                select table).Count()) + 1;

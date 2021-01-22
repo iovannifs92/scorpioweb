@@ -682,7 +682,7 @@ namespace scorpioweb.Controllers
             string vividoFuera, string lugaresVivido, string tiempoVivido, string motivoVivido, string viajaHabitual, string lugaresViaje, string tiempoViaje,
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
-            string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud,
+            string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
             IFormFile fotografia)//[Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización")]
         {
             string currentUser = User.Identity.Name;
@@ -720,6 +720,7 @@ namespace scorpioweb.Controllers
                 persona.Familiares = normaliza(familiares);
                 persona.ReferenciasPersonales = normaliza(referenciasPersonales);
                 persona.UltimaActualización = DateTime.Now;
+                persona.Capturista = currentUser;
                 #endregion
 
                 #region -Domicilio-

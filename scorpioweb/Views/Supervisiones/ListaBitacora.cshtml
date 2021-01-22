@@ -37,6 +37,10 @@
             var textoBitacora = document.getElementById("textoBitacora").value;
             var tv = document.getElementById("tipoVisita");
             var tipoVisita = tv.options[tv.selectedIndex].value;
+            var fd new FormData();
+            var files = $('#evidencia')[0].files[0];
+            fd.append('evidencia', files);
+
             //var evidencia = document.getElementById("evidencia").value;
 
             $.ajax({
@@ -45,7 +49,7 @@
                 url: "/Supervisiones/guardarRegistro",
                 traditional: true,
                 data: {
-                    datosRegistro: [IdSupervision, tipoPersona, textoBitacora, tipoVisita, /*evidencia*/],
+                    datosRegistro: [IdSupervision, tipoPersona, textoBitacora, tipoVisita/*, fd*/],
                 },
                 success: function (response) {
                     if (response.success) {
@@ -162,9 +166,8 @@
                     <label class="control-label">Texto</label>
                     <textarea maxlength="700" class="form-control" rows="5" name="textoBitacora" id="textoBitacora"></textarea>
                 </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Evidencia</label>
-                    <input class="form-control" maxlength="200" name="evidencia" type="text" id="evidencia" />
+                <div style="padding-top:20px" class="custom-file">
+                    <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
                 </div>
                 <input readonly name="IdSupervision" id="IdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
             </div>

@@ -37,11 +37,14 @@ namespace scorpioweb.Models
         public string ReferenciasPersonales { get; set; }
         public DateTime? UltimaActualización { get; set; }
         public string Supervisor { get; set; }
-        public string NombreCompleto {
-            get {
+        public string NombreCompleto
+        {
+            get
+            {
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
         public string rutaFoto { get; set; }
+        public string Capturista { get; set; }
     }
 }
