@@ -5,6 +5,8 @@
 }
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
 
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
 @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
 {
