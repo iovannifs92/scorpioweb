@@ -43,5 +43,6 @@ namespace scorpioweb.Models
             }
         }
         public string rutaFoto { get; set; }
+        public string Capturista { get; set; }
     }
 }

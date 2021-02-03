@@ -1,0 +1,46 @@
+﻿@model scorpioweb.Models.Bitacora
+
+@{
+    Layout = null;
+}
+<div class="row">
+    <div class="col-md-4">
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="CreateBitacora" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input readonly name="IdBitacora" id="IdBitacora" class="form-control" style="display:none" />
+            <div class="form-group">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input asp-for="Fecha" class="form-control" />
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tipo de persona</label>
+                <select class="form-control" name="tipoPersona" id="tipoPersona">
+                    <option value="SUPERVISADO">Supervisado</option>
+                    <option value="VICTIMA">Víctima</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tipo de visita</label>
+                <select class="form-control" name="tipoVisita" id="tipoVisita">
+                    <option value="PRESENCIAL">Presencial</option>
+                    <option value="TELEFONICA">Telefónica</option>
+                    <option value="WHATSAPP">WhatsApp</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Texto" class="control-label"></label>
+                <input asp-for="Texto" class="form-control" />
+                <span asp-validation-for="Texto" class="text-danger"></span>
+            </div>
+            <div class="custom-file">
+                <input required type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+            </div>
+            <input readonly name="IdSupervision" id="IdSupervision" class="form-control" style="display:none" />
+            <input readonly name="SupervisionIdSupervision" id="SupervisionIdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>

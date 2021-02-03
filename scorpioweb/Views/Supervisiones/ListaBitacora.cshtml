@@ -1,8 +1,13 @@
 ﻿@model scorpioweb.Models.Bitacora
 
+
 @{
     ViewData["Title"] = "Bitacora";
 }
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
 <script>
 
     showModal = (url, title, id) => {
@@ -37,29 +42,6 @@
             var textoBitacora = document.getElementById("textoBitacora").value;
             var tv = document.getElementById("tipoVisita");
             var tipoVisita = tv.options[tv.selectedIndex].value;
-            //var evidencia = document.getElementById("evidencia").value;
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Supervisiones/guardarRegistro",
-                traditional: true,
-                data: {
-                    datosRegistro: [IdSupervision, tipoPersona, textoBitacora, tipoVisita, /*evidencia*/],
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#modalAgregarRegistro").modal('hide');
-                        location.reload();
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                    location.reload();
-                }
-            });
         });
     });
 </script>
@@ -108,8 +90,8 @@
                     @Html.DisplayFor(modelItem => item.Texto)
                 </td>
                 <td>
-                    <a id="btnEditar" href="@Html.DisplayFor(modelItem => item.RutaEvidencia)">
-                        <i class="fa fa-paperclip fa-6"></i> 
+                    <a id="btnEditar" href="~/Evidencia/@Html.DisplayFor(modelItem => item.RutaEvidencia)">
+                        <i class="fa fa-paperclip fa-6"></i>
                     </a>
                 </td>
                 <td>
@@ -118,70 +100,25 @@
                     </a>
                 </td>
             </tr>
+
         }
+
     </tbody>
 </table>
-<div>
-    <button type="button" class="btn btn-primary" id="btnAgregarRegistro" name="btnAgregarRegistro">
-        <i class="fa fa-plus"></i>
-        Agregar Registro
-    </button>
-</div>
+@foreach (var item in ViewData["bitacora"] as IEnumerable<scorpioweb.Models.Bitacora>)
+{
+    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora","Supervisiones",null,Context.Request.Scheme)','Agregar Registro',@item.SupervisionIdSupervision)" class="btn btn-primary">
+        <i class="fa fa-plus"></i>  Agregar Registro
+    </a>
+    break;
+}
 <div>
     <a asp-action="PersonaSupervision" class="btn btn-link">
         Regresar a lista
     </a>
 </div>
 
-<div class="modal fade" id="modalAgregarRegistro" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color:#0078A7;">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="padding-top: 8px; font-size: 30px">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Agregar Registro</h5>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <label class="control-label">Tipo de persona</label>
-                    <select class="form-control" name="tipoPersona" id="tipoPersona">
-                        <option value="SUPERVISADO">Supervisado</option>
-                        <option value="VICTIMA">Víctima</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Tipo de visita</label>
-                    <select class="form-control" name="tipoVisita" id="tipoVisita">
-                        <option value="PRESENCIAL">Presencial</option>
-                        <option value="TELEFONICA">Telefónica</option>
-                        <option value="WHATSAPP">WhatsApp</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Texto</label>
-                    <textarea maxlength="700" class="form-control" rows="5" name="textoBitacora" id="textoBitacora"></textarea>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Evidencia</label>
-                    <input class="form-control" maxlength="200" name="evidencia" type="text" id="evidencia" />
-                </div>
-                <input readonly name="IdSupervision" id="IdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseRegistro" name="btnCloseRegistro">
-                    <i class="fa fa-close"></i>
-                    Cerrar
-                </button>
-                <button type="button" class="btn btn-primary" id="btnGuardarRegistro" name="btnGuardarRegistro">
-                    <i class="fa fa-save"></i>
-                    Guardar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
