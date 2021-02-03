@@ -23,25 +23,7 @@
 
             }
         })
-    }
-
-    $(document).ready(function () {
-        $("#btnAgregarRegistro").click(function () {
-            document.ready = document.getElementById("tipoPersona").value = 'SUPERVISADO'
-            document.ready = document.getElementById("textoBitacora").value = ''
-            document.ready = document.getElementById("tipoVisita").value = 'PRESENCIAL'
-            //document.ready = document.getElementById("evidencia").value = ''
-            $('#modalAgregarRegistro').modal('show')
-        });
-
-        $('#btnGuardarRegistro').on("click", function (e) {
-            e.preventDefault();
-            var IdSupervision = document.getElementById("IdSupervision").value;
-            var tp = document.getElementById("tipoPersona");
-            var tipoPersona = tp.options[tp.selectedIndex].value;
-            var textoBitacora = document.getElementById("textoBitacora").value;
-            var tv = document.getElementById("tipoVisita");
-            var tipoVisita = tv.options[tv.selectedIndex].value;
+    } 
         });
     });
 </script>
@@ -117,10 +99,6 @@
         Regresar a lista
     </a>
 </div>
-
-
-
-
 
 
 

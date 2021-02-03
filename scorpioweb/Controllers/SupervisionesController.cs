@@ -1247,9 +1247,8 @@ namespace scorpioweb.Controllers
         #region --Bitacora--
         public async Task<IActionResult> ListaBitacora(int? id)
         {
-
             var supervision = _context.Supervision
-               .SingleOrDefault(m => m.IdSupervision == id);
+            .SingleOrDefault(m => m.IdSupervision == id);
 
             var persona = _context.Persona
            .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
@@ -1295,6 +1294,7 @@ namespace scorpioweb.Controllers
 
                 var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
 
                 var persona = _context.Persona
                .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
