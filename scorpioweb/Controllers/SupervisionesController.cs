@@ -1362,15 +1362,27 @@ namespace scorpioweb.Controllers
             ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
             #endregion
 
+            ViewBag.RutaEvidencia =  bitacora.RutaEvidencia;
+
             return View(bitacora);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,SupervisionIdSupervision")] Bitacora bitacora)
+        public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision")] Bitacora bitacora, IFormFile evidencia)
         {
             bitacora.Texto = normaliza(bitacora.Texto);
+
+            var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);     
+
+            #region -Guardar archivo-
+            string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+            bitacora.RutaEvidencia = file_name;
+            var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.Write);
+            #endregion
 
             if (ModelState.IsValid)
             {
