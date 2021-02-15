@@ -1381,7 +1381,7 @@ namespace scorpioweb.Controllers
             string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
             bitacora.RutaEvidencia = file_name;
             var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
-            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.Write);
+            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
             #endregion
 
             if (ModelState.IsValid)
@@ -1389,6 +1389,7 @@ namespace scorpioweb.Controllers
                 try
                 {
                     _context.Update(bitacora);
+                    await evidencia.CopyToAsync(stream);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
