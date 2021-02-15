@@ -1257,6 +1257,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = persona.NombreCompleto;
             ViewBag.cp = cp.CausaPenal;
+    
 
             List<Bitacora> bitacora = _context.Bitacora.ToList();
 
@@ -1292,6 +1293,7 @@ namespace scorpioweb.Controllers
                 bitacora.TipoVisita = normaliza(tipoVisita);
                 bitacora.Texto = normaliza(Texto);
 
+
                 var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
 
@@ -1306,6 +1308,7 @@ namespace scorpioweb.Controllers
 
                 int idBitacora = ((from table in _context.Bitacora
                                    select table).Count()) + 1;
+
                 bitacora.IdBitacora = idBitacora;
 
                 #region -Guardar archivo-

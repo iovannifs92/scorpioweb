@@ -29,6 +29,11 @@
                 <textarea asp-for="Texto" class="form-control" cols="20" rows="5"></textarea>
                 <span asp-validation-for="Texto" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label class="control-label">Archivo </label>
+                <input type="file" class="cstom-file-input" asp-for="RutaEvidencia" />
+                <span asp-validation-for="RutaEvidencia" class="text-danger"></span>
+            </div>
 
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group col-lg-12">
