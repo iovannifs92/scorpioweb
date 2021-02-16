@@ -9,7 +9,6 @@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <script>
-
     showModal = (url, title, id) => {
         $.ajax({
             type: "GET",
@@ -24,6 +23,7 @@
             }
         })
     } 
+
 </script>
 
 <h2>Bitacora</h2>
@@ -80,24 +80,20 @@
                     </a>
                 </td>
             </tr>
-
         }
 
     </tbody>
 </table>
-@foreach (var item in ViewData["bitacora"] as IEnumerable<scorpioweb.Models.Bitacora>)
-{
-    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora","Supervisiones",null,Context.Request.Scheme)','Agregar Registro',@item.SupervisionIdSupervision)" class="btn btn-primary">
+ <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
         <i class="fa fa-plus"></i>  Agregar Registro
-    </a>
-    break;
-}
+ </a>
+    
+
 <div>
     <a asp-action="PersonaSupervision" class="btn btn-link">
         Regresar a lista
     </a>
 </div>
-
 
 
 
