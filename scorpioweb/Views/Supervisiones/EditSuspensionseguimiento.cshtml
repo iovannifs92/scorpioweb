@@ -38,7 +38,7 @@
                         asp-items="@(new SelectList(ViewBag.listaSuspendido, "Value", "Text", @ViewBag.idSuspendido))">
                 </select>
             </div>
-            @if (ViewBag.suspe == "SI")
+            @if (ViewBag.suspe == "SI" || ViewBag.suspe == null)
             {
                 <div class="form-group" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

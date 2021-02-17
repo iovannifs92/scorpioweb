@@ -1,0 +1,100 @@
+﻿@model scorpioweb.Models.Bitacora
+
+
+@{
+    ViewData["Title"] = "Bitacora";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    } 
+
+</script>
+
+<h2>Bitacora</h2>
+<h4>Nombre: @ViewBag.nombre</h4>
+<h4>CP: @ViewBag.cp</h4>
+
+<table class="table" style="text-align:center">
+    <thead style="text-align:center">
+        <tr>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Tipo de Persona
+            </th>
+            <th>
+                Tipo de Visita
+            </th>
+            <th>
+                Observación
+            </th>
+            <th>
+                Evidencia
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["bitacora"] as IEnumerable<scorpioweb.Models.Bitacora>)
+        {
+            <tr>
+                <td>
+                    @if (item.Fecha != null)
+                    {
+                        @(item.Fecha.Value.ToString("dd MMMM yyyy"))
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoPersona)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoVisita)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Texto)
+                </td>
+                <td>
+                    <a id="btnEditar" href="~/Evidencia/@Html.DisplayFor(modelItem => item.RutaEvidencia)">
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                </td>
+                <td>
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",null,Context.Request.Scheme)','Edita Bitacora',@item.IdBitacora)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+ <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
+        <i class="fa fa-plus"></i>  Agregar Registro
+ </a>
+    
+
+<div>
+    <a asp-action="PersonaSupervision" class="btn btn-link">
+        Regresar a lista
+    </a>
+</div>
+
+
+
+

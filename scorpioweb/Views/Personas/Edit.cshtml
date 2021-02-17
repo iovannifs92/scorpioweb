@@ -1,5 +1,8 @@
 ﻿@model scorpioweb.Models.Persona
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    @* Necesario para los modales en el servidor *@
+    <script src="~/js/jquery-1.11.1.min.js"></script>
+
     <script type="text/javascript">
     var tipo = 0;
         $(document).ready(function () {
@@ -89,10 +92,7 @@
         $('#lnEstado').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#lnEstado';
-            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
-            //public JsonResult GetMunicipio(int EstadoId)
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
-                //alert("entrando en JSON");
                 var items = '';
                 $("#lnMunicipio").empty();
                 $.each(data, function (i, municipio) {
@@ -224,6 +224,26 @@
             $('#modalAgregarSustancias').modal('show')
         });
         $("#btnEditarSustancias").click(function () {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/editarSustancias",
+                traditional: true,
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+
+            document.getElementById("sustanciaE").value = '@ViewBag.idSustancia';
+            document.getElementById("frecuenciaE").value = '@ViewBag.idFrecuencia';
+            document.getElementById("cantidadE").value = '@ViewBag.cantidad';
+            document.getElementById("ultimoConsumoE").value = '@ViewBag.ultimoConsumo';
+            document.getElementById("observacionesConsumoE").value = '@ViewBag.Observaciones';
             $('#modalEditarSustancias').modal('show')
         });
         $("#btnAgregarFamiliar").click(function () {
@@ -245,7 +265,7 @@
             document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
             document.ready = document.getElementById("AFLocalizacionA").value = '';
             document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
-            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';  
             document.ready = document.getElementById("AFobservacionesA").value = '';
             $("#AFDependenciaExplicaA").css("display", "none");
             $("#AFDireccionFamiliarA").css("display", "none");
@@ -255,6 +275,24 @@
         $("#btnEditarFamiliares").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Asiento Familiar"
             tipo = 1;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/editarFamiliares",
+                traditional: true,
+                data: {
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
 
             document.getElementById("AFNombreE").value = '@ViewBag.nombreF';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionF';
@@ -277,6 +315,24 @@
         $("#btnEditarReferencias").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Referencia"
             tipo = 2;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/editarFamiliares",
+                traditional: true,
+                data: {
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
 
             document.getElementById("AFNombreE").value = '@ViewBag.nombreR';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionR';
@@ -631,7 +687,7 @@
             });
         });
     });
-    //endregion
+s
     </script>
 
 @{
@@ -877,49 +933,44 @@
                 <label asp-for="Curp" class="control-label"></label>
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
+            </div> 
+            <div class="form-group col-md-11">
+                <label class="control-label col-md-10">¿Consume Sustancias?</label>
+                <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
+                        asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
+                </select>
             </div>
-            <div>
-                <label class="control-label col-md-12">Consume Sustancias</label>
-                <div class="form-group col-md-2">
-                    <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
-                            asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
-                    </select>
-                </div>
-                <div class="form-group col-md-10">
-                    <button type="button" class="btn btn-primary" style="display:none;" id="btnEditarSustancias">
-                        <i class="fa fa-pencil"></i>
-                        Editar
-                    </button>
-                </div>
+            <div class="form-group col-md-1" style="padding-top:25px;">
+                <button type="button" class="btn btn-primary" style="display:none;" id="btnEditarSustancias">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </button>
             </div>
-            <div>
-                <label class="control-label col-md-12">¿Tiene familiares?</label>
-                <div class="form-group col-md-2">
-                    <select class="form-control" name="Familiares" id="Familiares"
-                            asp-items="@(new SelectList(ViewBag.listaFamiliares, "Value", "Text", @ViewBag.idFamiliares))">
-                    </select>
-                </div>
-                <div class="form-group col-md-10">
-                    <button type="button" class="btn btn-primary" id="btnEditarFamiliares">
-                        <i class="fa fa-pencil"></i>
-                        Editar
-                    </button>
-                </div>
+            <div class="form-group col-md-11">
+                <label class="control-label">¿Tiene familiares?</label>
+                <select class="form-control" name="Familiares" id="Familiares"
+                        asp-items="@(new SelectList(ViewBag.listaFamiliares, "Value", "Text", @ViewBag.idFamiliares))">
+                </select>
             </div>
-            <div>
-                <label class="control-label col-md-12">¿Tiene referencias?</label>
-                <div class="form-group col-md-2">
-                    <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales"
-                            asp-items="@(new SelectList(ViewBag.listaReferenciasPersonales, "Value", "Text", @ViewBag.idReferenciasPersonales))">
-                    </select>
-                </div>
-                <div class="form-group col-md-10">
-                    <button type="button" class="btn btn-primary" id="btnEditarReferencias">
-                        <i class="fa fa-pencil"></i>
-                        Editar
-                    </button>
-                </div>
+            <div class="form-group col-md-1" style="padding-top:25px;">
+                <button type="button" class="btn btn-primary" id="btnEditarFamiliares">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </button>
+            </div>  
+            <div class="form-group col-md-11">
+                <label class="control-label">¿Tiene referencias?</label>
+                <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales"
+                        asp-items="@(new SelectList(ViewBag.listaReferenciasPersonales, "Value", "Text", @ViewBag.idReferenciasPersonales))">
+                </select>
             </div>
+            <div class="form-group col-md-1" style="padding-top:25px;">
+                <button type="button" class="btn btn-primary" id="btnEditarReferencias">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </button>
+            </div>
+
             <div class="form-group col-lg-12">
                 <label asp-for="UltimaActualización" class="control-label"></label>
                 <input asp-for="UltimaActualización" class="form-control" />
@@ -979,7 +1030,7 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="observaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoE" id="observacionesConsumoE">@ViewBag.observaciones</textarea>
+                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoE" id="observacionesConsumoE" style="white-space: pre-line">@ViewBag.observaciones</textarea>
                     <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
                 </div>
             </div>
@@ -1054,7 +1105,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseCS">
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>
@@ -1137,7 +1188,7 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="AFobservaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="AFobservacionesE" id="AFobservacionesE">@ViewBag.AFobservaciones</textarea>
+                    <textarea maxlength="250" class="form-control" name="AFobservacionesE" id="AFobservacionesE">@ViewBag.AFobservaciones</textarea>
                 </div>
             </div>
 
@@ -1246,7 +1297,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseTF">
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>

@@ -22,8 +22,12 @@
                 Fecha de ingreso
             </th>
             <th>
+                Capturista
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Supervisor)
             </th>
+
         </tr>
     </thead>
     <tbody>
@@ -35,6 +39,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UltimaActualización)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capturista)
             </td>
             <td>
                 <form asp-action="EditSupervisor">

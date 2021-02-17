@@ -4,21 +4,21 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-    <h2>Control de causas penales</h2>
-    <p>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="fa fa-plus"></i> Crea nueva Causa Penal
-        </a>
-    </p>
+<h2>Control de causas penales</h2>
+<p>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa fa-plus"></i> Crea nueva Causa Penal
+    </a>
+</p>
 
 <form asp-action="ListadeCausas" method="get">
     <div class="form-actions no-color">
         <p>
             Búsqueda: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-                      <button type="submit" class="btn btn-default">
-                          <i class="fa fa-search"></i>
-                          Buscar
-                      </button> |
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button> |
             <a asp-action="ListadeCausas">Regresar al listado completo</a>
         </p>
     </div>
@@ -47,52 +47,53 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <th>
-                @Html.DisplayFor(modelItem => item.Cnpp)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.Juez)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.Cambio)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.Distrito)
-            </th>
-            <th>
-                @Html.DisplayFor(modelItem => item.CausaPenal)
-            </th>
+            <tr>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Cnpp)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Juez)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Cambio)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.Distrito)
+                </th>
+                <th>
+                    @Html.DisplayFor(modelItem => item.CausaPenal)
+                </th>
 
-            <td>
-                <a class="btn btn-success" asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">
-                    <i class="fa fa-pencil"></i> Editar Causa
-                </a> |
-                <a class="btn btn-info" asp-action="DetailsCP" asp-route-id="@item.IdCausaPenal">
-                    <i class="fa fa-eye"></i> Personas Asignadas
-                </a> |
-                <a class="btn btn-primary" asp-action="Asignacion" asp-route-id="@item.IdCausaPenal" asp-route-cp="@item.CausaPenal">
-                    <i class="fa fa-plus"></i>  Asignación
-                </a>
-            </td>
-        </tr>
-        } 
+                <td>
+                    <a class="btn btn-success" asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">
+                        <i class="fa fa-pencil"></i> Editar Causa
+                    </a> 
+                    <a class="btn btn-info" asp-action="DetailsCP" asp-route-id="@item.IdCausaPenal">
+                        <i class="fa fa-eye"></i> Personas Asignadas
+                    </a> 
+                    <a class="btn btn-primary" asp-action="Asignacion" asp-route-id="@item.IdCausaPenal" asp-route-cp="@item.CausaPenal">
+                        <i class="fa fa-plus"></i>  Asignación
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
+
 @{
-    var prevDisabled = !Model.HasNextPage ? "disabled" : "";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<a asp-action="Index"
+<a asp-action="ListadeCausas"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
-<a asp-action="Index"
+<a asp-action="ListadeCausas"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"

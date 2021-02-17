@@ -1,5 +1,8 @@
 ﻿@model scorpioweb.Models.Abandonoestado
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
@@ -208,7 +211,6 @@
                     location.reload();
                 },
                 error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                     location.reload();
                 }
             });
@@ -358,46 +360,46 @@
                     </select>
                 </div>
             }
-            <div class="form-group col-md-11" id="DivFamiliarF">
-                <label class="control-label">¿Tiene familiDares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
+            <div class="form-group col-md-11 col-sm-11 col-xs-9" id="DivFamiliarF">
+                <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
                 <select class="form-control" name="FamiliaresFuera" id="FamiliarF"
                         asp-items="@(new SelectList(ViewBag.listaFamiliaresFuera, "Value", "Text", @ViewBag.idFamiliaresFuera))">
                 </select>
             </div>
             @if (ViewBag.Abandono == "SI")
             {
-                <div class="form-group col-md-1" id="DivbtnAdd" style="display:none">
+                <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnAdd" style="display:none">
                     <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalFamiliaresExtranjero1" class="btn btn-success">
-                        <i class="fa fa-plus"></i> AñadirFF
+                        <i class="fa fa-plus"></i> Añadir
                     </button>
                 </div>
-                <div class="form-group col-md-1" id="DivbtnEditar" style="padding-top:25px">
-                    <a id="btnEditar" onclick="showModal('@Url.Action("EditFamiliaresForaneos2","Personas",null,Context.Request.Scheme)','Edita Domicilo Secundario',@Model.PersonaIdPersona)" class="btn btn-success">
+                <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnEditar" style="padding-top:25px">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditFamiliaresForaneos2","Personas",null,Context.Request.Scheme)','Edita Familiar Foraneo',@Model.PersonaIdPersona)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </div>
             }
             else
             {
-                <div class="form-group col-md-1" id="DivbtnEditar" style="display:none">
-                    <a id="btnEditar" onclick="showModal('@Url.Action("EditFamiliaresForaneos2","Personas",null,Context.Request.Scheme)','Edita Domicilo Secundario',@Model.PersonaIdPersona)" class="btn btn-success">
+                <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnEditar" style="display:none">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditFamiliaresForaneos2","Personas",null,Context.Request.Scheme)','Edita Familiar Foraneo',@Model.PersonaIdPersona)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </div>
-                <div class="form-group col-md-1" id="DivbtnAdd" style="padding-top:25px">
+                <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnAdd" style="padding-top:25px">
                     <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalFamiliaresExtranjero1" class="btn btn-success">
-                        <i class="fa fa-plus"></i> AñadirFF
+                        <i class="fa fa-plus"></i> Añadir
                     </button>
                 </div>
 
             }
 
-            <div class="form-group col-md-12">
+            <div class="form-group col-lg-12 col-sm-12 col-xs-12">
                 <label asp-for="PersonaIdPersona" class="control-label"></label>
                 <input asp-for="PersonaIdPersona" class="form-control" />
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group col-lg-12 col-sm-12 col-xs-12">
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save"></i> Guardar
                 </button>
@@ -421,12 +423,12 @@
                 <div class="form-group">
                     <input type="hidden" name="IdFamiliaresForaneos" type="text" class="form-control" />
                 </div>
-            
+
                 <div class="form-group">
                     <label class="control-label">Persona IdPersona</label>
                     <input readonly name="PersonaIdPersona" id="PersonaIdPersona" class="form-control" value="@ViewBag.idFamiliarF" />
                 </div>
-             
+
                 <div class="form-group col-md-12">
                     <label class="control-label">Nombre</label>
                     <input class="form-control" maxlength="150" name="FENombre" type="text" id="FENombre"></input>

@@ -7,11 +7,12 @@
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
 
 
-    <h2 class="blockquote text-center" style="padding-top:3%;">@Model.Paterno @Model.Materno @Model.Nombre</h2>
+<h2 class="blockquote text-center" style="padding-top:3%;">@Model.Paterno @Model.Materno @Model.Nombre</h2>
 
-
+@*El color de el boton se define con el Id*@
 <div class="container">
     <br>
+
     <div class="row">
         <div class="col-md-6" style="padding-top:3%;">
             <a asp-action="Edit" asp-route-id="@Model.IdPersona" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Datos Generales</a>
@@ -22,7 +23,7 @@
     </div>
     <div class="row">
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditEscolaridad" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="escolaridad"class="btn btn-primary btn-lg btn-block btn-huge">Escolaridad</a>
+            <a asp-action="EditEscolaridad" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Escolaridad</a>
         </div>
         <div class="col-md-6" style="padding-top:3%;">
             <a asp-action="EditTrabajo" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Trabajo</a>

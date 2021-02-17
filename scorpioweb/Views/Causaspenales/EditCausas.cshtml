@@ -5,6 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
 @foreach (var item in ViewData["joinTablesCausa"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
 {
     <div class="row">
@@ -42,11 +45,18 @@
                 </div>
                 <div class="form-group">
                     <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-success">
-                       <i class="fa fa-plus"></i>  Crear Delito
+                        <i class="fa fa-plus"></i>  Crear Delito
                     </a>
-                    @if (ViewBag.Delitos != 0)
+                    @if (ViewBag.tieneDelitos == true)
                     {
                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                            <i class="fa fa-eye"></i> Ver Delitos
+                        </button>
+
+                    }
+                    else
+                    {
+                        <button style="display:none" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
                             <i class="fa fa-eye"></i> Ver Delitos
                         </button>
                     }

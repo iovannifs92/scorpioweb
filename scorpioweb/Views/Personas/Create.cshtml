@@ -1,4 +1,6 @@
-﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+﻿@*<script src="/lib/jquery/dist/jquery.js"></script>*@
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
 <script type="text/javascript">
     var tipo = 0;
@@ -151,7 +153,9 @@
                 tipo = 0;
                 $('#modalAsientoFamiliar').modal('hidden')
             }
+            
         });
+
         $("#ReferenciasPersonales").change(function () {
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Referencia";
@@ -163,6 +167,22 @@
                 tipo = 0;
                 $('#modalAsientoFamiliar').modal('hidden')
             }
+            $('#btnCloseAF').on("click", function (e) {
+                e.preventDefault();
+                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+                ReferenciasPersonales.value = 'No';
+            });
+
+            $('#modalAsientoFamiliar').on('hidden.bs.modal', function (e) {
+                e.preventDefault();
+                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+                ReferenciasPersonales.value = 'No';
+            });
+            $('#btnGuardarFamiliar').on("click", function (e) {
+                e.preventDefault();
+                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+                ReferenciasPersonales.value = 'S1';
+            });
         });
 
 
@@ -524,6 +544,50 @@
             });
         });
     });
+
+
+    //region Poner en "No" el drpodown si cancela en todos los modales 
+    $(document).ready(function () {
+        $('#btnCloseCS').on("click", function (e) {
+            e.preventDefault();
+            var consumoSustancias = document.getElementById('consumoSustancias');
+            consumoSustancias.value = 'No';
+        });
+        $('#modalConsumoSustancias').on('hidden.bs.modal', function (e) {
+            e.preventDefault();
+            var consumoSustancias = document.getElementById('consumoSustancias');
+            consumoSustancias.value = 'No';
+        });
+    });
+
+    $(document).ready(function () {
+        $('#btnCloseDS').on("click", function (e) {
+            e.preventDefault();
+            var cuentaDomicilioSecundario = document.getElementById('cuentaDomicilioSecundario');
+            cuentaDomicilioSecundario.value = 'NO';
+        });
+        $('#modalDomicilioSecundario').on('hidden.bs.modal', function (e) {
+            e.preventDefault();
+            var cuentaDomicilioSecundario = document.getElementById('cuentaDomicilioSecundario');
+            cuentaDomicilioSecundario.value = 'NO';
+        });
+    });
+
+    $(document).ready(function () {
+        $('#btnCloseFE').on("click", function (e) {
+            e.preventDefault();
+            var familiaresFuera = document.getElementById('familiaresFuera');
+            familiaresFuera.value = 'NO';
+        });
+        $('#modalFamiliaresExtranjero').on('hidden.bs.modal', function (e) {
+            e.preventDefault();
+            var familiaresFuera = document.getElementById('familiaresFuera');
+            familiaresFuera.value = 'NO';
+        });
+    });
+    //endregion
+
+
 
 
 </script>
@@ -902,7 +966,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseDS">
                                             <i class="fa fa-close"></i>
                                             Cerrar
                                         </button>
@@ -1261,7 +1325,7 @@
                 </div>
             </div>
             <div class="custom-file">
-                <input type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
+                <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
             </div>            
             <div class="form-group">
                 <input type="submit" value="Guardar Registro" class="btn btn-default" />
@@ -1328,7 +1392,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseCS" name="btnCloseCS">
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>
@@ -1432,7 +1496,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseAF">
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>
@@ -1547,7 +1611,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseFE">
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>

@@ -7,12 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
+using Microsoft.AspNetCore.Http;
 using SautinSoft.Document;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using QRCoder;
 using System.Drawing;
 using System.IO;
+
+
+
 
 namespace scorpioweb.Controllers
 {
@@ -68,7 +72,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="XIV", Value="XIV"}
         };
 
-        private List<SelectListItem> listaCumplimiento=new List<SelectListItem>
+        private List<SelectListItem> listaCumplimiento = new List<SelectListItem>
         {
             new SelectListItem{ Text = "Cumplimiento", Value = "CUMPLIMIENTO" },
             new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
@@ -165,7 +169,7 @@ namespace scorpioweb.Controllers
             dc.MailMerge.Execute(dataSource2, "Fracciones");
             dc.Save(resultPath);
 
-            Response.Redirect("https://localhost:44359/Documentos/"+"template.docx");
+            Response.Redirect("https://localhost:44359/Documentos/" + "template.docx");
 
 
         }
@@ -183,7 +187,7 @@ namespace scorpioweb.Controllers
             return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Boton para guaradar los cambios" });
 
         }
-       
+
         #region -Index-
         public async Task<IActionResult> Index()
         {
@@ -236,7 +240,7 @@ namespace scorpioweb.Controllers
             supervision.IdSupervision = idSuper;
             #endregion
 
-           
+
 
 
             return View(supervision);
@@ -250,7 +254,7 @@ namespace scorpioweb.Controllers
             if (id == null)
             {
                 return NotFound();
-            }            
+            }
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
@@ -350,7 +354,7 @@ namespace scorpioweb.Controllers
 
             switch (tipo)
             {
-                case 1:                    
+                case 1:
                     break;
             }
         }
@@ -405,7 +409,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/"+fraccionesimpuestas.SupervisionIdSupervision,"Supervisiones");
+                return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
             }
             return View(fraccionesimpuestas);
         }
@@ -552,7 +556,7 @@ namespace scorpioweb.Controllers
             }
 
 
-           
+
 
 
 
@@ -574,7 +578,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            
+
 
 
             int pageSize = 10;
@@ -631,16 +635,16 @@ namespace scorpioweb.Controllers
             List<Persona> personaVM = _context.Persona.ToList();
             #region -Jointables-
             ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
-                                          join  personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
-                                          join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
-                                          where supervisiontable.IdSupervision == id
-                                 
-                                          select new SupervisionPyCP
-                                          {
-                                              causapenalVM = causapenaltable,
-                                              supervisionVM = supervisiontable,
-                                              personaVM = personatable 
-                                          };
+                                                join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
+                                                join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
+                                                where supervisiontable.IdSupervision == id
+
+                                                select new SupervisionPyCP
+                                                {
+                                                    causapenalVM = causapenaltable,
+                                                    supervisionVM = supervisiontable,
+                                                    personaVM = personatable
+                                                };
             #endregion
 
 
@@ -733,7 +737,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCambiodeobligaciones-
-        public async Task<IActionResult>  EditCambiodeobligaciones(int? id, string nombre, string cp, string cambio)
+        public async Task<IActionResult> EditCambiodeobligaciones(int? id, string nombre, string cp, string cambio)
         {
             if (id == null)
             {
@@ -861,14 +865,17 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Fraccionesimpuestas-
-        public IActionResult EditFraccionesimpuestas(int? id, string nombre)
+        public IActionResult EditFraccionesimpuestas(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+
             ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+
 
             List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
 
@@ -916,7 +923,7 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> CrearFracciones(Fraccionesimpuestas fraccionesImpuestas, string[] datosFracciones)
         {
-            for (int i=0; i<14;i++)
+            for (int i = 0; i < 14; i++)
             {
                 if (bool.Parse(datosFracciones[i]) == true)
                 {
@@ -979,6 +986,8 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+
+
         #region -EditPlaneacionestrategica-
         public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
         {
@@ -1035,7 +1044,7 @@ namespace scorpioweb.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {                    
+                {
                     _context.Update(planeacionestrategica);
                     await _context.SaveChangesAsync();
                 }
@@ -1265,8 +1274,195 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Graficos-
+        #region --Bitacora--
+        public async Task<IActionResult> ListaBitacora(int? id)
+        {
+            var supervision = _context.Supervision
+            .SingleOrDefault(m => m.IdSupervision == id);
+
+            var persona = _context.Persona
+           .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
+            var cp = _context.Causapenal
+           .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
+
+            ViewBag.nombre = persona.NombreCompleto;
+            ViewBag.cp = cp.CausaPenal;
+    
+
+            List<Bitacora> bitacora = _context.Bitacora.ToList();
+
+            ViewData["Bitacora"] = from table in bitacora
+                                   where table.SupervisionIdSupervision == id
+                                   orderby table.IdBitacora
+                                   select table;
+
+            ViewBag.IdSupervisionGuardar = id;
+
+
+            return View();
+        }
+        #region -Create Bitacora-
+        public IActionResult CreateBitacora(int? id, string nombre, string cp)
+        {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.IdSupervisionGuardar = id;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
+            string tipoVisita, string Texto, string SupervisionIdSupervision, IFormFile evidencia)
+        {
+            string currentUser = User.Identity.Name;
+            if (ModelState.ErrorCount <= 1)
+            {
+                bitacora.Fecha = Fecha;
+                bitacora.TipoPersona = normaliza(tipoPersona);
+                bitacora.TipoVisita = normaliza(tipoVisita);
+                bitacora.Texto = normaliza(Texto);
+
+
+                var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
+
+                var persona = _context.Persona
+               .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
+                var cp = _context.Causapenal
+               .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
+
+                ViewBag.Npersona = persona.NombreCompleto;
+                ViewBag.cp = cp.CausaPenal;
+
+                int idBitacora = ((from table in _context.Bitacora
+                                   select table).Count()) + 1;
+
+                bitacora.IdBitacora = idBitacora;
+
+                #region -Guardar archivo-
+                string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                bitacora.RutaEvidencia = file_name;
+                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                #endregion
+
+
+                _context.Add(bitacora);
+                await evidencia.CopyToAsync(stream);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+            }
+            return View(bitacora);
+        }
         #endregion
+        public async Task<IActionResult> EditBitacora(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
+            if (bitacora == null)
+            {
+                return NotFound();
+            }
+
+            #region ListaTipoPersona
+            List<SelectListItem> ListaTipoPersona;
+            ListaTipoPersona = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Supervisado", Value="SUPERVISADO"},
+              new SelectListItem{ Text="Víctima", Value="VICTIMA"},
+
+            };
+            ViewBag.TipoPersona = ListaTipoPersona;
+            ViewBag.idTipoPersona = BuscaId(ListaTipoPersona, bitacora.TipoPersona);
+            #endregion
+
+            #region ListaTipoVisita
+            List<SelectListItem> ListaTipoVisita;
+            ListaTipoVisita = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Presencial", Value="PRESENCIAL"},
+              new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
+
+            };
+            ViewBag.TipoVisita = ListaTipoVisita;
+            ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
+            #endregion
+
+            ViewBag.RutaEvidencia =  bitacora.RutaEvidencia;
+
+            return View(bitacora);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision")] Bitacora bitacora, IFormFile evidencia)
+        {
+            bitacora.Texto = normaliza(bitacora.Texto);
+
+            var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);     
+
+            #region -Guardar archivo-
+            string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+            bitacora.RutaEvidencia = file_name;
+            var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.Write);
+            #endregion
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(bitacora);
+                    await evidencia.CopyToAsync(stream);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!BitacoraExists(bitacora.SupervisionIdSupervision))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+            }
+            return View(bitacora);
+        }
+
+        private bool BitacoraExists(int id)
+        {
+            return _context.Bitacora.Any(e => e.IdBitacora == id);
+        }
+
+        #endregion
+
+
+
+        #region -Graficos-   
+        private static MemoryStream BitmapToBytes(Bitmap img)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                return stream;
+            }
+        }
+
+        #endregion
+
+
 
     }
 }

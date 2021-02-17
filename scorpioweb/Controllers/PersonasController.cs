@@ -404,7 +404,9 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                return Json(new { success = true,
+                return Json(new
+                {
+                    success = true,
                     responseText = "Siguiente",
                     sustancia = consumosustancias[contadorSustancia].Sustancia,
                     frecuencia = consumosustancias[contadorSustancia].Frecuencia,
@@ -413,6 +415,14 @@ namespace scorpioweb.Controllers
                     observacionesConsumo = consumosustancias[contadorSustancia++].Observaciones
                 });
             }
+        }
+
+        public ActionResult editarSustancias()
+        {
+            contadorSustancia = 1;//por cargar la 1er sustancia
+            datosSustanciasEditadas = new List<List<string>>();//por si no se vacian las listas despues de guardar
+
+            return Json(new { success = true });
         }
 
         public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
@@ -510,6 +520,21 @@ namespace scorpioweb.Controllers
             }
         }
 
+        public ActionResult editarFamiliares(int tipoGuardado)
+        {
+            if (tipoGuardado == 1)
+            {
+                contadorFamiliares = 1;
+                datosFamiliaresEditados = new List<List<string>>();
+            }
+            else
+            {
+                contadorReferencias = 1;
+                datosReferenciasEditadas = new List<List<string>>();
+            }
+            return Json(new { success = true });
+        }
+
         public ActionResult guardarFamiliarExtranjero(string[] datosFE)
         {
             string currentUser = User.Identity.Name;
@@ -527,7 +552,8 @@ namespace scorpioweb.Controllers
             TempData["message"] = DateTime.Now;
             List<Municipios> municipiosList = new List<Municipios>();
 
-            if (EstadoId != 0) {                
+            if (EstadoId != 0)
+            {
 
                 municipiosList = (from Municipios in _context.Municipios
                                   where Municipios.EstadosId == EstadoId
@@ -659,7 +685,7 @@ namespace scorpioweb.Controllers
             string vividoFuera, string lugaresVivido, string tiempoVivido, string motivoVivido, string viajaHabitual, string lugaresViaje, string tiempoViaje,
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
-            string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud,
+            string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
             IFormFile fotografia)//[Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización")]
         {
             string currentUser = User.Identity.Name;
@@ -678,7 +704,7 @@ namespace scorpioweb.Controllers
                 persona.Lnpais = lnPais;
                 persona.Lnestado = lnEstado;
                 persona.Lnmunicipio = lnMunicipio;
-                persona.Lnlocalidad =normaliza(lnLocalidad);
+                persona.Lnlocalidad = normaliza(lnLocalidad);
                 persona.EstadoCivil = estadoCivil;
                 persona.Duracion = duracion;
                 persona.OtroIdioma = normaliza(otroIdioma);
@@ -697,6 +723,7 @@ namespace scorpioweb.Controllers
                 persona.Familiares = normaliza(familiares);
                 persona.ReferenciasPersonales = normaliza(referenciasPersonales);
                 persona.UltimaActualización = DateTime.Now;
+                persona.Capturista = currentUser;
                 #endregion
 
                 #region -Domicilio-
@@ -816,11 +843,12 @@ namespace scorpioweb.Controllers
                 abandonoEstado.PersonaIdPersona = idPersona;
                 saludfisica.PersonaIdPersona = idPersona;
 
+
                 #region -Guardar Foto-
-                string file_name =persona.IdPersona+"_"+persona.Paterno+"_"+persona.Nombre+".jpg";
+                string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
                 persona.rutaFoto = file_name;
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
-                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);                
+                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                 #endregion
 
                 #endregion
@@ -964,7 +992,7 @@ namespace scorpioweb.Controllers
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
                 await fotografia.CopyToAsync(stream);
-                await _context.SaveChangesAsync();                
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
                 #endregion
             }
@@ -1023,10 +1051,10 @@ namespace scorpioweb.Controllers
                 {
                     normalizar = ((Convert.ToInt32(normalizar) / 100)).ToString("C", CultureInfo.CurrentCulture);
                 }
-                catch(System.FormatException e)
+                catch (System.FormatException e)
                 {
                     return normalizar;
-                }                
+                }
             }
             else
             {
@@ -1103,8 +1131,8 @@ namespace scorpioweb.Controllers
             creaQR(id);
 
             #region -GeneraDocumento-
-            string templatePath = this._hostingEnvironment.WebRootPath+"\\Documentos\\templateEntrevista.docx";
-            string resultPath = this._hostingEnvironment.WebRootPath+"\\Documentos\\entrevista.docx";
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateEntrevista.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\entrevista.docx";
             string rutaFoto = ((vistaPersona[0].personaVM.Genero == ("M")) ? "hombre.png" : "mujer.png");
             if (vistaPersona[0].personaVM.rutaFoto != null)
             {
@@ -1198,30 +1226,29 @@ namespace scorpioweb.Controllers
 
 
             dc.MailMerge.FieldMerging += (sender, e) =>
-              {
-                  if (e.FieldName == "foto")
-                  {
-                      e.Inlines.Clear();
-                      e.Inlines.Add(new Picture(dc, picPath) { Layout = new InlineLayout(new Size(100, 100)) });
-                      e.Cancel = false;
-                  }
-                  if (e.FieldName == "QR")
-                  {
-                      e.Inlines.Clear();
-                      e.Inlines.Add(new Picture(dc, this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg") { Layout = new InlineLayout(new Size(100, 100)) });
-                      e.Cancel = false;
-                  }
-              };
-            
+            {
+                if (e.FieldName == "foto")
+                {
+                    e.Inlines.Clear();
+                    e.Inlines.Add(new Picture(dc, picPath) { Layout = new InlineLayout(new Size(100, 100)) });
+                    e.Cancel = false;
+                }
+                if (e.FieldName == "QR")
+                {
+                    e.Inlines.Clear();
+                    e.Inlines.Add(new Picture(dc, this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg") { Layout = new InlineLayout(new Size(100, 100)) });
+                    e.Cancel = false;
+                }
+            };
+
             dc.MailMerge.Execute(dataSource);
+
 
             dc.Save(resultPath);
 
             //Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
             Response.Redirect("http://10.6.60.190/Documentos/entrevista.docx");
             #endregion
-
-
 
         }
         #endregion        
@@ -1316,7 +1343,8 @@ namespace scorpioweb.Controllers
             int Lnestado;
             bool success = Int32.TryParse(persona.Lnestado, out Lnestado);
             List<Municipios> listaMunicipios = new List<Municipios>();
-            if (success) {
+            if (success)
+            {
                 listaMunicipios = (from table in _context.Municipios
                                    where table.EstadosId == Lnestado
                                    select table).ToList();
@@ -1325,7 +1353,6 @@ namespace scorpioweb.Controllers
             listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
 
             ViewBag.ListadoMunicipios = listaMunicipios;
-
             ViewBag.idMunicipio = persona.Lnmunicipio;
             #endregion
 
@@ -1418,7 +1445,7 @@ namespace scorpioweb.Controllers
             ViewBag.listaFrecuencia = ListaFrecuencia;
 
             if (consumosustancias.Count > 0)
-            {  
+            {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
                 ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustancias[contadorSustancia].Frecuencia);
                 ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
@@ -1553,7 +1580,8 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor")] Persona persona)        {
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor")] Persona persona)
+        {
             string currentUser = User.Identity.Name;
 
             if (id != persona.IdPersona)
@@ -1655,7 +1683,7 @@ namespace scorpioweb.Controllers
 
                 #region -Familiares-
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar
-                                            select table).Count());
+                                          select table).Count());
                 //Familiares editados
                 for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 13)
                 {
@@ -1888,10 +1916,10 @@ namespace scorpioweb.Controllers
             foreach (var item in LiatatDomicilio)
             {
                 if (item.Value == domicilio.TipoDomicilio)
-            {
+                {
                     ViewBag.idtDomicilio = item.Value;
                     break;
-               }
+                }
             }
             #endregion
 
@@ -1921,15 +1949,14 @@ namespace scorpioweb.Controllers
                 }
             }
             #endregion
-            
+
             #region Destado
             List<Estados> listaEstadosD = new List<Estados>();
             listaEstadosD = (from table in _context.Estados
-                            select table).ToList();
+                             select table).ToList();
 
             listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoD = listaEstadosD;
-
             ViewBag.idEstadoD = domicilio.Estado;
             #endregion
 
@@ -1940,12 +1967,12 @@ namespace scorpioweb.Controllers
             if (success)
             {
                 listaMunicipiosD = (from table in _context.Municipios
-                                   where table.EstadosId == estadoD
-                                   select table).ToList();
+                                    where table.EstadosId == estadoD
+                                    select table).ToList();
             }
 
-            ViewBag.ListaMunicipio = listaMunicipiosD;
-
+            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            ViewBag.ListaMunicipioD = listaMunicipiosD;
             ViewBag.idMunicipioD = domicilio.Municipio;
             #endregion
 
@@ -1957,7 +1984,7 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Entre 5 y 10 años", Value = "ENTRE 5 Y 10 AÑOS" },
                 new SelectListItem{ Text = "Entre 2 y 5 años", Value = "ENTRE 2 Y 5 AÑOS" },
                 new SelectListItem{ Text = "Entre 6 meses y 2 año", Value = "ENTRE 6 MESES Y 2 AÑO" },
-                new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },                
+                new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },
             };
 
             ViewBag.ListaTemporalidad = ListaDomicilioT;
@@ -1989,7 +2016,7 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
-        
+
             domicilio.Calle = normaliza(domicilio.Calle);
             domicilio.No = normaliza(domicilio.No);
             domicilio.NombreCf = normaliza(domicilio.NombreCf);
@@ -2023,14 +2050,10 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-      
+
 
         #region Edit Dmicilio Secundario
-        
-        
 
-
-        
         public async Task<IActionResult> EditDomSecundario2(int? id)
         {
             if (id == null)
@@ -2048,13 +2071,13 @@ namespace scorpioweb.Controllers
 
             #region -Jointables-
             ViewData["joinTablesDomcilioSec"] = from personaTable in personaVM
-                                           join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.IdDomicilio
-                                           join domicilioSec in domiciliosecundarioVM on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
-                                           where personaTable.IdPersona == id
-                                           select new PersonaViewModel
-                                           {
-                                               domicilioSecundarioVM = domicilioSec
-                                           };
+                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.IdDomicilio
+                                                join domicilioSec in domiciliosecundarioVM on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
+                                                where personaTable.IdPersona == id
+                                                select new PersonaViewModel
+                                                {
+                                                    domicilioSecundarioVM = domicilioSec
+                                                };
             #endregion
 
             #region TIPODOMICILIO          
@@ -2089,6 +2112,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.ListaPaisED = ListaPaisD;
             ViewBag.idPaisED = BuscaId(ListaPaisD, domisecu.Pais);
+
             ViewBag.ListaPaisM = ListaPaisD;
             ViewBag.idPaisM = BuscaId(ListaPaisD, domisecu.Pais);
             #endregion
@@ -2106,6 +2130,7 @@ namespace scorpioweb.Controllers
             listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoED = listaEstadosD;
             ViewBag.idEstadoED = domisecu.Estado;
+
             ViewBag.ListaEstadoM = listaEstadosD;
             ViewBag.idEstadoM = domisecu.Estado;
             #endregion
@@ -2124,18 +2149,12 @@ namespace scorpioweb.Controllers
             ViewBag.ListaMunicipioED = listaMunicipiosD;
             ViewBag.idMunicipioED = domisecu.Municipio;
 
+            ViewBag.ListaMunicipioM = listaMunicipiosD;
+            ViewBag.idMunicipioM = domisecu.Municipio;
+
             ViewBag.Pais = domisecu.Pais;
             #endregion
 
-            #region MunicipioMED
-            List<Municipios> listaMunicipiosMED = new List<Municipios>();
-            listaMunicipiosMED = (from table in _context.Municipios
-                                  select table).ToList();
-
-            listaMunicipiosMED.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
-            ViewBag.ListaMunicipioM = listaMunicipiosMED;
-            ViewBag.idMunicipioM = domisecu.Municipio;
-            #endregion
 
             #region TemporalidadDomicilio
             List<SelectListItem> ListaDomicilioT;
@@ -2191,7 +2210,7 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-       
+
 
         public async Task<IActionResult> DeleteConfirmedDom(int? id)
         {
@@ -2224,7 +2243,7 @@ namespace scorpioweb.Controllers
                          where a.IdDomicilio == domiciliosecundario.IdDomicilio
                          select a).FirstOrDefault();
             query.DomcilioSecundario = "SI";
-                    _context.SaveChanges();
+            _context.SaveChanges();
 
             _context.Add(domiciliosecundario);
             await _context.SaveChangesAsync();
@@ -2247,9 +2266,10 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            ViewBag.estudia = estudios.Estudia;
             ViewBag.listaEstudia = listaSiNo;
             ViewBag.idEstudia = BuscaId(listaSiNo, estudios.Estudia);
-            
+
             #region GradoEstudios
             List<SelectListItem> ListaGradoEstudios;
             ListaGradoEstudios = new List<SelectListItem>
@@ -2267,12 +2287,48 @@ namespace scorpioweb.Controllers
             ViewBag.idGradoEstudios = BuscaId(ListaGradoEstudios, estudios.GradoEstudios);
             #endregion
 
+
+            List<Estudios> estudiosVM = _context.Estudios.ToList();
+            List<Persona> personaVM = _context.Persona.ToList();
+
+
+            ViewData["joinTablesPersonaEstudia"] =
+                                     from personaTable in personaVM
+                                     join estudiosTabla in estudiosVM on personaTable.IdPersona equals estudiosTabla.PersonaIdPersona
+                                     where personaTable.IdPersona == idPersona
+                                     select new PersonaViewModel
+                                     {
+                                         personaVM = personaTable,
+                                         estudiosVM = estudiosTabla
+
+                                     };
+            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+
+
+
+
+            if ((ViewData["joinTablesPersonaEstudia"] as IEnumerable<scorpioweb.Models.PersonaViewModel>).Count() == 0)
+            {
+                ViewBag.RA = false;
+            }
+            else
+            {
+                ViewBag.RA = true;
+            }
+
+            //List<SelectListItem> ListaTrueFalse;
+            //ListaTrueFalse = new List<SelectListItem>
+            //{
+            //  new SelectListItem{ Text="SI", Value="True"},
+            //  new SelectListItem{ Text="NO", Value="Flse"}
+            //};
+            //ViewBag.listaTr = ListaTrueFalse;
+            //ViewBag.idGradoEstudios = BuscaId(ListaTrueFalse, ViewBag.RA);
+
             return View(estudios);
         }
 
-        // POST: Estudios/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditEscolaridad(int id, [Bind("IdEstudios,Estudia,GradoEstudios,InstitucionE,Horario,Direccion,Telefono,Observaciones,PersonaIdPersona")] Estudios estudios)
@@ -2284,7 +2340,7 @@ namespace scorpioweb.Controllers
 
             estudios.InstitucionE = normaliza(estudios.InstitucionE);
             estudios.Horario = normaliza(estudios.Horario);
-            estudios.Direccion = normaliza(estudios.Direccion); 
+            estudios.Direccion = normaliza(estudios.Direccion);
             estudios.Observaciones = normaliza(estudios.Observaciones);
 
 
@@ -2404,7 +2460,7 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
-            
+
             trabajo.Puesto = normaliza(trabajo.Puesto);
             trabajo.EmpledorJefe = normaliza(trabajo.EmpledorJefe);
             trabajo.Salario = normaliza(trabajo.Salario);
@@ -2524,7 +2580,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaFamiliaresFuera = listaNoSi;
             ViewBag.idFamiliaresFuera = BuscaId(listaNoSi, abandonoestado.FamiliaresFuera);
-                
+
             ViewBag.vfuera = abandonoestado.VividoFuera;
             ViewBag.vlugar = abandonoestado.ViajaHabitual;
             ViewBag.document = abandonoestado.DocumentacionSalirPais;
@@ -2554,7 +2610,7 @@ namespace scorpioweb.Controllers
             abandonoestado.LugaresViaje = normaliza(abandonoestado.LugaresViaje);
             abandonoestado.TiempoViaje = normaliza(abandonoestado.TiempoViaje);
             abandonoestado.MotivoViaje = normaliza(abandonoestado.MotivoViaje);
-            
+
 
 
 
@@ -2713,20 +2769,20 @@ namespace scorpioweb.Controllers
             #region -To List databases-
             List<Persona> personaVM = _context.Persona.ToList();
             List<Familiaresforaneos> familiaresforaneosVM = _context.Familiaresforaneos.ToList();
-     
+
             #endregion
 
             #region -Jointables-
             ViewData["joinTableFamiliarF"] = from personaTable in personaVM
-                                                join familiarf in familiaresforaneosVM on personaTable.IdPersona equals familiarf.PersonaIdPersona
-                                                where familiarf.PersonaIdPersona == id
-                                                select new PersonaViewModel
-                                                {
-                                                    familiaresForaneosVM = familiarf
-                                                };
+                                             join familiarf in familiaresforaneosVM on personaTable.IdPersona equals familiarf.PersonaIdPersona
+                                             where familiarf.PersonaIdPersona == id
+                                             select new PersonaViewModel
+                                             {
+                                                 familiaresForaneosVM = familiarf
+                                             };
             #endregion
 
-        
+
             #region GENERO          
             List<SelectListItem> ListaGenero;
             ListaGenero = new List<SelectListItem>
@@ -2736,7 +2792,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Prefiero no decirlo", Value="N"},
             };
             ViewBag.listaGenero = ListaGenero;
-         
+
             #endregion
 
 
@@ -2756,7 +2812,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.listaRelacion = ListaRelacion;
-         
+
             #endregion
 
             #region Tiempo de conocerlo
@@ -2770,7 +2826,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
             };
             ViewBag.listTiempo = ListaTiempo;
-        
+
             #endregion
 
             #region PAIS          
@@ -2788,7 +2844,7 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.ListaPais = ListaPaisD;
-       
+
             #endregion
 
             #region Destado
@@ -2798,7 +2854,7 @@ namespace scorpioweb.Controllers
 
             listaEstado.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstado = listaEstado;
-        
+
             #endregion
             #region Frecuencia de contacto
             List<SelectListItem> ListaFrecuencia;
@@ -2813,15 +2869,15 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.ListFrecuencia = ListaFrecuencia;
-     
+
             #endregion
 
             ViewBag.listaProseso = listaNoSi;
-    
+
 
             ViewBag.listaEnterar = listaNoSiNA;
-       
-  
+
+
 
             #endregion
             if (familiaresforaneos == null)
@@ -2847,15 +2903,7 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    //if (!FamiliaresforaneosExists(familiaresforaneos.IdFamiliaresForaneos))
-                    //{
-                    //    return NotFound();
-                    //}
-                    //else
-                    //{
-                    //    throw;
 
-                    //}
                 }
                 return RedirectToAction("EditAbandonoEstado/" + familiaresforaneos.PersonaIdPersona, "Personas");
             }
@@ -2896,6 +2944,7 @@ namespace scorpioweb.Controllers
             _context.Add(familiaresforaneos);
             await _context.SaveChangesAsync();
 
+
             return View();
         }
 
@@ -2913,7 +2962,7 @@ namespace scorpioweb.Controllers
             ViewData["Nombre"] = nombre;
             ViewData["Genero"] = genero;
             var saludfisica = await _context.Saludfisica.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
-            
+
 
             ViewBag.listaEnfermedad = listaNoSi;
             ViewBag.idEnfermedad = BuscaId(listaNoSi, saludfisica.Enfermedad);
