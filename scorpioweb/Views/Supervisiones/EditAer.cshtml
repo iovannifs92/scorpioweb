@@ -50,7 +50,7 @@
                     <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.eveluacion == "NO" || ViewBag.evaluacion == "NA")
+            @if (ViewBag.eveluacion == "NO" || ViewBag.evaluacion == "NA" || ViewBag.evaluacion == null)
             {
                 <div class="form-group" id="DivFechaEntrega" style="display: none;">
                     <label class="control-label">Fecha de Entrega</label>

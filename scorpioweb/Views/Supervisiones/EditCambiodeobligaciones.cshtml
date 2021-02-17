@@ -51,7 +51,7 @@
                     <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.cambio == "NO" || ViewBag.cambio == "NA")
+            @if (ViewBag.cambio == "NO" || ViewBag.cambio == "NA" || ViewBag.cambio == null)
             {
                 <div class="form-group" style="display: none;" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

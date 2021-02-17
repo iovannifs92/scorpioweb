@@ -9,10 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
 using SautinSoft.Document;
 using Microsoft.AspNetCore.Hosting;
-using SautinSoft.Document.Drawing;
+using Microsoft.AspNetCore.Identity;
 using QRCoder;
 using System.Drawing;
-using Size = SautinSoft.Document.Drawing.Size;
 using System.IO;
 
 namespace scorpioweb.Controllers
@@ -21,10 +20,15 @@ namespace scorpioweb.Controllers
     {
         #region -Constructor-
         private readonly IHostingEnvironment _hostingEnvironment;
-        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment)
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment,
+                        RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            this.roleManager = roleManager;
+            this.userManager = userManager;
         }
         #endregion
 
@@ -497,16 +501,40 @@ namespace scorpioweb.Controllers
                 searchString = currentFilter;
             }
 
-            var filter = from p in _context.Persona
-                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                         where p.Supervisor == User.Identity.Name
-                         select new SupervisionPyCP
-                         {
-                             personaVM = p,
-                             supervisionVM = s,
-                             causapenalVM = cp
-                         };
+            bool admin = false;
+
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
+                {
+                    admin = true;
+                }
+            }
+
+            var filter= from p in _context.Persona
+                        join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                        join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                        where p.Supervisor == User.Identity.Name
+                        select new SupervisionPyCP
+                        {
+                            personaVM = p,
+                            supervisionVM = s,
+                            causapenalVM = cp
+                        }; ;
+
+            if (admin)
+            {
+                filter = from p in _context.Persona
+                             join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                             join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                             select new SupervisionPyCP
+                             {
+                                 personaVM = p,
+                                 supervisionVM = s,
+                                 causapenalVM = cp
+                             };
+            }
+            
 
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;

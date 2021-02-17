@@ -51,7 +51,7 @@
                     <span asp-validation-for="MotivoSuspension" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.suspes == "NO" || ViewBag.suspes == "NA" )
+            @if (ViewBag.suspes == "NO" || ViewBag.suspes == "NA" || ViewBag.suspes == null )
             {
                 <div class="form-group" style="display:none" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

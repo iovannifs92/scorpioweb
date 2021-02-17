@@ -565,7 +565,7 @@ namespace scorpioweb.Controllers
 
 
         // GET: Personas/Create
-        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin")]
+        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
         public IActionResult Create(Estados Estados)
         {
             //datosSustancias.Clear();            

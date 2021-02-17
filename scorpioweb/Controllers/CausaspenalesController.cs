@@ -291,7 +291,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Asignacion-
-        public async Task<IActionResult> Asignacion(int? id, string cp)
+        public IActionResult Asignacion(int? id, string cp)
         {
             if (id == null)
             {
@@ -299,9 +299,6 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.CausaPenal = cp;
-
-            var persona = await _context.Persona
-                .SingleOrDefaultAsync(m => m.IdPersona == id);
 
             List<Persona> listaPersonas = new List<Persona>();
             List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
@@ -326,11 +323,6 @@ namespace scorpioweb.Controllers
             ViewBag.personas = listaPersonas;
 
             selectedPersona = new List<string>();
-
-            if (persona == null)
-            {
-                return NotFound();
-            }
 
             return View();
         }

@@ -51,7 +51,7 @@
                     <span asp-validation-for="MotivoRevocacion" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.revocado == "NO" || ViewBag.revocado == "NA")
+            @if (ViewBag.revocado == "NO" || ViewBag.revocado == "NA" || ViewBag.revocado == null)
             {
                 <div class="form-group" style="display:none" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>
