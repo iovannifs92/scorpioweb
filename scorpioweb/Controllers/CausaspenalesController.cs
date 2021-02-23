@@ -329,19 +329,19 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id, int persona_idPersona)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id/*, int persona_idPersona*/)
         {
             string currentUser = User.Identity.Name;
 
             if (ModelState.IsValid)
             {
-                if(/*selectedPersona.Count == 0*/persona_idPersona==0)
+                if(selectedPersona.Count == 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
 
-                //int idPersona = Int32.Parse(selectedPersona[0]);
-                int idPersona = persona_idPersona;
+                int idPersona = Int32.Parse(selectedPersona[0]);
+                //int idPersona = persona_idPersona;
                 //Por el la primera opcion vacia
                 if (idPersona == 0) {
                     return RedirectToAction(nameof(Index));
