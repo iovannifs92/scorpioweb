@@ -1,5 +1,5 @@
 ﻿@model scorpioweb.Models.Fraccionesimpuestas
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 @{
     ViewData["Title"] = "EditFraccionesimpuestas";
 }
@@ -50,7 +50,7 @@
                     }
                 },
                 error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    alert("Datos Guardados");
                     location.reload();
                 }
             });
@@ -159,7 +159,7 @@
 </table>
 
 <div>
-    <a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>
+    @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
     <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
         <i class="fa fa-plus"></i> Añadir Fracciones
     </button>

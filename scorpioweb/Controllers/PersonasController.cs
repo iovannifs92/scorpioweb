@@ -591,7 +591,7 @@ namespace scorpioweb.Controllers
 
 
         // GET: Personas/Create
-        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin")]
+        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
         public IActionResult Create(Estados Estados)
         {
             //datosSustancias.Clear();            
@@ -1006,6 +1006,7 @@ namespace scorpioweb.Controllers
         {
             var personas = from p in _context.Persona
                            where p.Supervisor != null
+                           orderby p.Paterno
                            select p;
 
             ViewBag.personas = personas.ToList();
@@ -1066,11 +1067,12 @@ namespace scorpioweb.Controllers
         public void creaQR(int? id)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("10.6.60.190/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);            
             qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+            fs.Close();
         }
         #endregion
 
@@ -1244,7 +1246,8 @@ namespace scorpioweb.Controllers
 
             dc.Save(resultPath);
 
-            Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
+            Response.Redirect("http://10.6.60.190/Documentos/entrevista.docx");
             #endregion
 
         }

@@ -1,5 +1,5 @@
 ﻿@model scorpioweb.Models.Cierredecaso
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
@@ -68,7 +68,7 @@
                     </select>
                 </div>
             }
-            @if (ViewBag.cierre == "NO" || ViewBag.cierre == "NA")
+            @if (ViewBag.cierre == "NO" || ViewBag.cierre == "NA" || ViewBag.cierre == null)
             {
                 <div class="form-group" style="display: none;" id="DivComoConcluyo">
                     <label class="control-label">Como Concluyó</label>

@@ -1,4 +1,5 @@
 ﻿@model scorpioweb.Models.Revocacion
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
@@ -50,7 +51,7 @@
                     <span asp-validation-for="MotivoRevocacion" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.revocado == "NO" || ViewBag.revocado == "NA")
+            @if (ViewBag.revocado == "NO" || ViewBag.revocado == "NA" || ViewBag.revocado == null)
             {
                 <div class="form-group" style="display:none" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

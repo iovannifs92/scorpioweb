@@ -6,14 +6,19 @@
 
 <h2>Control de causas penales</h2>
 <p>
-    <a asp-action="Create" class="btn btn-primary">Crea nueva Causa Penal</a>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fa fa-plus"></i> Crea nueva Causa Penal
+    </a>
 </p>
 
 <form asp-action="ListadeCausas" method="get">
     <div class="form-actions no-color">
         <p>
             Búsqueda: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <input type="submit" value="Buscar" class="btn btn-default" /> |
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button> |
             <a asp-action="ListadeCausas">Regresar al listado completo</a>
         </p>
     </div>
@@ -37,7 +42,6 @@
             <th>
                 <a asp-action="ListadeCausas" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
             </th>
-
         </tr>
     </thead>
     <tbody>
@@ -59,7 +63,7 @@
             <th>
                 @Html.DisplayFor(modelItem => item.CausaPenal)
             </th>
-           
+
             <td>
                 <a class="btn btn-success" asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">
                     <i class="fa fa-pencil"></i> Editar Causa
@@ -95,3 +99,4 @@
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
+

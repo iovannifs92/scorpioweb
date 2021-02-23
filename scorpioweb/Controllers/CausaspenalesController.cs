@@ -93,6 +93,7 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
+            var i= PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize);
             return View(await PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -290,7 +291,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Asignacion-
-        public async Task<IActionResult> Asignacion(int? id, string cp)
+        public IActionResult Asignacion(int? id, string cp)
         {
             if (id == null)
             {
@@ -298,9 +299,6 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.CausaPenal = cp;
-
-            var persona = await _context.Persona
-                .SingleOrDefaultAsync(m => m.IdPersona == id);
 
             List<Persona> listaPersonas = new List<Persona>();
             List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
@@ -326,28 +324,24 @@ namespace scorpioweb.Controllers
 
             selectedPersona = new List<string>();
 
-            if (persona == null)
-            {
-                return NotFound();
-            }
-
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, /*Bitacora bitacora,*/ int id)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id, int persona_idPersona)
         {
             string currentUser = User.Identity.Name;
 
             if (ModelState.IsValid)
             {
-                if(selectedPersona.Count == 0)
+                if(/*selectedPersona.Count == 0*/persona_idPersona==0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
 
-                int idPersona = Int32.Parse(selectedPersona[0]);
+                //int idPersona = Int32.Parse(selectedPersona[0]);
+                int idPersona = persona_idPersona;
                 //Por el la primera opcion vacia
                 if (idPersona == 0) {
                     return RedirectToAction(nameof(Index));
@@ -424,13 +418,6 @@ namespace scorpioweb.Controllers
                 victima.SupervisionIdSupervision = idSupervision;
                 #endregion
 
-                //#region agregar 1 entrada a bitacora
-                //int idbitacora = ((from table in _context.Bitacora
-                //                   select table).Count()) + 1;
-                //bitacora.IdBitacora = idbitacora;
-                //bitacora.SupervisionIdSupervision = idbitacora;
-                //#endregion
-
                 _context.Add(personacausapenal);
                 _context.Add(supervision);
                 await _context.SaveChangesAsync();
@@ -443,7 +430,6 @@ namespace scorpioweb.Controllers
                 _context.Add(revocacion);
                 _context.Add(fraccionesimpuestas);
                 _context.Add(victima);
-               // _context.Add(bitacora);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -575,7 +561,9 @@ namespace scorpioweb.Controllers
                                          causaPenalVM = causapenalTable
                                      };
 
+            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
             #endregion
+
 
             List<Delito> delitoVMV = _context.Delito.ToList();
             List<Causapenal> causaPenalVMV = _context.Causapenal.ToList();
@@ -591,13 +579,7 @@ namespace scorpioweb.Controllers
                                          causaPenalVM = causapenalTable
 
                                      };
-            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
-            if((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0){
-                ViewBag.tieneDelitos = false;
-            }else
-            {
-                ViewBag.tieneDelitos = true;
-            }
+
 
             return View();
         }

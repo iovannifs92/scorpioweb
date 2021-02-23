@@ -1,5 +1,5 @@
 ﻿@model scorpioweb.Models.Planeacionestrategica
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
@@ -96,7 +96,7 @@
                     </select>
                 </div>
             }
-            @if (ViewBag.plan == "NO" || ViewBag.plan == "NA")
+            @if (ViewBag.plan == "NO" || ViewBag.plan == "NA" ||  ViewBag.plan == null)
             {
                 <div class="form-group" id="DivMotivoNoPlaneacion">
                     <label class="control-label">Motivo de no Planeación</label>

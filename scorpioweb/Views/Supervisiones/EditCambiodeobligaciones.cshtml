@@ -1,5 +1,5 @@
 ﻿@model scorpioweb.Models.Cambiodeobligaciones
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
@@ -51,7 +51,7 @@
                     <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.cambio == "NO" || ViewBag.cambio == "NA")
+            @if (ViewBag.cambio == "NO" || ViewBag.cambio == "NA" || ViewBag.cambio == null)
             {
                 <div class="form-group" style="display: none;" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

@@ -1,5 +1,5 @@
 ﻿@model scorpioweb.Models.Suspensionseguimiento
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
@@ -51,7 +51,7 @@
                     <span asp-validation-for="MotivoSuspension" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.suspes == "NO" || ViewBag.suspes == "NA" )
+            @if (ViewBag.suspes == "NO" || ViewBag.suspes == "NA" || ViewBag.suspes == null )
             {
                 <div class="form-group" style="display:none" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

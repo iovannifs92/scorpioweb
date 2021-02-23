@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
@@ -71,7 +72,7 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="About">Acerca de</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a></li>
                     <li><a asp-area="" asp-controller="Firmas" asp-action="Create">Firmas</a></li>
-                    <li><a asp-area="" asp-controller="Personas" asp-action="Entrevista">Entrevista</a></li>
+                    <li><a asp-area="" asp-controller="Personas" asp-action="Create">Entrevista</a></li>
                     @if (User.Identity.Name == "iovannifs92@gmail.com")
                     {
                         <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
