@@ -580,6 +580,16 @@ namespace scorpioweb.Controllers
 
                                      };
 
+            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+            if ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0)
+            {
+                ViewBag.tieneDelitos = false;
+            }
+            else
+            {
+                ViewBag.tieneDelitos = true;
+            }
+
 
             return View();
         }

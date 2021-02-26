@@ -4,13 +4,18 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-@{ bool adminUser=false;}
+@{ bool adminUser=false;
+    bool oficialia=false;}
 
 @foreach (var item in ViewBag.RolesUsuario)
 {
     if (item == "AdminMCSCP" || item=="Director" || item=="Administrador")
     {
         adminUser=true;
+    }
+    if (item == "Oficialia")
+    {
+        oficialia=true;
     }
 }
 
@@ -30,28 +35,32 @@
                         Asignación de nuevas supervisiónes
                     </p>
                 </div>
-            </div>}
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    @if (adminUser)
-                    {
-                        <a asp-controller="Personas" asp-action="Index">
-                            <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                            Supervisados
-                        </a> }
-                    else
-                    {
-                        <a asp-controller="Personas" asp-action="ListadoSupervisor">
-                            <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                            Supervisados
-                        </a>}
-                </h4>
-                <p class="card-text">
-                    Base de datos de todos los supervisados
-                </p>
             </div>
-        </div>
+        }
+        @if (!oficialia)
+        {
+            <div class="col-sm-3 col-md-3 card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        @if (adminUser)
+                        {
+                            <a asp-controller="Personas" asp-action="Index">
+                                <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                                Supervisados
+                            </a> }
+                        else
+                        {
+                            <a asp-controller="Personas" asp-action="ListadoSupervisor">
+                                <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                                Supervisados
+                            </a>}
+                    </h4>
+                    <p class="card-text">
+                        Base de datos de todos los supervisados
+                    </p>
+                </div>
+            </div>
+        }            
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -68,7 +77,7 @@
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
-                    <a asp-controller="Supervisiones" asp-action="MenuSupervision">
+                    <a asp-controller="Supervisiones" asp-action="PersonaSupervision">
                         <img class="card-img-bottom" src="~/images/supervision.png" alt="Card image cap" style="padding-bottom:5%;">
                         Control de Supervisión
                     </a>
