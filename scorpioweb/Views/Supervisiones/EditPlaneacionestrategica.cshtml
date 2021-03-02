@@ -51,7 +51,7 @@
                         asp-items="@(new SelectList(ViewBag.listaPlanSupervision, "Value", "Text", @ViewBag.idPlanSupervision))">
                 </select>
             </div>
-            @if (ViewBag.plan == "SI" || ViewBag.plan == null)
+            @if (ViewBag.plan == null || ViewBag.plan == "SI")
             {
                 <div class="form-group" id="DivMotivoNoPlaneacion">
                     <label class="control-label">Motivo de no Planeación</label>
@@ -96,7 +96,7 @@
                     </select>
                 </div>
             }
-            @if (ViewBag.plan == "NO" || ViewBag.plan == "NA" ||  ViewBag.plan == null)
+            @if (ViewBag.plan == null || ViewBag.plan == "NO" || ViewBag.plan == "NA")
             {
                 <div class="form-group" id="DivMotivoNoPlaneacion">
                     <label class="control-label">Motivo de no Planeación</label>

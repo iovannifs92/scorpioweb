@@ -37,7 +37,7 @@
                         asp-items="@(new SelectList(ViewBag.listaRevocado, "Value", "Text", @ViewBag.idRevocado))">
                 </select>
             </div>
-            @if (ViewBag.revocado == "SI" || ViewBag.revocado == null)
+            @if (ViewBag.revocado == null || ViewBag.revocado == "SI")
             {
                 <div class="form-group" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>
@@ -51,7 +51,7 @@
                     <span asp-validation-for="MotivoRevocacion" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.revocado == "NO" || ViewBag.revocado == "NA" || ViewBag.revocado == null)
+            @if (ViewBag.revocado == null || ViewBag.revocado == "NO" || ViewBag.revocado == "NA")
             {
                 <div class="form-group" style="display:none" id="DivFechaAprobacion">
                     <label class="control-label">Fecha de Aprobación</label>

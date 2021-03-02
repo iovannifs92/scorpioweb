@@ -662,17 +662,17 @@
                         else {
                             document.ready = document.getElementById("AFNombreE").value = response.nombre;
                             document.ready = document.getElementById("AFRelacionE").value = response.relacion;
-                            document.ready = document.getElementById("AFEdadE").value = '0';
-                            document.ready = document.getElementById("AFSexoE").value = 'M';
-                            document.ready = document.getElementById("AFDependenciaE").value = 'NO';
-                            document.ready = document.getElementById("AFDependenciaExplicaOE").value = '';
-                            document.ready = document.getElementById("AFVivenJuntosE").value = 'SI';
-                            document.ready = document.getElementById("AFDireccionFamiliarOE").value = '';
-                            document.ready = document.getElementById("AFtelefonoFamiliarE").value = '';
-                            document.ready = document.getElementById("AFLocalizacionE").value = '';
-                            document.ready = document.getElementById("AFEnteradoProcesoE").value = 'SI';
-                            document.ready = document.getElementById("AFPuedeEnterarseOE").value = 'NA';
-                            document.ready = document.getElementById("AFobservacionesE").value = '';
+                            document.ready = document.getElementById("AFEdadE").value = response.edad;
+                            document.ready = document.getElementById("AFSexoE").value = response.sexo;
+                            document.ready = document.getElementById("AFDependenciaE").value = response.dependencia;
+                            document.ready = document.getElementById("AFDependenciaExplicaOE").value = response.explicaDependencia;
+                            document.ready = document.getElementById("AFVivenJuntosE").value = response.vivenJuntos;
+                            document.ready = document.getElementById("AFDireccionFamiliarOE").value = response.direccion;
+                            document.ready = document.getElementById("AFtelefonoFamiliarE").value = response.telefono;
+                            document.ready = document.getElementById("AFLocalizacionE").value = response.horarioLocalizacion;
+                            document.ready = document.getElementById("AFEnteradoProcesoE").value = response.enteradoProceso;
+                            document.ready = document.getElementById("AFPuedeEnterarseOE").value = response.puedeEnterarse;
+                            document.ready = document.getElementById("AFobservacionesE").value = response.observaciones;
                             $("#AFDependenciaExplicaE").css("display", "none");
                             $("#AFDireccionFamiliarE").css("display", "none");
                             $("#AFPuedeEnterarseE").css("display", "none");

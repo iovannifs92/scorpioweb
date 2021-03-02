@@ -44,7 +44,7 @@
                         asp-items="@(new SelectList(ViewBag.listaSeCerroCaso, "Value", "Text", @ViewBag.idSeCerroCaso))">
                 </select>
             </div>
-            @if (ViewBag.cierre == "SI" || ViewBag.cierre == null)
+            @if (ViewBag.cierre == null || ViewBag.cierre == "SI")
             {
                 <div class="form-group" id="DivComoConcluyo">
                     <label class="control-label">Como Concluyó</label>
@@ -68,7 +68,7 @@
                     </select>
                 </div>
             }
-            @if (ViewBag.cierre == "NO" || ViewBag.cierre == "NA" || ViewBag.cierre == null)
+            @if (ViewBag.cierre == null || ViewBag.cierre == "NO" || ViewBag.cierre == "NA")
             {
                 <div class="form-group" style="display: none;" id="DivComoConcluyo">
                     <label class="control-label">Como Concluyó</label>
