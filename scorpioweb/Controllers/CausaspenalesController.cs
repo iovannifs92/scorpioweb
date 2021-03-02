@@ -549,6 +549,32 @@ namespace scorpioweb.Controllers
             ViewBag.listaCambio = listaSiNo;
             ViewBag.idCambio = BuscaId(listaSiNo, causapenal.Cambio);
 
+            #region Distrito
+            List<SelectListItem> ListaDistrito;
+            ListaDistrito = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="I", Value="I"},
+              new SelectListItem{ Text="II", Value="II"},
+              new SelectListItem{ Text="III", Value="III"},
+              new SelectListItem{ Text="IV", Value="IV"},
+              new SelectListItem{ Text="V", Value="V"},
+              new SelectListItem{ Text="VI", Value="VI"},
+              new SelectListItem{ Text="VII", Value="VII"},
+              new SelectListItem{ Text="VIII", Value="VIII"},
+              new SelectListItem{ Text="IX", Value="IX"},
+              new SelectListItem{ Text="X", Value="X"},
+              new SelectListItem{ Text="XI", Value="XI"},
+              new SelectListItem{ Text="XII", Value="XII"},
+              new SelectListItem{ Text="XIII", Value="XIII"},
+              new SelectListItem{ Text="XIV", Value="XIV"},
+              new SelectListItem{ Text="XV", Value="XV"},
+              new SelectListItem{ Text="XVI", Value="XVI"},
+
+            };
+            ViewBag.listaDistrito = ListaDistrito;
+            ViewBag.idDistrito = BuscaId(ListaDistrito, causapenal.Distrito);
+            #endregion
+
             List<Delito> delitoVM = _context.Delito.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
 

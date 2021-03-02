@@ -1066,6 +1066,8 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Revocacion-
+
+
         public async Task<IActionResult> EditRevocacion(int? id, string nombre, string cp)
         {
             if (id == null)
@@ -1440,7 +1442,15 @@ namespace scorpioweb.Controllers
             }
             return View(bitacora);
         }
+        public async Task<IActionResult> DeleteRegistro(int? id)
+        {
+            var Bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
+            _context.Bitacora.Remove(Bitacora);
+            await _context.SaveChangesAsync();
 
+            return RedirectToAction("Supervision/" + Bitacora.SupervisionIdSupervision, "Supervisiones");
+        }
+        
         private bool BitacoraExists(int id)
         {
             return _context.Bitacora.Any(e => e.IdBitacora == id);

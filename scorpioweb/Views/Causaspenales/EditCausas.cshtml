@@ -37,8 +37,11 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label">Distrito</label>
-                    <input name="Distrito" id="Distrito" value="@item.causaPenalVM.Distrito" class="form-control" />
+                    <select class="form-control" name="Distrito"
+                            asp-items="@(new SelectList(ViewBag.listaDistrito, "Value", "Text", @ViewBag.idDistrito))">
+                    </select>
                 </div>
+ 
                 <div class="form-group">
                     <label class="control-label">Causa Penal</label>
                     <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />

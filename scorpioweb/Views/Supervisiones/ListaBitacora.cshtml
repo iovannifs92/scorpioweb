@@ -75,9 +75,17 @@
                     </a>
                 </td>
                 <td>
-                    <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",null,Context.Request.Scheme)','Edita Bitacora',@item.IdBitacora)" class="btn btn-success">
-                        <i class="fa fa-pencil"></i> Editar
-                    </a>
+                    <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.IdBitacora">
+                        <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",null,Context.Request.Scheme)','Edita Bitacora',@item.IdBitacora)" class="btn btn-success">
+                            <i class="fa fa-pencil"></i> Editar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar 
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    
                 </td>
             </tr>
         }
