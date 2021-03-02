@@ -22,7 +22,7 @@
 
             }
         })
-    } 
+    }
 
 </script>
 
@@ -53,56 +53,51 @@
     <tbody>
         @foreach (var item in ViewData["bitacora"] as IEnumerable<scorpioweb.Models.Bitacora>)
         {
-            <tr>
-                <td>
-                    @if (item.Fecha != null)
+        <tr>
+            <td>
+                @if (item.Fecha != null)
                     {
-                        @(item.Fecha.Value.ToString("dd MMMM yyyy"))
+                @(item.Fecha.Value.ToString("dd MMMM yyyy"))
                     }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TipoPersona)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TipoVisita)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Texto)
-                </td>
-                <td>
-                    <a id="btnEditar" href="~/Evidencia/@Html.DisplayFor(modelItem => item.RutaEvidencia)" target="_blank">
-                        <i class="fa fa-paperclip fa-6"></i>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoPersona)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoVisita)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Texto)
+            </td>
+            <td>
+                <a id="btnEditar" href="~/Evidencia/@Html.DisplayFor(modelItem => item.RutaEvidencia)" target="_blank">
+                    <i class="fa fa-paperclip fa-6"></i>
+                </a>
+            </td>
+            <td>
+                <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.IdBitacora">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",null,Context.Request.Scheme)','Edita Bitacora',@item.IdBitacora)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
                     </a>
-                </td>
-                <td>
-                    <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.IdBitacora">
-                        <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",null,Context.Request.Scheme)','Edita Bitacora',@item.IdBitacora)" class="btn btn-success">
-                            <i class="fa fa-pencil"></i> Editar
-                        </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Borrar 
-                        </button>
-                    </form>
-                </td>
-                <td>
-                    
-                </td>
-            </tr>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Borrar
+                    </button>
+                </form>
+            </td>
+            <td>
+            </td>
+        </tr>
         }
 
     </tbody>
 </table>
- <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
-        <i class="fa fa-plus"></i>  Agregar Registro
- </a>
-    
+<a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
+    <i class="fa fa-plus"></i>  Agregar Registro
+</a>
+
 
 <div>
     <a asp-action="PersonaSupervision" class="btn btn-link">
         Regresar a lista
     </a>
 </div>
-
-
-
-
