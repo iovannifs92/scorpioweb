@@ -37,7 +37,7 @@
                         asp-items="@(new SelectList(ViewBag.listaCuentaEvaluacion, "Value", "Text", @ViewBag.idCuentaEvaluacion))">
                 </select>
             </div>
-            @if (ViewBag.eveluacion == "SI" || ViewBag.eveluacion == null)
+            @if (ViewBag.eveluacion == null || ViewBag.eveluacion == "SI")
             {
                 <div class="form-group" id="DivFechaEntrega">
                     <label class="control-label">Fecha de Entrega</label>
@@ -50,7 +50,7 @@
                     <span asp-validation-for="EvaluadorCaso" class="text-danger"></span>
                 </div>
             }
-            @if (ViewBag.eveluacion == "NO" || ViewBag.evaluacion == "NA" || ViewBag.evaluacion == null)
+            @if (ViewBag.evaluacion == null || ViewBag.eveluacion == "NO" || ViewBag.evaluacion == "NA")
             {
                 <div class="form-group" id="DivFechaEntrega" style="display: none;">
                     <label class="control-label">Fecha de Entrega</label>
