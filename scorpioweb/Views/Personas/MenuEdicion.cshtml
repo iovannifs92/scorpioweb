@@ -1,50 +1,76 @@
 ﻿@model scorpioweb.Models.Persona
 
 @{
-    ViewData["Title"] = "MenuEdicion";
-    Layout = "/Views/Shared/_Layout.cshtml";
+  ViewData["Title"] = "MenuEdicion";
+  Layout = "/Views/Shared/_Layout.cshtml";
 }
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
 
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
-<h2 class="blockquote text-center" style="padding-top:3%;">@Model.Paterno @Model.Materno @Model.Nombre</h2>
+<script>
+  showModal = (url, title, id) => {
+    $.ajax({
+      type: "GET",
+      url: url + "?id=" + id,
+      success: function (res) {
+        $("#form-modal .modal-body").html(res);
+        $("#form-modal .modal-title").html(title);
+        $("#form-modal").modal('show');
+      },
+      error: function (res) {
+
+      }
+    })
+  }
+</script>
+
+<div class="row" style="text-align:center; padding-top:3%">
+  <img src="~/Fotos/@ViewBag.rutaFoto" class="img-thumbnail" width="200" height="200">
+  <br />
+  <a id="btnEditarFoto" style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personas",null,Context.Request.Scheme)','Edita Fotografía',@Model.IdPersona)" class="btn btn-success">
+    <i class="fa fa-pencil"></i> Editar Foto
+  </a>
+  <h2 class="blockquote">@Model.Paterno @Model.Materno @Model.Nombre</h2>
+</div>
 
 @*El color de el boton se define con el Id*@
 <div class="container">
-    <br>
+  <br>
 
-    <div class="row">
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="Edit" asp-route-id="@Model.IdPersona" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Datos Generales</a>
-        </div>
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditDomicilio" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Domicilio</a>
-        </div>
+  <div class="row">
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="Edit" asp-route-id="@Model.IdPersona" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Datos Generales</a>
     </div>
-    <div class="row">
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditEscolaridad" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Escolaridad</a>
-        </div>
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditTrabajo" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Trabajo</a>
-        </div>
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="EditDomicilio" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Domicilio</a>
     </div>
-    <div class="row">
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditActividadesSociales" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Actividades Sociales</a>
-        </div>
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditAbandonoEstado" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="abandonoEstado" class="btn btn-primary btn-lg btn-block btn-huge">Viajes fuera del Estado</a>
-        </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="EditEscolaridad" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Escolaridad</a>
     </div>
-    <div class="row">
-        <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditSalud" asp-route-genero="@Model.Genero" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona " id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Salud</a>
-        </div>
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="EditTrabajo" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Trabajo</a>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="EditActividadesSociales" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Actividades Sociales</a>
+    </div>
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="EditAbandonoEstado" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona" id="abandonoEstado" class="btn btn-primary btn-lg btn-block btn-huge">Viajes fuera del Estado</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6" style="padding-top:3%;">
+      <a asp-action="EditSalud" asp-route-genero="@Model.Genero" asp-route-nombre="@Model.Paterno @Model.Materno @Model.Nombre" asp-route-id="@Model.IdPersona " id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Salud</a>
+    </div>
+  </div>
 </div>
 
 <br />
 <a asp-action="Index" style="font-size:20px;" class="btn btn-link">
-    Regresar a lista de usuarios
+  Regresar a lista de usuarios
 </a>

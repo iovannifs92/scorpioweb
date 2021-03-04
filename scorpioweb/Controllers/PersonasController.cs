@@ -1267,7 +1267,76 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            string rutaFoto = ((persona.Genero == ("M")) ? "hombre.png" : "mujer.png");
+            if (persona.rutaFoto != null)
+            {
+                rutaFoto = persona.rutaFoto;
+            }
+            ViewBag.rutaFoto = rutaFoto;
+
             return View(persona);
+        }
+
+        public async Task<IActionResult> EditFoto(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            if (persona == null)
+            {
+                return NotFound();
+            }
+
+            return View(persona);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditFoto([Bind("IdPersona")] Persona persona, IFormFile fotoEditada)
+        {
+          if (ModelState.IsValid)
+          {
+            #region -Guardar Foto-
+            var file_name = (from a in _context.Persona
+                         where a.IdPersona == persona.IdPersona
+                         select a.rutaFoto).FirstOrDefault();
+            if(file_name == null)
+            {
+              var query = (from a in _context.Persona
+                           where a.IdPersona == persona.IdPersona
+                           select a).FirstOrDefault();
+              file_name = query.IdPersona + "_" + query.Paterno + "_" + query.Nombre + ".jpg";
+              query.rutaFoto = file_name;
+              try
+              {
+                  _context.Update(query);
+                  await _context.SaveChangesAsync();
+              }
+              catch (DbUpdateConcurrencyException)
+              {
+                  if (!PersonaExists(query.IdPersona))
+                  {
+                      return NotFound();
+                  }
+                  else
+                  {
+                      throw;
+                  }
+              }
+            }
+            var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
+            #endregion
+
+            fotoEditada.CopyTo(stream);
+            stream.Close();
+            return RedirectToAction("MenuEdicion/" + persona.IdPersona, "Personas");
+          }
+          return View(persona);
         }
 
         String BuscaId(List<SelectListItem> lista, String texto)
