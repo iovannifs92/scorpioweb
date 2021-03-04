@@ -63,23 +63,23 @@
             <th>
                 @Html.DisplayFor(modelItem => item.CausaPenal)
             </th>
-
             <td>
                 <from>
-                    <a style="margin-bottom:5px" class="btn btn-success" asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">
-                        <i class="fa fa-pencil"></i> Editar Causa
+                    <a style="margin-bottom:5px" class="btn btn-success hidden-md-down" asp-action="EditCausas" asp-route-id="@item.IdCausaPenal">
+                        <i class="fa fa-pencil"></i>Editar Causa
                     </a>
                 </from>
                 <form>
-                    <a style="margin-bottom:5px" class="btn btn-info" asp-action="DetailsCP" asp-route-id="@item.IdCausaPenal">
-                        <i class="fa fa-eye"></i> Personas Asignadas
+                    <a style="margin-bottom:5px" class="btn btn-info hidden-md-down" asp-action="DetailsCP" asp-route-id="@item.IdCausaPenal">
+                        <i class="fa fa-eye"></i>Personas Asignadas
                     </a>
                 </form>
                 <form>
-                    <a style="margin-bottom:5px" class="btn btn-primary" asp-action="Asignacion" asp-route-id="@item.IdCausaPenal" asp-route-cp="@item.CausaPenal">
-                        <i class="fa fa-plus"></i>  Asignación
+                    <a style="margin-bottom:5px" class="btn btn-primary hidden-md-down" asp-action="Asignacion" asp-route-id="@item.IdCausaPenal" asp-route-cp="@item.CausaPenal">
+                        <i class="fa fa-plus"></i>Asignación
                     </a>
                 </form>
+
             </td>
         </tr>
         }
