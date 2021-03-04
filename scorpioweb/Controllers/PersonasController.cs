@@ -1648,7 +1648,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor")] Persona persona)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista")] Persona persona)
         {
             string currentUser = User.Identity.Name;
 
@@ -1672,6 +1672,8 @@ namespace scorpioweb.Controllers
                 persona.ConsumoSustancias = normaliza(persona.ConsumoSustancias);
                 persona.Familiares = normaliza(persona.Familiares);
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
+                persona.rutaFoto = normaliza(persona.rutaFoto);
+                persona.Capturista = normaliza(persona.Capturista);
 
                 #region -ConsumoSustancias-
                 //Sustancias editadas
