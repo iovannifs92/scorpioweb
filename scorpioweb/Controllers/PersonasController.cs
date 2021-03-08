@@ -1304,7 +1304,7 @@ namespace scorpioweb.Controllers
             var file_name = (from a in _context.Persona
                          where a.IdPersona == persona.IdPersona
                          select a.rutaFoto).FirstOrDefault();
-            if(file_name == null)
+            if(file_name == null || file_name=="S-D")
             {
               var query = (from a in _context.Persona
                            where a.IdPersona == persona.IdPersona
