@@ -153,7 +153,7 @@
                 tipo = 0;
                 $('#modalAsientoFamiliar').modal('hidden')
             }
-            
+
         });
 
         $("#ReferenciasPersonales").change(function () {
@@ -356,6 +356,11 @@
         });
 
         //#endregion
+
+        $.validator.setDefaults({
+            ignore: "collapse1"
+        });
+
     });
 
 
@@ -499,7 +504,7 @@
             var frecuencia = f.options[f.selectedIndex].value;/////////////////
             var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
-            var observaciones = document.getElementById("FEobservaciones").value;       
+            var observaciones = document.getElementById("FEobservaciones").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
 
             $.ajax({
@@ -546,7 +551,7 @@
     });
 
 
-    //region Poner en "No" el drpodown si cancela en todos los modales 
+    //region Poner en "No" el drpodown si cancela en todos los modales
     $(document).ready(function () {
         $('#btnCloseCS').on("click", function (e) {
             e.preventDefault();
@@ -587,9 +592,6 @@
     });
     //endregion
 
-
-
-
 </script>
 
 @{
@@ -605,10 +607,10 @@
         <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data">
             <div class="container">
                 <div class="panel-group">
-                    <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
+                    <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
                         <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse1" onclick="mostrar">Datos Generales</a>
+                                <p style="margin-bottom:unset">Datos Generales</p>
                             </h4>
                         </div>
                         <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
@@ -774,10 +776,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
+                    <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;" data-toggle="collapse" href="#collapse2" onclick="mostrar">
                         <div class="panel-heading" style="color:#fff; background-color:#415667; border-color:#415667;">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse2" onclick="mostrar">Domicilio</a>
+                                <p style="margin-bottom:unset">Domicilio</pstyle="margin-bottom:unset">
                             </h4>
                         </div>
                         <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
@@ -975,10 +977,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;">
+                    <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
                         <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse3" onclick="mostrar">Escolaridad</a>
+                                <p style="margin-bottom:unset">Escolaridad</p>
                             </h4>
                         </div>
                         <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
@@ -1024,13 +1026,15 @@
 
                         </div>
                     </div>
-                    <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;">
+                    <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;" data-toggle="collapse" href="#collapse4" onclick="mostrar">
                         <div class="panel-heading" style="color:#fff; background-color:#80AEAB; border-color:#80AEAB;">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse4" onclick="mostrar">Trabajo</a>
+                                <p style="margin-bottom:unset">Trabajo</p>
                             </h4>
                         </div>
                         <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
+
+
                             <div class="form-group col-md-4">
                                 <label class="control-label">¿Trabaja actualmente?</label>
                                 <select required class="form-control" name="trabaja">
@@ -1124,10 +1128,10 @@
 
                         </div>
                     </div>
-                    <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;">
+                    <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;" data-toggle="collapse" href="#collapse5" onclick="mostrar" >
                         <div class="panel-heading" style="color:#fff; background-color:#233460; border-color:#233460;">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse5" onclick="mostrar">Actividades Sociales</a>
+                                <p style="margin-bottom:unset">Actividades Sociales</p>
                             </h4>
                         </div>
                         <div id="collapse5" class="panel-collapse collapse" style="padding-top:1%;">
@@ -1166,10 +1170,10 @@
                             </div>
                         </div>
                     </div>
-                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
+                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
                         <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse6" onclick="mostrar">Viajes fuera del Estado</a>
+                                <p style="margin-bottom:unset">Viajes fuera del Estado</p>
                             </h4>
                         </div>
                         <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
@@ -1240,15 +1244,15 @@
                                 </select>
                             </div>
                             @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                            <label class="control-label">¿Cuántos familiares?</label>
-                            <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                        </div>*@
+                                    <label class="control-label">¿Cuántos familiares?</label>
+                                    <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                                </div>*@
                         </div>
                     </div>
                     <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
-                        <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;">
+                        <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;" data-toggle="collapse" href="#collapse7" onclick="mostrar">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse7" onclick="mostrar">Salud</a>
+                                <p style="margin-bottom:unset">Salud</p>
                             </h4>
                         </div>
                         <div id="collapse7" class="panel-collapse collapse" style="padding-top:1%;">
@@ -1324,17 +1328,17 @@
                     </div>
                 </div>
             </div>
-            <div class="custom-file">
+            <div class="custom-file" style="margin-bottom:20px">
                 <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
-            </div>            
-            <div class="form-group">
-                <input type="submit" value="Guardar Registro" class="btn btn-default" />
+            </div>
+            <div class="form-group" style="margin-top:20px">
+                <button class="btn btn-primary" type="submit" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="collapse1 collapse2 collapse3">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
             </div>
         </form>
     </div>
 </div>
-
-
 
 <!-- Modal Consumo de sustancias Secundario -->
 <div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

@@ -18,87 +18,89 @@
         oficialia=true;
     }
 }
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
-    <div class="card-group" style="padding-top:2%">
-        @if (adminUser)
+<div class="card-group" style="padding-top:2%">
+    @if (adminUser)
         {
-            <div class="col-sm-3 col-md-3 card text-center">
+    <div class="col-sm-3 col-md-3 card text-center">
 
-                <div class="card-body">
-                    <h4 class="card-title">
-                        <a asp-controller="Personas" asp-action="AsignacionSupervision">
-                            <img class="card-img-top" src="~/images/asignacion.png" alt="Card image cap" style="padding-bottom:5%;" />
-                            Asignación de supervisión
-                        </a>
-                    </h4>
-                    <p class="card-text">
-                        Asignación de nuevas supervisiónes
-                    </p>
-                </div>
-            </div>
-        }
-        @if (!oficialia)
-        {
-            <div class="col-sm-3 col-md-3 card text-center">
-                <div class="card-body">
-                    <h4 class="card-title">
-                        @if (adminUser)
-                        {
-                            <a asp-controller="Personas" asp-action="Index">
-                                <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                                Supervisados
-                            </a> }
-                        else
-                        {
-                            <a asp-controller="Personas" asp-action="ListadoSupervisor">
-                                <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                                Supervisados
-                            </a>}
-                    </h4>
-                    <p class="card-text">
-                        Base de datos de todos los supervisados
-                    </p>
-                </div>
-            </div>
-        }            
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Causaspenales" asp-action="ListadeCausas">
-                        <img class="card-img-bottom" src="~/images/cp.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Control de causas penales
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Control y asgnación de casusas penales
-                </p>
-            </div>
-        </div>
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Supervisiones" asp-action="PersonaSupervision">
-                        <img class="card-img-bottom" src="~/images/supervision.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Control de Supervisión
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Control y seguimiento de personas supervisadas
-                </p>
-            </div>
-        </div>
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a href="#">
-                        <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Indicadores
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Indicadores relevantes de la supervisión de la Coordinación de Medidas Cautelares y Suspensión Condicional del Proceso
-                </p>
-            </div>
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Personas" asp-action="AsignacionSupervision">
+                    <img class="card-img-top" src="~/images/asignacion.png" alt="Card image cap" style="padding-bottom:5%;" />
+                    Asignación de supervisión
+                </a>
+            </h4>
+            <p class="card-text">
+                Asignación de nuevas supervisiónes
+            </p>
         </div>
     </div>
+        }
+    @if (!oficialia)
+        {
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                @if (adminUser)
+                        {
+                <a asp-controller="Personas" asp-action="Index">
+                    <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Supervisados
+                </a> }
+                        else
+                        {
+                <a asp-controller="Personas" asp-action="ListadoSupervisor">
+                    <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Supervisados
+                </a>}
+            </h4>
+            <p class="card-text">
+                Base de datos de todos los supervisados
+            </p>
+        </div>
+    </div>
+        }
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Causaspenales" asp-action="ListadeCausas">
+                    <img class="card-img-bottom" src="~/images/cp.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Control de causas penales
+                </a>
+            </h4>
+            <p class="card-text">
+                Control y asgnación de casusas penales
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Supervisiones" asp-action="PersonaSupervision">
+                    <img class="card-img-bottom" src="~/images/supervision.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Control de Supervisión
+                </a>
+            </h4>
+            <p class="card-text">
+                Control y seguimiento de personas supervisadas
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a href="#">
+                    <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Indicadores
+                </a>
+            </h4>
+            <p class="card-text">
+                Indicadores relevantes de la supervisión de la Coordinación de Medidas Cautelares y Suspensión Condicional del Proceso
+            </p>
+        </div>
+    </div>
+</div>
 
