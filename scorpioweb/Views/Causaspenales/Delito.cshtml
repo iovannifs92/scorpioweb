@@ -14,6 +14,7 @@
         <form asp-action="Delito">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdDelito" />
+            <input type="hidden" asp-for="CausaPenalIdCausaPenal" />
             <div class="form-group">
                 <label asp-for="Tipo" class="control-label"></label>
                 <input asp-for="Tipo" class="form-control" />

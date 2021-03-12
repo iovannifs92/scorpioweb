@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -21,7 +22,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
-        
+
         #endregion
 
         public string normaliza(string normalizar)
@@ -32,7 +33,7 @@ namespace scorpioweb.Controllers
             }
             return normalizar;
         }
-        
+
 
         public CausaspenalesController(penas2Context context)
         {
@@ -65,7 +66,7 @@ namespace scorpioweb.Controllers
 
             var causa = from p in _context.Causapenal
 
-                           select p;
+                        select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -93,7 +94,7 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
-            var i= PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize);
+            var i = PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize);
             return View(await PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -124,7 +125,7 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             var causa = from p in _context.Causapenal
-                           select p;
+                        select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -210,7 +211,7 @@ namespace scorpioweb.Controllers
             {
                 #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
-                                     select table).Count());
+                                     select table.IdCausaPenal).Max()) + 1;
                 causapenal.IdCausaPenal = idCausaPenal;
                 for (int i = 0; i < datosDelitos.Count; i = i + 3)
                 {
@@ -278,7 +279,7 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
-       
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -335,7 +336,7 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
-                if(selectedPersona.Count == 0)
+                if (selectedPersona.Count == 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -343,7 +344,8 @@ namespace scorpioweb.Controllers
                 int idPersona = Int32.Parse(selectedPersona[0]);
                 //int idPersona = persona_idPersona;
                 //Por el la primera opcion vacia
-                if (idPersona == 0) {
+                if (idPersona == 0)
+                {
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -406,7 +408,7 @@ namespace scorpioweb.Controllers
 
                 #region agregar 1 entrada a Fraccionesimpuestas
                 int idFraccionesimpuestas = ((from table in _context.Fraccionesimpuestas
-                                     select table).Count()) + 1;
+                                              select table).Count()) + 1;
                 fraccionesimpuestas.IdFracciones = idFraccionesimpuestas;
                 fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
                 #endregion
@@ -503,7 +505,7 @@ namespace scorpioweb.Controllers
         {
             return View();
         }
-     
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDelito(int id, Delito delitoDB, string Tipo, string Modalidad, string EspecificarDelito)
@@ -515,7 +517,7 @@ namespace scorpioweb.Controllers
                 delitoDB.Modalidad = Modalidad;
                 delitoDB.EspecificarDelito = EspecificarDelito;
                 delitoDB.CausaPenalIdCausaPenal = id;
-                
+
                 _context.Add(delitoDB);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("EditCausas", "Causaspenales", new { @id = id });
@@ -530,7 +532,7 @@ namespace scorpioweb.Controllers
         }
 
         #region -EditCausas-
-        public async Task<IActionResult> EditCausas(int? id)     
+        public async Task<IActionResult> EditCausas(int? id)
         {
             var IdCausaPenal = id;
             if (IdCausaPenal == null)
@@ -594,7 +596,7 @@ namespace scorpioweb.Controllers
             List<Delito> delitoVMV = _context.Delito.ToList();
             List<Causapenal> causaPenalVMV = _context.Causapenal.ToList();
 
-         
+
             ViewData["joinTablesCausaDelito"] =
                                      from causapenalTable in causaPenalVM
                                      join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
@@ -619,7 +621,7 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
@@ -633,8 +635,9 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(causa);
-                    await _context.SaveChangesAsync();
+                    var oldCausa = await _context.Causapenal.FindAsync(id);
+                    _context.Entry(oldCausa).CurrentValues.SetValues(causa);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -647,7 +650,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                
+
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -685,8 +688,10 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(delito);
-                    await _context.SaveChangesAsync();
+                    var oldDelito = await _context.Delito.FindAsync(id);
+                    _context.Entry(oldDelito).CurrentValues.SetValues(delito);
+                    //_context.Update(delito);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

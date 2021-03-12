@@ -997,7 +997,7 @@ namespace scorpioweb.Controllers
                 return RedirectToAction(nameof(Index));
                 #endregion
             }
-            return View(persona);
+            return RedirectToAction("ListadoSupervisor", "Personas");
         }
 
         #endregion

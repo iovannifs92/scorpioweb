@@ -14,5 +14,13 @@ namespace scorpioweb.Models
         public string Distrito { get; set ; }
         public string CausaPenal { get; set; }
 
+        //static Causapenal()
+        //{
+        //    Triggers<Causapenal>.Updated += e =>
+        //    {
+        //        int a = 1;                
+        //    };
+        //}
+
     }
 }

@@ -44,18 +44,20 @@
     <div class="col-sm-3 col-md-3 card text-center">
         <div class="card-body">
             <h4 class="card-title">
-                @if (adminUser)
-                        {
-                <a asp-controller="Personas" asp-action="Index">
-                    <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                    Supervisados
-                </a> }
-                        else
-                        {
-                <a asp-controller="Personas" asp-action="ListadoSupervisor">
-                    <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                    Supervisados
-                </a>}
+                @if (adminUser||oficialia)
+                {
+                    <a asp-controller="Personas" asp-action="Index">
+                        <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Supervisados
+                    </a> 
+                }
+                else
+                {
+                    <a asp-controller="Personas" asp-action="ListadoSupervisor">
+                        <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Supervisados
+                    </a>
+                }
             </h4>
             <p class="card-text">
                 Base de datos de todos los supervisados
