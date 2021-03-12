@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +13,8 @@ namespace scorpioweb.Controllers
 {
     public class CausaspenalesController : Controller
     {
-        #region -Variables Globales-
+        #region -Variables Globales-.
+        private readonly UserManager<ApplicationUser> userManager;
         public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
@@ -34,9 +37,10 @@ namespace scorpioweb.Controllers
         }
         
 
-        public CausaspenalesController(penas2Context context)
+        public CausaspenalesController(penas2Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            this.userManager = userManager;
         }
 
         #region -Index-
@@ -106,6 +110,22 @@ namespace scorpioweb.Controllers
            string searchString,
            int? pageNumber)
         {
+
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+            #endregion
+
+
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
@@ -210,7 +230,7 @@ namespace scorpioweb.Controllers
             {
                 #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
-                                     select table).Count()) + 1;
+                                     select table.IdCausaPenal).Max()) + 1;
                 causapenal.IdCausaPenal = idCausaPenal;
                 for (int i = 0; i < datosDelitos.Count; i = i + 3)
                 {
@@ -633,8 +653,9 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(causa);
-                    await _context.SaveChangesAsync();
+                    var oldCausa = await _context.Causapenal.FindAsync(id);
+                    _context.Entry(oldCausa).CurrentValues.SetValues(causa);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -685,8 +706,10 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(delito);
-                    await _context.SaveChangesAsync();
+                    var oldDelito = await _context.Delito.FindAsync(id);
+                    _context.Entry(oldDelito).CurrentValues.SetValues(delito);
+                    //_context.Update(delito);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

@@ -4,49 +4,49 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    @* Necesario para los modales en el servidor *@
-    <script src="~/js/jquery-1.11.1.min.js"></script>
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
-    <script type="text/javascript">
-        var tipo = 0;
-        $(document).ready(function () {
-            $('#btnGuardarDelito').on("click", function (e) {
-                e.preventDefault();
+<script type="text/javascript">
+    var tipo = 0;
+    $(document).ready(function () {
+        $('#btnGuardarDelito').on("click", function (e) {
+            e.preventDefault();
 
-                var tipodel = document.getElementById("tipoD").value;
-                var modalidad = document.getElementById("modalidadD").value;
-                var especificarD = document.getElementById("Edelito").value;
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/Causaspenales/GuardarDelito",
-                    traditional: true,
-                    data: {
-                        datosDelito: [tipodel, modalidad, especificarD],
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            alert(response.responseText);
-                            document.ready = document.getElementById("tipoD").value = '';
-                            document.ready = document.getElementById("modalidadD").value = '';
-                            document.ready = document.getElementById("Edelito").value = '';
-                            var otraDelito = confirm("¿Agregar otro delito?");
-                            if (otraDelito == true) {
-                                alert("Coloque los datos correspondientes");
-                            } else {
-                                $("#modalDelito").modal('hide');
-                            }
+            var tipodel = document.getElementById("tipoD").value;
+            var modalidad = document.getElementById("modalidadD").value;
+            var especificarD = document.getElementById("Edelito").value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/GuardarDelito",
+                traditional: true,
+                data: {
+                    datosDelito: [tipodel, modalidad, especificarD],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("tipoD").value = '';
+                        document.ready = document.getElementById("modalidadD").value = '';
+                        document.ready = document.getElementById("Edelito").value = '';
+                        var otraDelito = confirm("¿Agregar otro delito?");
+                        if (otraDelito == true) {
+                            alert("Coloque los datos correspondientes");
                         } else {
-                            alert(response.responseText);
+                            $("#modalDelito").modal('hide');
                         }
-                    },
-                    error: function (response) {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    } else {
+                        alert(response.responseText);
                     }
-                });
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
             });
         });
-    </script>
+    });
+</script>
 
 <h2>Crear causa Penal</h2>
 
@@ -62,7 +62,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Juez</label>
-                <input required name="juez" type="text" class="form-control"  maxlength="150"/>
+                <input required name="juez" type="text" class="form-control" maxlength="150" />
             </div>
             <div class="form-group">
                 <label class="control-label">Cambio</label>
@@ -127,29 +127,27 @@
                 </button>
 
             </div>
-            <div class="container">
-                <div class="form-group col-md-12">
-                    <label class="control-label">Tipo</label>
-                    <input required name="tipoD" id="tipoD" type="text" class="form-control" />
-                </div>
-                <div>
-                    <div class="form-grou col-md-12">
-                        <label class="control-label">Modalidad</label>
-                        <input required name="modalidadD" id="modalidadD" type="text" class="form-control" />
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label class="control-label">Especifique Delito</label>
-                        <input required name="Edelito" id="Edelito" type="text" class="form-control" />
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            <i class="fa fa-close"></i> Cerrar
-                        </button>
-                        <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">
-                            <i class="fa fa-save"></i> Guardar delito
-                        </button>
-                    </div>
-                </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tipo</label>
+                <input required name="tipoD" id="tipoD" type="text" class="form-control" />
             </div>
+            <div class="form-grou col-md-12">
+                <label class="control-label">Modalidad</label>
+                <input required name="modalidadD" id="modalidadD" type="text" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Especifique Delito</label>
+                <input required name="Edelito" id="Edelito" type="text" class="form-control" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-close"></i> Cerrar
+                </button>
+                <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar delito
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

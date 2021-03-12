@@ -65,7 +65,6 @@ namespace scorpioweb.Controllers
         };
         #endregion
 
-
         #region -Constructor-
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
@@ -85,6 +84,20 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+            #endregion
+
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
@@ -108,9 +121,10 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.Paterno.Contains(searchString)
-                                        || p.Materno.Contains(searchString)
-                                        || p.Nombre.Contains(searchString));
+                personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+                                        || p.Materno.StartsWith(searchString)
+                                        || p.Nombre.StartsWith(searchString)
+                                        || p.Supervisor.StartsWith(searchString));
             }
 
             switch (sortOrder)
@@ -162,9 +176,10 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.Paterno.Contains(searchString)
-                                        || p.Materno.Contains(searchString)
-                                        || p.Nombre.Contains(searchString));
+                personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+                                        || p.Materno.StartsWith(searchString)
+                                        || p.Nombre.StartsWith(searchString)
+                                        || p.Supervisor.StartsWith(searchString));
             }
 
             switch (sortOrder)
@@ -182,7 +197,6 @@ namespace scorpioweb.Controllers
                     personas = personas.OrderBy(p => p.Paterno);
                     break;
             }
-
             int pageSize = 10;
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -998,7 +1012,7 @@ namespace scorpioweb.Controllers
                 return RedirectToAction(nameof(Index));
                 #endregion
             }
-            return View(persona);
+            return RedirectToAction("ListadoSupervisor", "Personas");
         }
 
         #endregion
