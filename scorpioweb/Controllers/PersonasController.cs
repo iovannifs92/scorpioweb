@@ -108,9 +108,10 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.Paterno.Contains(searchString)
-                                        || p.Materno.Contains(searchString)
-                                        || p.Nombre.Contains(searchString));
+                personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+                                        || p.Materno.StartsWith(searchString)
+                                        || p.Nombre.StartsWith(searchString)
+                                        || p.Supervisor.StartsWith(searchString));
             }
 
             switch (sortOrder)
@@ -162,9 +163,10 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.Paterno.Contains(searchString)
-                                        || p.Materno.Contains(searchString)
-                                        || p.Nombre.Contains(searchString));
+                personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+                                        || p.Materno.StartsWith(searchString)
+                                        || p.Nombre.StartsWith(searchString)
+                                        || p.Supervisor.StartsWith(searchString));
             }
 
             switch (sortOrder)
@@ -182,7 +184,6 @@ namespace scorpioweb.Controllers
                     personas = personas.OrderBy(p => p.Paterno);
                     break;
             }
-
             int pageSize = 10;
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
