@@ -12,7 +12,6 @@
     $(document).ready(function () {
         $('#btnGuardarDelito').on("click", function (e) {
             e.preventDefault();
-
             var tipodel = document.getElementById("tipoD").value;
             var modalidad = document.getElementById("modalidadD").value;
             var especificarD = document.getElementById("Edelito").value;
@@ -56,13 +55,12 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             <div class="form-group">
-                <input type="hidden" name="cnpp" id="cnpp" type="text" class="form-control" readonly />
+                <input type="hidden" name="cnpp" id="cnpp" value="Si" type="text" class="form-control" readonly />
             </div>
             <div class="form-group">
                 <label class="control-label">Juez</label>
-                <input required name="juez" type="text" class="form-control" maxlength="150" />
+                <input required name="juez" type="text" class="form-control" />
             </div>
             <div class="form-group">
                 <label class="control-label">Cambio</label>

@@ -210,7 +210,7 @@ namespace scorpioweb.Controllers
             {
                 #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
-                                     select table).Count()) + 1;
+                                     select table).Count());
                 causapenal.IdCausaPenal = idCausaPenal;
                 for (int i = 0; i < datosDelitos.Count; i = i + 3)
                 {
