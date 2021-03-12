@@ -686,7 +686,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia)//[Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización")]
+            IFormFile fotografia)
         {
             string currentUser = User.Identity.Name;
 
@@ -843,14 +843,6 @@ namespace scorpioweb.Controllers
                 abandonoEstado.PersonaIdPersona = idPersona;
                 saludfisica.PersonaIdPersona = idPersona;
 
-
-                #region -Guardar Foto-
-                string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
-                persona.rutaFoto = file_name;
-                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
-                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                #endregion
-
                 #endregion
 
                 #region -ConsumoSustancias-
@@ -982,6 +974,17 @@ namespace scorpioweb.Controllers
                 }
                 #endregion
 
+                #region -Guardar Foto-
+                if(fotografia != null)
+                {
+                  string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
+                  persona.rutaFoto = file_name;
+                  var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+                  var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                  await fotografia.CopyToAsync(stream);
+                }
+                #endregion
+
                 #region -Añadir a contexto-
                 _context.Add(persona);
                 _context.Add(domicilio);
@@ -991,7 +994,6 @@ namespace scorpioweb.Controllers
                 _context.Add(actividadsocial);
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
-                await fotografia.CopyToAsync(stream);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
                 #endregion
