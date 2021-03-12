@@ -63,7 +63,7 @@
             <th>
                 @Html.DisplayFor(modelItem => item.UltimaActualización)
             </th>
-            @if (oficialia)
+            @if (!oficialia)
             {
                 <td>
                     <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
