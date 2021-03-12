@@ -4,6 +4,16 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+@{ bool oficialia = false;}
+
+@foreach (var item in ViewBag.RolesUsuario)
+{
+    if (item == "Oficialia")
+    {
+        oficialia = true;
+    }
+}
+
 <h2>Supervisados MC y SCP</h2>
 <p>
     <a asp-action="Create">
@@ -43,16 +53,18 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr valign="middle">
-                <td>
-                    @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Supervisor)
-                </td>
-                <th>
-                    @Html.DisplayFor(modelItem => item.UltimaActualización)
-                </th>
+        <tr valign="middle">
+            <td>
+                @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supervisor)
+            </td>
+            <th>
+                @Html.DisplayFor(modelItem => item.UltimaActualización)
+            </th>
+            @if (oficialia)
+            {
                 <td>
                     <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
                         <i class="fa fa-pencil"></i>
@@ -64,7 +76,8 @@
                     </a>
                     @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
                 </td>
-            </tr>
+            }
+        </tr>
         }
     </tbody>
 </table>

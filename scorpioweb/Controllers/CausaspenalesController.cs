@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -210,7 +211,7 @@ namespace scorpioweb.Controllers
             {
                 #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
-                                     select table).Count()) + 1;
+                                     select table.IdCausaPenal).Max()) + 1;
                 causapenal.IdCausaPenal = idCausaPenal;
                 for (int i = 0; i < datosDelitos.Count; i = i + 3)
                 {
@@ -633,8 +634,9 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(causa);
-                    await _context.SaveChangesAsync();
+                    var oldCausa = await _context.Causapenal.FindAsync(id);
+                    _context.Entry(oldCausa).CurrentValues.SetValues(causa);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -685,8 +687,10 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(delito);
-                    await _context.SaveChangesAsync();
+                    var oldDelito = await _context.Delito.FindAsync(id);
+                    _context.Entry(oldDelito).CurrentValues.SetValues(delito);
+                    //_context.Update(delito);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
