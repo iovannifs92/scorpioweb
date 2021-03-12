@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,8 @@ namespace scorpioweb.Controllers
 {
     public class CausaspenalesController : Controller
     {
-        #region -Variables Globales-
+        #region -Variables Globales-.
+        private readonly UserManager<ApplicationUser> userManager;
         public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
@@ -35,9 +37,10 @@ namespace scorpioweb.Controllers
         }
         
 
-        public CausaspenalesController(penas2Context context)
+        public CausaspenalesController(penas2Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            this.userManager = userManager;
         }
 
         #region -Index-
@@ -107,6 +110,22 @@ namespace scorpioweb.Controllers
            string searchString,
            int? pageNumber)
         {
+
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+            #endregion
+
+
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";

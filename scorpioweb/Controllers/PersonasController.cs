@@ -65,7 +65,6 @@ namespace scorpioweb.Controllers
         };
         #endregion
 
-
         #region -Constructor-
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
@@ -85,6 +84,20 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+            #endregion
+
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
