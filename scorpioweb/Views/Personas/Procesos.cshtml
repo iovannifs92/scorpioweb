@@ -1,0 +1,25 @@
+﻿@model IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>
+
+@{
+  Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+@foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
+{
+  <h2>Personas Dentro de la CP @item.causaPenalVM.CausaPenal</h2>
+  break;
+}
+<h3>Causa Penal</h3>
+
+@foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
+{
+  <tr>
+    <td>
+      @Html.DisplayFor(modelItem => item.personaVM.Paterno)
+    </td>
+  </tr>
+}
+

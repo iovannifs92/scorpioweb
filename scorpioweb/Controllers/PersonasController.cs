@@ -1268,6 +1268,40 @@ namespace scorpioweb.Controllers
 
         }
         #endregion        
+        public async Task<IActionResult> Procesos(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            if (persona == null)
+            {
+                return NotFound();
+            }
+
+            #region -To List databases-
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
+            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
+            #endregion
+
+            #region -Jointables-
+            ViewData["joinTables"] = from personaTable in personaVM
+                                     join personaCausaPenalTable in personaCausaPenalVM on personaTable.IdPersona equals personaCausaPenalTable.PersonaIdPersona
+                                     join causaPenalTable in causaPenalVM on personaCausaPenalTable.CausaPenalIdCausaPenal equals causaPenalTable.IdCausaPenal
+                                     where personaTable.IdPersona == id
+                                     orderby personaTable.Paterno
+                                     select new PersonaCausaPenalViewModel
+                                     {
+                                         personaVM = personaTable,
+                                         causaPenalVM = causaPenalTable
+                                     };
+            #endregion
+
+            return View();
+        }
 
         #region -Edicion-        
 
@@ -2136,8 +2170,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
-
         #region Edit Dmicilio Secundario
 
         public async Task<IActionResult> EditDomSecundario2(int? id)
@@ -2725,8 +2757,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditFamiliaresForaneos-
-
-        public async Task<IActionResult> EditFamiliaresForaneos(int id)
+        public async Task<IActionResult> EditFamiliaresForaneos(int? id)
         {
             if (id == null)
             {
@@ -2839,9 +2870,6 @@ namespace scorpioweb.Controllers
             }
             return View(familiaresforaneos);
         }
-
-
-
 
         public async Task<IActionResult> EditFamiliaresForaneos2(int? id)
         {
@@ -2960,12 +2988,8 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaProseso = listaNoSi;
 
-
             ViewBag.listaEnterar = listaNoSiNA;
 
-
-
-            #endregion
             if (familiaresforaneos == null)
             {
                 return NotFound();
@@ -2973,7 +2997,6 @@ namespace scorpioweb.Controllers
 
             return View(familiaresforaneos);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -3033,10 +3056,7 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-
-
         #endregion
-
 
         #region -Editar Salud-
         public async Task<IActionResult> EditSalud(string nombre, string genero, int? id)
@@ -3144,7 +3164,7 @@ namespace scorpioweb.Controllers
             return View(saludfisica);
         }
         #endregion
-
+        #endregion
 
         #region -Borrar-
         // GET: Personas/Delete/5
