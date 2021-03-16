@@ -18,6 +18,7 @@ using SautinSoft.Document.Drawing;
 using QRCoder;
 using System.Drawing;
 using Size = SautinSoft.Document.Drawing.Size;
+using System.Security.Claims;
 
 namespace scorpioweb.Controllers
 {
@@ -1327,8 +1328,11 @@ namespace scorpioweb.Controllers
               query.rutaFoto = file_name;
               try
               {
-                  _context.Update(query);
-                  await _context.SaveChangesAsync();
+                var oldFoto = await _context.Persona.FindAsync(query.IdPersona);
+                _context.Entry(oldFoto).CurrentValues.SetValues(query);
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                //_context.Update(query);
+                //await _context.SaveChangesAsync();
               }
               catch (DbUpdateConcurrencyException)
               {
@@ -1707,8 +1711,11 @@ namespace scorpioweb.Controllers
 
                         try
                         {
-                            _context.Update(consumosustanciasBD);
-                            await _context.SaveChangesAsync();
+                            var oldconsumosustanciasBD = await _context.Consumosustancias.FindAsync(consumosustanciasBD.IdConsumoSustancias);
+                            _context.Entry(oldconsumosustanciasBD).CurrentValues.SetValues(consumosustanciasBD);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                            //_context.Update(consumosustanciasBD);
+                            //await _context.SaveChangesAsync();
                         }
                         catch (DbUpdateConcurrencyException)
                         {
@@ -1794,8 +1801,11 @@ namespace scorpioweb.Controllers
 
                         try
                         {
-                            _context.Update(asientoFamiliar);
-                            await _context.SaveChangesAsync();
+                            var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
+                            _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                            //_context.Update(asientoFamiliar);
+                            //await _context.SaveChangesAsync();
                         }
                         catch (DbUpdateConcurrencyException)
                         {
@@ -1886,8 +1896,11 @@ namespace scorpioweb.Controllers
 
                         try
                         {
-                            _context.Update(asientoFamiliar);
-                            await _context.SaveChangesAsync();
+                            var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
+                            _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                            //_context.Update(asientoFamiliar);
+                            //await _context.SaveChangesAsync();
                         }
                         catch (DbUpdateConcurrencyException)
                         {
@@ -1953,8 +1966,11 @@ namespace scorpioweb.Controllers
 
                 try
                 {
-                    _context.Update(persona);
-                    await _context.SaveChangesAsync();
+                    var oldPersona = await _context.Persona.FindAsync(id);
+                    _context.Entry(oldPersona).CurrentValues.SetValues(persona);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(persona);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2114,8 +2130,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(domicilio);
-                    await _context.SaveChangesAsync();
+                    var oldDomicilio = await _context.Domicilio.FindAsync(domicilio.IdDomicilio);
+                    _context.Entry(oldDomicilio).CurrentValues.SetValues(domicilio);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(domicilio);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2133,8 +2152,6 @@ namespace scorpioweb.Controllers
             return View(domicilio);
         }
         #endregion
-
-
 
         #region Edit Dmicilio Secundario
 
@@ -2275,8 +2292,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(domiciliosecundario);
-                    await _context.SaveChangesAsync();
+                    var oldDomicilio = await _context.Domiciliosecundario.FindAsync(domiciliosecundario.IdDomicilioSecundario);
+                    _context.Entry(oldDomicilio).CurrentValues.SetValues(domiciliosecundario);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(domiciliosecundario);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2433,8 +2453,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(estudios);
-                    await _context.SaveChangesAsync();
+                    var oldEstudios = await _context.Estudios.FindAsync(estudios.IdEstudios);
+                    _context.Entry(oldEstudios).CurrentValues.SetValues(estudios);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(estudios);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2556,8 +2579,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(trabajo);
-                    await _context.SaveChangesAsync();
+                    var oldTrabajo = await _context.Trabajo.FindAsync(trabajo.IdTrabajo);
+                    _context.Entry(oldTrabajo).CurrentValues.SetValues(trabajo);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(trabajo);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2617,8 +2643,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(actividadsocial);
-                    await _context.SaveChangesAsync();
+                    var oldActividadsocial = await _context.Actividadsocial.FindAsync(actividadsocial.IdActividadSocial);
+                    _context.Entry(oldActividadsocial).CurrentValues.SetValues(actividadsocial);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(actividadsocial);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2702,8 +2731,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(abandonoestado);
-                    await _context.SaveChangesAsync();
+                    var oldAbandonoestado = await _context.Abandonoestado.FindAsync(abandonoestado.IdAbandonoEstado);
+                    _context.Entry(oldAbandonoestado).CurrentValues.SetValues(abandonoestado);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(abandonoestado);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2733,6 +2765,7 @@ namespace scorpioweb.Controllers
 
             var familiaresforaneos = await _context.Familiaresforaneos.Where(m => m.PersonaIdPersona == id).FirstOrDefaultAsync();
             ViewBag.idFamiliarF = familiaresforaneos.PersonaIdPersona;
+
             #region GENERO          
             List<SelectListItem> ListaGenero;
             ListaGenero = new List<SelectListItem>
@@ -2744,7 +2777,6 @@ namespace scorpioweb.Controllers
             ViewBag.listaGenero = ListaGenero;
             ViewBag.idGenero = BuscaId(ListaGenero, familiaresforaneos.Sexo);
             #endregion
-
 
             #region Relacion
             List<SelectListItem> ListaRelacion;
@@ -2806,6 +2838,7 @@ namespace scorpioweb.Controllers
             ViewBag.ListaEstado = listaEstado;
             ViewBag.idEstado = familiaresforaneos.Estado;
             #endregion
+
             #region Frecuencia de contacto
             List<SelectListItem> ListaFrecuencia;
             ListaFrecuencia = new List<SelectListItem>
@@ -2982,8 +3015,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(familiaresforaneos);
-                    await _context.SaveChangesAsync();
+                    var oldFamiliaresforaneos = await _context.Familiaresforaneos.FindAsync(familiaresforaneos.IdFamiliaresForaneos);
+                    _context.Entry(oldFamiliaresforaneos).CurrentValues.SetValues(familiaresforaneos);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(familiaresforaneos);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -3123,8 +3159,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    _context.Update(saludfisica);
-                    await _context.SaveChangesAsync();
+                    var oldSaludfisica = await _context.Saludfisica.FindAsync(saludfisica.IdSaludFisica);
+                    _context.Entry(oldSaludfisica).CurrentValues.SetValues(saludfisica);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(saludfisica);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
