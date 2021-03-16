@@ -61,7 +61,7 @@ namespace scorpioweb
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                //app.UseExceptionHandler("/Home/Error");
             }
 
             app.UseStaticFiles();

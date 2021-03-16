@@ -933,7 +933,7 @@ s
                 <label asp-for="Curp" class="control-label"></label>
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
-            </div> 
+            </div>
             <div class="form-group col-md-11">
                 <label class="control-label col-md-10">¿Consume Sustancias?</label>
                 <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
@@ -957,7 +957,7 @@ s
                     <i class="fa fa-pencil"></i>
                     Editar
                 </button>
-            </div>  
+            </div>
             <div class="form-group col-md-11">
                 <label class="control-label">¿Tiene referencias?</label>
                 <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales"
@@ -981,6 +981,8 @@ s
                 <input asp-for="Supervisor" class="form-control" />
                 <span asp-validation-for="Supervisor" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="Capturista" />
+            <input type="hidden" asp-for="rutaFoto" />
             <div class="form-group col-md-12">
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save"></i>
