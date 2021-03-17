@@ -880,7 +880,7 @@ namespace scorpioweb.Controllers
                         consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
                         consumosustanciasBD.PersonaIdPersona = idPersona;
                         _context.Add(consumosustanciasBD);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
 
@@ -915,7 +915,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.Tipo = "FAMILIAR";
                         asientoFamiliar.PersonaIdPersona = idPersona;
                         _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
 
@@ -950,7 +950,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.Tipo = "REFERENCIA";
                         asientoFamiliar.PersonaIdPersona = idPersona;
                         _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
 
@@ -983,7 +983,7 @@ namespace scorpioweb.Controllers
                         familiaresForaneos.Observaciones = normaliza(datosFamiliaresExtranjero[i + 11][0]);
                         familiaresForaneos.PersonaIdPersona = idPersona;
                         _context.Add(familiaresForaneos);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
 
@@ -1007,7 +1007,7 @@ namespace scorpioweb.Controllers
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
                 await fotografia.CopyToAsync(stream);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 return RedirectToAction(nameof(Index));
                 #endregion
             }
@@ -1713,7 +1713,7 @@ namespace scorpioweb.Controllers
                         {
                             var oldconsumosustanciasBD = await _context.Consumosustancias.FindAsync(consumosustanciasBD.IdConsumoSustancias);
                             _context.Entry(oldconsumosustanciasBD).CurrentValues.SetValues(consumosustanciasBD);
-                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             //_context.Update(consumosustanciasBD);
                             //await _context.SaveChangesAsync();
                         }
@@ -1758,7 +1758,7 @@ namespace scorpioweb.Controllers
                         consumosustanciasBD.PersonaIdPersona = id;
                         consumosustanciasBD.IdConsumoSustancias = ++idConsumoSustancias;
                         _context.Add(consumosustanciasBD);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(null,1);
                     }
                 }
 
@@ -1803,7 +1803,7 @@ namespace scorpioweb.Controllers
                         {
                             var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
                             _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
-                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             //_context.Update(asientoFamiliar);
                             //await _context.SaveChangesAsync();
                         }
@@ -1855,7 +1855,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.PersonaIdPersona = id;
                         asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
                         _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(null, 1);
                     }
                 }
 
@@ -1898,7 +1898,7 @@ namespace scorpioweb.Controllers
                         {
                             var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
                             _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
-                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             //_context.Update(asientoFamiliar);
                             //await _context.SaveChangesAsync();
                         }
@@ -1950,7 +1950,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.PersonaIdPersona = id;
                         asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
                         _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(null, 1);
                     }
                 }
 
