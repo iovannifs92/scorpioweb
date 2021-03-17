@@ -368,8 +368,80 @@ namespace scorpioweb.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+
+                //int idPersonaCausaPenal = ((from table in _context.Personacausapenal
+                //                            select table).Count()) + 1;
+
+                //personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
+                //personacausapenal.PersonaIdPersona = idPersona;
+                //personacausapenal.CausaPenalIdCausaPenal = id;
+
+                //#region agregar 1 entrada a Supervision
+                //int idSupervision = ((from table in _context.Supervision
+                //                      select table).Count()) + 1;
+                //supervision.IdSupervision = idSupervision;
+                //supervision.PersonaIdPersona = idPersona;
+                //supervision.CausaPenalIdCausaPenal = id;
+                //#endregion
+
+                //#region agregar 1 entrada a Suspensionseguimiento
+                //int idSuspensionSeguimiento = ((from table in _context.Suspensionseguimiento
+                //                                select table).Count()) + 1;
+                //suspensionseguimiento.IdSuspensionSeguimiento = idSuspensionSeguimiento;
+                //suspensionseguimiento.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Aer
+                //int idAer = ((from table in _context.Aer
+                //              select table).Count()) + 1;
+                //aer.IdAer = idAer;
+                //aer.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Planeacionestrategica
+                //int idPlaneacionestrategica = ((from table in _context.Planeacionestrategica
+                //                                select table).Count()) + 1;
+                //planeacionestrategica.IdPlaneacionEstrategica = idPlaneacionestrategica;
+                //planeacionestrategica.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Cierredecaso
+                //int idCierredecaso = ((from table in _context.Cierredecaso
+                //                       select table).Count()) + 1;
+                //cierredecaso.IdCierreDeCaso = idCierredecaso;
+                //cierredecaso.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Cambiodeobligaciones
+                //int idCambiodeobligaciones = ((from table in _context.Cambiodeobligaciones
+                //                               select table).Count()) + 1;
+                //cambiodeobligaciones.IdCambiodeObligaciones = idCambiodeobligaciones;
+                //cambiodeobligaciones.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Revocacion
+                //int idRevocacion = ((from table in _context.Revocacion
+                //                     select table).Count()) + 1;
+                //revocacion.IdRevocacion = idRevocacion;
+                //revocacion.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Fraccionesimpuestas
+                //int idFraccionesimpuestas = ((from table in _context.Fraccionesimpuestas
+                //                              select table).Count()) + 1;
+                //fraccionesimpuestas.IdFracciones = idFraccionesimpuestas;
+                //fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
+                //#region agregar 1 entrada a Victima
+                //int idVictima = ((from table in _context.Victima
+                //                  select table).Count()) + 1;
+                //victima.IdVictima = idVictima;
+                //victima.SupervisionIdSupervision = idSupervision;
+                //#endregion
+
                 int idPersonaCausaPenal = ((from table in _context.Personacausapenal
-                                            select table).Count()) + 1;
+                                            select table.IdPersonaCausapenal).Max()) + 1;
 
                 personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
                 personacausapenal.PersonaIdPersona = idPersona;
@@ -377,70 +449,67 @@ namespace scorpioweb.Controllers
 
                 #region agregar 1 entrada a Supervision
                 int idSupervision = ((from table in _context.Supervision
-                                      select table).Count()) + 1;
-                supervision.IdSupervision = idSupervision;
-                supervision.PersonaIdPersona = idPersona;
-                supervision.CausaPenalIdCausaPenal = id;
+                                      select table.IdSupervision).Max()) + 1;
                 #endregion
 
                 #region agregar 1 entrada a Suspensionseguimiento
                 int idSuspensionSeguimiento = ((from table in _context.Suspensionseguimiento
-                                                select table).Count()) + 1;
+                                                select table.IdSuspensionSeguimiento).Max()) + 1;
                 suspensionseguimiento.IdSuspensionSeguimiento = idSuspensionSeguimiento;
                 suspensionseguimiento.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Aer
                 int idAer = ((from table in _context.Aer
-                              select table).Count()) + 1;
+                              select table.IdAer).Max()) + 1;
                 aer.IdAer = idAer;
                 aer.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Planeacionestrategica
                 int idPlaneacionestrategica = ((from table in _context.Planeacionestrategica
-                                                select table).Count()) + 1;
+                                                select table.IdPlaneacionEstrategica).Max()) + 1;
                 planeacionestrategica.IdPlaneacionEstrategica = idPlaneacionestrategica;
                 planeacionestrategica.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Cierredecaso
                 int idCierredecaso = ((from table in _context.Cierredecaso
-                                       select table).Count()) + 1;
+                                       select table.IdCierreDeCaso).Max()) + 1;
                 cierredecaso.IdCierreDeCaso = idCierredecaso;
                 cierredecaso.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Cambiodeobligaciones
                 int idCambiodeobligaciones = ((from table in _context.Cambiodeobligaciones
-                                               select table).Count()) + 1;
+                                               select table.IdCambiodeObligaciones).Max()) + 1;
                 cambiodeobligaciones.IdCambiodeObligaciones = idCambiodeobligaciones;
                 cambiodeobligaciones.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Revocacion
                 int idRevocacion = ((from table in _context.Revocacion
-                                     select table).Count()) + 1;
+                                     select table.IdRevocacion).Max()) + 1;
                 revocacion.IdRevocacion = idRevocacion;
                 revocacion.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Fraccionesimpuestas
                 int idFraccionesimpuestas = ((from table in _context.Fraccionesimpuestas
-                                              select table).Count()) + 1;
+                                              select table.IdFracciones).Max()) + 1;
                 fraccionesimpuestas.IdFracciones = idFraccionesimpuestas;
                 fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Victima
                 int idVictima = ((from table in _context.Victima
-                                  select table).Count()) + 1;
+                                  select table.IdVictima).Max()) +1; 
                 victima.IdVictima = idVictima;
                 victima.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 _context.Add(personacausapenal);
-                _context.Add(supervision);
+                _context.Add(supervision);  
                 await _context.SaveChangesAsync();
                 //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
                 _context.Add(suspensionseguimiento);
