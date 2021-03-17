@@ -368,7 +368,7 @@ namespace scorpioweb.Controllers
                 }
 
                 int idPersonaCausaPenal = ((from table in _context.Personacausapenal
-                                            select table).Count()) + 1;
+                                            select table.IdPersonaCausapenal).Max()) + 1;
 
                 personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
                 personacausapenal.PersonaIdPersona = idPersona;
@@ -440,7 +440,7 @@ namespace scorpioweb.Controllers
 
                 _context.Add(personacausapenal);
                 _context.Add(supervision);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
                 _context.Add(suspensionseguimiento);
                 _context.Add(aer);
@@ -450,7 +450,7 @@ namespace scorpioweb.Controllers
                 _context.Add(revocacion);
                 _context.Add(fraccionesimpuestas);
                 _context.Add(victima);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 return RedirectToAction(nameof(Index));
             }
             return View(personacausapenal);
