@@ -450,6 +450,9 @@ namespace scorpioweb.Controllers
                 #region agregar 1 entrada a Supervision
                 int idSupervision = ((from table in _context.Supervision
                                       select table.IdSupervision).Max()) + 1;
+                supervision.IdSupervision = idSupervision;
+                supervision.PersonaIdPersona = idPersona;
+                supervision.CausaPenalIdCausaPenal = id;
                 #endregion
 
                 #region agregar 1 entrada a Suspensionseguimiento
@@ -494,13 +497,6 @@ namespace scorpioweb.Controllers
                 revocacion.SupervisionIdSupervision = idSupervision;
                 #endregion
 
-                #region agregar 1 entrada a Fraccionesimpuestas
-                int idFraccionesimpuestas = ((from table in _context.Fraccionesimpuestas
-                                              select table.IdFracciones).Max()) + 1;
-                fraccionesimpuestas.IdFracciones = idFraccionesimpuestas;
-                fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
-                #endregion
-
                 #region agregar 1 entrada a Victima
                 int idVictima = ((from table in _context.Victima
                                   select table.IdVictima).Max()) +1; 
@@ -510,7 +506,7 @@ namespace scorpioweb.Controllers
 
                 _context.Add(personacausapenal);
                 _context.Add(supervision);  
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(null, 1);
                 //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
                 _context.Add(suspensionseguimiento);
                 _context.Add(aer);
@@ -518,7 +514,6 @@ namespace scorpioweb.Controllers
                 _context.Add(cierredecaso);
                 _context.Add(cambiodeobligaciones);
                 _context.Add(revocacion);
-                _context.Add(fraccionesimpuestas);
                 _context.Add(victima);
                 await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction(nameof(Index));
