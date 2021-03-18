@@ -24,7 +24,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
-        
+
         #endregion
 
         public string normaliza(string normalizar)
@@ -35,7 +35,7 @@ namespace scorpioweb.Controllers
             }
             return normalizar;
         }
-        
+
 
         public CausaspenalesController(penas2Context context, UserManager<ApplicationUser> userManager)
         {
@@ -69,7 +69,7 @@ namespace scorpioweb.Controllers
 
             var causa = from p in _context.Causapenal
 
-                           select p;
+                        select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -97,7 +97,7 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
-            var i= PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize);
+            var i = PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize);
             return View(await PaginatedList<Causapenal>.CreateAsync(causa.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -144,7 +144,7 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             var causa = from p in _context.Causapenal
-                           select p;
+                        select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -298,7 +298,7 @@ namespace scorpioweb.Controllers
             return View(causapenal);
         }
 
-       
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -355,7 +355,7 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
-                if(selectedPersona.Count == 0)
+                if (selectedPersona.Count == 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -363,7 +363,8 @@ namespace scorpioweb.Controllers
                 int idPersona = Int32.Parse(selectedPersona[0]);
                 //int idPersona = persona_idPersona;
                 //Por el la primera opcion vacia
-                if (idPersona == 0) {
+                if (idPersona == 0)
+                {
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -376,64 +377,61 @@ namespace scorpioweb.Controllers
 
                 #region agregar 1 entrada a Supervision
                 int idSupervision = ((from table in _context.Supervision
-                                      select table).Count()) + 1;
-                supervision.IdSupervision = idSupervision;
-                supervision.PersonaIdPersona = idPersona;
-                supervision.CausaPenalIdCausaPenal = id;
+                                      select table.IdSupervision).Max()) + 1;
                 #endregion
 
                 #region agregar 1 entrada a Suspensionseguimiento
                 int idSuspensionSeguimiento = ((from table in _context.Suspensionseguimiento
-                                                select table).Count()) + 1;
+                                                select table.IdSuspensionSeguimiento).Max()) + 1;
                 suspensionseguimiento.IdSuspensionSeguimiento = idSuspensionSeguimiento;
                 suspensionseguimiento.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Aer
                 int idAer = ((from table in _context.Aer
-                              select table).Count()) + 1;
+                              select table.IdAer).Max()) + 1;
                 aer.IdAer = idAer;
                 aer.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Planeacionestrategica
                 int idPlaneacionestrategica = ((from table in _context.Planeacionestrategica
-                                                select table).Count()) + 1;
+                                                select table.IdPlaneacionEstrategica).Max()) + 1;
                 planeacionestrategica.IdPlaneacionEstrategica = idPlaneacionestrategica;
                 planeacionestrategica.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Cierredecaso
                 int idCierredecaso = ((from table in _context.Cierredecaso
-                                       select table).Count()) + 1;
+                                       select table.IdCierreDeCaso).Max()) + 1;
                 cierredecaso.IdCierreDeCaso = idCierredecaso;
                 cierredecaso.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Cambiodeobligaciones
                 int idCambiodeobligaciones = ((from table in _context.Cambiodeobligaciones
-                                               select table).Count()) + 1;
+                                               select table.IdCambiodeObligaciones).Max()) + 1;
                 cambiodeobligaciones.IdCambiodeObligaciones = idCambiodeobligaciones;
                 cambiodeobligaciones.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Revocacion
                 int idRevocacion = ((from table in _context.Revocacion
-                                     select table).Count()) + 1;
+                                     select table.IdRevocacion).Max()) + 1;
                 revocacion.IdRevocacion = idRevocacion;
                 revocacion.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Fraccionesimpuestas
                 int idFraccionesimpuestas = ((from table in _context.Fraccionesimpuestas
-                                     select table).Count()) + 1;
+                                              select table.IdFracciones).Max()) + 1;
                 fraccionesimpuestas.IdFracciones = idFraccionesimpuestas;
                 fraccionesimpuestas.SupervisionIdSupervision = idSupervision;
                 #endregion
 
                 #region agregar 1 entrada a Victima
                 int idVictima = ((from table in _context.Victima
-                                  select table).Count()) + 1;
+                                  select table.IdVictima).Max()) +1; 
                 victima.IdVictima = idVictima;
                 victima.SupervisionIdSupervision = idSupervision;
                 #endregion
@@ -523,7 +521,7 @@ namespace scorpioweb.Controllers
         {
             return View();
         }
-     
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDelito(int id, Delito delitoDB, string Tipo, string Modalidad, string EspecificarDelito)
@@ -535,7 +533,7 @@ namespace scorpioweb.Controllers
                 delitoDB.Modalidad = Modalidad;
                 delitoDB.EspecificarDelito = EspecificarDelito;
                 delitoDB.CausaPenalIdCausaPenal = id;
-                
+
                 _context.Add(delitoDB);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("EditCausas", "Causaspenales", new { @id = id });
@@ -550,7 +548,7 @@ namespace scorpioweb.Controllers
         }
 
         #region -EditCausas-
-        public async Task<IActionResult> EditCausas(int? id)     
+        public async Task<IActionResult> EditCausas(int? id)
         {
             var IdCausaPenal = id;
             if (IdCausaPenal == null)
@@ -614,7 +612,7 @@ namespace scorpioweb.Controllers
             List<Delito> delitoVMV = _context.Delito.ToList();
             List<Causapenal> causaPenalVMV = _context.Causapenal.ToList();
 
-         
+
             ViewData["joinTablesCausaDelito"] =
                                      from causapenalTable in causaPenalVM
                                      join delitoTabla in delitoVM on causapenal.IdCausaPenal equals delitoTabla.CausaPenalIdCausaPenal
@@ -639,7 +637,7 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
@@ -668,7 +666,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                
+
                 return RedirectToAction(nameof(Index));
             }
             return View();

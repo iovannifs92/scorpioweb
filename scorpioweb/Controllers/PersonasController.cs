@@ -2019,7 +2019,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + persona.IdPersona, "Personas");
             }
             return View(persona);
         }
@@ -2183,7 +2183,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + domicilio.PersonaIdPersona, "Personas");
             }
             return View(domicilio);
         }
@@ -2506,7 +2506,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + estudios.PersonaIdPersona, "Personas");
             }
             return View(estudios);
         }
@@ -2632,7 +2632,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + trabajo.PersonaIdPersona, "Personas");
             }
             return View(trabajo);
         }
@@ -2696,7 +2696,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + actividadsocial.PersonaIdPersona, "Personas");
             }
             return View(actividadsocial);
         }
@@ -2784,7 +2784,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + abandonoestado.PersonaIdPersona, "Personas");
             }
             return View(abandonoestado);
         }
@@ -3200,7 +3200,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + saludfisica.PersonaIdPersona, "Personas");
             }
             return View(saludfisica);
         }

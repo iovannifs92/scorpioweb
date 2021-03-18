@@ -234,7 +234,7 @@ namespace scorpioweb.Controllers
 
             #region -idSuper-
             int idSuper = ((from table in _context.Supervision
-                            select table).Count()) + 1;
+                            select table.IdSupervision).Max()) + 1;
             supervision.IdSupervision = idSuper;
             #endregion
 
@@ -324,7 +324,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + supervision.IdSupervision, "Supervisiones");
             }
             return View(supervision);
         }
@@ -740,7 +740,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + aer.SupervisionIdSupervision, "Supervisiones");
             }
             return View(aer);
         }
@@ -800,7 +800,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + cambiodeobligaciones.SupervisionIdSupervision, "Supervisiones");
             }
             return View(cambiodeobligaciones);
         }
@@ -874,7 +874,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + cierredecaso.SupervisionIdSupervision, "Supervisiones");
             }
             return View(cierredecaso);
         }
@@ -935,7 +935,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
             }
             return View(fraccionesimpuestas);
         }
@@ -1081,7 +1081,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + planeacionestrategica.SupervisionIdSupervision, "Supervisiones");
             }
             return View(planeacionestrategica);
         }
@@ -1145,7 +1145,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + revocacion.SupervisionIdSupervision, "Supervisiones");
             }
             return View(revocacion);
         }
@@ -1205,7 +1205,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + suspensionseguimiento.SupervisionIdSupervision, "Supervisiones");
             }
             return View();
         }
@@ -1301,7 +1301,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(PersonaSupervision));
+                return RedirectToAction("Supervision/" + victima.SupervisionIdSupervision, "Supervisiones");
             }
             return View();
         }
@@ -1370,7 +1370,7 @@ namespace scorpioweb.Controllers
                 ViewBag.cp = cp.CausaPenal;
 
                 int idBitacora = ((from table in _context.Bitacora
-                                   select table).Count()) + 1;
+                                   select table.IdBitacora).Max()) + 1;
 
                 bitacora.IdBitacora = idBitacora;
 
