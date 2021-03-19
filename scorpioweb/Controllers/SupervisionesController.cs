@@ -509,20 +509,25 @@ namespace scorpioweb.Controllers
                 searchString = currentFilter;
             }
 
-            bool admin = false;
+            bool supervisor = false;
 
-            foreach (var user in userManager.Users)
+            var usuario = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(usuario);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
             {
-                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
+                rolUsuario.Add(roles[i]);
+                if(roles[i]== "SupervisorMCSCP")
                 {
-                    admin = true;
+                    supervisor = true;
                 }
             }
 
             var filter= from p in _context.Persona
                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                        where p.Supervisor == User.Identity.Name
                         select new SupervisionPyCP
                         {
                             personaVM = p,
@@ -530,11 +535,12 @@ namespace scorpioweb.Controllers
                             causapenalVM = cp
                         }; ;
 
-            if (admin)
+            if (supervisor)
             {
                 filter = from p in _context.Persona
                              join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                              join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                             where p.Supervisor == User.Identity.Name
                              select new SupervisionPyCP
                              {
                                  personaVM = p,
