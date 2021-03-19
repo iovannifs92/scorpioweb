@@ -1,8 +1,7 @@
-﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-@{
+﻿@*@{
     ViewData["Title"] = "CrearCausaPenal";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}*@
 
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
@@ -10,39 +9,108 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        $('#btnGuardarDelito').on("click", function (e) {
+//        $('#btnGuardarDelito').on("click", function (e) {
+//          $("#modalFamiliaresExtranjero").modal('hide');
+//          alert("h");
+            //e.preventDefault();
+            //var tipodel = document.getElementById("tipoD").value;
+            //var modalidad = document.getElementById("modalidadD").value;
+            //var especificarD = document.getElementById("Edelito").value;
+            //$.ajax({
+            //    type: "POST",
+            //    dataType: "json",
+            //    url: "/Causaspenales/GuardarDelito",
+            //    traditional: true,
+            //    data: {
+            //        datosDelito: [tipodel, modalidad, especificarD],
+            //    },
+            //    success: function (response) {
+            //        if (response.success) {
+            //            alert(response.responseText);
+            //            document.ready = document.getElementById("tipoD").value = '';
+            //            document.ready = document.getElementById("modalidadD").value = '';
+            //            document.ready = document.getElementById("Edelito").value = '';
+            //            var otraDelito = confirm("¿Agregar otro delito?");
+            //            if (otraDelito == true) {
+            //                alert("Coloque los datos correspondientes");
+            //            } else {
+            //                $("#modalDelito").modal('hide');
+            //            }
+            //        } else {
+            //            alert(response.responseText);
+            //        }
+            //    },
+            //    error: function (response) {
+            //        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            //    }
+            //});
+//        });
+
+        $('#btnGuardarFamiliarExtranjero').on("click", function (e) {
             e.preventDefault();
-            var tipodel = document.getElementById("tipoD").value;
-            var modalidad = document.getElementById("modalidadD").value;
-            var especificarD = document.getElementById("Edelito").value;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Causaspenales/GuardarDelito",
-                traditional: true,
-                data: {
-                    datosDelito: [tipodel, modalidad, especificarD],
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert(response.responseText);
-                        document.ready = document.getElementById("tipoD").value = '';
-                        document.ready = document.getElementById("modalidadD").value = '';
-                        document.ready = document.getElementById("Edelito").value = '';
-                        var otraDelito = confirm("¿Agregar otro delito?");
-                        if (otraDelito == true) {
-                            alert("Coloque los datos correspondientes");
-                        } else {
-                            $("#modalDelito").modal('hide');
-                        }
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
+          $("#modalFamiliaresExtranjero").modal('hide');
+            //var r = document.getElementById("FERelacion");
+            //var g = document.getElementById("FESexo");
+            //var t = document.getElementById("FETiempo");
+            //var pa = document.getElementById("FEPais");
+            //var f = document.getElementById("FEFrecuencia");
+            //var p = document.getElementById("FEEnteradoProceso");
+            //var e = document.getElementById("FEPuedeEnterarseO");
+
+            //var nombre = document.getElementById("FENombre").value;
+            //var relacion = r.options[r.selectedIndex].value; /////////////////
+            //var edad = document.getElementById("FEEdad").value;
+            //var sexo = g.options[g.selectedIndex].value; /////////////////
+            //var tiempo = t.options[t.selectedIndex].value;/////////////////
+            //var pais = pa.options[pa.selectedIndex].value;/////////////////
+            //var estado = document.getElementById("FEEstado").value;
+            //var telefono = document.getElementById("FETelefonoFamiliar").value;
+            //var frecuencia = f.options[f.selectedIndex].value;/////////////////
+            //var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
+            //var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            //var observaciones = document.getElementById("FEobservaciones").value;
+            ////var user = document.getElementById("usuario").firstChild.nodeValue;
+
+            //$.ajax({
+            //    type: "POST",
+            //    dataType: "json",
+            //    url: "/Personas/guardarFamiliarExtranjero",
+            //    traditional: true,
+            //    data: {
+            //        datosFE: [nombre, relacion, edad, sexo, tiempo, pais, estado, telefono, frecuencia, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
+            //    },
+            //    success: function (response) {
+            //        if (response.success) {
+            //            alert(response.responseText);
+            //            document.ready = document.getElementById("FENombre").value = '';
+            //            document.ready = document.getElementById("FERelacion").value = 'MAMA';
+            //            document.ready = document.getElementById("FEEdad").value = '0';
+            //            document.ready = document.getElementById("FESexo").value = 'M';
+            //            document.ready = document.getElementById("FETiempo").value = 'MENOS DE 1 AÑO';
+            //            document.ready = document.getElementById("FEPais").value = 'MEXICO';
+            //            document.ready = document.getElementById("FEEstado").value = '';
+            //            document.ready = document.getElementById("FETelefonoFamiliar").value = '';
+            //            document.ready = document.getElementById("FEFrecuencia").value = 'DIARIAMENTE';
+            //            document.ready = document.getElementById("FEEnteradoProceso").value = 'SI';
+            //            document.ready = document.getElementById("FEPuedeEnterarse").value = 'NA';
+            //            document.ready = document.getElementById("FEobservaciones").value = '';
+
+            //            $("#FEPuedeEnterarse").css("display", "none");
+
+            //            var otroFamiliar = confirm("¿Agregar otra persona?");
+            //            if (otroFamiliar == true) {
+            //                alert("Coloque los datos correspondientes");
+            //            } else {
+            //                $("#modalFamiliaresExtranjero").modal('hide');
+            //            }
+            //        } else {
+            //            alert(response.responseText);
+            //        }
+            //    },
+            //    error: function (response) {
+            //        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            //    }
+            //});
         });
     });
 </script>
@@ -55,10 +123,7 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input type="hidden" name="cnpp" id="cnpp" value="Si" type="text" class="form-control" readonly />
-            </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label class="control-label">Juez</label>
                 <input required name="juez" type="text" class="form-control" />
             </div>
@@ -94,9 +159,9 @@
             <div class="form-group">
                 <label class="control-label">Causa Penal</label>
                 <input required name="cp" type="text" class="form-control" />
-            </div>
+            </div>*@
             <div class="form-group">
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalFamiliaresExtranjero">
                     <i class="fa fa-plus"></i> Delito asociado a la Causa
                 </button>
             </div>
@@ -125,18 +190,18 @@
                 </button>
 
             </div>
-            <div class="form-group col-md-12">
+            @*<div class="form-group col-md-12">
                 <label class="control-label">Tipo</label>
                 <input required name="tipoD" id="tipoD" type="text" class="form-control" />
             </div>
-            <div class="form-grou col-md-12">
+            <div class="form-group col-md-12">
                 <label class="control-label">Modalidad</label>
                 <input required name="modalidadD" id="modalidadD" type="text" class="form-control" />
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Especifique Delito</label>
                 <input required name="Edelito" id="Edelito" type="text" class="form-control" />
-            </div>
+            </div>*@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -148,4 +213,118 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="modalFamiliaresExtranjero" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="color:#000; background-color:#fff; border-color:#fff;">
+        <h5 class="modal-title" style="font-size: 30px; color:#000;">Familiar en el extranjero</h5>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="control-label">Nombre</label>
+          <input class="form-control" maxlength="150" name="FENombre" type="text" id="FENombre" />
+        </div>
+        <div class="form-group col-md-4">
+          <label class="control-label">Edad</label>
+          <input class="form-control" value="0" name="FEEdad" type="text" id="FEEdad" />
+        </div>
+        <div class="form-group col-md-4">
+          <label class="control-label">Genero</label>
+          <select required class="form-control" name="FESexo" id="FESexo">
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+            <option value="N">Prefiero no decirlo</option>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label class="control-label">Relación</label>
+          <select class="form-control" name="FERelacion" id="FERelacion">
+            <option value="MAMA">Máma</option>
+            <option value="PAPA">Pápa</option>
+            <option value="HERMANO (A)">Hermano(a)</option>
+            <option value="HIJO (A)">Hijo(a)</option>
+            <option value="ABUELO (A)">Abuelo(a)</option>
+            <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
+            <option value="AMIGO">Amigo</option>
+            <option value="CONOCIDO">Conocido</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label class="control-label">Tiempo de conocerlo</label>
+          <select class="form-control" name="FETiempo" id="FETiempo">
+            <option value="MENOS DE 1 AÑO">Menos de un año</option>
+            <option value="ENTRE 1 Y 2 AÑOS">Entre 1 y 2 años</option>
+            <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años(a)</option>
+            <option value="MÁS DE 5 AÑOS">Más de 5 años</option>
+            <option value="TODA LA VIDA">Toda la vida</option>
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label class="control-label">País</label>
+          <select class="form-control" name="FEPais" id="FEPais">
+            <option value="MEXICO">México</option>
+            <option value="ESTADOS UNIDOS">Estados Unidos</option>
+            <option value="CANADA">Canada</option>
+            <option value="COLOMBIA">Colombia</option>
+            <option value="EL SALVADOR">El Salvador</option>
+            <option value="GUATEMALA">Guatemala</option>
+            <option value="CHILE">Chile</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Estado</label>
+          <input class="form-control" maxlength="70" name="FEEstado" type="text" id="FEEstado" />
+        </div>
+        <div class="form-group">
+          <label class="control-label">Teléfono (10 dígitos)</label>
+          <input name="FETelefonoFamiliar" id="FETelefonoFamiliar" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label class="control-label">Frecuencia de contacto</label>
+          <select class="form-control" name="FEFrecuencia" id="FEFrecuencia">
+            <option value="DIARIAMENTE">Diariamente</option>
+            <option value="UNA VEZ A LA SEMANA">Una vez a la semana</option>
+            <option value="UNA VEZ CADA 15 DIAS">Una vez cada 15 días</option>
+            <option value="UNA VEZ AL MES">Una vez al mes</option>
+            <option value="UNA VEZ AL AÑO">Una vez al año</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="control-label">¿Enterado de su proceso penal?</label>
+          <select required class="form-control" name="FEEnteradoProceso" id="FEEnteradoProceso">
+            <option value="SI">Si</option>
+            <option value="NO">No</option>
+          </select>
+        </div>
+        <div class="form-group" style="display:none;" id="FEPuedeEnterarse">
+          <label class="control-label">¿Se puede enterar?</label>
+          <select required class="form-control" name="FEPuedeEnterarse" id="FEPuedeEnterarseO">
+            <option value="NA">NA</option>
+            <option value="NO">No</option>
+            <option value="SI">Si</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="FEobservaciones">Observaciones</label>
+          <textarea maxlength="200" class="form-control" rows="2" name="FEobservaciones" id="FEobservaciones"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseFE">
+          <i class="fa fa-close"></i>
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary" id="btnGuardarFamiliarExtranjero" name="btnGuardarFamiliarExtranjero">
+          <i class="fa fa-save"></i>
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

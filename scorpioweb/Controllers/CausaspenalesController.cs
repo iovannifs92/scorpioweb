@@ -242,7 +242,7 @@ namespace scorpioweb.Controllers
                         delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
 
                         _context.Add(delitoDB);
-                        await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync(null, 1);
                     }
                 }
 
@@ -262,7 +262,7 @@ namespace scorpioweb.Controllers
                 causapenal.Cambio = cambio;
                 causapenal.CausaPenal = cp;
                 _context.Add(causapenal);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction(nameof(Index));
             }
             return View(causapenal);
@@ -305,7 +305,7 @@ namespace scorpioweb.Controllers
         {
             var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
             _context.Causapenal.Remove(causapenal);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(null, 1);
             return RedirectToAction(nameof(Index));
         }
         #endregion
@@ -448,7 +448,7 @@ namespace scorpioweb.Controllers
                 _context.Add(revocacion);
                 _context.Add(fraccionesimpuestas);
                 _context.Add(victima);
-                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction(nameof(Index));
             }
             return View(personacausapenal);
@@ -535,7 +535,7 @@ namespace scorpioweb.Controllers
                 delitoDB.CausaPenalIdCausaPenal = id;
 
                 _context.Add(delitoDB);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction("EditCausas", "Causaspenales", new { @id = id });
             }
             return View();
