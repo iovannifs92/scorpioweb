@@ -781,7 +781,7 @@ namespace scorpioweb.Controllers
                 estudios.InstitucionE = normaliza(institucionE);
                 estudios.Horario = normaliza(horarioE);
                 estudios.Direccion = normaliza(direccionE);
-                estudios.Telefono = normaliza(telefonoE);
+                estudios.Telefono = telefonoE;
                 estudios.Observaciones = normaliza(observacionesE);
                 #endregion
 
@@ -796,7 +796,7 @@ namespace scorpioweb.Controllers
                 trabajo.Salario = normaliza(salario);
                 trabajo.Direccion = normaliza(direccionT);
                 trabajo.Horario = normaliza(horarioT);
-                trabajo.Telefono = normaliza(telefonoT);
+                trabajo.Telefono = telefonoT;
                 trabajo.Observaciones = normaliza(observacionesT);
                 #endregion
 
@@ -804,7 +804,7 @@ namespace scorpioweb.Controllers
                 actividadsocial.TipoActividad = normaliza(tipoActividad);
                 actividadsocial.Horario = normaliza(horarioAS);
                 actividadsocial.Lugar = normaliza(lugarAS);
-                actividadsocial.Telefono = normaliza(telefonoAS);
+                actividadsocial.Telefono = telefonoAS;
                 actividadsocial.SePuedeEnterar = sePuedeEnterarAS;
                 actividadsocial.Referencia = normaliza(referenciaAS);
                 actividadsocial.Observaciones = normaliza(observacionesAS);
@@ -842,14 +842,14 @@ namespace scorpioweb.Controllers
 
                 #region -IdDomicilio-
                 int idDomicilio = ((from table in _context.Domicilio
-                                    select table).Count()) + 1;
+                                    select table.IdDomicilio).Max()) + 1;
                 domicilio.IdDomicilio = idDomicilio;
                 domiciliosecundario.IdDomicilio = idDomicilio;
                 #endregion
 
                 #region -IdPersona-
                 int idPersona = ((from table in _context.Persona
-                                  select table).Count()) + 1;
+                                  select table.IdPersona).Max()) + 1;
                 persona.IdPersona = idPersona;
                 domicilio.PersonaIdPersona = idPersona;
                 estudios.PersonaIdPersona = idPersona;
@@ -976,7 +976,7 @@ namespace scorpioweb.Controllers
                         familiaresForaneos.TiempoConocerlo = datosFamiliaresExtranjero[i + 4][0];
                         familiaresForaneos.Pais = datosFamiliaresExtranjero[i + 5][0];
                         familiaresForaneos.Estado = normaliza(datosFamiliaresExtranjero[i + 6][0]);
-                        familiaresForaneos.Telefono = normaliza(datosFamiliaresExtranjero[i + 7][0]);
+                        familiaresForaneos.Telefono = datosFamiliaresExtranjero[i + 7][0];
                         familiaresForaneos.FrecuenciaContacto = datosFamiliaresExtranjero[i + 8][0];
                         familiaresForaneos.EnteradoProceso = datosFamiliaresExtranjero[i + 9][0];
                         familiaresForaneos.PuedeEnterarse = datosFamiliaresExtranjero[i + 10][0];
@@ -1743,7 +1743,7 @@ namespace scorpioweb.Controllers
 
                 //Sustancias agregadas
                 int idConsumoSustancias = ((from table in _context.Consumosustancias
-                                            select table).Count());
+                                            select table.IdConsumoSustancias).Max());
                 for (int i = 0; i < datosSustancias.Count; i = i + 5)
                 {
                     if (datosSustancias[i][1] == currentUser)
@@ -1774,7 +1774,7 @@ namespace scorpioweb.Controllers
 
                 #region -Familiares-
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar
-                                          select table).Count());
+                                          select table.IdAsientoFamiliar).Max());
                 //Familiares editados
                 for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 13)
                 {
@@ -2083,7 +2083,7 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Más de 10 años", Value = "MAS DE 10 AÑOS" },
                 new SelectListItem{ Text = "Entre 5 y 10 años", Value = "ENTRE 5 Y 10 AÑOS" },
                 new SelectListItem{ Text = "Entre 2 y 5 años", Value = "ENTRE 2 Y 5 AÑOS" },
-                new SelectListItem{ Text = "Entre 6 meses y 2 año", Value = "ENTRE 6 MESES Y 2 AÑO" },
+                new SelectListItem{ Text = "Entre 6 meses y 2 años", Value = "ENTRE 6 MESES Y 2 AÑOS" },
                 new SelectListItem{ Text = "Menos de 6 meses", Value = "MENOS DE 6 MESES" },
             };
 

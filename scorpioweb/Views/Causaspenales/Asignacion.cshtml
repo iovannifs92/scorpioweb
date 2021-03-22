@@ -188,29 +188,7 @@
                     e.which = 13; // ascii carriage return code
                     $("input").trigger(e);
                 },
-                select: function (event, ui) {
-                    var cp = document.getElementById("combobox");
-                    var idPersona = cp.options[cp.selectedIndex].value;
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/Causaspenales/AsignarPersona",
-                        traditional: true,
-                        data: {
-                            datosPersona: [idPersona],
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                alert(response.responseText);//"Persona seleccionada
-                            } else {
-                                alert(response.responseText);
-                            }
-                        },
-                        error: function (response) {
-                            alert("hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                        }
-                    });
-                }
+                    
             });
 
             $("#toggle").on("click", function () {
