@@ -234,7 +234,7 @@ namespace scorpioweb.Controllers
 
             #region -idSuper-
             int idSuper = ((from table in _context.Supervision
-                            select table).Count()) + 1;
+                            select table.IdSupervision).Max()) + 1;
             supervision.IdSupervision = idSuper;
             #endregion
 
@@ -1036,6 +1036,7 @@ namespace scorpioweb.Controllers
             {
                 new SelectListItem{ Text = "Diaria", Value = "DIARIA" },
                 new SelectListItem{ Text = "Semanal", Value = "SEMANAL" },
+                new SelectListItem{ Text = "Quincenal", Value = "QUINCENAL" },
                 new SelectListItem{ Text = "Mensual", Value = "MENSUAL" },
                 new SelectListItem{ Text = "Bimestral", Value = "BIMESTRAL" },
                 new SelectListItem{ Text = "Trimestral", Value = "TRIMESTRAL" },
