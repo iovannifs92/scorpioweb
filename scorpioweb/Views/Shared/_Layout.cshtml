@@ -75,9 +75,8 @@
                     <li><a asp-area="" asp-controller="Personas" asp-action="Entrevista">Entrevista</a></li>
                     @if (User.Identity.Name == "iovannifs92@gmail.com")
                     {
-                        <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
-                        <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>
-                    }
+        <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
+                        <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>}
                     <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
@@ -104,13 +103,13 @@
     </environment>*@
 
     @* Descomentar bloque para probar los modales que usen el modal id="form-modal" de este archivo.
-       E.g. EditFraccionesImpuestas *@
+        E.g. EditFraccionesImpuestas *@
     @*<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-            asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-            asp-fallback-test="window.jQuery"
-            crossorigin="anonymous"
-            integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
-    </script>*@
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>*@
 
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
             asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
@@ -120,7 +119,7 @@
     </script>
     <script src="~/js/site.min.js" asp-append-version="true"></script>
 
-    <div class="modal fade" id="form-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="overflow-y: scroll;" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="form-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="overflow-y: scroll;" aria-labelledby="myLotLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#0078A7;">
