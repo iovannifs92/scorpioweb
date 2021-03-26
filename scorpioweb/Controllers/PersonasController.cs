@@ -116,7 +116,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var personas = from p in _context.Persona
+            var personas/*supervisionPyCP*/ = from p in _context.Persona
                            where p.Supervisor != null
                            select p;
 
@@ -144,6 +144,34 @@ namespace scorpioweb.Controllers
                     break;
             }
 
+            //var personas = from p in _context.Persona
+            //               where p.Supervisor != null
+            //               select p;
+
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+            //                            || p.Materno.StartsWith(searchString)
+            //                            || p.Nombre.StartsWith(searchString)
+            //                            || p.Supervisor.StartsWith(searchString));
+            //}
+
+            //switch (sortOrder)
+            //{
+            //    case "name_desc":
+            //        personas = personas.OrderByDescending(p => p.Paterno);
+            //        break;
+            //    case "Date":
+            //        personas = personas.OrderBy(p => p.UltimaActualización);
+            //        break;
+            //    case "date_desc":
+            //        personas = personas.OrderByDescending(p => p.UltimaActualización);
+            //        break;
+            //    default:
+            //        personas = personas.OrderBy(p => p.Paterno);
+            //        break;
+            //}
+
             int pageSize = 10;
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -154,6 +182,7 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
+      var x = 0;x = 0 / x;
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
@@ -1276,29 +1305,27 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
-            if (persona == null)
+            var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
+            if (supervision == null)
             {
                 return NotFound();
             }
 
-            #region -To List databases-
-            List<Persona> personaVM = _context.Persona.ToList();
-            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
+            List<Supervision> SupervisionVM = _context.Supervision.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
-            #endregion
-
+            List<Persona> personaVM = _context.Persona.ToList();
             #region -Jointables-
-            ViewData["joinTables"] = from personaTable in personaVM
-                                     join personaCausaPenalTable in personaCausaPenalVM on personaTable.IdPersona equals personaCausaPenalTable.PersonaIdPersona
-                                     join causaPenalTable in causaPenalVM on personaCausaPenalTable.CausaPenalIdCausaPenal equals causaPenalTable.IdCausaPenal
-                                     where personaTable.IdPersona == id
-                                     orderby personaTable.Paterno
-                                     select new PersonaCausaPenalViewModel
-                                     {
-                                         personaVM = personaTable,
-                                         causaPenalVM = causaPenalTable
-                                     };
+            ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
+                                                join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
+                                                join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
+                                                where supervisiontable.IdSupervision == id
+
+                                                select new SupervisionPyCP
+                                                {
+                                                    causapenalVM = causapenaltable,
+                                                    supervisionVM = supervisiontable,
+                                                    personaVM = personatable
+                                                };
             #endregion
 
             return View();

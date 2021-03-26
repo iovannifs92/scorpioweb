@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 
-    <environment include="Development">
+    @*<environment include="Development">
         <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -25,14 +25,14 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <script src="~/js/panel.js"></script>
         <script src="~/js/jquery-1.11.1.min.js"></script>
-    </environment>
-    <environment exclude="Development">
+    </environment>*@
+    @*<environment exclude="Development">*@
         <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
         <link rel="stylesheet" href="~/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/bootstrap.min.css">
-        @*<link rel="stylesheet" href="~/css/jquery.fancybox.css">*@
+        <link rel="stylesheet" href="~/css/jquery.fancybox.css">
         <link rel="stylesheet" href="~/css/animate.css">
         <link rel="stylesheet" href="~/css/main.css">
         <link rel="stylesheet" href="~/css/media-queries.css">
@@ -45,7 +45,7 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
         <script src="~/js/panel.js"></script>
 
-    </environment>
+    @*</environment>*@
 </head>
 <body>
 
@@ -97,20 +97,20 @@
         </footer>
     </div>
 
-    <environment include="Development">
+    @*<environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
+    </environment>*@
 
     @* Descomentar bloque para probar los modales que usen el modal id="form-modal" de este archivo.
        E.g. EditFraccionesImpuestas *@
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+    @*<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
             asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
             asp-fallback-test="window.jQuery"
             crossorigin="anonymous"
             integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
-    </script>
+    </script>*@
 
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
             asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
