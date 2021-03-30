@@ -182,7 +182,6 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
-      var x = 0;x = 0 / x;
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";

@@ -1,4 +1,4 @@
-﻿@model PaginatedList<scorpioweb.Models.SupervisionPyCP>
+﻿@model PaginatedList<scorpioweb.Models.Persona>
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -9,7 +9,7 @@
     <a asp-action="Create">Nueva entrevista de encuadre</a>
 </p>
 
-@*<form asp-action="ListadoSupervisor" method="get">
+<form asp-action="ListadoSupervisor" method="get">
     <div class="form-actions no-color">
         <p>
             Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
@@ -46,32 +46,32 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                    @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
+                    @Html.DisplayFor(modelItem => item.Supervisor)
                 </td>
                 <th>
-                    @Html.DisplayFor(modelItem => item.personaVM.UltimaActualización)
+                    @Html.DisplayFor(modelItem => item.UltimaActualización)
                 </th>
                 <td>
-                  <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.personaVM.IdPersona">
+                  <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
                     <i class="fa fa-pencil"></i>
                     Editar
                   </a>
-                  <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
+                  <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
                     <i class="fa fa-eye"></i>
                     Detalles
                   </a>
-                    <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.supervisionVM.IdSupervision">
-                      <i class="fa fa-cogs"></i>
-                       Procesos
-                    </a>
+                  @*<a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.supervisionVM.IdSupervision">
+                    <i class="fa fa-cogs"></i>
+                      Procesos
+                  </a>*@
                 </td>
             </tr>
         }
     </tbody>
-</table>*@
+</table>
 
 @{
     var prevDisabled = !Model.HasNextPage ? "disabled" : "";
