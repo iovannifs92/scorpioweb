@@ -63,6 +63,11 @@
                 <input asp-for="Victimacol" class="form-control" />
                 <span asp-validation-for="Victimacol" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label class="control-label">Observaciones</label>
+                <textarea asp-for="Observaciones" maxlength="400" class="form-control" rows="5" name="Observaciones" id="Observaciones"></textarea>
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">

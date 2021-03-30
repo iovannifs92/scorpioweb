@@ -16,5 +16,6 @@ namespace scorpioweb.Models
         public string Direccion { get; set; }
         public string Victimacol { get; set; }
         public int SupervisionIdSupervision { get; set; }
+        public string Observaciones { get; set; }
     }
 }
