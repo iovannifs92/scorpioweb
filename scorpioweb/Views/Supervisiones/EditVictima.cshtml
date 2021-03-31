@@ -1,19 +1,13 @@
 ﻿@model scorpioweb.Models.Victima
 
 @{
-    ViewData["Title"] = "EditVictima";
+    Layout = null;
 }
-@* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
-<h2>Supervisión</h2>
-<h4>Nombre: @ViewBag.nombre</h4>
-<h4>CP: @ViewBag.cp </h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditVictima">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditVictima" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdVictima" />
+            <input hidden asp-for="IdVictima" />
             <div class="form-group">
                 <label class="control-label"> Nombre de Victima</label>
                 <input asp-for="NombreV" class="form-control" />
@@ -59,9 +53,14 @@
                 <span asp-validation-for="Direccion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Colonia de Victima</label>
+                <label class="control-label">Colonia/Fraccionamiento</label>
                 <input asp-for="Victimacol" class="form-control" />
                 <span asp-validation-for="Victimacol" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Observaciónes</label>
+                <input asp-for="Observaciones" class="form-control" />
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group">
@@ -72,12 +71,3 @@
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="PersonaSupervision">Regresar a lista</a>
-</div>
-
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

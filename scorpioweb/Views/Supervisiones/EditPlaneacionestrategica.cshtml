@@ -45,7 +45,7 @@
         <form asp-action="EditPlaneacionestrategica">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdPlaneacionEstrategica" />
-            <div class="form-group" hidden>
+            <div class="form-group">
                 <label class="control-label">Plan de Supervisión</label>
                 <select class="form-control" name="PlanSupervision" id="PlanSupervision"
                         asp-items="@(new SelectList(ViewBag.listaPlanSupervision, "Value", "Text", @ViewBag.idPlanSupervision))">

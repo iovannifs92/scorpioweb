@@ -1,0 +1,67 @@
+﻿@model scorpioweb.Models.Victima
+
+@{
+    Layout = null;
+}
+<div class="table-responsive-lg">
+    <div class="container-fluid">
+        <div class="panel-group">
+            <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
+                
+                <table class="table table-bordered">
+                    <tr>
+                        <th class="estiloDG">Nombre de Victima</th>
+                        <td style="background-color: white; color: black">@Html.DisplayFor(model => model.NombreV)</td>
+
+                    </tr>
+                    <tr>
+                        <th class="estiloDG">Edad</th>
+                        <td style="background-color: white; color: black">@Html.DisplayFor(model => model.Edad)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG">Teléfono</th>
+                        <td style="background-color: white; color: black">@Html.DisplayFor(model => model.Telefono)</td>
+                    </tr>
+                    <tr>
+
+                        <th class="estiloDG">Conoce a Detenido</th>
+                        <td style="background-color: white; color: black">@Html.DisplayFor(model => model.ConoceDetenido)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Tipo de Relación</th>
+                        <td style="width:25%; background-color: white; color: black">@Html.DisplayFor(model => model.TipoRelacion)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Tiempo de Conocerlo</th>
+                        <td style="width:25%; background-color: white; color: black">@Html.DisplayFor(model => model.TiempoConocerlo)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Vive con el Supervisado</th>
+                        <td style="width:25%; background-color: white; color: black">@Html.DisplayFor(model => model.ViveSupervisado)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Dirección</th>
+                        <td style="width:25%; background-color: white; color: black"> @Html.DisplayFor(model => model.Direccion)</td>
+                    </tr>                 
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Colonia/Fraccionamiento de Victima</th>
+                        <td style="width:25%; background-color: white; color: black">@Html.DisplayFor(model => model.Victimacol)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Dirección</th>
+                        <td style="width:25%; background-color: white; color: black"> @Html.DisplayFor(model => model.Direccion)</td>
+                    </tr>                   
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Vive con el Supervisado</th>
+                        <td style="width:25%; background-color: white; color: black">@Html.DisplayFor(model => model.ViveSupervisado)</td>
+                    </tr>
+                    <tr>
+                        <th class="estiloDG" style="width:25%">Observaciones</th>
+                        <td style="width:25%; background-color: white; color: black">@Html.DisplayFor(model => model.Observaciones)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

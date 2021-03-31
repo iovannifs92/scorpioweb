@@ -1,9 +1,8 @@
 ﻿@model scorpioweb.Models.Persona
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
-    @* Necesario para los modales en el servidor *@
-    <script src="~/js/jquery-1.11.1.min.js"></script>
-
-    <script type="text/javascript">
+<script type="text/javascript">
     var tipo = 0;
         $(document).ready(function () {
         //#region inicializar
@@ -17,7 +16,6 @@
             btnEditarSustancias.style.display = "none"
         }
         //#endregion
-
         //#region Editar Familiares
         var Familiares = document.getElementById("Familiares")
         var btnEditarFamiliares = document.getElementById("btnEditarFamiliares")
@@ -28,7 +26,6 @@
             btnEditarFamiliares.style.display = "none"
         }
         //#endregion
-
         //#region Editar Referencias
         var ReferenciasPersonales = document.getElementById("ReferenciasPersonales")
         var btnEditarReferencias = document.getElementById("btnEditarReferencias")
@@ -39,7 +36,6 @@
             btnEditarReferencias.style.display = "none"
         }
         //#endregion
-
         //#region referencias display
         var Dependencia = document.getElementById("AFDependenciaE")
         var DependenciaExplica = document.getElementById("AFDependenciaExplicaE")
@@ -50,7 +46,6 @@
             DependenciaExplica.style.display = "none"
         }
         //#endregion
-
         //#region viven juntos display
         var VivenJuntos = document.getElementById("AFVivenJuntosE")
         var Domicilio = document.getElementById("AFDireccionFamiliarE")
@@ -61,7 +56,6 @@
             Domicilio.style.display = "none"
         }
         //#endregion
-
         //#region enterado proceso display
         var EnteradoProceso = document.getElementById("AFEnteradoProcesoE")
         var PuedeEnterarse = document.getElementById("AFPuedeEnterarseE")
@@ -71,7 +65,6 @@
         else {
             PuedeEnterarse.style.display = "none"
         }
-
         $('#AFEnteradoProcesoE').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -80,15 +73,12 @@
             else {
                 $("#AFPuedeEnterarseE").css("display", "none");
             }
-
         });
         //#endregion
         //#endregion
-
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#municipioD').html(items);
-
         $('#lnEstado').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#lnEstado';
@@ -101,7 +91,6 @@
                 $('#lnMunicipio').html(items);
             });
         });
-
         $('#lnpais').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
@@ -125,7 +114,6 @@
                 $("#DivLnlocalidad").addClass("col-lg-3");
             }
         });
-
         $('#OtroIdioma').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
@@ -139,7 +127,6 @@
                 $("#DivOtroIdioma").addClass("col-md-12");
             }
         });
-
         $('#Traductor').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
@@ -153,7 +140,6 @@
                 $("#DivTraductor").addClass("col-md-12");
             }
         });
-
         $('#Hijos').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
@@ -167,9 +153,6 @@
                 $("#DivHijos").addClass("col-md-12");
             }
         });
-
-
-
         $('#sexo').change(function () {
             var gen = $(this).children("option:selected").val();
             if (gen == "F") {
@@ -180,7 +163,6 @@
             }
         });
         //#endregion
-
         //#region -Modales-
         $("#consumoSustancias").change(function () {
             var opcion = $(this).children("option:selected").val();
@@ -238,7 +220,6 @@
                     alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 }
             });
-
             document.getElementById("sustanciaE").value = '@ViewBag.idSustancia';
             document.getElementById("frecuenciaE").value = '@ViewBag.idFrecuencia';
             document.getElementById("cantidadE").value = '@ViewBag.cantidad';
@@ -253,7 +234,6 @@
             else {
                 document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
             }
-
             document.ready = document.getElementById("AFNombreA").value = '';
             document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
             document.ready = document.getElementById("AFEdadA").value = '0';
@@ -265,7 +245,7 @@
             document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
             document.ready = document.getElementById("AFLocalizacionA").value = '';
             document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
-            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';  
+            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
             document.ready = document.getElementById("AFobservacionesA").value = '';
             $("#AFDependenciaExplicaA").css("display", "none");
             $("#AFDireccionFamiliarA").css("display", "none");
@@ -275,7 +255,6 @@
         $("#btnEditarFamiliares").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Asiento Familiar"
             tipo = 1;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -293,7 +272,6 @@
                     alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 }
             });
-
             document.getElementById("AFNombreE").value = '@ViewBag.nombreF';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionF';
             document.getElementById("AFEdadE").value = '@ViewBag.edadF';
@@ -315,7 +293,6 @@
         $("#btnEditarReferencias").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Referencia"
             tipo = 2;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -333,7 +310,6 @@
                     alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 }
             });
-
             document.getElementById("AFNombreE").value = '@ViewBag.nombreR';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionR';
             document.getElementById("AFEdadE").value = '@ViewBag.edadR';
@@ -353,7 +329,6 @@
             $('#modalEditarAsientoFamiliar').modal('show')
         });
         //#endregion
-
         //#region -changeDisplay-
         //#region editar
         $('#AFDependenciaE').change(function () {
@@ -364,9 +339,7 @@
             else {
                 $("#AFDependenciaExplicaE").css("display", "none");
             }
-
         });
-
         $('#AFVivenJuntosE').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -375,9 +348,7 @@
             else {
                 $("#AFDireccionFamiliarE").css("display", "none");
             }
-
         });
-
         $('#AFEnteradoProcesoE').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -386,10 +357,8 @@
             else {
                 $("#AFPuedeEnterarseE").css("display", "none");
             }
-
         });
         //#endregion
-
         //#region agregar
         $('#AFDependenciaA').change(function () {
             var dat = $(this).children("option:selected").val();
@@ -399,9 +368,7 @@
             else {
                 $("#AFDependenciaExplicaA").css("display", "none");
             }
-
         });
-
         $('#AFVivenJuntosA').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -410,9 +377,7 @@
             else {
                 $("#AFDireccionFamiliarA").css("display", "none");
             }
-
         });
-
         $('#AFEnteradoProcesoA').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -421,12 +386,10 @@
             else {
                 $("#AFPuedeEnterarseA").css("display", "none");
             }
-
         });
         //#endregion
         //#endregion
     });
-
     //region GuardarMODALS
     $(document).ready(function () {
         $('#btnGuardarSustancia').on("click", function (e) {
@@ -439,7 +402,6 @@
             var ultimoC = document.getElementById("ultimoConsumoA").value;
             var observaciones = document.getElementById("observacionesConsumoA").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -481,7 +443,6 @@
         //    var ultimoC = document.getElementById("ultimoConsumo").value;
         //    var observaciones = document.getElementById("observacionesConsumo").value;
         //    //var user = document.getElementById("usuario").firstChild.nodeValue;
-
         //    $.ajax({
         //        type: "POST",
         //        dataType: "json",
@@ -523,7 +484,6 @@
             var ultimoC = document.getElementById("ultimoConsumoE").value;
             var observaciones = document.getElementById("observacionesConsumoE").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -561,7 +521,6 @@
             var v = document.getElementById("AFVivenJuntosA");
             var p = document.getElementById("AFEnteradoProcesoA");
             var e = document.getElementById("AFPuedeEnterarseOA");
-
             var nombre = document.getElementById("AFNombreA").value;
             var relacion = r.options[r.selectedIndex].value; /////////////////
             var edad = document.getElementById("AFEdadA").value;
@@ -576,7 +535,6 @@
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
             var observaciones = document.getElementById("AFobservacionesA").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -605,7 +563,6 @@
                         $("#AFDependenciaExplicaA").css("display", "none");
                         $("#AFDireccionFamiliarA").css("display", "none");
                         $("#AFPuedeEnterarseA").css("display", "none");
-
                         var otraSustancia = confirm("¿Agregar otra persona?");
                         if (otraSustancia == true) {
                             alert("Coloque los datos correspondientes");
@@ -629,7 +586,6 @@
             var v = document.getElementById("AFVivenJuntosE");
             var p = document.getElementById("AFEnteradoProcesoE");
             var e = document.getElementById("AFPuedeEnterarseOE");
-
             var nombre = document.getElementById("AFNombreE").value;
             var relacion = r.options[r.selectedIndex].value; /////////////////
             var edad = document.getElementById("AFEdadE").value;
@@ -644,7 +600,6 @@
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
             var observaciones = document.getElementById("AFobservacionesE").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -688,7 +643,7 @@
         });
     });
 s
-    </script>
+</script>
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
