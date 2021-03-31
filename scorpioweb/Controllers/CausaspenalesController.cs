@@ -425,13 +425,6 @@ namespace scorpioweb.Controllers
                 revocacion.SupervisionIdSupervision = idSupervision;
                 #endregion
 
-                #region agregar 1 entrada a Victima
-                int idVictima = ((from table in _context.Victima
-                                  select table.IdVictima).Max()) +1; 
-                victima.IdVictima = idVictima;
-                victima.SupervisionIdSupervision = idSupervision;
-                #endregion
-
                 _context.Add(personacausapenal);
                 _context.Add(supervision);
                 await _context.SaveChangesAsync(null, 1);
@@ -442,7 +435,6 @@ namespace scorpioweb.Controllers
                 _context.Add(cierredecaso);
                 _context.Add(cambiodeobligaciones);
                 _context.Add(revocacion);
-                _context.Add(victima);
                 await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction(nameof(Index));
             }

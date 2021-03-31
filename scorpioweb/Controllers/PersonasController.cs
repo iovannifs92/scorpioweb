@@ -1142,7 +1142,7 @@ namespace scorpioweb.Controllers
             QRCodeData qrCodeData = qrGenerator.CreateQrCode("10.6.60.190/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);            
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
             qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
             fs.Close();
         }
@@ -1402,48 +1402,48 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditFoto([Bind("IdPersona")] Persona persona, IFormFile fotoEditada)
         {
-          if (ModelState.IsValid)
-          {
-            #region -Guardar Foto-
-            var file_name = (from a in _context.Persona
-                         where a.IdPersona == persona.IdPersona
-                         select a.rutaFoto).FirstOrDefault();
-            if(file_name == null || file_name=="S-D")
+            if (ModelState.IsValid)
             {
-              var query = (from a in _context.Persona
-                           where a.IdPersona == persona.IdPersona
-                           select a).FirstOrDefault();
-              file_name = query.IdPersona + "_" + query.Paterno + "_" + query.Nombre + ".jpg";
-              query.rutaFoto = file_name;
-              try
-              {
-                var oldFoto = await _context.Persona.FindAsync(query.IdPersona);
-                _context.Entry(oldFoto).CurrentValues.SetValues(query);
-                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                //_context.Update(query);
-                //await _context.SaveChangesAsync();
-              }
-              catch (DbUpdateConcurrencyException)
-              {
-                  if (!PersonaExists(query.IdPersona))
-                  {
-                      return NotFound();
-                  }
-                  else
-                  {
-                      throw;
-                  }
-              }
-            }
-            var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
-            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
-            #endregion
+                #region -Guardar Foto-
+                var file_name = (from a in _context.Persona
+                                 where a.IdPersona == persona.IdPersona
+                                 select a.rutaFoto).FirstOrDefault();
+                if (file_name == null || file_name == "S-D")
+                {
+                    var query = (from a in _context.Persona
+                                 where a.IdPersona == persona.IdPersona
+                                 select a).FirstOrDefault();
+                    file_name = query.IdPersona + "_" + query.Paterno + "_" + query.Nombre + ".jpg";
+                    query.rutaFoto = file_name;
+                    try
+                    {
+                        var oldFoto = await _context.Persona.FindAsync(query.IdPersona);
+                        _context.Entry(oldFoto).CurrentValues.SetValues(query);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                        //_context.Update(query);
+                        //await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!PersonaExists(query.IdPersona))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
+                #endregion
 
-            fotoEditada.CopyTo(stream);
-            stream.Close();
-            return RedirectToAction("MenuEdicion/" + persona.IdPersona, "Personas");
-          }
-          return View(persona);
+                fotoEditada.CopyTo(stream);
+                stream.Close();
+                return RedirectToAction("MenuEdicion/" + persona.IdPersona, "Personas");
+            }
+            return View(persona);
         }
 
         String BuscaId(List<SelectListItem> lista, String texto)
@@ -1578,6 +1578,7 @@ namespace scorpioweb.Controllers
             ViewBag.idioma = persona.OtroIdioma;
             ViewBag.traductor = persona.Traductor;
             ViewBag.Hijos = persona.Hijos;
+            ViewBag.conSustancia = persona.ConsumoSustancias;
 
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
@@ -1618,6 +1619,13 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text="Ocasionalmente", Value="OCASIONALMENTE"},
             };
             ViewBag.listaFrecuencia = ListaFrecuencia;
+
+
+         
+
+
+
+
 
             if (consumosustancias.Count > 0)
             {
@@ -1860,6 +1868,9 @@ namespace scorpioweb.Controllers
                     }
                 }
                 #endregion
+
+
+
 
                 #region -Familiares-
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar

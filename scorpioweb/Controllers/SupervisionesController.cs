@@ -182,7 +182,7 @@ namespace scorpioweb.Controllers
                 datosSupervision = new List<String> { datosS[i], currentUser };
             }
 
-            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Boton para guaradar los cambios" });
+            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Botón para guardar los cambios" });
 
         }
 
@@ -1219,24 +1219,104 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditVictima-
-        public async Task<IActionResult> Editvictima(int? id, string nombre, string cp)
+
+        #region -Lista Victima-
+        public async Task<IActionResult> ListaVictima(int? id)
+        {
+            var supervision = _context.Supervision
+            .SingleOrDefault(m => m.IdSupervision == id);
+
+            var persona = _context.Persona
+           .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
+            var cp = _context.Causapenal
+           .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
+
+            ViewBag.nombre = persona.NombreCompleto;
+            ViewBag.cp = cp.CausaPenal;
+
+
+            List<Victima> victimas  = _context.Victima.ToList();
+
+            ViewData["Victima"] = from table in victimas
+                                   where table.SupervisionIdSupervision == id
+                                   orderby table.IdVictima
+                                   select table;
+
+            ViewBag.IdSupervisionGuardar = id;
+
+
+            return View();
+        }
+        #endregion
+        #region -Create Victima-
+        public IActionResult CreateVictima(int? id, string nombre, string cp)
+        {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.IdSupervisionGuardar = id;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateVictima(Victima victima, string IdVictima, string NombreV, string Edad, string Telefono, string ConoceDetenido, string TipoRelacion, 
+            string TiempoConocerlo, string ViveSupervisado, string Direccion, string Victimacol, string Observaciones, string SupervisionIdSupervision)
+        {
+            string currentUser = User.Identity.Name;
+            if (ModelState.ErrorCount <= 1)
+            {
+                victima.NombreV = normaliza(NombreV);
+                victima.Edad = Edad;
+                victima.Telefono = Telefono;
+                victima.ConoceDetenido = normaliza(ConoceDetenido);
+                victima.TipoRelacion = normaliza(TipoRelacion);
+                victima.TiempoConocerlo = normaliza(TiempoConocerlo);
+                victima.ViveSupervisado = normaliza(ViveSupervisado);
+                victima.Direccion = normaliza(Direccion);
+                victima.Victimacol = normaliza(Victimacol);
+                victima.Observaciones = normaliza(Observaciones);
+
+
+                var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == victima.SupervisionIdSupervision);
+
+
+                var persona = _context.Persona
+               .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
+                var cp = _context.Causapenal
+               .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
+
+                ViewBag.Npersona = persona.NombreCompleto;
+                ViewBag.cp = cp.CausaPenal;
+
+                int idVictima = ((from table in _context.Victima
+                                   select table.IdVictima).Max()) + 1;
+
+                victima.IdVictima = idVictima;
+                _context.Add(victima);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones");
+            }
+            return View(victima);
+        }
+        #endregion
+
+        public async Task<IActionResult> Editvictima(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            ViewBag.nombre = nombre;
-            ViewBag.cp = cp;
 
-            var supervision = await _context.Victima.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
-            if (supervision == null)
+            var Victima = await _context.Victima.SingleOrDefaultAsync(m => m.IdVictima == id);
+            if (Victima == null)
             {
                 return NotFound();
             }
 
             ViewBag.ConoceDetenido = listaSiNoNa;
-            ViewBag.idConoceDetenido = BuscaId(listaSiNoNa, supervision.ConoceDetenido);
+            ViewBag.idConoceDetenido = BuscaId(listaSiNoNa, Victima.ConoceDetenido);
 
 
             #region Relacion
@@ -1255,7 +1335,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.TipoRelacion = ListaRelacion;
-            ViewBag.idTipoRelacion = BuscaId(ListaRelacion, supervision.TipoRelacion);
+            ViewBag.idTipoRelacion = BuscaId(ListaRelacion, Victima.TipoRelacion);
             #endregion
 
 
@@ -1269,24 +1349,20 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
             };
             ViewBag.TiempoConocerlo = ListaTiempo;
-            ViewBag.idTiempoConocerlo = BuscaId(ListaTiempo, supervision.TiempoConocerlo);
+            ViewBag.idTiempoConocerlo = BuscaId(ListaTiempo, Victima.TiempoConocerlo);
 
             ViewBag.ViveSupervisado = listaNaSiNo;
-            ViewBag.idViveSupervisado = BuscaId(listaNaSiNo, supervision.ViveSupervisado);
+            ViewBag.idViveSupervisado = BuscaId(listaNaSiNo, Victima.ViveSupervisado);
 
 
-            return View(supervision);
+            return View(Victima);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editvictima(int id, [Bind("IdVictima,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,SupervisionIdSupervision, Observaciones")] Victima victima)
         {
-            if (id != victima.SupervisionIdSupervision)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -1294,8 +1370,6 @@ namespace scorpioweb.Controllers
                     var oldVictima = await _context.Victima.FindAsync(victima.IdVictima, victima.SupervisionIdSupervision);
                     _context.Entry(oldVictima).CurrentValues.SetValues(victima);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                    //_context.Update(victima);
-                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -1311,6 +1385,28 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("Supervision/" + victima.SupervisionIdSupervision, "Supervisiones");
             }
             return View();
+        }
+        public async Task<IActionResult> DeleteVictima(int? id)
+        {
+            var Victima = await _context.Victima.SingleOrDefaultAsync(m => m.IdVictima == id);
+            _context.Victima.Remove(Victima);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Supervision/" + Victima.SupervisionIdSupervision, "Supervisiones");
+        }
+        public async Task<IActionResult> VerVictima(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var Victima = await _context.Victima
+                .SingleOrDefaultAsync(m => m.IdVictima == id);
+            if (Victima == null)
+            {
+                return NotFound();
+            }
+            return View(Victima);
         }
         #endregion
 
@@ -1498,6 +1594,11 @@ namespace scorpioweb.Controllers
             return _context.Bitacora.Any(e => e.IdBitacora == id);
         }
 
+        private bool VictimaExists(int id)
+        {
+            return _context.Victima.Any(e => e.IdVictima == id);
+        }
+
         #endregion
 
 
@@ -1515,6 +1616,10 @@ namespace scorpioweb.Controllers
         #endregion
 
 
-
+        public IActionResult Archivos()
+        {
+            return View();
+        }
+               
     }
 }
