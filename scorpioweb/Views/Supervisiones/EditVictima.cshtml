@@ -1,19 +1,13 @@
 ﻿@model scorpioweb.Models.Victima
 
 @{
-    ViewData["Title"] = "EditVictima";
+    Layout = null;
 }
-@* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
-<h2>Supervisión</h2>
-<h4>Nombre: @ViewBag.nombre</h4>
-<h4>CP: @ViewBag.cp </h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="EditVictima">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditVictima" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdVictima" />
+            <input hidden asp-for="IdVictima" />
             <div class="form-group">
                 <label class="control-label"> Nombre de Victima</label>
                 <input asp-for="NombreV" class="form-control" />
@@ -26,7 +20,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+                <input asp-for="Telefono" class="form-control" type="tel" pattern="[0-9]{10}" maxlength="10"/>
                 <span asp-validation-for="Telefono" type="number" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -59,13 +53,13 @@
                 <span asp-validation-for="Direccion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Colonia de Victima</label>
+                <label class="control-label">Colonia/Fraccionamiento</label>
                 <input asp-for="Victimacol" class="form-control" />
                 <span asp-validation-for="Victimacol" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Observaciones</label>
-                <textarea asp-for="Observaciones" maxlength="400" class="form-control" rows="5" name="Observaciones" id="Observaciones"></textarea>
+                <label class="control-label">Observaciónes</label>
+                <input asp-for="Observaciones" class="form-control" />
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
@@ -77,12 +71,3 @@
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="PersonaSupervision">Regresar a lista</a>
-</div>
-
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

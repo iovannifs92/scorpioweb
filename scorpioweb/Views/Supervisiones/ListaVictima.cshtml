@@ -1,0 +1,81 @@
+﻿@model scorpioweb.Models.Bitacora
+
+
+@{
+    ViewData["Title"] = "Victimas";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+</script>
+
+<h2>Victima</h2>
+<h4>Nombre: @ViewBag.nombre</h4>
+<h4>CP: @ViewBag.cp</h4>
+<table class="table" style="text-align:center">
+    <thead style="text-align:center">
+        <tr>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Telefono
+            </th>
+            <th>
+                Tipo de Relación
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["Victima"] as IEnumerable<scorpioweb.Models.Victima>)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreV)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telefono)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoRelacion)
+            </td>
+            <td>
+
+                <form onsubmit="return confirm('¿Deseas borrar Victima?');" asp-action="DeleteVictima" asp-route-id="@item.IdVictima">
+                    <a id="btnVer" onclick="showModal('@Url.Action("VerVictima","Supervisiones",null,Context.Request.Scheme)','Datos Victima',@item.IdVictima)" class="btn btn-info">
+                        <i class="fa fa-eye"></i> Ver
+                    </a>
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditVictima","Supervisiones",null,Context.Request.Scheme)','Edita Victima',@item.IdVictima)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Borrar
+                    </button>
+
+                </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+<a id="btnCreate" onclick="showModal('@Url.Action("CreateVictima", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
+    <i class="fa fa-plus"></i>  Agregar Victima
+</a>
