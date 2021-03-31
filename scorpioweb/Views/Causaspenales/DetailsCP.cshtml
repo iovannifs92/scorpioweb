@@ -24,28 +24,35 @@
                 <th>
                     Nombre(s)
                 </th>
+                <th>
+                    Supervisor
+                </th>
             </tr>
         </thead>
 
         <tbody>
             @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaCausaPenalViewModel>)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Paterno)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Materno)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Nombre)
-                </td>
+          <tr>
+            <td>
+              @Html.DisplayFor(modelItem => item.personaVM.Paterno)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.personaVM.Materno)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
+            </td>
 
-                <td>
-                    <a href="/Personas/Details/@item.personaVM.IdPersona">
-                     Detalles</a>
-                </td>
-            </tr>
+            <td>
+              <a href="/Personas/Details/@item.personaVM.IdPersona">
+                Detalles
+              </a>
+            </td>
+          </tr>
             }
         </tbody>
         </table>

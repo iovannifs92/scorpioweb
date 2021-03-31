@@ -426,7 +426,7 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 _context.Add(personacausapenal);
-                _context.Add(supervision);  
+                _context.Add(supervision);
                 await _context.SaveChangesAsync(null, 1);
                 //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
                 _context.Add(suspensionseguimiento);

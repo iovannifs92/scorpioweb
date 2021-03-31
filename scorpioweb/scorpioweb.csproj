@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <UserSecretsId>aspnet-scorpioweb-602369CA-DE7C-41E5-9AF9-DCDFAB66B4AA</UserSecretsId>
+    <MvcBuildViews>true</MvcBuildViews>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

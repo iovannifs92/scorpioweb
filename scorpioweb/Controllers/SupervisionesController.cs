@@ -485,7 +485,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -PersonaSupervicion-
+        #region -PersonaSupervision-
         public async Task<IActionResult> PersonaSupervision(
            string sortOrder,
            string currentFilter,
@@ -1361,7 +1361,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editvictima([Bind("IdVictima,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,Observaciones,SupervisionIdSupervision")] Victima victima)
+        public async Task<IActionResult> Editvictima(int id, [Bind("IdVictima,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,SupervisionIdSupervision, Observaciones")] Victima victima)
         {
             if (ModelState.IsValid)
             {
@@ -1473,7 +1473,7 @@ namespace scorpioweb.Controllers
                 ViewBag.cp = cp.CausaPenal;
 
                 int idBitacora = ((from table in _context.Bitacora
-                                   select table).Count()) + 1;
+                                   select table.IdBitacora).Max()) + 1;
 
                 bitacora.IdBitacora = idBitacora;
 

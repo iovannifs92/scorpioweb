@@ -1,0 +1,19 @@
+﻿@model IEnumerable<scorpioweb.Models.SupervisionPyCP>
+
+@{
+  Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
+{
+  <h2 class="text-center">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
+  break;
+}
+
+<h3>Causas Penales:</h3>
+
+@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
+{
+  <h3 class="blockquote">@item.causapenalVM.CausaPenal</h3>
+}
+

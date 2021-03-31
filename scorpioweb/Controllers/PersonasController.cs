@@ -116,7 +116,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var personas = from p in _context.Persona
+            var personas/*supervisionPyCP*/ = from p in _context.Persona
                            where p.Supervisor != null
                            select p;
 
@@ -143,6 +143,34 @@ namespace scorpioweb.Controllers
                     personas = personas.OrderBy(p => p.Paterno);
                     break;
             }
+
+            //var personas = from p in _context.Persona
+            //               where p.Supervisor != null
+            //               select p;
+
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+            //                            || p.Materno.StartsWith(searchString)
+            //                            || p.Nombre.StartsWith(searchString)
+            //                            || p.Supervisor.StartsWith(searchString));
+            //}
+
+            //switch (sortOrder)
+            //{
+            //    case "name_desc":
+            //        personas = personas.OrderByDescending(p => p.Paterno);
+            //        break;
+            //    case "Date":
+            //        personas = personas.OrderBy(p => p.UltimaActualización);
+            //        break;
+            //    case "date_desc":
+            //        personas = personas.OrderByDescending(p => p.UltimaActualización);
+            //        break;
+            //    default:
+            //        personas = personas.OrderBy(p => p.Paterno);
+            //        break;
+            //}
 
             int pageSize = 10;
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
@@ -701,7 +729,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia)//[Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización")]
+            IFormFile fotografia)
         {
             string currentUser = User.Identity.Name;
 
@@ -858,14 +886,6 @@ namespace scorpioweb.Controllers
                 abandonoEstado.PersonaIdPersona = idPersona;
                 saludfisica.PersonaIdPersona = idPersona;
 
-
-                #region -Guardar Foto-
-                string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
-                persona.rutaFoto = file_name;
-                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
-                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                #endregion
-
                 #endregion
 
                 #region -ConsumoSustancias-
@@ -997,6 +1017,17 @@ namespace scorpioweb.Controllers
                 }
                 #endregion
 
+                #region -Guardar Foto-
+                if(fotografia != null)
+                {
+                  string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
+                  persona.rutaFoto = file_name;
+                  var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+                  var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                  await fotografia.CopyToAsync(stream);
+                }
+                #endregion
+
                 #region -Añadir a contexto-
                 _context.Add(persona);
                 _context.Add(domicilio);
@@ -1006,7 +1037,6 @@ namespace scorpioweb.Controllers
                 _context.Add(actividadsocial);
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
-                await fotografia.CopyToAsync(stream);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 return RedirectToAction(nameof(Index));
                 #endregion
@@ -1267,6 +1297,38 @@ namespace scorpioweb.Controllers
 
         }
         #endregion        
+        public async Task<IActionResult> Procesos(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
+            if (supervision == null)
+            {
+                return NotFound();
+            }
+
+            List<Supervision> SupervisionVM = _context.Supervision.ToList();
+            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
+            List<Persona> personaVM = _context.Persona.ToList();
+            #region -Jointables-
+            ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
+                                                join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
+                                                join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
+                                                where supervisiontable.IdSupervision == id
+
+                                                select new SupervisionPyCP
+                                                {
+                                                    causapenalVM = causapenaltable,
+                                                    supervisionVM = supervisiontable,
+                                                    personaVM = personatable
+                                                };
+            #endregion
+
+            return View();
+        }
 
         #region -Edicion-        
 
@@ -2766,8 +2828,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditFamiliaresForaneos-
-
-        public async Task<IActionResult> EditFamiliaresForaneos(int id)
+        public async Task<IActionResult> EditFamiliaresForaneos(int? id)
         {
             if (id == null)
             {
@@ -2881,9 +2942,6 @@ namespace scorpioweb.Controllers
             }
             return View(familiaresforaneos);
         }
-
-
-
 
         public async Task<IActionResult> EditFamiliaresForaneos2(int? id)
         {
@@ -3002,12 +3060,8 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaProseso = listaNoSi;
 
-
             ViewBag.listaEnterar = listaNoSiNA;
 
-
-
-            #endregion
             if (familiaresforaneos == null)
             {
                 return NotFound();
@@ -3015,7 +3069,6 @@ namespace scorpioweb.Controllers
 
             return View(familiaresforaneos);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -3078,10 +3131,7 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-
-
         #endregion
-
 
         #region -Editar Salud-
         public async Task<IActionResult> EditSalud(string nombre, string genero, int? id)
@@ -3192,7 +3242,7 @@ namespace scorpioweb.Controllers
             return View(saludfisica);
         }
         #endregion
-
+        #endregion
 
         #region -Borrar-
         // GET: Personas/Delete/5
