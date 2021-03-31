@@ -182,7 +182,7 @@ namespace scorpioweb.Controllers
                 datosSupervision = new List<String> { datosS[i], currentUser };
             }
 
-            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Boton para guaradar los cambios" });
+            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Botón para guardar los cambios" });
 
         }
 
@@ -1515,6 +1515,10 @@ namespace scorpioweb.Controllers
         #endregion
 
 
-
+        public IActionResult Archivos()
+        {
+            return View();
+        }
+               
     }
 }
