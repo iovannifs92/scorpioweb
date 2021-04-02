@@ -468,6 +468,13 @@ namespace scorpioweb.Controllers
             return Json(new { success = true });
         }
 
+        public ActionResult agregarSustancias()
+        {
+            datosSustancias = new List<List<string>>();//por si no se vacian las listas despues de guardar
+
+            return Json(new { success = true });
+        }
+
         public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
         {
             string currentUser = User.Identity.Name;
@@ -570,9 +577,22 @@ namespace scorpioweb.Controllers
                 contadorFamiliares = 1;
                 datosFamiliaresEditados = new List<List<string>>();
             }
-            else
+            else if (tipoGuardado == 2)
             {
                 contadorReferencias = 1;
+                datosReferenciasEditadas = new List<List<string>>();
+            }
+            return Json(new { success = true });
+        }
+
+        public ActionResult agregarAsientoFamiliar(int tipo)
+        {
+            if (tipo == 1)
+            {
+                datosFamiliares = new List<List<string>>();
+            }
+            else if (tipo == 2)
+            {
                 datosReferenciasEditadas = new List<List<string>>();
             }
             return Json(new { success = true });
@@ -588,6 +608,13 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = true, responseText = "Datos Guardados con éxito" });
 
+        }
+
+        public ActionResult agregarFamiliaresExtranjeros()
+        {
+            datosFamiliaresExtranjero = new List<List<string>>();
+
+            return Json(new { success = true });
         }
 
         public JsonResult GetMunicipio(int EstadoId)
