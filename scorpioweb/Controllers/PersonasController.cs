@@ -119,7 +119,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var personas/*supervisionPyCP*/ = from p in _context.Persona
+            var personas = from p in _context.Persona
                            where p.Supervisor != null
                            select p;
 
@@ -146,34 +146,6 @@ namespace scorpioweb.Controllers
                     personas = personas.OrderBy(p => p.Paterno);
                     break;
             }
-
-            //var personas = from p in _context.Persona
-            //               where p.Supervisor != null
-            //               select p;
-
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
-            //                            || p.Materno.StartsWith(searchString)
-            //                            || p.Nombre.StartsWith(searchString)
-            //                            || p.Supervisor.StartsWith(searchString));
-            //}
-
-            //switch (sortOrder)
-            //{
-            //    case "name_desc":
-            //        personas = personas.OrderByDescending(p => p.Paterno);
-            //        break;
-            //    case "Date":
-            //        personas = personas.OrderBy(p => p.UltimaActualización);
-            //        break;
-            //    case "date_desc":
-            //        personas = personas.OrderByDescending(p => p.UltimaActualización);
-            //        break;
-            //    default:
-            //        personas = personas.OrderBy(p => p.Paterno);
-            //        break;
-            //}
 
             int pageSize = 10;
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
@@ -1338,10 +1310,10 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
-            if (supervision == null)
+            var supervisiones = await _context.Supervision.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            if (supervisiones.Count == 0)
             {
-                return NotFound();
+                return RedirectToAction("SinSupervision");
             }
 
             List<Supervision> SupervisionVM = _context.Supervision.ToList();
@@ -1351,7 +1323,7 @@ namespace scorpioweb.Controllers
             ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
                                                 join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
                                                 join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
-                                                where supervisiontable.IdSupervision == id
+                                                where personatable.IdPersona == id
 
                                                 select new SupervisionPyCP
                                                 {
@@ -1361,6 +1333,11 @@ namespace scorpioweb.Controllers
                                                 };
             #endregion
 
+            return View();
+        }
+
+        public ActionResult SinSupervision()
+        {
             return View();
         }
 

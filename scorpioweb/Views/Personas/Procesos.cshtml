@@ -12,8 +12,31 @@
 
 <h3>Causas Penales:</h3>
 
-@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
-{
-  <h3 class="blockquote">@item.causapenalVM.CausaPenal</h3>
-}
-
+<table class="table">
+  <thead>
+    <tr>
+      <th>
+        Causa Penal
+      </th>
+      <th>
+        Supervisión
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
+    {
+      <tr>
+        <td>
+          @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
+        </td>
+        <td>
+          <a class="btn btn-primary" asp-controller="Supervisiones" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervision">
+            <i class="fa fa-cog"></i>
+            Supervisión
+          </a>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
