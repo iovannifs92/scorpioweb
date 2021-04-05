@@ -1,4 +1,4 @@
-﻿@model PaginatedList<scorpioweb.Models.Persona>
+﻿@model PaginatedList<scorpioweb.Models.SupervisionPyCP>
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
@@ -34,7 +34,7 @@
             </a>
         </p>
     </div>
-</form>
+ </form>
 
 <table class="table">
     <thead>
@@ -55,30 +55,29 @@
         {
         <tr valign="middle">
             <td>
-                @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Supervisor)
+                @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
             </td>
             <th>
-                @Html.DisplayFor(modelItem => item.UltimaActualización)
+                @Html.DisplayFor(modelItem => item.personaVM.UltimaActualización)
             </th>
             @if (!oficialia)
             {
                 <td>
-                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
+                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.personaVM.IdPersona">
                         <i class="fa fa-pencil"></i>
                         Editar
                     </a>
-                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
                         <i class="fa fa-eye"></i>
                         Detalles
                     </a>
-                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.IdPersona">
-                        <i class="fa fa-list"></i>
+                    <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.supervisionVM.IdSupervision">
+                        <i class="fa fa-cogs"></i>
                         Procesos
                     </a>
-                    @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
                 </td>
             }
         </tr>

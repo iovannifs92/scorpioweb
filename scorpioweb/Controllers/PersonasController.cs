@@ -116,7 +116,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var personas/*supervisionPyCP*/ = from p in _context.Persona
+            var personas = from p in _context.Persona
                            where p.Supervisor != null
                            select p;
 
@@ -143,34 +143,6 @@ namespace scorpioweb.Controllers
                     personas = personas.OrderBy(p => p.Paterno);
                     break;
             }
-
-            //var personas = from p in _context.Persona
-            //               where p.Supervisor != null
-            //               select p;
-
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
-            //                            || p.Materno.StartsWith(searchString)
-            //                            || p.Nombre.StartsWith(searchString)
-            //                            || p.Supervisor.StartsWith(searchString));
-            //}
-
-            //switch (sortOrder)
-            //{
-            //    case "name_desc":
-            //        personas = personas.OrderByDescending(p => p.Paterno);
-            //        break;
-            //    case "Date":
-            //        personas = personas.OrderBy(p => p.UltimaActualización);
-            //        break;
-            //    case "date_desc":
-            //        personas = personas.OrderByDescending(p => p.UltimaActualización);
-            //        break;
-            //    default:
-            //        personas = personas.OrderBy(p => p.Paterno);
-            //        break;
-            //}
 
             int pageSize = 10;
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));

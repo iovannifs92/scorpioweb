@@ -533,7 +533,7 @@ namespace scorpioweb.Controllers
                             personaVM = p,
                             supervisionVM = s,
                             causapenalVM = cp
-                        }; ;
+                        };
 
             if (supervisor)
             {
