@@ -1003,7 +1003,7 @@ namespace scorpioweb.Controllers
                             break;
                     }
                     _context.Add(fraccionesImpuestas);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
             }
             return View();
