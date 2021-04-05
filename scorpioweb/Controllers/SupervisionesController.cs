@@ -182,7 +182,7 @@ namespace scorpioweb.Controllers
                 datosSupervision = new List<String> { datosS[i], currentUser };
             }
 
-            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Boton para guaradar los cambios" });
+            return Json(new { success = true, responseText = "Datos Guardados con éxito,\n Presione Botón para guardar los cambios" });
 
         }
 
@@ -1003,7 +1003,7 @@ namespace scorpioweb.Controllers
                             break;
                     }
                     _context.Add(fraccionesImpuestas);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
             }
             return View();
@@ -1616,6 +1616,10 @@ namespace scorpioweb.Controllers
         #endregion
 
 
-
+        public IActionResult Archivos()
+        {
+            return View();
+        }
+               
     }
 }

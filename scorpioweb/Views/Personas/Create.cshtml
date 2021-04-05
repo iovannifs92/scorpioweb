@@ -133,17 +133,54 @@
         });
 
         $("#consumoSustancias").change(function () {
+            document.getElementById("sustancia").value = 'ALCOHOL';
+            document.getElementById("frecuenciaS").value = 'DIARIO';
+            document.getElementById("cantidadS").value = '';
+            document.getElementById("ultimoConsumo").value = '';
+            document.getElementById("observacionesConsumo").value = '';
+
             var opcion = $(this).children("option:selected").val();
-            //alert("opcion: "+opcion);
             if (opcion == "Si") {
                 $('#modalConsumoSustancias').modal('show')
             }
             else {
                 $('#modalConsumoSustancias').modal('hidden')
             }
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/agregarSustancias",
+                traditional: true,
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
         });
 
         $("#Familiares").change(function () {
+            document.getElementById("AFNombre").value = '';
+            document.getElementById("AFRelacion").value = 'MAMA';
+            document.getElementById("AFEdad").value = '0';
+            document.getElementById("AFSexo").value = 'M';
+            document.getElementById("AFDependencia").value = 'NO';
+            document.getElementById("AFDependenciaExplicaO").value = '';
+            document.getElementById("AFVivenJuntos").value = 'SI';
+            document.getElementById("AFDireccionFamiliarO").value = '';
+            document.getElementById("AFtelefonoFamiliar").value = '';
+            document.getElementById("AFLocalizacion").value = '';
+            document.getElementById("AFEnteradoProceso").value = 'SI';
+            document.getElementById("AFPuedeEnterarseO").value = 'NA';
+            document.getElementById("AFobservacionesConsumo").value = '';
+            $("#AFDependenciaExplica").css("display", "none");
+            $("#AFDireccionFamiliar").css("display", "none");
+            $("#AFPuedeEnterarse").css("display", "none");
+
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Asiento Familiar";
             if (opcion == "Si") {
@@ -155,9 +192,43 @@
                 $('#modalAsientoFamiliar').modal('hidden')
             }
 
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/agregarAsientoFamiliar",
+                traditional: true,
+                data: {
+                    tipo: tipo,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
         });
 
         $("#ReferenciasPersonales").change(function () {
+            document.getElementById("AFNombre").value = '';
+            document.getElementById("AFRelacion").value = 'MAMA';
+            document.getElementById("AFEdad").value = '0';
+            document.getElementById("AFSexo").value = 'M';
+            document.getElementById("AFDependencia").value = 'NO';
+            document.getElementById("AFDependenciaExplicaO").value = '';
+            document.getElementById("AFVivenJuntos").value = 'SI';
+            document.getElementById("AFDireccionFamiliarO").value = '';
+            document.getElementById("AFtelefonoFamiliar").value = '';
+            document.getElementById("AFLocalizacion").value = '';
+            document.getElementById("AFEnteradoProceso").value = 'SI';
+            document.getElementById("AFPuedeEnterarseO").value = 'NA';
+            document.getElementById("AFobservacionesConsumo").value = '';
+            $("#AFDependenciaExplica").css("display", "none");
+            $("#AFDireccionFamiliar").css("display", "none");
+            $("#AFPuedeEnterarse").css("display", "none");
+            
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Referencia";
             if (opcion == "Si") {
@@ -168,26 +239,41 @@
                 tipo = 0;
                 $('#modalAsientoFamiliar').modal('hidden')
             }
-            $('#btnCloseAF').on("click", function (e) {
-                e.preventDefault();
-                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
-                ReferenciasPersonales.value = 'No';
-            });
 
-            $('#modalAsientoFamiliar').on('hidden.bs.modal', function (e) {
-                e.preventDefault();
-                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
-                ReferenciasPersonales.value = 'No';
-            });
-            $('#btnGuardarFamiliar').on("click", function (e) {
-                e.preventDefault();
-                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
-                ReferenciasPersonales.value = 'S1';
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/agregarAsientoFamiliar",
+                traditional: true,
+                data: {
+                    tipo: tipo,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
             });
         });
 
-
         $("#familiaresFuera").change(function () {
+            document.getElementById("FENombre").value = '';
+            document.getElementById("FERelacion").value = 'MAMA';
+            document.getElementById("FEEdad").value = '0';
+            document.getElementById("FESexo").value = 'M';
+            document.getElementById("FETiempo").value = 'MENOS DE 1 AÑO';
+            document.getElementById("FEPais").value = 'MEXICO';
+            document.getElementById("FEEstado").value = '';
+            document.getElementById("FETelefonoFamiliar").value = '';
+            document.getElementById("FEFrecuencia").value = 'DIARIAMENTE';
+            document.getElementById("FEEnteradoProceso").value = 'SI';
+            document.getElementById("FEPuedeEnterarse").value = 'NA';
+            document.getElementById("FEobservaciones").value = '';
+            $("#FEPuedeEnterarse").css("display", "none");
+
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $('#modalFamiliaresExtranjero').modal('show')
@@ -195,6 +281,21 @@
             else {
                 $('#modalFamiliaresExtranjero').modal('hidden')
             }
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/agregarFamiliaresExtranjeros",
+                traditional: true,
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
         });
 
         //#endregion
@@ -551,14 +652,9 @@
     });
 
 
-    //region Poner en "No" el drpodown si cancela en todos los modales
+    //region Poner en "No" el dropdown si cancela en todos los modales
     $(document).ready(function () {
         $('#btnCloseCS').on("click", function (e) {
-            e.preventDefault();
-            var consumoSustancias = document.getElementById('consumoSustancias');
-            consumoSustancias.value = 'No';
-        });
-        $('#modalConsumoSustancias').on('hidden.bs.modal', function (e) {
             e.preventDefault();
             var consumoSustancias = document.getElementById('consumoSustancias');
             consumoSustancias.value = 'No';
@@ -571,11 +667,6 @@
             var cuentaDomicilioSecundario = document.getElementById('cuentaDomicilioSecundario');
             cuentaDomicilioSecundario.value = 'NO';
         });
-        $('#modalDomicilioSecundario').on('hidden.bs.modal', function (e) {
-            e.preventDefault();
-            var cuentaDomicilioSecundario = document.getElementById('cuentaDomicilioSecundario');
-            cuentaDomicilioSecundario.value = 'NO';
-        });
     });
 
     $(document).ready(function () {
@@ -584,10 +675,19 @@
             var familiaresFuera = document.getElementById('familiaresFuera');
             familiaresFuera.value = 'NO';
         });
-        $('#modalFamiliaresExtranjero').on('hidden.bs.modal', function (e) {
+    });
+
+    $(document).ready(function () {
+        $('#btnCloseAF').on("click", function (e) {
             e.preventDefault();
-            var familiaresFuera = document.getElementById('familiaresFuera');
-            familiaresFuera.value = 'NO';
+            if (tipo == 1) {
+              var Familiares = document.getElementById('Familiares');
+              Familiares.value = 'No';
+            }
+            else if (tipo == 2) {
+              var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+              ReferenciasPersonales.value = 'No';
+            }
         });
     });
     //endregion
@@ -873,7 +973,7 @@
                             </div>
                         </div>
                         <!-- Modal Domicilio Secundario -->
-                        <div class="modal fade" id="modalDomicilioSecundario" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal fade" id="modalDomicilioSecundario" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header" style="background-color:#415667;">
@@ -1340,8 +1440,8 @@
     </div>
 </div>
 
-<!-- Modal Consumo de sustancias Secundario -->
-<div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<!-- Modal Consumo de sustancias -->
+<div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#0078A7;">
@@ -1410,7 +1510,7 @@
 </div>
 
 <!-- Modal Asiento Familiar -->
-<div class="modal fade" id="modalAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="modalAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#0078A7;">
@@ -1514,7 +1614,7 @@
 </div>
 
 <!-- Modal Familiares en el extranjero -->
-<div class="modal fade" id="modalFamiliaresExtranjero" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="modalFamiliaresExtranjero" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header" style="color:#000; background-color:#fff; border-color:#fff;">
