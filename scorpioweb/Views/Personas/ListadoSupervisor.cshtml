@@ -1,97 +1,94 @@
-﻿@model PaginatedList<scorpioweb.Models.SupervisionPyCP>
+﻿@model PaginatedList<scorpioweb.Models.Persona>
 
 @{
-  Layout = "/Views/Shared/_Layout.cshtml";
+    Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Supervisados MC y SCP</h2>
 <p>
-  <a asp-action="Create">
-    Nueva entrevista encuadre
-  </a>
+    <a asp-action="Create">Nueva entrevista de encuadre</a>
 </p>
 
 <form asp-action="ListadoSupervisor" method="get">
-  <div class="form-actions no-color">
-    <p>
-      Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-      <button type="submit" class="btn btn-default">
-        <i class="fa fa-search"></i>
-        Buscar
-      </button>
-      <a asp-action="ListadoSupervisor" class="btn btn-link">
-        Regresar al listado completo
-      </a>
-    </p>
-  </div>
+    <div class="form-actions no-color">
+        <p>
+            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="Index" class="btn btn-link">
+                Regresar al listado completo
+            </a>
+        </p>
+    </div>
 </form>
 
 <table class="table">
-  <thead>
-    <tr>
-      <th>
-        <a asp-action="ListadoSupervisor" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
-      </th>
-      <th>
-        Supervisor
-      </th>
-      <th>
-        <a asp-action="ListadoSupervisor" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Última actualización</a>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var item in Model)
-    {
-      <tr valign="middle">
-        <td>
-          @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
-        </td>
-        <td>
-          @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
-        </td>
-        <th>
-          @Html.DisplayFor(modelItem => item.personaVM.UltimaActualización)
-        </th>
-        @if (!oficialia)
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="ListadoSupervisor" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+            </th>
+            <th>
+                Supervisor
+            </th>
+            <th>
+                <a asp-action="ListadoSupervisor" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Última actualización</a>
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
         {
-          <td>
-            <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.personaVM.IdPersona">
-              <i class="fa fa-pencil"></i>
-              Editar
-            </a>
-            <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
-              <i class="fa fa-eye"></i>
-              Detalles
-            </a>
-            <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.supervisionVM.IdSupervision">
-              <i class="fa fa-cogs"></i>
-              Procesos
-            </a>
-          </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Supervisor)
+                </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.UltimaActualización)
+                </th>
+                <td>
+                  <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                  </a>
+                  <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-eye"></i>
+                    Detalles
+                  </a>
+                  <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-cogs"></i>
+                    Procesos
+                  </a>
+                </td>
+            </tr>
         }
-      </tr>
-    }
-  </tbody>
+    </tbody>
 </table>
 
 @{
-  var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-  var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    var prevDisabled = !Model.HasNextPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-
-<a asp-action="ListadoSupervisor"
+<a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @prevDisabled">
-  Anterior
+    Anterior
 </a>
-<a asp-action="ListadoSupervisor"
+<a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @nextDisabled">
-  Siguiente
+    Siguiente
 </a>

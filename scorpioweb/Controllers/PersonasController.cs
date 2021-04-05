@@ -1303,10 +1303,10 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
-            if (supervision == null)
+            var supervisiones = await _context.Supervision.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            if (supervisiones.Count == 0)
             {
-                return NotFound();
+                return RedirectToAction("SinSupervision");
             }
 
             List<Supervision> SupervisionVM = _context.Supervision.ToList();
@@ -1316,7 +1316,7 @@ namespace scorpioweb.Controllers
             ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
                                                 join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
                                                 join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
-                                                where supervisiontable.IdSupervision == id
+                                                where personatable.IdPersona == id
 
                                                 select new SupervisionPyCP
                                                 {
@@ -1326,6 +1326,11 @@ namespace scorpioweb.Controllers
                                                 };
             #endregion
 
+            return View();
+        }
+
+        public ActionResult SinSupervision()
+        {
             return View();
         }
 
