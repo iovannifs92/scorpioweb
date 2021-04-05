@@ -4,24 +4,25 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-@{ bool adminUser=false;
-    bool oficialia=false;}
+@{ bool adminUser = false;
+    bool oficialia = false;}
 
 @foreach (var item in ViewBag.RolesUsuario)
 {
-    if (item == "AdminMCSCP" || item=="Director" || item=="Administrador")
+    if (item == "AdminMCSCP" || item == "Director" || item == "Administrador")
     {
-        adminUser=true;
+        adminUser = true;
     }
     if (item == "Oficialia")
     {
-        oficialia=true;
+        oficialia = true;
     }
 }
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <div class="card-group" style="padding-top:2%">
+    
     @if (adminUser)
     {
         <div class="col-sm-3 col-md-3 card text-center">
@@ -91,18 +92,18 @@
             </div>
         </div>
     }
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a href="#">
-                        <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Indicadores
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Indicadores relevantes de la supervisión de la Coordinación de Medidas Cautelares y Suspensión Condicional del Proceso
-                </p>
-            </div>
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a href="#">
+                    <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Indicadores
+                </a>
+            </h4>
+            <p class="card-text">
+                Indicadores relevantes de la supervisión de la Coordinación de Medidas Cautelares y Suspensión Condicional del Proceso
+            </p>
         </div>
     </div>
+</div>
 

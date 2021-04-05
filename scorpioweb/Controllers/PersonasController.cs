@@ -97,6 +97,9 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.RolesUsuario = rolUsuario;
+           
+            String users = user.ToString();
+            ViewBag.RolesUsuarios = users;
             #endregion
 
             ViewData["CurrentSort"] = sortOrder;
@@ -186,6 +189,10 @@ namespace scorpioweb.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
 
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            String users = user.ToString();
+            ViewBag.RolesUsuario = users;
+            
 
             if (searchString != null)
             {
@@ -2807,8 +2814,6 @@ namespace scorpioweb.Controllers
                     var oldAbandonoestado = await _context.Abandonoestado.FindAsync(abandonoestado.IdAbandonoEstado);
                     _context.Entry(oldAbandonoestado).CurrentValues.SetValues(abandonoestado);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                    //_context.Update(abandonoestado);
-                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -2934,8 +2939,6 @@ namespace scorpioweb.Controllers
             ViewBag.idEnterar = BuscaId(listaNoSiNA, familiaresforaneos.PuedeEnterarse);
             ViewBag.Pais = familiaresforaneos.Pais;
 
-
-
             if (familiaresforaneos == null)
             {
                 return NotFound();
@@ -2950,7 +2953,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var familiaresforaneos = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            var familiaresforaneos = await _context.Familiaresforaneos.FirstAsync(m => m.PersonaIdPersona == id);
 
             #region -To List databases-
             List<Persona> personaVM = _context.Persona.ToList();
@@ -2993,7 +2996,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Hijo (a)", Value="HIJO (A)"},
               new SelectListItem{ Text="Abelo (a)", Value="ABUELO (A)"},
               new SelectListItem{ Text="Familiar 1 Nivel", Value="FAMILIAR 1 NIVEL"},
-              new SelectListItem{ Text="Amigo", Value="AMIGO"},
+              new SelectListItem{ Text="Amigo", Value="AMIGO"},  
               new SelectListItem{ Text="Conocido", Value="CONOCIDO (A)"},
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
