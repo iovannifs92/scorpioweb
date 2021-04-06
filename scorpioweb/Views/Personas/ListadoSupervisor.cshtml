@@ -17,7 +17,7 @@
                 <i class="fa fa-search"></i>
                 Buscar
             </button>
-            <a asp-action="Index" class="btn btn-link">
+            <a asp-action="ListadoSupervisor" class="btn btn-link">
                 Regresar al listado completo
             </a>
         </p>
@@ -55,18 +55,28 @@
                     @Html.DisplayFor(modelItem => item.UltimaActualización)
                 </th>
                 <td>
-                  <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
-                    <i class="fa fa-pencil"></i>
-                    Editar
-                  </a>
-                  <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
-                    <i class="fa fa-eye"></i>
-                    Detalles
-                  </a>
-                  <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
-                    <i class="fa fa-cogs"></i>
-                    Procesos
-                  </a>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                        <i class="fa fa-eye"></i>
+                        Detalles
+                    </a>
+                    <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
+                        <i class="fa fa-cogs"></i>
+                        Procesos
+                    </a>
+                    @if (ViewBag.RolesUsuario == item.Supervisor)
+                    {
+                        <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
+                            <i class="fa fa-pencil"></i>
+                            Editar
+                        </a>
+                    }
+                    @if (ViewBag.RolesUsuario != item.Supervisor)
+                    {
+                        <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona" style="display:none;">
+                            <i class="fa fa-pencil"></i>
+                            Editar
+                        </a>
+                    }
                 </td>
             </tr>
         }
@@ -78,14 +88,14 @@
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<a asp-action="Index"
+<a asp-action="ListadoSupervisor"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
-<a asp-action="Index"
+<a asp-action="ListadoSupervisor"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"

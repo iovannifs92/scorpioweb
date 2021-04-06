@@ -3,17 +3,6 @@
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
 }
-
-@{ bool oficialia = false;}
-
-@foreach (var item in ViewBag.RolesUsuario)
-{
-    if (item == "Oficialia")
-    {
-        oficialia = true;
-    }
-}
-
 <h2>Supervisados MC y SCP</h2>
 <p>
     <a asp-action="Create">
@@ -31,6 +20,9 @@
             </button>
             <a asp-action="Index" class="btn btn-link">
                 Regresar al listado completo
+            </a> |
+            <a asp-action="ListadoSupervisor" class="btn btn-link">
+                Ver solo mis Supervisados 
             </a>
         </p>
     </div>
@@ -60,27 +52,34 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Supervisor)
             </td>
-            <th>
+            <th>  
                 @Html.DisplayFor(modelItem => item.UltimaActualización)
             </th>
-            @if (!oficialia)
-            {
-                <td>
+            <td>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-eye"></i>
+                    Detalles
+                </a>
+                <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-cogs"></i>
+                    Procesos
+                </a>
+                @if (ViewBag.RolesUsuarios == item.Supervisor)
+                {
                     <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
                         <i class="fa fa-pencil"></i>
                         Editar
                     </a>
-                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
-                        <i class="fa fa-eye"></i>
-                        Detalles
+                }
+                @if (ViewBag.RolesUsuarios != item.Supervisor)
+                {
+                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona" style="display:none;">
+                        <i class="fa fa-pencil"></i>
+                        Editar
                     </a>
-                    <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
-                      <i class="fa fa-cogs"></i>
-                      Procesos
-                    </a>
-                    @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
-                </td>
-            }
+                }
+
+            </td>
         </tr>
         }
     </tbody>
