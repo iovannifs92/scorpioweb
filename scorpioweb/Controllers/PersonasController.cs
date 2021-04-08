@@ -125,10 +125,13 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+                foreach (var item in searchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
                                         || p.Materno.StartsWith(searchString)
-                                        || p.Nombre.StartsWith(searchString)
-                                        || p.Supervisor.StartsWith(searchString));
+                                        || p.Nombre.StartsWith(searchString));
+                }
             }
 
             switch (sortOrder)
@@ -151,6 +154,7 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
+       
         public async Task<IActionResult> ListadoSupervisor(
             string sortOrder,
             string currentFilter,
@@ -184,11 +188,15 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                personas = personas.Where(p => p.Paterno.StartsWith(searchString)
+                foreach (var item in searchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
                                         || p.Materno.StartsWith(searchString)
-                                        || p.Nombre.StartsWith(searchString)
-                                        || p.Supervisor.StartsWith(searchString));
+                                        || p.Nombre.StartsWith(searchString));
+                }
             }
+
 
             switch (sortOrder)
             {
@@ -1772,7 +1780,7 @@ namespace scorpioweb.Controllers
                 persona.Familiares = normaliza(persona.Familiares);
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
                 persona.rutaFoto = normaliza(persona.rutaFoto);
-                persona.Capturista = normaliza(persona.Capturista);
+                persona.Capturista = persona.Capturista;
 
                 #region -ConsumoSustancias-
                 //Sustancias editadas
