@@ -52,16 +52,10 @@
 {
     i++;
     <div class="form-group col-md-12">
-        <form asp-action="EditFamiliaresForaneos">
-            <div>
-                <h4>Familiar Foraneo <span>@i</span> </h4>
-            </div>
-            <div class="form-group col-md-6">
-                <input name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
-            </div>
-            <div class="form-group col-lg-6">
-                <input name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
-            </div>
+        <form asp-action="EditFamiliaresForaneos">     
+            <input type="hidden" name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
+
+            <input type="hidden" name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
 
             <div class="form-group col-md-12">
                 <label class="control-label">Nombre</label>
@@ -156,10 +150,7 @@
                 </div>
                 @foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
                 {
-                    <div class="form-group">
-                        <label class="control-label">Persona IdPersona</label>
-                        <input readonly name="PersonaIdPersona" id="PersonaIdPersonaFE" class="form-control" value="@item.familiaresForaneosVM.PersonaIdPersona" />
-                    </div>
+                    <input type="hidden" readonly name="PersonaIdPersona" id="PersonaIdPersonaFE" class="form-control" value="@item.familiaresForaneosVM.PersonaIdPersona" />
                     break;
                 }
 
