@@ -228,10 +228,10 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                #region -Delitos-
                 int idCausaPenal = ((from table in _context.Causapenal
                                      select table.IdCausaPenal).Max()) + 1;
                 causapenal.IdCausaPenal = idCausaPenal;
+                #region -Delitos-
                 for (int i = 0; i < datosDelitos.Count; i = i + 3)
                 {
                     if (datosDelitos[i][1] == currentUser)

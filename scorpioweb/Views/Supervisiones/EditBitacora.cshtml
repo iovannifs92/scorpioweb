@@ -3,6 +3,7 @@
 @{
     Layout = null;
 }
+
 <div class="row">
     <div class="col-md-12">
         <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditBitacora" enctype="multipart/form-data">
@@ -32,8 +33,8 @@
                 <span asp-validation-for="Texto" class="text-danger"></span>
             </div>
 
-            <div class="custom-file" class="form-group col-lg-12" style="padding-bottom:20px">
-                <input required type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+            <div class="custom-file form-group col-lg-12" style="padding-bottom:20px">
+                <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
             <div class="form-group col-lg-12">

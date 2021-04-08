@@ -1544,22 +1544,36 @@ namespace scorpioweb.Controllers
             bitacora.Texto = normaliza(bitacora.Texto);
 
             var supervision = _context.Supervision
-               .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);     
-
-            #region -Guardar archivo-
-            string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
-            bitacora.RutaEvidencia = file_name;
-            var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
-            var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
-            #endregion
+               .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     var oldBitacora = await _context.Bitacora.FindAsync(bitacora.IdBitacora, bitacora.SupervisionIdSupervision);
+
+                    if(evidencia == null)
+                    { 
+                        bitacora.RutaEvidencia = oldBitacora.RutaEvidencia;
+                    }
+                    else
+                    {
+                        string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                        bitacora.RutaEvidencia = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+
+                        if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                        {
+                            System.IO.File.Delete(Path.Combine(uploads, file_name));
+                        }
+                          
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await evidencia.CopyToAsync(stream);
+                        stream.Close();
+                    }
+                    
                     _context.Entry(oldBitacora).CurrentValues.SetValues(bitacora);
-                    await evidencia.CopyToAsync(stream);
+
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(bitacora);
                     //await evidencia.CopyToAsync(stream);
