@@ -8,6 +8,25 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+</script>
+
+
+
 @foreach (var item in ViewData["joinTablesCausa"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
 {
 <div class="row">
@@ -47,22 +66,22 @@
                 <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />
             </div>
             <div class="form-group">
-                <a asp-action="CreateDelito" asp-route-id="@item.causaPenalVM.IdCausaPenal" class="btn btn-success">
-                    <i class="fa fa-plus"></i>  Crear Delito
+                <a id="btnVer" onclick="showModal('@Url.Action("CreateDelito","Causaspenales",null,Context.Request.Scheme)','Crear Delito',@item.causaPenalVM.IdCausaPenal)" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Crear Delito
                 </a>
                 @if (ViewBag.tieneDelitos == true)
-                    {
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
-                    <i class="fa fa-eye"></i> Ver Delitos
-                </button>
+                {
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                        <i class="fa fa-eye"></i> Ver Delitos
+                    </button>
 
-                    }
-                    else
-                    {
-                <button style="display:none" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
-                    <i class="fa fa-eye"></i> Ver Delitos
-                </button>
-                    }
+                }
+                else
+                {
+                    <button style="display:none" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                        <i class="fa fa-eye"></i> Ver Delitos
+                    </button>
+                }
             </div>
             <div class="form-group">
                 <button type="submit" id="btnguardarEdit" class="btn btn-primary">
@@ -94,7 +113,7 @@
                         <td style="width: 65%;">@item.delitoVM.Tipo</td>
                     </tr>
                     <tr>
-                        <td style="background-color: #E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
+                        <td style="background-color:#E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
                         <td>@item.delitoVM.Modalidad</td>
                         <td style="border-right: solid White;
                                        border-bottom: solid White;

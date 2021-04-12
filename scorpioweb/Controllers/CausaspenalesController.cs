@@ -506,6 +506,8 @@ namespace scorpioweb.Controllers
         #region -DetailsCP-
         public IActionResult CreateDelito(int? id)
         {
+            ViewBag.idDelito = id;
+            ViewBag.inputRequired = true;
             return View();
         }
 
@@ -521,11 +523,15 @@ namespace scorpioweb.Controllers
                 delitoDB.EspecificarDelito = EspecificarDelito;
                 delitoDB.CausaPenalIdCausaPenal = id;
 
+                int idDelito = ((from table in _context.Delito
+                                 select table.IdDelito).Max()) + 1;
+
+                delitoDB.IdDelito = idDelito;
                 _context.Add(delitoDB);
-                await _context.SaveChangesAsync(null, 1);
-                return RedirectToAction("EditCausas", "Causaspenales", new { @id = id });
+                await _context.SaveChangesAsync();
+                return RedirectToAction("EditCausas/" + delitoDB.CausaPenalIdCausaPenal, "Causaspenales");    
             }
-            return View();
+            return View(delitoDB);
         }
         #endregion
 

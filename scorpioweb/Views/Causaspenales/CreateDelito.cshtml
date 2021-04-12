@@ -1,36 +1,29 @@
 ﻿@{
-    ViewData["Title"] = "Create Delito";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
-@* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
-<h2>Create Delito</h2>
-
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateDelito">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas guardar datos?');" asp-action="CreateDelito" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Tipo</label>
-                <input required name="Tipo" type="text" class="form-control" />
+                <input name="Tipo" type="text" class="form-control" />
             </div>
             <div class="form-group">
                 <label class="control-label">Modalidad</label>
-                <input required name="Modalidad" type="text" class="form-control" />
+                <input  name="Modalidad" type="text" class="form-control" />
             </div>
             <div class="form-group">
                 <label class="control-label">Especifique delito</label>
                 <input required name="EspecificarDelito" type="text" class="form-control" />
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
             </div>
+            <input name="id" type="hidden" value="@ViewBag.idDelito" />
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Regresar a lista</a>
 </div>
