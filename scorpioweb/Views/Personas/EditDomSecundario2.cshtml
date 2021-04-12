@@ -138,15 +138,8 @@
     i++;
     <div class="form-group col-md-12">
         <form asp-action="EditDomSecundario">
-            <div>
-                <h4>Domicilio Secundario <span>@i</span> </h4>
-            </div>
-            <div class="form-group col-md-6">
-                <input name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioVM.IdDomicilioSecundario" class="form-control" readonly />
-            </div>
-            <div class="form-group col-lg-6">
-                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioVM.IdDomicilio" class="form-control" readonly />
-            </div>
+            <input type="hidden" name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioVM.IdDomicilioSecundario" class="form-control" readonly />
+            <input type="hidden" name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioVM.IdDomicilio" class="form-control" readonly />
             <div class="form-group col-lg-12">
                 <label class="control-label">Tipo de Ubiacion</label>
                 <select class="form-control" name="TipoDomicilio" id="tipoDomicilio"

@@ -449,7 +449,7 @@ namespace scorpioweb.Controllers
 
         public ActionResult agregarSustancias()
         {
-            datosSustancias = new List<List<string>>();//por si no se vacian las listas despues de guardar
+            datosSustancias = new List<List<string>>();//por si no se vacian las listas despues de guardar el modal
 
             return Json(new { success = true });
         }
@@ -666,6 +666,19 @@ namespace scorpioweb.Controllers
             return normalizar;
         }
 
+        public string removeSpaces(string str)
+        {
+            while (str.Length > 0 && str[0] == ' ')
+            {
+                str = str.Substring(1);
+            }
+            while (str.Length > 0 && str[str.Length - 1] == ' ')
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+            return str;
+        }
+
         public static DateTime validateDatetime(string value)
         {
             try
@@ -743,9 +756,9 @@ namespace scorpioweb.Controllers
             if (ModelState.ErrorCount <= 1)
             {
                 #region -Persona-            
-                persona.Nombre = nombre.ToUpper();
-                persona.Paterno = paterno.ToUpper();
-                persona.Materno = normaliza(materno);
+                persona.Nombre = removeSpaces(normaliza(nombre));
+                persona.Paterno = removeSpaces(normaliza(paterno));
+                persona.Materno = removeSpaces(normaliza(materno));
                 persona.Alias = normaliza(alias);
                 persona.Genero = normaliza(sexo);
                 persona.Edad = edad;
@@ -1758,9 +1771,9 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
-                persona.Paterno = normaliza(persona.Paterno);
-                persona.Materno = normaliza(persona.Materno);
-                persona.Nombre = normaliza(persona.Nombre);
+                persona.Paterno = removeSpaces(normaliza(persona.Paterno));
+                persona.Materno = removeSpaces(normaliza(persona.Materno));
+                persona.Nombre = removeSpaces(normaliza(persona.Nombre));
                 persona.Alias = normaliza(persona.Alias);
                 persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
                 persona.Duracion = normaliza(persona.Duracion);
@@ -3279,6 +3292,15 @@ namespace scorpioweb.Controllers
             _context.Persona.Remove(persona);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> DeleteSustancia(int? id)
+        {
+            var sustancia = await _context.Consumosustancias.SingleOrDefaultAsync(m => m.IdConsumoSustancias == id);
+            _context.Consumosustancias.Remove(sustancia);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            return RedirectToAction(nameof(Index));//return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
         }
         #endregion
 
