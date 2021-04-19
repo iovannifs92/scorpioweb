@@ -420,7 +420,7 @@
                         document.ready = document.getElementById("observacionesConsumoA").value = '';
                         var otraSustancia = confirm("¿Consume alguna otra sustancia?");
                         if (otraSustancia == true) {
-                            alert("Coloque los datos correspondientes a la nueva susutancia");
+                            alert("Coloque los datos correspondientes a la nueva sustancia");
                         } else {
                             $("#modalAgregarSustancias").modal('hide');
                         }
@@ -989,6 +989,13 @@
             </div>
 
             <div class="modal-footer">
+                @*<button type="submit" class="btn btn-danger" id="btnDeleteSustancia" name="btnDeleteSustancia">
+                    <i class="fa fa-plus"></i>
+                    Borrar
+                </button>
+                <button asp-action="DeleteSustancia" asp-route-id=@Model.Paterno onclick="return update();" class="btn btn-danger" type="submit">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>*@
                 <button type="button" class="btn btn-success" id="btnAgregarSustancia" name="btnAgregarSustancia">
                     <i class="fa fa-plus"></i>
                     Agregar

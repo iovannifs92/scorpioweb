@@ -6,46 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 
-    <environment include="Development">
-        <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/css/font-awesome.min.css">
-        <link rel="stylesheet" href="~/css/bootstrap.min.css">
-        <link rel="stylesheet" href="~/css/jquery.fancybox.css">
-        <link rel="stylesheet" href="~/css/animate.css">
-        <link rel="stylesheet" href="~/css/main.css">
-        <link rel="stylesheet" href="~/css/media-queries.css">
-        <script src="~/js/modernizr-2.6.2.min.js"></script>
-        <script src="~/js/modernizr-2.6.2.min.js"></script>
-        <link rel="stylesheet" href="~/css/imprimir.css" media="print">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        <script src="~/js/panel.js"></script>
-        <script src="~/js/jquery-1.11.1.min.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/css/font-awesome.min.css">
-        <link rel="stylesheet" href="~/css/bootstrap.min.css">
-        @*<link rel="stylesheet" href="~/css/jquery.fancybox.css">*@
-        <link rel="stylesheet" href="~/css/animate.css">
-        <link rel="stylesheet" href="~/css/main.css">
-        <link rel="stylesheet" href="~/css/media-queries.css">
-        <link rel="stylesheet" href="~/css/imprimir.css" media="print">
-        <script src="~/js/modernizr-2.6.2.min.js"></script>
-        <script src="~/js/modernizr-2.6.2.min.js"></script>
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        <script src="~/js/panel.js"></script>
-
-    </environment>
+    <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/jquery.fancybox.css">
+    <link rel="stylesheet" href="~/css/animate.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <link rel="stylesheet" href="~/css/media-queries.css">
+    <link rel="stylesheet" href="~/css/imprimir.css" media="print">
+    <script src="~/js/modernizr-2.6.2.min.js"></script>
+    <script src="~/js/modernizr-2.6.2.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+            asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+            asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+    <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    <script src="~/js/panel.js"></script>
 </head>
 <body>
 
@@ -75,8 +52,9 @@
                     <li><a asp-area="" asp-controller="Personas" asp-action="Entrevista">Entrevista</a></li>
                     @if (User.Identity.Name == "iovannifs92@gmail.com")
                     {
-        <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
-                        <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>}
+                        <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
+                        <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>
+}
                     <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
@@ -96,14 +74,7 @@
         </footer>
     </div>
 
-    <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
-
-    @* Descomentar bloque para probar los modales que usen el modal id="form-modal" de este archivo.
-        E.g. EditFraccionesImpuestas *@
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
             asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
