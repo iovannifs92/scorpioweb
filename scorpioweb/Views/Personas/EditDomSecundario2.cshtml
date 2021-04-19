@@ -142,30 +142,30 @@
                 <h4>Domicilio Secundario <span>@i</span> </h4>
             </div>
             <div class="form-group col-md-6">
-                <input name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioVM.IdDomicilioSecundario" class="form-control" readonly />
+                <input name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioVM.IdDomicilioSecundario" class="form-control" readonly style="display:none" />
             </div>
             <div class="form-group col-lg-6">
-                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioVM.IdDomicilio" class="form-control" readonly />
+                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioVM.IdDomicilio" class="form-control" readonly  style="display:none" />
             </div>
-            <div class="form-group col-lg-12">
+            <div class="form-group col-md-12">
                 <label class="control-label">Tipo de Ubiacion</label>
                 <select class="form-control" name="TipoDomicilio" id="tipoDomicilio"
                         asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text",@item.domicilioSecundarioVM.TipoDomicilio))">
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Calle</label>
                 <input name="Calle" id="Calle" value=" @item.domicilioSecundarioVM.Calle" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">No</label>
                 <input name="No" id="No" value="@item.domicilioSecundarioVM.No" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Tipo de  Ubicacion</label>
                 <input name="TipoUbicacion" id="TipoUbicacion" value="@item.domicilioSecundarioVM.TipoUbicacion" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Nombre de Colonia/Fracionamiento</label>
                 <input name="NombreCf" id="NombreCf" value="@item.domicilioSecundarioVM.NombreCf" class="form-control" />
             </div>
@@ -200,27 +200,27 @@
                         asp-items="@(new SelectList(ViewBag.listaResidenciaHabitual, "Value", "Text",@item.domicilioSecundarioVM.ResidenciaHabitual))">
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Código Postal</label>
                 <input name="Cp" id="Cp" value="@item.domicilioSecundarioVM.Cp" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Referencias</label>
                 <input name="Referencias" id="Referencias" value="@item.domicilioSecundarioVM.Referencias" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Horario</label>
                 <input name="Horario" id="Horario" value="@item.domicilioSecundarioVM.Horario" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Motivo</label>
                 <input name="Motivo" id="Motivo" value="@item.domicilioSecundarioVM.Motivo" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Observaciones</label>
                 <input name="Observaciones" id="Observaciones" value="@item.domicilioSecundarioVM.Observaciones" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save"></i> Guardar
                 </button>

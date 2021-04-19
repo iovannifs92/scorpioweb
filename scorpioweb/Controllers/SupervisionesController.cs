@@ -15,9 +15,11 @@ using QRCoder;
 using System.Drawing;
 using System.IO;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace scorpioweb.Controllers
 {
+    [Authorize]
     public class SupervisionesController : Controller
     {
         #region -Constructor-
@@ -1523,9 +1525,10 @@ namespace scorpioweb.Controllers
             ListaTipoVisita = new List<SelectListItem>
             {
               new SelectListItem{ Text="Presencial", Value="PRESENCIAL"},
-              new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="Firma Periódica", Value="FIRMA PERIODICA"},
               new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
-
+              new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
             ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
