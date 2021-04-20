@@ -140,7 +140,7 @@
             document.getElementById("observacionesConsumo").value = '';
 
             var opcion = $(this).children("option:selected").val();
-            if (opcion == "Si") {
+            if (opcion == "SI") {
                 $('#modalConsumoSustancias').modal('show')
             }
             else {
@@ -183,7 +183,7 @@
 
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Asiento Familiar";
-            if (opcion == "Si") {
+            if (opcion == "SI") {
                 tipo = 1;
                 $('#modalAsientoFamiliar').modal('show')
             }
@@ -231,7 +231,7 @@
             
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Referencia";
-            if (opcion == "Si") {
+            if (opcion == "SI") {
                 tipo = 2;
                 $('#modalAsientoFamiliar').modal('show')
             }
@@ -657,7 +657,7 @@
         $('#btnCloseCS').on("click", function (e) {
             e.preventDefault();
             var consumoSustancias = document.getElementById('consumoSustancias');
-            consumoSustancias.value = 'No';
+            consumoSustancias.value = 'NO';
         });
     });
 
@@ -682,11 +682,11 @@
             e.preventDefault();
             if (tipo == 1) {
               var Familiares = document.getElementById('Familiares');
-              Familiares.value = 'No';
+              Familiares.value = 'NO';
             }
             else if (tipo == 2) {
               var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
-              ReferenciasPersonales.value = 'No';
+              ReferenciasPersonales.value = 'NO';
             }
         });
     });
@@ -856,22 +856,22 @@
                             <div class="form-group">
                                 <label class="control-label">¿Consume alguna sustancia o droga?</label>
                                 <select class="form-control" name="consumoSustancias" id="consumoSustancias">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
+                                    <option value="NO">No</option>
+                                    <option value="SI">Si</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Añadir Familiares</label>
                                 <select class="form-control" name="Familiares" id="Familiares">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
+                                    <option value="NO">No</option>
+                                    <option value="SI">Si</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Añadir Referencias</label>
                                 <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
+                                    <option value="NO">No</option>
+                                    <option value="SI">Si</option>
                                 </select>
                             </div>
                         </div>
