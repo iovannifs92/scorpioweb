@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using scorpioweb.Models;
 
 namespace scorpioweb.Controllers
 {
+    [Authorize]
     public class CausaspenalesController : Controller
     {
         #region -Variables Globales-.
@@ -216,8 +218,25 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Create-
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+
+            String users = user.ToString();
+            ViewBag.RolesUsuarios = users;
+            #endregion
+
             return View();
         }
 

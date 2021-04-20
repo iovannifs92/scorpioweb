@@ -1,17 +1,18 @@
 ﻿@*<script src="/lib/jquery/dist/jquery.js"></script>*@
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script> con este jquery no funciona el boton de guardar sustancia*@
+
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#lnMunicipio').html(items);
         $('#municipioD').html(items);
-
         $('#lnEstado').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#lnEstado';
@@ -44,9 +45,7 @@
                 $("#Pais, #Localidad").removeClass("col-md-6");
                 $("#Pais, #Localidad").addClass("col-md-3");
             }
-
         });
-
         /*Combobox Domicilio*/
         $('#estadoD').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
@@ -80,9 +79,7 @@
                 $("#PaisD").removeClass("col-md-12");
                 $("#PaisD").addClass("col-md-4");
             }
-
         });
-
         /*Combobox Domicilio Secundario*/
         $('#estadoDDS').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
@@ -116,10 +113,8 @@
                 $("#PaisDDS").removeClass("col-md-12");
                 $("#PaisDDS").addClass("col-md-4");
             }
-
         });
         //#endregion
-
         //#region -Modales-
         $("#cuentaDomicilioSecundario").change(function () {
             var opcion = $(this).children("option:selected").val();
@@ -131,14 +126,12 @@
                 $('#modalDomicilioSecundario').modal('hidden')
             }
         });
-
         $("#consumoSustancias").change(function () {
             document.getElementById("sustancia").value = 'ALCOHOL';
             document.getElementById("frecuenciaS").value = 'DIARIO';
             document.getElementById("cantidadS").value = '';
             document.getElementById("ultimoConsumo").value = '';
             document.getElementById("observacionesConsumo").value = '';
-
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $('#modalConsumoSustancias').modal('show')
@@ -146,7 +139,6 @@
             else {
                 $('#modalConsumoSustancias').modal('hidden')
             }
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -162,7 +154,6 @@
                 }
             });
         });
-
         $("#Familiares").change(function () {
             document.getElementById("AFNombre").value = '';
             document.getElementById("AFRelacion").value = 'MAMA';
@@ -180,7 +171,6 @@
             $("#AFDependenciaExplica").css("display", "none");
             $("#AFDireccionFamiliar").css("display", "none");
             $("#AFPuedeEnterarse").css("display", "none");
-
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Asiento Familiar";
             if (opcion == "SI") {
@@ -191,7 +181,6 @@
                 tipo = 0;
                 $('#modalAsientoFamiliar').modal('hidden')
             }
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -210,7 +199,6 @@
                 }
             });
         });
-
         $("#ReferenciasPersonales").change(function () {
             document.getElementById("AFNombre").value = '';
             document.getElementById("AFRelacion").value = 'MAMA';
@@ -228,7 +216,7 @@
             $("#AFDependenciaExplica").css("display", "none");
             $("#AFDireccionFamiliar").css("display", "none");
             $("#AFPuedeEnterarse").css("display", "none");
-            
+
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Referencia";
             if (opcion == "SI") {
@@ -239,7 +227,6 @@
                 tipo = 0;
                 $('#modalAsientoFamiliar').modal('hidden')
             }
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -258,7 +245,6 @@
                 }
             });
         });
-
         $("#familiaresFuera").change(function () {
             document.getElementById("FENombre").value = '';
             document.getElementById("FERelacion").value = 'MAMA';
@@ -273,7 +259,6 @@
             document.getElementById("FEPuedeEnterarse").value = 'NA';
             document.getElementById("FEobservaciones").value = '';
             $("#FEPuedeEnterarse").css("display", "none");
-
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $('#modalFamiliaresExtranjero').modal('show')
@@ -281,7 +266,6 @@
             else {
                 $('#modalFamiliaresExtranjero').modal('hidden')
             }
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -297,9 +281,7 @@
                 }
             });
         });
-
         //#endregion
-
         //#region -changeDisplay-
         $('#vividoFuera').change(function () {
             var vivido = $(this).children("option:selected").val();
@@ -313,9 +295,7 @@
                 $("#tiempoVivido").css("display", "none");
                 $("#motivoVivido").css("display", "none");
             }
-
         });
-
         $('#viajaHabitual').change(function () {
             var viaje = $(this).children("option:selected").val();
             if (viaje == "SI") {
@@ -328,9 +308,7 @@
                 $("#tiempoViaje").css("display", "none");
                 $("#motivoViaje").css("display", "none");
             }
-
         });
-
         $('#documentacionSalirPais').change(function () {
             var doc = $(this).children("option:selected").val();
             if (doc == "SI") {
@@ -343,7 +321,6 @@
                 $("#pasaporte").css("display", "none");
                 $("#visa").css("display", "none");
             }
-
         });
         $('#familiaresFuera').change(function () {
             var fam = $(this).children("option:selected").val();
@@ -355,7 +332,6 @@
                 $("#cuantosFamiliaresDentro").value(0);
             }
         });
-
         $('#sexo').change(function () {
             var gen = $(this).children("option:selected").val();
             if (gen == "F") {
@@ -365,7 +341,6 @@
                 $("#embarazo").css("display", "none");
             }
         });
-
         $('#enfermedad').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
@@ -376,7 +351,6 @@
                 $("#especifiqueEnfermedad").css("display", "none");
                 $("#tratamiento").css("display", "none");
             }
-
         });
         $('#embarazoLactancia').change(function () {
             var dat = $(this).children("option:selected").val();
@@ -388,7 +362,6 @@
                 $("#tiempoEmbarazo").css("display", "none");
                 $("#tratamiento").css("display", "none");
             }
-
         });
         $('#discapacidad').change(function () {
             var dat = $(this).children("option:selected").val();
@@ -398,7 +371,6 @@
             else {
                 $("#especifiqueDiscapacidad").css("display", "none");
             }
-
         });
         $('#servicioMedico').change(function () {
             var dat = $(this).children("option:selected").val();
@@ -410,9 +382,7 @@
                 $("#especifiqueServicioMedico").css("display", "none");
                 $("#especificaServicioMedico").css("display", "none");
             }
-
         });
-
         $('#AFDependencia').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
@@ -421,9 +391,7 @@
             else {
                 $("#AFDependenciaExplica").css("display", "none");
             }
-
         });
-
         $('#AFVivenJuntos').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -432,9 +400,7 @@
             else {
                 $("#AFDireccionFamiliar").css("display", "none");
             }
-
         });
-
         $('#AFEnteradoProceso').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -443,9 +409,7 @@
             else {
                 $("#AFPuedeEnterarse").css("display", "none");
             }
-
         });
-
         $('#FEEnteradoProceso').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "NO") {
@@ -454,19 +418,62 @@
             else {
                 $("#FEPuedeEnterarse").css("display", "none");
             }
-
+        });
+        $('#estudia').change(function () {
+            var vivido = $(this).children("option:selected").val();
+            if (vivido == "SI") {
+                $("#horarioE").css("display", "block");
+                $("#direccionE").css("display", "block");
+                $("#telefonoE").css("display", "block");
+            }
+            else {
+                $("#horarioE").css("display", "none");
+                $("#direccionE").css("display", "none");
+                $("#telefonoE").css("display", "none");
+            }
         });
 
-        //#endregion
+        $('#trabaja').change(function () {
+            var vivido = $(this).children("option:selected").val();
+            if (vivido == "SI") {
+                $("#tipoOcupacion").css("display", "block");
+                $("#puesto").css("display", "block");
+                $("#empleadorJefe").css("display", "block");
+                $("#enteradoProceso").css("display", "block");
+                $("#sePuedeEnterar").css("display", "block");
+                $("#tiempoTrabajando").css("display", "block");
+                $("#salario").css("display", "block");
+                $("#temporalidadSalario").css("display", "block");
+                $("#direccionT").css("display", "block");
+                $("#horarioT").css("display", "block");
+                $("#telefonoT").css("display", "block");
 
+
+            }
+            else {
+                $("#tipoOcupacion").css("display", "none");
+                $("#puesto").css("display", "none");
+                $("#empleadorJefe").css("display", "none");
+                $("#enteradoProceso").css("display", "none");
+                $("#sePuedeEnterar").css("display", "none");
+                $("#tiempoTrabajando").css("display", "none");
+                $("#salario").css("display", "none");
+                $("#temporalidadSalario").css("display", "none");
+                $("#direccionT").css("display", "none");
+                $("#horarioT").css("display", "none");
+                $("#telefonoT").css("display", "none");
+
+            }
+        });
+
+
+
+
+        //#endregion
         $.validator.setDefaults({
             ignore: "collapse1"
         });
-
     });
-
-
-
     $(document).ready(function () {
         $('#btnGuardarSustancia').on("click", function (e) {
             e.preventDefault();
@@ -478,7 +485,6 @@
             var ultimoC = document.getElementById("ultimoConsumo").value;
             var observaciones = document.getElementById("observacionesConsumo").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -511,7 +517,6 @@
             });
         });
     });
-
     $(document).ready(function () {
         $('#btnGuardarFamiliar').on("click", function (e) {
             e.preventDefault();
@@ -521,7 +526,6 @@
             var v = document.getElementById("AFVivenJuntos");
             var p = document.getElementById("AFEnteradoProceso");
             var e = document.getElementById("AFPuedeEnterarseO");
-
             var nombre = document.getElementById("AFNombre").value;
             var relacion = r.options[r.selectedIndex].value; /////////////////
             var edad = document.getElementById("AFEdad").value;
@@ -536,7 +540,6 @@
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
             var observaciones = document.getElementById("AFobservacionesConsumo").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -565,7 +568,6 @@
                         $("#AFDependenciaExplica").css("display", "none");
                         $("#AFDireccionFamiliar").css("display", "none");
                         $("#AFPuedeEnterarse").css("display", "none");
-
                         var otraSustancia = confirm("¿Agregar otra persona?");
                         if (otraSustancia == true) {
                             alert("Coloque los datos correspondientes");
@@ -582,7 +584,6 @@
             });
         });
     });
-
     $(document).ready(function () {
         $('#btnGuardarFamiliarExtranjero').on("click", function (e) {
             e.preventDefault();
@@ -593,7 +594,6 @@
             var f = document.getElementById("FEFrecuencia");
             var p = document.getElementById("FEEnteradoProceso");
             var e = document.getElementById("FEPuedeEnterarseO");
-
             var nombre = document.getElementById("FENombre").value;
             var relacion = r.options[r.selectedIndex].value; /////////////////
             var edad = document.getElementById("FEEdad").value;
@@ -607,7 +607,6 @@
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
             var observaciones = document.getElementById("FEobservaciones").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
-
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -631,9 +630,7 @@
                         document.ready = document.getElementById("FEEnteradoProceso").value = 'SI';
                         document.ready = document.getElementById("FEPuedeEnterarse").value = 'NA';
                         document.ready = document.getElementById("FEobservaciones").value = '';
-
                         $("#FEPuedeEnterarse").css("display", "none");
-
                         var otroFamiliar = confirm("¿Agregar otra persona?");
                         if (otroFamiliar == true) {
                             alert("Coloque los datos correspondientes");
@@ -650,8 +647,6 @@
             });
         });
     });
-
-
     //region Poner en "No" el dropdown si cancela en todos los modales
     $(document).ready(function () {
         $('#btnCloseCS').on("click", function (e) {
@@ -660,7 +655,6 @@
             consumoSustancias.value = 'NO';
         });
     });
-
     $(document).ready(function () {
         $('#btnCloseDS').on("click", function (e) {
             e.preventDefault();
@@ -668,7 +662,6 @@
             cuentaDomicilioSecundario.value = 'NO';
         });
     });
-
     $(document).ready(function () {
         $('#btnCloseFE').on("click", function (e) {
             e.preventDefault();
@@ -676,7 +669,6 @@
             familiaresFuera.value = 'NO';
         });
     });
-
     $(document).ready(function () {
         $('#btnCloseAF').on("click", function (e) {
             e.preventDefault();
@@ -691,7 +683,6 @@
         });
     });
     //endregion
-
 </script>
 
 @{
@@ -707,8 +698,8 @@
         <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data">
             <div class="container">
                 <div class="panel-group">
-                    <div id="datosGenerales" class="panel panel-primary">
-                        <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
+                    <div id="datosGenerales" class="panel panel-primary ">
+                        <div class="panel-heading " style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
                             <h4 class="panel-title">
                                 <p style="margin-bottom:unset">Datos Generales</p>
                             </h4>
@@ -801,7 +792,7 @@
                                 <label class="control-label">¿Cuál?</label>
                                 <input name="especifiqueIdioma" type="text" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Sabe leer y escribir?</label>
                                 <select class="form-control" name="leerEscribir">
                                     <option value="Si">Si</option>
@@ -838,29 +829,29 @@
                                 <label class="control-label">¿Cuántos?</label>
                                 <input name="nHijos" type="number" value="0" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Con cuántas personas vive?</label>
                                 <input name="nPersonasVive" id="nPersonasVive" type="number" value="0" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
                                 <select class="form-control" name="propiedades">
                                     <option value="No">No</option>
                                     <option value="Si">Si</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">CURP</label>
                                 <input name="CURP" type="text" maxlength="18" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Consume alguna sustancia o droga?</label>
                                 <select class="form-control" name="consumoSustancias" id="consumoSustancias">
                                     <option value="NO">No</option>
                                     <option value="SI">Si</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">Añadir Familiares</label>
                                 <select class="form-control" name="Familiares" id="Familiares">
                                     <option value="NO">No</option>
@@ -883,7 +874,7 @@
                             </h4>
                         </div>
                         <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
                                 <select required class="form-control" name="tipoDomicilio">
                                     <option value="RENTADA">Rentada</option>
@@ -1077,7 +1068,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;" >
+                    <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;">
                         <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
                             <h4 class="panel-title">
                                 <p style="margin-bottom:unset">Escolaridad</p>
@@ -1086,14 +1077,14 @@
                         <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
                             <div class="form-group col-md-3">
                                 <label class="control-label">¿Actualmente estudia?</label>
-                                <select required class="form-control" name="estudia">
+                                <select required class="form-control" name="estudia" id="estudia">
                                     <option value="SI">Si</option>
                                     <option value="NO">No</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
                                 <label class="control-label">Último grado de estudios</label>
-                                <select required class="form-control" name="gradoEstudios">
+                                <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
                                     <option value="PRIMARIA">Primaria</option>
                                     <option value="SECUNDARIA">Secundaria</option>
                                     <option value="BACHILLERATO">Bachillerato</option>
@@ -1105,21 +1096,21 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
-                                <input maxlength="150" name="institucionE" type="text" class="form-control" />
+                                <input maxlength="150" name="institucionE" id="institucionE" type="text" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12" id="horarioE">
                                 <label class="control-label">Horarios:</label>
-                                <input maxlength="100" name="horarioE" type="text" class="form-control" />
+                                <input maxlength="100" name="horarioE" id="horarioE" type="text" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="direccionE">
                                 <label class="control-label">Dirección</label>
-                                <input maxlength="150" name="direccionE" type="text" class="form-control" />
+                                <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="telefonoE">
                                 <label class="control-label">Teléfono (10 dígitos)</label>
-                                <input maxlength="10" id="telefonoEscuela" name="telefonoE" type="text" class="form-control" />
+                                <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group ">
                                 <label class="control-label" for="observaciones">Observaciones</label>
                                 <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
                             </div>
@@ -1135,16 +1126,16 @@
                         <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
 
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Trabaja actualmente?</label>
-                                <select required class="form-control" name="trabaja">
+                                <select required class="form-control" name="trabaja" id="trabaja">
                                     <option value="SI">Si</option>
                                     <option value="NO">No</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-8">
+                            <div class="form-group col-md-12" id="tipoOcupacion">
                                 <label class="control-label">Tipo de ocupación</label>
-                                <select required class="form-control" name="tipoOcupacion">
+                                <select required class="form-control" name="tipoOcupacion" id="tipoOcupacion">
                                     <option value="NA">NA</option>
                                     <option value="FUNCIONARIO, DIRECTOR Y JEFE">Funcionarios, directores y jefes</option>
                                     <option value="PROFESIONISTA O TÉCNICO">Profesionistas y técnicos </option>
@@ -1157,33 +1148,33 @@
                                     <option value="TRABAJADORES EN ACTIVIDADES ELEMENTALES Y DE APOYO">Trabajadores en actividades elementales y de apoyo</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="puesto">
                                 <label class="control-label">Puesto</label>
-                                <input maxlength="45" name="puesto" type="text" class="form-control" />
+                                <input maxlength="45" name="" type="puesto" id="puesto" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="empleadorJefe">
                                 <label class="control-label">Empleador/Jefe inmediato</label>
-                                <input maxlength="150" name="empleadorJefe" type="text" class="form-control" />
+                                <input maxlength="150" name="empleadorJefe" id="empleadorJefe" type="text" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="enteradoProceso">
                                 <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
-                                <select class="form-control" name="enteradoProceso">
+                                <select class="form-control" name="enteradoProceso" id="enteradoProceso">
                                     <option value="NA">NA</option>
                                     <option value="SI">Si</option>
                                     <option value="NO">No</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="sePuedeEnterar">
                                 <label class="control-label">¿Se puede enterar?</label>
-                                <select class="form-control" name="sePuedeEnterar">
+                                <select class="form-control" name="sePuedeEnterar" id="sePuedeEnterar">
                                     <option value="NA">NA</option>
                                     <option value="SI">Si</option>
                                     <option value="NO">No</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12" id="tiempoTrabajando">
                                 <label class="control-label">Tiempo</label>
-                                <select required class="form-control" name="tiempoTrabajando">
+                                <select required class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
                                     <option value="MAS DE 10 AÑOS">Más de 10 años</option>
                                     <option value="ENTRE 2 Y 4 AÑOS">Entre 2 y 4 años</option>
                                     <option value="ENTRE 5 Y 9 AÑOS">Entre 5 y 9 años</option>
@@ -1194,13 +1185,13 @@
                                     <option value="SIN TRABAJO DURANTE MAS DE 3 MESES">Tiene más de 3 meses sin actividad laboral</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="salario">
                                 <label class="control-label">Salario ($)</label>
-                                <input maxlength="45" name="salario" type="text" class="form-control" />
+                                <input maxlength="45" name="salario" id="salario" type="text" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="temporalidadSalario">
                                 <label class="control-label">Cada cuando le pagan</label>
-                                <select class="form-control" name="temporalidadSalario">
+                                <select class="form-control" name="temporalidadSalario" id="temporalidadSalario">
                                     <option value="NA">NA</option>
                                     <option value="DIARIO">Diario</option>
                                     <option value="SEMANAL">Semanal</option>
@@ -1208,17 +1199,17 @@
                                     <option value="MENSUAL">Mensual</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12" id="direccionT">
                                 <label class="control-label">Dirección</label>
-                                <input maxlength="150" name="direccionT" type="text" class="form-control" />
+                                <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="horarioT">
                                 <label class="control-label">Horario de trabajo:</label>
-                                <input maxlength="100" name="horarioT" type="text" class="form-control" />
+                                <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6" id="telefonoT">
                                 <label class="control-label">Teléfono (10 dígitos)</label>
-                                <input maxlength="10" name="telefonoT" type="text" class="form-control" />
+                                <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
                             </div>
                             <div class="form-group">
                                 <label class="control-label" for="observaciones">Observaciones</label>
@@ -1243,11 +1234,11 @@
                                 <label class="control-label">Horario:</label>
                                 <input maxlength="100" name="horarioAS" type="text" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">Lugar donde realiza su actividad</label>
                                 <input maxlength="100" name="lugarAS" type="text" class="form-control" />
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">Teléfono (10 dígitos)</label>
                                 <input maxlength="10" name="telefonoAS" type="text" class="form-control" />
                             </div>
@@ -1270,66 +1261,66 @@
                             </div>
                         </div>
                     </div>
-                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;" >
+                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
                         <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
                             <h4 class="panel-title">
                                 <p style="margin-bottom:unset">Viajes fuera del Estado</p>
                             </h4>
                         </div>
                         <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Ha vivido en otro estado o país?</label>
                                 <select required class="form-control" name="vividoFuera" id="vividoFuera">
                                     <option value="NO">No</option>
                                     <option value="SI">Si</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="display:none" id="lugaresVivido">
+                            <div class="form-group col-md-12" style="display:none" id="lugaresVivido">
                                 <label class="control-label">Si ha vivido fuera especificar que lugares</label>
                                 <textarea maxlength="200" class="form-control" rows="2" name="lugaresVivido" id="lugaresVividoDentro"></textarea>
                             </div>
-                            <div class="form-group" style="display:none" id="tiempoVivido">
+                            <div class="form-group col-md-12" style="display:none" id="tiempoVivido">
                                 <label class="control-label">Tiempo que vivio en esos lugares</label>
                                 <input maxlength="100" name="tiempoVivido" id="tiempoVividoDentro" type="text" class="form-control" />
                             </div>
-                            <div class="form-group" style="display:none" id="motivoVivido">
+                            <div class="form-group col-md-12" style="display:none" id="motivoVivido">
                                 <label class="control-label">Motivo</label>
                                 <textarea maxlength="200" class="form-control" rows="2" name="motivoVivido" id="motivoVividoDentro"></textarea>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
                                 <select required class="form-control" name="viajaHabitual" id="viajaHabitual">
                                     <option value="NO">No</option>
                                     <option value="SI">Si</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="display:none" id="lugaresViaje">
+                            <div class="form-group col-md-12" style="display:none" id="lugaresViaje">
                                 <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
                                 <textarea maxlength="200" class="form-control" rows="2" name="lugaresViaje"></textarea>
                             </div>
-                            <div class="form-group" style="display:none" id="tiempoViaje">
+                            <div class="form-group col-md-12" style="display:none" id="tiempoViaje">
                                 <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
                                 <input maxlength="100" name="tiempoViaje" type="text" class="form-control" />
                             </div>
-                            <div class="form-group" style="display:none" id="motivoViaje">
+                            <div class="form-group col-md-12" style="display:none" id="motivoViaje">
                                 <label class="control-label">Motivo por el que viaja</label>
                                 <textarea maxlength="200" class="form-control" rows="2" name="motivoViaje"></textarea>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-12">
                                 <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
                                 <select required class="form-control" name="documentaciónSalirPais" id="documentacionSalirPais">
                                     <option value="NO">No</option>
                                     <option value="SI">Si</option>
                                 </select>
                             </div>
-                            <div class="form-group" id="pasaporte" style="display:none">
+                            <div class="form-group col-md-12" id="pasaporte" style="display:none">
                                 <label class="control-label">¿Cuenta con pasaporte?</label>
                                 <select required class="form-control" name="pasaporte" id="pasaporteDentro">
                                     <option value="NO">No</option>
                                     <option value="SI">Si</option>
                                 </select>
                             </div>
-                            <div class="form-group" id="visa" style="display:none">
+                            <div class="form-group col-md-12" id="visa" style="display:none">
                                 <label class="control-label">¿Cuenta con visa?</label>
                                 <select required class="form-control" name="visa" id="visaDentro">
                                     <option value="NO">No</option>
@@ -1428,10 +1419,10 @@
                     </div>
                 </div>
             </div>
-            <div class="custom-file" style="margin-bottom:20px">
+            <div class="custom-file col-md-12" style="margin-bottom:20px">
                 <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
             </div>
-            <div class="form-group" style="margin-top:20px">
+            <div class="form-group " style="margin-top:20px">
                 <button class="btn btn-primary" type="submit" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="collapse1 collapse2 collapse3">
                     <i class="fa fa-save"></i> Guardar
                 </button>
@@ -1733,4 +1724,3 @@
         Regresar a lista de usuarios
     </a>
 </div>
-

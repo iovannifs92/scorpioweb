@@ -11,7 +11,7 @@
 @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
 {
     var rutaFoto =((item.personaVM.Genero==("M")) ? "hombre.png" : "mujer.png");
-    if (item.personaVM.rutaFoto!=null)
+      if (item.personaVM.rutaFoto!=null)
     {
         rutaFoto = item.personaVM.rutaFoto;
     }
@@ -41,7 +41,7 @@
                                 <td class="estiloDG">Fecha de nacimiento</td>
                                 <td style="background-color: white; color: black">@item.personaVM.Fnacimiento</td>
                                 <td class="estiloDG">Lugar de nacimiento</td>
-                                <td style="background-color: white; color: black">@item.personaVM.Lnpais, @item.personaVM.Lnestado, @item.personaVM.Lnmunicipio </td>
+                                <td style="background-color: white; color: black">@ViewBag.lnmunicipio, @ViewBag.lnestado, @item.personaVM.Lnpais  </td>
                             </tr>
                             <tr>
                             </tr>
@@ -138,7 +138,7 @@
                             </tr>
                             <tr>
                                 <td class="estiloDomicilio" colspan="1">Dirección</td>
-                                <td colspan="2">@item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf CP @item.domicilioVM.Cp, @item.domicilioVM.Estado, @item.domicilioVM.Municipio</td>
+                                <td colspan="2">@item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf CP @item.domicilioVM.Cp, @ViewBag.estado, @ViewBag.municipio, @item.domicilioVM.Pais</td>
                                 <td colspan="1"><a href="https://www.google.com.mx/maps/place/ @item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf, , @item.domicilioVM.Estado, @item.domicilioVM.Municipio" target="_blank">Ir al Mapa</a></td>
                             </tr>
                             <tr>
@@ -396,6 +396,7 @@
             <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaVM.IdPersona"><i class="fa fa-print"></i> Imprimir</a>
         </div>
     </div>
+    break;
 }
 <br />
 <div>

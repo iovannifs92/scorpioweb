@@ -300,6 +300,8 @@ namespace scorpioweb.Controllers
             var persona = await _context.Persona
                 .SingleOrDefaultAsync(m => m.IdPersona == id);
 
+            var domicilioEM = await _context.Domicilio.SingleOrDefaultAsync(d => d.PersonaIdPersona == id);
+
             #region -To List databases-
 
             List<Persona> personaVM = _context.Persona.ToList();
@@ -341,11 +343,77 @@ namespace scorpioweb.Controllers
                                          abandonoEstadoVM = abandonoEstado,
                                          saludFisicaVM = saludFisica
                                          //estadosVMPersona=nacimientoEstado,
-                                         //municipiosVMPersona=nacimientoMunicipio,
+                                         //municipiosVMPersona=nacimientoMunicipio,  
                                          //estadosVMDomicilio = domicilioEstado,
                                          //municipiosVMDomicilio= domicilioMunicipio,
                                      };
 
+            #endregion
+
+
+            #region Sacar el nombre de estdo y municipio (NACIMIENTO)
+            var LNE = (from e in _context.Estados
+                     join p in _context.Persona on e.Id equals int.Parse(p.Lnestado)
+                     where p.IdPersona == id
+                     select new
+                     {
+                         e.Estado
+                     });
+
+            string selectem1 = LNE.FirstOrDefault().Estado.ToString();
+            ViewBag.lnestado = selectem1.ToUpper();
+
+            var LNM = (from m in _context.Municipios
+                       join p in _context.Persona on m.Id equals int.Parse(p.Lnestado)
+                       where p.IdPersona == id
+                       select new
+                       {
+                           m.Municipio
+                       });
+
+            string selectem2 = LNM.FirstOrDefault().Municipio.ToString();
+            ViewBag.lnmunicipio = selectem2.ToUpper();
+            #endregion
+
+            #region Sacar el nombre de estdo y municipio (DOMICILIO)
+            var E = (from d in _context.Domicilio
+                      join m in _context.Estados on int.Parse(d.Estado) equals m.Id
+                      join p in _context.Persona on d.PersonaIdPersona equals id
+                      select new
+                      {
+                          m.Estado
+                      });
+
+            string selectem3 = E.FirstOrDefault().Estado.ToString();
+            ViewBag.estado = selectem3.ToUpper();
+
+            var M = (from d in _context.Domicilio
+                      join m in _context.Municipios on int.Parse(d.Municipio) equals m.Id
+                      join p in _context.Persona on d.PersonaIdPersona equals id
+                      select new
+                      {
+                          m.Municipio
+                      });
+
+            string selectem4 = M.FirstOrDefault().Municipio.ToString();
+            ViewBag.municipio = selectem4.ToUpper();
+            #endregion
+
+            #region Lnmunicipio
+            int Lnestado;
+            bool success = Int32.TryParse(persona.Lnestado, out Lnestado);
+            List<Municipios> listaMunicipios = new List<Municipios>();
+            if (success)
+            {
+                listaMunicipios = (from table in _context.Municipios
+                                   where table.EstadosId == Lnestado
+                                   select table).ToList();
+            }
+
+            listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+
+            ViewBag.ListadoMunicipios = listaMunicipios;
+            ViewBag.idMunicipio = persona.Lnmunicipio;
             #endregion
 
             #region -JoinTables null-
@@ -639,7 +707,7 @@ namespace scorpioweb.Controllers
                                   where Municipios.EstadosId == EstadoId
                                   select Municipios).ToList();
             }
-            else
+            else 
             {
                 municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
             }
@@ -816,7 +884,7 @@ namespace scorpioweb.Controllers
                 domicilio.Observaciones = normaliza(observaciones);
                 #endregion
 
-                #region -Domicilio Secundario-
+                #region -Domicilio Secundario-   
                 domiciliosecundario.Motivo = motivoDS;
                 domiciliosecundario.TipoDomicilio = tipoDomicilioDS;
                 domiciliosecundario.Calle = normaliza(calleDS);
@@ -1061,7 +1129,7 @@ namespace scorpioweb.Controllers
                 #region -Añadir a contexto-
                 _context.Add(persona);
                 _context.Add(domicilio);
-                _context.Add(domiciliosecundario);
+               // _context.Add(domiciliosecundario);
                 _context.Add(estudios);
                 _context.Add(trabajo);
                 _context.Add(actividadsocial);
