@@ -128,9 +128,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
-                                        || p.Materno.StartsWith(searchString)
-                                        || p.Nombre.StartsWith(searchString));
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
                 }
             }
 
@@ -191,9 +190,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
-                                        || p.Materno.StartsWith(searchString)
-                                        || p.Nombre.StartsWith(searchString));
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
                 }
             }
 

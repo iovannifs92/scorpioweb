@@ -558,20 +558,13 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(spcp => spcp.personaVM.Paterno.Contains(searchString) ||
-                                              spcp.personaVM.Materno.Contains(searchString) ||
-                                              spcp.personaVM.Nombre.Contains(searchString) ||
+                filter = filter.Where(spcp => (spcp.personaVM.Paterno + " " + spcp.personaVM.Materno + " " + spcp.personaVM.Nombre).Contains(searchString) ||
+                                              (spcp.personaVM.Nombre + " " + spcp.personaVM.Paterno + " " + spcp.personaVM.Materno).Contains(searchString) ||
                                               spcp.supervisionVM.EstadoSupervision.Contains(searchString) ||
                                               spcp.causapenalVM.CausaPenal.Contains(searchString) ||
-                                              spcp.supervisionVM.EstadoSupervision.Contains(estadoSuper)
+                                              spcp.personaVM.Supervisor.Contains(searchString)
                                               );
             }
-
-
-
-
-
-
 
             switch (sortOrder)
             {
