@@ -558,20 +558,13 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(spcp => spcp.personaVM.Paterno.Contains(searchString) ||
-                                              spcp.personaVM.Materno.Contains(searchString) ||
-                                              spcp.personaVM.Nombre.Contains(searchString) ||
+                filter = filter.Where(spcp => (spcp.personaVM.Paterno + " " + spcp.personaVM.Materno + " " + spcp.personaVM.Nombre).Contains(searchString) ||
+                                              (spcp.personaVM.Nombre + " " + spcp.personaVM.Paterno + " " + spcp.personaVM.Materno).Contains(searchString) ||
                                               spcp.supervisionVM.EstadoSupervision.Contains(searchString) ||
                                               spcp.causapenalVM.CausaPenal.Contains(searchString) ||
-                                              spcp.supervisionVM.EstadoSupervision.Contains(estadoSuper)
+                                              spcp.personaVM.Supervisor.Contains(searchString)
                                               );
             }
-
-
-
-
-
-
 
             switch (sortOrder)
             {
@@ -1525,9 +1518,10 @@ namespace scorpioweb.Controllers
             ListaTipoVisita = new List<SelectListItem>
             {
               new SelectListItem{ Text="Presencial", Value="PRESENCIAL"},
-              new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="Firma Periódica", Value="FIRMA PERIODICA"},
               new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
-
+              new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
             ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
