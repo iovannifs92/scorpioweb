@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "RegistroConfirmation";
+}
+
+@if (ViewBag.nombreRegistrado != null)
+{
+    <h2 style="text-align:center">
+        Registro exitoso de:
+    </h2>
+    <h3 style="text-align:center">
+        @ViewBag.nombreRegistrado
+    </h3>
+}
+else
+{
+    <h2 style="text-align:center">
+        No se registro.<br>
+        Comuniquese con su administrador.
+    </h2>
+}
+
+<a asp-action="Index" class="btn btn-link">
+    Regresar al listado completo
+</a>

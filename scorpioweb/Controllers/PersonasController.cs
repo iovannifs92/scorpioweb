@@ -1134,12 +1134,25 @@ namespace scorpioweb.Controllers
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
                 #endregion
             }
             return RedirectToAction("ListadoSupervisor", "Personas");
         }
 
+        public async Task<IActionResult> RegistroConfirmation(int? id)
+        {
+            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            if (persona == null)
+            {
+                ViewBag.nombreRegistrado = null;
+            }
+            else
+            {
+                ViewBag.nombreRegistrado = persona.Nombre + " " + persona.Paterno + " " + persona.Materno;
+            }
+            return View();
+        }
         #endregion
 
         #region -Entrevista-
