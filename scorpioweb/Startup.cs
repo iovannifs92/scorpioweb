@@ -52,7 +52,7 @@ namespace scorpioweb
             services.ConfigureApplicationCookie(options =>
             {
                 options.Cookie.Name = ".AspNetCore.Identity.Application";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(150);
                 options.SlidingExpiration = true;
             });
         }

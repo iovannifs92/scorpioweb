@@ -15,9 +15,11 @@ using QRCoder;
 using System.Drawing;
 using System.IO;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace scorpioweb.Controllers
 {
+    [Authorize]
     public class SupervisionesController : Controller
     {
         #region -Constructor-
