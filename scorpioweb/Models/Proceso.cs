@@ -17,5 +17,13 @@ namespace scorpioweb.Models
         public string EspecificaFuncionario { get; set; }
         public string Observaciones { get; set; }
         public int PersonaIdPersona { get; set; }
+        
+
+
+
+
+
+
+
     }
 }
