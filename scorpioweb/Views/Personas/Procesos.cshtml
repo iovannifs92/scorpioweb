@@ -1,46 +1,56 @@
 ﻿@model IEnumerable<scorpioweb.Models.SupervisionPyCP>
 
 @{
-  Layout = "/Views/Shared/_Layout.cshtml";
+    Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
+
+@foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
 {
-  <h2 class="text-center">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
-  break;
+    <h3>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h3>
+    break;
 }
 
-<h3>Causas Penales:</h3>
+
+ 
 
 <table class="table">
-  <thead>
-    <tr>
-      <th>
-        Causa Penal
-      </th>
-      <th>
-        Supervisión
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
-    {
-      <tr>
-        <td>
-          @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
-        </td>
-        <td>
-          <a class="btn btn-primary" asp-controller="Supervisiones" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervision">
-            <i class="fa fa-cog"></i>
-            Supervisión
-          </a>
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
+    <thead>
+        <tr>
+            <th>Causa Penal</th>
+            <th>Figura Judicial</th>
+            <th>Periodicidad de firma</th>
+            <th>Fecha de ultimo Contacto</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
+        {
+            <tr>
+                <TH>
+                    @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
+                </TH>
+                <td>
+                    @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.planeacionestrategicaVM.PeriodicidadFirma)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.planeacionestrategicaVM.FechaUltimoContacto)
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Supervisiones" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervision">
+                        <i class="fa fa-cog"></i>
+                        Supervisión
+                    </a>
+                </td>
+            </tr>
+        }
 
+    </tbody>
+</table>
 <a asp-action="Index" class="btn btn-link">
-  Regresar al listado completo
+    Regresar al listado completo
 </a>

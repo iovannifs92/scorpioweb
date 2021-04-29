@@ -390,11 +390,12 @@ namespace scorpioweb.Controllers
                       join p in _context.Persona on d.PersonaIdPersona equals id
                       select new
                       {
-                          m.Municipio
+                          m.Municipio,
+                          m.Id
                       });
 
             string selectem4 = M.FirstOrDefault().Municipio.ToString();
-            ViewBag.municipio = selectem4.ToUpper();
+            ViewBag.municipio = selectem4.ToUpper()  ;
             #endregion
 
             #region Lnmunicipio
@@ -1420,21 +1421,62 @@ namespace scorpioweb.Controllers
             }
 
             List<Supervision> SupervisionVM = _context.Supervision.ToList();
+            List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
+            List<Planeacionestrategica> planeacionestrategicasVM = _context.Planeacionestrategica.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
             List<Persona> personaVM = _context.Persona.ToList();
-            #region -Jointables-
-            ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
-                                                join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
-                                                join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
-                                                where personatable.IdPersona == id
 
-                                                select new SupervisionPyCP
-                                                {
-                                                    causapenalVM = causapenaltable,
-                                                    supervisionVM = supervisiontable,
-                                                    personaVM = personatable
-                                                };
+
+            #region -JointablesProcesos-
+
+            var queryPro = (from s in _context.Supervision
+                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                            join c in _context.Causapenal on s.CausaPenalIdCausaPenal equals c.IdCausaPenal
+                            join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision
+                            join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+                            where s.PersonaIdPersona == id
+                            orderby f.IdFracciones 
+                            group c by c.CausaPenal into grup
+                          
+                            select grup
+                          );
+          
+
+            var q = queryPro.ToList();
+
+
+            List<Procesos> lists = new List<Procesos>();
+
+
+            for(int i = 0; i<q.Count; i++)
+            {
+                
+                var querya = from c in _context.Causapenal
+                             join s in _context.Supervision on c.IdCausaPenal equals s.CausaPenalIdCausaPenal
+                             join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                             join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision
+                             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+                             where q[i].Key.Equals(c.CausaPenal)
+                             select new Procesos
+                             {
+                                 supervisionVM = s,
+                                 causapenalVM = c,
+                                 personaVM = p,
+                                 fraccionesimpuestasVM = f,
+                                 planeacionestrategicaVM = pe
+                                         };
+
+                var maxfra = querya.OrderByDescending(u => u.fraccionesimpuestasVM.IdFracciones).FirstOrDefault();
+                lists.Add(maxfra);
+                
+            }
+
+             
+
+            ViewData["joinTbalasProceso1"] = lists;
+
             #endregion
+
 
             return View();
         }
@@ -2510,6 +2552,20 @@ namespace scorpioweb.Controllers
             var domseundario = await _context.Domiciliosecundario.SingleOrDefaultAsync(m => m.IdDomicilioSecundario == id);
             _context.Domiciliosecundario.Remove(domseundario);
             await _context.SaveChangesAsync();
+
+            var empty = (from ds in _context.Domiciliosecundario
+                         where ds.IdDomicilio == domseundario.IdDomicilio
+                         select ds);
+
+            if (!empty.Any())
+            {
+                var query = (from a in _context.Domicilio
+                             where a.IdDomicilio == domseundario.IdDomicilio
+                             select a).FirstOrDefault();
+                query.DomcilioSecundario = "NO";
+                _context.SaveChanges();
+            }
+
             return RedirectToAction("EditDomicilio/" + domseundario.IdDomicilio, "Personas");
         }
 
@@ -2532,11 +2588,14 @@ namespace scorpioweb.Controllers
             domiciliosecundario.Horario = datosDomicilio[14];
             domiciliosecundario.Observaciones = datosDomicilio[15];
 
+
             var query = (from a in _context.Domicilio
                          where a.IdDomicilio == domiciliosecundario.IdDomicilio
                          select a).FirstOrDefault();
             query.DomcilioSecundario = "SI";
             _context.SaveChanges();
+
+
 
             _context.Add(domiciliosecundario);
             await _context.SaveChangesAsync();
@@ -3211,6 +3270,23 @@ namespace scorpioweb.Controllers
             var familiarf = await _context.Familiaresforaneos.SingleOrDefaultAsync(m => m.IdFamiliaresForaneos == id);
             _context.Familiaresforaneos.Remove(familiarf);
             await _context.SaveChangesAsync();
+
+            var empty = (from ff in _context.Familiaresforaneos
+                         where ff.PersonaIdPersona == familiarf.PersonaIdPersona
+                         select ff);
+
+            if (!empty.Any())
+            {
+                var query = (from a in _context.Abandonoestado
+                             where a.PersonaIdPersona == familiarf.PersonaIdPersona
+                             select a).FirstOrDefault();
+                query.FamiliaresFuera = "NO";
+                _context.SaveChanges();
+            }
+
+
+
+
             return RedirectToAction("EditAbandonoEstado/" + familiarf.PersonaIdPersona, "Personas");
         }
 
