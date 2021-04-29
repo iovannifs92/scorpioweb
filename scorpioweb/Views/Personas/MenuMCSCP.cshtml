@@ -22,7 +22,7 @@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <div class="card-group" style="padding-top:2%">
-    
+
     @if (adminUser)
     {
         <div class="col-sm-3 col-md-3 card text-center">
@@ -43,10 +43,10 @@
     <div class="col-sm-3 col-md-3 card text-center">
         <div class="card-body">
             <h4 class="card-title">
-                    <a asp-controller="Personas" asp-action="Index">
-                        <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Supervisados
-                    </a>
+                <a asp-controller="Personas" asp-action="Index">
+                    <img class="card-img-top" src="~/images/persona.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Supervisados
+                </a>
             </h4>
             <p class="card-text">
                 Base de datos de todos los supervisados
@@ -82,18 +82,22 @@
             </div>
         </div>
     }
-    <div class="col-sm-3 col-md-3 card text-center">
-        <div class="card-body">
-            <h4 class="card-title">
-                <a href="#">
-                    <img class="card-img-bottom" src="~/images/growth.png" alt="Card image cap" style="padding-bottom:5%;">
-                    Indicadores
-                </a>
-            </h4>
-            <p class="card-text">
-                Indicadores relevantes de la supervisión de la Coordinación de Medidas Cautelares y Suspensión Condicional del Proceso
-            </p>
+    @if (ViewBag.Warnings != 0)
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a href="#">
+                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Alertas <span class="badge" style="background-color:red">@ViewBag.Warnings</span>
+                    </a>
+                </h4>
+                <p class="card-text">
+                    Supervisados que deben de ser revisados de manera inmediata
+                </p>
+            </div>
         </div>
-    </div>
+    }
+
 </div>
 

@@ -280,7 +280,7 @@ namespace scorpioweb.Controllers
             {
                 rolUsuario.Add(roles[i]);
             }
-
+            ViewBag.Warnings = 0;
             ViewBag.RolesUsuario = rolUsuario;
             return View();
         }
