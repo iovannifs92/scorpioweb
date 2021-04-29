@@ -3,7 +3,7 @@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <script type="text/javascript">
-    var tipo = 0;
+        var tipo = 0;
         $(document).ready(function () {
         //#region inicializar
         //#region Editar Sustancias
@@ -225,6 +225,7 @@
             document.getElementById("cantidadE").value = '@ViewBag.cantidad';
             document.getElementById("ultimoConsumoE").value = '@ViewBag.ultimoConsumo';
             document.getElementById("observacionesConsumoE").value = '@ViewBag.Observaciones';
+            document.getElementById("idConsumoSustanciasE").value = '@ViewBag.idConsumoSustancias';
             $('#modalEditarSustancias').modal('show')
         });
         $("#btnAgregarFamiliar").click(function () {
@@ -254,6 +255,7 @@
         });
         $("#btnEditarFamiliares").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Asiento Familiar"
+            document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarF'
             tipo = 1;
             $.ajax({
                 type: "POST",
@@ -285,6 +287,7 @@
             document.getElementById("AFEnteradoProcesoE").value = '@ViewBag.idEnteradoProcesoF';
             document.getElementById("AFPuedeEnterarseOE").value = '@ViewBag.idPuedeEnterarseF';
             document.getElementById("AFobservacionesE").value = '@ViewBag.AFobservacionesF';
+            document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarF';
             $("#AFDependenciaExplicaE").css("display", "none");
             $("#AFDireccionFamiliarE").css("display", "none");
             $("#AFPuedeEnterarseE").css("display", "none");
@@ -292,6 +295,7 @@
         });
         $("#btnEditarReferencias").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Referencia"
+            document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarR'
             tipo = 2;
             $.ajax({
                 type: "POST",
@@ -323,6 +327,7 @@
             document.getElementById("AFEnteradoProcesoE").value = '@ViewBag.idEnteradoProcesoR';
             document.getElementById("AFPuedeEnterarseOE").value = '@ViewBag.idPuedeEnterarseR';
             document.getElementById("AFobservacionesE").value = '@ViewBag.AFobservacionesR';
+            document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarR';
             $("#AFDependenciaExplicaE").css("display", "none");
             $("#AFDireccionFamiliarE").css("display", "none");
             $("#AFPuedeEnterarseE").css("display", "none");
@@ -433,47 +438,6 @@
                 }
             });
         });
-        //$('#btnBorrarSustancia').on("click", function (e) {
-        //    e.preventDefault();
-        //    var s = document.getElementById("sustancia");
-        //    var f = document.getElementById("frecuenciaS");
-        //    var sustancia = s.options[s.selectedIndex].value;
-        //    var frecuencia = f.options[f.selectedIndex].value;
-        //    var cantidad = document.getElementById("cantidadS").value;
-        //    var ultimoC = document.getElementById("ultimoConsumo").value;
-        //    var observaciones = document.getElementById("observacionesConsumo").value;
-        //    //var user = document.getElementById("usuario").firstChild.nodeValue;
-        //    $.ajax({
-        //        type: "POST",
-        //        dataType: "json",
-        //        url: "/Personas/guardarSustancia",
-        //        traditional: true,
-        //        data: {
-        //            datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
-        //        },
-        //        success: function (response) {
-        //            if (response.success) {
-        //                alert(response.responseText);
-        //                document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
-        //                document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
-        //                document.ready = document.getElementById("cantidadS").value = '';
-        //                document.ready = document.getElementById("ultimoConsumo").value = '';
-        //                document.ready = document.getElementById("observacionesConsumo").value = '';
-        //                var otraSustancia = confirm("¿Consume alguna otra sustancia?");
-        //                if (otraSustancia == true) {
-        //                    alert("Coloque los datos correspondientes a la nueva susutancia");
-        //                } else {
-        //                    $("#modalConsumoSustancias").modal('hide');
-        //                }
-        //            } else {
-        //                alert(response.responseText);
-        //            }
-        //        },
-        //        error: function (response) {
-        //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-        //        }
-        //    });
-        //});
         $('#btnSiguienteSustancia').on("click", function (e) {
             e.preventDefault();
             var s = document.getElementById("sustanciaE");
@@ -483,6 +447,7 @@
             var cantidad = document.getElementById("cantidadE").value;
             var ultimoC = document.getElementById("ultimoConsumoE").value;
             var observaciones = document.getElementById("observacionesConsumoE").value;
+            var idConsumo = document.getElementById("idConsumoSustanciasE").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
             $.ajax({
                 type: "POST",
@@ -490,7 +455,7 @@
                 url: "/Personas/siguienteSustancia",
                 traditional: true,
                 data: {
-                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
+                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones, idConsumo/*, user*/],
                 },
                 success: function (response) {
                     if (response.success) {
@@ -503,6 +468,41 @@
                             document.ready = document.getElementById("cantidadE").value = response.cantidad;
                             document.ready = document.getElementById("ultimoConsumoE").value = response.ultimoConsumo;
                             document.ready = document.getElementById("observacionesConsumoE").value = response.observacionesConsumo;
+                            document.ready = document.getElementById("idConsumoSustanciasE").value = response.idConsumoSustancias;
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+        $('#btnDeleteSustancia').on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/deleteSustancia",
+                traditional: true,
+                success: function (response) {
+                    if (response.success) {
+                        if (response.responseText == "Datos Guardados con éxito") {
+                            $("#modalEditarSustancias").modal('hide');
+                        }
+                        else if (response.responseText == "Siguiente") {
+                            document.ready = document.getElementById("sustanciaE").value = response.sustancia;
+                            document.ready = document.getElementById("frecuenciaE").value = response.frecuencia;
+                            document.ready = document.getElementById("cantidadE").value = response.cantidad;
+                            document.ready = document.getElementById("ultimoConsumoE").value = response.ultimoConsumo;
+                            document.ready = document.getElementById("observacionesConsumoE").value = response.observacionesConsumo;
+                            document.ready = document.getElementById("idConsumoSustanciasE").value = response.idConsumoSustancias;
+                        }
+                        else if (response.responseText == "Ya No") {
+                            var select = document.getElementById("consumoSustancias");
+                            $(select).val("NO");
+                            $("#modalEditarSustancias").modal('hide');
                         }
                     } else {
                         alert(response.responseText);
@@ -599,6 +599,7 @@
             var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
             var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
             var observaciones = document.getElementById("AFobservacionesE").value;
+            var idFamiliar = document.getElementById("AFidAsientoFamiliarE").value;
             //var user = document.getElementById("usuario").firstChild.nodeValue;
             $.ajax({
                 type: "POST",
@@ -606,7 +607,7 @@
                 url: "/Personas/siguienteFamiliar",
                 traditional: true,
                 data: {
-                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
+                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones, idFamiliar/*, user*/],
                     tipoGuardado: tipo,
                 },
                 success: function (response) {
@@ -628,6 +629,7 @@
                             document.ready = document.getElementById("AFEnteradoProcesoE").value = response.enteradoProceso;
                             document.ready = document.getElementById("AFPuedeEnterarseOE").value = response.puedeEnterarse;
                             document.ready = document.getElementById("AFobservacionesE").value = response.observaciones;
+                            document.ready = document.getElementById("AFidAsientoFamiliarE").value = response.idAsientoFamiliar;
                             $("#AFDependenciaExplicaE").css("display", "none");
                             $("#AFDireccionFamiliarE").css("display", "none");
                             $("#AFPuedeEnterarseE").css("display", "none");
@@ -641,7 +643,85 @@
                 }
             });
         });
+        $('#btnDeleteFamiliar').on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/deleteFamiliar",
+                traditional: true,
+                data: {
+                    tipoGuardado: tipo,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        if (response.responseText == "Datos Guardados con éxito") {
+                            $("#modalEditarAsientoFamiliar").modal('hide');
+                        }
+                        else if (response.responseText == "Siguiente") {
+                            document.ready = document.getElementById("AFNombreE").value = response.nombre;
+                            document.ready = document.getElementById("AFRelacionE").value = response.relacion;
+                            document.ready = document.getElementById("AFEdadE").value = response.edad;
+                            document.ready = document.getElementById("AFSexoE").value = response.sexo;
+                            document.ready = document.getElementById("AFDependenciaE").value = response.dependencia;
+                            document.ready = document.getElementById("AFDependenciaExplicaOE").value = response.explicaDependencia;
+                            document.ready = document.getElementById("AFVivenJuntosE").value = response.vivenJuntos;
+                            document.ready = document.getElementById("AFDireccionFamiliarOE").value = response.direccion;
+                            document.ready = document.getElementById("AFtelefonoFamiliarE").value = response.telefono;
+                            document.ready = document.getElementById("AFLocalizacionE").value = response.horarioLocalizacion;
+                            document.ready = document.getElementById("AFEnteradoProcesoE").value = response.enteradoProceso;
+                            document.ready = document.getElementById("AFPuedeEnterarseOE").value = response.puedeEnterarse;
+                            document.ready = document.getElementById("AFobservacionesE").value = response.observaciones;
+                            document.ready = document.getElementById("AFidAsientoFamiliarE").value = response.idAsientoFamiliar;
+                            $("#AFDependenciaExplicaE").css("display", "none");
+                            $("#AFDireccionFamiliarE").css("display", "none");
+                            $("#AFPuedeEnterarseE").css("display", "none");
+                        }
+                        else if (response.responseText == "Ya No") {
+                            if (tipo == 1) {
+                                var select = document.getElementById("Familiares");
+                                $(select).val("NO");
+                            }
+                            else {
+                                var select = document.getElementById("ReferenciasPersonales");
+                                $(select).val("NO");
+                            }
+                            $("#modalEditarAsientoFamiliar").modal('hide');
+                         }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
     });
+
+    //region Poner en "No" el dropdown si cancela en todos los modales
+    $(document).ready(function () {
+        $('#btnCloseCS').on("click", function (e) {
+            e.preventDefault();
+            var consumoSustancias = document.getElementById('consumoSustancias');
+            consumoSustancias.value = 'NO';
+        });
+    });
+
+    $(document).ready(function () {
+        $('#btnCloseAF').on("click", function (e) {
+            e.preventDefault();
+            if (tipo == 1) {
+              var Familiares = document.getElementById('Familiares');
+              Familiares.value = 'NO';
+            }
+            else if (tipo == 2) {
+              var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+              ReferenciasPersonales.value = 'NO';
+            }
+        });
+    });
+    //endregion
 </script>
 
 @{
@@ -889,9 +969,9 @@
                 <span asp-validation-for="Curp" class="text-danger"></span>
             </div>
             <div class="form-group col-md-11">
-                <label class="control-label col-md-10">¿Consume Sustancias?</label>
+                <label class="control-label">¿Consume Sustancias?</label>
                 <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
-                        asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.idConsumoSustancias))">
+                        asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.ConsumoSustancias))">
                 </select>
             </div>
             <div class="form-group col-md-1" style="padding-top:25px;">
@@ -961,6 +1041,7 @@
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;">Consumo de sustancias</h5>
             </div>
             <div class="modal-body">
+                <input type="hidden" name="idConsumoSustanciasE" id="idConsumoSustanciasE" value="@ViewBag.idConsumoSustancias" />
                 <div>
                     <label class="control-label">Sustancia</label>
                     <select class="form-control" name="sustanciaE" id="sustanciaE"
@@ -989,13 +1070,9 @@
             </div>
 
             <div class="modal-footer">
-                @*<button type="submit" class="btn btn-danger" id="btnDeleteSustancia" name="btnDeleteSustancia">
-                    <i class="fa fa-plus"></i>
-                    Borrar
-                </button>
-                <button asp-action="DeleteSustancia" asp-route-id=@Model.Paterno onclick="return update();" class="btn btn-danger" type="submit">
+                <button type="submit" class="btn btn-danger form-group col-xs-3 col-sm-2" id="btnDeleteSustancia" name="btnDeleteSustancia">
                     <i class="fa fa-trash"></i> Borrar
-                </button>*@
+                </button>
                 <button type="button" class="btn btn-success" id="btnAgregarSustancia" name="btnAgregarSustancia">
                     <i class="fa fa-plus"></i>
                     Agregar
@@ -1086,6 +1163,7 @@
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFREditar"></h5>
             </div>
             <div class="modal-body">
+                <input type="hidden" name="AFidAsientoFamiliarE" id="AFidAsientoFamiliarE" />
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
                     <input class="form-control" maxlength="150" name="AFNombreE" type="text" id="AFNombreE" value="@ViewBag.nombre" />
@@ -1153,6 +1231,9 @@
             </div>
 
             <div class="modal-footer">
+                <button type="submit" class="btn btn-danger form-group col-xs-3 col-sm-2" id="btnDeleteFamiliar" name="btnDeleteSustancia">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
                 <button type="button" class="btn btn-success" id="btnAgregarFamiliar" name="btnAgregarFamiliar">
                     <i class="fa fa-plus"></i>
                     Agregar
@@ -1257,7 +1338,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseTF">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseAF">
                     <i class="fa fa-close"></i>
                     Cerrar
                 </button>

@@ -128,9 +128,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
-                                        || p.Materno.StartsWith(searchString)
-                                        || p.Nombre.StartsWith(searchString));
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
                 }
             }
 
@@ -191,9 +190,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => p.Paterno.StartsWith(searchString)
-                                        || p.Materno.StartsWith(searchString)
-                                        || p.Nombre.StartsWith(searchString));
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
                 }
             }
 
@@ -511,7 +509,8 @@ namespace scorpioweb.Controllers
                     frecuencia = consumosustancias[contadorSustancia].Frecuencia,
                     cantidad = consumosustancias[contadorSustancia].Cantidad,
                     ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
-                    observacionesConsumo = consumosustancias[contadorSustancia++].Observaciones
+                    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
+                    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
                 });
             }
         }
@@ -587,7 +586,8 @@ namespace scorpioweb.Controllers
                         horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion,
                         enteradoProceso = familiares[contadorFamiliares].EnteradoProceso,
                         puedeEnterarse = familiares[contadorFamiliares].PuedeEnterarse,
-                        observaciones = familiares[contadorFamiliares++].Observaciones
+                        observaciones = familiares[contadorFamiliares].Observaciones,
+                        idAsientoFamiliar = familiares[contadorFamiliares++].IdAsientoFamiliar
                     });
                 }
             }
@@ -620,7 +620,8 @@ namespace scorpioweb.Controllers
                         horarioLocalizacion = referenciaspersonales[contadorReferencias].HorarioLocalizacion,
                         enteradoProceso = referenciaspersonales[contadorReferencias].EnteradoProceso,
                         puedeEnterarse = referenciaspersonales[contadorReferencias].PuedeEnterarse,
-                        observaciones = referenciaspersonales[contadorReferencias++].Observaciones
+                        observaciones = referenciaspersonales[contadorReferencias].Observaciones,
+                        idAsientoFamiliar = referenciaspersonales[contadorReferencias++].IdAsientoFamiliar
                     });
                 }
             }
@@ -1134,12 +1135,25 @@ namespace scorpioweb.Controllers
                 _context.Add(abandonoEstado);
                 _context.Add(saludfisica);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
                 #endregion
             }
             return RedirectToAction("ListadoSupervisor", "Personas");
         }
 
+        public async Task<IActionResult> RegistroConfirmation(int? id)
+        {
+            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            if (persona == null)
+            {
+                ViewBag.nombreRegistrado = null;
+            }
+            else
+            {
+                ViewBag.nombreRegistrado = persona.Nombre + " " + persona.Paterno + " " + persona.Materno;
+            }
+            return View();
+        }
         #endregion
 
         #region -Entrevista-
@@ -1693,11 +1707,10 @@ namespace scorpioweb.Controllers
             ViewBag.idioma = persona.OtroIdioma;
             ViewBag.traductor = persona.Traductor;
             ViewBag.Hijos = persona.Hijos;
-            ViewBag.conSustancia = persona.ConsumoSustancias;
 
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
-            ViewBag.idConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
+            ViewBag.ConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
 
             contadorSustancia = 0;
 
@@ -1749,6 +1762,7 @@ namespace scorpioweb.Controllers
                 ViewBag.cantidad = consumosustancias[contadorSustancia].Cantidad;
                 ViewBag.ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo;
                 ViewBag.observaciones = consumosustancias[contadorSustancia].Observaciones;
+                ViewBag.idConsumoSustancias = consumosustancias[contadorSustancia].IdConsumoSustancias;
                 contadorSustancia++;
             }
             else
@@ -1812,6 +1826,7 @@ namespace scorpioweb.Controllers
                 ViewBag.idEnteradoProcesoF = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
                 ViewBag.idPuedeEnterarseF = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
                 ViewBag.AFobservacionesF = familiares[contadorFamiliares].Observaciones;
+                ViewBag.idAsientoFamiliarF = familiares[contadorFamiliares].IdAsientoFamiliar;
                 contadorFamiliares++;
             }
             else
@@ -1853,6 +1868,7 @@ namespace scorpioweb.Controllers
                 ViewBag.idEnteradoProcesoR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].EnteradoProceso);
                 ViewBag.idPuedeEnterarseR = BuscaId(listaNoSiNA, referenciaspersonales[contadorReferencias].PuedeEnterarse);
                 ViewBag.AFobservacionesR = referenciaspersonales[contadorReferencias].Observaciones;
+                ViewBag.idAsientoFamiliarR = referenciaspersonales[contadorReferencias].IdAsientoFamiliar;
                 contadorReferencias++;
             }
             else
@@ -1907,18 +1923,18 @@ namespace scorpioweb.Controllers
 
                 #region -ConsumoSustancias-
                 //Sustancias editadas
-                for (int i = 0; i < datosSustanciasEditadas.Count; i = i + 5)
+                for (int i = 0; i < datosSustanciasEditadas.Count; i = i + 6)
                 {
                     if (datosSustanciasEditadas[i][1] == currentUser)
                     {
                         Consumosustancias consumosustanciasBD = new Consumosustancias();
 
-                        consumosustanciasBD.IdConsumoSustancias = consumosustancias[i / 5].IdConsumoSustancias;
                         consumosustanciasBD.Sustancia = datosSustanciasEditadas[i][0];
                         consumosustanciasBD.Frecuencia = datosSustanciasEditadas[i + 1][0];
                         consumosustanciasBD.Cantidad = normaliza(datosSustanciasEditadas[i + 2][0]);
                         consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustanciasEditadas[i + 3][0]);
                         consumosustanciasBD.Observaciones = normaliza(datosSustanciasEditadas[i + 4][0]);
+                        consumosustanciasBD.IdConsumoSustancias = Int32.Parse(datosSustanciasEditadas[i + 5][0]);
                         consumosustanciasBD.PersonaIdPersona = id;
 
                         try
@@ -1991,13 +2007,12 @@ namespace scorpioweb.Controllers
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar
                                           select table.IdAsientoFamiliar).Max());
                 //Familiares editados
-                for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 13)
+                for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 14)
                 {
                     if (datosFamiliaresEditados[i][1] == currentUser)
                     {
                         Asientofamiliar asientoFamiliar = new Asientofamiliar();
 
-                        asientoFamiliar.IdAsientoFamiliar = familiares[i / 13].IdAsientoFamiliar;
                         asientoFamiliar.Nombre = normaliza(datosFamiliaresEditados[i][0]);
                         asientoFamiliar.Relacion = datosFamiliaresEditados[i + 1][0];
                         asientoFamiliar.Edad = Int32.Parse(datosFamiliaresEditados[i + 2][0]);
@@ -2011,6 +2026,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.EnteradoProceso = datosFamiliaresEditados[i + 10][0];
                         asientoFamiliar.PuedeEnterarse = datosFamiliaresEditados[i + 11][0];
                         asientoFamiliar.Observaciones = normaliza(datosFamiliaresEditados[i + 12][0]);
+                        asientoFamiliar.IdAsientoFamiliar = Int32.Parse(datosFamiliaresEditados[i + 13][0]);
                         asientoFamiliar.Tipo = "FAMILIAR";
                         asientoFamiliar.PersonaIdPersona = id;
 
@@ -2086,13 +2102,12 @@ namespace scorpioweb.Controllers
 
                 #region -Referencias-
                 //Referencias editadas
-                for (int i = 0; i < datosReferenciasEditadas.Count; i = i + 13)
+                for (int i = 0; i < datosReferenciasEditadas.Count; i = i + 14)
                 {
                     if (datosReferenciasEditadas[i][1] == currentUser)
                     {
                         Asientofamiliar asientoFamiliar = new Asientofamiliar();
 
-                        asientoFamiliar.IdAsientoFamiliar = referenciaspersonales[i / 13].IdAsientoFamiliar;
                         asientoFamiliar.Nombre = normaliza(datosReferenciasEditadas[i][0]);
                         asientoFamiliar.Relacion = datosReferenciasEditadas[i + 1][0];
                         asientoFamiliar.Edad = Int32.Parse(datosReferenciasEditadas[i + 2][0]);
@@ -2106,6 +2121,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.EnteradoProceso = datosReferenciasEditadas[i + 10][0];
                         asientoFamiliar.PuedeEnterarse = datosReferenciasEditadas[i + 11][0];
                         asientoFamiliar.Observaciones = normaliza(datosReferenciasEditadas[i + 12][0]);
+                        asientoFamiliar.IdAsientoFamiliar = Int32.Parse(datosReferenciasEditadas[i + 13][0]);
                         asientoFamiliar.Tipo = "REFERENCIA";
                         asientoFamiliar.PersonaIdPersona = id;
 
@@ -3446,13 +3462,121 @@ namespace scorpioweb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> DeleteSustancia(int? id)
+        public async Task<IActionResult> deleteSustancia()
         {
-            var sustancia = await _context.Consumosustancias.SingleOrDefaultAsync(m => m.IdConsumoSustancias == id);
+            var sustancia = await _context.Consumosustancias.SingleOrDefaultAsync(m => m.IdConsumoSustancias == consumosustancias[contadorSustancia - 1].IdConsumoSustancias);
             _context.Consumosustancias.Remove(sustancia);
             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            return RedirectToAction(nameof(Index));//return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
+            if (contadorSustancia == consumosustancias.Count)
+            {
+                if (datosSustancias.Count + datosSustanciasEditadas.Count == 0)
+                {
+                    return Json(new { success = true, responseText = "Ya No" });
+                }
+                else
+                {
+                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = true,
+                    responseText = "Siguiente",
+                    sustancia = consumosustancias[contadorSustancia].Sustancia,
+                    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+                    cantidad = consumosustancias[contadorSustancia].Cantidad,
+                    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+                    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
+                    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
+                });
+            }
+        }
+
+        public async Task<IActionResult> deleteFamiliar(int tipoGuardado)
+        {
+            if (tipoGuardado == 1)
+            {
+                var asientoFamiliar = await _context.Asientofamiliar.SingleOrDefaultAsync(m => m.IdAsientoFamiliar == familiares[contadorFamiliares - 1].IdAsientoFamiliar);
+                _context.Asientofamiliar.Remove(asientoFamiliar);
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (contadorFamiliares == familiares.Count)
+                {
+                    if (datosFamiliares.Count + datosFamiliaresEditados.Count == 0)
+                    {
+                        return Json(new { success = true, responseText = "Ya No" });
+                    }
+                    else
+                    {
+                        return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = familiares[contadorFamiliares].Nombre,
+                        relacion = familiares[contadorFamiliares].Relacion,
+                        edad = familiares[contadorFamiliares].Edad,
+                        sexo = familiares[contadorFamiliares].Sexo,
+                        dependencia = familiares[contadorFamiliares].Dependencia,
+                        explicaDependencia = familiares[contadorFamiliares].DependenciaExplica,
+                        vivenJuntos = familiares[contadorFamiliares].VivenJuntos,
+                        direccion = familiares[contadorFamiliares].Domicilio,
+                        telefono = familiares[contadorFamiliares].Telefono,
+                        horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion,
+                        enteradoProceso = familiares[contadorFamiliares].EnteradoProceso,
+                        puedeEnterarse = familiares[contadorFamiliares].PuedeEnterarse,
+                        observaciones = familiares[contadorFamiliares].Observaciones,
+                        idAsientoFamiliar = familiares[contadorFamiliares++].IdAsientoFamiliar
+                    });
+                }
+            }
+            else
+            {
+                var asientoFamiliar = await _context.Asientofamiliar.SingleOrDefaultAsync(m => m.IdAsientoFamiliar == referenciaspersonales[contadorReferencias - 1].IdAsientoFamiliar);
+                _context.Asientofamiliar.Remove(asientoFamiliar);
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (contadorReferencias == referenciaspersonales.Count)
+                {
+                    if (datosReferencias.Count + datosReferenciasEditadas.Count == 0)
+                    {
+                        return Json(new { success = true, responseText = "Ya No" });
+                    }
+                    else
+                    {
+                        return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        responseText = "Siguiente",
+                        nombre = referenciaspersonales[contadorReferencias].Nombre,
+                        relacion = referenciaspersonales[contadorReferencias].Relacion,
+                        edad = referenciaspersonales[contadorReferencias].Edad,
+                        sexo = referenciaspersonales[contadorReferencias].Sexo,
+                        dependencia = referenciaspersonales[contadorReferencias].Dependencia,
+                        explicaDependencia = referenciaspersonales[contadorReferencias].DependenciaExplica,
+                        vivenJuntos = referenciaspersonales[contadorReferencias].VivenJuntos,
+                        direccion = referenciaspersonales[contadorReferencias].Domicilio,
+                        telefono = referenciaspersonales[contadorReferencias].Telefono,
+                        horarioLocalizacion = referenciaspersonales[contadorReferencias].HorarioLocalizacion,
+                        enteradoProceso = referenciaspersonales[contadorReferencias].EnteradoProceso,
+                        puedeEnterarse = referenciaspersonales[contadorReferencias].PuedeEnterarse,
+                        observaciones = referenciaspersonales[contadorReferencias].Observaciones,
+                        idAsientoFamiliar = referenciaspersonales[contadorReferencias++].IdAsientoFamiliar
+                    });
+                }
+            }
         }
         #endregion
 

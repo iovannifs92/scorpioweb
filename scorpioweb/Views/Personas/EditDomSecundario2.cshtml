@@ -250,10 +250,7 @@
                 </div>
                 @foreach (var item in ViewData["joinTablesDomcilioSec"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
                 {
-                    <div class="form-group">
-                        <label class="control-label">Id Domicilio</label>
-                        <input readonly name="IdDomicilio" id="IdDomicilioMD" class="form-control" value="@item.domicilioSecundarioVM.IdDomicilio" />
-                    </div>
+                    <input readonly type="hidden" name="IdDomicilio" id="IdDomicilioMD" class="form-control" value="@item.domicilioSecundarioVM.IdDomicilio" />
                     break;
                 }
                 <div class="form-group col-md-12">
