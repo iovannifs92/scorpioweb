@@ -102,7 +102,7 @@
 
     @RenderSection("Scripts", required: false)
 
-    <a href="javascript:void(0);" id="back-top"><i class="fa fa-angle-up fa-3x" id="fangle"></i></a>
+    <a  onclick="topFunction()" id="back-top"><i class="fa fa-angle-up fa-3x" id="fangle" name="fangle"></i></a>
 
     @*Essential jQuery Plugins
         ==================================================*@
@@ -141,6 +141,23 @@
         }
         );
         wow.init();
+
+        var fangle = document.getElementById("myBtn");
+        window.onscroll = function () { scrollFunction() };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                fangle.style.display = "block";
+            } else {
+                fangle.style.display = "none";
+            }
+        }
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+       
+        
     </script>
     <!-- Custom Functions -->
     <script src="js/custom.js"></script>

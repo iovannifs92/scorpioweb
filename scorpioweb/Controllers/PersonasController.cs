@@ -2654,10 +2654,6 @@ namespace scorpioweb.Controllers
                                          estudiosVM = estudiosTabla
 
                                      };
-            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
-
-
-
 
             if ((ViewData["joinTablesPersonaEstudia"] as IEnumerable<scorpioweb.Models.PersonaViewModel>).Count() == 0)
             {
@@ -2668,14 +2664,6 @@ namespace scorpioweb.Controllers
                 ViewBag.RA = true;
             }
 
-            //List<SelectListItem> ListaTrueFalse;
-            //ListaTrueFalse = new List<SelectListItem>
-            //{
-            //  new SelectListItem{ Text="SI", Value="True"},
-            //  new SelectListItem{ Text="NO", Value="Flse"}
-            //};
-            //ViewBag.listaTr = ListaTrueFalse;
-            //ViewBag.idGradoEstudios = BuscaId(ListaTrueFalse, ViewBag.RA);
 
             return View(estudios);
         }
