@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<scorpioweb.Models.SupervisionPyCP>
 
 @{
+    ViewData["Title"] = "Procesos";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,9 +11,6 @@
     <h3>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h3>
     break;
 }
-
-
- 
 
 <table class="table">
     <thead>

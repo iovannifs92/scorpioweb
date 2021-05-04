@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Alertas";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="text-center" style="padding-top:1%">
+        <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+        <br />
+        <a style="width:200px">Alertas</a>
+    </div>
+    <table class="table" style="padding-top:5%">
+        <thead>
+            <tr>
+                <th>
+                    <a>Nombre</a>
+                </th>
+                <th>
+                    <a>Causa Penal</a>
+                </th>
+                <th>
+                    <a>Tipo de alerta</a>
+                </th>
+                <th>
+                    <a>Información de campo</a>
+                </th>
+                @if (ViewBag.Admin)
+                {
+                    <th>
+                        <a>Supervisor</a>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewData["alertas"] as IEnumerable<scorpioweb.Models.PlaneacionWarningViewModel>)
+            {
+            <tr>
+                <td>
+                    @item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre
+                </td>
+                <td>
+                    @item.causapenalVM.CausaPenal
+                </td>
+                @{
+                    switch (@item.tipoAdvertencia)
+                    {
+                        case "Informe fuera de tiempo":
+                            @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
+                            {
+                                <td>
+                                    Informe en próximos 30 días
+                                </td>
+                            }
+                            else
+                            {
+                                @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
+                                {
+                                    <td>
+                                        Informe en próximos 30 días
+                                    </td>
+                                }
+                                else
+                                {
+                                    @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                                    {
+                                        <td style="color:red">
+                                            Informe fuera de tiempo
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color:#F0AD00">
+                                            Informe en menos de 5 días
+                                        </td>
+                                    }
+                                }
+                            }
+                            <td>
+                                @item.planeacionestrategicaVM.FechaInforme
+                            </td>
+                            break;
+                        case "Sin fecha de informe":
+                            <td>
+                                @item.tipoAdvertencia
+                            </td>
+                            <td>
+                                @item.planeacionestrategicaVM.FechaInforme
+                            </td>
+                            break;
+                        case "Sin periodicidad de firma":
+                            <td>
+                                @item.tipoAdvertencia
+                            </td>
+                            <td>
+                                @item.planeacionestrategicaVM.PeriodicidadFirma
+                            </td>
+                            break;
+                    }
+                }
+                @if (ViewBag.Admin)
+                {
+                    <td>
+                        @item.personaVM.Supervisor
+                    </td>
+                }
+            <td>
+                <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
+                    <i class="fa fa-pencil"></i> Detalle
+                </a>
+            </td>
+            </tr>
+            }
+        </tbody>
+    </table>
