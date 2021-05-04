@@ -66,6 +66,7 @@
             </p>
         </div>
     </div>
+
     @if (!oficialia)
     {
         <div class="col-sm-3 col-md-3 card text-center">
@@ -82,12 +83,13 @@
             </div>
         </div>
     }
+
     @if (ViewBag.Warnings != 0)
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
-                    <a href="#">
+                    <a asp-controller="Personas" asp-action="WarningSupervisor">
                         <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" style="padding-bottom:5%;">
                         Alertas <span class="badge" style="background-color:red">@ViewBag.Warnings</span>
                     </a>
