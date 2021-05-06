@@ -1570,8 +1570,7 @@ namespace scorpioweb.Controllers
                             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
                             where s.PersonaIdPersona == id
                             orderby f.IdFracciones 
-                            group c by c.CausaPenal into grup
-                          
+                            group c by c.IdCausaPenal into grup
                             select grup
                           );
           
@@ -1590,7 +1589,7 @@ namespace scorpioweb.Controllers
                              join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
                              join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision
                              join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                             where q[i].Key.Equals(c.CausaPenal)
+                             where q[i].Key.Equals(c.IdCausaPenal)
                              select new Procesos
                              {
                                  supervisionVM = s,
