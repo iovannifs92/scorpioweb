@@ -95,6 +95,14 @@
                                 @item.planeacionestrategicaVM.PeriodicidadFirma
                             </td>
                             break;
+                        case "Sin estado de supervisión":
+                            <td>
+                                @item.tipoAdvertencia
+                            </td>
+                            <td>
+                                @item.supervisionVM.EstadoSupervision
+                            </td>
+                            break;
                     }
                 }
                 @if (ViewBag.Admin)
@@ -103,11 +111,11 @@
                         @item.personaVM.Supervisor
                     </td>
                 }
-            <td>
-                <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
-                    <i class="fa fa-pencil"></i> Detalle
-                </a>
-            </td>
+                <td>
+                    <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
+                        <i class="fa fa-pencil"></i> Detalle
+                    </a>
+                </td>
             </tr>
             }
         </tbody>
