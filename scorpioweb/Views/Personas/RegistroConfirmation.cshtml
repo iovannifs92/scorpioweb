@@ -6,17 +6,19 @@
 @if (ViewBag.nombreRegistrado != null)
 {
     <h2 style="text-align:center">
-        Registro exitoso de:
+        <div class="alert alert-success" role="alert">
+            Registro exitoso de:<br />
+            @ViewBag.nombreRegistrado
+        </div>
     </h2>
-    <h3 style="text-align:center">
-        @ViewBag.nombreRegistrado
-    </h3>
 }
 else
 {
     <h2 style="text-align:center">
-        No se registro.<br>
-        Comuniquese con su administrador.
+        <div class="alert alert-danger" role="alert">
+            No se registro.<br>
+            Comuniquese con su administrador.
+        </div>
     </h2>
 }
 

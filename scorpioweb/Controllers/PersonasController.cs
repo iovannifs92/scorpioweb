@@ -1570,8 +1570,7 @@ namespace scorpioweb.Controllers
                             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
                             where s.PersonaIdPersona == id
                             orderby f.IdFracciones 
-                            group c by c.CausaPenal into grup
-                          
+                            group c by c.IdCausaPenal into grup
                             select grup
                           );
           
@@ -1590,7 +1589,7 @@ namespace scorpioweb.Controllers
                              join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
                              join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision
                              join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                             where q[i].Key.Equals(c.CausaPenal)
+                             where q[i].Key.Equals(c.IdCausaPenal)
                              select new Procesos
                              {
                                  supervisionVM = s,
@@ -2788,10 +2787,6 @@ namespace scorpioweb.Controllers
                                          estudiosVM = estudiosTabla
 
                                      };
-            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
-
-
-
 
             if ((ViewData["joinTablesPersonaEstudia"] as IEnumerable<scorpioweb.Models.PersonaViewModel>).Count() == 0)
             {
@@ -2802,14 +2797,6 @@ namespace scorpioweb.Controllers
                 ViewBag.RA = true;
             }
 
-            //List<SelectListItem> ListaTrueFalse;
-            //ListaTrueFalse = new List<SelectListItem>
-            //{
-            //  new SelectListItem{ Text="SI", Value="True"},
-            //  new SelectListItem{ Text="NO", Value="Flse"}
-            //};
-            //ViewBag.listaTr = ListaTrueFalse;
-            //ViewBag.idGradoEstudios = BuscaId(ListaTrueFalse, ViewBag.RA);
 
             return View(estudios);
         }

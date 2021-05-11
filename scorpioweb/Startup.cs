@@ -44,7 +44,6 @@ namespace scorpioweb
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc(options => {
-                var policy = new AutorizationPolicyBuilder();
             }).AddXmlSerializerFormatters();  
             services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
             services.AddSession();
