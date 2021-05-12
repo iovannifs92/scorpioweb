@@ -259,6 +259,8 @@ namespace scorpioweb.Controllers
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
 
+            await PermisosEdicion(id);
+
             var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
             if (supervision == null)
             {
@@ -672,6 +674,8 @@ namespace scorpioweb.Controllers
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
 
+            await PermisosEdicion(id);
+
             var supervision = await _context.Aer.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
             {
@@ -758,6 +762,8 @@ namespace scorpioweb.Controllers
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
 
+            await PermisosEdicion(id);
+
             var supervision = await _context.Cambiodeobligaciones.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
             {
@@ -817,6 +823,8 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+
+            await PermisosEdicion(id);
 
             var supervision = await _context.Cierredecaso.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -882,19 +890,19 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Fraccionesimpuestas-
-        public IActionResult EditFraccionesimpuestas(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditFraccionesimpuestas(int? id, string nombre, string cp)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
 
+            await PermisosEdicion(id);
 
-            List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
+            List < Fraccionesimpuestas > fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
 
             ViewData["fracciones"] = from fracciones in fraccionesImpuestas
                                      where fracciones.SupervisionIdSupervision == id
@@ -1019,6 +1027,8 @@ namespace scorpioweb.Controllers
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
 
+            await PermisosEdicion(id);
+
             var supervision = await _context.Planeacionestrategica.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
             {
@@ -1101,6 +1111,9 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+
+            await PermisosEdicion(id);
+
             var supervision = await _context.Revocacion.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
             {
@@ -1163,6 +1176,8 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+
+            await PermisosEdicion(id);
 
             var supervision = await _context.Suspensionseguimiento.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
             if (supervision == null)
@@ -1228,6 +1243,8 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = persona.NombreCompleto;
             ViewBag.cp = cp.CausaPenal;
+
+            await PermisosEdicion(id);
 
 
             List<Victima> victimas  = _context.Victima.ToList();
@@ -1301,8 +1318,7 @@ namespace scorpioweb.Controllers
             if (id == null)
             {
                 return NotFound();
-            }
-
+            }            
 
             var Victima = await _context.Victima.SingleOrDefaultAsync(m => m.IdVictima == id);
             if (Victima == null)
@@ -1418,7 +1434,9 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = persona.NombreCompleto;
             ViewBag.cp = cp.CausaPenal;
-    
+
+            await PermisosEdicion(id);
+
 
             List<Bitacora> bitacora = _context.Bitacora.ToList();
 
@@ -1630,6 +1648,51 @@ namespace scorpioweb.Controllers
         {
             return View();
         }
-               
+
+        public async Task<IActionResult> PermisosEdicion(int? id)
+        {
+            #region -PermisosEdicion-
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool flagCoordinador = false;
+            bool flagUser = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "AdminMCSCP")
+                {
+                    flagCoordinador = true;
+                }
+            }
+
+            var query = from persona in _context.Persona
+                        join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona
+                        where supervision.IdSupervision == id
+                        select new
+                        {
+                            supervisor = persona.Supervisor
+                        };
+
+            foreach (var s in query)
+            {
+                if (s.supervisor == user.ToString())
+                {
+                    flagUser = true;
+                }
+            }
+
+            if (flagCoordinador || flagUser)
+            {
+                ViewBag.usuario = true;
+            }
+            else
+            {
+                ViewBag.usuario = false;
+            }
+
+            return null;
+            #endregion
+        }
+
     }
 }

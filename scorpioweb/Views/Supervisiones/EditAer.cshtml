@@ -18,7 +18,7 @@
     });
 </script>
 @{
-    ViewData["Title"] = "EditAer";
+    ViewData["Title"] = "AER";
 }
 
 <h2>AER</h2>
@@ -89,17 +89,20 @@
                 </select>
             </div>
             <input type="hidden" asp-for="SupervisionIdSupervision" />
-            <div class="form-group">
-                <button type="submit" value="" class="btn btn-primary">
-                    <i class="fa fa-save"></i> Guardar
-                </button>
-            </div>
+            @if (ViewBag.usuario)
+            {
+                <div class="form-group">
+                    <button type="submit" value="" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            }
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="PersonaSupervision">Regresar a lista</a>
+    <a href='javascript:history.go(-1)'>Regresar</a>
 </div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
