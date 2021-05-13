@@ -58,7 +58,6 @@
                 @Html.DisplayFor(modelItem => item.TipoRelacion)
             </td>
             <td>
-
                 <form onsubmit="return confirm('¿Deseas borrar Victima?');" asp-action="DeleteVictima" asp-route-id="@item.IdVictima">
                     <a id="btnVer" onclick="showModal('@Url.Action("VerVictima","Supervisiones",null,Context.Request.Scheme)','Datos Victima',@item.IdVictima)" class="btn btn-info">
                         <i class="fa fa-eye"></i> Ver
