@@ -1649,6 +1649,7 @@ namespace scorpioweb.Controllers
             return View();
         }
 
+        #region -PermisosEdicion-
         public async Task<IActionResult> PermisosEdicion(int? id)
         {
             #region -PermisosEdicion-
@@ -1693,6 +1694,6 @@ namespace scorpioweb.Controllers
             return null;
             #endregion
         }
-
+        #endregion
     }
 }

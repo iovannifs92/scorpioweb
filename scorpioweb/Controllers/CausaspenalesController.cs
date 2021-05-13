@@ -330,7 +330,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Asignacion-
-        public IActionResult Asignacion(int? id, string cp)
+        public async Task<IActionResult> Asignacion(int? id, string cp)
         {
             if (id == null)
             {
@@ -338,6 +338,9 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.CausaPenal = cp;
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool flagCoordinador = false;
 
             List<Persona> listaPersonas = new List<Persona>();
             List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
@@ -350,7 +353,9 @@ namespace scorpioweb.Controllers
                 select personaCausaPenalTable
                 ).ToList();
 
-            listaPersonas = (
+            if (await esAdmin())
+            {
+                listaPersonas = (
                 from personaTable in personaVM
                 where listaPersonasAsignadas.All(
                     per => per.PersonaIdPersona != personaTable.IdPersona
@@ -358,6 +363,21 @@ namespace scorpioweb.Controllers
                 orderby personaTable.Paterno
                 select personaTable
                 ).ToList();
+            }
+            else
+            {
+                listaPersonas = (
+                from personaTable in personaVM
+                where listaPersonasAsignadas.All(
+                    per => per.PersonaIdPersona != personaTable.IdPersona
+                    )
+                && personaTable.Supervisor == user.ToString()
+                orderby personaTable.Paterno
+                select personaTable
+                ).ToList();
+            }
+
+            
 
             ViewBag.personas = listaPersonas;
 
@@ -735,6 +755,25 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("EditCausas", "Causaspenales", new { @id = idcausa });
             }
             return View();
+        }
+        #endregion
+
+        #region -esAdmin-
+        public async Task<bool> esAdmin()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool flagCoordinador = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "AdminMCSCP")
+                {
+                    flagCoordinador = true;
+                }
+            }
+
+            return flagCoordinador;
         }
         #endregion
     }
