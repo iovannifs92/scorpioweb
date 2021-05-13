@@ -3678,18 +3678,18 @@ namespace scorpioweb.Controllers
                                                 tipoAdvertencia = "Sin periodicidad de firma"
                                             }).Union
                                             (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where persona.Supervisor == usuario && supervision.EstadoSupervision == null
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 tipoAdvertencia = "Sin estado de supervisión"
-                                             });
+                                                join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                                join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                                join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                                where persona.Supervisor == usuario && supervision.EstadoSupervision == null
+                                                select new PlaneacionWarningViewModel
+                                                {
+                                                    personaVM = persona,
+                                                    supervisionVM = supervision,
+                                                    causapenalVM = causapenal,
+                                                    planeacionestrategicaVM = planeacion,
+                                                    tipoAdvertencia = "Sin estado de supervisión"
+                                                });
             }
 
 

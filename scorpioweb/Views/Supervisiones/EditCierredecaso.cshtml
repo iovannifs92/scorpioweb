@@ -25,7 +25,7 @@
 
 
 @{
-    ViewData["Title"] = "EditCierredecaso";
+    ViewData["Title"] = "Cierre de caso";
 }
 
 <h2>Cierre de caso</h2>
@@ -92,21 +92,21 @@
                     </select>
                 </div>
             }
-
-
-
             <input type="hidden" asp-for="SupervisionIdSupervision" />
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-save"></i> Guardar
-                </button>
-            </div>
+            @if (ViewBag.usuario)
+            {
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            }            
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="PersonaSupervision">Regresar a lista</a>
+    <a href='javascript:history.go(-1)'>Regresar</a>
 </div>
 
 @section Scripts {

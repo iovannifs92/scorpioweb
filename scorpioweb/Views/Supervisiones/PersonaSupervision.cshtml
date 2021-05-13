@@ -47,7 +47,10 @@
                 <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
             </th>
             <th>
-                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoCumplimientoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de supervisión</a>
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoSupervisionParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de supervisión</a>
+            </th>
+            <th>
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoCumplimientoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de cumplimiento</a>
             </th>
             <th>
                 <a>Supervisor</a>
@@ -65,11 +68,14 @@
                 @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.supervisionVM.EstadoCumplimiento)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
-            </td>           
+            </td>
             <td>
                 <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
                     <i class="fa fa-pencil"></i> Editar

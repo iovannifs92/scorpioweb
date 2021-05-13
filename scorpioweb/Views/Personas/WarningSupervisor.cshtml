@@ -53,26 +53,17 @@
                             }
                             else
                             {
-                                @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
+                                @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
                                 {
-                                    <td>
-                                        Informe en próximos 30 días
+                                    <td style="color:red">
+                                        Informe fuera de tiempo
                                     </td>
                                 }
                                 else
                                 {
-                                    @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
-                                    {
-                                        <td style="color:red">
-                                            Informe fuera de tiempo
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        <td style="color:#F0AD00">
-                                            Informe en menos de 5 días
-                                        </td>
-                                    }
+                                    <td style="color:#F0AD00">
+                                        Informe en menos de 5 días
+                                    </td>
                                 }
                             }
                             <td>
