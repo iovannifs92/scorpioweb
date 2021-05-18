@@ -3934,13 +3934,13 @@ namespace scorpioweb.Controllers
                          join b in supervisoresBD on s.Key equals b.Supervisor
                          select new
                          {
-                             b.Supervisor,
+                             Supervisor=((b.Supervisor).ToString()).Substring(0,((b.Supervisor).ToString()).IndexOf("@")),
                              Supervisados=s.Count+ b.Supervisados
                          }).ToList();
 
             var json = result.ToGoogleDataTable()
-            .NewColumn(new Column(ColumnType.String, "Topping"), x => x.Supervisor)
-            .NewColumn(new Column(ColumnType.Number, "Slices"), x => x.Supervisados)
+            .NewColumn(new Column(ColumnType.String, "Supervisor"), x => x.Supervisor)
+            .NewColumn(new Column(ColumnType.Number, "Supervisiones"), x => x.Supervisados)
             .Build()
             .GetJson();
 
