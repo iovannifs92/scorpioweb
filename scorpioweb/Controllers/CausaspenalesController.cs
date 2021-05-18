@@ -339,8 +339,6 @@ namespace scorpioweb.Controllers
 
             ViewBag.CausaPenal = cp;
             var user = await userManager.FindByNameAsync(User.Identity.Name);
-            var roles = await userManager.GetRolesAsync(user);
-            bool flagCoordinador = false;
 
             List<Persona> listaPersonas = new List<Persona>();
             List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();

@@ -19,6 +19,9 @@ using QRCoder;
 using System.Drawing;
 using Size = SautinSoft.Document.Drawing.Size;
 using System.Security.Claims;
+using System.Data;
+using Google.DataTable.Net.Wrapper.Extension;
+using Google.DataTable.Net.Wrapper;
 
 namespace scorpioweb.Controllers
 {
@@ -234,6 +237,43 @@ namespace scorpioweb.Controllers
                 }
             }
             ViewBag.ListadoUsuarios = ListaUsuarios;
+
+            var supervisoresScorpio = from s in _context.Supervision
+                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                                      where s.EstadoSupervision == "VIGENTE"
+                                      group p by p.Supervisor into grup
+                                      select new
+                                      {
+                                          grup.Key,
+                                          Count = grup.Count()
+                                      }
+                          ;
+
+            var supervisoresBD = from c in _context.Controlsupervisiones
+                                 select new
+                                 {
+                                     c.Supervisor,
+                                     c.Supervisados
+                                 };
+
+            var result = (from s in supervisoresScorpio
+                          join b in supervisoresBD on s.Key equals b.Supervisor
+                          select new
+                          {
+                              b.Supervisor,
+                              Supervisados = s.Count + b.Supervisados
+                          }).ToList();
+
+            var recomendar = (((from r in result
+                                orderby r.Supervisados ascending
+                                select new
+                                {
+                                    r.Supervisor
+                                }).Take(1))).ToArray();
+
+            string recomendacion = (recomendar[0].Supervisor).ToString();
+
+            ViewBag.Recomendacion = recomendacion;
             return View(await _context.Persona.ToListAsync());
         }
 
@@ -3850,6 +3890,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -BitmapToBytes-
         private static MemoryStream BitmapToBytes(Bitmap img)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -3858,10 +3899,53 @@ namespace scorpioweb.Controllers
                 return stream;
             }
         }
+        #endregion
 
+        #region -PersonaExists-
         private bool PersonaExists(int id)
         {
             return _context.Persona.Any(e => e.IdPersona == id);
         }
+        #endregion
+
+        #region -obtenerDatos-
+        public ActionResult OnGetChartData()
+        {
+
+            var supervisoresScorpio = from s in _context.Supervision
+                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                            where s.EstadoSupervision == "VIGENTE"
+                            group p by p.Supervisor into grup
+                            select new
+                            {
+                                grup.Key,
+                                Count=grup.Count()
+                            }
+                          ;
+
+            var supervisoresBD = from c in _context.Controlsupervisiones
+                                 select new
+                                 {
+                                     c.Supervisor,
+                                     c.Supervisados
+                                 };
+
+            var result = (from s in supervisoresScorpio
+                         join b in supervisoresBD on s.Key equals b.Supervisor
+                         select new
+                         {
+                             b.Supervisor,
+                             Supervisados=s.Count+ b.Supervisados
+                         }).ToList();
+
+            var json = result.ToGoogleDataTable()
+            .NewColumn(new Column(ColumnType.String, "Topping"), x => x.Supervisor)
+            .NewColumn(new Column(ColumnType.Number, "Slices"), x => x.Supervisados)
+            .Build()
+            .GetJson();
+
+            return Content(json);           
+        }
+        #endregion
     }
 }
