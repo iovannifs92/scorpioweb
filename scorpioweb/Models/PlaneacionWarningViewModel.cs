@@ -11,6 +11,8 @@ namespace scorpioweb.Models
         public Supervision supervisionVM { get; set; }
         public Causapenal causapenalVM { get; set; }
         public Planeacionestrategica planeacionestrategicaVM { get; set; }
+        public Fraccionesimpuestas fraccionesimpuestasVM { get; set; }
         public string tipoAdvertencia { get; set; }
+        public string figuraJudicial { get; set; }
     }
 }

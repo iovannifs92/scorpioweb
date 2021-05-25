@@ -3616,6 +3616,12 @@ namespace scorpioweb.Controllers
             List<Supervision> supervisionVM = _context.Supervision.ToList();
             List<Causapenal> causapenalVM = _context.Causapenal.ToList();
             List<Planeacionestrategica> planeacionestrategicaVM = _context.Planeacionestrategica.ToList();
+            List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
+
+            List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
+                                  group f by f.SupervisionIdSupervision into grp
+                                  select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+
 
             #endregion
 
@@ -3627,27 +3633,32 @@ namespace scorpioweb.Controllers
                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE"
-                                       select new PlaneacionWarningViewModel
+                                        select new PlaneacionWarningViewModel
                                         {
                                             personaVM = persona,
                                             supervisionVM = supervision,
                                             causapenalVM = causapenal,
                                             planeacionestrategicaVM = planeacion,
+                                            
                                             tipoAdvertencia = "Informe fuera de tiempo"
                                         }).Union
                                     (from persona in personaVM
                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                        join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                         where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                     select new PlaneacionWarningViewModel
-                                        {
-                                            personaVM = persona,
-                                            supervisionVM = supervision,
-                                            causapenalVM = causapenal,
-                                            planeacionestrategicaVM = planeacion,
-                                            tipoAdvertencia = "Sin fecha de informe"
-                                        }).Union
+                                        orderby fracciones.FiguraJudicial
+                                        select new PlaneacionWarningViewModel
+                                            {
+                                                personaVM = persona,
+                                                supervisionVM = supervision,
+                                                causapenalVM = causapenal,
+                                                planeacionestrategicaVM = planeacion,
+                                                fraccionesimpuestasVM = fracciones,
+                                                figuraJudicial = fracciones.FiguraJudicial,
+                                                tipoAdvertencia = "Sin fecha de informe"
+                                            }).Union
                                     (from persona in personaVM
                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
@@ -3695,21 +3706,25 @@ namespace scorpioweb.Controllers
                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                            join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                             where persona.Supervisor == usuario && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                         select new PlaneacionWarningViewModel
-                                            {
-                                                personaVM = persona,
-                                                supervisionVM = supervision,
-                                                causapenalVM = causapenal,
-                                                planeacionestrategicaVM = planeacion,
-                                                tipoAdvertencia = "Sin fecha de informe"
-                                            }).Union
+                                             orderby fracciones.FiguraJudicial
+                                             select new PlaneacionWarningViewModel
+                                                {
+                                                    personaVM = persona,
+                                                    supervisionVM = supervision,
+                                                    causapenalVM = causapenal,
+                                                    planeacionestrategicaVM = planeacion,
+                                                    fraccionesimpuestasVM = fracciones,
+                                                    figuraJudicial = fracciones.FiguraJudicial,
+                                                    tipoAdvertencia = "Sin fecha de informe"
+                                                }).Union
                                         (from persona in personaVM
                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                             where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                         select new PlaneacionWarningViewModel
+                                            select new PlaneacionWarningViewModel
                                             {
                                                 personaVM = persona,
                                                 supervisionVM = supervision,

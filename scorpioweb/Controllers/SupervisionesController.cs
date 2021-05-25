@@ -1052,7 +1052,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Bimestral", Value = "BIMESTRAL" },
                 new SelectListItem{ Text = "Trimestral", Value = "TRIMESTRAL" },
                 new SelectListItem{ Text = "Semestral", Value = "SEMESTRAL" },
-                new SelectListItem{ Text = "Anual", Value = "ANUAL" },
+                new SelectListItem{ Text = "Anual", Value = "ANUAL", },
+                new SelectListItem{ Text = "No aplica", Value = "NO APLICA"}
                 };
 
             ViewBag.listaPeriodicidadFirma = ListaPeriodicidadFirma;
