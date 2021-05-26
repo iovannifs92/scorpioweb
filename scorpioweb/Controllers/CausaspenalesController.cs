@@ -237,6 +237,8 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuarios = users;
             #endregion
 
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
             return View();
         }
 
