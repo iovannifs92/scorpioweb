@@ -71,12 +71,25 @@
                             </td>
                             break;
                         case "Sin fecha de informe":
-                            <td>
-                                @item.tipoAdvertencia
-                            </td>
-                            <td>
-                                @item.planeacionestrategicaVM.FechaInforme
-                            </td>
+                            @if (item.figuraJudicial != "MC")
+                            {
+                                <td>
+                                    @item.tipoAdvertencia
+                                </td>
+                                <td>
+                                    @item.planeacionestrategicaVM.FechaInforme
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    Sin control de supervisión
+                                </td>
+                                <td>
+                                    @item.planeacionestrategicaVM.FechaInforme
+                                </td>
+                            }
+
                             break;
                         case "Sin periodicidad de firma":
                             <td>
@@ -102,6 +115,9 @@
                         @item.personaVM.Supervisor
                     </td>
                 }
+                <td>
+                    @item.figuraJudicial
+                </td>
                 <td>
                     <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
                         <i class="fa fa-pencil"></i> Detalle

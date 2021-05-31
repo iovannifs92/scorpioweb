@@ -19,6 +19,9 @@ using QRCoder;
 using System.Drawing;
 using Size = SautinSoft.Document.Drawing.Size;
 using System.Security.Claims;
+using System.Data;
+using Google.DataTable.Net.Wrapper.Extension;
+using Google.DataTable.Net.Wrapper;
 
 namespace scorpioweb.Controllers
 {
@@ -234,6 +237,43 @@ namespace scorpioweb.Controllers
                 }
             }
             ViewBag.ListadoUsuarios = ListaUsuarios;
+
+            var supervisoresScorpio = from s in _context.Supervision
+                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                                      where s.EstadoSupervision == "VIGENTE"
+                                      group p by p.Supervisor into grup
+                                      select new
+                                      {
+                                          grup.Key,
+                                          Count = grup.Count()
+                                      }
+                          ;
+
+            var supervisoresBD = from c in _context.Controlsupervisiones
+                                 select new
+                                 {
+                                     c.Supervisor,
+                                     c.Supervisados
+                                 };
+
+            var result = (from s in supervisoresScorpio
+                          join b in supervisoresBD on s.Key equals b.Supervisor
+                          select new
+                          {
+                              b.Supervisor,
+                              Supervisados = s.Count + b.Supervisados
+                          }).ToList();
+
+            var recomendar = (((from r in result
+                                orderby r.Supervisados ascending
+                                select new
+                                {
+                                    r.Supervisor
+                                }).Take(1))).ToArray();
+
+            string recomendacion = (recomendar[0].Supervisor).ToString();
+
+            ViewBag.Recomendacion = recomendacion;
             return View(await _context.Persona.ToListAsync());
         }
 
@@ -3576,6 +3616,12 @@ namespace scorpioweb.Controllers
             List<Supervision> supervisionVM = _context.Supervision.ToList();
             List<Causapenal> causapenalVM = _context.Causapenal.ToList();
             List<Planeacionestrategica> planeacionestrategicaVM = _context.Planeacionestrategica.ToList();
+            List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
+
+            List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
+                                  group f by f.SupervisionIdSupervision into grp
+                                  select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+
 
             #endregion
 
@@ -3587,27 +3633,32 @@ namespace scorpioweb.Controllers
                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE"
-                                       select new PlaneacionWarningViewModel
+                                        select new PlaneacionWarningViewModel
                                         {
                                             personaVM = persona,
                                             supervisionVM = supervision,
                                             causapenalVM = causapenal,
                                             planeacionestrategicaVM = planeacion,
+                                            
                                             tipoAdvertencia = "Informe fuera de tiempo"
                                         }).Union
                                     (from persona in personaVM
                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                        join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                         where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                     select new PlaneacionWarningViewModel
-                                        {
-                                            personaVM = persona,
-                                            supervisionVM = supervision,
-                                            causapenalVM = causapenal,
-                                            planeacionestrategicaVM = planeacion,
-                                            tipoAdvertencia = "Sin fecha de informe"
-                                        }).Union
+                                        orderby fracciones.FiguraJudicial
+                                        select new PlaneacionWarningViewModel
+                                            {
+                                                personaVM = persona,
+                                                supervisionVM = supervision,
+                                                causapenalVM = causapenal,
+                                                planeacionestrategicaVM = planeacion,
+                                                fraccionesimpuestasVM = fracciones,
+                                                figuraJudicial = fracciones.FiguraJudicial,
+                                                tipoAdvertencia = "Sin fecha de informe"
+                                            }).Union
                                     (from persona in personaVM
                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
@@ -3655,21 +3706,25 @@ namespace scorpioweb.Controllers
                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                            join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                             where persona.Supervisor == usuario && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                         select new PlaneacionWarningViewModel
-                                            {
-                                                personaVM = persona,
-                                                supervisionVM = supervision,
-                                                causapenalVM = causapenal,
-                                                planeacionestrategicaVM = planeacion,
-                                                tipoAdvertencia = "Sin fecha de informe"
-                                            }).Union
+                                             orderby fracciones.FiguraJudicial
+                                             select new PlaneacionWarningViewModel
+                                                {
+                                                    personaVM = persona,
+                                                    supervisionVM = supervision,
+                                                    causapenalVM = causapenal,
+                                                    planeacionestrategicaVM = planeacion,
+                                                    fraccionesimpuestasVM = fracciones,
+                                                    figuraJudicial = fracciones.FiguraJudicial,
+                                                    tipoAdvertencia = "Sin fecha de informe"
+                                                }).Union
                                         (from persona in personaVM
                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                             where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                         select new PlaneacionWarningViewModel
+                                            select new PlaneacionWarningViewModel
                                             {
                                                 personaVM = persona,
                                                 supervisionVM = supervision,
@@ -3850,6 +3905,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -BitmapToBytes-
         private static MemoryStream BitmapToBytes(Bitmap img)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -3858,10 +3914,53 @@ namespace scorpioweb.Controllers
                 return stream;
             }
         }
+        #endregion
 
+        #region -PersonaExists-
         private bool PersonaExists(int id)
         {
             return _context.Persona.Any(e => e.IdPersona == id);
         }
+        #endregion
+
+        #region -obtenerDatos-
+        public ActionResult OnGetChartData()
+        {
+
+            var supervisoresScorpio = from s in _context.Supervision
+                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                            where s.EstadoSupervision == "VIGENTE"
+                            group p by p.Supervisor into grup
+                            select new
+                            {
+                                grup.Key,
+                                Count=grup.Count()
+                            }
+                          ;
+
+            var supervisoresBD = from c in _context.Controlsupervisiones
+                                 select new
+                                 {
+                                     c.Supervisor,
+                                     c.Supervisados
+                                 };
+
+            var result = (from s in supervisoresScorpio
+                         join b in supervisoresBD on s.Key equals b.Supervisor
+                         select new
+                         {
+                             Supervisor=((b.Supervisor).ToString()).Substring(0,((b.Supervisor).ToString()).IndexOf("@")),
+                             Supervisados=s.Count+ b.Supervisados
+                         }).ToList();
+
+            var json = result.ToGoogleDataTable()
+            .NewColumn(new Column(ColumnType.String, "Supervisor"), x => x.Supervisor)
+            .NewColumn(new Column(ColumnType.Number, "Supervisiones"), x => x.Supervisados)
+            .Build()
+            .GetJson();
+
+            return Content(json);           
+        }
+        #endregion
     }
 }

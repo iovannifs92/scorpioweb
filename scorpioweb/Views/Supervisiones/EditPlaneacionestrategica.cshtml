@@ -51,7 +51,7 @@
                         asp-items="@(new SelectList(ViewBag.listaPlanSupervision, "Value", "Text", @ViewBag.idPlanSupervision))">
                 </select>
             </div>
-            @if (ViewBag.plan == null || ViewBag.plan == "SI")
+            @if (ViewBag.plan == null || ViewBag.plan == "SI" || ViewBag.plan == "NA")
             {
                 <div class="form-group" id="DivMotivoNoPlaneacion">
                     <label class="control-label">Motivo de no Planeación</label>
@@ -70,7 +70,7 @@
                     <span asp-validation-for="UltimoInforme" class="text-danger"></span>
                 </div>
                 <div class="form-group" id="DivFechaInforme">
-                    <label class="control-label">Fecha de Informe</label>
+                    <label class="control-label">Fecha de Informe / Control de supervisión</label>
                     <input asp-for="FechaInforme" class="form-control" />
                     <span asp-validation-for="FechaInforme" class="text-danger"></span>
                 </div>
@@ -96,7 +96,7 @@
                     </select>
                 </div>
             }
-            @if (ViewBag.plan == null || ViewBag.plan == "NO" || ViewBag.plan == "NA")
+            @if (ViewBag.plan == "NO")
             {
                 <div class="form-group" id="DivMotivoNoPlaneacion">
                     <label class="control-label">Motivo de no Planeación</label>
@@ -115,7 +115,7 @@
                     <span asp-validation-for="UltimoInforme" class="text-danger"></span>
                 </div>
                 <div class="form-group" id="DivFechaInforme" style="display: none;">
-                    <label class="control-label">Fecha de Informe</label>
+                    <label class="control-label">Fecha de Informe / Control de supervisión</label>
                     <input asp-for="FechaInforme" class="form-control" />
                     <span asp-validation-for="FechaInforme" class="text-danger"></span>
                 </div>

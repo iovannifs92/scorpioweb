@@ -120,7 +120,7 @@
                 a.setAttribute("class", "autocomplete-items");
                 this.parentNode.appendChild(a);
                 for (i = 0; i < arr.length; i++) {
-                    if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
                         b = document.createElement("DIV");
                         b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
                         b.innerHTML += arr[i].substr(val.length);
@@ -184,7 +184,8 @@
                 closeAllLists(e.target);
             });
         }
-        var countries = ["Robo", "Homicidio", "Contra la Salud", "Lesiones", "Violencia Familiar","Daños"];
+        //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
+        var countries = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
         autocomplete(document.getElementById("tipoD"), countries);
     });
 
@@ -292,7 +293,7 @@
                 <button type="button" class="btn btn-secondary  col-md-3" data-dismiss="modal" style="margin-right:280px">
                     <i class="fa fa-close"></i> Cerrar
                 </button>
-                <br/>
+                <br />
                 <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary col-md-3">
                     <i class="fa fa-save"></i> Guardar delito
                 </button>
