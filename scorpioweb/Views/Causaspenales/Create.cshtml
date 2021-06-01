@@ -187,6 +187,9 @@
         //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
         var countries = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
         autocomplete(document.getElementById("tipoD"), countries);
+
+        var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
+        autocomplete(document.getElementById("juez"), jueces);
     });
 
         
@@ -204,18 +207,18 @@
             <div class="form-group">
                 <input type="hidden" name="cnpp" id="cnpp" value="Si" class="form-control" readonly />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12 autocomplete">
                 <label class="control-label">Juez</label>
-                <input maxlength="150" required name="juez" type="text" class="form-control" />
+                <input required name="juez" id="juez" type="text" maxlength="150" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Cambio</label>
                 <select required class="form-control" name="Cambio" id="Cambio">
                     <option value="No">No</option>
                     <option value="SI">Si</option>
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Distrito</label>
                 <select required class="form-control" name="distrito" id="distrito">
                     <option value="I">I</option>
@@ -237,9 +240,9 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
-                <input required name="cp" type="text" class="form-control" maxlength="20"/>
+                <input required name="cp" type="text" class="form-control" />
             </div>
             <div class="form-group">
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
@@ -278,8 +281,8 @@
                 <label class="control-label">Tipo</label>
             </div>
             <div class="form-group col-md-12">
-              <input required name="tipoD" id="tipoD" type="text" maxlength="150" class="form-control" />
-            </div>    
+                <input required name="tipoD" id="tipoD" type="text" maxlength="150" class="form-control" />
+            </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Modalidad</label>
                 <input id="modalidadD" type="text" class="form-control" />
