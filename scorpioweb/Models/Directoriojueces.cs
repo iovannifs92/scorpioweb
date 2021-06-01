@@ -8,7 +8,6 @@ namespace scorpioweb.Models
         public int IdDirectorioJueces { get; set; }
         public string Instancia { get; set; }
         public string Nombre { get; set; }
-        public string Cargo { get; set; }
         public string Area { get; set; }
         public string TelefonoDirecto { get; set; }
         public string Conmutador { get; set; }
