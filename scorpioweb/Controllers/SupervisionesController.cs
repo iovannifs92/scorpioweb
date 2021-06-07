@@ -1492,15 +1492,17 @@ namespace scorpioweb.Controllers
                 bitacora.IdBitacora = idBitacora;
 
                 #region -Guardar archivo-
-                string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
-                bitacora.RutaEvidencia = file_name;
-                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
-                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                if (evidencia != null)
+                {
+                    string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    bitacora.RutaEvidencia = file_name;
+                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                    await evidencia.CopyToAsync(stream);
+                }
                 #endregion
 
-
                 _context.Add(bitacora);
-                await evidencia.CopyToAsync(stream);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
             }

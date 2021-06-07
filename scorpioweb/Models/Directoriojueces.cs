@@ -11,7 +11,7 @@ namespace scorpioweb.Models
         public string Area { get; set; }
         public string TelefonoDirecto { get; set; }
         public string Conmutador { get; set; }
-        public int Extension { get; set; }
+        public string Extension { get; set; }
         public string DistritoJudicial { get; set; }
         public string Edificio { get; set; }
         public string Localizacion { get; set; }
