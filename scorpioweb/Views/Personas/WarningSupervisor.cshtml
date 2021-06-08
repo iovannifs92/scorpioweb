@@ -34,6 +34,7 @@
         <tbody>
             @foreach (var item in ViewData["alertas"] as IEnumerable<scorpioweb.Models.PlaneacionWarningViewModel>)
             {
+
             <tr>
                 <td>
                     @item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre
@@ -45,25 +46,34 @@
                     switch (@item.tipoAdvertencia)
                     {
                         case "Informe fuera de tiempo":
-                            @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
+                            @if (@item.figuraJudicial == "MC")
                             {
                                 <td>
-                                    Informe en próximos 30 días
+                                    Control de supervisión
                                 </td>
                             }
                             else
                             {
-                                @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                                @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
                                 {
-                                    <td style="color:red">
-                                        Informe fuera de tiempo
+                                    <td>
+                                        Informe en próximos 30 días
                                     </td>
                                 }
                                 else
                                 {
-                                    <td style="color:#F0AD00">
-                                        Informe en menos de 5 días
-                                    </td>
+                                    @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                                    {
+                                        <td style="color:red">
+                                            Informe fuera de tiempo
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color:#F0AD00">
+                                            Informe en menos de 5 días
+                                        </td>
+                                    }
                                 }
                             }
                             <td>
@@ -119,9 +129,18 @@
                     @item.figuraJudicial
                 </td>
                 <td>
-                    <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
-                        <i class="fa fa-pencil"></i> Detalle
-                    </a>
+                    @if (item.tipoAdvertencia == "Sin estado de supervisión")
+                    {
+                        <a asp-controller="Supervisiones" asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
+                            <i class="fa fa-pencil"></i> Detalle
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
+                            <i class="fa fa-pencil"></i> Detalle
+                        </a>
+                    }
                 </td>
             </tr>
             }
