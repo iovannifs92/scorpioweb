@@ -132,7 +132,9 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
+                                                   p.Supervisor.Contains(searchString));
+
                 }
             }
 
