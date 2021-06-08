@@ -547,28 +547,33 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.responseText);
-                        document.ready = document.getElementById("AFNombre").value = '';
-                        document.ready = document.getElementById("AFRelacion").value = 'MAMA';
-                        document.ready = document.getElementById("AFEdad").value = '0';
-                        document.ready = document.getElementById("AFSexo").value = 'M';
-                        document.ready = document.getElementById("AFDependencia").value = 'NO';
-                        document.ready = document.getElementById("AFDependenciaExplicaO").value = '';
-                        document.ready = document.getElementById("AFVivenJuntos").value = 'SI';
-                        document.ready = document.getElementById("AFDireccionFamiliarO").value = '';
-                        document.ready = document.getElementById("AFtelefonoFamiliar").value = '';
-                        document.ready = document.getElementById("AFLocalizacion").value = '';
-                        document.ready = document.getElementById("AFEnteradoProceso").value = 'SI';
-                        document.ready = document.getElementById("AFPuedeEnterarseO").value = 'NA';
-                        document.ready = document.getElementById("AFobservacionesConsumo").value = '';
-                        $("#AFDependenciaExplica").css("display", "none");
-                        $("#AFDireccionFamiliar").css("display", "none");
-                        $("#AFPuedeEnterarse").css("display", "none");
-                        var otraSustancia = confirm("¿Agregar otra persona?");
-                        if (otraSustancia == true) {
-                            alert("Coloque los datos correspondientes");
-                        } else {
-                            $("#modalAsientoFamiliar").modal('hide');
+                        if ($.isNumeric(edad)) {
+                            alert(response.responseText);
+                            document.ready = document.getElementById("AFNombre").value = '';
+                            document.ready = document.getElementById("AFRelacion").value = 'MAMA';
+                            document.ready = document.getElementById("AFEdad").value = '0';
+                            document.ready = document.getElementById("AFSexo").value = 'M';
+                            document.ready = document.getElementById("AFDependencia").value = 'NO';
+                            document.ready = document.getElementById("AFDependenciaExplicaO").value = '';
+                            document.ready = document.getElementById("AFVivenJuntos").value = 'SI';
+                            document.ready = document.getElementById("AFDireccionFamiliarO").value = '';
+                            document.ready = document.getElementById("AFtelefonoFamiliar").value = '';
+                            document.ready = document.getElementById("AFLocalizacion").value = '';
+                            document.ready = document.getElementById("AFEnteradoProceso").value = 'SI';
+                            document.ready = document.getElementById("AFPuedeEnterarseO").value = 'NA';
+                            document.ready = document.getElementById("AFobservacionesConsumo").value = '';
+                            $("#AFDependenciaExplica").css("display", "none");
+                            $("#AFDireccionFamiliar").css("display", "none");
+                            $("#AFPuedeEnterarse").css("display", "none");
+                            var otraSustancia = confirm("¿Agregar otra persona?");
+                            if (otraSustancia == true) {
+                                alert("Coloque los datos correspondientes");
+                            } else {
+                                $("#modalAsientoFamiliar").modal('hide');
+                            }
+                        }
+                        else {
+                            alert("Edad inválida")
                         }
                     } else {
                         alert(response.responseText);
