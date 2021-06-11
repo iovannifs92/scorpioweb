@@ -9,6 +9,28 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
+        //Muestra los campos escondidos required. 
+        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
+        $("#form").validate({
+            ignore: false,
+            rules: {
+                name: "required",
+                email: {
+                    required: true,
+                    email: true,
+                },
+            },
+            submitHandler: function (form) {
+                 alert('Form Submitted');
+            },
+            invalidHandler: function(e,validator) {
+                for (var i=0;i<validator.errorList.length;i++){   
+                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+                }
+            }
+        });
+        //endregion
+
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#lnMunicipio').html(items);
@@ -696,737 +718,739 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data">
-            <div class="container">
-                <div class="panel-group">
-                    <div id="datosGenerales" class="panel panel-primary ">
-                        <div class="panel-heading " style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Datos Generales</p>
-                            </h4>
-                        </div>
-                        <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group col-md-4">
-                                <label class="control-label">Nombre (s)</label>
-                                <input required name="nombre" type="text" class="form-control" />
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="form">
+            <div class="container sub-page form">
+                <div class="container">
+                    <div class="panel-group">
+                        <div id="datosGenerales" class="panel panel-primary ">
+                            <div class="panel-heading " style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Datos Generales</p>
+                                </h4>
                             </div>
-                            <div class="form-group col-md-4">
-                                <label class="control-label">Apellido paterno</label>
-                                <input required name="paterno" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label class="control-label">Apellido materno</label>
-                                <input name="materno" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Alias</label>
-                                <input name="alias" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Género</label>
-                                <select required class="form-control" name="sexo" id="sexo">
-                                    <option value="M">Masculino</option>
-                                    <option value="F">Femenino</option>
-                                    <option value="N">Prefiero no decirlo</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Edad</label>
-                                <input required name="edad" type="number" value="0" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Fecha de nacimiento</label>
-                                <input required name="fNacimiento" type="date" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-3" id="Pais">
-                                <label class="control-label">País</label>
-                                <select class="form-control" name="lnPais" id="lnPais">
-                                    <option value="MEXICO">México</option>
-                                    <option value="ESTADOS UNIDOS">Estados Unidos</option>
-                                    <option value="CANADA">Canada</option>
-                                    <option value="COLOMBIA">Colombia</option>
-                                    <option value="EL SALVADOR">El Salvador</option>
-                                    <option value="GUATEMALA">Guatemala</option>
-                                    <option value="CHILE">Chile</option>
-                                    <option value="OTRO">Otro</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-3" id="Estado">
-                                <label class="control-label">Estado</label>
-                                <select class="form-control" name="lnEstado" id="lnEstado"
-                                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))">
-                                </select>
-                            </div>
-                            <div class="form-group col-md-3" id="Municipio">
-                                <label class="control-label">Municipio</label>
-                                <select class="form-control" name="lnMunicipio" id="lnMunicipio"
-                                        asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
-                                </select>
+                            <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Nombre (s)</label>
+                                    <input required name="nombre" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Apellido paterno</label>
+                                    <input required name="paterno" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Apellido materno</label>
+                                    <input name="materno" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Alias</label>
+                                    <input name="alias" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Género</label>
+                                    <select required class="form-control" name="sexo" id="sexo">
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Femenino</option>
+                                        <option value="N">Prefiero no decirlo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Edad</label>
+                                    <input required name="edad" type="number" value="0" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Fecha de nacimiento</label>
+                                    <input required name="fNacimiento" type="date" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-3" id="Pais">
+                                    <label class="control-label">País</label>
+                                    <select class="form-control" name="lnPais" id="lnPais">
+                                        <option value="MEXICO">México</option>
+                                        <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                                        <option value="CANADA">Canada</option>
+                                        <option value="COLOMBIA">Colombia</option>
+                                        <option value="EL SALVADOR">El Salvador</option>
+                                        <option value="GUATEMALA">Guatemala</option>
+                                        <option value="CHILE">Chile</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3" id="Estado">
+                                    <label class="control-label">Estado</label>
+                                    <select class="form-control" name="lnEstado" id="lnEstado"
+                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3" id="Municipio">
+                                    <label class="control-label">Municipio</label>
+                                    <select class="form-control" name="lnMunicipio" id="lnMunicipio"
+                                            asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
+                                    </select>
 
-                            </div>
-                            <div class="form-group col-md-3" id="Localidad">
-                                <label class="control-label">Localidad</label>
-                                <input name="lnLocalidad" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Estado Civil</label>
-                                <select class="form-control" name="estadoCivil">
-                                    <option value="Soltero (a)">Soltero (a)</option>
-                                    <option value="Casado (a)">Casado (a)</option>
-                                    <option value="Union libre">Unión libre</option>
-                                    <option value="Viudo (a)">Viudo (a)</option>
-                                    <option value="Divorciado (a)">Divorciado (a)</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Duración (estado civil)</label>
-                                <input name="duracion" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">¿Habla otro idioma, lengua o dialecto, distinto al español?</label>
-                                <select class="form-control" name="otroIdioma">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">¿Cuál?</label>
-                                <input name="especifiqueIdioma" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Sabe leer y escribir?</label>
-                                <select class="form-control" name="leerEscribir">
-                                    <option value="Si">Si</option>
-                                    <option value="No">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">¿Requiere de traductor o interprete?</label>
-                                <select class="form-control" name="traductor">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Especificar tipo de traductor</label>
-                                <input name="especifiqueTraductor" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Télefono Fijo (10 Dígitos)</label>
-                                <input name="telefonoFijo" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Celular (10 Dígitos)</label>
-                                <input name="celular" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">¿Tiene hijos?</label>
-                                <select class="form-control" name="hijos">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">¿Cuántos?</label>
-                                <input name="nHijos" type="number" value="0" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Con cuántas personas vive?</label>
-                                <input name="nPersonasVive" id="nPersonasVive" type="number" value="0" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
-                                <select class="form-control" name="propiedades">
-                                    <option value="No">No</option>
-                                    <option value="Si">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">CURP</label>
-                                <input name="CURP" type="text" maxlength="18" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Consume alguna sustancia o droga?</label>
-                                <select class="form-control" name="consumoSustancias" id="consumoSustancias">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Añadir Familiares</label>
-                                <select class="form-control" name="Familiares" id="Familiares">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">Añadir Referencias</label>
-                                <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
-                        <div class="panel-heading" style="color:#fff; background-color:#415667; border-color:#415667;" data-toggle="collapse" href="#collapse2" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Domicilio</p>
-                            </h4>
-                        </div>
-                        <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group col-md-12">
-                                <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
-                                <select required class="form-control" name="tipoDomicilio">
-                                    <option value="RENTADA">Rentada</option>
-                                    <option value="PRESTADA">Prestada</option>
-                                    <option value="PROPIA">Propia</option>
-                                    <option value="FAMILIAR">Familiar</option>
-                                    <option value="SITUACION DE CALLE">Situación de calle</option>
-                                    <option value="IRREGULAR">Irregular</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-5">
-                                <label class="control-label">Calle</label>
-                                <input required name="calle" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-2">
-                                <label class="control-label">Número</label>
-                                <input name="no" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-5">
-                                <label class="control-label">Colonia/Fraccionamiento</label>
-                                <input required name="nombreCF" type="text" class="form-control" maxlength="45" />
-                            </div>
-                            <div class="form-group col-md-4" id="PaisD">
-                                <label class="control-label">País</label>
-                                <select class="form-control" name="paisD" id="paisD">
-                                    <option value="MEXICO">México</option>
-                                    <option value="ESTADOS UNIDOS">Estados Unidos</option>
-                                    <option value="CANADA">Canada</option>
-                                    <option value="COLOMBIA">Colombia</option>
-                                    <option value="EL SALVADOR">El Salvador</option>
-                                    <option value="GUATEMALA">Guatemala</option>
-                                    <option value="CHILE">Chile</option>
-                                    <option value="OTRO">Otro</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4" id="EstadoD">
-                                <label class="control-label">Estado</label>
-                                <select class="form-control" name="estadoD" id="estadoD"
-                                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" runat="server">
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4" id="MunicipioD">
-                                <label class="control-label">Municipio</label>
-                                <select class="form-control" name="municipioD" id="municipioD"
-                                        asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
-                                <select required class="form-control" name="temporalidad">
-                                    <option value="MAS DE 10 AÑOS">Más de 10 años</option>
-                                    <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
-                                    <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
-                                    <option value="ENTRE 6 MESES Y 2 AÑOS">Entre 6 meses y 2 años</option>
-                                    <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label class="control-label">¿Este domicilio es su residencia habitual?</label>
-                                <select required class="form-control" name="residenciaHabitual">
-                                    <option value="Si">Si</option>
-                                    <option value="No">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label class="control-label">Código Postal</label>
-                                <input name="cp" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label" for="referencias">Referencias para ubicar su domicilio</label>
-                                <textarea required maxlength="300" class="form-control" rows="3" name="referencias" id="referencias"></textarea>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label" for="horario">Días y horario en que se encuentra en el domicilio:</label>
-                                <textarea required maxlength="100" class="form-control" rows="3" name="horario" id="horario"></textarea>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label" for="observaciones">Observaciones</label>
-                                <textarea maxlength="400" class="form-control" rows="5" name="observaciones" id="observaciones"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">¿Cuenta con domicilio secundario?</label>
-                                <select required class="form-control" name="cuentaDomicilioSecundario" id="cuentaDomicilioSecundario">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
+                                </div>
+                                <div class="form-group col-md-3" id="Localidad">
+                                    <label class="control-label">Localidad</label>
+                                    <input name="lnLocalidad" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Estado Civil</label>
+                                    <select class="form-control" name="estadoCivil">
+                                        <option value="Soltero (a)">Soltero (a)</option>
+                                        <option value="Casado (a)">Casado (a)</option>
+                                        <option value="Union libre">Unión libre</option>
+                                        <option value="Viudo (a)">Viudo (a)</option>
+                                        <option value="Divorciado (a)">Divorciado (a)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Duración (estado civil)</label>
+                                    <input name="duracion" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Habla otro idioma, lengua o dialecto, distinto al español?</label>
+                                    <select class="form-control" name="otroIdioma">
+                                        <option value="No">No</option>
+                                        <option value="Si">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Cuál?</label>
+                                    <input name="especifiqueIdioma" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Sabe leer y escribir?</label>
+                                    <select class="form-control" name="leerEscribir">
+                                        <option value="Si">Si</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Requiere de traductor o interprete?</label>
+                                    <select class="form-control" name="traductor">
+                                        <option value="No">No</option>
+                                        <option value="Si">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Especificar tipo de traductor</label>
+                                    <input name="especifiqueTraductor" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Télefono Fijo (10 Dígitos)</label>
+                                    <input name="telefonoFijo" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Celular (10 Dígitos)</label>
+                                    <input name="celular" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Tiene hijos?</label>
+                                    <select class="form-control" name="hijos">
+                                        <option value="No">No</option>
+                                        <option value="Si">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Cuántos?</label>
+                                    <input name="nHijos" type="number" value="0" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Con cuántas personas vive?</label>
+                                    <input name="nPersonasVive" id="nPersonasVive" type="number" value="0" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
+                                    <select class="form-control" name="propiedades">
+                                        <option value="No">No</option>
+                                        <option value="Si">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">CURP</label>
+                                    <input name="CURP" type="text" maxlength="18" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Consume alguna sustancia o droga?</label>
+                                    <select class="form-control" name="consumoSustancias" id="consumoSustancias">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">Añadir Familiares</label>
+                                    <select class="form-control" name="Familiares" id="Familiares">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Añadir Referencias</label>
+                                    <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <!-- Modal Domicilio Secundario -->
-                        <div class="modal fade" id="modalDomicilioSecundario" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header" style="background-color:#415667;">
-                                        <h5 class="modal-title" style="font-size: 30px; color:#fff;">Domicilio Secundario</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label class="control-label">Motivo del domicilio secundario</label>
-                                            <input name="motivoDS" maxlength="100" type="text" class="form-control" />
+                        <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color:#fff; background-color:#415667; border-color:#415667;" data-toggle="collapse" href="#collapse2" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Domicilio</p>
+                                </h4>
+                            </div>
+                            <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
+                                    <select required class="form-control" name="tipoDomicilio">
+                                        <option value="RENTADA">Rentada</option>
+                                        <option value="PRESTADA">Prestada</option>
+                                        <option value="PROPIA">Propia</option>
+                                        <option value="FAMILIAR">Familiar</option>
+                                        <option value="SITUACION DE CALLE">Situación de calle</option>
+                                        <option value="IRREGULAR">Irregular</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label class="control-label">Calle</label>
+                                    <input required name="calle" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label class="control-label">Número</label>
+                                    <input name="no" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label class="control-label">Colonia/Fraccionamiento</label>
+                                    <input required name="nombreCF" type="text" class="form-control" maxlength="45" />
+                                </div>
+                                <div class="form-group col-md-4" id="PaisD">
+                                    <label class="control-label">País</label>
+                                    <select class="form-control" name="paisD" id="paisD">
+                                        <option value="MEXICO">México</option>
+                                        <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                                        <option value="CANADA">Canada</option>
+                                        <option value="COLOMBIA">Colombia</option>
+                                        <option value="EL SALVADOR">El Salvador</option>
+                                        <option value="GUATEMALA">Guatemala</option>
+                                        <option value="CHILE">Chile</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4" id="EstadoD">
+                                    <label class="control-label">Estado</label>
+                                    <select class="form-control" name="estadoD" id="estadoD"
+                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" runat="server">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4" id="MunicipioD">
+                                    <label class="control-label">Municipio</label>
+                                    <select class="form-control" name="municipioD" id="municipioD"
+                                            asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
+                                    <select required class="form-control" name="temporalidad">
+                                        <option value="MAS DE 10 AÑOS">Más de 10 años</option>
+                                        <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
+                                        <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
+                                        <option value="ENTRE 6 MESES Y 2 AÑOS">Entre 6 meses y 2 años</option>
+                                        <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">¿Este domicilio es su residencia habitual?</label>
+                                    <select required class="form-control" name="residenciaHabitual">
+                                        <option value="Si">Si</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="control-label">Código Postal</label>
+                                    <input name="cp" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label" for="referencias">Referencias para ubicar su domicilio</label>
+                                    <textarea required maxlength="300" class="form-control" rows="3" name="referencias" id="referencias"></textarea>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label" for="horario">Días y horario en que se encuentra en el domicilio:</label>
+                                    <textarea required maxlength="100" class="form-control" rows="3" name="horario" id="horario"></textarea>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label" for="observaciones">Observaciones</label>
+                                    <textarea maxlength="400" class="form-control" rows="5" name="observaciones" id="observaciones"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">¿Cuenta con domicilio secundario?</label>
+                                    <select required class="form-control" name="cuentaDomicilioSecundario" id="cuentaDomicilioSecundario">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Modal Domicilio Secundario -->
+                            <div class="modal fade" id="modalDomicilioSecundario" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header" style="background-color:#415667;">
+                                            <h5 class="modal-title" style="font-size: 30px; color:#fff;">Domicilio Secundario</h5>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
-                                            <select class="form-control" name="tipoDomicilioDS">
-                                                <option value="RENTADA">Rentada</option>
-                                                <option value="PRESTADA">Prestada</option>
-                                                <option value="PROPIA">Propia</option>
-                                                <option value="FAMILIAR">Familiar</option>
-                                                <option value="SITACION DE CALLE">Situación de calle</option>
-                                                <option value="IRREGULAR">Irregular</option>
-                                            </select>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label class="control-label">Motivo del domicilio secundario</label>
+                                                <input name="motivoDS" maxlength="100" type="text" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
+                                                <select class="form-control" name="tipoDomicilioDS">
+                                                    <option value="RENTADA">Rentada</option>
+                                                    <option value="PRESTADA">Prestada</option>
+                                                    <option value="PROPIA">Propia</option>
+                                                    <option value="FAMILIAR">Familiar</option>
+                                                    <option value="SITACION DE CALLE">Situación de calle</option>
+                                                    <option value="IRREGULAR">Irregular</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-5">
+                                                <label class="control-label">Calle</label>
+                                                <input name="calleDS" type="text" class="form-control" max="200" />
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <label class="control-label">Número</label>
+                                                <input name="noDS" type="text" class="form-control" maxlength="100" />
+                                            </div>
+                                            <div class="form-group col-md-5">
+                                                <label class="control-label">Colonia/Fraccionamiento</label>
+                                                <input name="nombreCFDS" type="text" class="form-control" />
+                                            </div>
+                                            <div class="form-group col-md-4" id="PaisDDS">
+                                                <label class="control-label">País</label>
+                                                <select class="form-control" name="paisDDS" id="paisDDS">
+                                                    <option value="MEXICO">México</option>
+                                                    <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                                                    <option value="CANADA">Canada</option>
+                                                    <option value="COLOMBIA">Colombia</option>
+                                                    <option value="EL SALVADOR">El Salvador</option>
+                                                    <option value="GUATEMALA">Guatemala</option>
+                                                    <option value="CHILE">Chile</option>
+                                                    <option value="OTRO">Otro</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-4" id="EstadoDDS">
+                                                <label class="control-label">Estado</label>
+                                                <select class="form-control" name="estadoDDS" id="estadoDDS"
+                                                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))">
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-4" id="MunicipioDDS">
+                                                <label class="control-label">Municipio</label>
+                                                <select class="form-control" name="municipioDDS" id="municipioDDS"
+                                                        asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
+                                                <select class="form-control" name="temporalidadDS">
+                                                    <option value="MAS DE 10 AÑOS">Más de 10 años</option>
+                                                    <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
+                                                    <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
+                                                    <option value="ENTRE 6 MESES Y 2 AÑOS">Entre 6 meses y 2 años</option>
+                                                    <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="control-label">¿Este domicilio es su residencia habitual?</label>
+                                                <select class="form-control" name="residenciaHabitualDS">
+                                                    <option value="Si">Si</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Código Postal</label>
+                                                <input name="cpDS" type="text" class="form-control" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="referencias">Referencias para ubicar su domicilio</label>
+                                                <textarea maxlength="300" class="form-control" rows="3" name="referenciasDS" id="referenciasDS"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label" for="horario">Días y horario en que se encuentra en el domicilio:</label>
+                                                <textarea maxlength="100" class="form-control" rows="3" name="horarioDS" id="horarioDS"></textarea>
+                                            </div>
+                                            <div class="form-group col-md-12">
+                                                <label class="control-label" for="observaciones">Observaciones</label>
+                                                <textarea maxlength="300" class="form-control" rows="3" name="observacionesDS" id="observaciones"></textarea>
+                                                <small class="form-text text-muted">En caso de tener un 3er domicilio anotarlo aquí</small>
+                                            </div>
                                         </div>
-                                        <div class="form-group col-md-5">
-                                            <label class="control-label">Calle</label>
-                                            <input name="calleDS" type="text" class="form-control" max="200" />
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseDS">
+                                                <i class="fa fa-close"></i>
+                                                Cerrar
+                                            </button>
                                         </div>
-                                        <div class="form-group col-md-2">
-                                            <label class="control-label">Número</label>
-                                            <input name="noDS" type="text" class="form-control" maxlength="100" />
-                                        </div>
-                                        <div class="form-group col-md-5">
-                                            <label class="control-label">Colonia/Fraccionamiento</label>
-                                            <input name="nombreCFDS" type="text" class="form-control" />
-                                        </div>
-                                        <div class="form-group col-md-4" id="PaisDDS">
-                                            <label class="control-label">País</label>
-                                            <select class="form-control" name="paisDDS" id="paisDDS">
-                                                <option value="MEXICO">México</option>
-                                                <option value="ESTADOS UNIDOS">Estados Unidos</option>
-                                                <option value="CANADA">Canada</option>
-                                                <option value="COLOMBIA">Colombia</option>
-                                                <option value="EL SALVADOR">El Salvador</option>
-                                                <option value="GUATEMALA">Guatemala</option>
-                                                <option value="CHILE">Chile</option>
-                                                <option value="OTRO">Otro</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-4" id="EstadoDDS">
-                                            <label class="control-label">Estado</label>
-                                            <select class="form-control" name="estadoDDS" id="estadoDDS"
-                                                    asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))">
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-4" id="MunicipioDDS">
-                                            <label class="control-label">Municipio</label>
-                                            <select class="form-control" name="municipioDDS" id="municipioDDS"
-                                                    asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
-                                            <select class="form-control" name="temporalidadDS">
-                                                <option value="MAS DE 10 AÑOS">Más de 10 años</option>
-                                                <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
-                                                <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
-                                                <option value="ENTRE 6 MESES Y 2 AÑOS">Entre 6 meses y 2 años</option>
-                                                <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group col-md-6">
-                                            <label class="control-label">¿Este domicilio es su residencia habitual?</label>
-                                            <select class="form-control" name="residenciaHabitualDS">
-                                                <option value="Si">Si</option>
-                                                <option value="No">No</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label">Código Postal</label>
-                                            <input name="cpDS" type="text" class="form-control" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label" for="referencias">Referencias para ubicar su domicilio</label>
-                                            <textarea maxlength="300" class="form-control" rows="3" name="referenciasDS" id="referenciasDS"></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label" for="horario">Días y horario en que se encuentra en el domicilio:</label>
-                                            <textarea maxlength="100" class="form-control" rows="3" name="horarioDS" id="horarioDS"></textarea>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <label class="control-label" for="observaciones">Observaciones</label>
-                                            <textarea maxlength="300" class="form-control" rows="3" name="observacionesDS" id="observaciones"></textarea>
-                                            <small class="form-text text-muted">En caso de tener un 3er domicilio anotarlo aquí</small>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseDS">
-                                            <i class="fa fa-close"></i>
-                                            Cerrar
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;">
-                        <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Escolaridad</p>
-                            </h4>
-                        </div>
-                        <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group col-md-3">
-                                <label class="control-label">¿Actualmente estudia?</label>
-                                <select required class="form-control" name="estudia" id="estudia">
-                                    <option value="SI">Si</option>
-                                    <option value="NO">No</option>
-                                </select>
+                        <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Escolaridad</p>
+                                </h4>
                             </div>
-                            <div class="form-group col-md-3">
-                                <label class="control-label">Último grado de estudios</label>
-                                <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
-                                    <option value="PRIMARIA">Primaria</option>
-                                    <option value="SECUNDARIA">Secundaria</option>
-                                    <option value="BACHILLERATO">Bachillerato</option>
-                                    <option value="TSU">TSU</option>
-                                    <option value="LICENCIATURA">Licenciatura</option>
-                                    <option value="MAESTRÍA">Maestría</option>
-                                    <option value="DOCTORADO">Doctorado</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
-                                <input maxlength="150" name="institucionE" id="institucionE" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12" id="horarioE">
-                                <label class="control-label">Horarios:</label>
-                                <input maxlength="100" name="horarioE" id="horarioE" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="direccionE">
-                                <label class="control-label">Dirección</label>
-                                <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="telefonoE">
-                                <label class="control-label">Teléfono (10 dígitos)</label>
-                                <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group ">
-                                <label class="control-label" for="observaciones">Observaciones</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
-                            </div>
+                            <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
+                                <div class="form-group col-md-3">
+                                    <label class="control-label">¿Actualmente estudia?</label>
+                                    <select required class="form-control" name="estudia" id="estudia">
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="control-label">Último grado de estudios</label>
+                                    <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
+                                        <option value="PRIMARIA">Primaria</option>
+                                        <option value="SECUNDARIA">Secundaria</option>
+                                        <option value="BACHILLERATO">Bachillerato</option>
+                                        <option value="TSU">TSU</option>
+                                        <option value="LICENCIATURA">Licenciatura</option>
+                                        <option value="MAESTRÍA">Maestría</option>
+                                        <option value="DOCTORADO">Doctorado</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
+                                    <input maxlength="150" name="institucionE" id="institucionE" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12" id="horarioE">
+                                    <label class="control-label">Horarios:</label>
+                                    <input maxlength="100" name="horarioE" id="horarioE" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="direccionE">
+                                    <label class="control-label">Dirección</label>
+                                    <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="telefonoE">
+                                    <label class="control-label">Teléfono (10 dígitos)</label>
+                                    <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group ">
+                                    <label class="control-label" for="observaciones">Observaciones</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
+                                </div>
 
+                            </div>
                         </div>
-                    </div>
-                    <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;">
-                        <div class="panel-heading" style="color:#fff; background-color:#80AEAB; border-color:#80AEAB;" data-toggle="collapse" href="#collapse4" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Trabajo</p>
-                            </h4>
-                        </div>
-                        <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
+                        <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color:#fff; background-color:#80AEAB; border-color:#80AEAB;" data-toggle="collapse" href="#collapse4" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Trabajo</p>
+                                </h4>
+                            </div>
+                            <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
 
 
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Trabaja actualmente?</label>
-                                <select required class="form-control" name="trabaja" id="trabaja">
-                                    <option value="SI">Si</option>
-                                    <option value="NO">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12" id="tipoOcupacion">
-                                <label class="control-label">Tipo de ocupación</label>
-                                <select required class="form-control" name="tipoOcupacion" id="tipoOcupacion">
-                                    <option value="NA">NA</option>
-                                    <option value="FUNCIONARIO, DIRECTOR Y JEFE">Funcionarios, directores y jefes</option>
-                                    <option value="PROFESIONISTA O TÉCNICO">Profesionistas y técnicos </option>
-                                    <option value="TRABAJADORES AUXILIARES EN ACTIVIDADES ADMINISTRATIVAS">Trabajadores auxiliares en actividades administrativas</option>
-                                    <option value="COMERCIANTES, EMPLEADOS DE VENTA Y AGENTES DE VENTAS">Comerciantes, empleados en ventas y agentes de ventas</option>
-                                    <option value="TRABAJADORES EN SERVICIOS PERSONALES Y VIGILANCIA">Trabajadores en servicios personales y vigilancia</option>
-                                    <option value="TRABAJADORES EN ACTIVIDADES AGRICOLAS, GANADERAS, FORESTALES, CAZA Y PESCA">Trabajadores en actividades agrícolas, ganaderas, forestales, caza y pesca</option>
-                                    <option value="TRABAJADORES ARTESANALES">Trabajadores artesanales </option>
-                                    <option value="OPERADORES DE MAQUINARIA INDUSTRIAL, ENSAMBLADORES, CHOFERES Y CONDUCTORES DE TRANSPORTE">Operadores de maquinaria industrial, ensambladores, choferes y conductores de transporte </option>
-                                    <option value="TRABAJADORES EN ACTIVIDADES ELEMENTALES Y DE APOYO">Trabajadores en actividades elementales y de apoyo</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6" id="puesto">
-                                <label class="control-label">Puesto</label>
-                                <input maxlength="45" name="" type="puesto" id="puesto" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="empleadorJefe">
-                                <label class="control-label">Empleador/Jefe inmediato</label>
-                                <input maxlength="150" name="empleadorJefe" id="empleadorJefe" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="enteradoProceso">
-                                <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
-                                <select class="form-control" name="enteradoProceso" id="enteradoProceso">
-                                    <option value="NA">NA</option>
-                                    <option value="SI">Si</option>
-                                    <option value="NO">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6" id="sePuedeEnterar">
-                                <label class="control-label">¿Se puede enterar?</label>
-                                <select class="form-control" name="sePuedeEnterar" id="sePuedeEnterar">
-                                    <option value="NA">NA</option>
-                                    <option value="SI">Si</option>
-                                    <option value="NO">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12" id="tiempoTrabajando">
-                                <label class="control-label">Tiempo</label>
-                                <select required class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
-                                    <option value="MAS DE 10 AÑOS">Más de 10 años</option>
-                                    <option value="ENTRE 2 Y 4 AÑOS">Entre 2 y 4 años</option>
-                                    <option value="ENTRE 5 Y 9 AÑOS">Entre 5 y 9 años</option>
-                                    <option value="MAS DE UN AÑO Y MENOS DE 2">Más de un año menos de 2</option>
-                                    <option value="ENTRE 6 MESES Y 1 AÑO">Entre 6 meses y 1 año</option>
-                                    <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
-                                    <option value="SIN TRABAJO DURANTE MENOS DE 3 MESES">Tiene menos de 3 meses sin actividad laboral</option>
-                                    <option value="SIN TRABAJO DURANTE MAS DE 3 MESES">Tiene más de 3 meses sin actividad laboral</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6" id="salario">
-                                <label class="control-label">Salario ($)</label>
-                                <input maxlength="45" name="salario" id="salario" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="temporalidadSalario">
-                                <label class="control-label">Cada cuando le pagan</label>
-                                <select class="form-control" name="temporalidadSalario" id="temporalidadSalario">
-                                    <option value="NA">NA</option>
-                                    <option value="DIARIO">Diario</option>
-                                    <option value="SEMANAL">Semanal</option>
-                                    <option value="QUINCENAL">Quincenal</option>
-                                    <option value="MENSUAL">Mensual</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12" id="direccionT">
-                                <label class="control-label">Dirección</label>
-                                <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="horarioT">
-                                <label class="control-label">Horario de trabajo:</label>
-                                <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6" id="telefonoT">
-                                <label class="control-label">Teléfono (10 dígitos)</label>
-                                <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label" for="observaciones">Observaciones</label>
-                                <textarea maxlength="300" class="form-control" rows="2" name="observacionesT" id="observacionesT"></textarea>
-                                <small class="form-text text-muted">En caso de que no trabaje o que tenga un segundo trabajo anotarlo aquí</small>
-                            </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Trabaja actualmente?</label>
+                                    <select required class="form-control" name="trabaja" id="trabaja">
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" id="tipoOcupacion">
+                                    <label class="control-label">Tipo de ocupación</label>
+                                    <select required class="form-control" name="tipoOcupacion" id="tipoOcupacion">
+                                        <option value="NA">NA</option>
+                                        <option value="FUNCIONARIO, DIRECTOR Y JEFE">Funcionarios, directores y jefes</option>
+                                        <option value="PROFESIONISTA O TÉCNICO">Profesionistas y técnicos </option>
+                                        <option value="TRABAJADORES AUXILIARES EN ACTIVIDADES ADMINISTRATIVAS">Trabajadores auxiliares en actividades administrativas</option>
+                                        <option value="COMERCIANTES, EMPLEADOS DE VENTA Y AGENTES DE VENTAS">Comerciantes, empleados en ventas y agentes de ventas</option>
+                                        <option value="TRABAJADORES EN SERVICIOS PERSONALES Y VIGILANCIA">Trabajadores en servicios personales y vigilancia</option>
+                                        <option value="TRABAJADORES EN ACTIVIDADES AGRICOLAS, GANADERAS, FORESTALES, CAZA Y PESCA">Trabajadores en actividades agrícolas, ganaderas, forestales, caza y pesca</option>
+                                        <option value="TRABAJADORES ARTESANALES">Trabajadores artesanales </option>
+                                        <option value="OPERADORES DE MAQUINARIA INDUSTRIAL, ENSAMBLADORES, CHOFERES Y CONDUCTORES DE TRANSPORTE">Operadores de maquinaria industrial, ensambladores, choferes y conductores de transporte </option>
+                                        <option value="TRABAJADORES EN ACTIVIDADES ELEMENTALES Y DE APOYO">Trabajadores en actividades elementales y de apoyo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="puesto">
+                                    <label class="control-label">Puesto</label>
+                                    <input maxlength="45" name="" type="puesto" id="puesto" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="empleadorJefe">
+                                    <label class="control-label">Empleador/Jefe inmediato</label>
+                                    <input maxlength="150" name="empleadorJefe" id="empleadorJefe" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="enteradoProceso">
+                                    <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
+                                    <select class="form-control" name="enteradoProceso" id="enteradoProceso">
+                                        <option value="NA">NA</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="sePuedeEnterar">
+                                    <label class="control-label">¿Se puede enterar?</label>
+                                    <select class="form-control" name="sePuedeEnterar" id="sePuedeEnterar">
+                                        <option value="NA">NA</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" id="tiempoTrabajando">
+                                    <label class="control-label">Tiempo</label>
+                                    <select required class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
+                                        <option value="MAS DE 10 AÑOS">Más de 10 años</option>
+                                        <option value="ENTRE 2 Y 4 AÑOS">Entre 2 y 4 años</option>
+                                        <option value="ENTRE 5 Y 9 AÑOS">Entre 5 y 9 años</option>
+                                        <option value="MAS DE UN AÑO Y MENOS DE 2">Más de un año menos de 2</option>
+                                        <option value="ENTRE 6 MESES Y 1 AÑO">Entre 6 meses y 1 año</option>
+                                        <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
+                                        <option value="SIN TRABAJO DURANTE MENOS DE 3 MESES">Tiene menos de 3 meses sin actividad laboral</option>
+                                        <option value="SIN TRABAJO DURANTE MAS DE 3 MESES">Tiene más de 3 meses sin actividad laboral</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="salario">
+                                    <label class="control-label">Salario ($)</label>
+                                    <input maxlength="45" name="salario" id="salario" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="temporalidadSalario">
+                                    <label class="control-label">Cada cuando le pagan</label>
+                                    <select class="form-control" name="temporalidadSalario" id="temporalidadSalario">
+                                        <option value="NA">NA</option>
+                                        <option value="DIARIO">Diario</option>
+                                        <option value="SEMANAL">Semanal</option>
+                                        <option value="QUINCENAL">Quincenal</option>
+                                        <option value="MENSUAL">Mensual</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" id="direccionT">
+                                    <label class="control-label">Dirección</label>
+                                    <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="horarioT">
+                                    <label class="control-label">Horario de trabajo:</label>
+                                    <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="telefonoT">
+                                    <label class="control-label">Teléfono (10 dígitos)</label>
+                                    <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="observaciones">Observaciones</label>
+                                    <textarea maxlength="300" class="form-control" rows="2" name="observacionesT" id="observacionesT"></textarea>
+                                    <small class="form-text text-muted">En caso de que no trabaje o que tenga un segundo trabajo anotarlo aquí</small>
+                                </div>
 
-                        </div>
-                    </div>
-                    <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;">
-                        <div class="panel-heading" style="color:#fff; background-color:#233460; border-color:#233460;" data-toggle="collapse" href="#collapse5" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Actividades Sociales</p>
-                            </h4>
-                        </div>
-                        <div id="collapse5" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Tipo de actividad</label>
-                                <input maxlength="150" name="tipoActividad" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Horario:</label>
-                                <input maxlength="100" name="horarioAS" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Lugar donde realiza su actividad</label>
-                                <input maxlength="100" name="lugarAS" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">Teléfono (10 dígitos)</label>
-                                <input maxlength="10" name="telefonoAS" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
-                                <select required class="form-control" name="sePuedeEnterarAS">
-                                    <option value="NA">NA</option>
-                                    <option value="SI">Si</option>
-                                    <option value="NO">No</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Especificar persona de referencia</label>
-                                <input maxlength="100" name="referenciaAS" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label" for="observacionesAS">Observaciones</label>
-                                <textarea maxlength="300" class="form-control" rows="2" name="observacionesAS" id="observacionesAS"></textarea>
-                                <small class="form-text text-muted">En caso de tener alguna otra actividad mencionarlo aquí</small>
                             </div>
                         </div>
-                    </div>
-                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
-                        <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Viajes fuera del Estado</p>
-                            </h4>
+                        <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color:#fff; background-color:#233460; border-color:#233460;" data-toggle="collapse" href="#collapse5" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Actividades Sociales</p>
+                                </h4>
+                            </div>
+                            <div id="collapse5" class="panel-collapse collapse" style="padding-top:1%;">
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Tipo de actividad</label>
+                                    <input maxlength="150" name="tipoActividad" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Horario:</label>
+                                    <input maxlength="100" name="horarioAS" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">Lugar donde realiza su actividad</label>
+                                    <input maxlength="100" name="lugarAS" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">Teléfono (10 dígitos)</label>
+                                    <input maxlength="10" name="telefonoAS" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
+                                    <select required class="form-control" name="sePuedeEnterarAS">
+                                        <option value="NA">NA</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Especificar persona de referencia</label>
+                                    <input maxlength="100" name="referenciaAS" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="observacionesAS">Observaciones</label>
+                                    <textarea maxlength="300" class="form-control" rows="2" name="observacionesAS" id="observacionesAS"></textarea>
+                                    <small class="form-text text-muted">En caso de tener alguna otra actividad mencionarlo aquí</small>
+                                </div>
+                            </div>
                         </div>
-                        <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Ha vivido en otro estado o país?</label>
-                                <select required class="form-control" name="vividoFuera" id="vividoFuera">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
+                        <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
+                            <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Viajes fuera del Estado</p>
+                                </h4>
                             </div>
-                            <div class="form-group col-md-12" style="display:none" id="lugaresVivido">
-                                <label class="control-label">Si ha vivido fuera especificar que lugares</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="lugaresVivido" id="lugaresVividoDentro"></textarea>
+                            <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Ha vivido en otro estado o país?</label>
+                                    <select required class="form-control" name="vividoFuera" id="vividoFuera">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" style="display:none" id="lugaresVivido">
+                                    <label class="control-label">Si ha vivido fuera especificar que lugares</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="lugaresVivido" id="lugaresVividoDentro"></textarea>
+                                </div>
+                                <div class="form-group col-md-12" style="display:none" id="tiempoVivido">
+                                    <label class="control-label">Tiempo que vivio en esos lugares</label>
+                                    <input maxlength="100" name="tiempoVivido" id="tiempoVividoDentro" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12" style="display:none" id="motivoVivido">
+                                    <label class="control-label">Motivo</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="motivoVivido" id="motivoVividoDentro"></textarea>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
+                                    <select required class="form-control" name="viajaHabitual" id="viajaHabitual">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" style="display:none" id="lugaresViaje">
+                                    <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="lugaresViaje"></textarea>
+                                </div>
+                                <div class="form-group col-md-12" style="display:none" id="tiempoViaje">
+                                    <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
+                                    <input maxlength="100" name="tiempoViaje" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12" style="display:none" id="motivoViaje">
+                                    <label class="control-label">Motivo por el que viaja</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="motivoViaje"></textarea>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
+                                    <select required class="form-control" name="documentaciónSalirPais" id="documentacionSalirPais">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" id="pasaporte" style="display:none">
+                                    <label class="control-label">¿Cuenta con pasaporte?</label>
+                                    <select required class="form-control" name="pasaporte" id="pasaporteDentro">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12" id="visa" style="display:none">
+                                    <label class="control-label">¿Cuenta con visa?</label>
+                                    <select required class="form-control" name="visa" id="visaDentro">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
+                                    <select required class="form-control" name="familiaresFuera" id="familiaresFuera">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                @*<div class="form-group" style="display:none" id="cuantosFamiliares">
+                            <label class="control-label">¿Cuántos familiares?</label>
+                            <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                        </div>*@
                             </div>
-                            <div class="form-group col-md-12" style="display:none" id="tiempoVivido">
-                                <label class="control-label">Tiempo que vivio en esos lugares</label>
-                                <input maxlength="100" name="tiempoVivido" id="tiempoVividoDentro" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12" style="display:none" id="motivoVivido">
-                                <label class="control-label">Motivo</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="motivoVivido" id="motivoVividoDentro"></textarea>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
-                                <select required class="form-control" name="viajaHabitual" id="viajaHabitual">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12" style="display:none" id="lugaresViaje">
-                                <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="lugaresViaje"></textarea>
-                            </div>
-                            <div class="form-group col-md-12" style="display:none" id="tiempoViaje">
-                                <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
-                                <input maxlength="100" name="tiempoViaje" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group col-md-12" style="display:none" id="motivoViaje">
-                                <label class="control-label">Motivo por el que viaja</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="motivoViaje"></textarea>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
-                                <select required class="form-control" name="documentaciónSalirPais" id="documentacionSalirPais">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12" id="pasaporte" style="display:none">
-                                <label class="control-label">¿Cuenta con pasaporte?</label>
-                                <select required class="form-control" name="pasaporte" id="pasaporteDentro">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12" id="visa" style="display:none">
-                                <label class="control-label">¿Cuenta con visa?</label>
-                                <select required class="form-control" name="visa" id="visaDentro">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
-                                <select required class="form-control" name="familiaresFuera" id="familiaresFuera">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                                    <label class="control-label">¿Cuántos familiares?</label>
-                                    <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                                </div>*@
                         </div>
-                    </div>
-                    <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
-                        <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;" data-toggle="collapse" href="#collapse7" onclick="mostrar">
-                            <h4 class="panel-title">
-                                <p style="margin-bottom:unset">Salud</p>
-                            </h4>
-                        </div>
-                        <div id="collapse7" class="panel-collapse collapse" style="padding-top:1%;">
-                            <div class="form-group">
-                                <label class="control-label">¿Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
-                                <select required class="form-control" name="enfermedad" id="enfermedad">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
+                        <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;" data-toggle="collapse" href="#collapse7" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">Salud</p>
+                                </h4>
                             </div>
-                            <div class="form-group" style="display:none" id="especifiqueEnfermedad">
-                                <label class="control-label">Especifique la enfermedad</label>
-                                <textarea maxlength="100" class="form-control" rows="2" name="especifiqueEnfermedad"></textarea>
-                            </div>
-                            <div class="form-group" id="embarazo" style="display:none">
-                                <label class="control-label">¿Está embarazada o en período de lactancia?</label>
-                                <select required class="form-control" name="embarazoLactancia" id="embarazoLactancia">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="display:none" id="tiempoEmbarazo">
-                                <label class="control-label">Tiempo de embarazo o lactancia</label>
-                                <input maxlength="100" name="tiempoEmbarazo" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group" style="display:none" id="tratamiento">
-                                <label class="control-label">Tratamiento médico indicado</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="tratamiento"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">¿Tiene alguna condición física que requiera cuidados especiales?</label>
-                                <select required class="form-control" name="discapacidad" id="discapacidad">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="display:none" id="especifiqueDiscapacidad">
-                                <label class="control-label">Específique la discapacidad</label>
-                                <input maxlength="100" class="form-control" type="text" name="especifiqueDiscapacidad" />
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label">¿Cuenta con servicio médico?</label>
-                                <select required class="form-control" name="servicioMedico" id="servicioMedico">
-                                    <option value="NO">No</option>
-                                    <option value="SI">Si</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6" id="especifiqueServicioMedico" style="display:none;">
-                                <label class="control-label">¿Qué tipo de servicio tiene?</label>
-                                <select class="form-control" name="especifiqueServicioMedico">
-                                    <option value="NA">NA</option>
-                                    <option value="SEGURO MEDICO">Seguro Médico</option>
-                                    <option value="DERECHO HABIENTE">Derecho habiente</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6" id="institucionServicioMedico" style="display:none;">
-                                <label class="control-label">Institución prestadora de servicio</label>
-                                <select required class="form-control" name="institucionServicioMedico">
-                                    <option value="NA">NA</option>
-                                    <option value="IMSS">IMSS</option>
-                                    <option value="ISSSTE">ISSSTE</option>
-                                    <option value="SEGURO POPULAR">Seguro Popular</option>
-                                    <option value="MILITAR">Militar</option>
-                                    <option value="OTRO">Otro</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label" for="observacionesSalud">Observaciones</label>
-                                <textarea maxlength="200" class="form-control" rows="2" name="observacionesSalud"></textarea>
-                                <small class="form-text text-muted">Observaciones</small>
+                            <div id="collapse7" class="panel-collapse collapse" style="padding-top:1%;">
+                                <div class="form-group">
+                                    <label class="control-label">¿Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
+                                    <select required class="form-control" name="enfermedad" id="enfermedad">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display:none" id="especifiqueEnfermedad">
+                                    <label class="control-label">Especifique la enfermedad</label>
+                                    <textarea maxlength="100" class="form-control" rows="2" name="especifiqueEnfermedad"></textarea>
+                                </div>
+                                <div class="form-group" id="embarazo" style="display:none">
+                                    <label class="control-label">¿Está embarazada o en período de lactancia?</label>
+                                    <select required class="form-control" name="embarazoLactancia" id="embarazoLactancia">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display:none" id="tiempoEmbarazo">
+                                    <label class="control-label">Tiempo de embarazo o lactancia</label>
+                                    <input maxlength="100" name="tiempoEmbarazo" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group" style="display:none" id="tratamiento">
+                                    <label class="control-label">Tratamiento médico indicado</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="tratamiento"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">¿Tiene alguna condición física que requiera cuidados especiales?</label>
+                                    <select required class="form-control" name="discapacidad" id="discapacidad">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display:none" id="especifiqueDiscapacidad">
+                                    <label class="control-label">Específique la discapacidad</label>
+                                    <input maxlength="100" class="form-control" type="text" name="especifiqueDiscapacidad" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">¿Cuenta con servicio médico?</label>
+                                    <select required class="form-control" name="servicioMedico" id="servicioMedico">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="especifiqueServicioMedico" style="display:none;">
+                                    <label class="control-label">¿Qué tipo de servicio tiene?</label>
+                                    <select class="form-control" name="especifiqueServicioMedico">
+                                        <option value="NA">NA</option>
+                                        <option value="SEGURO MEDICO">Seguro Médico</option>
+                                        <option value="DERECHO HABIENTE">Derecho habiente</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="institucionServicioMedico" style="display:none;">
+                                    <label class="control-label">Institución prestadora de servicio</label>
+                                    <select required class="form-control" name="institucionServicioMedico">
+                                        <option value="NA">NA</option>
+                                        <option value="IMSS">IMSS</option>
+                                        <option value="ISSSTE">ISSSTE</option>
+                                        <option value="SEGURO POPULAR">Seguro Popular</option>
+                                        <option value="MILITAR">Militar</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="observacionesSalud">Observaciones</label>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="observacionesSalud"></textarea>
+                                    <small class="form-text text-muted">Observaciones</small>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="custom-file col-md-12" style="margin-bottom:20px">
-                <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
-            </div>
-            <div class="form-group " style="margin-top:20px">
-                <button class="btn btn-primary" type="submit" >
-                    <i class="fa fa-save"></i> Guardar
-                </button>
+                <div class="custom-file col-md-12" style="margin-bottom:20px">
+                    <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
+                </div>
+                <div class="form-group " style="margin-top:20px">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
             </div>
         </form>
     </div>
