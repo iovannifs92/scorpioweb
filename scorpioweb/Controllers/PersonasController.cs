@@ -448,7 +448,7 @@ namespace scorpioweb.Controllers
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
+                                         where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC" 
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = persona,
@@ -3787,7 +3787,7 @@ namespace scorpioweb.Controllers
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
+                                         where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC" 
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = persona,
