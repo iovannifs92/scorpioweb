@@ -585,7 +585,9 @@ namespace scorpioweb.Controllers
             }
 
 
-
+            //var personas = _context.Persona
+            //    .FromSql("CALL informeSemanal")
+            //    .ToList();
 
 
             int pageSize = 10;

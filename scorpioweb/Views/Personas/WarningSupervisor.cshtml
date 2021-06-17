@@ -80,6 +80,23 @@
                                 @item.planeacionestrategicaVM.FechaInforme
                             </td>
                             break;
+                        case "Control de supervisión a 3 días o menos":
+                            @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                            {
+                                <td style="color:red">
+                                    Control de supervisión fuera de tiempo
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @item.tipoAdvertencia
+                                </td>
+                            }
+                            <td>
+                                @item.planeacionestrategicaVM.FechaInforme
+                            </td>
+                            break;
                         case "Sin fecha de informe":
                             @if (item.figuraJudicial != "MC")
                             {
