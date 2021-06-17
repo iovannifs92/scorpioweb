@@ -20,9 +20,6 @@
                     email: true,
                 },
             },
-            submitHandler: function (form) {
-                 alert('Form Submitted');
-            },
             invalidHandler: function(e,validator) {
                 for (var i=0;i<validator.errorList.length;i++){   
                     $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
