@@ -47,8 +47,8 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">Acerca de</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a></li>
-                    <li><a asp-area="" asp-controller="Firmas" asp-action="Create">Firmas</a></li>*@
+        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a></li>
+        <li><a asp-area="" asp-controller="Firmas" asp-action="Create">Firmas</a></li>*@
                     <li><a asp-area="" asp-controller="Personas" asp-action="Entrevista">Entrevista</a></li>
                     @if (User.Identity.Name == "iovannifs92@gmail.com")
                     {
@@ -56,6 +56,7 @@
                         <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>
                     }
                     <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
+                    <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
