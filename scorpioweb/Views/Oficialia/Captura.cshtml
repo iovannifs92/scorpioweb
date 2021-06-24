@@ -114,112 +114,15 @@
                             input.autocomplete("search", "");
                         });
                 },
-//                _source: function (request, response) {
-//                  var sampleAnswers = request.term.split(" ");
-
-//                  var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-
-//                  var resultset = [];
-//sampleAnswers = ["13", "12"]
-//                  $.each(sampleAnswers, function() {
-
-//                    var t = this
-
-//                    if (t && (!request.term || matcher.test(t)))
-//                    {
-//                       resultset.push( {
-
-//                       label: t.replace(
-//                                 new RegExp(
-//                                         "(?![^&;]+;)(?!<[^<>]*)(" +
-//                                         $.ui.autocomplete.escapeRegex(request.term) +
-//                                         ")(?![^<>]*>)(?![^&;]+;)", "gi"
-//                                       ), "<strong>$1</strong>"),
-//                       value: t,
-//                       option: this
-//                     });
-//                   }  
-//                   return;
-//                 });
-
-//                response(this.element.children("option").map(function () {
-//                    var text = $(this).text();
-//                    //if (this.value && (!str || matcher.test(text))) {
-//                    //    resultset.push({
-//                    //        label: text,
-//                    //        value: text,
-//                    //        option: this
-//                    //    });
-//                    //}
-//                    //else
-//                    //    f = false;
-//                }));
-
-//alert(resultset)
-//                    response(resultset);
-
-//                },
-//                _source: function (request, response) {
-//                    var res = request.term.split(" ");
-
-////                    //var resultset = [];
-
-////                    sampleAnswers = ["13", "12"]
-////                    var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-
-////                    var resultset = [];
-
-////                    $.each(sampleAnswers, function() {
-
-////                        var t = this;
-
-////                        if (t && (!request.term || matcher.test(t)))
-////                        {
-////                            resultset.push( {
-
-////                            label: t.replace(
-////                                        new RegExp(
-////                                                "(?![^&;]+;)(?!<[^<>]*)(" +
-////                                                $.ui.autocomplete.escapeRegex(request.term) +
-////                                                ")(?![^<>]*>)(?![^&;]+;)", "gi"
-////                                            ), "<strong>$1</strong>"),
-////                            value: t,
-////                            option: this
-////                            });
-////                        }  
-////                        return;
-////                    });
-////alert(resultset)
-////alert(sampleAnswers)
-
-//                    //for (i = 0; i < res.length; i++) {
-//                        var str = res[i];
-//                        var f = true;
-//                    var matcher = new RegExp($.ui.autocomplete.escapeRegex(res[0]), "i");
-//                    var matcher2 = new RegExp($.ui.autocomplete.escapeRegex(res[0]), "i");
-//                        response(this.element.children("option").map(function () {
-//                            var text = $(this).text();
-//                            if (this.value && (!str || (matcher.test(text) && matcher2.test(text)))) {
-//                                resultset.push({
-//                                    label: text,
-//                                    value: text,
-//                                    option: this
-//                                });
-//                            }
-//                            else
-//                                f = false;
-//                        }));
-//                    //}
-////resultset= ["13", "12"]
-//                    response(resultset);
-//                },
                 _source: function (request, response) {
                     var res = request.term.split(" ");
+
                     var matcher = [];
                     for (i = 0; i < res.length; i++) {
                         matcher[i] = new RegExp($.ui.autocomplete.escapeRegex(res[i]), "i");
                     }
-                    var matcher2 = new RegExp($.ui.autocomplete.escapeRegex(res[1]), "i");
+
+                    var resultset = [];
                     response(this.element.children("option").map(function () {
                         var text = $(this).text();
 
@@ -227,20 +130,15 @@
                             if (!this.value || (request.term && !matcher[i].test(text)))
                             return;
                         }
-                        return {
+                        resultset.push({
                             label: text,
                             value: text,
                             option: this
-                        };
-
-                        //if (this.value && (!request.term || (matcher.test(text) && matcher2.test(text))))
-                        //    return {
-                        //        label: text,
-                        //        value: text,
-                        //        option: this
-                        //    };
+                        });
                     }));
-
+                    response(resultset);
+                    
+                    $("#btnCausaPenal").css("display", "block");
                 },
                 _removeIfInvalid: function (event, ui) {
                     // Selected an item, nothing to do
@@ -295,7 +193,7 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert(response.responseText);//"Persona seleccionada
+                                $("#btnCausaPenal").css("display", "none");
                             } else {
                                 alert(response.responseText);
                             }
@@ -535,17 +433,18 @@
                     <label asp-for="CausaPenal" class="control-label col-md-12 col-sm-12">
                         Causa Penal/Causa Minoril, Distrito, Juez
                     </label>
-                    <div style="padding-right:15px" class="form-group col-md-12 col-sm-12">
-                        <div class="col-md-12 col-sm-12" style="padding-left:0%">
-                            <button class="btn btn-success" type="submit" id="btnCausaPenal" name="btnCausaPenal" style="display:block" data-toggle="modal" data-target="#modalDelito">
+                    <div style="padding-right:0%" class="form-group col-md-12 col-sm-12">
+                        <div class="col-xs-1" style="padding-left:0%">
+                            <select type="submit" class="form-control" id="combobox" name="combobox" style="display:none;"
+                                    asp-items="@(new SelectList(ViewBag.cp))">
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-offset-6 col-md-offset-5 col-sm-offset-3 col-xs-offset-5 col-xs-1">
+                            <button type="button" class="btn btn-success" id="btnCausaPenal" name="btnCausaPenal" data-toggle="modal" data-target="#modalDelito">
                                 <i class="fa fa-plus"></i> Crea nueva causa penal
                             </button>
                         </div>
-                        <hr /> @*Hace 1 linea para tamaños el tamaño de columna bootstrap mas chico*@
-                        <select type="submit" class="form-control" id="combobox" name="combobox" style="display:none;"
-                                asp-items="@(new SelectList(ViewBag.cp))">
-                        </select>
-                        <span style="color:#808080">Escribe para buscar causa penal o crea una nueva causa penal si no se encuentra</span>
+                        <span class="col-xs-12" style="color:#808080;padding-left:0%">Escribe para buscar causa penal o crea una nueva causa penal si no se encuentra</span>
                         <span asp-validation-for="CausaPenal" class="text-danger"></span>
                     </div>
                     <div class="form-group col-md-12 col-sm-12">
