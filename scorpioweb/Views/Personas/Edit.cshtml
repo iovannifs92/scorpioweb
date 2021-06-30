@@ -546,28 +546,33 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.responseText);
-                        document.ready = document.getElementById("AFNombreA").value = '';
-                        document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
-                        document.ready = document.getElementById("AFEdadA").value = '0';
-                        document.ready = document.getElementById("AFSexoA").value = 'M';
-                        document.ready = document.getElementById("AFDependenciaA").value = 'NO';
-                        document.ready = document.getElementById("AFDependenciaExplicaOA").value = '';
-                        document.ready = document.getElementById("AFVivenJuntosA").value = 'SI';
-                        document.ready = document.getElementById("AFDireccionFamiliarOA").value = '';
-                        document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
-                        document.ready = document.getElementById("AFLocalizacionA").value = '';
-                        document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
-                        document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
-                        document.ready = document.getElementById("AFobservacionesA").value = '';
-                        $("#AFDependenciaExplicaA").css("display", "none");
-                        $("#AFDireccionFamiliarA").css("display", "none");
-                        $("#AFPuedeEnterarseA").css("display", "none");
-                        var otraSustancia = confirm("¿Agregar otra persona?");
-                        if (otraSustancia == true) {
-                            alert("Coloque los datos correspondientes");
-                        } else {
-                            $("#modalAgregarAsientoFamiliar").modal('hide');
+                        if ($.isNumeric(edad)) {
+                            alert(response.responseText);
+                            document.ready = document.getElementById("AFNombreA").value = '';
+                            document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
+                            document.ready = document.getElementById("AFEdadA").value = '0';
+                            document.ready = document.getElementById("AFSexoA").value = 'M';
+                            document.ready = document.getElementById("AFDependenciaA").value = 'NO';
+                            document.ready = document.getElementById("AFDependenciaExplicaOA").value = '';
+                            document.ready = document.getElementById("AFVivenJuntosA").value = 'SI';
+                            document.ready = document.getElementById("AFDireccionFamiliarOA").value = '';
+                            document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
+                            document.ready = document.getElementById("AFLocalizacionA").value = '';
+                            document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
+                            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+                            document.ready = document.getElementById("AFobservacionesA").value = '';
+                            $("#AFDependenciaExplicaA").css("display", "none");
+                            $("#AFDireccionFamiliarA").css("display", "none");
+                            $("#AFPuedeEnterarseA").css("display", "none");
+                            var otraSustancia = confirm("¿Agregar otra persona?");
+                            if (otraSustancia == true) {
+                                alert("Coloque los datos correspondientes");
+                            } else {
+                                $("#modalAgregarAsientoFamiliar").modal('hide');
+                            }
+                        }
+                        else {
+                            alert("Edad inválida")
                         }
                     } else {
                         alert(response.responseText);
@@ -1176,7 +1181,7 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Edad</label>
-                    <input class="form-control" name="AFEdadE" type="text" id="AFEdadE" value="@ViewBag.edad" />
+                    <input class="form-control" name="AFEdadE" type="number" id="AFEdadE" value="@ViewBag.edad" />
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Genero</label>
