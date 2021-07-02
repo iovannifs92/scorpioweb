@@ -302,6 +302,7 @@
         });
         //#endregion
         //#region -changeDisplay-
+ 
         $('#vividoFuera').change(function () {
             var vivido = $(this).children("option:selected").val();
             if (vivido == "SI") {
@@ -1100,11 +1101,11 @@
                                 <div class="form-group col-md-3">
                                     <label class="control-label">¿Actualmente estudia?</label>
                                     <select required class="form-control" name="estudia" id="estudia">
-                                        <option value="SI">Si</option>
                                         <option value="NO">No</option>
+                                        <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-3" id="">
                                     <label class="control-label">Último grado de estudios</label>
                                     <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
                                         <option value="PRIMARIA">Primaria</option>
@@ -1116,24 +1117,24 @@
                                         <option value="DOCTORADO">Doctorado</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6" style="display:none">
                                     <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
                                     <input maxlength="150" name="institucionE" id="institucionE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-12" id="horarioE">
+                                <div class="form-group col-md-12" id="horarioE" style="display:none">
                                     <label class="control-label">Horarios:</label>
                                     <input maxlength="100" name="horarioE" id="horarioE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="direccionE">
+                                <div class="form-group col-md-6" id="direccionE" style="display:none">
                                     <label class="control-label">Dirección</label>
                                     <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="telefonoE">
+                                <div class="form-group col-md-6" id="telefonoE"style="display:none">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group ">
-                                    <label class="control-label" for="observaciones">Observaciones</label>
+                                    <label class="control-label col-md-12" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
                                 </div>
 

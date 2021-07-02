@@ -1210,12 +1210,12 @@ namespace scorpioweb.Controllers
 
 
                 //insertar en ala bd temporal para veriicar el id
-           
+
 
 
                 //var empty = (from tem in _context.
                 //             where ds.IdDomicilio == domseundario.IdDomicilio
-                //             select ds);
+                //             select ds);ViewBag.listaEstudia
 
 
                 //if (!empty.Any())
@@ -2905,8 +2905,8 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.estudia = estudios.Estudia;
-            ViewBag.listaEstudia = listaSiNo;
-            ViewBag.idEstudia = BuscaId(listaSiNo, estudios.Estudia);
+            ViewBag.listaEstudia = listaNoSi;
+            ViewBag.idEstudia = BuscaId(listaNoSi, estudios.Estudia);
 
             #region GradoEstudios
             List<SelectListItem> ListaGradoEstudios;
