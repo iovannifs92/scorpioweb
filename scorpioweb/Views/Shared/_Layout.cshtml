@@ -47,8 +47,8 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">Acerca de</a></li>
-        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a></li>
-        <li><a asp-area="" asp-controller="Firmas" asp-action="Create">Firmas</a></li>*@
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a></li>
+                        <li><a asp-area="" asp-controller="Firmas" asp-action="Create">Firmas</a></li>*@
                     <li><a asp-area="" asp-controller="Personas" asp-action="Entrevista">Entrevista</a></li>
                     @if (User.Identity.Name == "iovannifs92@gmail.com")
                     {
@@ -103,7 +103,7 @@
 
     @RenderSection("Scripts", required: false)
 
-    <a  onclick="topFunction()" id="back-top"><i class="fa fa-angle-up fa-3x" id="fangle" name="fangle"></i></a>
+    <a onclick="topFunction()" id="back-top"><i class="fa fa-angle-up fa-3x" id="fangle" name="fangle"></i></a>
 
     @*Essential jQuery Plugins
         ==================================================*@
@@ -157,8 +157,8 @@
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
-       
-        
+
+
     </script>
     <!-- Custom Functions -->
     <script src="js/custom.js"></script>

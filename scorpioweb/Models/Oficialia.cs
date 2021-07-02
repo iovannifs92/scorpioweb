@@ -19,7 +19,7 @@ namespace scorpioweb.Models
         public string Materno { get; set; }
         public string Nombre { get; set; }
         public string CarpetaEjecucion { get; set; }
-        public string CausaPenal { get; set; }
+        public int? IdCausaPenal { get; set; }
         public string ExisteVictima { get; set; }
         public string NombreVictima { get; set; }
         public string DireccionVictima { get; set; }

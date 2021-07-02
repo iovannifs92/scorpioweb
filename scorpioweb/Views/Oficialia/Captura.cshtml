@@ -183,25 +183,10 @@
                 select: function (event, ui) {
                     var cp = document.getElementById("combobox");
                     var idPersona = cp.options[cp.selectedIndex].value;
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/Causaspenales/AsignarPersona",
-                        traditional: true,
-                        data: {
-                            datosPersona: [idPersona],
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                $("#btnCausaPenal").css("display", "none");
-                            } else {
-                                alert(response.responseText);
-                            }
-                        },
-                        error: function (response) {
-                            alert("hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                        }
-                    });
+                    $("#btnCausaPenal").css("display", "none");
+                    $("#modalCausaPenal").modal('hide');
+                    var idCausaPenal = document.getElementById("idCausaPenal");
+                    idCausaPenal.value = idPersona;
                 }
             });
             $("#toggle").on("click", function () {
@@ -210,6 +195,79 @@
         });
 
         $(document).ready(function () {
+            $('#btnGuardarDelito').on("click", function (e) {
+                e.preventDefault();
+                var tipodel = document.getElementById("tipoD").value;
+                var modalidad = document.getElementById("modalidadD").value;
+                var especificarD = document.getElementById("Edelito").value;
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Causaspenales/GuardarDelito",
+                    traditional: true,
+                    data: {
+                        datosDelito: [tipodel, modalidad, especificarD],
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.responseText);
+                            document.ready = document.getElementById("tipoD").value = '';
+                            document.ready = document.getElementById("modalidadD").value = '';
+                            document.ready = document.getElementById("Edelito").value = '';
+                            var otraDelito = confirm("¿Agregar otro delito?");
+                            if (otraDelito == true) {
+                                alert("Coloque los datos correspondientes");
+                            } else {
+                                $("#modalDelito").modal('hide');
+                            }
+                        } else {
+                            alert(response.responseText);
+                        }
+                    },
+                    error: function (response) {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                });
+            });
+            $('#btnGuardarCausaPenal').on("click", function (e) {
+                e.preventDefault();
+                var juez = document.getElementById("juez").value;
+                var Cambio = document.getElementById("Cambio").value;
+                var distrito = document.getElementById("distrito").value;
+                var cp = document.getElementById("cp").value;
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Causaspenales/CreateCausaPenal",
+                    traditional: true,
+                    data: {
+                        juez, Cambio, distrito, cp,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $("#btnCausaPenal").css("display", "none");
+                            $("#modalCausaPenal").modal('hide');
+                            var idCausaPenal = document.getElementById("idCausaPenal");
+                            idCausaPenal.value = response.responseText;
+
+                            // si se crean varias cp, la ultima es la que se muestra como se espera
+                            $("#combobox").append('<option value="0">' + cp + ", Distrito " + distrito + ", " + juez + '</option>');
+                            var cb = document.getElementById("combobox");
+                            cb.value = "0";
+
+                            //https://stackoverflow.com/questions/6197664/set-value-to-jquery-autocomplete-combobox
+                            $('.ui-autocomplete-input').focus().val(cp + ", Distrito " + distrito + ", " + juez);
+                            $('.ui-autocomplete-input').autocomplete('close');
+                        } else {
+                            alert(response.responseText);
+                        }
+                    },
+                    error: function (response) {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                });
+            });
+
             function autocomplete(inp, arr) {
                 var currentFocus;
                 inp.addEventListener("input", function (e) {
@@ -287,6 +345,10 @@
                 });
             }
 
+            var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+            autocomplete(document.getElementById("tipoD"), catalogo);
+            var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
+            autocomplete(document.getElementById("juez"), jueces);
             var expide = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.expide))');
             autocomplete(document.getElementById("Expide"), expide);
             var asunto = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.asunto))');
@@ -331,7 +393,7 @@
     <br />
     <br />
     <div class="row">
-        <div class="col-md-offset-3 col-sm-offset-3 col-md-6 col-sm-6">
+        <div class="col-sm-offset-3 col-sm-6 col-xs-12">
             <form asp-action="Captura">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
@@ -430,23 +492,28 @@
                         <input asp-for="CarpetaEjecucion" class="form-control" />
                         <span asp-validation-for="CarpetaEjecucion" class="text-danger"></span>
                     </div>
-                    <label asp-for="CausaPenal" class="control-label col-md-12 col-sm-12">
+                    <label class="control-label col-md-12 col-sm-12">
                         Causa Penal/Causa Minoril, Distrito, Juez
                     </label>
-                    <div style="padding-right:0%" class="form-group col-md-12 col-sm-12">
-                        <div class="col-xs-1" style="padding-left:0%">
-                            <select type="submit" class="form-control" id="combobox" name="combobox" style="display:none;"
-                                    asp-items="@(new SelectList(ViewBag.cp))">
+                    <div class="form-group" style="padding-right:0%">
+                        @*<div class="col-xs-12" style="padding-left:0%">*@
+                        <div class="col-sm-1 col-xs-12">
+                            <select type="submit" class="form-control" id="combobox" name="combobox" style="display:block;"
+                                    asp-items="@(new SelectList(ViewBag.cp, "IdCausaPenal", "CausaPenalCompleta"))">
                             </select>
                         </div>
-                        <div class="form-group col-lg-offset-6 col-md-offset-5 col-sm-offset-3 col-xs-offset-5 col-xs-1">
-                            <button type="button" class="btn btn-success" id="btnCausaPenal" name="btnCausaPenal" data-toggle="modal" data-target="#modalDelito">
+                        <br />@*Para que haga focus el select en xs*@
+                        <div class="col-lg-offset-6 col-md-offset-5 col-sm-offset-3 col-sm-1">
+                            <button type="button" class="btn btn-success" id="btnCausaPenal" name="btnCausaPenal" data-toggle="modal" data-target="#modalCausaPenal">
                                 <i class="fa fa-plus"></i> Crea nueva causa penal
                             </button>
                         </div>
-                        <span class="col-xs-12" style="color:#808080;padding-left:0%">Escribe para buscar causa penal o crea una nueva causa penal si no se encuentra</span>
-                        <span asp-validation-for="CausaPenal" class="text-danger"></span>
+                        @*</div>*@
+                        <span class="col-xs-12" style="color:#808080;padding-bottom:1em">Escribe para buscar causa penal o crea una nueva causa penal si no se encuentra</span>
+                        <input asp-for="IdCausaPenal" class="form-control" style="display:none" id="idCausaPenal" name="idCausaPenal" />
+                        <span asp-validation-for="IdCausaPenal" class="text-danger"></span>
                     </div>
+                    <br />
                     <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="ExisteVictima" class="control-label">
                             Existe una víctima de por medio
@@ -474,14 +541,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                @* col-xs-12 hace que no se mueva la pregunta al espacio vacio del boton de CP *@
+                <div class="form-group col-xs-12" style="padding-left:0%">
                     <label asp-for="AsuntoOficio" class="control-label">
                         ¿Cuál es el asunto del oficio?
                     </label>
                     <input id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" />
                     <span asp-validation-for="AsuntoOficio" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-xs-12" style="padding-left:0%">
                     <label asp-for="TieneTermino" class="control-label">
                         ¿Cuenta con termino?
                     </label>
@@ -491,14 +559,14 @@
                     </select>
                     <span asp-validation-for="TieneTermino" class="text-danger"></span>
                 </div>
-                <div class="form-group" id="FechaTermino" name="FechaTermino" style="padding-left:15px;display:none">
+                <div class="form-group col-xs-12" id="FechaTermino" name="FechaTermino" style="display:none">
                     <label asp-for="FechaTermino" class="control-label">
                         ¿Cuál es la fecha de termino?
                     </label>
                     <input asp-for="FechaTermino" class="form-control" type="date" />
                     <span asp-validation-for="FechaTermino" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-xs-12" style="padding-left:0%">
                     <label asp-for="UsuarioTurnar" class="control-label">
                         Usuario a turnar
                     </label>
@@ -507,14 +575,14 @@
                     </select>
                     <span asp-validation-for="UsuarioTurnar" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-xs-12" style="padding-left:0%">
                     <label asp-for="Observaciones" class="control-label">
                         Observaciones
                     </label>
                     <textarea asp-for="Observaciones" class="form-control" rows="5"></textarea>
                     <span asp-validation-for="Observaciones" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-xs-12" style="padding-left:0%">
                     <button class="btn btn-primary" type="submit">
                         <i class="fa fa-save"></i> Guardar
                     </button>
@@ -525,6 +593,68 @@
 
     <div>
         <a asp-action="Index">Regresar</a>
+    </div>
+
+    <!-- Modal Causa Penal -->
+    <div class="modal fade" id="modalCausaPenal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#0078A7;">
+                    <h1 class="modal-title" style="font-size: 30px; color:#fff;" id="exampleModalLongTitle">Crear Causa Penal</h1>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="form-group col-md-12 autocomplete">
+                    <label class="control-label">Juez</label>
+                    <input required name="juez" id="juez" type="text" maxlength="150" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Cambio</label>
+                    <select required class="form-control" name="Cambio" id="Cambio">
+                        <option value="No">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Distrito</label>
+                    <select required class="form-control" name="distrito" id="distrito">
+                        <option value="I">I</option>
+                        <option value="II">II</option>
+                        <option value="III">III</option>
+                        <option value="IV">IV</option>
+                        <option value="V">V</option>
+                        <option value="VI">VI</option>
+                        <option value="VII">VII</option>
+                        <option value="VIII">VIII</option>
+                        <option value="IX">IX</option>
+                        <option value="X">X</option>
+                        <option value="XI">XI</option>
+                        <option value="XII">XII</option>
+                        <option value="XIII">XIII</option>
+                        <option value="XIV">XIV</option>
+                        <option value="XV">XV</option>
+                        <option value="XVI">XVI</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label class="control-label">Causa Penal</label>
+                    <input required id="cp" name="cp" type="text" class="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary col-xs-2" data-dismiss="modal">
+                        <i class="fa fa-close"></i> Cerrar
+                    </button>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                        <i class="fa fa-plus"></i> Delito asociados a la causa penal
+                    </button>
+                    <button type="submit" id="btnGuardarCausaPenal" name="btnGuardarCausaPenal" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Delito -->
@@ -554,11 +684,11 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary  col-md-3" data-dismiss="modal" style="margin-right:280px">
+                    <button type="button" class="btn btn-secondary col-xs-2" data-dismiss="modal" style="margin-right:280px">
                         <i class="fa fa-close"></i> Cerrar
                     </button>
                     <br />
-                    <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary col-md-3">
+                    <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">
                         <i class="fa fa-save"></i> Guardar delito
                     </button>
                 </div>
