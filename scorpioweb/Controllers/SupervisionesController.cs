@@ -75,8 +75,7 @@ namespace scorpioweb.Controllers
         private List<SelectListItem> listaCumplimiento = new List<SelectListItem>
         {
             new SelectListItem{ Text = "Cumplimiento", Value = "CUMPLIMIENTO" },
-            new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
-            new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
+            new SelectListItem{ Text = "Incumplimiento", Value = "INCUMPLIMIENTO" },
         };
 
         private List<SelectListItem> listaFiguraJudicial = new List<SelectListItem>
