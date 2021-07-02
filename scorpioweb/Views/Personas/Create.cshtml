@@ -9,25 +9,6 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        //Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
-        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
-        $("#forma").validate({
-            ignore: false,
-            rules: {
-                name: "required",
-                email: {
-                    required: true,
-                    email: true,
-                },
-            },
-            invalidHandler: function(e,validator) {
-                for (var i=0;i<validator.errorList.length;i++){   
-                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
-                }
-            }
-        });
-        //endregion
-
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#lnMunicipio').html(items);
@@ -701,6 +682,27 @@
               ReferenciasPersonales.value = 'NO';
             }
         });
+    });
+    $(document).ready(function () {
+        //Muestra los campos escondidos required. Funciona solo en el servidor por ser http. 
+        //Destruye el codigo de javascript que le sigue localmente.
+        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
+        $("#forma").validate({
+            ignore: false,
+            rules: {
+                name: "required",
+                email: {
+                    required: true,
+                    email: true,
+                },
+            },
+            invalidHandler: function(e,validator) {
+                for (var i=0;i<validator.errorList.length;i++){   
+                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+                }
+            }
+        });
+        //endregion
     });
     //endregion
 </script>
