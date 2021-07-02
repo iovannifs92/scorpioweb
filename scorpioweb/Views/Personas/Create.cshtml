@@ -1,6 +1,6 @@
 ﻿@*<script src="/lib/jquery/dist/jquery.js"></script>*@
 @* Necesario para los modales en el servidor *@
-@*<script src="~/js/jquery-1.11.1.min.js"></script> con este jquery no funciona el boton de guardar sustancia*@
+<script src="~/js/jquery-1.11.1.min.js"></script> @*con este jquery no funciona el boton de guardar sustancia*@
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -9,9 +9,9 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        //Muestra los campos escondidos required. 
+        //Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
         //https://www.py4u.net/discuss/342030 usar http en jsfiddle
-        $("#form").validate({
+        $("#forma").validate({
             ignore: false,
             rules: {
                 name: "required",
@@ -715,8 +715,8 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="form">
-            <div class="container sub-page form">
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="forma">
+            <div class="container sub-page forma">
                 <div class="container">
                     <div class="panel-group">
                         <div id="datosGenerales" class="panel panel-primary ">
@@ -879,7 +879,7 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">Añadir Referencias</label>
                                     <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
                                         <option value="NO">No</option>
@@ -976,7 +976,7 @@
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="400" class="form-control" rows="5" name="observaciones" id="observaciones"></textarea>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Cuenta con domicilio secundario?</label>
                                     <select required class="form-control" name="cuentaDomicilioSecundario" id="cuentaDomicilioSecundario">
                                         <option value="NO">No</option>
@@ -1131,7 +1131,7 @@
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group ">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
                                 </div>
@@ -1225,14 +1225,14 @@
                                     <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="horarioT">
-                                    <label class="control-label">Horario de trabajo:</label>
+                                    <label class="control-label">Horario de trabajo</label>
                                     <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="telefonoT">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group"  style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesT" id="observacionesT"></textarea>
                                     <small class="form-text text-muted">En caso de que no trabaje o que tenga un segundo trabajo anotarlo aquí</small>
@@ -1275,7 +1275,7 @@
                                     <label class="control-label">Especificar persona de referencia</label>
                                     <input maxlength="100" name="referenciaAS" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observacionesAS">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesAS" id="observacionesAS"></textarea>
                                     <small class="form-text text-muted">En caso de tener alguna otra actividad mencionarlo aquí</small>
@@ -1348,7 +1348,7 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
                                     <select required class="form-control" name="familiaresFuera" id="familiaresFuera">
                                         <option value="NO">No</option>
