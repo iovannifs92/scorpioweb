@@ -22,6 +22,9 @@ using System.Security.Claims;
 using System.Data;
 using Google.DataTable.Net.Wrapper.Extension;
 using Google.DataTable.Net.Wrapper;
+using MySql.Data.MySqlClient;
+
+
 
 namespace scorpioweb.Controllers
 {
@@ -1060,6 +1063,7 @@ namespace scorpioweb.Controllers
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
             IFormFile fotografia)
         {
+
             string currentUser = User.Identity.Name;
 
 
@@ -1204,9 +1208,34 @@ namespace scorpioweb.Controllers
                 domiciliosecundario.IdDomicilio = idDomicilio;
                 #endregion
 
+
+                //insertar en ala bd temporal para veriicar el id
+           
+
+
+                //var empty = (from tem in _context.
+                //             where ds.IdDomicilio == domseundario.IdDomicilio
+                //             select ds);
+
+
+                //if (!empty.Any())
+                //{
+                //    var query = (from a in _context.Domicilio
+                //                 where a.IdDomicilio == domseundario.IdDomicilio
+                //                 select a).FirstOrDefault();
+                //    query.DomcilioSecundario = "NO";
+                //    _context.SaveChanges();
+                //}
+
+
+
+
+
                 #region -IdPersona-
                 int idPersona = ((from table in _context.Persona
                                   select table.IdPersona).Max()) + 1;
+
+
                 persona.IdPersona = idPersona;
                 domicilio.PersonaIdPersona = idPersona;
                 estudios.PersonaIdPersona = idPersona;
@@ -1215,6 +1244,18 @@ namespace scorpioweb.Controllers
                 abandonoEstado.PersonaIdPersona = idPersona;
                 saludfisica.PersonaIdPersona = idPersona;
 
+                #endregion
+
+                #region Stored Procedure
+                //MySqlConnection con = new MySqlConnection("server=10.6.60.190;port=3306;user=administrador;password=ssp.2020;database=penas2");
+                //MySqlCommand cmd = con.CreateCommand();
+                //cmd.CommandText = "spScorpioInsertidtemporal";
+                //cmd.CommandType = CommandType.StoredProcedure;
+                //cmd.Parameters.AddWithValue("@var_idpersona", idPersona);
+                //cmd.Parameters.AddWithValue("@var_supervisor", currentUser);
+                //cmd.ExecuteNonQuery();
+                //cmd.Parameters.Clear();
+                //con.Close();
                 #endregion
 
                 #region -ConsumoSustancias-
@@ -1250,7 +1291,15 @@ namespace scorpioweb.Controllers
                     {
                         asientoFamiliar.Nombre = normaliza(datosFamiliares[i][0]);
                         asientoFamiliar.Relacion = datosFamiliares[i + 1][0];
-                        asientoFamiliar.Edad = Int32.Parse(datosFamiliares[i + 2][0]);
+                        try
+                        {
+                            asientoFamiliar.Edad = Int32.Parse(datosFamiliares[i + 2][0]);
+                        }
+                        catch
+                        {
+                            asientoFamiliar.Edad = 0;
+                        }
+
                         asientoFamiliar.Sexo = datosFamiliares[i + 3][0];
                         asientoFamiliar.Dependencia = datosFamiliares[i + 4][0];
                         asientoFamiliar.DependenciaExplica = normaliza(datosFamiliares[i + 5][0]);
@@ -1285,7 +1334,14 @@ namespace scorpioweb.Controllers
                     {
                         asientoFamiliar.Nombre = normaliza(datosReferencias[i][0]);
                         asientoFamiliar.Relacion = datosReferencias[i + 1][0];
-                        asientoFamiliar.Edad = Int32.Parse(datosReferencias[i + 2][0]);
+                        try
+                        {
+                            asientoFamiliar.Edad = Int32.Parse(datosReferencias[i + 2][0]);
+                        }
+                        catch
+                        {
+                            asientoFamiliar.Edad = 0;
+                        }
                         asientoFamiliar.Sexo = datosReferencias[i + 3][0];
                         asientoFamiliar.Dependencia = datosReferencias[i + 4][0];
                         asientoFamiliar.DependenciaExplica = normaliza(datosReferencias[i + 5][0]);

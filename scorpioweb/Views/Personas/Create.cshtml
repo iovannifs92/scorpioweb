@@ -1,6 +1,6 @@
 ﻿@*<script src="/lib/jquery/dist/jquery.js"></script>*@
 @* Necesario para los modales en el servidor *@
-@*<script src="~/js/jquery-1.11.1.min.js"></script> con este jquery no funciona el boton de guardar sustancia*@
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -10,22 +10,22 @@
     var tipo = 0;
     $(document).ready(function () {
         //Muestra los campos escondidos required. 
-        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
-        $("#form").validate({
-            ignore: false,
-            rules: {
-                name: "required",
-                email: {
-                    required: true,
-                    email: true,
-                },
-            },
-            invalidHandler: function(e,validator) {
-                for (var i=0;i<validator.errorList.length;i++){   
-                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
-                }
-            }
-        });
+        ////https://www.py4u.net/discuss/342030 usar http en jsfiddle
+        //$("#form").validate({
+        //    ignore: false,
+        //    rules: {
+        //        name: "required",
+        //        email: {
+        //            required: true,
+        //            email: true,
+        //        },
+        //    },
+        //    invalidHandler: function(e,validator) {
+        //        for (var i=0;i<validator.errorList.length;i++){   
+        //            $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+        //        }
+        //    }
+        //});
         //endregion
 
         //#region -Municipios-
@@ -566,7 +566,7 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        if ($.isNumeric(edad)) {
+                        //if ($.isNumeric(edad)) {
                             alert(response.responseText);
                             document.ready = document.getElementById("AFNombre").value = '';
                             document.ready = document.getElementById("AFRelacion").value = 'MAMA';
@@ -590,10 +590,10 @@
                             } else {
                                 $("#modalAsientoFamiliar").modal('hide');
                             }
-                        }
-                        else {
-                            alert("Edad inválida")
-                        }
+                        //}
+                        //else {
+                        //    alert("Edad inválida")
+                        //}
                     } else {
                         alert(response.responseText);
                     }
@@ -693,7 +693,7 @@
         $('#btnCloseAF').on("click", function (e) {
             e.preventDefault();
             if (tipo == 1) {
-              var Familiares = document.getElementById('Familiares');
+                var Familiares = document.getElementById('Familiares');
               Familiares.value = 'NO';
             }
             else if (tipo == 2) {
@@ -877,6 +877,7 @@
                                     <select class="form-control" name="Familiares" id="Familiares">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
+
                                     </select>
                                 </div>
                                 <div class="form-group">
