@@ -499,6 +499,8 @@ namespace scorpioweb.Controllers
            )
 
         {
+            #region
+            #endregion
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
@@ -528,15 +530,29 @@ namespace scorpioweb.Controllers
                     supervisor = true;
                 }
             }
+            List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
+
+            List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
+                                                         group f by f.SupervisionIdSupervision into grp
+                                                         select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+
+            List<Supervision> querySupervisionSinFraccion = (from s in _context.Supervision
+                                                            join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision into SupervisionFracciones
+                                                            from sf in SupervisionFracciones.DefaultIfEmpty()
+                                                            select new Supervision{                                                                
+                                                            }).ToList();
 
             var filter= from p in _context.Persona
                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                        //join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                         select new SupervisionPyCP
                         {
                             personaVM = p,
                             supervisionVM = s,
-                            causapenalVM = cp
+                            causapenalVM = cp,
+                            //fraccionesimpuestasVM =fracciones,
+                            tiempoSupervision= (s.Termino-s.Inicio).ToString()
                         };
 
             if (supervisor)
@@ -544,12 +560,15 @@ namespace scorpioweb.Controllers
                 filter = from p in _context.Persona
                              join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                              join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                             //join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                              where p.Supervisor == User.Identity.Name
                              select new SupervisionPyCP
                              {
                                  personaVM = p,
                                  supervisionVM = s,
-                                 causapenalVM = cp
+                                 causapenalVM = cp,
+                                 //fraccionesimpuestasVM = fracciones,
+                                 tiempoSupervision = (s.Termino - s.Inicio).ToString()
                              };
             }
             

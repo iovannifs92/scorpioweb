@@ -1,4 +1,5 @@
-﻿namespace scorpioweb.Models
+﻿
+namespace scorpioweb.Models
 {
     public class SupervisionPyCP
     {
@@ -7,5 +8,6 @@
         public Causapenal causapenalVM { get; set; }
         public Fraccionesimpuestas fraccionesimpuestasVM { get; set; }
         public Planeacionestrategica planeacionestrategicaVM { get; set; }
+        public string tiempoSupervision { get; set; }
     }
 }
