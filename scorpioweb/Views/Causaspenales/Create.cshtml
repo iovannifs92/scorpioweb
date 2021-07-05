@@ -28,7 +28,6 @@
     }
 
         input[type=text] {
-           
             width: 100%;
         }
 
@@ -185,18 +184,18 @@
             });
         }
         //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
-        var countries = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
-        autocomplete(document.getElementById("tipoD"), countries);
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+        autocomplete(document.getElementById("tipoD"), catalogo);
 
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("juez"), jueces);
     });
 
-        
+
 
 </script>
 
-<h2>Crear causa Penal</h2>
+<h2>Crear Causa Penal</h2>
 
 <h4></h4>
 <hr />
@@ -247,7 +246,7 @@
             </div>
             <div class="form-group">
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
-                    <i class="fa fa-plus"></i> Delito asociado a la Causa
+                    <i class="fa fa-plus"></i> Delito asociados a la causa penal
                 </button>
             </div>
             <div class="form-group">
@@ -267,7 +266,7 @@
 </div>
 
 
-<!-- Modal -->
+<!-- Modal Delito -->
 <div class="modal fade" id="modalDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -294,11 +293,10 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary  col-md-3" data-dismiss="modal" style="margin-right:280px">
+                <button type="button" class="btn btn-secondary  col-xs-2" data-dismiss="modal" style="margin-right:280px">
                     <i class="fa fa-close"></i> Cerrar
                 </button>
-                <br />
-                <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary col-md-3">
+                <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">
                     <i class="fa fa-save"></i> Guardar delito
                 </button>
             </div>

@@ -2,32 +2,11 @@
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script> con este jquery no funciona el boton de guardar sustancia*@
 
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
 
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        //Muestra los campos escondidos required. 
-        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
-        $("#form").validate({
-            ignore: false,
-            rules: {
-                name: "required",
-                email: {
-                    required: true,
-                    email: true,
-                },
-            },
-            invalidHandler: function(e,validator) {
-                for (var i=0;i<validator.errorList.length;i++){   
-                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
-                }
-            }
-        });
-        //endregion
-
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#lnMunicipio').html(items);
@@ -302,6 +281,7 @@
         });
         //#endregion
         //#region -changeDisplay-
+
         $('#vividoFuera').change(function () {
             var vivido = $(this).children("option:selected").val();
             if (vivido == "SI") {
@@ -566,7 +546,7 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        if ($.isNumeric(edad)) {
+                        //if ($.isNumeric(edad)) {
                             alert(response.responseText);
                             document.ready = document.getElementById("AFNombre").value = '';
                             document.ready = document.getElementById("AFRelacion").value = 'MAMA';
@@ -590,10 +570,10 @@
                             } else {
                                 $("#modalAsientoFamiliar").modal('hide');
                             }
-                        }
-                        else {
-                            alert("Edad inválida")
-                        }
+                        //}
+                        //else {
+                        //    alert("Edad inválida")
+                        //}
                     } else {
                         alert(response.responseText);
                     }
@@ -693,7 +673,7 @@
         $('#btnCloseAF').on("click", function (e) {
             e.preventDefault();
             if (tipo == 1) {
-              var Familiares = document.getElementById('Familiares');
+                var Familiares = document.getElementById('Familiares');
               Familiares.value = 'NO';
             }
             else if (tipo == 2) {
@@ -701,6 +681,27 @@
               ReferenciasPersonales.value = 'NO';
             }
         });
+    });
+    $(document).ready(function () {
+        //Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
+        //Destruye el codigo de javascript que le sigue localmente.
+        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
+        $("#forma").validate({
+            ignore: false,
+            rules: {
+                name: "required",
+                email: {
+                    required: true,
+                    email: true,
+                },
+            },
+            invalidHandler: function(e,validator) {
+                for (var i=0;i<validator.errorList.length;i++){
+                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+                }
+            }
+        });
+        //endregion
     });
     //endregion
 </script>
@@ -715,8 +716,8 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="form">
-            <div class="container sub-page form">
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="forma">
+            <div class="container sub-page forma">
                 <div class="container">
                     <div class="panel-group">
                         <div id="datosGenerales" class="panel panel-primary ">
@@ -877,10 +878,11 @@
                                     <select class="form-control" name="Familiares" id="Familiares">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
+
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label class="control-label">Añadir Referencias</label>
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
+                                    <label class="control-label col-md-12" style="padding-left:0%;">Añadir Referencias</label>
                                     <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
@@ -976,7 +978,7 @@
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="400" class="form-control" rows="5" name="observaciones" id="observaciones"></textarea>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Cuenta con domicilio secundario?</label>
                                     <select required class="form-control" name="cuentaDomicilioSecundario" id="cuentaDomicilioSecundario">
                                         <option value="NO">No</option>
@@ -1009,7 +1011,7 @@
                                             </div>
                                             <div class="form-group col-md-5">
                                                 <label class="control-label">Calle</label>
-                                                <input name="calleDS" type="text" class="form-control" max="200" />
+                                                <input name="calleDS" type="text" class="form-control" maxlength="200" />
                                             </div>
                                             <div class="form-group col-md-2">
                                                 <label class="control-label">Número</label>
@@ -1099,11 +1101,11 @@
                                 <div class="form-group col-md-3">
                                     <label class="control-label">¿Actualmente estudia?</label>
                                     <select required class="form-control" name="estudia" id="estudia">
-                                        <option value="SI">Si</option>
                                         <option value="NO">No</option>
+                                        <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-3" id="">
                                     <label class="control-label">Último grado de estudios</label>
                                     <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
                                         <option value="PRIMARIA">Primaria</option>
@@ -1115,23 +1117,23 @@
                                         <option value="DOCTORADO">Doctorado</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6" style="display:none">
                                     <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
                                     <input maxlength="150" name="institucionE" id="institucionE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-12" id="horarioE">
+                                <div class="form-group col-md-12" id="horarioE" style="display:none">
                                     <label class="control-label">Horarios:</label>
                                     <input maxlength="100" name="horarioE" id="horarioE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="direccionE">
+                                <div class="form-group col-md-6" id="direccionE" style="display:none">
                                     <label class="control-label">Dirección</label>
                                     <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="telefonoE">
+                                <div class="form-group col-md-6" id="telefonoE" style="display:none">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group ">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
                                 </div>
@@ -1225,14 +1227,14 @@
                                     <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="horarioT">
-                                    <label class="control-label">Horario de trabajo:</label>
+                                    <label class="control-label">Horario de trabajo</label>
                                     <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="telefonoT">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesT" id="observacionesT"></textarea>
                                     <small class="form-text text-muted">En caso de que no trabaje o que tenga un segundo trabajo anotarlo aquí</small>
@@ -1275,7 +1277,7 @@
                                     <label class="control-label">Especificar persona de referencia</label>
                                     <input maxlength="100" name="referenciaAS" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observacionesAS">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesAS" id="observacionesAS"></textarea>
                                     <small class="form-text text-muted">En caso de tener alguna otra actividad mencionarlo aquí</small>
@@ -1348,7 +1350,7 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
                                     <select required class="form-control" name="familiaresFuera" id="familiaresFuera">
                                         <option value="NO">No</option>
@@ -1356,9 +1358,9 @@
                                     </select>
                                 </div>
                                 @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                            <label class="control-label">¿Cuántos familiares?</label>
-                            <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                        </div>*@
+                                        <label class="control-label">¿Cuántos familiares?</label>
+                                        <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                                    </div>*@
                             </div>
                         </div>
                         <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
