@@ -53,6 +53,12 @@
                 <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoCumplimientoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de cumplimiento</a>
             </th>
             <th>
+                <a>Figura Judicial</a>
+            </th>
+            @*<th>
+                <a>Tiempo Supervisión</a>
+            </th>*@
+            <th>
                 <a>Supervisor</a>
             </th>
         </tr>
@@ -73,6 +79,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.supervisionVM.EstadoCumplimiento)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
+            </td>
+            @*@if (item.fraccionesimpuestasVM.FiguraJudicial == "SCP" && item.supervisionVM.Inicio != null && item.supervisionVM.Termino != null)
+            {
+                <td>
+                    @item.supervisionVM.Inicio.Value - @item.supervisionVM.Termino.Value
+                </td>
+            }
+            else
+            {
+                <td>
+                </td>
+            }*@
             <td>
                 @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
             </td>
