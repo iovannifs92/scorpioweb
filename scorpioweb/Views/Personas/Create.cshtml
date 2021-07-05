@@ -9,9 +9,9 @@
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        //Muestra los campos escondidos required. 
+        ////Muestra los campos escondidos required. 
         ////https://www.py4u.net/discuss/342030 usar http en jsfiddle
-        //$("#form").validate({
+        //$("#form2").validate({
         //    ignore: false,
         //    rules: {
         //        name: "required",
@@ -20,9 +20,9 @@
         //            email: true,
         //        },
         //    },
-        //    invalidHandler: function(e,validator) {
-        //        for (var i=0;i<validator.errorList.length;i++){   
-        //            $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+        //    invalidhandler: function(e,validator) {
+        //        for (var i=0;i<validator.errorlist.length;i++){   
+        //            $(validator.errorlist[i].element).parents('.panel-collapse.collapse').collapse('show');
         //        }
         //    }
         //});
@@ -716,7 +716,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="form">
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="form2">
             <div class="container sub-page form">
                 <div class="container">
                     <div class="panel-group">
@@ -882,7 +882,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label">Añadir Referencias</label>
+                                    <label class="control-label col-md-12">Añadir Referencias</label>
                                     <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>

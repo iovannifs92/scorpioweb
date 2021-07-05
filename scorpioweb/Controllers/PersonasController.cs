@@ -25,6 +25,8 @@ using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
 
 
+    
+
 
 namespace scorpioweb.Controllers
 {
@@ -1004,6 +1006,23 @@ namespace scorpioweb.Controllers
             }
         }
 
+
+
+        //public void connectartbd(int idtemporal = 1,  string currentuser)
+        //{
+        //    MySqlConnection con = new MySqlConnection("server=10.6.60.190;port=3306;user=administrador;password=ssp.2020;database=penas2");
+        //    MySqlCommand cmd = con.CreateCommand();
+        //    cmd.CommandText = " ";
+        //    cmd.CommandType = CommandType.StoredProcedure;
+        //    cmd.Parameters.AddWithValue("@var_idgenerado", idtemporal);
+        //    cmd.Parameters.AddWithValue("@var_supervisor", currentuser);
+        //    cmd.ExecuteNonQuery();
+        //    cmd.Parameters.Clear();
+        //    con.Close();
+        //}
+
+
+
         public string generaEstado(string id)
         {
             string estado = "";
@@ -1022,6 +1041,8 @@ namespace scorpioweb.Controllers
             }
             return estado;
         }
+        
+
 
         public string generaMunicipio(string id)
         {
@@ -1208,6 +1229,8 @@ namespace scorpioweb.Controllers
                 domiciliosecundario.IdDomicilio = idDomicilio;
                 #endregion
 
+                connectartbd();
+
 
                 //insertar en ala bd temporal para veriicar el id
 
@@ -1247,15 +1270,7 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 #region Stored Procedure
-                //MySqlConnection con = new MySqlConnection("server=10.6.60.190;port=3306;user=administrador;password=ssp.2020;database=penas2");
-                //MySqlCommand cmd = con.CreateCommand();
-                //cmd.CommandText = "spScorpioInsertidtemporal";
-                //cmd.CommandType = CommandType.StoredProcedure;
-                //cmd.Parameters.AddWithValue("@var_idpersona", idPersona);
-                //cmd.Parameters.AddWithValue("@var_supervisor", currentUser);
-                //cmd.ExecuteNonQuery();
-                //cmd.Parameters.Clear();
-                //con.Close();
+      
                 #endregion
 
                 #region -ConsumoSustancias-
