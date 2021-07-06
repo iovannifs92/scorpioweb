@@ -683,7 +683,7 @@
         });
     });
     $(document).ready(function () {
-        //Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
+        //#region Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
         //Destruye el codigo de javascript que le sigue localmente.
         //https://www.py4u.net/discuss/342030 usar http en jsfiddle
         $("#forma").validate({
@@ -1443,7 +1443,7 @@
                     </div>
                 </div>
                 <div class="custom-file col-md-12" style="margin-bottom:20px">
-                    <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
+                    <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" accept="image/*" lang="es">
                 </div>
                 <div class="form-group " style="margin-top:20px">
                     <button class="btn btn-primary" type="submit">

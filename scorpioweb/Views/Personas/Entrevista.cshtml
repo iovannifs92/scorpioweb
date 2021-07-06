@@ -219,10 +219,10 @@
     </script>
 </head>
 <body>
-    <div class="form-group col-lg-12">
+    <div class="form-group col-xs-12">
         <label class="control-label">Busque a la persona dentro de la lista de imputados</label>
     </div>
-    <form asp-action="Entrevista" id="form">
+    <form asp-action="Entrevista" id="form" class="form-group col-xs-12">
         <select type="submit" class="form-control" id="combobox" name="persona_idPersona" style="display:none;"
                 asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
         </select>
