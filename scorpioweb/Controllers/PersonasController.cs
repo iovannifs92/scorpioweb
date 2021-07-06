@@ -1410,6 +1410,7 @@ namespace scorpioweb.Controllers
                   var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
                   var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                   await fotografia.CopyToAsync(stream);
+                  stream.Close();
                 }
                 #endregion
 

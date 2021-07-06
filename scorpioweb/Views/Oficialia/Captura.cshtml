@@ -448,8 +448,8 @@
                         ¿Es referente a un imputado/sentenciado?
                     </label>
                     <select asp-for="ReferenteImputado" class="form-control">
-                        <option value="NO">No</option>
                         <option value="SI">Sí</option>
+                        <option value="NO">No</option>
                     </select>
                     <span asp-validation-for="ReferenteImputado" class="text-danger"></span>
                 </div>
@@ -542,14 +542,14 @@
                     </div>
                 </div>
                 @* col-xs-12 hace que no se mueva la pregunta al espacio vacio del boton de CP *@
-                <div class="form-group col-xs-12" style="padding-left:0%">
+                <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="AsuntoOficio" class="control-label">
                         ¿Cuál es el asunto del oficio?
                     </label>
                     <input id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" />
                     <span asp-validation-for="AsuntoOficio" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xs-12" style="padding-left:0%">
+                <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="TieneTermino" class="control-label">
                         ¿Cuenta con termino?
                     </label>
@@ -566,7 +566,7 @@
                     <input asp-for="FechaTermino" class="form-control" type="date" />
                     <span asp-validation-for="FechaTermino" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xs-12" style="padding-left:0%">
+                <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="UsuarioTurnar" class="control-label">
                         Usuario a turnar
                     </label>
@@ -575,7 +575,7 @@
                     </select>
                     <span asp-validation-for="UsuarioTurnar" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xs-12" style="padding-left:0%">
+                <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="Observaciones" class="control-label">
                         Observaciones
                     </label>
