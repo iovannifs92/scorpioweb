@@ -543,14 +543,16 @@ namespace scorpioweb.Controllers
 
             var filter= from p in _context.Persona
                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-                        join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                        //join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
+                        join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal                        
+                        join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
+                        into PersonaSupervisionCausaPenal
+                        from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
                         select new SupervisionPyCP
                         {
                             personaVM = p,
                             supervisionVM = s,
                             causapenalVM = cp,
-                            //fraccionesimpuestasVM =fracciones,
+                            fraccionesimpuestasVM =fraccion,
                             tiempoSupervision= (s.Termino-s.Inicio).ToString()
                         };
 
@@ -559,14 +561,14 @@ namespace scorpioweb.Controllers
                 filter = from p in _context.Persona
                              join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                              join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                             //join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
+                             join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                              where p.Supervisor == User.Identity.Name
                              select new SupervisionPyCP
                              {
                                  personaVM = p,
                                  supervisionVM = s,
                                  causapenalVM = cp,
-                                 //fraccionesimpuestasVM = fracciones,
+                                 fraccionesimpuestasVM = fracciones,
                                  tiempoSupervision = (s.Termino - s.Inicio).ToString()
                              };
             }
