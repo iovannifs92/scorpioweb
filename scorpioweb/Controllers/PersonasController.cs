@@ -754,14 +754,33 @@ namespace scorpioweb.Controllers
         public ActionResult editarSustancias()
         {
             contadorSustancia = 1;//por cargar la 1er sustancia
-            datosSustanciasEditadas = new List<List<string>>();//por si no se vacian las listas despues de guardar
+
+            //por si no se vacian las listas despues de guardar
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosSustanciasEditadas.Count; i++)
+            {
+                if (datosSustanciasEditadas[i][1] == currentUser)
+                {
+                    datosSustanciasEditadas.RemoveAt(i);
+                    i--;
+                }
+            }
 
             return Json(new { success = true });
         }
 
         public ActionResult agregarSustancias()
         {
-            datosSustancias = new List<List<string>>();//por si no se vacian las listas despues de guardar el modal
+            //por si no se vacian las listas despues de guardar el modal
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosSustancias.Count; i++)
+            {
+                if (datosSustancias[i][1] == currentUser)
+                {
+                    datosSustancias.RemoveAt(i);
+                    i--;
+                }
+            }
 
             return Json(new { success = true });
         }
@@ -885,15 +904,30 @@ namespace scorpioweb.Controllers
 
         public ActionResult editarFamiliares(int tipoGuardado)
         {
+            string currentUser = User.Identity.Name;
             if (tipoGuardado == 1)
             {
                 contadorFamiliares = 1;
-                datosFamiliaresEditados = new List<List<string>>();
+                for (int i = 0; i < datosFamiliaresEditados.Count; i++)
+                {
+                    if (datosFamiliaresEditados[i][1] == currentUser)
+                    {
+                        datosFamiliaresEditados.RemoveAt(i);
+                        i--;
+                    }
+                }
             }
             else if (tipoGuardado == 2)
             {
                 contadorReferencias = 1;
-                datosReferenciasEditadas = new List<List<string>>();
+                for (int i = 0; i < datosReferenciasEditadas.Count; i++)
+                {
+                    if (datosReferenciasEditadas[i][1] == currentUser)
+                    {
+                        datosReferenciasEditadas.RemoveAt(i);
+                        i--;
+                    }
+                }
             }
             return Json(new { success = true });
         }
@@ -903,13 +937,28 @@ namespace scorpioweb.Controllers
 
         public ActionResult agregarAsientoFamiliar(int tipo)
         {
+            string currentUser = User.Identity.Name;
             if (tipo == 1)
             {
-                datosFamiliares = new List<List<string>>();
+                for (int i = 0; i < datosFamiliares.Count; i++)
+                {
+                    if (datosFamiliares[i][1] == currentUser)
+                    {
+                        datosFamiliares.RemoveAt(i);
+                        i--;
+                    }
+                }
             }
             else if (tipo == 2)
             {
-                datosReferenciasEditadas = new List<List<string>>();
+                for (int i = 0; i < datosReferencias.Count; i++)
+                {
+                    if (datosReferencias[i][1] == currentUser)
+                    {
+                        datosReferencias.RemoveAt(i);
+                        i--;
+                    }
+                }
             }
             return Json(new { success = true });
         }
@@ -928,7 +977,15 @@ namespace scorpioweb.Controllers
 
         public ActionResult agregarFamiliaresExtranjeros()
         {
-            datosFamiliaresExtranjero = new List<List<string>>();
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosFamiliaresExtranjero.Count; i++)
+            {
+                if (datosFamiliaresExtranjero[i][1] == currentUser)
+                {
+                    datosFamiliaresExtranjero.RemoveAt(i);
+                    i--;
+                }
+            }
 
             return Json(new { success = true });
         }
@@ -2345,9 +2402,6 @@ namespace scorpioweb.Controllers
                     }
                 }
                 #endregion
-
-
-
 
                 #region -Familiares-
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar
