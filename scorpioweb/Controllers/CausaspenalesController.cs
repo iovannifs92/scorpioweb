@@ -243,9 +243,19 @@ namespace scorpioweb.Controllers
             return View();
         }
 
+        public async Task<IActionResult> CreateCausaPenal(string juez, string distrito, string cambio, string cp)
+        {
+            Causapenal causapenal = new Causapenal();
+            Delito delitoDB = new Delito();
+            await Create(causapenal, delitoDB, null, juez, distrito, cambio, cp);
+            int idCausaPenal = ((from table in _context.Causapenal
+                                 select table.IdCausaPenal).Max());
+            return Json(new { success = true, responseText = idCausaPenal });
+        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp, string delitoM)
+//        [ValidateAntiForgeryToken] Para poder llamar el metodo desde Oficialia
+        public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp)
         {
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)

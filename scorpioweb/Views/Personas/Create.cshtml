@@ -1,33 +1,12 @@
 ﻿@*<script src="/lib/jquery/dist/jquery.js"></script>*@
 @* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
-
+@*<script src="~/js/jquery-1.11.1.min.js"></script> con este jquery no funciona el boton de guardar sustancia*@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
 
 <script type="text/javascript">
     var tipo = 0;
     $(document).ready(function () {
-        ////Muestra los campos escondidos required. 
-        ////https://www.py4u.net/discuss/342030 usar http en jsfiddle
-        //$("#form2").validate({
-        //    ignore: false,
-        //    rules: {
-        //        name: "required",
-        //        email: {
-        //            required: true,
-        //            email: true,
-        //        },
-        //    },
-        //    invalidhandler: function(e,validator) {
-        //        for (var i=0;i<validator.errorlist.length;i++){   
-        //            $(validator.errorlist[i].element).parents('.panel-collapse.collapse').collapse('show');
-        //        }
-        //    }
-        //});
-        //endregion
-
         //#region -Municipios-
         var items = "<option value='0'>Selecciona</option>";
         $('#lnMunicipio').html(items);
@@ -114,13 +93,16 @@
                 $('#municipioDDS').html(items);
             });
         });
-        $('#paisDDS').change(function () {
+
+
+        $('#paisDS').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                  $("#estadoDDS").val(0);
                 var items = "<option value='0'>Selecciona</option>";
                 $('#municipioDDS').html(items);
-                $("#municipioDDS").val(0);
+                var items1 = "<option value='0'>Selecciona</option>";
+                $("#municipioDDS").val(items1);
                 $("#EstadoDDS").css("display", "none");
                 $("#MunicipioDDS").css("display", "none");
                 $("#PaisDDS").removeClass("col-md-4");
@@ -133,6 +115,9 @@
                 $("#PaisDDS").addClass("col-md-4");
             }
         });
+
+
+
         //#endregion
         //#region -Modales-
         $("#cuentaDomicilioSecundario").change(function () {
@@ -235,7 +220,6 @@
             $("#AFDependenciaExplica").css("display", "none");
             $("#AFDireccionFamiliar").css("display", "none");
             $("#AFPuedeEnterarse").css("display", "none");
-
             var opcion = $(this).children("option:selected").val();
             document.getElementById("textoAFR").innerHTML = "Referencia";
             if (opcion == "SI") {
@@ -300,9 +284,80 @@
                 }
             });
         });
+
+        $(document).ready(function () {
+            $('#btnGuardarDomSec').on("click", function (e) {
+                e.preventDefault();
+                var motivo = document.getElementById("motivoDS").value;
+                var tds = document.getElementById("tipoDomicilioDS");
+                var tipoDS = tds.options[tds.selectedIndex].value;
+                var calle = document.getElementById("calleDS").value;
+                var no = document.getElementById("noDS").value;
+                var nombre = document.getElementById("nombreCFDS").value;
+                var p = document.getElementById("paisDS");
+                var pais = p.options[p.selectedIndex].value;
+                var e = document.getElementById("estadoDDS");
+                var estado = e.options[e.selectedIndex].value;
+                var m = document.getElementById("municipioDDS");
+                var municipio = m.options[m.selectedIndex].value;
+                var temporalidad = document.getElementById("temporalidadDS").value;
+                var residenciahabitual = document.getElementById("residenciahabitualDS").value;
+                var cp = document.getElementById("cpDS").value;
+                var referenciahabitual = document.getElementById("referenciasDS").value;
+                var horario = document.getElementById("horarioDS").value;
+                var observaciones = document.getElementById("observacionesDS").value;
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Personas/guardarDomcililiosecudario",
+                    traditional: true,
+                    data: {
+                        datosDS: [motivo, tipoDS, calle, no, nombre, pais, estado, municipio, temporalidad, residenciahabitual, cp, referenciahabitual, horario, observaciones],
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            document.ready = document.getElementById("motivoDS").value = '';
+                            document.ready = document.getElementById("tipoDomicilioDS").value = 'RENTADA';
+                            document.ready = document.getElementById("calleDS").value = '';
+                            document.ready = document.getElementById("noDS").value = '';
+                            document.ready = document.getElementById("nombreCFDS").value = '';
+                            document.ready = document.getElementById("paisDS").value = '';
+                            //document.ready = document.getElementById("estadoDS").value = '';
+                            //document.ready = document.getElementById("municipioDS").value = '';
+                            document.ready = document.getElementById("temporalidadDS").value = 'MAS DE 10 AÑOS';
+                            document.ready = document.getElementById("residenciahabitualDS").value = 'No';
+                            document.ready = document.getElementById("cpDS").value = '';
+                            document.ready = document.getElementById("referenciasDS").value = '';
+                            document.ready = document.getElementById("horarioDS").value = '';
+                            document.ready = document.getElementById("observacionesDS").value = '';
+                            $("#EstadoDDS").css("display", "block");
+                            $("#MunicipioDDS").css("display", "block");
+                            $("#PaisDDS").removeClass("col-md-12");
+                            $("#PaisDDS").addClass("col-md-4");
+
+                            var otroDS = confirm("¿Tiene otro domicilio secundario?");
+                            if (otroDS == true) {
+                                alert("Coloque los datos correspondientes");
+                            } else {
+                                $("#modalDomicilioSecundario").modal('hide');
+                            }
+                        } else {
+                            alert(response.responseText);
+                        }
+                    },
+                    error: function (response) {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                });
+
+
+            });
+        });
+
+
+
         //#endregion
         //#region -changeDisplay-
- 
         $('#vividoFuera').change(function () {
             var vivido = $(this).children("option:selected").val();
             if (vivido == "SI") {
@@ -466,8 +521,6 @@
                 $("#direccionT").css("display", "block");
                 $("#horarioT").css("display", "block");
                 $("#telefonoT").css("display", "block");
-
-
             }
             else {
                 $("#tipoOcupacion").css("display", "none");
@@ -481,10 +534,8 @@
                 $("#direccionT").css("display", "none");
                 $("#horarioT").css("display", "none");
                 $("#telefonoT").css("display", "none");
-
             }
         });
-
         //#endregion
         $.validator.setDefaults({
             ignore: "collapse1"
@@ -703,6 +754,27 @@
             }
         });
     });
+    $(document).ready(function () {
+        //#region Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
+        //Destruye el codigo de javascript que le sigue localmente.
+        //https://www.py4u.net/discuss/342030 usar http en jsfiddle
+        $("#forma").validate({
+            ignore: false,
+            rules: {
+                name: "required",
+                email: {
+                    required: true,
+                    email: true,
+                },
+            },
+            invalidHandler: function(e,validator) {
+                for (var i=0;i<validator.errorList.length;i++){
+                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+                }
+            }
+        });
+        //endregion
+    });
     //endregion
 </script>
 
@@ -716,8 +788,8 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="form2">
-            <div class="container sub-page form">
+        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="forma">
+            <div class="container sub-page forma">
                 <div class="container">
                     <div class="panel-group">
                         <div id="datosGenerales" class="panel panel-primary ">
@@ -881,8 +953,8 @@
 
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-12">Añadir Referencias</label>
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
+                                    <label class="control-label col-md-12" style="padding-left:0%;">Añadir Referencias</label>
                                     <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
@@ -978,7 +1050,7 @@
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="400" class="form-control" rows="5" name="observaciones" id="observaciones"></textarea>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Cuenta con domicilio secundario?</label>
                                     <select required class="form-control" name="cuentaDomicilioSecundario" id="cuentaDomicilioSecundario">
                                         <option value="NO">No</option>
@@ -996,11 +1068,11 @@
                                         <div class="modal-body">
                                             <div class="form-group">
                                                 <label class="control-label">Motivo del domicilio secundario</label>
-                                                <input name="motivoDS" maxlength="100" type="text" class="form-control" />
+                                                <input name="motivoDS" id="motivoDS" maxlength="100" type="text" class="form-control" />
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
-                                                <select class="form-control" name="tipoDomicilioDS">
+                                                <select class="form-control" name="tipoDomicilioDS" id="tipoDomicilioDS">
                                                     <option value="RENTADA">Rentada</option>
                                                     <option value="PRESTADA">Prestada</option>
                                                     <option value="PROPIA">Propia</option>
@@ -1011,19 +1083,19 @@
                                             </div>
                                             <div class="form-group col-md-5">
                                                 <label class="control-label">Calle</label>
-                                                <input name="calleDS" type="text" class="form-control" max="200" />
+                                                <input name="calleDS" id="calleDS" type="text" class="form-control" maxlength="200" />
                                             </div>
                                             <div class="form-group col-md-2">
                                                 <label class="control-label">Número</label>
-                                                <input name="noDS" type="text" class="form-control" maxlength="100" />
+                                                <input name="noDS" id="noDS" type="text" class="form-control" maxlength="100" />
                                             </div>
                                             <div class="form-group col-md-5">
                                                 <label class="control-label">Colonia/Fraccionamiento</label>
-                                                <input name="nombreCFDS" type="text" class="form-control" />
+                                                <input name="nombreCFDS" id="nombreCFDS" type="text" class="form-control" />
                                             </div>
                                             <div class="form-group col-md-4" id="PaisDDS">
                                                 <label class="control-label">País</label>
-                                                <select class="form-control" name="paisDDS" id="paisDDS">
+                                                <select class="form-control" name="paisDS" id="paisDS">
                                                     <option value="MEXICO">México</option>
                                                     <option value="ESTADOS UNIDOS">Estados Unidos</option>
                                                     <option value="CANADA">Canada</option>
@@ -1048,7 +1120,7 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
-                                                <select class="form-control" name="temporalidadDS">
+                                                <select class="form-control" name="temporalidadDS" id="temporalidadDS">
                                                     <option value="MAS DE 10 AÑOS">Más de 10 años</option>
                                                     <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
                                                     <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
@@ -1058,14 +1130,14 @@
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="control-label">¿Este domicilio es su residencia habitual?</label>
-                                                <select class="form-control" name="residenciaHabitualDS">
-                                                    <option value="Si">Si</option>
+                                                <select class="form-control" name="residenciaHabitualDS" id="residenciahabitualDS">
                                                     <option value="No">No</option>
+                                                    <option value="Si">Si</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label">Código Postal</label>
-                                                <input name="cpDS" type="text" class="form-control" />
+                                                <input name="cpDS" id="cpDS" type="text" class="form-control" />
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label" for="referencias">Referencias para ubicar su domicilio</label>
@@ -1077,7 +1149,7 @@
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="control-label" for="observaciones">Observaciones</label>
-                                                <textarea maxlength="300" class="form-control" rows="3" name="observacionesDS" id="observaciones"></textarea>
+                                                <textarea maxlength="300" class="form-control" rows="3" name="observacionesDS" id="observacionesDS"></textarea>
                                                 <small class="form-text text-muted">En caso de tener un 3er domicilio anotarlo aquí</small>
                                             </div>
                                         </div>
@@ -1085,6 +1157,10 @@
                                             <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseDS">
                                                 <i class="fa fa-close"></i>
                                                 Cerrar
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="btnGuardarDomSec" name="btnGuardarDomSec">
+                                                <i class="fa fa-save"></i>
+                                                Guardar
                                             </button>
                                         </div>
                                     </div>
@@ -1129,12 +1205,12 @@
                                     <label class="control-label">Dirección</label>
                                     <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="telefonoE"style="display:none">
+                                <div class="form-group col-md-6" id="telefonoE" style="display:none">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group ">
-                                    <label class="control-label col-md-12" for="observaciones">Observaciones</label>
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
+                                    <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
                                 </div>
 
@@ -1227,14 +1303,14 @@
                                     <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="horarioT">
-                                    <label class="control-label">Horario de trabajo:</label>
+                                    <label class="control-label">Horario de trabajo</label>
                                     <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="telefonoT">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesT" id="observacionesT"></textarea>
                                     <small class="form-text text-muted">En caso de que no trabaje o que tenga un segundo trabajo anotarlo aquí</small>
@@ -1277,7 +1353,7 @@
                                     <label class="control-label">Especificar persona de referencia</label>
                                     <input maxlength="100" name="referenciaAS" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observacionesAS">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesAS" id="observacionesAS"></textarea>
                                     <small class="form-text text-muted">En caso de tener alguna otra actividad mencionarlo aquí</small>
@@ -1350,7 +1426,7 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
                                     <select required class="form-control" name="familiaresFuera" id="familiaresFuera">
                                         <option value="NO">No</option>
@@ -1358,9 +1434,9 @@
                                     </select>
                                 </div>
                                 @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                            <label class="control-label">¿Cuántos familiares?</label>
-                            <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                        </div>*@
+                                        <label class="control-label">¿Cuántos familiares?</label>
+                                        <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                                    </div>*@
                             </div>
                         </div>
                         <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1443,7 +1519,7 @@
                     </div>
                 </div>
                 <div class="custom-file col-md-12" style="margin-bottom:20px">
-                    <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" lang="es">
+                    <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" accept="image/*" lang="es">
                 </div>
                 <div class="form-group " style="margin-top:20px">
                     <button class="btn btn-primary" type="submit">

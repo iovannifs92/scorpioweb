@@ -13,6 +13,13 @@ namespace scorpioweb.Models
         public string Cambio { get; set; }
         public string Distrito { get; set ; }
         public string CausaPenal { get; set; }
+        public string CausaPenalCompleta
+        {
+            get
+            {
+                return this.CausaPenal + ", Distrito " + this.Distrito + ", " + this.Juez;
+            }
+        }
 
         //static Causapenal()
         //{
