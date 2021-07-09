@@ -111,13 +111,12 @@
             </div>
             @if (ViewBag.cierre == null || ViewBag.cierre == "SI")
             {
-                <div id="DivComoConcluyo" class="form-group autocomplete" style="padding-top:15px;">
-                    <label class="control-label">Como Concluyó</label>
-                </div>
                 <div id="DivComoConcluyo" class="form-group">
-                    <input required name="ComoConcluyo" id="ComoConcluyo" type="text" maxlength="150" class="form-control" />
+                    <label class="control-label">Como Concluyó</label>
+                    <select class="form-control" name="ComoConcluyo" id="ComoConcluyo"
+                            asp-items="@(new SelectList(ViewBag.CierreCaso, "Value", "Text"))">
+                    </select>
                 </div>
-
                 <div class="form-group" id="DivNoArchivo">
                     <label class="control-label">Número de Archivo</label>
                     <input asp-for="NoArchivo" class="form-control" />
@@ -137,11 +136,11 @@
             }
             @if (ViewBag.cierre == null || ViewBag.cierre == "NO" || ViewBag.cierre == "NA")
             {
-                <div id="DivComoConcluyo" style="display: none;" class="form-group autocomplete" style="padding-top:15px;">
+                <div id="DivComoConcluyo" class="form-group">
                     <label class="control-label">Como Concluyó</label>
-                </div>
-                <div id="DivComoConcluyo"  class="form-group col-md-12">
-                    <input required name="ComoConcluyo" id="ComoConcluyo" type="text" maxlength="150" class="form-control" />
+                    <select class="form-control" name="ComoConcluyo" id="ComoConcluyo"
+                            asp-items="@(new SelectList(ViewBag.CierreCaso, "Value", "Text"))">
+                    </select>
                 </div>
                 <div class="form-group" style="display: none;" id="DivNoArchivo">
                     <label class="control-label">Número de Archivo</label>

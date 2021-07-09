@@ -55,9 +55,9 @@
             <th>
                 <a>Figura Judicial</a>
             </th>
-            @*<th>
-                <a>Tiempo Supervisión</a>
-            </th>*@
+            <th>
+                <a>Tiempo Supervisión (Días)</a>
+            </th>
             <th>
                 <a>Supervisor</a>
             </th>
@@ -82,17 +82,28 @@
             <td>
                 @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
             </td>
-            @*@if (item.fraccionesimpuestasVM.FiguraJudicial == "SCP" && item.supervisionVM.Inicio != null && item.supervisionVM.Termino != null)
+
+            @if (item.supervisionVM.Inicio != null && item.supervisionVM.Termino != null && item.supervisionVM.EstadoSupervision == "VIGENTE")
             {
-                <td>
-                    @item.supervisionVM.Inicio.Value - @item.supervisionVM.Termino.Value
-                </td>
+                @if (@item.tiempoSupervision < 10)
+                {
+                    <td style="color:white; background-color:red">
+                        @(item.tiempoSupervision)
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        @(item.tiempoSupervision)
+                    </td>
+                }                
             }
             else
             {
                 <td>
                 </td>
-            }*@
+            }
+
             <td>
                 @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
             </td>
