@@ -8,6 +8,6 @@ namespace scorpioweb.Models
         public Causapenal causapenalVM { get; set; }
         public Fraccionesimpuestas fraccionesimpuestasVM { get; set; }
         public Planeacionestrategica planeacionestrategicaVM { get; set; }
-        public string tiempoSupervision { get; set; }
+        public int tiempoSupervision { get; set; }
     }
 }

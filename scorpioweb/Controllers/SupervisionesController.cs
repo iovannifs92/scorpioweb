@@ -84,6 +84,23 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "SCP", Value = "SCP" },
         };
 
+        private List<SelectListItem> listaCierreCaso = new List<SelectListItem>
+        {
+            new SelectListItem{ Text = "NA", Value = "NA" },
+            new SelectListItem{ Text = "Sobreseimiento por acuerdo reparatorio", Value = "SOBRESEIMIENTO POR ACUERDO REPARATORIO" },
+            new SelectListItem{ Text = "Sobreseimiento por suspensión condicional del proceso", Value = "SOBRESEIMIENTO POR SUSPENSIÓN CONDICIONAL DEL PROCESO" },
+            new SelectListItem{ Text = "Sobreseimiento por perdón", Value = "SOBRESEIMIENTO POR PERDÓN" },
+            new SelectListItem{ Text = "Sobreseimiento por muerte del imputado", Value = "SOBRESEIMIENTO POR MUERTE DEL IMPUTADO" },
+            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCIÓN PENAL" },
+            new SelectListItem{ Text = "Sobreseimiento por prescripción", Value = "SOBRESEIMIENTO POR PRESCRIPCIÓN" },
+            new SelectListItem{ Text = "Criterio de oportunidad", Value = "CRITERIO DE OPORTUNIDAD" },
+            new SelectListItem{ Text = "Sentencia condenatoria en procedimiento abreviado", Value = "SENTENCIA CONDENATORIA EN PROCEDIMIENTO ABREVIADO" },
+            new SelectListItem{ Text = "Sentencia absolutoria en procedimiento abreviado", Value = "SENTENCIA ABSOLUTORIA EN PROCEDIMIENTO ABREVIADO" },
+            new SelectListItem{ Text = "Sentencia condenatoria en juicio oral", Value = "SENTENCIA CONDENATORIA EN JUICIO ORAL" },
+            new SelectListItem{ Text = "Sentencia absolutoria en juicio oral", Value = "SENTENCIA ABSOLUTORIA EN JUICIO ORAL" },
+            new SelectListItem{ Text = "No vinculación a proceso", Value = "NO VINCULACIÓN A PROCESO" }
+        };
+
 
         public string normaliza(string normalizar)
         {
@@ -552,8 +569,8 @@ namespace scorpioweb.Controllers
                             personaVM = p,
                             supervisionVM = s,
                             causapenalVM = cp,
-                            fraccionesimpuestasVM =fraccion,
-                            tiempoSupervision= (s.Termino-s.Inicio).ToString()
+                            fraccionesimpuestasVM = fraccion,
+                            tiempoSupervision = (s.Termino!=null && s.Inicio!=null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays): 0
                         };
 
             if (supervisor)
@@ -562,14 +579,16 @@ namespace scorpioweb.Controllers
                              join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                              join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
                              join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
-                             where p.Supervisor == User.Identity.Name
+                             into PersonaSupervisionCausaPenal
+                            from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
+                            where p.Supervisor == User.Identity.Name
                              select new SupervisionPyCP
                              {
                                  personaVM = p,
                                  supervisionVM = s,
                                  causapenalVM = cp,
-                                 fraccionesimpuestasVM = fracciones,
-                                 tiempoSupervision = (s.Termino - s.Inicio).ToString()
+                                 fraccionesimpuestasVM = fraccion,
+                                 tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
                              };
             }
             
@@ -854,7 +873,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-
+            ViewBag.CierreCaso = listaCierreCaso;
             ViewBag.listaSeCerroCaso = listaNaSiNo;
             ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, supervision.SeCerroCaso);
             ViewBag.cierre = supervision.SeCerroCaso;
