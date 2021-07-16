@@ -1,0 +1,118 @@
+﻿@model PaginatedList<scorpioweb.Models.Oficialia>
+
+@{
+    ViewData["Title"] = "EditRegistros";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<h2>Edición Oficialia</h2>
+
+<form asp-action="EditRegistros" method="get">
+    <h4 style="padding-left:30px">
+        Rango de fecha
+    </h4>
+    <div class="col-xs-12">
+        <div class="col-xs-4">
+            <label>
+                Inicial
+            </label>
+            <input type="date" id="inicial" name="inicial" value="@ViewData["inicial"]" />
+        </div>
+        <div class="col-xs-4">
+            <label>
+                Final
+            </label>
+            <input type="date" id="final" name="final" value="@ViewData["final"]" />
+        </div>
+        <div>
+            <input type="text" class="col-xs-2" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
+        </div>
+        <button type="submit" class="btn btn-default col-xs-2">
+            <i class="fa fa-search"></i>
+            Buscar
+        </button>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Fecha de Emisión
+            </th>
+            <th>
+                Causa Penal
+            </th>
+            <th>
+                Asunto del oficio
+            </th>
+            <th>
+                Usuario a Turnar
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaternoMaternoNombre)
+                </td>
+                <td>
+                    @Convert.ToString(string.Format("{0:M/d/yyyy}", @item.FechaEmision))
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CausaPenal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AsuntoOficio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UsuarioTurnar)
+                </td>
+                <td>
+                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </a>
+                    <a class="btn btn-primary" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
+                        <i class="fa fa-copy"></i>
+                        Clonar
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div>
+@*<p>*@
+    <a asp-action="Captura">Nuevo Registro</a>
+@*</p>*@
+<a asp-action="EditRegistros"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default col-xs-offset-6 col-sm-offset-7 col-lg-offset-9 @prevDisabled">
+    Anterior
+</a>
+<a asp-action="EditRegistros"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+</div>
