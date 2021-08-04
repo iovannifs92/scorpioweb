@@ -1,0 +1,294 @@
+﻿@model scorpioweb.Models.Serviciospreviosjuicio
+
+@{
+    Layout = null;
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#RealizoEntrevista').change(function () {
+            var opcion = $(this).children("option:selected").val();
+            if (opcion == "SI") {
+                $("#bloqueEntrevista").css("display", "block");
+            }
+            else {
+                $("#bloqueEntrevista").css("display", "none");
+            }
+        });
+        $('#TipoDetenido').change(function () {
+            var opcion = $(this).children("option:selected").val();
+            if (opcion == "ADOLESCENTE") {
+                $("#bloqueAdolescente").css("display", "block");
+            }
+            else {
+                $("#bloqueAdolescente").css("display", "none");
+            }
+        });
+        $('#Antecedentes').change(function () {
+            var opcion = $(this).children("option:selected").val();
+            if (opcion == "SI") {
+                $("#tieneAntecedentesDatos").css("display", "block");
+            }
+            else {
+                $("#tieneAntecedentesDatos").css("display", "none");
+            }
+        });
+
+        $(document).ready(function () {
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+        autocomplete(document.getElementById("CompletaDelito"), catalogo);
+    });
+
+    });
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input required maxlength="100" asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Paterno" class="control-label"></label>
+                <input required maxlength="45" asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Materno" class="control-label"></label>
+                <input maxlength="45" asp-for="Materno" class="form-control" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Sexo</label>
+                <select class="form-control" name="Sexo" id="Sexo"
+                        asp-items="@(new SelectList(ViewBag.listaSexo, "Value", "Text", @ViewBag.idGenero))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Edad" class="control-label"></label>
+                <input type="number" asp-for="Edad" class="form-control" />
+                <span asp-validation-for="Edad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Calle" class="control-label">Calle y Número</label>
+                <input maxlength="200" asp-for="Calle" class="form-control" />
+                <span asp-validation-for="Calle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Colonia" class="control-label"></label>
+                <input maxlength="200" asp-for="Colonia" class="form-control" />
+                <span asp-validation-for="Colonia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Domicilio</label>
+                <select class="form-control" name="Domicilio" id="Domicilio"
+                        asp-items="@(new SelectList(ViewBag.listaDomicilio, "Value", "Text", @ViewBag.idDomicilio))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Telefono (10 dígitos)</label>
+                <input maxlength="10" asp-for="Telefono" class="form-control" />
+                <span asp-validation-for="Telefono" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Papa" class="control-label">Nombre del padre</label>
+                <input asp-for="Papa" maxlength="300" class="form-control" />
+                <span asp-validation-for="Papa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mama" class="control-label">Nombre de la madre</label>
+                <input asp-for="Mama" maxlength="300" class="form-control" />
+                <span asp-validation-for="Mama" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ubicacion" class="control-label"></label>
+                <select class="form-control" name="Ubicacion" id="Ubicacion"
+                        asp-items="@(new SelectList(ViewBag.listaUbicacion, "Value", "Text", @ViewBag.idUbicacion))">
+                </select>
+            </div>
+            <div class="form-group col-md-12 autocomplete">
+                <label asp-for="Delito" class="control-label"></label>
+                <input asp-for="Delito" id="CompletaDelito" maxlength="300" class="form-control inputSearch"/>
+                <span asp-validation-for="Delito" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Unidad de Investigación</label>
+                <select class="form-control" name="UnidadInvestigacion" id="UnidadInvestigacion"
+                        asp-items="@(new SelectList(ViewBag.listaUnidadI, "Value", "Text", @ViewBag.idUnidad))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaDetencion" class="control-label"></label>
+                <input asp-for="FechaDetencion" type="date" class="form-control" />
+                <span asp-validation-for="FechaDetencion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Situacion" class="control-label">Sitación Jurídica</label>
+                <select class="form-control" name="UnidadInvestigacion" id="UnidadInvestigacion"
+                        asp-items="@(new SelectList(ViewBag.listaSituacionJuridica, "Value", "Text", @ViewBag.idSituacionJuridica))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RealizoEntrevista" class="control-label">¿Se realizó entrevista?</label>
+                <select class="form-control" name="RealizoEntrevista" id="RealizoEntrevista"
+                        asp-items="@(new SelectList(ViewBag.listaRealizoE, "Value", "Text", @ViewBag.idRealizoE))">
+                </select>
+            </div>
+
+            @* Bloque Si realizo entrevista *@
+            <div class="form-group" id="bloqueEntrevista" name="bloqueEntrevista" style="@(ViewBag.RealizoEntrevista=="NEGATIVA" ? "display:none":string.Empty)">
+
+                <div class="form-group">
+                    <label asp-for="TipoDetenido" class="control-label">¿Qué tipo de detenido es?</label>
+                    <select class="form-control" name="TipoDetenido" id="TipoDetenido"
+                            asp-items="@(new SelectList(ViewBag.listaTipoDetenido, "Value", "Text", @ViewBag.idlTipoDetenido))">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Aer" class="control-label">Resultado Análisis de Evaluación de Riesgos</label>
+                    <select class="form-control" name="Aer" id="Aer"
+                            asp-items="@(new SelectList(ViewBag.listaAER, "Value", "Text", @ViewBag.idAER))">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Tamizaje" class="control-label"></label>
+                    <select class="form-control" name="Tamizaje" id="Tamizaje"
+                            asp-items="@(new SelectList(ViewBag.listaTamizaje, "Value", "Text", @ViewBag.idTamizaje))">
+                    </select>
+                </div>
+                @* Bloque Adolescentes *@
+                <div class="form-group" id="bloqueAdolescente" name="bloqueAdolescente" style="@(ViewBag.TipoDetenido=="ADULTO" ? "display:none":string.Empty)">
+                    <div class="form-group">
+                        <label asp-for="Rcomparesencia" class="control-label">Riesgo de no comparesencia</label>
+                        <select class="form-control" name="Rcomparesencia" id="Rcomparesencia"
+                                asp-items="@(new SelectList(ViewBag.listaComparesencia, "Value", "Text", @ViewBag.idComparesencia))">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Rvictima" class="control-label">Riesgo a la víctima</label>
+                        <select class="form-control" name="Rvictima" id="Rvictima"
+                                asp-items="@(new SelectList(ViewBag.listaVictima, "Value", "Text", @ViewBag.idVictima))">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Robstaculizacion" class="control-label">Riesgo de obstaculizar</label>
+                        <select class="form-control" name="Robstaculizacion" id="Robstaculizacion"
+                                asp-items="@(new SelectList(ViewBag.listaObstaculizar, "Value", "Text", @ViewBag.idObstaculizar))">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Recomendacion" class="control-label"></label>
+                        <select class="form-control" name="Recomendacion" id="Recomendacion"
+                                asp-items="@(new SelectList(ViewBag.listaRecomendacion, "Value", "Text", @ViewBag.idRecomendacion))">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Antecedentes" class="control-label"></label>
+                    <select class="form-control" name="Antecedentes" id="Antecedentes"
+                            asp-items="@(new SelectList(ViewBag.listaAntecedentes, "Value", "Text", @ViewBag.idAntecedentes))">
+                    </select>
+                </div>
+                <div class="form-group" style="@(ViewBag.TieneAntecedentes=="NO" ? "display:none":string.Empty)" id="tieneAntecedentesDatos" name="tieneAntecedentesDatos">
+                    <label asp-for="AntecedentesDatos" class="control-label">Describa antecedentes</label>
+                    <textarea maxlength="500" class="form-control" rows="5" name="AntecedentesDatos" id="AntecedentesDatos"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <textarea maxlength="500" class="form-control" rows="5" name="Observaciones" id="Observaciones"></textarea>
+            </div>
+            <div class="form-group" hidden>
+                <label asp-for="PersonaIdPersona" class="control-label"></label>
+                <input asp-for="PersonaIdPersona" class="form-control" />
+                <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
+            <div class="input-group">
+                <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+

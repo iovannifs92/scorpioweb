@@ -107,6 +107,7 @@
                 }
             });
         });
+
         function autocomplete(inp, arr) {
             var currentFocus;
             inp.addEventListener("input", function (e) {
@@ -190,9 +191,6 @@
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("juez"), jueces);
     });
-
-
-
 </script>
 
 <h2>Crear Causa Penal</h2>

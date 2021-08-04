@@ -1,0 +1,187 @@
+﻿@model scorpioweb.Models.Serviciospreviosjuicio
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Serviciospreviosjuicio</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Paterno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Paterno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Materno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Materno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Sexo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Sexo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Edad)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Edad)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Calle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Calle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Colonia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Colonia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Domicilio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Domicilio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Telefono)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Telefono)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Papa)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Papa)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Mama)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Mama)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Ubicacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Ubicacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Delito)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Delito)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UnidadInvestigacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UnidadInvestigacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaDetencion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaDetencion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Situacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Situacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RealizoEntrevista)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RealizoEntrevista)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TipoDetenido)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TipoDetenido)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Aer)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Aer)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Tamizaje)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tamizaje)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Rcomparesencia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Rcomparesencia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Rvictima)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Rvictima)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Robstaculizacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Robstaculizacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Recomendacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Recomendacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Antecedentes)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Antecedentes)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AntecedentesDatos)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AntecedentesDatos)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Observaciones)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Observaciones)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PersonaIdPersona)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PersonaIdPersona)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdserviciosPreviosJuicio">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

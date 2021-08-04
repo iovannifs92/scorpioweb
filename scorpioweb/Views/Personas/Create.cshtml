@@ -43,6 +43,24 @@
                 $("#Pais, #Localidad").removeClass("col-md-6");
                 $("#Pais, #Localidad").addClass("col-md-3");
             }
+        });$('#lnPais').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                $("#lnEstado").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#lnMunicipio').html(items);
+                $("#lnMunicipio").val(0);
+                $("#Estado").css("display", "none");
+                $("#Municipio").css("display", "none");
+                $("#Pais, #Localidad").removeClass("col-md-3");
+                $("#Pais, #Localidad").addClass("col-md-6");
+            }
+            else {
+                $("#Estado").css("display", "block");
+                $("#Municipio").css("display", "block");
+                $("#Pais, #Localidad").removeClass("col-md-6");
+                $("#Pais, #Localidad").addClass("col-md-3");
+            }
         });
         /*Combobox Domicilio*/
         $('#estadoD').change(function () {

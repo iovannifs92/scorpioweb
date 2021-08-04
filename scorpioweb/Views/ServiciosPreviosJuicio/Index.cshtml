@@ -1,0 +1,205 @@
+﻿@model PaginatedList<scorpioweb.Models.Serviciospreviosjuicio>
+
+@{
+    ViewData["Title"] = "Control AER";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font: 16px Arial;
+    }
+
+    /*the container must be positioned relative:*/
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
+
+    .inputSearch {
+        border: 2px solid #f2f2f2;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+        .inputSearch[type=text] {
+            width: 100%;
+        }
+
+        .inputSearch[type=submit] {
+            background-color: DodgerBlue;
+            color: #f2f2f2;
+            cursor: pointer;
+        }
+
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #f2f2f2;
+    }
+</style>
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+</script>
+
+<h2>Control de Análisis de Evaluación de Riesgos</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="Index" class="btn btn-link">
+                Regresar al listado completo
+            </a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Sexo
+            </th>
+            <th>
+                Entrevista
+            </th>
+            <th>
+                Tipo Detenido
+            </th>
+            <th>
+                AER
+            </th>
+            <th>
+                Fecha de detención
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreCompleto)
+                </td>
+                <td>
+                    @switch (item.Sexo)
+                    {
+                        case "F":
+                            <span>FEMENINO</span>
+                            break;
+                        case "M":
+                            <span>MASCULINO</span>
+                            break;
+                        default:
+                            <span>NA</span>
+                            break;
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RealizoEntrevista)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoDetenido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Aer)
+                </td>
+                <td>
+                    @item.FechaDetencion.Value.ToString("dd-MMMM-yyyy")
+                </td>
+                <td>
+                    <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="Delete" asp-route-id="@item.IdserviciosPreviosJuicio">
+                        <a id="btnEditar" onclick="showModal('@Url.Action("Edit","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Editar Registro',@item.IdserviciosPreviosJuicio)" class="btn btn-success">
+                            <i class="fa fa-pencil"></i> Editar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+
+
+<div style="padding-top:1%">
+    @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
+    <a id="btnNuevoRegistro" name="btnNuevoRegistro" onclick="showModal('@Url.Action("Create","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Nuevo Registro')" class="btn btn-primary">
+        <i class="fa fa-plus"></i> Nuevo Registro
+    </a>
+</div>
