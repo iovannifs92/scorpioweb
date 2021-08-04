@@ -137,7 +137,7 @@
                         });
                     }));
                     response(resultset);
-                    
+
                     $("#btnCausaPenal").css("display", "block");
                 },
                 _removeIfInvalid: function (event, ui) {
@@ -353,6 +353,31 @@
             var asunto = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.asunto))');
             autocomplete(document.getElementById("AsuntoOficio"), asunto);
 
+            $('.ui-autocomplete-input').focus().val(@Html.Raw(Json.Serialize(@ViewBag.val)));
+            
+            var ReferenteImputado = document.getElementById("ReferenteImputado")
+            if (ReferenteImputado.value == "NO") {
+                Imputado.style.display = "none"
+            }
+            else {
+                Imputado.style.display = "block"
+            }
+            var ExisteVictima = document.getElementById("ExisteVictima")
+            if (ExisteVictima.value == "NO") {
+                Victima.style.display = "none"
+            }
+            else {
+                Victima.style.display = "block"
+            }
+            var TieneTermino = document.getElementById("TieneTermino")
+            var FechaTermino = document.getElementById("FechaTermino")
+            if (TieneTermino.value == "NO") {
+                FechaTermino.style.display = "none"
+            }
+            else {
+                FechaTermino.style.display = "block"
+            }
+
             $('#ReferenteImputado').change(function () {
                 var dat = $(this).children("option:selected").val();
                 if (dat == "SI") {
@@ -384,8 +409,8 @@
     </script>
 </head>
 <body>
-    <h2 class="text-center">
-        Control de Oficialía de Partes DGEPyMS
+    <h2 class="text-center" id="titulo" name="titulo">
+        @ViewBag.titulo
     </h2>
 
     <br />
@@ -393,8 +418,9 @@
     <br />
     <div class="row">
         <div class="col-sm-offset-3 col-sm-6 col-xs-12">
-            <form asp-action="Captura">
+            <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IdOficialia" />
                 <div class="form-group">
                     <label asp-for="Recibe" class="control-label">
                         ¿Quién recibe?
@@ -441,7 +467,7 @@
                     <label asp-for="Expide" class="control-label">
                         Expide
                     </label>
-                    <input id="Expide" name="Expide" type="text" maxlength="150" class="form-control" />
+                    <input asp-for="Expide" id="Expide" name="Expide" type="text" maxlength="150" class="form-control" />
                     <span asp-validation-for="Expide" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -454,7 +480,7 @@
                     </select>
                     <span asp-validation-for="ReferenteImputado" class="text-danger"></span>
                 </div>
-                <div id="Imputado" name="Imputado" style="display:block">
+                <div id="Imputado" name="Imputado">
                     <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="Sexo" class="control-label">
                             Sexo
@@ -523,7 +549,7 @@
                         </select>
                         <span asp-validation-for="ExisteVictima" class="text-danger"></span>
                     </div>
-                    <div id="Victima" name="Victima" style="padding-left:30px;display:none" class="col-md-12 col-sm-12">
+                    <div id="Victima" name="Victima" style="padding-left:30px;" class="col-md-12 col-sm-12">
                         <div class="form-group">
                             <label asp-for="NombreVictima" class="control-label">
                                 Nombre de la víctima
@@ -545,7 +571,7 @@
                     <label asp-for="AsuntoOficio" class="control-label">
                         ¿Cuál es el asunto del oficio?
                     </label>
-                    <input required id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" />
+                    <input required asp-for="AsuntoOficio" id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" />
                     <span asp-validation-for="AsuntoOficio" class="text-danger"></span>
                 </div>
                 <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
@@ -558,7 +584,7 @@
                     </select>
                     <span asp-validation-for="TieneTermino" class="text-danger"></span>
                 </div>
-                <div class="form-group col-xs-12" id="FechaTermino" name="FechaTermino" style="display:none">
+                <div class="form-group col-xs-12" id="FechaTermino" name="FechaTermino">
                     <label asp-for="FechaTermino" class="control-label">
                         ¿Cuál es la fecha de termino?
                     </label>
@@ -591,7 +617,7 @@
     </div>
 
     <div>
-        <a asp-action="Index">Regresar</a>
+        <a asp-action="EditRegistros">Regresar</a>
     </div>
 
     <!-- Modal Causa Penal -->
