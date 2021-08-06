@@ -34,6 +34,7 @@ namespace scorpioweb.Models
         public string AntecedentesDatos { get; set; }
         public string Observaciones { get; set; }
         public int? PersonaIdPersona { get; set; }
+        public string RutaAer { get; set; }
         public string NombreCompleto
         {
             get

@@ -252,8 +252,9 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,PersonaIdPersona")] Serviciospreviosjuicio serviciospreviosjuicio)
+        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones")] Serviciospreviosjuicio serviciospreviosjuicio)
         {
+            int idAER = 0;
             serviciospreviosjuicio.Nombre = normaliza(serviciospreviosjuicio.Nombre);
             serviciospreviosjuicio.Paterno = normaliza(serviciospreviosjuicio.Paterno);
             serviciospreviosjuicio.Materno = normaliza(serviciospreviosjuicio.Materno);
@@ -263,6 +264,34 @@ namespace scorpioweb.Controllers
             serviciospreviosjuicio.Mama = normaliza(serviciospreviosjuicio.Mama);
             serviciospreviosjuicio.AntecedentesDatos = normaliza(serviciospreviosjuicio.AntecedentesDatos);
             serviciospreviosjuicio.Observaciones = normaliza(serviciospreviosjuicio.Observaciones);
+
+            int cont = (from table in _context.Serviciospreviosjuicio
+                        select table.IdserviciosPreviosJuicio).Count();
+            if (cont != 0)
+            {
+                idAER = ((from table in _context.Serviciospreviosjuicio
+                              select table.IdserviciosPreviosJuicio).Max()) + 1;
+            }
+            else
+            {
+                idAER = 1;
+            }
+            
+
+            serviciospreviosjuicio.IdserviciosPreviosJuicio = idAER;
+
+            #region -Guardar archivo-
+            if (evidencia != null)
+            {
+                string file_name = idAER +"_"+ serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
+                serviciospreviosjuicio.RutaAer = file_name;
+                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
+                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                await evidencia.CopyToAsync(stream);
+                stream.Close();
+            }
+            #endregion
+
             _context.Add(serviciospreviosjuicio);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -337,7 +366,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,PersonaIdPersona")] Serviciospreviosjuicio serviciospreviosjuicio)
+        public async Task<IActionResult> Edit(IFormFile evidencia, [Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,PersonaIdPersona")] Serviciospreviosjuicio serviciospreviosjuicio)
         {
 
             if (ModelState.IsValid)
@@ -354,6 +383,29 @@ namespace scorpioweb.Controllers
                     serviciospreviosjuicio.AntecedentesDatos = normaliza(serviciospreviosjuicio.AntecedentesDatos);
                     serviciospreviosjuicio.Observaciones = normaliza(serviciospreviosjuicio.Observaciones);
                     var oldServiciospreviosjuicio = await _context.Serviciospreviosjuicio.FindAsync(serviciospreviosjuicio.IdserviciosPreviosJuicio);
+                    #region -EditarArchivo-
+                    if (evidencia == null)
+                    {
+                        serviciospreviosjuicio.RutaAer = oldServiciospreviosjuicio.RutaAer;
+                    }
+                    else
+                    {
+                        string file_name = serviciospreviosjuicio.IdserviciosPreviosJuicio + "_" + serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
+                        serviciospreviosjuicio.RutaAer = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
+
+                        if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                        {
+                            System.IO.File.Delete(Path.Combine(uploads, file_name));
+                        }
+
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await evidencia.CopyToAsync(stream);
+                        stream.Close();
+                    }
+                    #endregion
+
+
                     _context.Entry(oldServiciospreviosjuicio).CurrentValues.SetValues(serviciospreviosjuicio);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 

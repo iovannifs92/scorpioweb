@@ -114,7 +114,7 @@
                 <div id="DivComoConcluyo" class="form-group">
                     <label class="control-label">Como Concluyó</label>
                     <select class="form-control" name="ComoConcluyo" id="ComoConcluyo"
-                            asp-items="@(new SelectList(ViewBag.CierreCaso, "Value", "Text"))">
+                            asp-items="@(new SelectList(ViewBag.CierreCaso, "Value", "Text", ViewBag.idCierreCaso))">
                     </select>
                 </div>
                 <div class="form-group" id="DivNoArchivo">

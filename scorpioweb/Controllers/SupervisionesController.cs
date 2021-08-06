@@ -874,6 +874,7 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.CierreCaso = listaCierreCaso;
+            ViewBag.idCierreCaso = BuscaId(listaCierreCaso, supervision.ComoConcluyo);
             ViewBag.listaSeCerroCaso = listaNaSiNo;
             ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, supervision.SeCerroCaso);
             ViewBag.cierre = supervision.SeCerroCaso;
