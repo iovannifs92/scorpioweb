@@ -1105,7 +1105,7 @@ namespace scorpioweb.Controllers
             return estado;
         }
 
-  
+
         public string generaMunicipio(string id)
         {
             string municipio = "";
@@ -1874,15 +1874,53 @@ namespace scorpioweb.Controllers
 
             }
 
-              
+
 
             ViewData["joinTbalasProceso1"] = lists;
 
             #endregion
+            return View();
+        }
+        #region -Presentaciones periodicas-
+        public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var presentciones = await _context.Registrohuella.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            if (presentciones.Count == 0)
+            {
+                return RedirectToAction("SinSupervision");
+            }
+
+            List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>(); 
+
+            var queripersonasis = from p in _context.Persona
+                                  join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
+                                  join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
+                                  where p.IdPersona == id
+                                  select new PresentacionPeriodicaPersona
+                                  {
+                                      presentacionperiodicaVM = pp,
+                                      registrohuellaVM = rh,
+                                      personaVM = p
+                                  };
+            var maxfra = queripersonasis.OrderByDescending(u => u.presentacionperiodicaVM.FechaFirma);
+             if (maxfra == null)
+            {
+                ViewBag.MessageNull = "No ha registrado asistencias";
+            }
+            ViewData["joinTbalasProceso1"] = maxfra;
+
+          
+
 
 
             return View();
         }
+        #endregion
 
         public ActionResult SinSupervision()
         {

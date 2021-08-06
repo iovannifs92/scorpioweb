@@ -56,6 +56,10 @@
                 @Html.DisplayFor(modelItem => item.UltimaActualización)
             </th>
             <td>
+                <a class="btn btn-light" asp-action="PresentacionPeriodicaPersona" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-calendar-check"></i>
+                    Presentaciones
+                </a>
                 <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
                     <i class="fa fa-eye"></i>
                     Detalles

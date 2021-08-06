@@ -1,0 +1,51 @@
+﻿@model IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>
+
+    @{
+    ViewData["Title"] = "Procesos";
+    Layout = "/Views/Shared/_Layout.cshtml";
+    }
+
+
+
+
+    @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
+        {
+        <h3>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h3>
+        break;
+        }
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID Registro</th>
+                    <th>Fecha de firma</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable
+                <scorpioweb.Models.PresentacionPeriodicaPersona>
+                    )
+                    {
+                <tr>
+                    <TH>
+                        @Html.DisplayFor(modelItem => item.registrohuellaVM.IdregistroHuella)
+                    </TH>
+                    <td>
+                        @if (item.presentacionperiodicaVM.FechaFirma != null)
+                        {
+                            @(item.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
+                        }
+                    </td>
+                    <td>
+                        Pres
+                    </td>
+                   
+                </tr>
+                    }
+
+            </tbody>
+        </table>
+        <a asp-action="Index" class="btn btn-link">
+            Regresar al listado completo
+        </a>
