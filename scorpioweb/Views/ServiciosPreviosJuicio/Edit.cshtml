@@ -121,7 +121,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Edit">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
             <div class="form-group">
@@ -189,7 +189,7 @@
             </div>
             <div class="form-group col-md-12 autocomplete">
                 <label asp-for="Delito" class="control-label"></label>
-                <input asp-for="Delito" id="CompletaDelito" maxlength="300" class="form-control inputSearch"/>
+                <input asp-for="Delito" id="CompletaDelito" maxlength="300" class="form-control inputSearch" />
                 <span asp-validation-for="Delito" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -284,8 +284,12 @@
                 <input asp-for="PersonaIdPersona" class="form-control" />
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
+            <div class="custom-file form-group col-lg-12" style="padding-bottom:20px">
+                <label class="control-label">Reporte Técnico</label>
+                <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+            </div>
             <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
-            <div class="input-group">
+            <div class="input-group" style="padding-top:1%">
                 <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
             </div>
         </form>

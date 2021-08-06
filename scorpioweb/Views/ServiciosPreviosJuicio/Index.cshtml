@@ -10,10 +10,6 @@
         box-sizing: border-box;
     }
 
-    body {
-        font: 16px Arial;
-    }
-
     /*the container must be positioned relative:*/
     .autocomplete {
         position: relative;
@@ -124,53 +120,64 @@
             <th>
                 Fecha de detención
             </th>
+            <th>
+                Reporte Técnico
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NombreCompleto)
-                </td>
-                <td>
-                    @switch (item.Sexo)
-                    {
-                        case "F":
-                            <span>FEMENINO</span>
-                            break;
-                        case "M":
-                            <span>MASCULINO</span>
-                            break;
-                        default:
-                            <span>NA</span>
-                            break;
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RealizoEntrevista)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TipoDetenido)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Aer)
-                </td>
-                <td>
-                    @item.FechaDetencion.Value.ToString("dd-MMMM-yyyy")
-                </td>
-                <td>
-                    <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="Delete" asp-route-id="@item.IdserviciosPreviosJuicio">
-                        <a id="btnEditar" onclick="showModal('@Url.Action("Edit","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Editar Registro',@item.IdserviciosPreviosJuicio)" class="btn btn-success">
-                            <i class="fa fa-pencil"></i> Editar
-                        </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Borrar
-                        </button>
-                    </form>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCompleto)
+            </td>
+            <td>
+                @switch (item.Sexo)
+                {
+                    case "F":
+                        <span>FEMENINO</span>
+                        break;
+                    case "M":
+                        <span>MASCULINO</span>
+                        break;
+                    default:
+                        <span>NA</span>
+                        break;
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RealizoEntrevista)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoDetenido)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aer)
+            </td>
+            <td>
+                @(item.FechaDetencion != null ? item.FechaDetencion.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+            </td>
+            <td>
+                @if (item.RutaAer != null)
+                {
+                    <a id="btnEditar" href="~/AER/@Html.DisplayFor(modelItem => item.RutaAer)" target="_blank">
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                }
+            </td>
+            <td>
+                <form onsubmit="return confirm('¿Deseas borrar este registro?');" asp-action="Delete" asp-route-id="@item.IdserviciosPreviosJuicio">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("Edit","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Editar Registro',@item.IdserviciosPreviosJuicio)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Borrar
+                    </button>
+                </form>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
