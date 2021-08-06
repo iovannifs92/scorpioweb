@@ -17,9 +17,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>ID Registro</th>
                     <th>Fecha de firma</th>
-                    <th>Tipo</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,19 +26,12 @@
                     )
                     {
                 <tr>
-                    <TH>
-                        @Html.DisplayFor(modelItem => item.registrohuellaVM.IdregistroHuella)
-                    </TH>
                     <td>
                         @if (item.presentacionperiodicaVM.FechaFirma != null)
                         {
                             @(item.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
                         }
-                    </td>
-                    <td>
-                        Pres
-                    </td>
-                   
+                    </td>                  
                 </tr>
                     }
 
