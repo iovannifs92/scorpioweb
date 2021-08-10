@@ -92,6 +92,30 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
+            //para er si la  persona tiene o no huella registrada
+
+            var queryhayhuella = from r in _context.Registrohuella
+                                 join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
+                                 group r by r.PersonaIdPersona into grup
+                                 select new
+                                 {
+                                     grup.Key,
+                                     Count = grup.Count()
+                                 };
+
+            foreach (var personaHuella in queryhayhuella)
+            {
+                if(personaHuella.Count >= 1) {
+
+                    ViewBag.personaIdPersona = personaHuella.Key;
+                };
+            }
+
+
+
+
+
+
             #region -ListaUsuarios-            
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -252,8 +276,7 @@ namespace scorpioweb.Controllers
                                       {
                                           grup.Key,
                                           Count = grup.Count()
-                                      }
-                          ;
+                                      };
 
             var supervisoresBD = from c in _context.Controlsupervisiones
                                  select new
@@ -1887,12 +1910,6 @@ namespace scorpioweb.Controllers
             if(id == null)
             {
                 return NotFound();
-            }
-
-            var presentciones = await _context.Registrohuella.Where(m => m.PersonaIdPersona == id).ToListAsync();
-            if (presentciones.Count == 0)
-            {
-                return RedirectToAction("SinSupervision");
             }
 
             List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>(); 
