@@ -65,20 +65,20 @@
                     <i class="fa fa-cogs"></i>
                     Procesos
                 </a>
-                @if (ViewBag.personaIdPersona == item.IdPersona)
-                {
+                @*@if (ViewBag.personaIdPersona == item.IdPersona)
+                {*@
                     <a class="btn btn-default" asp-action="PresentacionPeriodicaPersona" asp-route-id="@item.IdPersona">
                         <i class="fa fa-calendar"></i>
                         Presentaciones
                     </a>
-                }
-                else
+                    @*}*@
+                @*else
                 {
                     <a  style ="display:none;" class="btn btn-default" asp-action="PresentacionPeriodicaPersona" asp-route-id="@item.IdPersona">
                         <i class="fa fa-calendar"></i>
                         Presentaciones
                     </a>
-                }
+                }*@
 
                 @if (ViewBag.RolesUsuarios == item.Supervisor)
                 {

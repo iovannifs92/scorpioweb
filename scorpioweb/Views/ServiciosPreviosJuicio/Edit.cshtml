@@ -289,9 +289,12 @@
                 <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
             </div>
             <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo"))
+            {
             <div class="input-group" style="padding-top:1%">
                 <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
             </div>
+            }            
         </form>
     </div>
 </div>
