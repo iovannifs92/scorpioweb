@@ -61,7 +61,8 @@ namespace scorpioweb.Controllers
         private List<SelectListItem> listaUbicacion = new List<SelectListItem>
         {
             new SelectListItem{ Text = "C. Operativa", Value = "C. OPERATIVA" },
-            new SelectListItem{ Text = "Archivo", Value = "ARCHIVO" }
+            new SelectListItem{ Text = "Archivo", Value = "ARCHIVO" },
+            new SelectListItem{ Text = "C. Ejecución de Penas", Value = "C. EJECUCION PENAS" }
         };
 
         private List<SelectListItem> ListaUnidadInvestigación = new List<SelectListItem>

@@ -13,7 +13,7 @@
     {
         adminUser = true;
     }
-    if (item == "Oficialia")
+    if (item == "Oficialia" || item=="Asistente")
     {
         oficialia = true;
     }
@@ -53,19 +53,18 @@
             </p>
         </div>
     </div>
-    <div class="col-sm-3 col-md-3 card text-center">
-        <div class="card-body">
-            <h4 class="card-title">
-                <a asp-controller="Causaspenales" asp-action="ListadeCausas">
-                    <img class="card-img-bottom" src="~/images/cp.png" alt="Card image cap" style="padding-bottom:5%;">
-                    Control de causas penales
-                </a>
-            </h4>
-            <p class="card-text">
-                Control y asgnación de casusas penales
-            </p>
-        </div>
-    </div>
+
+    @if (!User.IsInRole("Asistentes"))
+    {
+        <h4 class="card-title">
+            <a asp-controller="Causaspenales" asp-action="ListadeCausas">
+                <img class="card-img-bottom" src="~/images/cp.png" alt="Card image cap" style="padding-bottom:5%;">
+                Control de causas penales
+            </a>
+        </h4>
+    }
+    
+
 
     @if (!oficialia)
     {
