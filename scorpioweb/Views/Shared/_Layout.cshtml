@@ -60,8 +60,11 @@
                         <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
                         <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>
                     }
-                    @*<li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>*@
-                </ul>
+                    @if (User.IsInRole("Masteradmin"))
+                    {
+                        <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
+                    }
+                    </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
