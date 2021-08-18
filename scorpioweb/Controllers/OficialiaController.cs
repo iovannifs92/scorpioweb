@@ -422,6 +422,45 @@ namespace scorpioweb.Controllers
             return View(oficialia);
         }
 
+
+        public async Task<IActionResult> Reportes()
+        {
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            List<Oficialia> ListaRecibe = new List<Oficialia>();
+            int i = 0;
+            ListaUsuarios.Add(new SelectListItem
+            {
+                Text = "Selecciona",
+                Value = i.ToString()
+            });
+            i++;
+            foreach (var user in userManager.Users)
+            {
+                ListaUsuarios.Add(new SelectListItem
+                {
+                    Text = user.ToString(),
+                    Value = i.ToString()
+                });
+                i++;
+            }
+
+            ListaRecibe = _context.Oficialia
+                .FromSql("CALL spRecibeOficialia")
+                .ToList();
+
+
+            ViewBag.usuarios = ListaUsuarios;
+            ViewBag.recibe = ListaRecibe;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reportes(DateTime FechaInicio, DateTime FechaFin, string entrega, string captura)
+        {
+            return RedirectToAction("Reportes", "Oficialia");
+        }
+
         #region -OficialiaExists-
         private bool OficialiaExists(int id)
         {
