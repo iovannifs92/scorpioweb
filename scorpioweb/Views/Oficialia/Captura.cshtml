@@ -235,36 +235,66 @@
                 var Cambio = document.getElementById("Cambio").value;
                 var distrito = document.getElementById("distrito").value;
                 var cp = document.getElementById("cp").value;
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/Causaspenales/CreateCausaPenal",
-                    traditional: true,
-                    data: {
-                        juez, Cambio, distrito, cp,
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            $("#btnCausaPenal").css("display", "none");
-                            $("#modalCausaPenal").modal('hide');
-                            var idCausaPenal = document.getElementById("idCausaPenal");
-                            idCausaPenal.value = response.responseText;
 
-                            // si se crean varias cp, la ultima es la que se muestra como se espera
-                            $("#combobox").append('<option value="0">' + cp + ", Distrito " + distrito + ", " + juez + '</option>');
-                            var cb = document.getElementById("combobox");
-                            cb.value = "0";
-
-                            //https://stackoverflow.com/questions/6197664/set-value-to-jquery-autocomplete-combobox
-                            $('.ui-autocomplete-input').focus().val(cp + ", Distrito " + distrito + ", " + juez);
-                        } else {
-                            alert(response.responseText);
+                var numerosNuevos = cp.split("/");
+                cpc = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.cp))');
+                matches = "";
+                for (let i = 0; i < cpc.length; i++)
+                {
+                    var numeros = cpc[i].causaPenal.split("/");
+                    if (numerosNuevos.length == numeros.length)
+                    {
+                        let j = 0;
+                        for (; j < numeros.length; j++)
+                            if (parseInt(numerosNuevos[j]) != parseInt(numeros[j]))
+                                break;
+                        if (j == numeros.length)
+                        {
+                            if (distrito === cpc[i].distrito && juez === cpc[i].juez)
+                            {
+                                matches += cpc[i].causaPenalCompleta + "\n";
+                            }
                         }
-                    },
-                    error: function (response) {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                     }
-                });
+                }
+
+                if (matches === "") {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/Causaspenales/CreateCausaPenal",
+                        traditional: true,
+                        data: {
+                            juez, Cambio, distrito, cp,
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $("#btnCausaPenal").css("display", "none");
+                                $("#modalCausaPenal").modal('hide');
+                                var idCausaPenal = document.getElementById("idCausaPenal");
+                                idCausaPenal.value = response.responseText;
+
+                                // si se crean varias cp, la ultima es la que se muestra como se espera
+                                $("#combobox").append('<option value="0">' + cp + ", Distrito " + distrito + ", " + juez + '</option>');
+                                var cb = document.getElementById("combobox");
+                                cb.value = "0";
+
+                                //https://stackoverflow.com/questions/6197664/set-value-to-jquery-autocomplete-combobox
+                                $('.ui-autocomplete-input').focus().val(cp + ", Distrito " + distrito + ", " + juez);
+                            } else {
+                                alert(response.responseText);
+                            }
+                        },
+                        error: function (response) {
+                            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                        }
+                    });
+                }
+                else
+                {
+                    matches = "Esta causa penal ya se encuentran dentro del sistema\n\n" + matches;
+                    alert(matches);
+                }
             });
 
             function autocomplete(inp, arr) {

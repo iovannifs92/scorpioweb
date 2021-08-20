@@ -260,42 +260,53 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                int idCausaPenal = ((from table in _context.Causapenal
-                                     select table.IdCausaPenal).Max()) + 1;
-                causapenal.IdCausaPenal = idCausaPenal;
-                #region -Delitos-
-                for (int i = 0; i < datosDelitos.Count; i = i + 3)
+                var first = (from a in _context.Causapenal
+                          where a.CausaPenal == cp && a.Juez == juez && a.Distrito == distrito
+                          select a).FirstOrDefault();
+
+                if (first == null)
                 {
-                    if (datosDelitos[i][1] == currentUser)
+                    int idCausaPenal = ((from table in _context.Causapenal
+                                         select table.IdCausaPenal).Max()) + 1;
+                    causapenal.IdCausaPenal = idCausaPenal;
+                    #region -Delitos-
+                    for (int i = 0; i < datosDelitos.Count; i = i + 3)
                     {
-                        delitoDB.Tipo = datosDelitos[i][0];
-                        delitoDB.Modalidad = datosDelitos[i + 1][0];
-                        delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
-                        delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
+                        if (datosDelitos[i][1] == currentUser)
+                        {
+                            delitoDB.Tipo = datosDelitos[i][0];
+                            delitoDB.Modalidad = datosDelitos[i + 1][0];
+                            delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
+                            delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
 
-                        _context.Add(delitoDB);
-                        await _context.SaveChangesAsync(null, 1);
+                            _context.Add(delitoDB);
+                            await _context.SaveChangesAsync(null, 1);
+                        }
                     }
-                }
 
-                for (int i = 0; i < datosDelitos.Count; i++)
+                    for (int i = 0; i < datosDelitos.Count; i++)
+                    {
+                        if (datosDelitos[i][1] == currentUser)
+                        {
+                            datosDelitos.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    #endregion
+
+                    causapenal.Cnpp = cnpp;
+                    causapenal.Juez = juez;
+                    causapenal.Distrito = distrito;
+                    causapenal.Cambio = cambio;
+                    causapenal.CausaPenal = cp;
+                    _context.Add(causapenal);
+                    await _context.SaveChangesAsync(null, 1);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
                 {
-                    if (datosDelitos[i][1] == currentUser)
-                    {
-                        datosDelitos.RemoveAt(i);
-                        i--;
-                    }
-                }
-                #endregion
 
-                causapenal.Cnpp = cnpp;
-                causapenal.Juez = juez;
-                causapenal.Distrito = distrito;
-                causapenal.Cambio = cambio;
-                causapenal.CausaPenal = cp;
-                _context.Add(causapenal);
-                await _context.SaveChangesAsync(null, 1);
-                return RedirectToAction(nameof(Index));
+                }
             }
             return View(causapenal);
         }
