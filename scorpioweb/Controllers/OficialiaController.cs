@@ -8,6 +8,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
+using SautinSoft.Document;
+using SautinSoft.Document.Drawing;
+using Microsoft.AspNetCore.Hosting;
+using System.Data;
+using System.IO;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Text;
+using SautinSoft.Document.MailMerging;
+using System.Globalization;
 
 namespace scorpioweb.Controllers
 {
@@ -18,14 +29,17 @@ namespace scorpioweb.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         public static List<List<string>> datosDelitos = new List<List<string>>();
+        private readonly IHostingEnvironment _hostingEnvironment;
         #endregion
 
         #region -Constructor-
-        public OficialiaController(penas2Context context, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public OficialiaController(penas2Context context, RoleManager<IdentityRole> roleManager, 
+            UserManager<ApplicationUser> userManager, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             this.roleManager = roleManager;
             this.userManager = userManager;
+            _hostingEnvironment = hostingEnvironment;
         }
         #endregion
 
@@ -425,41 +439,117 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> Reportes()
         {
-            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
-            List<Oficialia> ListaRecibe = new List<Oficialia>();
-            int i = 0;
-            ListaUsuarios.Add(new SelectListItem
+            List<SelectListItem> ListaCapturista = new List<SelectListItem>();
+            List<SelectListItem> ListaRecibe = new List<SelectListItem>();
+
+            var c = from o in _context.Oficialia
+                    group o by new { o.Capturista }
+                    into grupo
+                    select grupo.FirstOrDefault();
+
+            foreach (var capturista in c)
             {
-                Text = "Selecciona",
-                Value = i.ToString()
-            });
-            i++;
-            foreach (var user in userManager.Users)
-            {
-                ListaUsuarios.Add(new SelectListItem
+                ListaCapturista.Add(new SelectListItem
                 {
-                    Text = user.ToString(),
-                    Value = i.ToString()
+                    Text = capturista.Capturista,
+                    Value = capturista.Capturista
                 });
-                i++;
             }
 
-            ListaRecibe = _context.Oficialia
-                .FromSql("CALL spRecibeOficialia")
-                .ToList();
+            var r = from o in _context.Oficialia
+                    group o by new { o.Recibe }
+                    into grupo
+                    select grupo.FirstOrDefault();
+
+            foreach (var recibe in r)
+            {
+                ListaRecibe.Add(new SelectListItem
+                {
+                    Text = recibe.Recibe,
+                    Value = recibe.Recibe
+                });
+            }
 
 
-            ViewBag.usuarios = ListaUsuarios;
+            ViewBag.capturista = ListaCapturista;
             ViewBag.recibe = ListaRecibe;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Reportes(DateTime FechaInicio, DateTime FechaFin, string entrega, string captura)
+        public void Reportes(DateTime FechaInicio, DateTime FechaFin, string entrega, string captura)
         {
-            return RedirectToAction("Reportes", "Oficialia");
+
+            IEnumerable<OficialiaReporte> dataOficialia = from o in _context.Oficialia.AsEnumerable()
+                              where o.Capturista == captura
+                              && o.Recibe == entrega
+                              && (o.FechaRecepcion >= FechaInicio && o.FechaRecepcion <= FechaFin)
+                              select new OficialiaReporte{
+                                  FechaRecepcion = (o.FechaRecepcion.Value).ToString("dd-MMMM-yyyy"),
+                                  FechaEmision= (o.FechaEmision.Value).ToString("dd-MMMM-yyyy"),
+                                  Expide=o.Expide,
+                                  AsuntoOficio=o.AsuntoOficio,
+                                  Paterno=o.Paterno,
+                                  Materno=o.Materno,
+                                  Nombre=o.Nombre,
+                                  CausaPenal=o.CausaPenal,
+                                  CarpetaEjecucion=o.CarpetaEjecucion,
+                                  Observaciones=o.Observaciones
+                              };
+
+            //item.FechaDetencion.Value.ToString("dd-MMMM-yyyy")
+
+            //string xmlOficialia = SerializeObject<List<Oficialia>>(listaOficialia);
+
+
+            #region -GeneraDocumento-
+            DataSet ds = new DataSet();
+            //ds.ReadXml(new StringReader(xmlOficialia));
+
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateOficialia.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\reporteOficialia.docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveUnusedFields;
+            dc.MailMerge.Execute(dataOficialia, "OficialiaReporte");
+            
+
+            dc.Save(resultPath);
+
+
+            Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
+            //Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
+            #endregion
+
+            //return RedirectToAction("Reportes", "Oficialia");
         }
+
+        #region -SerializeObject-
+        public static string SerializeObject<T>(T obj)
+        {
+            var serializer = new XmlSerializer(typeof(T));
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Encoding = new UnicodeEncoding(true, true);
+            settings.Indent = true;
+            //settings.OmitXmlDeclaration = true;  
+
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", "");
+
+            using (StringWriter textWriter = new StringWriter())
+            {
+                using (XmlWriter xmlWriter = XmlWriter.Create(textWriter, settings))
+                {
+                    serializer.Serialize(xmlWriter, obj, ns);
+                }
+
+                return textWriter.ToString(); //This is the output as a string  
+            }
+        }
+        #endregion
 
         #region -OficialiaExists-
         private bool OficialiaExists(int id)

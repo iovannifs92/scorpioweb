@@ -20,6 +20,8 @@
     <Compile Remove="Migrations\20201102175557_AddRutaFoto.Designer.cs" />
     <Compile Remove="Migrations\20201112182713_rutafoto.cs" />
     <Compile Remove="Migrations\20201112182713_rutafoto.Designer.cs" />
+    <Compile Remove="Migrations\20210818184702_StoredProcedure.cs" />
+    <Compile Remove="Migrations\20210818184702_StoredProcedure.Designer.cs" />
   </ItemGroup>
 
 

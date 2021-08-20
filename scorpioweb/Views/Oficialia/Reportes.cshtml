@@ -28,18 +28,15 @@
                     ¿A quién se entrega?
                 </label>
                 <select required class="form-control" name="entrega" id="entrega"
-                        asp-items="@(new SelectList(ViewBag.usuarios, "Text","Text"))">
+                        asp-items="@(new SelectList(ViewBag.recibe, "Text","Text"))">
                 </select>
             </div>
             <div class="form-group">
                 <label class="control-label">
                     ¿Quién captura?
                 </label>
-                <select required class="form-control" name="captura" id="captura">
-                    <option value="Iovanni">Iovanni</option>
-                    <option value="Lili">Lili</option>
-                    <option value="Miguel">Miguel</option>
-                    <option value="Rafa">Rafa</option>
+                <select required class="form-control" name="captura" id="captura" 
+                        asp-items="@(new SelectList(ViewBag.capturista, "Text","Text"))">
                 </select>
             </div>
             <div class="form-group">
