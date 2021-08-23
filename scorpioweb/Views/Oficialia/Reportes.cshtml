@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Reportes Oficialia";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<h2>Generación Reportes</h2>
+<div class="row">
+    <div class="col-sm-6 col-xs-12">
+        <form asp-action="Reportes">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td><b>Fecha de entrega a la coordinación:</b></td>
+                        <td>
+                            <input required type="date" class="form-control" name="FechaInicio" id="FechaInicio" />
+                        </td>
+                        <td>
+                            <input required type="date" class="form-control" name="FechaFin" id="FechaFin" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-group">
+                <label class="control-label">
+                    ¿A quién se entrega?
+                </label>
+                <select required class="form-control" name="entrega" id="entrega"
+                        asp-items="@(new SelectList(ViewBag.recibe, "Text","Text"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">
+                    ¿Quién captura?
+                </label>
+                <select required class="form-control" name="captura" id="captura" 
+                        asp-items="@(new SelectList(ViewBag.capturista, "Text","Text"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="btnImprime" name="btnImprime" class="btn btn-primary">
+                    <i class="fa fa-print"></i> Imprimir Reporte
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
