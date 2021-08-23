@@ -237,6 +237,13 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuarios = users;
             #endregion
 
+            List<Causapenal> listaCP = new List<Causapenal>();
+            List<Causapenal> CPVM = _context.Causapenal.ToList();
+            listaCP = (
+                from CPTable in CPVM
+                select CPTable
+                ).ToList();
+            ViewBag.cp = listaCP;
             ViewBag.directorio = _context.Directoriojueces.Select(Directoriojueces => Directoriojueces.Area).ToList();
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
@@ -260,53 +267,41 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                var first = (from a in _context.Causapenal
-                          where a.CausaPenal == cp && a.Juez == juez && a.Distrito == distrito
-                          select a).FirstOrDefault();
-
-                if (first == null)
+                int idCausaPenal = ((from table in _context.Causapenal
+                                        select table.IdCausaPenal).Max()) + 1;
+                causapenal.IdCausaPenal = idCausaPenal;
+                #region -Delitos-
+                for (int i = 0; i < datosDelitos.Count; i = i + 2)
                 {
-                    int idCausaPenal = ((from table in _context.Causapenal
-                                         select table.IdCausaPenal).Max()) + 1;
-                    causapenal.IdCausaPenal = idCausaPenal;
-                    #region -Delitos-
-                    for (int i = 0; i < datosDelitos.Count; i = i + 3)
+                    if (datosDelitos[i][1] == currentUser)
                     {
-                        if (datosDelitos[i][1] == currentUser)
-                        {
-                            delitoDB.Tipo = datosDelitos[i][0];
-                            delitoDB.Modalidad = datosDelitos[i + 1][0];
-                            delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
-                            delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
+                        delitoDB.Tipo = datosDelitos[i][0];
+                        delitoDB.Modalidad = datosDelitos[i + 1][0];
+                        delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
 
-                            _context.Add(delitoDB);
-                            await _context.SaveChangesAsync(null, 1);
-                        }
+                        _context.Add(delitoDB);
+                        await _context.SaveChangesAsync(null, 1);
                     }
-
-                    for (int i = 0; i < datosDelitos.Count; i++)
-                    {
-                        if (datosDelitos[i][1] == currentUser)
-                        {
-                            datosDelitos.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                    #endregion
-
-                    causapenal.Cnpp = cnpp;
-                    causapenal.Juez = juez;
-                    causapenal.Distrito = distrito;
-                    causapenal.Cambio = cambio;
-                    causapenal.CausaPenal = cp;
-                    _context.Add(causapenal);
-                    await _context.SaveChangesAsync(null, 1);
-                    return RedirectToAction(nameof(Index));
                 }
-                else
+
+                for (int i = 0; i < datosDelitos.Count; i++)
                 {
-
+                    if (datosDelitos[i][1] == currentUser)
+                    {
+                        datosDelitos.RemoveAt(i);
+                        i--;
+                    }
                 }
+                #endregion
+
+                causapenal.Cnpp = cnpp;
+                causapenal.Juez = juez;
+                causapenal.Distrito = distrito;
+                causapenal.Cambio = cambio;
+                causapenal.CausaPenal = cp;
+                _context.Add(causapenal);
+                await _context.SaveChangesAsync(null, 1);
+                return Json(new { success = true, responseText = Url.Action("Index", "Causaspenales") });
             }
             return View(causapenal);
         }
@@ -581,7 +576,6 @@ namespace scorpioweb.Controllers
             {
                 delitoDB.Tipo = Tipo;
                 delitoDB.Modalidad = Modalidad;
-                delitoDB.EspecificarDelito = EspecificarDelito;
                 delitoDB.CausaPenalIdCausaPenal = id;
 
                 int idDelito = ((from table in _context.Delito
@@ -746,7 +740,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delito(int id, [Bind("IdDelito,Tipo,Modalidad,EspecificarDelito,CausaPenalIdCausaPenal")] Delito delito)
+        public async Task<IActionResult> Delito(int id, [Bind("IdDelito,Tipo,Modalidad,CausaPenalIdCausaPenal")] Delito delito)
         {
             if (id != delito.IdDelito)
             {
