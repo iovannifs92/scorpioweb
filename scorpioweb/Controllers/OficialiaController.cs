@@ -478,13 +478,13 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public void Reportes(DateTime FechaInicio, DateTime FechaFin, string entrega, string captura)
+        public void Reportes(DateTime fechaInicio, DateTime fechaFin, string entrega, string captura)
         {
 
             IEnumerable<OficialiaReporte> dataOficialia = from o in _context.Oficialia.AsEnumerable()
                               where o.Capturista == captura
                               && o.Recibe == entrega
-                              && (o.FechaRecepcion >= FechaInicio && o.FechaRecepcion <= FechaFin)
+                              && (o.FechaRecepcion >= fechaInicio && o.FechaRecepcion <= fechaFin)
                               select new OficialiaReporte{
                                   FechaRecepcion = (o.FechaRecepcion.Value).ToString("dd-MMMM-yyyy"),
                                   FechaEmision= (o.FechaEmision.Value).ToString("dd-MMMM-yyyy"),
@@ -502,7 +502,7 @@ namespace scorpioweb.Controllers
 
             //string xmlOficialia = SerializeObject<List<Oficialia>>(listaOficialia);
 
-
+            
             #region -GeneraDocumento-
             DataSet ds = new DataSet();
             //ds.ReadXml(new StringReader(xmlOficialia));
@@ -512,7 +512,19 @@ namespace scorpioweb.Controllers
 
             DocumentCore dc = DocumentCore.Load(templatePath);
 
+            var dataSource = new[]
+            {
+                new
+                {
+                    FechaInicio=fechaInicio.ToString("dd-MMMM-yyyy"),
+                    FechaFin=fechaFin.ToString("dd-MMMM-yyyy"),
+                    Entrega=entrega.Substring(0, (entrega.IndexOf("@"))),
+                    Captura=captura.Substring(0, (captura.IndexOf("@")))
+                }
+            };
+
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveUnusedFields;
+            dc.MailMerge.Execute(dataSource);
             dc.MailMerge.Execute(dataOficialia, "OficialiaReporte");
             
 
