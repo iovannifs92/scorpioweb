@@ -45,7 +45,7 @@
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">Acerca de</a></li>
         <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contacto</a></li>
         <li><a asp-area="" asp-controller="Firmas" asp-action="Create">Firmas</a></li>*@
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Asistentes"))
+                    @if (User.IsInRole("Asistentes"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
@@ -63,7 +63,7 @@
                         <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
                         <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                     }

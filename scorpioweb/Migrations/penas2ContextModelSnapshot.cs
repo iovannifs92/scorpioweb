@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using scorpioweb.Models;
 using System;
 
@@ -745,6 +743,8 @@ namespace scorpioweb.Migrations
                     b.Property<string>("EstadoCivil")
                         .HasMaxLength(45);
 
+                    b.Property<string>("Familiares");
+
                     b.Property<DateTime?>("Fnacimiento")
                         .HasColumnName("FNacimiento")
                         .HasColumnType("datetime");
@@ -796,6 +796,8 @@ namespace scorpioweb.Migrations
 
                     b.Property<string>("Propiedades")
                         .HasMaxLength(45);
+
+                    b.Property<string>("ReferenciasPersonales");
 
                     b.Property<string>("Supervisor")
                         .HasMaxLength(100);
@@ -1110,6 +1112,50 @@ namespace scorpioweb.Migrations
                     b.HasKey("IdTrabajo");
 
                     b.ToTable("trabajo");
+                });
+
+            modelBuilder.Entity("scorpioweb.Models.Victima", b =>
+                {
+                    b.Property<int>("IdVictima")
+                        .HasColumnName("idVictima");
+
+                    b.Property<int>("SupervisionIdSupervision")
+                        .HasColumnName("Supervision_idSupervision");
+
+                    b.Property<string>("ConoceDetenido")
+                        .HasMaxLength(2);
+
+                    b.Property<string>("Direccion")
+                        .HasMaxLength(300);
+
+                    b.Property<string>("Edad")
+                        .HasMaxLength(45);
+
+                    b.Property<string>("Nombre")
+                        .HasMaxLength(150);
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("TiempoConocerlo")
+                        .HasMaxLength(75);
+
+                    b.Property<string>("TipoRelacion")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Victimacol")
+                        .HasColumnName("victimacol")
+                        .HasMaxLength(45);
+
+                    b.Property<string>("ViveSupervisado")
+                        .HasMaxLength(45);
+
+                    b.HasKey("IdVictima", "SupervisionIdSupervision");
+
+                    b.HasIndex("SupervisionIdSupervision")
+                        .HasName("fk_Victima_Supervision_idx");
+
+                    b.ToTable("victima");
                 });
 #pragma warning restore 612, 618
         }
