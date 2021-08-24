@@ -178,7 +178,7 @@ namespace scorpioweb.Controllers
                 }
                 oficialia.IdOficialia = idOficialia;
 
-                oficialia.Capturista = capturista;
+                oficialia.Capturista = User.Identity.Name;
                 oficialia.Recibe = recibe;
                 oficialia.MetodoNotificacion = metodoNotificacion;
                 oficialia.NumOficio = normaliza(numOficio);
