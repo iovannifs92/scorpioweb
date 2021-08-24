@@ -4,6 +4,101 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+
+
+
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<link href="~/css/bootstrap4-toggle.css" rel="stylesheet" />
+<script src="~/Documentos/script.js"></script>
+<script src="~/js/bootstrap4-toggle.js"></script>
+
+
+<script type="text/javascript">
+    var tipo = 0;
+
+     function candado(id, candado){
+        var personaidpersona = id;
+         $.ajax({
+             type: "POST",
+             dataType: "json",
+             url: "/Personas/LoockCandado",
+             traditional: true,
+             data: {
+                 datoCandado: [candado, personaidpersona],
+             },
+             success: function (response) {
+                 if (response.success) {
+                     location.reload();
+                 } else {
+                     alert(response.responseText);
+                 }
+             },
+                // if (response.success) {
+                //     alert("Dentro del response");
+                //     if (response.responseText[0] == 1) {
+                //         //var x = getElementById("PersonaIdPersona");
+                //         alert("Dentro de color primary");
+                //         $("#on").removeClass("btn-danger");
+                //         $("#on").addClass("btn-primary");
+                //         $("#des").removeClass("fa-lock");
+                //         $("#des").addClass("fa-unlock");
+                //        } else {
+                //         alert("Dentro de color danger");
+                //         $("#on").removeClass("btn-primary");
+                //          $("#on").addClass("btn-danger");
+                //         $("#des").removeClass("fa-unlock");
+                //         $("#des").addClass("fa-lock");
+                //        }
+                //    } else {
+                //        alert(response.responseText);
+                //    }
+                //},
+             error: function (response) {
+                 location.reload();
+                }
+            });
+            //$("#info").text("U checked me, place some code here");
+        }
+//        else {
+//alert("1")
+//            $.ajax({
+//                type: "POST",
+//                dataType: "json",
+//                url: "/Personas/LoockCandado",
+//                traditional: true,
+//                data: {
+//                    datoCandado: [candado, personaidpersona],
+//                },
+//                success: function (response) {
+//                    alert("estado candado" + response.responseText);
+//                    if (response.success) {
+//                        if (response.responseText >= 1) {
+//                            alert("Cambiando de color primary " + field);
+//                            $("#on").addClass("btn btn-primary");
+//                        } else {
+//                            alert("Cambiando de color danger " + field);
+//                            $("#on").addClass("btn btn-danger");
+//                        }
+//                        //location.reload();
+//                    } else {
+//                        alert(response.responseText);
+//                    }
+//                },
+//                error: function (response) {
+//                   // alert("Datos NO Guardados");
+//                    //location.reload();
+//                }
+//            });
+
+        //}
+
+
+      // alert("Entrando al JSON")
+
+
+</script>
+
 <h2>Supervisados MC y SCP</h2>
 <p>
     <a asp-action="Create">Nueva entrevista de encuadre</a>
@@ -44,41 +139,54 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Supervisor)
-                </td>
-                <th>
-                    @Html.DisplayFor(modelItem => item.UltimaActualización)
-                </th>
-                <td>
-                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
-                        <i class="fa fa-eye"></i>
-                        Detalles
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supervisor)
+            </td>
+            <th>
+                @Html.DisplayFor(modelItem => item.UltimaActualización)
+            </th>
+            <td>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-eye"></i>
+                    Detalles
+                </a>
+                <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-cogs"></i>
+                    Procesos
+                </a>
+                @if (ViewBag.RolesUsuario == item.Supervisor)
+                {
+                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
+                        <i class="fa fa-pencil"></i>
+                        Editar
                     </a>
-                    <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
-                        <i class="fa fa-cogs"></i>
-                        Procesos
+                }
+                @if (ViewBag.RolesUsuario != item.Supervisor)
+                {
+                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona" style="display:none;">
+                        <i class="fa fa-pencil"></i>
+                        Editar
                     </a>
-                    @if (ViewBag.RolesUsuario == item.Supervisor)
+                }
+            </td>
+            <td>
+                @if (ViewBag.RolesUsuarios == item.Supervisor)
+                {
+                    @if (item.Candado == 1)
                     {
-                        <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
-                            <i class="fa fa-pencil"></i>
-                            Editar
-                        </a>
+                        <button id="on" name="on" class="btn btn-primary" onclick="candado(@item.IdPersona, false)"><i id="des" name="des" class="fa fa-unlock"></i></button>
                     }
-                    @if (ViewBag.RolesUsuario != item.Supervisor)
+                    else
                     {
-                        <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona" style="display:none;">
-                            <i class="fa fa-pencil"></i>
-                            Editar
-                        </a>
+                        <button id="on " name="on" class="btn btn-danger" onclick="candado(@item.IdPersona, true)"><i id="des" name="des" class="fa fa-lock"></i></button>
                     }
-                </td>
-            </tr>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

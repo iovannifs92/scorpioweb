@@ -24,6 +24,8 @@ using Google.DataTable.Net.Wrapper.Extension;
 using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
 
+using System.Threading;
+
 
 
 namespace scorpioweb.Controllers
@@ -93,7 +95,6 @@ namespace scorpioweb.Controllers
             int? pageNumber)
         {
             //para er si la  persona tiene o no huella registrada
-
             var queryhayhuella = from r in _context.Registrohuella
                                  join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
                                  group r by r.PersonaIdPersona into grup
@@ -110,10 +111,6 @@ namespace scorpioweb.Controllers
                     ViewBag.personaIdPersona = personaHuella.Key;
                 };
             }
-
-
-
-
 
 
             #region -ListaUsuarios-            
@@ -183,6 +180,9 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
+
+
+           // Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -245,6 +245,7 @@ namespace scorpioweb.Controllers
                     break;
             }
             int pageSize = 10;
+           // Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -1206,6 +1207,7 @@ namespace scorpioweb.Controllers
                 persona.ReferenciasPersonales = normaliza(referenciasPersonales);
                 persona.UltimaActualización = DateTime.Now;
                 persona.Capturista = currentUser;
+                persona.Candado = 0;
                 #endregion
 
                 #region -Domicilio-
@@ -4283,5 +4285,64 @@ namespace scorpioweb.Controllers
             return Content(json);
         }
         #endregion
+
+        #region -Actualizar Candado-
+        public JsonResult LoockCandado(Persona persona, string[] datoCandado)
+      //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
+        {
+            persona.Candado = Convert.ToSByte(datoCandado[0] ==  "true");
+            persona.IdPersona = Int32.Parse(datoCandado[1]);
+
+            var empty = (from p in _context.Persona
+                         where p.IdPersona == persona.IdPersona
+                         select p);
+
+            if (empty.Any())
+            {
+                var query = (from p in _context.Persona
+                             where p.IdPersona == persona.IdPersona
+                             select p).FirstOrDefault();
+                query.Candado = persona.Candado;
+                _context.SaveChanges();
+            }
+            var stadoc = (from p in _context.Persona
+                          where p.IdPersona == persona.IdPersona
+                          select p.Candado).FirstOrDefault();
+            //return View();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona)});
+        }
+        public JsonResult getEstadodeCanadado(int id)
+        {
+            //IEnumerable<Persona> shops = _context.Persona;
+            //return Json(shops.Select(u => new { u.Candado, u.IdPersona }).Where(u => u.IdPersona == id));
+
+            var stadoc = (from p in _context.Persona
+                          where p.IdPersona == id
+                          select p.Candado);
+
+            return Json(stadoc);
+        }
+        #endregion
     }
 }
+
+ //public JsonResult GetMunicipio(int EstadoId)
+ //       {
+ //           TempData["message"] = DateTime.Now;
+ //           List<Municipios> municipiosList = new List<Municipios>();
+
+ //           if (EstadoId != 0)
+ //           {
+
+ //               municipiosList = (from Municipios in _context.Municipios
+ //                                 where Municipios.EstadosId == EstadoId
+ //                                 select Municipios).ToList();
+ //           }
+ //           else
+ //           {
+ //               municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+ //           }
+
+ //           return Json(new SelectList(municipiosList, "Id", "Municipio"));
+ //       }

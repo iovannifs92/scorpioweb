@@ -33,10 +33,12 @@ namespace scorpioweb.Models
         public string Propiedades { get; set; }
         public string Curp { get; set; }
         public string ConsumoSustancias { get; set; }
-        public string Familiares { get; set; }
-        public string ReferenciasPersonales { get; set; }
         public DateTime? UltimaActualización { get; set; }
         public string Supervisor { get; set; }
+        public string Familiares { get; set; }
+        public string ReferenciasPersonales { get; set; }
+        public string Capturista { get; set; }
+        public sbyte? Candado { get; set; }
         public string NombreCompleto
         {
             get
@@ -45,6 +47,6 @@ namespace scorpioweb.Models
             }
         }
         public string rutaFoto { get; set; }
-        public string Capturista { get; set; }
+
     }
 }
