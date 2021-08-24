@@ -157,7 +157,7 @@ namespace scorpioweb.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Captura(Oficialia oficialia, string capturista, string recibe, string metodoNotificacion, string numOficio, string expide,
+        public async Task<IActionResult> Captura(Oficialia oficialia, string recibe, string metodoNotificacion, string numOficio, string expide,
             string referenteImputado, string sexo, string paterno, string materno, string nombre, string carpetaEjecucion, string existeVictima,
             string nombreVictima, string direccionVictima, string asuntoOficio, string tieneTermino, string usuarioTurnar, string observaciones,
             int? idCausaPenal, sbyte? Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino)
