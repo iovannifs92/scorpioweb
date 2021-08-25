@@ -1065,9 +1065,27 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
 
+            int idPersona = ((from table in _context.Persona
+                              select table.IdPersona).Max()) + 1;
+            //int id= (Session["id"] != null && Session["id"].ToString() != string.Empty) ? Convert.ToInt32(Session["id"]) : idPersona;
+
+
             listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListadoEstados = listaEstados;
+            ViewBag.idPersonas = idPersona;
             return View();
+        }
+
+        public void setCookie(string key, string value, int? expireTime)
+        {
+            CookieOptions option = new CookieOptions();
+
+            if (expireTime.HasValue)
+                option.Expires = DateTime.Now.AddMinutes(expireTime.Value);
+            else
+                option.Expires = DateTime.Now.AddMilliseconds(10);
+
+            Response.Cookies.Append(key, value, option);
         }
 
         public string normaliza(string normalizar)

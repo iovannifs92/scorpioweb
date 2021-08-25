@@ -802,8 +802,9 @@
 
 @ViewBag.Javascript
 <h2>Entrevista de encuadre</h2>
-@*<h2 id="usuario">iovanni</h2>*@
-<hr />
+<h2>@ViewBag.idPersonas</h2>
+
+<br />
 <div class="row">
     <div class="col-md-4">
         <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="forma">
