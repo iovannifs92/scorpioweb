@@ -17,7 +17,7 @@
 <script type="text/javascript">
     var tipo = 0;
 
-     function candado(id, candado){
+    function candado(id, candado) {
         var personaidpersona = id;
          $.ajax({
              type: "POST",
@@ -150,17 +150,31 @@
                 @Html.DisplayFor(modelItem => item.UltimaActualización)
             </th>
             <td>
-                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                <a style="margin-top:10px;" class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
                     <i class="fa fa-eye"></i>
                     Detalles
                 </a>
-                <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
+                <a style="margin-top:10px;" class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.IdPersona">
                     <i class="fa fa-cogs"></i>
                     Procesos
                 </a>
+                @*@if (ViewBag.personaIdPersona == item.IdPersona)
+        {*@
+                <a style="margin-top:10px;" class="btn btn-default" asp-action="PresentacionPeriodicaPersona" asp-route-id="@item.IdPersona">
+                    <i class="fa fa-calendar"></i>
+                    Presentaciones
+                </a>
+                @*}*@
+                @*else
+        {
+            <a  style ="display:none;" class="btn btn-default" asp-action="PresentacionPeriodicaPersona" asp-route-id="@item.IdPersona">
+                <i class="fa fa-calendar"></i>
+                Presentaciones
+            </a>
+        }*@
                 @if (ViewBag.RolesUsuario == item.Supervisor)
                 {
-                    <a class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
+                    <a style="margin-top:10px;" class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
                         <i class="fa fa-pencil"></i>
                         Editar
                     </a>
@@ -174,16 +188,13 @@
                 }
             </td>
             <td>
-                @if (ViewBag.RolesUsuarios == item.Supervisor)
+                @if (item.Candado == 0)
                 {
-                    @if (item.Candado == 1)
-                    {
-                        <button id="on" name="on" class="btn btn-primary" onclick="candado(@item.IdPersona, false)"><i id="des" name="des" class="fa fa-unlock"></i></button>
-                    }
-                    else
-                    {
-                        <button id="on " name="on" class="btn btn-danger" onclick="candado(@item.IdPersona, true)"><i id="des" name="des" class="fa fa-lock"></i></button>
-                    }
+                    <button id="on" name="on" class="btn btn-primary" onclick="candado(@item.IdPersona, true)"><i id="des" name="des" class="fa fa-unlock"></i></button>
+                }
+                else
+                {
+                    <button id="on " name="on" class="btn btn-danger" onclick="candado(@item.IdPersona, false)"><i id="des" name="des" class="fa fa-lock"></i></button>
                 }
             </td>
         </tr>

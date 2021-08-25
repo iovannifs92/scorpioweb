@@ -111,8 +111,6 @@ namespace scorpioweb.Controllers
                     ViewBag.personaIdPersona = personaHuella.Key;
                 };
             }
-
-
             #region -ListaUsuarios-            
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
