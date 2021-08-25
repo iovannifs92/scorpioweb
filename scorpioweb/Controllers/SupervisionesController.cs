@@ -703,7 +703,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
         #region -Aer-
         public async Task<IActionResult> EditAer(int? id, string nombre, string cp)
         {
@@ -1056,8 +1055,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
-
         #region -EditPlaneacionestrategica-
         public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
         {
@@ -1303,6 +1300,8 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
+
+
         #region -Create Victima-
         public IActionResult CreateVictima(int? id, string nombre, string cp)
         {
@@ -1354,14 +1353,13 @@ namespace scorpioweb.Controllers
             }
             return View(victima);
         }
-        #endregion
 
         public async Task<IActionResult> Editvictima(int? id)
         {
             if (id == null)
             {
                 return NotFound();
-            }            
+            }
 
             var Victima = await _context.Victima.SingleOrDefaultAsync(m => m.IdVictima == id);
             if (Victima == null)
@@ -1372,8 +1370,12 @@ namespace scorpioweb.Controllers
             ViewBag.ConoceDetenido = listaSiNoNa;
             ViewBag.idConoceDetenido = BuscaId(listaSiNoNa, Victima.ConoceDetenido);
 
+            #endregion
 
-            #region Relacion
+
+
+
+        #region Relacion
             List<SelectListItem> ListaRelacion;
             ListaRelacion = new List<SelectListItem>
             {
