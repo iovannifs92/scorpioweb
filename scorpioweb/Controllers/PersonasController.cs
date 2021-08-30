@@ -25,8 +25,7 @@ using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
 
 using System.Threading;
-
-
+using Newtonsoft.Json.Linq;
 
 namespace scorpioweb.Controllers
 {
@@ -86,8 +85,47 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -Metodos Generales-
+        public string normaliza(string normalizar)
+        {
+            if (!String.IsNullOrEmpty(normalizar))
+            {
+                normalizar = normalizar.ToUpper();
+            }
+            else
+            {
+                normalizar = "S-D";
+            }
+            return normalizar;
+        }
 
-        // GET: Personas
+        public string removeSpaces(string str)
+        {
+            while (str.Length > 0 && str[0] == ' ')
+            {
+                str = str.Substring(1);
+            }
+            while (str.Length > 0 && str[str.Length - 1] == ' ')
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+            return str;
+        }
+
+        public static DateTime validateDatetime(string value)
+        {
+            try
+            {
+                return DateTime.Parse(value, new System.Globalization.CultureInfo("pt-BR"));
+            }
+            catch
+            {
+                return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
+            }
+        }
+        #endregion
+
+        #region -Index-
         public async Task<IActionResult> Index(
             string sortOrder,
             string currentFilter,
@@ -106,7 +144,8 @@ namespace scorpioweb.Controllers
 
             foreach (var personaHuella in queryhayhuella)
             {
-                if(personaHuella.Count >= 1) {
+                if (personaHuella.Count >= 1)
+                {
 
                     ViewBag.personaIdPersona = personaHuella.Key;
                 };
@@ -180,11 +219,12 @@ namespace scorpioweb.Controllers
             int pageSize = 10;
 
 
-           // Response.Headers.Add("Refresh", "5");
+            // Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+        #endregion
 
-
+        #region -ListadoSupervisor-
         public async Task<IActionResult> ListadoSupervisor(
             string sortOrder,
             string currentFilter,
@@ -243,100 +283,12 @@ namespace scorpioweb.Controllers
                     break;
             }
             int pageSize = 10;
-           // Response.Headers.Add("Refresh", "5");
+            // Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
-
-        #region -AsignaSupervision-
-
-        public async Task<IActionResult> AsignacionSupervision()
-        {
-            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
-            int i = 0;
-            foreach (var user in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
-                {
-                    ListaUsuarios.Add(new SelectListItem
-                    {
-                        Text = user.ToString(),
-                        Value = i.ToString()
-                    });
-                    i++;
-                }
-            }
-            ViewBag.ListadoUsuarios = ListaUsuarios;
-
-            var supervisoresScorpio = from s in _context.Supervision
-                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                                      where s.EstadoSupervision == "VIGENTE"
-                                      group p by p.Supervisor into grup
-                                      select new
-                                      {
-                                          grup.Key,
-                                          Count = grup.Count()
-                                      };
-
-            var supervisoresBD = from c in _context.Controlsupervisiones
-                                 select new
-                                 {
-                                     c.Supervisor,
-                                     c.Supervisados
-                                 };
-
-            var result = (from s in supervisoresScorpio
-                          join b in supervisoresBD on s.Key equals b.Supervisor
-                          select new
-                          {
-                              b.Supervisor,
-                              Supervisados = s.Count + b.Supervisados
-                          }).ToList();
-
-            var recomendar = (((from r in result
-                                orderby r.Supervisados ascending
-                                select new
-                                {
-                                    r.Supervisor
-                                }).Take(1))).ToArray();
-
-            string recomendacion = (recomendar[0].Supervisor).ToString();
-
-            ViewBag.Recomendacion = recomendacion;
-            return View(await _context.Persona.ToListAsync());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditSupervisor(Persona persona)
-        {
-            int id = persona.IdPersona;
-            string supervisor = persona.Supervisor;
-
-            var personaUpdate = await _context.Persona
-                .FirstOrDefaultAsync(p => p.IdPersona == id);
-
-            personaUpdate.Supervisor = supervisor;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PersonaExists(persona.IdPersona))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction("MenuMCSCP");
-        }
-
         #endregion
 
+        #region -MenuMCSCP-
         public async Task<IActionResult> MenuMCSCP()
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
@@ -542,6 +494,97 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuario = rolUsuario;
             return View();
         }
+        #endregion
+
+        #region -AsignaSupervision-
+
+        public async Task<IActionResult> AsignacionSupervision()
+        {
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            int i = 0;
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+
+            var supervisoresScorpio = from s in _context.Supervision
+                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                                      where s.EstadoSupervision == "VIGENTE"
+                                      group p by p.Supervisor into grup
+                                      select new
+                                      {
+                                          grup.Key,
+                                          Count = grup.Count()
+                                      };
+
+            var supervisoresBD = from c in _context.Controlsupervisiones
+                                 select new
+                                 {
+                                     c.Supervisor,
+                                     c.Supervisados
+                                 };
+
+            var result = (from s in supervisoresScorpio
+                          join b in supervisoresBD on s.Key equals b.Supervisor
+                          select new
+                          {
+                              b.Supervisor,
+                              Supervisados = s.Count + b.Supervisados
+                          }).ToList();
+
+            var recomendar = (((from r in result
+                                orderby r.Supervisados ascending
+                                select new
+                                {
+                                    r.Supervisor
+                                }).Take(1))).ToArray();
+
+            string recomendacion = (recomendar[0].Supervisor).ToString();
+
+            ViewBag.Recomendacion = recomendacion;
+            return View(await _context.Persona.ToListAsync());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSupervisor(Persona persona)
+        {
+            int id = persona.IdPersona;
+            string supervisor = persona.Supervisor;
+
+            var personaUpdate = await _context.Persona
+                .FirstOrDefaultAsync(p => p.IdPersona == id);
+
+            personaUpdate.Supervisor = supervisor;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PersonaExists(persona.IdPersona))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("MenuMCSCP");
+        }
+
+        #endregion
 
         #region -Detalles-
 
@@ -733,6 +776,7 @@ namespace scorpioweb.Controllers
 
         #region -Entrevista de encuadre insertar-
 
+        #region -porBORRAR-
         public ActionResult guardarSustancia(string[] datosConsumo)
         {
             string currentUser = User.Identity.Name;
@@ -744,7 +788,95 @@ namespace scorpioweb.Controllers
             return Json(new { success = true, responseText = "Datos Guardados con éxito" });
 
         }
+        public ActionResult agregarSustancias()
+        {
+            //por si no se vacian las listas despues de guardar el modal
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosSustancias.Count; i++)
+            {
+                if (datosSustancias[i][1] == currentUser)
+                {
+                    datosSustancias.RemoveAt(i);
+                    i--;
+                }
+            }
 
+            return Json(new { success = true });
+        }
+        public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
+        {
+            string currentUser = User.Identity.Name;
+            if (tipoGuardado == 1)
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosFamiliares.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+            }
+            else if (tipoGuardado == 2)
+            {
+                for (int i = 0; i < datosFamiliar.Length; i++)
+                {
+                    datosReferencias.Add(new List<String> { datosFamiliar[i], currentUser });
+                }
+            }
+
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+
+        }
+        public ActionResult agregarAsientoFamiliar(int tipo)
+        {
+            string currentUser = User.Identity.Name;
+            if (tipo == 1)
+            {
+                for (int i = 0; i < datosFamiliares.Count; i++)
+                {
+                    if (datosFamiliares[i][1] == currentUser)
+                    {
+                        datosFamiliares.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            else if (tipo == 2)
+            {
+                for (int i = 0; i < datosReferencias.Count; i++)
+                {
+                    if (datosReferencias[i][1] == currentUser)
+                    {
+                        datosReferencias.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            return Json(new { success = true });
+        }
+        public ActionResult guardarDomcililiosecudario(string[] datosDS)
+        {
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosDS.Length; i++)
+            {
+                datosDomiciolioSecundario.Add(new List<String> { datosDS[i], currentUser });
+            }
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+
+        }
+        public ActionResult guardarFamiliarExtranjero(string[] datosFE)
+        {
+            string currentUser = User.Identity.Name;
+            for (int i = 0; i < datosFE.Length; i++)
+            {
+                datosFamiliaresExtranjero.Add(new List<String> { datosFE[i], currentUser });
+            }
+
+            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
+
+        }
+        #endregion
+
+        #region -EditaSustancias-
         public ActionResult siguienteSustancia(string[] datosConsumo)
         {
             string currentUser = User.Identity.Name;
@@ -791,65 +923,9 @@ namespace scorpioweb.Controllers
             return Json(new { success = true });
         }
 
-        public ActionResult agregarSustancias()
-        {
-            //por si no se vacian las listas despues de guardar el modal
-            string currentUser = User.Identity.Name;
-            for (int i = 0; i < datosSustancias.Count; i++)
-            {
-                if (datosSustancias[i][1] == currentUser)
-                {
-                    datosSustancias.RemoveAt(i);
-                    i--;
-                }
-            }
+        #endregion
 
-            return Json(new { success = true });
-        }
-
-
-        public ActionResult guardarDomcililiosecudario(string[] datosDS)
-        {
-            string currentUser = User.Identity.Name;
-            for (int i = 0; i < datosDS.Length; i++)
-            {
-                datosDomiciolioSecundario.Add(new List<String> { datosDS[i], currentUser });
-            }
-
-            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-
-        }
-
-        public ActionResult agregarAgregardomiciliosecuendario()
-        {
-            datosDomiciolioSecundario = new List<List<string>>();
-
-            return Json(new { success = true });
-        }
-
-        public ActionResult guardarFamiliar(string[] datosFamiliar, int tipoGuardado)
-        {
-            string currentUser = User.Identity.Name;
-            if (tipoGuardado == 1)
-            {
-                for (int i = 0; i < datosFamiliar.Length; i++)
-                {
-                    datosFamiliares.Add(new List<String> { datosFamiliar[i], currentUser });
-                }
-            }
-            else if (tipoGuardado == 2)
-            {
-                for (int i = 0; i < datosFamiliar.Length; i++)
-                {
-                    datosReferencias.Add(new List<String> { datosFamiliar[i], currentUser });
-                }
-            }
-
-
-            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-
-        }
-
+        #region -EditaFamiliar-
         public ActionResult siguienteFamiliar(string[] datosFamiliar, int tipoGuardado)
         {
             string currentUser = User.Identity.Name;
@@ -953,48 +1029,13 @@ namespace scorpioweb.Controllers
             }
             return Json(new { success = true });
         }
+        #endregion
 
-
-
-
-        public ActionResult agregarAsientoFamiliar(int tipo)
+        public ActionResult agregarAgregardomiciliosecuendario()
         {
-            string currentUser = User.Identity.Name;
-            if (tipo == 1)
-            {
-                for (int i = 0; i < datosFamiliares.Count; i++)
-                {
-                    if (datosFamiliares[i][1] == currentUser)
-                    {
-                        datosFamiliares.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-            else if (tipo == 2)
-            {
-                for (int i = 0; i < datosReferencias.Count; i++)
-                {
-                    if (datosReferencias[i][1] == currentUser)
-                    {
-                        datosReferencias.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
+            datosDomiciolioSecundario = new List<List<string>>();
+
             return Json(new { success = true });
-        }
-
-        public ActionResult guardarFamiliarExtranjero(string[] datosFE)
-        {
-            string currentUser = User.Identity.Name;
-            for (int i = 0; i < datosFE.Length; i++)
-            {
-                datosFamiliaresExtranjero.Add(new List<String> { datosFE[i], currentUser });
-            }
-
-            return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-
         }
 
         public ActionResult agregarFamiliaresExtranjeros()
@@ -1012,6 +1053,7 @@ namespace scorpioweb.Controllers
             return Json(new { success = true });
         }
 
+        #region -Estados y Municipios-
         public JsonResult GetMunicipio(int EstadoId)
         {
             TempData["message"] = DateTime.Now;
@@ -1052,80 +1094,6 @@ namespace scorpioweb.Controllers
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
         }
 
-
-
-
-        // GET: Personas/Create
-        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
-        public IActionResult Create(Estados Estados)
-        {
-            //datosSustancias.Clear();            
-            List<Estados> listaEstados = new List<Estados>();
-            listaEstados = (from table in _context.Estados
-                            select table).ToList();
-
-            int idPersona = ((from table in _context.Persona
-                              select table.IdPersona).Max()) + 1;
-            //int id= (Session["id"] != null && Session["id"].ToString() != string.Empty) ? Convert.ToInt32(Session["id"]) : idPersona;
-
-
-            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
-            ViewBag.ListadoEstados = listaEstados;
-            ViewBag.idPersonas = idPersona;
-            return View();
-        }
-
-        public void setCookie(string key, string value, int? expireTime)
-        {
-            CookieOptions option = new CookieOptions();
-
-            if (expireTime.HasValue)
-                option.Expires = DateTime.Now.AddMinutes(expireTime.Value);
-            else
-                option.Expires = DateTime.Now.AddMilliseconds(10);
-
-            Response.Cookies.Append(key, value, option);
-        }
-
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "S-D";
-            }
-            return normalizar;
-        }
-
-
-        public string removeSpaces(string str)
-        {
-            while (str.Length > 0 && str[0] == ' ')
-            {
-                str = str.Substring(1);
-            }
-            while (str.Length > 0 && str[str.Length - 1] == ' ')
-            {
-                str = str.Substring(0, str.Length - 1);
-            }
-            return str;
-        }
-
-        public static DateTime validateDatetime(string value)
-        {
-            try
-            {
-                return DateTime.Parse(value, new System.Globalization.CultureInfo("pt-BR"));
-            }
-            catch
-            {
-                return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
-            }
-        }
-
         public string generaEstado(string id)
         {
             string estado = "";
@@ -1164,6 +1132,21 @@ namespace scorpioweb.Controllers
             }
             return municipio;
         }
+        #endregion
+
+        #region -CREATE-
+        // GET: Personas/Create
+        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
+        public IActionResult Create(Estados Estados)
+        {
+            //datosSustancias.Clear();            
+            List<Estados> listaEstados = new List<Estados>();
+            listaEstados = (from table in _context.Estados
+                            select table).ToList();
+            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
+            ViewBag.ListadoEstados = listaEstados;
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1174,8 +1157,8 @@ namespace scorpioweb.Controllers
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad,
             string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string cuentaDomicilioSecundario,
-            string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,
-            string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
+            /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
+        string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
             string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE,
             string trabaja, string tipoOcupacion, string puesto, string empleadorJefe, string enteradoProceso, string sePuedeEnterar, string tiempoTrabajando,
             string salario, string temporalidadSalario, string direccionT, string horarioT, string telefonoT, string observacionesT,
@@ -1184,7 +1167,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia)
+            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero)
         {
 
             string currentUser = User.Identity.Name;
@@ -1244,7 +1227,7 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 #region -Domicilio Secundario-   
-                domiciliosecundario.Motivo = motivoDS;
+                /*domiciliosecundario.Motivo = motivoDS;
                 domiciliosecundario.TipoDomicilio = tipoDomicilioDS;
                 domiciliosecundario.Calle = normaliza(calleDS);
                 domiciliosecundario.No = normaliza(noDS);
@@ -1257,7 +1240,7 @@ namespace scorpioweb.Controllers
                 domiciliosecundario.Cp = normaliza(cpDS);
                 domiciliosecundario.Referencias = normaliza(referenciasDS);
                 domiciliosecundario.Horario = normaliza(horarioDS);
-                domiciliosecundario.Observaciones = normaliza(observacionesDS);
+                domiciliosecundario.Observaciones = normaliza(observacionesDS);*/
                 #endregion
 
                 #region -Estudios-
@@ -1325,32 +1308,12 @@ namespace scorpioweb.Controllers
                 saludfisica.Observaciones = normaliza(observacionesSalud);
                 #endregion
 
-                #region -IdDomicilio-
+                #region -IdDomicilio-  
                 int idDomicilio = ((from table in _context.Domicilio
                                     select table.IdDomicilio).Max()) + 1;
                 domicilio.IdDomicilio = idDomicilio;
-                domiciliosecundario.IdDomicilio = idDomicilio;
+                //domiciliosecundario.IdDomicilio = idDomicilio;
                 #endregion
-
-
-                //insertar en ala bd temporal para veriicar el id
-                //var empty = (from tem in _context.
-                //             where ds.IdDomicilio == domseundario.IdDomicilio
-                //             select ds);ViewBag.listaEstudia
-
-
-                //if (!empty.Any())
-                //{
-                //    var query = (from a in _context.Domicilio
-                //                 where a.IdDomicilio == domseundario.IdDomicilio
-                //                 select a).FirstOrDefault();
-                //    query.DomcilioSecundario = "NO";
-                //    _context.SaveChanges();
-                //}
-
-
-
-
 
                 #region -IdPersona-
                 int idPersona = ((from table in _context.Persona
@@ -1366,88 +1329,79 @@ namespace scorpioweb.Controllers
                 saludfisica.PersonaIdPersona = idPersona;
 
                 #endregion
-                //#region Stored Procedure
-                //var con = new MySqlConnection("server=10.6.60.190;port=3306;user=administrador;password=ssp.2020;database=penas2");
-                //var cmd = new MySqlCommand("spScorpioInsertidtemporal", con);
-                //cmd.CommandType = CommandType.StoredProcedure;
-                //cmd.Parameters.AddWithValue("@var_idpersona", idPersona);
-                //cmd.Parameters.AddWithValue("@var_supervisor", currentUser);
-                //con.Open();
-                //cmd.ExecuteNonQuery();
-                //con.Close();
-                //#endregion
 
                 #region -ConsumoSustancias-
-                for (int i = 0; i < datosSustancias.Count; i = i + 5)
+                if (arraySustancias != null)
                 {
-                    if (datosSustancias[i][1] == currentUser)
-                    { /*Revisar el cambio de variable "iovanni" por a variable de usuario*/
-                        consumosustanciasBD.Sustancia = datosSustancias[i][0];
-                        consumosustanciasBD.Frecuencia = datosSustancias[i + 1][0];
-                        consumosustanciasBD.Cantidad = normaliza(datosSustancias[i + 2][0]);
-                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
-                        consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
+                    JArray sustancias = JArray.Parse(arraySustancias);
+
+                    for (int i = 0; i < sustancias.Count; i = i + 5)
+                    {
+                        consumosustanciasBD.Sustancia = sustancias[i].ToString();
+                        consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
+                        consumosustanciasBD.Cantidad = normaliza(sustancias[i + 2].ToString());
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(sustancias[i + 3].ToString());
+                        consumosustanciasBD.Observaciones = normaliza(sustancias[i + 4].ToString());
                         consumosustanciasBD.PersonaIdPersona = idPersona;
                         _context.Add(consumosustanciasBD);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
-
-                for (int i = 0; i < datosSustancias.Count; i++)
+                /*for (int i = 0; i < datosSustancias.Count; i++)
                 {
                     if (datosSustancias[i][1] == currentUser)
                     {
                         datosSustancias.RemoveAt(i);
                         i--;
                     }
-                }
+                }*/
                 #endregion
 
-                #region -Familiares-
-                for (int i = 0; i < datosFamiliares.Count; i = i + 13)
+                #region -FamiliarReferencia-
+                if (arrayFamiliarReferencia != null)
                 {
-                    if (datosFamiliares[i][1] == currentUser)
+                    JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
+                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
                     {
-                        asientoFamiliar.Nombre = normaliza(datosFamiliares[i][0]);
-                        asientoFamiliar.Relacion = datosFamiliares[i + 1][0];
+                        asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                        asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                         try
                         {
-                            asientoFamiliar.Edad = Int32.Parse(datosFamiliares[i + 2][0]);
+                            asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
                         }
                         catch
                         {
                             asientoFamiliar.Edad = 0;
                         }
-
-                        asientoFamiliar.Sexo = datosFamiliares[i + 3][0];
-                        asientoFamiliar.Dependencia = datosFamiliares[i + 4][0];
-                        asientoFamiliar.DependenciaExplica = normaliza(datosFamiliares[i + 5][0]);
-                        asientoFamiliar.VivenJuntos = datosFamiliares[i + 6][0];
-                        asientoFamiliar.Domicilio = normaliza(datosFamiliares[i + 7][0]);
-                        asientoFamiliar.Telefono = datosFamiliares[i + 8][0];
-                        asientoFamiliar.HorarioLocalizacion = normaliza(datosFamiliares[i + 9][0]);
-                        asientoFamiliar.EnteradoProceso = datosFamiliares[i + 10][0];
-                        asientoFamiliar.PuedeEnterarse = datosFamiliares[i + 11][0];
-                        asientoFamiliar.Observaciones = normaliza(datosFamiliares[i + 12][0]);
-                        asientoFamiliar.Tipo = "FAMILIAR";
+                        asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                        asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                        asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                        asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                        asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                        asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                        asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                        asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                        asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                        asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                        asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
                         asientoFamiliar.PersonaIdPersona = idPersona;
                         _context.Add(asientoFamiliar);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        
                     }
                 }
-
-                for (int i = 0; i < datosFamiliares.Count; i++)
+                /*for (int i = 0; i < datosFamiliares.Count; i++)
                 {
                     if (datosFamiliares[i][1] == currentUser)
                     {
                         datosFamiliares.RemoveAt(i);
                         i--;
                     }
-                }
+                }*/
                 #endregion
 
                 #region -Referencias-
-                for (int i = 0; i < datosReferencias.Count; i = i + 13)
+                /*for (int i = 0; i < datosReferencias.Count; i = i + 13)
                 {
                     if (datosReferencias[i][1] == currentUser)
                     {
@@ -1485,78 +1439,77 @@ namespace scorpioweb.Controllers
                         datosReferencias.RemoveAt(i);
                         i--;
                     }
-                }
+                }*/
                 #endregion
 
                 #region -Domicilio Secundario-
-                for (int i = 0; i < datosDomiciolioSecundario.Count; i = i + 14)
+                if (arrayDomSec != null)
                 {
-                    if (datosDomiciolioSecundario[i][1] == currentUser)
+                    JArray domSec = JArray.Parse(arrayDomSec);
+                    for (int i = 0; i < domSec.Count; i = i + 14)
                     {
-                        domiciliosecundario.Motivo = normaliza(datosDomiciolioSecundario[i][0]);
-                        domiciliosecundario.TipoDomicilio = datosDomiciolioSecundario[i + 1][0];
-                        domiciliosecundario.Calle = normaliza(datosDomiciolioSecundario[i + 2][0]);
-                        domiciliosecundario.No = normaliza(datosDomiciolioSecundario[i + 3][0]);
-                        domiciliosecundario.NombreCf = normaliza(datosDomiciolioSecundario[i + 4][0]);
-                        domiciliosecundario.Pais = datosDomiciolioSecundario[i + 5][0];
-                        domiciliosecundario.Estado = normaliza(datosDomiciolioSecundario[i + 6][0]);
-                        domiciliosecundario.Municipio = datosDomiciolioSecundario[i + 7][0];
-                        domiciliosecundario.Temporalidad = datosDomiciolioSecundario[i + 8][0];
-                        domiciliosecundario.ResidenciaHabitual = datosDomiciolioSecundario[i + 9][0];
-                        domiciliosecundario.Cp = datosDomiciolioSecundario[i + 10][0];
-                        domiciliosecundario.Referencias = normaliza(datosDomiciolioSecundario[i + 11][0]);
-                        domiciliosecundario.Horario = normaliza(datosDomiciolioSecundario[i + 12][0]);
-                        domiciliosecundario.Observaciones = normaliza(datosDomiciolioSecundario[i + 13][0]);
+                        domiciliosecundario.Motivo = normaliza(domSec[i].ToString());
+                        domiciliosecundario.TipoDomicilio = domSec[i + 1].ToString();
+                        domiciliosecundario.Calle = normaliza(domSec[i + 2].ToString());
+                        domiciliosecundario.No = normaliza(domSec[i + 3].ToString());
+                        domiciliosecundario.NombreCf = normaliza(domSec[i + 4].ToString());
+                        domiciliosecundario.Pais = domSec[i + 5].ToString();
+                        domiciliosecundario.Estado = normaliza(domSec[i + 6].ToString());
+                        domiciliosecundario.Municipio = domSec[i + 7].ToString();
+                        domiciliosecundario.Temporalidad = domSec[i + 8].ToString();
+                        domiciliosecundario.ResidenciaHabitual = domSec[i + 9].ToString();
+                        domiciliosecundario.Cp = domSec[i + 10].ToString();
+                        domiciliosecundario.Referencias = normaliza(domSec[i + 11].ToString());
+                        domiciliosecundario.Horario = normaliza(domSec[i + 12].ToString());
+                        domiciliosecundario.Observaciones = normaliza(domSec[i + 13].ToString());
                         domiciliosecundario.IdDomicilio = idDomicilio;
                         _context.Add(domiciliosecundario);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
 
-                for (int i = 0; i < datosDomiciolioSecundario.Count; i++)
+
+                /*for (int i = 0; i < datosDomiciolioSecundario.Count; i++)
                 {
                     if (datosDomiciolioSecundario[i][1] == currentUser)
                     {
                         datosDomiciolioSecundario.RemoveAt(i);
                         i--;
                     }
-                }
+                }*/
                 #endregion
 
-
-
-
                 #region -Familiares Extranjero-
-                for (int i = 0; i < datosFamiliaresExtranjero.Count; i = i + 12)
+                if (arrayFamExtranjero != null)
                 {
-                    if (datosFamiliaresExtranjero[i][1] == currentUser)
+                    JArray famExtranjero = JArray.Parse(arrayFamExtranjero);
+                    for (int i = 0; i < famExtranjero.Count; i = i + 12)
                     {
-                        familiaresForaneos.Nombre = normaliza(datosFamiliaresExtranjero[i][0]);
-                        familiaresForaneos.Relacion = datosFamiliaresExtranjero[i + 1][0];
-                        familiaresForaneos.Edad = Int32.Parse(datosFamiliaresExtranjero[i + 2][0]);
-                        familiaresForaneos.Sexo = datosFamiliaresExtranjero[i + 3][0];
-                        familiaresForaneos.TiempoConocerlo = datosFamiliaresExtranjero[i + 4][0];
-                        familiaresForaneos.Pais = datosFamiliaresExtranjero[i + 5][0];
-                        familiaresForaneos.Estado = normaliza(datosFamiliaresExtranjero[i + 6][0]);
-                        familiaresForaneos.Telefono = datosFamiliaresExtranjero[i + 7][0];
-                        familiaresForaneos.FrecuenciaContacto = datosFamiliaresExtranjero[i + 8][0];
-                        familiaresForaneos.EnteradoProceso = datosFamiliaresExtranjero[i + 9][0];
-                        familiaresForaneos.PuedeEnterarse = datosFamiliaresExtranjero[i + 10][0];
-                        familiaresForaneos.Observaciones = normaliza(datosFamiliaresExtranjero[i + 11][0]);
+                        familiaresForaneos.Nombre = normaliza(famExtranjero[i].ToString());
+                        familiaresForaneos.Relacion = famExtranjero[i + 1].ToString();
+                        familiaresForaneos.Edad = Int32.Parse(famExtranjero[i + 2].ToString());
+                        familiaresForaneos.Sexo = famExtranjero[i + 3].ToString();
+                        familiaresForaneos.TiempoConocerlo = famExtranjero[i + 4].ToString();
+                        familiaresForaneos.Pais = famExtranjero[i + 5].ToString();
+                        familiaresForaneos.Estado = normaliza(famExtranjero[i + 6].ToString());
+                        familiaresForaneos.Telefono = famExtranjero[i + 7].ToString();
+                        familiaresForaneos.FrecuenciaContacto = famExtranjero[i + 8].ToString();
+                        familiaresForaneos.EnteradoProceso = famExtranjero[i + 9].ToString();
+                        familiaresForaneos.PuedeEnterarse = famExtranjero[i + 10].ToString();
+                        familiaresForaneos.Observaciones = normaliza(famExtranjero[i + 11].ToString());
                         familiaresForaneos.PersonaIdPersona = idPersona;
                         _context.Add(familiaresForaneos);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
-
-                for (int i = 0; i < datosFamiliaresExtranjero.Count; i++)
+                /*for (int i = 0; i < datosFamiliaresExtranjero.Count; i++)
                 {
                     if (datosFamiliaresExtranjero[i][1] == currentUser)
                     {
                         datosFamiliaresExtranjero.RemoveAt(i);
                         i--;
                     }
-                }
+                }*/
                 #endregion
 
                 #region -Guardar Foto-
@@ -1586,7 +1539,9 @@ namespace scorpioweb.Controllers
             }
             return RedirectToAction("ListadoSupervisor", "Personas");
         }
+        #endregion
 
+        #region -RegistroConfirmation-
         public async Task<IActionResult> RegistroConfirmation(int? id)
         {
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
@@ -1600,6 +1555,8 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
+        #endregion       
+
         #endregion
 
         #region -Entrevista-
@@ -1852,7 +1809,9 @@ namespace scorpioweb.Controllers
             #endregion
 
         }
-        #endregion        
+        #endregion
+
+        #region -Procesos-
         public async Task<IActionResult> Procesos(int? id)
         {
             if (id == null)
@@ -1922,6 +1881,8 @@ namespace scorpioweb.Controllers
             #endregion
             return View();
         }
+        #endregion
+
         #region -Presentaciones periodicas-
         public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
         {
@@ -1957,10 +1918,12 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -SinSupervision-
         public ActionResult SinSupervision()
         {
             return View();
         }
+        #endregion
 
         #region -Edicion-        
 
@@ -4342,23 +4305,3 @@ namespace scorpioweb.Controllers
         #endregion
     }
 }
-
- //public JsonResult GetMunicipio(int EstadoId)
- //       {
- //           TempData["message"] = DateTime.Now;
- //           List<Municipios> municipiosList = new List<Municipios>();
-
- //           if (EstadoId != 0)
- //           {
-
- //               municipiosList = (from Municipios in _context.Municipios
- //                                 where Municipios.EstadosId == EstadoId
- //                                 select Municipios).ToList();
- //           }
- //           else
- //           {
- //               municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
- //           }
-
- //           return Json(new SelectList(municipiosList, "Id", "Municipio"));
- //       }

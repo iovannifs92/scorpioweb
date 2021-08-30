@@ -176,7 +176,7 @@
                             </a>
                         }*@
 
-                    @if (ViewBag.RolesUsuarios == item.Supervisor)
+                    @if (ViewBag.RolesUsuarios == item.Supervisor || User.IsInRole("Masteradmin"))
                     {
                         <a style="margin-top:10px;" class="btn btn-success" asp-action="MenuEdicion" asp-route-id="@item.IdPersona">
                             <i class="fa fa-pencil"></i>
