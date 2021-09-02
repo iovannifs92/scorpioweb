@@ -56,6 +56,19 @@ namespace scorpioweb.Controllers
             return normalizar;
         }
 
+        public string removeSpaces(string str)
+        {
+            while (str.Length > 0 && str[0] == ' ')
+            {
+                str = str.Substring(1);
+            }
+            while (str.Length > 0 && str[str.Length - 1] == ' ')
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+            return str;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -184,9 +197,9 @@ namespace scorpioweb.Controllers
                 oficialia.Expide = normaliza(expide);
                 oficialia.ReferenteImputado = referenteImputado;
                 oficialia.Sexo = sexo;
-                oficialia.Paterno = normaliza(paterno);
-                oficialia.Materno = normaliza(materno);
-                oficialia.Nombre = normaliza(nombre);
+                oficialia.Paterno = removeSpaces(normaliza(paterno));
+                oficialia.Materno = removeSpaces(normaliza(materno));
+                oficialia.Nombre = removeSpaces(normaliza(nombre));
                 oficialia.CarpetaEjecucion = normaliza(carpetaEjecucion);
                 oficialia.ExisteVictima = existeVictima;
                 oficialia.NombreVictima = normaliza(nombreVictima);
@@ -365,9 +378,9 @@ namespace scorpioweb.Controllers
 
             oficialia.NumOficio = normaliza(oficialia.NumOficio);
             oficialia.Expide = normaliza(oficialia.Expide);
-            oficialia.Paterno = normaliza(oficialia.Paterno);
-            oficialia.Materno = normaliza(oficialia.Materno);
-            oficialia.Nombre = normaliza(oficialia.Nombre);
+            oficialia.Paterno = removeSpaces(normaliza(oficialia.Paterno));
+            oficialia.Materno = removeSpaces(normaliza(oficialia.Materno));
+            oficialia.Nombre = removeSpaces(normaliza(oficialia.Nombre));
             oficialia.CarpetaEjecucion = normaliza(oficialia.CarpetaEjecucion);
             oficialia.NombreVictima = normaliza(oficialia.NombreVictima);
             oficialia.DireccionVictima = normaliza(oficialia.DireccionVictima);
