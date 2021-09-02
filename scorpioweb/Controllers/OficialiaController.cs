@@ -179,7 +179,6 @@ namespace scorpioweb.Controllers
                 oficialia.IdOficialia = idOficialia;
 
                 oficialia.Capturista = User.Identity.Name;
-                oficialia.Recibe = recibe;
                 oficialia.MetodoNotificacion = metodoNotificacion;
                 oficialia.NumOficio = normaliza(numOficio);
                 oficialia.Expide = normaliza(expide);
@@ -207,6 +206,14 @@ namespace scorpioweb.Controllers
                 else
                 {
                     oficialia.UsuarioTurnar = usuarioTurnar;
+                }
+                if (recibe == "Selecciona")
+                {
+                    oficialia.Recibe = null;
+                }
+                else
+                {
+                    oficialia.Recibe = recibe;
                 }
                 var cp = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == idCausaPenal);
                 if (cp != null)
@@ -284,9 +291,10 @@ namespace scorpioweb.Controllers
                 foreach (var item in currentFilter.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    oficios = oficios.Where(o => o.UsuarioTurnar.Contains(currentFilter) ||
-                                             o.PaternoMaternoNombre.Contains(currentFilter.ToUpper()) ||
-                                             o.NombrePaternoMaterno.Contains(currentFilter.ToUpper()));
+                    oficios = oficios.Where(o => (o.UsuarioTurnar != null && o.UsuarioTurnar.Contains(currentFilter.ToLower())) ||
+                                             (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
+                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
+                                             (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)));
                 }
             }
 
@@ -365,6 +373,10 @@ namespace scorpioweb.Controllers
             oficialia.DireccionVictima = normaliza(oficialia.DireccionVictima);
             oficialia.AsuntoOficio = normaliza(oficialia.AsuntoOficio);
             oficialia.Observaciones = normaliza(oficialia.Observaciones);
+            if (oficialia.Recibe == "Selecciona")
+            {
+                oficialia.Recibe = null;
+            }
             if (oficialia.UsuarioTurnar == "Selecciona")
             {
                 oficialia.UsuarioTurnar = null;
