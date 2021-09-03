@@ -285,8 +285,9 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     oficios = oficios.Where(o => o.UsuarioTurnar.Contains(currentFilter) ||
-                                             o.PaternoMaternoNombre.Contains(currentFilter.ToUpper()) ||
-                                             o.NombrePaternoMaterno.Contains(currentFilter.ToUpper()));
+                                             //o.PaternoMaternoNombre.Contains(currentFilter.ToUpper()) ||
+                                             //o.NombrePaternoMaterno.Contains(currentFilter.ToUpper()));
+                                             o.Paterno.Contains(currentFilter.ToUpper()));
                 }
             }
 
@@ -456,8 +457,8 @@ namespace scorpioweb.Controllers
                 });
             }
 
-            var r = from o in _context.Oficialia
-                    group o by new { o.Recibe }
+            var r = from o in _context.Oficialia//UsuarioTurnar
+                    group o by new { o.UsuarioTurnar }
                     into grupo
                     select grupo.FirstOrDefault();
 
@@ -465,8 +466,8 @@ namespace scorpioweb.Controllers
             {
                 ListaRecibe.Add(new SelectListItem
                 {
-                    Text = recibe.Recibe,
-                    Value = recibe.Recibe
+                    Text = recibe.UsuarioTurnar,
+                    Value = recibe.UsuarioTurnar
                 });
             }
 
@@ -483,7 +484,7 @@ namespace scorpioweb.Controllers
 
             IEnumerable<OficialiaReporte> dataOficialia = from o in _context.Oficialia.AsEnumerable()
                               where o.Capturista == captura
-                              && o.Recibe == entrega
+                              && o.UsuarioTurnar == entrega
                               && (o.FechaRecepcion >= fechaInicio && o.FechaRecepcion <= fechaFin)
                               select new OficialiaReporte{
                                   FechaRecepcion = (o.FechaRecepcion.Value).ToString("dd-MMMM-yyyy"),
@@ -531,8 +532,8 @@ namespace scorpioweb.Controllers
             dc.Save(resultPath);
 
 
-            Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
-            //Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
+            Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
             #endregion
 
             //return RedirectToAction("Reportes", "Oficialia");

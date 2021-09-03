@@ -30,6 +30,7 @@ namespace scorpioweb.Models
         public string UsuarioTurnar { get; set; }
         public sbyte? Entregado { get; set; }
         public string Observaciones { get; set; }
+
         public string PaternoMaternoNombre
         {
             get
