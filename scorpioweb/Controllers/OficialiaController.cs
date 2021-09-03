@@ -56,6 +56,19 @@ namespace scorpioweb.Controllers
             return normalizar;
         }
 
+        public string removeSpaces(string str)
+        {
+            while (str.Length > 0 && str[0] == ' ')
+            {
+                str = str.Substring(1);
+            }
+            while (str.Length > 0 && str[str.Length - 1] == ' ')
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+            return str;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -179,15 +192,14 @@ namespace scorpioweb.Controllers
                 oficialia.IdOficialia = idOficialia;
 
                 oficialia.Capturista = User.Identity.Name;
-                oficialia.Recibe = recibe;
                 oficialia.MetodoNotificacion = metodoNotificacion;
                 oficialia.NumOficio = normaliza(numOficio);
                 oficialia.Expide = normaliza(expide);
                 oficialia.ReferenteImputado = referenteImputado;
                 oficialia.Sexo = sexo;
-                oficialia.Paterno = normaliza(paterno);
-                oficialia.Materno = normaliza(materno);
-                oficialia.Nombre = normaliza(nombre);
+                oficialia.Paterno = removeSpaces(normaliza(paterno));
+                oficialia.Materno = removeSpaces(normaliza(materno));
+                oficialia.Nombre = removeSpaces(normaliza(nombre));
                 oficialia.CarpetaEjecucion = normaliza(carpetaEjecucion);
                 oficialia.ExisteVictima = existeVictima;
                 oficialia.NombreVictima = normaliza(nombreVictima);
@@ -207,6 +219,14 @@ namespace scorpioweb.Controllers
                 else
                 {
                     oficialia.UsuarioTurnar = usuarioTurnar;
+                }
+                if (recibe == "Selecciona")
+                {
+                    oficialia.Recibe = null;
+                }
+                else
+                {
+                    oficialia.Recibe = recibe;
                 }
                 var cp = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == idCausaPenal);
                 if (cp != null)
@@ -284,10 +304,10 @@ namespace scorpioweb.Controllers
                 foreach (var item in currentFilter.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    oficios = oficios.Where(o => o.UsuarioTurnar.Contains(currentFilter) ||
-                                             //o.PaternoMaternoNombre.Contains(currentFilter.ToUpper()) ||
-                                             //o.NombrePaternoMaterno.Contains(currentFilter.ToUpper()));
-                                             o.Paterno.Contains(currentFilter.ToUpper()));
+                    oficios = oficios.Where(o => (o.UsuarioTurnar != null && o.UsuarioTurnar.Contains(currentFilter.ToLower())) ||
+                                             (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
+                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
+                                             (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)));
                 }
             }
 
@@ -358,14 +378,18 @@ namespace scorpioweb.Controllers
 
             oficialia.NumOficio = normaliza(oficialia.NumOficio);
             oficialia.Expide = normaliza(oficialia.Expide);
-            oficialia.Paterno = normaliza(oficialia.Paterno);
-            oficialia.Materno = normaliza(oficialia.Materno);
-            oficialia.Nombre = normaliza(oficialia.Nombre);
+            oficialia.Paterno = removeSpaces(normaliza(oficialia.Paterno));
+            oficialia.Materno = removeSpaces(normaliza(oficialia.Materno));
+            oficialia.Nombre = removeSpaces(normaliza(oficialia.Nombre));
             oficialia.CarpetaEjecucion = normaliza(oficialia.CarpetaEjecucion);
             oficialia.NombreVictima = normaliza(oficialia.NombreVictima);
             oficialia.DireccionVictima = normaliza(oficialia.DireccionVictima);
             oficialia.AsuntoOficio = normaliza(oficialia.AsuntoOficio);
             oficialia.Observaciones = normaliza(oficialia.Observaciones);
+            if (oficialia.Recibe == "Selecciona")
+            {
+                oficialia.Recibe = null;
+            }
             if (oficialia.UsuarioTurnar == "Selecciona")
             {
                 oficialia.UsuarioTurnar = null;
@@ -457,8 +481,8 @@ namespace scorpioweb.Controllers
                 });
             }
 
-            var r = from o in _context.Oficialia//UsuarioTurnar
-                    group o by new { o.UsuarioTurnar }
+            var r = from o in _context.Oficialia
+                    group o by new { o.Recibe }
                     into grupo
                     select grupo.FirstOrDefault();
 
@@ -466,8 +490,8 @@ namespace scorpioweb.Controllers
             {
                 ListaRecibe.Add(new SelectListItem
                 {
-                    Text = recibe.UsuarioTurnar,
-                    Value = recibe.UsuarioTurnar
+                    Text = recibe.Recibe,
+                    Value = recibe.Recibe
                 });
             }
 
@@ -484,7 +508,7 @@ namespace scorpioweb.Controllers
 
             IEnumerable<OficialiaReporte> dataOficialia = from o in _context.Oficialia.AsEnumerable()
                               where o.Capturista == captura
-                              && o.UsuarioTurnar == entrega
+                              && o.Recibe == entrega
                               && (o.FechaRecepcion >= fechaInicio && o.FechaRecepcion <= fechaFin)
                               select new OficialiaReporte{
                                   FechaRecepcion = (o.FechaRecepcion.Value).ToString("dd-MMMM-yyyy"),
@@ -532,8 +556,8 @@ namespace scorpioweb.Controllers
             dc.Save(resultPath);
 
 
-            //Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
-            Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
+            Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
+            //Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
             #endregion
 
             //return RedirectToAction("Reportes", "Oficialia");
