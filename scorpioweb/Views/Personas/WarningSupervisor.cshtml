@@ -23,6 +23,9 @@
                 <th>
                     <a>Información de campo</a>
                 </th>
+                <th>
+                    <a>Municipio</a>
+                </th>
                 @if (ViewBag.Admin)
                 {
                     <th>
@@ -136,6 +139,9 @@
                             break;
                     }
                 }
+                <td>
+                    @item.municipiosVM.Municipio
+                </td>
                 @if (ViewBag.Admin)
                 {
                     <td>

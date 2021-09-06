@@ -3882,10 +3882,12 @@ namespace scorpioweb.Controllers
             List<Causapenal> causapenalVM = _context.Causapenal.ToList();
             List<Planeacionestrategica> planeacionestrategicaVM = _context.Planeacionestrategica.ToList();
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
+            List<Domicilio> domicilioVM = _context.Domicilio.ToList();
+            List<Municipios> municipiosVM = _context.Municipios.ToList();
 
-            List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
-                                                         group f by f.SupervisionIdSupervision into grp
-                                                         select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+            List < Fraccionesimpuestas > queryFracciones = (from f in fraccionesimpuestasVM
+                                                            group f by f.SupervisionIdSupervision into grp
+                                                            select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
 
 
             #endregion
@@ -3895,6 +3897,8 @@ namespace scorpioweb.Controllers
             {
                 ViewData["alertas"] = (from persona in personaVM
                                        join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                       join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                       join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                        join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                        join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                        join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
@@ -3903,6 +3907,7 @@ namespace scorpioweb.Controllers
                                        {
                                            personaVM = persona,
                                            supervisionVM = supervision,
+                                           municipiosVM = municipio,
                                            causapenalVM = causapenal,
                                            planeacionestrategicaVM = planeacion,
                                            fraccionesimpuestasVM = fracciones,
@@ -3911,6 +3916,8 @@ namespace scorpioweb.Controllers
                                        }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
@@ -3919,6 +3926,7 @@ namespace scorpioweb.Controllers
                                          {
                                              personaVM = persona,
                                              supervisionVM = supervision,
+                                             municipiosVM = municipio,
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              fraccionesimpuestasVM = fracciones,
@@ -3927,6 +3935,8 @@ namespace scorpioweb.Controllers
                                          }).Union
                                     (from persona in personaVM
                                      join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                      join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                      join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                      join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
@@ -3936,6 +3946,7 @@ namespace scorpioweb.Controllers
                                      {
                                          personaVM = persona,
                                          supervisionVM = supervision,
+                                         municipiosVM = municipio,
                                          causapenalVM = causapenal,
                                          planeacionestrategicaVM = planeacion,
                                          fraccionesimpuestasVM = fracciones,
@@ -3944,6 +3955,8 @@ namespace scorpioweb.Controllers
                                      }).Union
                                     (from persona in personaVM
                                      join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                      join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                      join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                      where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
@@ -3951,12 +3964,15 @@ namespace scorpioweb.Controllers
                                      {
                                          personaVM = persona,
                                          supervisionVM = supervision,
+                                         municipiosVM = municipio,
                                          causapenalVM = causapenal,
                                          planeacionestrategicaVM = planeacion,
                                          tipoAdvertencia = "Sin periodicidad de firma"
                                      }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          where supervision.EstadoSupervision == null
@@ -3964,6 +3980,7 @@ namespace scorpioweb.Controllers
                                          {
                                              personaVM = persona,
                                              supervisionVM = supervision,
+                                             municipiosVM = municipio,
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              tipoAdvertencia = "Sin estado de supervisión"
@@ -3974,6 +3991,8 @@ namespace scorpioweb.Controllers
             {
                 ViewData["alertas"] = (from persona in personaVM
                                        join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                       join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                       join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                        join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                        join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                        join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
@@ -3982,6 +4001,7 @@ namespace scorpioweb.Controllers
                                        {
                                            personaVM = persona,
                                            supervisionVM = supervision,
+                                           municipiosVM = municipio,
                                            causapenalVM = causapenal,
                                            planeacionestrategicaVM = planeacion,
                                            fraccionesimpuestasVM = fracciones,
@@ -3990,6 +4010,8 @@ namespace scorpioweb.Controllers
                                        }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
@@ -3998,6 +4020,7 @@ namespace scorpioweb.Controllers
                                          {
                                              personaVM = persona,
                                              supervisionVM = supervision,
+                                             municipiosVM = municipio,
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              fraccionesimpuestasVM = fracciones,
@@ -4007,6 +4030,8 @@ namespace scorpioweb.Controllers
                                     (from persona in personaVM
                                      join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                      join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                      join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                      join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                      where persona.Supervisor == usuario && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
@@ -4015,6 +4040,7 @@ namespace scorpioweb.Controllers
                                      {
                                          personaVM = persona,
                                          supervisionVM = supervision,
+                                         municipiosVM = municipio,
                                          causapenalVM = causapenal,
                                          planeacionestrategicaVM = planeacion,
                                          fraccionesimpuestasVM = fracciones,
@@ -4023,6 +4049,8 @@ namespace scorpioweb.Controllers
                                      }).Union
                                     (from persona in personaVM
                                      join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                      join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                      join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                      where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
@@ -4030,12 +4058,15 @@ namespace scorpioweb.Controllers
                                      {
                                          personaVM = persona,
                                          supervisionVM = supervision,
+                                         municipiosVM = municipio,
                                          causapenalVM = causapenal,
                                          planeacionestrategicaVM = planeacion,
                                          tipoAdvertencia = "Sin periodicidad de firma"
                                      }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          where persona.Supervisor == usuario && supervision.EstadoSupervision == null
@@ -4043,6 +4074,7 @@ namespace scorpioweb.Controllers
                                          {
                                              personaVM = persona,
                                              supervisionVM = supervision,
+                                             municipiosVM = municipio,
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              tipoAdvertencia = "Sin estado de supervisión"
