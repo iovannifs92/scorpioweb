@@ -107,7 +107,7 @@ namespace scorpioweb.Controllers
         {
             new SelectListItem{ Text = "NA", Value = "NA" },
             new SelectListItem{ Text = "Alto", Value = "ALTO" },
-            new SelectListItem{ Text = "Mínimo", Value = "MINIMO" }
+            new SelectListItem{ Text = "Bajo", Value = "BAJO" }
         };
 
         private List<SelectListItem> listaRecomendación = new List<SelectListItem>
