@@ -1551,7 +1551,7 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                ViewBag.nombreRegistrado = persona.Nombre + " " + persona.Paterno + " " + persona.Materno;
+                ViewBag.nombreRegistrado = persona.NombreCompleto;
             }
             return View();
         }
@@ -1563,7 +1563,6 @@ namespace scorpioweb.Controllers
         public ActionResult Entrevista()
         {
             var personas = from p in _context.Persona
-                           where p.Supervisor != null
                            orderby p.Paterno
                            select p;
 
@@ -1578,10 +1577,19 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EntrevistaPost()
         {
-            string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                return RedirectToAction("MenuEdicion", "Personas", new { @id = idPersona });
+                var persona = _context.Persona
+                    .SingleOrDefault(m => m.IdPersona == idPersona);
+
+                if (persona.Supervisor == null)
+                {
+                    return RedirectToAction("SinSupervisor");
+                }
+                else
+                {
+                    return RedirectToAction("MenuEdicion", "Personas", new { @id = idPersona });
+                }
             }
             return View();
         }
@@ -1921,6 +1929,24 @@ namespace scorpioweb.Controllers
         #region -SinSupervision-
         public ActionResult SinSupervision()
         {
+            return View();
+        }
+        #endregion
+
+        #region -SinSupervisor-
+        public async Task<IActionResult> SinSupervisor()
+        {
+            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == idPersona);
+            if (persona == null)
+            {
+                ViewBag.nombre = null;
+                ViewBag.capturista = null;
+            }
+            else
+            {
+                ViewBag.nombre = persona.NombreCompleto;
+                ViewBag.capturista = persona.Capturista;
+            }
             return View();
         }
         #endregion
@@ -2980,8 +3006,6 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
-
-
 
         public async Task<IActionResult> DeleteConfirmedDom(int? id)
         {
