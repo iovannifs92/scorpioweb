@@ -33,7 +33,6 @@ namespace scorpioweb.Controllers
     [Authorize]
     public class PersonasController : Controller
     {
-
         //To get content root path of the project
         private readonly IHostingEnvironment _hostingEnvironment;
 
@@ -83,6 +82,7 @@ namespace scorpioweb.Controllers
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
+         
         }
         #endregion
 
@@ -148,6 +148,7 @@ namespace scorpioweb.Controllers
             var personas = from p in _context.Persona
                            where p.Supervisor != null
                            select p;
+       
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -180,8 +181,25 @@ namespace scorpioweb.Controllers
             int pageSize = 10;
 
 
-           // Response.Headers.Add("Refresh", "5");
+            // Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+            //return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+
+        Persona persona1;
+        List<Persona> personas1;
+
+    
+        public async Task<ActionResult> Personas()
+        {
+            Tuple<List<Persona>, Persona> tuple;
+
+            tuple = new Tuple<List<Persona>, Persona>(personas1, persona1);
+
+
+
+            return View("PersonasDetails", tuple);
         }
 
 
@@ -243,8 +261,9 @@ namespace scorpioweb.Controllers
                     break;
             }
             int pageSize = 10;
-           // Response.Headers.Add("Refresh", "5");
-            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+            // Response.Headers.Add("Refresh", "5");
+            // return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         #region -AsignaSupervision-
@@ -1332,26 +1351,6 @@ namespace scorpioweb.Controllers
                 domiciliosecundario.IdDomicilio = idDomicilio;
                 #endregion
 
-
-                //insertar en ala bd temporal para veriicar el id
-                //var empty = (from tem in _context.
-                //             where ds.IdDomicilio == domseundario.IdDomicilio
-                //             select ds);ViewBag.listaEstudia
-
-
-                //if (!empty.Any())
-                //{
-                //    var query = (from a in _context.Domicilio
-                //                 where a.IdDomicilio == domseundario.IdDomicilio
-                //                 select a).FirstOrDefault();
-                //    query.DomcilioSecundario = "NO";
-                //    _context.SaveChanges();
-                //}
-
-
-
-
-
                 #region -IdPersona-
                 int idPersona = ((from table in _context.Persona
                                   select table.IdPersona).Max()) + 1;
@@ -1366,16 +1365,6 @@ namespace scorpioweb.Controllers
                 saludfisica.PersonaIdPersona = idPersona;
 
                 #endregion
-                //#region Stored Procedure
-                //var con = new MySqlConnection("server=10.6.60.190;port=3306;user=administrador;password=ssp.2020;database=penas2");
-                //var cmd = new MySqlCommand("spScorpioInsertidtemporal", con);
-                //cmd.CommandType = CommandType.StoredProcedure;
-                //cmd.Parameters.AddWithValue("@var_idpersona", idPersona);
-                //cmd.Parameters.AddWithValue("@var_supervisor", currentUser);
-                //con.Open();
-                //cmd.ExecuteNonQuery();
-                //con.Close();
-                //#endregion
 
                 #region -ConsumoSustancias-
                 for (int i = 0; i < datosSustancias.Count; i = i + 5)
@@ -1522,9 +1511,6 @@ namespace scorpioweb.Controllers
                     }
                 }
                 #endregion
-
-
-
 
                 #region -Familiares Extranjero-
                 for (int i = 0; i < datosFamiliaresExtranjero.Count; i = i + 12)
@@ -2370,7 +2356,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista")] Persona persona)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado")] Persona persona)
         {
             string currentUser = User.Identity.Name;
 
@@ -2396,6 +2382,7 @@ namespace scorpioweb.Controllers
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
+                persona.Candado = persona.Candado;
 
                 #region -ConsumoSustancias-
                 //Sustancias editadas
@@ -4302,10 +4289,10 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Actualizar Candado-
+        #region -Actualizar Candado All-
         public JsonResult LoockCandado(Persona persona, string[] datoCandado)
       //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
-        {
+            {
             persona.Candado = Convert.ToSByte(datoCandado[0] ==  "true");
             persona.IdPersona = Int32.Parse(datoCandado[1]);
 
@@ -4340,6 +4327,162 @@ namespace scorpioweb.Controllers
             return Json(stadoc);
         }
         #endregion
+
+        #region -JsonA-ll-
+        public async Task<IActionResult> Get(string sortOrder,
+            string currentFilter,
+            string Search,
+            int? pageNumber)
+        { 
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+
+            String users = user.ToString();
+            ViewBag.RolesUsuarios = users;
+            #endregion
+
+
+            //List<Persona> personas = _context.Persona.ToList();
+            //var personas = _context.Persona;
+            //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
+
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+
+            if (Search != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                Search = currentFilter;
+            }
+            ViewData["CurrentFilter"] = Search;
+
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+
+            if (!String.IsNullOrEmpty(Search))
+            {
+                foreach (var item in Search.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
+                                                   p.Supervisor.Contains(Search));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.Paterno);
+                    break;
+                case "Date":
+                    personas = personas.OrderBy(p => p.UltimaActualización);
+                    break;
+                case "date_desc":
+                    personas = personas.OrderByDescending(p => p.UltimaActualización);
+                    break;
+                default:
+                    personas = personas.OrderBy(p => p.Paterno);
+                    break;
+            }
+
+            int pageSize = 10;
+            // Response.Headers.Add("Refresh", "5");
+            return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+            //return Json(new
+            //{
+            //    success = true,
+            //    responseText = "Siguiente",
+            //    sustancia = consumosustancias[contadorSustancia].Sustancia,
+            //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+            //    cantidad = consumosustancias[contadorSustancia].Cantidad,
+            //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+            //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
+            //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
+            //});
+
+        }
+
+        public async Task<IActionResult> GetBusqueda(string searchValue,
+            string sortOrder,
+            string currentFilter,
+            int? pageNumber)
+        {
+            //List<Persona> persona = new List<Persona>();
+            //persona = _context.Persona.Where(x => (x.Nombre +" "+x.Paterno+ " " + x.Materno).Contains(searchValue)|| searchValue == null).ToList();
+            //return Json(persona);
+
+            if (searchValue != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchValue = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchValue;
+
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+            if (!String.IsNullOrEmpty(searchValue))
+            {
+                foreach (var item in searchValue.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchValue) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) ||
+                                                   p.Supervisor.Contains(searchValue));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.Paterno);
+                    break;
+                case "Date":
+                    personas = personas.OrderBy(p => p.UltimaActualización);
+                    break;
+                case "date_desc":
+                    personas = personas.OrderByDescending(p => p.UltimaActualización);
+                    break;
+                default:
+                    personas = personas.OrderBy(p => p.Paterno);
+                    break;
+            }
+
+            int pageSize = 10;
+
+            return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+        #endregion
+
+
+
+
     }
 }
 

@@ -47,6 +47,5 @@ namespace scorpioweb.Models
             }
         }
         public string rutaFoto { get; set; }
-
     }
 }

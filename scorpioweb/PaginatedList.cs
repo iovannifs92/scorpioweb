@@ -42,5 +42,14 @@ namespace scorpioweb
             var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
+
+        //public static PagedData<T> PagedResult<T>(this List<T> list, int pageNumber, int pageSize) where T: class
+        //{
+        //    var result = new PagedData<T>();
+        //    result.Data = list.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
+        //    result.TotalPages = Convert.ToInt32(Math.Ceiling((double)list.Count() / pageSize));
+        //    result.CurrentPage = pageNumber;
+        //    return result;
+        //}
     }
 }
