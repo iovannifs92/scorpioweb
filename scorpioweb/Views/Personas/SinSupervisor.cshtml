@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "SinSupervisor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (ViewBag.nombre != null)
+{
+    <h2 style="text-align:center">
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.nombre no cuenta con un supervisor asignado<br>
+            Capturista: @ViewBag.capturista
+        </div>
+    </h2>
+}
+else
+{
+    <h2 style="text-align:center">
+        <div class="alert alert-danger" role="alert">
+            Comuniquese con su administrador.
+        </div>
+    </h2>
+}
+
+<a asp-action="Entrevista" class="btn btn-link" style="padding-left:0%">
+    Regresar
+</a>
+
+

@@ -17,6 +17,7 @@
 #Ignorar
 appsettings.json
 penas2Context.cs
+appsettings.Development.json
 
 # Build results
 [Dd]ebug/

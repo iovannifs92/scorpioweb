@@ -204,7 +204,7 @@
                 <span asp-validation-for="FechaDetencion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Situacion" class="control-label">Sitación Jurídica</label>
+                <label asp-for="Situacion" class="control-label">Situación Jurídica</label>
                 <select class="form-control" name="UnidadInvestigacion" id="UnidadInvestigacion"
                         asp-items="@(new SelectList(ViewBag.listaSituacionJuridica, "Value", "Text", @ViewBag.idSituacionJuridica))">
                 </select>
@@ -240,7 +240,7 @@
                 @* Bloque Adolescentes *@
                 <div class="form-group" id="bloqueAdolescente" name="bloqueAdolescente" style="@(ViewBag.TipoDetenido=="ADULTO" ? "display:none":string.Empty)">
                     <div class="form-group">
-                        <label asp-for="Rcomparesencia" class="control-label">Riesgo de no comparesencia</label>
+                        <label asp-for="Rcomparesencia" class="control-label">Riesgo de no comparecencia</label>
                         <select class="form-control" name="Rcomparesencia" id="Rcomparesencia"
                                 asp-items="@(new SelectList(ViewBag.listaComparesencia, "Value", "Text", @ViewBag.idComparesencia))">
                         </select>

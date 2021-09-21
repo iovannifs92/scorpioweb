@@ -62,7 +62,8 @@ namespace scorpioweb.Controllers
         {
             new SelectListItem{ Text = "C. Operativa", Value = "C. OPERATIVA" },
             new SelectListItem{ Text = "Archivo", Value = "ARCHIVO" },
-            new SelectListItem{ Text = "C. Ejecución de Penas", Value = "C. EJECUCION PENAS" }
+            new SelectListItem{ Text = "C. Ejecución de Penas", Value = "C. EJECUCION PENAS" },
+            new SelectListItem{ Text = "Adolescentes", Value = "ADOLESCENTES" }
         };
 
         private List<SelectListItem> ListaUnidadInvestigación = new List<SelectListItem>
@@ -106,7 +107,7 @@ namespace scorpioweb.Controllers
         {
             new SelectListItem{ Text = "NA", Value = "NA" },
             new SelectListItem{ Text = "Alto", Value = "ALTO" },
-            new SelectListItem{ Text = "Mínimo", Value = "MINIMO" }
+            new SelectListItem{ Text = "Bajo", Value = "BAJO" }
         };
 
         private List<SelectListItem> listaRecomendación = new List<SelectListItem>
