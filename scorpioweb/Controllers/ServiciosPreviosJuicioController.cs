@@ -61,18 +61,20 @@ namespace scorpioweb.Controllers
         private List<SelectListItem> listaUbicacion = new List<SelectListItem>
         {
             new SelectListItem{ Text = "C. Operativa", Value = "C. OPERATIVA" },
+            new SelectListItem{ Text = "C. Región Norte", Value = "C. REGIÓN NORTE" },
             new SelectListItem{ Text = "Archivo", Value = "ARCHIVO" },
             new SelectListItem{ Text = "C. Ejecución de Penas", Value = "C. EJECUCION PENAS" },
-            new SelectListItem{ Text = "Adolescentes", Value = "ADOLESCENTES" }
+            new SelectListItem{ Text = "Adolescentes", Value = "ADOLESCENTES" }            
         };
 
         private List<SelectListItem> ListaUnidadInvestigación = new List<SelectListItem>
         {
             new SelectListItem{ Text = "Centro de Operaciones Estratégicas", Value = "CENTRO DE OPERACIONES ESTRATEGICAS" },
             new SelectListItem{ Text = "M. P. Fóraneos", Value = "M. P. FORANEOS" },
-            new SelectListItem{ Text = "P. G. R.", Value = "P. G. R." },
-            new SelectListItem{ Text = "P. G. R. Gómez Palacio , Dgo.", Value = "P. G. R. GOMEZ PALACIO, DGO" },
+            new SelectListItem{ Text = "F. G. R.", Value = "F. G. R." },
+            new SelectListItem{ Text = "F. G. R. Gómez Palacio , Dgo.", Value = "F. G. R. GOMEZ PALACIO, DGO" },
             new SelectListItem{ Text = "Fiscalía", Value = "FISCALIA" },
+            new SelectListItem{ Text = "Vicefiscalía", Value = "VICEFISCALIA" }
         };
 
         private List<SelectListItem> listaSituacionJuridica = new List<SelectListItem>
