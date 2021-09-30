@@ -109,6 +109,7 @@
                 //alert("Fecha " result[i].ultimaActualización);
                 //alert("Fecha " result[i].ultimaActualización.Value.ToString('dd-MMMM-yyyy'));
                 if (result == 0) {
+                    alert("Buscador en ceros 1");
                     document.getElementById("btnNext").disabled = true;
                 } else {
                     if (result.length < 10) {
@@ -128,10 +129,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -140,10 +141,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
@@ -154,10 +155,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -166,7 +167,7 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                     + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
@@ -210,7 +211,6 @@
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-
                         if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                             if (result[i].candado == 0) {
                                 row = row
@@ -218,10 +218,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -230,10 +230,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
@@ -244,10 +244,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -256,7 +256,7 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                     + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
@@ -289,6 +289,7 @@
             url: "/Personas/Get?pageNumber=" + page + "&currentFilter=" + searchValue,
             traditional: true,
             success: function (result) {
+
                 if (result) {
                     if (result.length < 10) {
                         document.getElementById("btnNext").disabled = true;
@@ -308,10 +309,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -320,10 +321,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
@@ -334,10 +335,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -346,7 +347,7 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                     + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
@@ -415,10 +416,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -427,10 +428,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
@@ -441,10 +442,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -453,7 +454,7 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                     + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
@@ -494,6 +495,7 @@
             traditional: true,
             success: function (result) {
                 if (result == 0) {
+
                     document.getElementById("btnNexts").disabled = true;
                 } else {
                     if (result.length < 10) {
@@ -513,10 +515,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -525,10 +527,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                        }
@@ -567,6 +569,7 @@
             traditional: true,
             success: function (result) {
                 if (result == 0) {
+
                     document.getElementById("btnNexts").disabled = true;
                 } else {
                     if (result.length < 10) {
@@ -586,10 +589,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -598,10 +601,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
@@ -646,10 +649,10 @@
                                 + "<td>" + result[i].nombreCompleto + "</td>"
                                 + "<td>" + result[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                 + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                 + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                 + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
@@ -658,10 +661,10 @@
                                 + "<td>" + result[i].nombreCompleto + "</td>"
                                 + "<td>" + result[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                 + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                 + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                 + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
@@ -706,10 +709,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Dealles</a > "
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
@@ -718,10 +721,10 @@
                                     + "<td>" + result[i].nombreCompleto + "</td>"
                                     + "<td>" + result[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Dealles</a>"
+                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
                                     + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                     + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
                                     + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                          }
