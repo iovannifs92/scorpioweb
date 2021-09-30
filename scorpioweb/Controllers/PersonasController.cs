@@ -2404,8 +2404,8 @@ namespace scorpioweb.Controllers
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
+                if (persona.Candado == null){persona.Candado = 0;}
                 persona.Candado = persona.Candado;
-
                 #region -ConsumoSustancias-
                 //Sustancias editadas
                 for (int i = 0; i < datosSustanciasEditadas.Count; i = i + 6)
