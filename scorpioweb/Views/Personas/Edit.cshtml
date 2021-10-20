@@ -1003,6 +1003,12 @@
                         asp-items="@(new SelectList(ViewBag.listaReferenciasPersonales, "Value", "Text", @ViewBag.idReferenciasPersonales))">
                 </select>
             </div>
+            <div class="form-group col-md-11">
+                <label class="control-label">Ubicación del Expediente (solo Durango)</label>
+                <select class="form-control" name="UbicacionExpediente" id="UbicacionExpediente"
+                        asp-items="@(new SelectList(ViewBag.listaUbicacionExp, "Value", "Text", @ViewBag.idUbicacionExp))">
+                </select>
+            </div>
             <div class="form-group col-md-1" style="padding-top:25px;">
                 <button type="button" class="btn btn-primary" id="btnEditarReferencias">
                     <i class="fa fa-pencil"></i>

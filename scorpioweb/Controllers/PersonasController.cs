@@ -71,6 +71,53 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
+
+        private List<SelectListItem> listaZonas = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="NA", Value="NA"},
+            new SelectListItem{ Text="Zona 1", Value="ZONA 1"},
+            new SelectListItem{ Text="Zona 2", Value="ZONA 2"},
+            new SelectListItem{ Text="Zona 3", Value="ZONA 3"},
+            new SelectListItem{ Text="Zona 4", Value="ZONA 4"},
+            new SelectListItem{ Text="Zona 5", Value="ZONA 5"},
+            new SelectListItem{ Text="Zona 6", Value="ZONA 6"},
+            new SelectListItem{ Text="Zona 7", Value="ZONA 7"}            
+        };
+        
+
+        private List<SelectListItem> listaUbicacionExpediente = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="NA", Value="NA"},
+            new SelectListItem{ Text="MCSCP1-1", Value="MCSCP1-1"},
+            new SelectListItem{ Text="MCSCP1-2", Value="MCSCP1-2"},
+            new SelectListItem{ Text="MCSCP1-3", Value="MCSCP1-3"},
+            new SelectListItem{ Text="MCSCP1-4", Value="MCSCP1-4"},
+            new SelectListItem{ Text="MCSCP2-1", Value="MCSCP2-1"},
+            new SelectListItem{ Text="MCSCP2-2", Value="MCSCP2-2"},
+            new SelectListItem{ Text="MCSCP2-3", Value="MCSCP2-3"},
+            new SelectListItem{ Text="MCSCP2-4", Value="MCSCP2-4"},
+            new SelectListItem{ Text="MCSCP3-1", Value="MCSCP3-1"},
+            new SelectListItem{ Text="MCSCP3-2", Value="MCSCP3-2"},
+            new SelectListItem{ Text="MCSCP3-3", Value="MCSCP3-3"},
+            new SelectListItem{ Text="MCSCP3-4", Value="MCSCP3-4"},
+            new SelectListItem{ Text="MCSCP4-1", Value="MCSCP4-1"},
+            new SelectListItem{ Text="MCSCP4-2", Value="MCSCP4-2"},
+            new SelectListItem{ Text="MCSCP4-3", Value="MCSCP4-3"},
+            new SelectListItem{ Text="MCSCP4-4", Value="MCSCP4-4"},
+            new SelectListItem{ Text="MCSCP5-1", Value="MCSCP5-1"},
+            new SelectListItem{ Text="MCSCP5-2", Value="MCSCP5-2"},
+            new SelectListItem{ Text="MCSCP5-3", Value="MCSCP5-3"},
+            new SelectListItem{ Text="MCSCP5-4", Value="MCSCP5-4"},
+            new SelectListItem{ Text="MCSCP6-1", Value="MCSCP6-1"},
+            new SelectListItem{ Text="MCSCP6-2", Value="MCSCP6-2"},
+            new SelectListItem{ Text="MCSCP6-3", Value="MCSCP6-3"},
+            new SelectListItem{ Text="MCSCP6-4", Value="MCSCP6-4"},
+            new SelectListItem{ Text="MCSCP7-1", Value="MCSCP7-1"},
+            new SelectListItem{ Text="MCSCP7-2", Value="MCSCP7-2"},
+            new SelectListItem{ Text="MCSCP7-3", Value="MCSCP7-3"},
+            new SelectListItem{ Text="MCSCP7-4", Value="MCSCP7-4"}           
+        };
+
         #endregion
 
         #region -Constructor-
@@ -1173,11 +1220,11 @@ namespace scorpioweb.Controllers
             string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
-            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales,
-            string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad,
+            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
+            string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
             string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string cuentaDomicilioSecundario,
             /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
-        string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
+            string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
             string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE,
             string trabaja, string tipoOcupacion, string puesto, string empleadorJefe, string enteradoProceso, string sePuedeEnterar, string tiempoTrabajando,
             string salario, string temporalidadSalario, string direccionT, string horarioT, string telefonoT, string observacionesT,
@@ -1223,6 +1270,7 @@ namespace scorpioweb.Controllers
                 persona.ConsumoSustancias = normaliza(consumoSustancias);
                 persona.Familiares = normaliza(familiares);
                 persona.ReferenciasPersonales = normaliza(referenciasPersonales);
+                persona.UbicacionExpediente = ubicacionExpediente;
                 persona.UltimaActualización = DateTime.Now;
                 persona.Capturista = currentUser;
                 persona.Candado = 0;
@@ -1239,6 +1287,7 @@ namespace scorpioweb.Controllers
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = normaliza(cp);
+                domicilio.Zona = zona;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
@@ -2187,6 +2236,10 @@ namespace scorpioweb.Controllers
 
             ViewBag.listaPropiedades = listaNoSi;
             ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
+
+            ViewBag.listaUbicacionExp = listaUbicacionExpediente;
+            ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
+
             ViewBag.pais = persona.Lnpais;
             ViewBag.idioma = persona.OtroIdioma;
             ViewBag.traductor = persona.Traductor;
@@ -2378,7 +2431,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado")] Persona persona)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado, UbicacionExpediente")] Persona persona)
         {
             string currentUser = User.Identity.Name;
 
@@ -2404,6 +2457,7 @@ namespace scorpioweb.Controllers
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
+                persona.UbicacionExpediente = persona.UbicacionExpediente;
                 if (persona.Candado == null){persona.Candado = 0;}
                 persona.Candado = persona.Candado;
                 #region -ConsumoSustancias-
@@ -2811,6 +2865,9 @@ namespace scorpioweb.Controllers
             ViewBag.listacuentaDomicilioSecundario = listaNoSi;
             ViewBag.idcuentaDomicilioSecundario = BuscaId(listaNoSi, domicilio.DomcilioSecundario);
 
+            ViewBag.listaZona = listaZonas;
+            ViewBag.idZona = BuscaId(listaZonas, domicilio.Zona);
+
             ViewBag.pais = domicilio.Pais;
             ViewBag.domi = domicilio.DomcilioSecundario;
 
@@ -2823,7 +2880,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,PersonaIdPersona")] Domicilio domicilio)
+        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,PersonaIdPersona, Zona")] Domicilio domicilio)
         {
             if (id != domicilio.PersonaIdPersona)
             {
@@ -2837,6 +2894,7 @@ namespace scorpioweb.Controllers
             domicilio.Referencias = normaliza(domicilio.Referencias);
             domicilio.Horario = normaliza(domicilio.Horario);
             domicilio.Observaciones = normaliza(domicilio.Observaciones);
+            domicilio.Zona = domicilio.Zona;
 
 
             if (ModelState.IsValid)

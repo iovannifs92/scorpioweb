@@ -22,5 +22,6 @@ namespace scorpioweb.Models
         public string DomcilioSecundario { get; set; }
         public string Observaciones { get; set; }
         public int PersonaIdPersona { get; set; }
+        public string Zona { get; set; }
     }
 }
