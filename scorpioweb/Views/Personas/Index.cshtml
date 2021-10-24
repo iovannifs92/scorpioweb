@@ -11,6 +11,10 @@
 <script src="~/js/bootstrap4-toggle.js"></script>
 
 
+@{
+    ViewBag.Title = "Supervisados MC y SCP";
+}
+
 <script type="text/javascript">
     var tipo = 0;
     var page = 1;
@@ -369,7 +373,7 @@
             url: "/Personas/Get?pageNumber=" + page + "&currentFilter=" + searchValue + "&Search=" + searchValue,
             traditional: true,
             success: function (result) {
-                if (result.length < 10) {
+                   if (result.length < 10) {
                     document.getElementById("btnNext").disabled = true;
                 }
                 $('#tblPersona').html('');
@@ -380,14 +384,13 @@
                     var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
                     if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
-                        /*alert("fecha " + resulta);*/
+
                         /*alert("Fecha " + result[i].ultimaActualización);*/
                         if (result[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
+                                + "<td>" + result[i].supervisor + "</td>"+ "<th>" + date + "</th>"
                                 + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
                                 + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
                                 + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"

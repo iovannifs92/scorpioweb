@@ -2,6 +2,10 @@
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script> con este jquery no funciona el boton de guardar sustancia*@
 
+@{
+    ViewBag.Title = "Crear Entrevista";
+}
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script type="text/javascript">
@@ -164,7 +168,7 @@
             else {
                 $('#modalDomicilioSecundario').modal('hidden')
             }
-        });        
+        });
         $("#Familiares").change(function () {
             document.getElementById("AFNombre").value = '';
             document.getElementById("AFRelacion").value = 'MAMA';
@@ -242,7 +246,7 @@
             else {
                 $('#modalFamiliaresExtranjero').modal('hidden')
             }
-        });        
+        });
         //#endregion
 
         //#region -btnGuardar-
@@ -355,7 +359,7 @@
                 alert("Coloque los datos correspondientes");
             } else {
                 $("#modalAsientoFamiliar").modal('hide');
-            }            
+            }
         });
         $('#btnGuardarDomSec').on("click", function (e) {
             e.preventDefault();
@@ -378,7 +382,7 @@
             var horario = document.getElementById("horarioDS").value;//
             var observaciones = document.getElementById("observacionesDS").value;//
 
-            listDomSec.push(motivo); 
+            listDomSec.push(motivo);
             listDomSec.push(tipoDS);
             listDomSec.push(calle);
             listDomSec.push(no);
@@ -393,7 +397,7 @@
             listDomSec.push(horario);
             listDomSec.push(observaciones);
 
-                
+
             alert(listDomSec);
             $('#arrayDomSec').val(JSON.stringify(listDomSec));
             alert("Datos Guardados con éxito");
@@ -424,7 +428,7 @@
                 $("#modalDomicilioSecundario").modal('hide');
             }
 
-        });        
+        });
         $('#btnGuardarFamiliarExtranjero').on("click", function (e) {
             e.preventDefault();
             var r = document.getElementById("FERelacion");
@@ -674,7 +678,7 @@
         });
     });
 
-    
+
 
     //#region Poner en "No" el dropdown si cancela en todos los modales
     $(document).ready(function () {

@@ -1,7 +1,9 @@
 ﻿@{
+    ViewBag.Title = "Abandono estado";
     Layout = null;
 }
-    <script type="text/javascript">
+
+<script type="text/javascript">
  //* Modal EditdomicilioSecundario*/
         $('#estadoEDS').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
@@ -130,7 +132,7 @@
 
 
 
-    </script>
+</script>
 
 @{int i = 0;}
 @foreach (var item in ViewData["joinTablesDomcilioSec"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
@@ -145,7 +147,7 @@
                 <input name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioVM.IdDomicilioSecundario" class="form-control" readonly style="display:none" />
             </div>
             <div class="form-group col-lg-6">
-                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioVM.IdDomicilio" class="form-control" readonly  style="display:none" />
+                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioVM.IdDomicilio" class="form-control" readonly style="display:none" />
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Tipo de Ubiacion</label>
@@ -246,7 +248,7 @@
             <div class="modal-body">
 
                 <div class="form-group">
-                    <input type="hidden" name="IdDomicilioSecundario" id="IdDomicilioSecundarioM"  class="form-control" />
+                    <input type="hidden" name="IdDomicilioSecundario" id="IdDomicilioSecundarioM" class="form-control" />
                 </div>
                 @foreach (var item in ViewData["joinTablesDomcilioSec"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
                 {

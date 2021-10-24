@@ -1,0 +1,111 @@
+﻿@model PaginatedList<scorpioweb.Models.Persona>
+@*@{
+        Layout = "/Views/Shared/_Layout.cshtml";
+    }*@
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<link href="~/css/bootstrap4-toggle.css" rel="stylesheet" />
+<script src="~/Documentos/script.js"></script>
+<script src="~/js/bootstrap4-toggle.js"></script>
+
+<h3>Reasignación</h3>
+
+<form asp-action="Reasignacion" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Búsqueda: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+        </p>
+    </div>
+
+    <div></div>
+
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Reasignacion" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+            </th>
+            <th>
+                Supervisor actual
+            </th>
+            <th>
+                <a asp-action="Reasignacion" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Última actualización</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr valign="middle">
+            <td>
+                @Html.DisplayFor(modelItem => item.IdPersona)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supervisor)
+            </td>
+            <th>
+                @Html.DisplayFor(modelItem => item.UltimaActualización)
+            </th>
+            <td>
+                <form asp-action="EditSupervisorReasignacion">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label class="control-label">Motivo</label>
+                        <input name="MotivoRealizo" id="MotivoRealizo" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="@item.IdPersona" name="IdPersona" id="IdPersona" />
+                        <select class="form-control" name="Supervisor" id="Supervisor"
+                                asp-items="@(new SelectList(@ViewBag.ListadoUsuarios, "Text","Text"))">
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i>
+                            Guardar
+                        </button>
+                        <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersona">
+                            <i class="fa fa-eye"></i>
+                            Detalles
+                        </a>
+                    </div>
+                </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+
+<a asp-action="Reasignacion"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Reasignacion"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>

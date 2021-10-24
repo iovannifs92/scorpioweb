@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = null;
+    ViewBag.Title = "Crear Entrevista";
 }
 
 <script type="text/javascript">
@@ -44,7 +44,7 @@
             }
         });
     });
-        //#endregion
+    //#endregion
 </script>
 
 @{int i = 0;}
@@ -52,7 +52,7 @@
 {
     i++;
     <div class="form-group col-md-12">
-        <form asp-action="EditFamiliaresForaneos">     
+        <form asp-action="EditFamiliaresForaneos">
             <input type="hidden" name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
 
             <input type="hidden" name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
