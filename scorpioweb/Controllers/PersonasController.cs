@@ -130,7 +130,7 @@ namespace scorpioweb.Controllers
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
-         
+
         }
         #endregion
 
@@ -210,7 +210,8 @@ namespace scorpioweb.Controllers
                 rolUsuario.Add(roles[i]);
             }
 
-            ViewBag.RolesUsuario = rolUsuario;
+
+            ViewBag.RolesUsuario = rolUsuario[1]; ;
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
@@ -236,7 +237,7 @@ namespace scorpioweb.Controllers
             var personas = from p in _context.Persona
                            where p.Supervisor != null
                            select p;
-       
+
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -253,16 +254,10 @@ namespace scorpioweb.Controllers
             switch (sortOrder)
             {
                 case "name_desc":
-                    personas = personas.OrderByDescending(p => p.Paterno);
-                    break;
-                case "Date":
-                    personas = personas.OrderBy(p => p.UltimaActualización);
-                    break;
-                case "date_desc":
-                    personas = personas.OrderByDescending(p => p.UltimaActualización);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
                 default:
-                    personas = personas.OrderBy(p => p.Paterno);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
             }
 
@@ -278,7 +273,7 @@ namespace scorpioweb.Controllers
         Persona persona1;
         List<Persona> personas1;
 
-    
+
         public async Task<ActionResult> Personas()
         {
             Tuple<List<Persona>, Persona> tuple;
@@ -329,7 +324,9 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
+                                                   (p.IdPersona.ToString()).Contains(searchString)
+                                                   );
                 }
             }
 
@@ -337,16 +334,10 @@ namespace scorpioweb.Controllers
             switch (sortOrder)
             {
                 case "name_desc":
-                    personas = personas.OrderByDescending(p => p.Paterno);
-                    break;
-                case "Date":
-                    personas = personas.OrderBy(p => p.UltimaActualización);
-                    break;
-                case "date_desc":
-                    personas = personas.OrderByDescending(p => p.UltimaActualización);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
                 default:
-                    personas = personas.OrderBy(p => p.Paterno);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
             }
             int pageSize = 10;
@@ -650,6 +641,170 @@ namespace scorpioweb.Controllers
                 }
             }
             return RedirectToAction("MenuMCSCP");
+        }
+
+        #endregion
+
+        #region -Reasignacion-
+
+
+
+        public async Task<IActionResult> Reasignacion(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
+        {
+
+
+         
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            int i = 0;
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+
+            var queryhayhuella = from r in _context.Registrohuella
+                                 join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
+                                 group r by r.PersonaIdPersona into grup
+                                 select new
+                                 {
+                                     grup.Key,
+                                     Count = grup.Count()
+                                 };
+
+            foreach (var personaHuella in queryhayhuella)
+            {
+                if (personaHuella.Count >= 1)
+                {
+
+                    ViewBag.personaIdPersona = personaHuella.Key;
+                };
+            }
+
+
+            #region -ListaUsuarios-            
+            var usr = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(usr);
+
+            List<string> rolUsuario = new List<string>();
+
+            for (int e = 0; e < roles.Count; e++)
+            {
+                rolUsuario.Add(roles[e]);
+            }
+
+            ViewBag.RolesUsuario = rolUsuario;
+
+            String users = usr.ToString();
+            ViewBag.RolesUsuarios = users;
+            #endregion
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                foreach (var item in searchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
+                                                   p.Supervisor.Contains(searchString) || (p.IdPersona.ToString()).Contains(searchString));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+                default:
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+            }
+
+            int pageSize = 10;
+            // Response.Headers.Add("Refresh", "5");
+            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSupervisorReasignacion(Persona persona, Reasignacionsupervisor reasignacionsupervisor)
+        {
+            int id = persona.IdPersona;
+            string idS = (persona.IdPersona).ToString();
+            string supervisor = persona.Supervisor;
+            string motivo = reasignacionsupervisor.MotivoRealizo;
+            string currentUser = User.Identity.Name;
+
+            var sA = from p in _context.Persona
+                           where p.IdPersona == id
+                           select new
+                           {
+                               p.Supervisor
+                           };
+
+            reasignacionsupervisor.PersonaIdpersona = (persona.IdPersona).ToString();
+            reasignacionsupervisor.MotivoRealizo = reasignacionsupervisor.MotivoRealizo;
+            reasignacionsupervisor.FechaReasignacion = DateTime.Now;
+            reasignacionsupervisor.SAntiguo = sA.FirstOrDefault().Supervisor.ToString();
+            reasignacionsupervisor.QuienRealizo = currentUser;
+            reasignacionsupervisor.SNuevo = supervisor;
+            _context.Add(reasignacionsupervisor);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
+            var personaUpdate = await _context.Persona
+                .FirstOrDefaultAsync(p => p.IdPersona == id);
+            personaUpdate.Supervisor = supervisor;
+
+   
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PersonaExists(persona.IdPersona))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Reasignacion");
         }
 
         #endregion
@@ -1457,7 +1612,7 @@ namespace scorpioweb.Controllers
                         asientoFamiliar.PersonaIdPersona = idPersona;
                         _context.Add(asientoFamiliar);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                        
+
                     }
                 }
                 /*for (int i = 0; i < datosFamiliares.Count; i++)
@@ -1964,12 +2119,12 @@ namespace scorpioweb.Controllers
         #region -Presentaciones periodicas-
         public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>(); 
+            List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>();
 
             var queripersonasis = from p in _context.Persona
                                   join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
@@ -1982,13 +2137,13 @@ namespace scorpioweb.Controllers
                                       personaVM = p
                                   };
             var maxfra = queripersonasis.OrderByDescending(u => u.presentacionperiodicaVM.FechaFirma);
-             if (maxfra == null)
+            if (maxfra == null)
             {
                 ViewBag.MessageNull = "No ha registrado asistencias";
             }
-            ViewData["joinTbalasProceso1"] = maxfra;
+            ViewData["joinTablasPresentacion"] = maxfra;
 
-          
+
 
 
 
@@ -2239,8 +2394,8 @@ namespace scorpioweb.Controllers
             ViewBag.listaPropiedades = listaNoSi;
             ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
 
-            ViewBag.listaUbicacionExp = listaUbicacionExpediente;
-            ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
+            //ViewBag.listaUbicacionExp = listaUbicacionExpediente;
+            //ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
 
             ViewBag.pais = persona.Lnpais;
             ViewBag.idioma = persona.OtroIdioma;
@@ -2459,7 +2614,7 @@ namespace scorpioweb.Controllers
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
-                persona.UbicacionExpediente = persona.UbicacionExpediente;
+                //persona.UbicacionExpediente = persona.UbicacionExpediente;
                 if (persona.Candado == null){persona.Candado = 0;}
                 persona.Candado = persona.Candado;
                 #region -ConsumoSustancias-
@@ -3989,9 +4144,9 @@ namespace scorpioweb.Controllers
             List<Domicilio> domicilioVM = _context.Domicilio.ToList();
             List<Municipios> municipiosVM = _context.Municipios.ToList();
 
-            List < Fraccionesimpuestas > queryFracciones = (from f in fraccionesimpuestasVM
-                                                            group f by f.SupervisionIdSupervision into grp
-                                                            select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+            List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
+                                                         group f by f.SupervisionIdSupervision into grp
+                                                         select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
 
 
             #endregion
@@ -4403,9 +4558,9 @@ namespace scorpioweb.Controllers
 
         #region -Actualizar Candado All-
         public JsonResult LoockCandado(Persona persona, string[] datoCandado)
-      //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
-            {
-            persona.Candado = Convert.ToSByte(datoCandado[0] ==  "true");
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
+        {
+            persona.Candado = Convert.ToSByte(datoCandado[0] == "true");
             persona.IdPersona = Int32.Parse(datoCandado[1]);
 
             var empty = (from p in _context.Persona
@@ -4425,7 +4580,7 @@ namespace scorpioweb.Controllers
                           select p.Candado).FirstOrDefault();
             //return View();
 
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona)});
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona) });
         }
         public JsonResult getEstadodeCanadado(int id)
         {
@@ -4445,7 +4600,7 @@ namespace scorpioweb.Controllers
             string currentFilter,
             string Search,
             int? pageNumber)
-        { 
+        {
             #region -ListaUsuarios-            
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -4457,7 +4612,7 @@ namespace scorpioweb.Controllers
                 rolUsuario.Add(roles[i]);
             }
 
-            ViewBag.RolesUsuario = rolUsuario;
+            ViewBag.RolesUsuario = rolUsuario[1] ;
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
@@ -4467,6 +4622,14 @@ namespace scorpioweb.Controllers
             //List<Persona> personas = _context.Persona.ToList();
             //var personas = _context.Persona;
             //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
+
+            List<Persona> listaSupervisados = new List<Persona>();
+            listaSupervisados = (from table in _context.Persona
+                                 select table).ToList();
+            listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
+            ViewBag.listaSupervisados = listaSupervisados;
+
+
 
 
             ViewData["CurrentSort"] = sortOrder;
@@ -4496,8 +4659,8 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
-                                                   p.Supervisor.Contains(Search));
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) || 
+                                                   p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
 
                 }
             }
@@ -4505,16 +4668,10 @@ namespace scorpioweb.Controllers
             switch (sortOrder)
             {
                 case "name_desc":
-                    personas = personas.OrderByDescending(p => p.Paterno);
-                    break;
-                case "Date":
-                    personas = personas.OrderBy(p => p.UltimaActualización);
-                    break;
-                case "date_desc":
-                    personas = personas.OrderByDescending(p => p.UltimaActualización);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
                 default:
-                    personas = personas.OrderBy(p => p.Paterno);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
             }
 
@@ -4564,8 +4721,8 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchValue) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) ||
-                                                   p.Supervisor.Contains(searchValue));
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) || 
+                                                   p.Supervisor.Contains(searchValue) || (p.IdPersona.ToString()).Contains(searchValue));
 
                 }
             }
@@ -4573,16 +4730,10 @@ namespace scorpioweb.Controllers
             switch (sortOrder)
             {
                 case "name_desc":
-                    personas = personas.OrderByDescending(p => p.Paterno);
-                    break;
-                case "Date":
-                    personas = personas.OrderBy(p => p.UltimaActualización);
-                    break;
-                case "date_desc":
-                    personas = personas.OrderByDescending(p => p.UltimaActualización);
+                    personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
                 default:
-                    personas = personas.OrderBy(p => p.Paterno);
+                    personas = personas.OrderBy(p => p.IdPersona);
                     break;
             }
 
@@ -4593,7 +4744,19 @@ namespace scorpioweb.Controllers
         #endregion
 
 
+        #region -Listado Supervisados -
+        public IActionResult SupervisadosList(Persona persona)
+        {
+            //datosSustancias.Clear();            
+            List<Persona> listaSupervisados = new List<Persona>();
+            listaSupervisados = (from table in _context.Persona
+                            select table).ToList();
+            listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
+            ViewBag.listaSupervisados = listaSupervisados;
+            return View();
+        }
 
 
+        #endregion
     }
 }
