@@ -8,7 +8,7 @@ namespace scorpioweb.Models
         public int Id { get; set; }
         public string PersonaIdpersona { get; set; }
         public DateTime? FechaReasignacion { get; set; }
-        public string SAntuguo { get; set; }
+        public string SAntiguo { get; set; }
         public string SNuevo { get; set; }
         public string QuienRealizo { get; set; }
         public string MotivoRealizo { get; set; }

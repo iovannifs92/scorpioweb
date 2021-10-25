@@ -39,6 +39,7 @@ namespace scorpioweb.Models
         public string ReferenciasPersonales { get; set; }
         public string Capturista { get; set; }
         public sbyte? Candado { get; set; }
+        public string UbicacionExpediente { get; set; }
         public string NombreCompleto
         {
             get

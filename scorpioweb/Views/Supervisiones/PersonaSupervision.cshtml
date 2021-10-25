@@ -41,6 +41,9 @@
     <thead>
         <tr>
             <th>
+                <a>ID</a>
+            </th>
+            <th>
                 <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
             </th>
             <th>
@@ -67,6 +70,9 @@
         @foreach (var item in Model)
         {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
             </td>
@@ -96,7 +102,7 @@
                     <td>
                         @(item.tiempoSupervision)
                     </td>
-                }                
+                }
             }
             else
             {
