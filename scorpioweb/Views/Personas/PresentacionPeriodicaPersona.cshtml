@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>
 
     @{
-    ViewData["Title"] = "Presentaciónes Periodicas";
+    ViewData["Title"] = "Presentaciones Periodicas";
     Layout = "/Views/Shared/_Layout.cshtml";
     }
 
 
 
 
-    @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
+    @foreach (var item in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
         {
         <h2>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h2>
         break;
@@ -17,24 +17,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Prsentación Periodica</th>
+                    <th>Presentación Periódica</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in ViewData["joinTablasPresentacion"] as IEnumerable
-                <scorpioweb.Models.PresentacionPeriodicaPersona>
-                    )
-                    {
+                @foreach (var item2 in ViewData["joinTablasPresentacion"] as IEnumerable <scorpioweb.Models.PresentacionPeriodicaPersona>)
+                {
                 <tr>
                     <td>
-                        @if (item.presentacionperiodicaVM.FechaFirma != null)
+                        @if (item2.presentacionperiodicaVM.FechaFirma != null)
                         {
-                            @(item.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
+                            @(item2.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
                         }
                     </td>                  
                 </tr>
-                    }
-
+                }
             </tbody>
         </table>
         <a asp-action="Index" class="btn btn-link">
