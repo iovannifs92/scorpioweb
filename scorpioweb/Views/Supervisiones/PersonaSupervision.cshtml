@@ -37,7 +37,7 @@
     </div>
 </form>
 
-<table class="table">
+<table class="table" style="font-size:10px">
     <thead>
         <tr>
             <th>
@@ -50,17 +50,24 @@
                 <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
             </th>
             <th>
-                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoSupervisionParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de supervisión</a>
-            </th>
-            <th>
-                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoCumplimientoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de cumplimiento</a>
-            </th>
-            <th>
                 <a>Figura Judicial</a>
             </th>
             <th>
-                <a>Tiempo Supervisión (Días)</a>
+                <a>Fecha Inicio</a>
             </th>
+            <th>
+                <a>Fecha Término</a>
+            </th>
+            <th>
+                <a>Fecha Informe (Informe Intermedio)</a>
+            </th>
+            <th>
+                <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoSupervisionParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de supervisión</a>
+            </th>
+
+            @*<th>
+            <a>Tiempo Supervisión (Días)</a>
+        </th>*@
             <th>
                 <a>Supervisor</a>
             </th>
@@ -80,35 +87,42 @@
                 @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.supervisionVM.EstadoCumplimiento)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
             </td>
+            <td style="font-size:9px">
+                @(item.supervisionVM.Inicio != null ? item.supervisionVM.Inicio.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+            </td>
+            <td style="font-size:9px">
+                @(item.supervisionVM.Termino != null ? item.supervisionVM.Termino.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+            </td>
+            <td style="font-size:9px">                 
+                @(item.planeacionestrategicaVM.FechaInforme != null ? item.planeacionestrategicaVM.FechaInforme.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+            </td>
 
-            @if (item.supervisionVM.Inicio != null && item.supervisionVM.Termino != null && item.supervisionVM.EstadoSupervision == "VIGENTE")
+
+            @*@if (item.supervisionVM.Inicio != null && item.supervisionVM.Termino != null && item.supervisionVM.EstadoSupervision == "VIGENTE")
+        {
+            @if (@item.tiempoSupervision < 10)
             {
-                @if (@item.tiempoSupervision < 10)
-                {
-                    <td style="color:white; background-color:red">
-                        @(item.tiempoSupervision)
-                    </td>
-                }
-                else
-                {
-                    <td>
-                        @(item.tiempoSupervision)
-                    </td>
-                }
+                <td style="color:white; background-color:red">
+                    @(item.tiempoSupervision)
+                </td>
             }
             else
             {
                 <td>
+                    @(item.tiempoSupervision)
                 </td>
             }
+        }
+        else
+        {
+            <td>
+            </td>
+        }*@
 
             <td>
                 @Html.DisplayFor(modelItem => item.personaVM.Supervisor)

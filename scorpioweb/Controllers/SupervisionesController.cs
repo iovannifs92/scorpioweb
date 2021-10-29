@@ -289,7 +289,7 @@ namespace scorpioweb.Controllers
             {
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
                 new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
-                new SelectListItem{ Text = "Pendiente", Value = "PENDIENTE" },
+                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
                 };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
@@ -560,7 +560,8 @@ namespace scorpioweb.Controllers
 
             var filter= from p in _context.Persona
                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-                        join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal                        
+                        join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                        join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
                         join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                         into PersonaSupervisionCausaPenal
                         from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
@@ -569,6 +570,7 @@ namespace scorpioweb.Controllers
                             personaVM = p,
                             supervisionVM = s,
                             causapenalVM = cp,
+                            planeacionestrategicaVM = pe,
                             fraccionesimpuestasVM = fraccion,
                             tiempoSupervision = (s.Termino!=null && s.Inicio!=null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays): 0
                         };
@@ -578,7 +580,8 @@ namespace scorpioweb.Controllers
                 filter = from p in _context.Persona
                              join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                              join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                             join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
+                         join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+                         join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                              into PersonaSupervisionCausaPenal
                             from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
                             where p.Supervisor == User.Identity.Name
@@ -587,6 +590,7 @@ namespace scorpioweb.Controllers
                                  personaVM = p,
                                  supervisionVM = s,
                                  causapenalVM = cp,
+                                 planeacionestrategicaVM = pe,
                                  fraccionesimpuestasVM = fraccion,
                                  tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
                              };

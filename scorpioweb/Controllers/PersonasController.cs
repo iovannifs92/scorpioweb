@@ -115,7 +115,9 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="MCSCP7-1", Value="MCSCP7-1"},
             new SelectListItem{ Text="MCSCP7-2", Value="MCSCP7-2"},
             new SelectListItem{ Text="MCSCP7-3", Value="MCSCP7-3"},
-            new SelectListItem{ Text="MCSCP7-4", Value="MCSCP7-4"}           
+            new SelectListItem{ Text="MCSCP7-4", Value="MCSCP7-4"},
+            new SelectListItem{ Text="PRESTAMO", Value="PRESTAMO"},
+            new SelectListItem{ Text="ARCHIVO", Value="ARCHIVO"}
         };
 
         #endregion
