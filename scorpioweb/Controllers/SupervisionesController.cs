@@ -283,20 +283,18 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            #region Estado Suprvición
+            #region Estado Supervisión
             List<SelectListItem> ListaEstadoS;
             ListaEstadoS = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
                 new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
-                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
-                };
+                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" }
+            };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
             ViewBag.idEstadoSupervision = BuscaId(ListaEstadoS, supervision.EstadoSupervision);
             #endregion
-
-
 
             #region Estado Cumplimiento
             List<SelectListItem> ListaEstadoC;

@@ -436,6 +436,7 @@ namespace scorpioweb.Controllers
                                       select table.IdSupervision).Max()) + 1;
                 supervision.IdSupervision = idSupervision;
                 supervision.PersonaIdPersona = idPersona;
+                supervision.EstadoSupervision = "VIGENTE";
                 supervision.CausaPenalIdCausaPenal = id;
                 #endregion
 
