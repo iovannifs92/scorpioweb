@@ -546,6 +546,16 @@ namespace scorpioweb.Controllers
                     supervisor = true;
                 }
             }
+
+            ViewBag.RolesUsuario = rolUsuario[1];
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                rolUsuario.Add(roles[i]);
+            }
+
+            ViewBag.RolesUsuario1 = rolUsuario;
+
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
 
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
@@ -557,6 +567,22 @@ namespace scorpioweb.Controllers
                                                             from sf in SupervisionFracciones.DefaultIfEmpty()
                                                             select new Supervision{                                                                
                                                             }).ToList();
+
+             #region Estado Suprvición
+            List<SelectListItem> ListaEstadoS;
+            ListaEstadoS = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "", Value = "" },
+                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
+                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
+                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+                };
+
+            ViewBag.listaEstadoSupervision = ListaEstadoS;
+          
+            #endregion
+
+
 
             var filter= from p in _context.Persona
                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
@@ -639,6 +665,12 @@ namespace scorpioweb.Controllers
 
 
 
+
+
+
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PersonaSupervision(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
@@ -705,6 +737,70 @@ namespace scorpioweb.Controllers
 
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EdicionMenuSuper(Supervision supervision, Planeacionestrategica planeacionestrategica)
+        {
+            int idSuper = supervision.IdSupervision;
+            int idPlaneacion = planeacionestrategica.IdPlaneacionEstrategica;
+            var fInicio = supervision.Inicio;
+            var fTermino = supervision.Termino;
+            var fInforme = planeacionestrategica.FechaInforme;
+            string estadoS = supervision.EstadoSupervision;
+
+
+            supervision.Inicio = fInicio;
+            supervision.Termino = fTermino;
+            supervision.EstadoSupervision = estadoS;
+            planeacionestrategica.FechaInforme = fInforme;
+
+            var fInicioUpdate = (from a in _context.Supervision
+                                 where a.IdSupervision == idSuper
+                                 select a).FirstOrDefault();
+            fInicioUpdate.Inicio = fInicio;
+            _context.SaveChanges();
+
+            var fTerminoUpdate = (from a in _context.Supervision
+                                 where a.IdSupervision == idSuper
+                                 select a).FirstOrDefault();
+            fTerminoUpdate.Termino = fTermino;
+            _context.SaveChanges();
+
+
+            var estadoSUpdate = (from a in _context.Supervision
+                                  where a.IdSupervision == idSuper
+                                  select a).FirstOrDefault();
+            estadoSUpdate.EstadoSupervision = estadoS;
+            _context.SaveChanges();
+
+
+            var fInformeUpdate = (from a in _context.Planeacionestrategica
+                                  where a.IdPlaneacionEstrategica == idPlaneacion
+                                  select a).FirstOrDefault();
+            fInformeUpdate.FechaInforme = fInforme;
+            _context.SaveChanges();
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!SupervisionExists(supervision.IdSupervision))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("PersonaSupervision");
+        }
+
+
         #endregion
 
         #region -Aer-

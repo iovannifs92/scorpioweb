@@ -211,7 +211,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            ViewBag.RolesUsuario = rolUsuario[1]; ;
+            ViewBag.RolesUsuario = rolUsuario[1]; 
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
@@ -553,7 +553,13 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuario = rolUsuario;
             return View();
         }
+       
+
+
         #endregion
+
+
+
 
         #region -AsignaSupervision-
 
@@ -895,6 +901,11 @@ namespace scorpioweb.Controllers
 
             string selectem2 = LNM.FirstOrDefault().Municipio.ToString();
             ViewBag.lnmunicipio = selectem2.ToUpper();
+
+
+
+
+
             #endregion
 
             #region Sacar el nombre de estdo y municipio (DOMICILIO)
@@ -2142,11 +2153,6 @@ namespace scorpioweb.Controllers
                 ViewBag.MessageNull = "No ha registrado asistencias";
             }
             ViewData["joinTablasPresentacion"] = maxfra;
-
-
-
-
-
             return View();
         }
         #endregion
@@ -4742,7 +4748,6 @@ namespace scorpioweb.Controllers
             return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
-
 
         #region -Listado Supervisados -
         public IActionResult SupervisadosList(Persona persona)
