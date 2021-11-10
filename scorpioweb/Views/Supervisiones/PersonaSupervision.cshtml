@@ -117,34 +117,41 @@
             {
                 <form asp-action="EdicionMenuSuper">
 
-                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision"    />
-                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica"    />
-                    <td style="font-size:9px">
-                        <input name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date/>
-                    </td>
-                    <td style="font-size:9px">
-                        <input name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
-                    </td>
-                    <td style="font-size:9px">
-                        <input name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
-                    </td>
-                    <td>
+                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
+                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
+                <td style="font-size:9px">
+                    <input name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date />
+                </td>
+                <td style="font-size:9px">
+                    <input name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
+                </td>
+                <td style="font-size:9px">
+                    <input name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
+                </td>
+                <td>
+                    @if (@item.supervisionVM.EstadoSupervision == null)
+                    {
+                        <p style="font-size:15px">Pendiente</p>
+                    }
+                    else
+                    {
                         <select class="form-control" name="EstadoSupervision" id="EstadoSupervision"
                                 asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
                         </select>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-save"></i>
-                                Guardar
-                            </button>
-                        </div>
-                    </td>
-               </form>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
+                </td>
+                <td>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i>
+                            Guardar
+                        </button>
+                    </div>
+                </td>
+                </form>
             }
             else
             {
@@ -158,36 +165,19 @@
                     @(item.planeacionestrategicaVM.FechaInforme != null ? item.planeacionestrategicaVM.FechaInforme.Value.ToString("dd-MMMM-yyyy") : String.Empty)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+                    @if (@item.supervisionVM.EstadoSupervision == null)
+                    {
+                        <p style="font-size:10px">PENDIENTE</p>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
                 </td>
-
-
             }
-            @*@if (item.supervisionVM.Inicio != null && item.supervisionVM.Termino != null && item.supervisionVM.EstadoSupervision == "VIGENTE")
-        {
-            @if (@item.tiempoSupervision < 10)
-            {
-                <td style="color:white; background-color:red">
-                    @(item.tiempoSupervision)
-                </td>
-            }
-            else
-            {
-                <td>
-                    @(item.tiempoSupervision)
-                </td>
-            }
-        }
-        else
-        {
-            <td>
-            </td>
-        }*@
-
-
             <td>
                 <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
                     <i class="fa fa-pencil"></i> Editar

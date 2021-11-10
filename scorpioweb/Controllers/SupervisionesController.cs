@@ -302,6 +302,7 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaEstadoC;
             ListaEstadoC = new List<SelectListItem>
             {
+                new SelectListItem{ Text = "", Value = "NA" },
                 new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
                 new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
                 new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
