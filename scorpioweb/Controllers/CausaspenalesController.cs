@@ -438,7 +438,6 @@ namespace scorpioweb.Controllers
                 supervision.PersonaIdPersona = idPersona;
                 supervision.CausaPenalIdCausaPenal = id;
                 supervision.EstadoSupervision = "VIGENTE";
-                   ;
                 #endregion
 
                 #region agregar 1 entrada a Suspensionseguimiento

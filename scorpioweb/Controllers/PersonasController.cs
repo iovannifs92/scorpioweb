@@ -1442,6 +1442,7 @@ namespace scorpioweb.Controllers
                 persona.UltimaActualización = DateTime.Now;
                 persona.Capturista = currentUser;
                 persona.Candado = 0;
+                persona.MotivoCandado = "NA";
                 #endregion
 
                 #region -Domicilio-
@@ -4568,6 +4569,7 @@ namespace scorpioweb.Controllers
         {
             persona.Candado = Convert.ToSByte(datoCandado[0] == "true");
             persona.IdPersona = Int32.Parse(datoCandado[1]);
+            persona.MotivoCandado = datoCandado[2];
 
             var empty = (from p in _context.Persona
                          where p.IdPersona == persona.IdPersona
@@ -4579,6 +4581,7 @@ namespace scorpioweb.Controllers
                              where p.IdPersona == persona.IdPersona
                              select p).FirstOrDefault();
                 query.Candado = persona.Candado;
+                query.MotivoCandado = persona.MotivoCandado;
                 _context.SaveChanges();
             }
             var stadoc = (from p in _context.Persona

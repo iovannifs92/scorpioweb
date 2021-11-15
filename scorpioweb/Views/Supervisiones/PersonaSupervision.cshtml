@@ -115,30 +115,22 @@
             </td>
             @if (@ViewBag.RolesUsuario == "AdminMCSCP" || @ViewBag.RolesUsuario == "Masteradmin")
             {
-                <form asp-action="EdicionMenuSuper">
-
-                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
-                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
-                <td style="font-size:9px">
-                    <input name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date />
-                </td>
-                <td style="font-size:9px">
-                    <input name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
-                </td>
-                <td style="font-size:9px">
-                    <input name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
-                </td>
-                <td>
-                    @if (@item.supervisionVM.EstadoSupervision == null)
-                    {
-                        <p style="font-size:15px">Pendiente</p>
-                    }
-                    else
-                    {
-                        <select class="form-control" name="EstadoSupervision" id="EstadoSupervision"
+                <form asp-action="EdicionMenuSuper" style="font-size:10px">
+                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision"    />
+                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica"    />
+                    <td>
+                        <input style="font-size:9px" name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date/>
+                    </td>
+                    <td>
+                        <input style="font-size:9px" name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
+                    </td>
+                    <td>
+                        <input style="font-size:10px" name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
+                    </td>
+                    <td>
+                        <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px"
                                 asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
                         </select>
-                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.personaVM.Supervisor)

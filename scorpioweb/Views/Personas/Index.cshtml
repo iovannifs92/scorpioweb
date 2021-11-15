@@ -25,13 +25,25 @@
     });
     function candado2(id, candado) {
         var personaidpersona = id;
+        let text;
+        if (candado == true) {
+            let razon = prompt("Razon de bloqueo", "");
+            if (razon == null || razon == "") {
+                text = "NA";
+            } else {
+                text = razon;
+            }
+        } else {
+           text = "NA";
+        }
+
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "/Personas/LoockCandado",
             traditional: true,
             data: {
-                datoCandado: [candado, personaidpersona],
+                datoCandado: [candado, personaidpersona, text],
             },
             success: function (response) {
                 if (response.success) {
@@ -56,13 +68,24 @@
     };
     function candado(id, candado) {
         var personaidpersona = id;
+        let text;
+        if (candado == true) {
+            let razon = prompt("Razon de bloqueo", "");
+            if (razon == null || razon == "") {
+                text = "NA";
+            } else {
+                text = razon;
+            }
+        } else {
+            text = "NA";
+        }
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "/Personas/LoockCandado",
             traditional: true,
             data: {
-                datoCandado: [candado, personaidpersona],
+                datoCandado: [candado, personaidpersona, text],
             },
             success: function (response) {
                 if (response.success) {
@@ -106,7 +129,7 @@
             },
             traditional: true,
             success: function (result) {
-                
+
                 if (result.length < 10) {
                     document.getElementById("btnNext").disabled = true;
                 }
@@ -118,7 +141,7 @@
                     var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
                     //if (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP') {
-                    if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
+                    if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
                         if (result[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
@@ -208,7 +231,7 @@
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                        if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
+                        if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
                             if (result[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -297,7 +320,7 @@
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                        if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
+                        if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
                             if (result[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -396,7 +419,7 @@
                     var d = new Date(dateString);
                     var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m..";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                    if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
+                    if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
                         /*alert("Fecha " + result[i].ultimaActualización);*/
                         if (result[i].candado == 0) {
                             row = row

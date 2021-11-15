@@ -8,7 +8,7 @@
 
 
 
-    @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
+    @foreach (var item in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
         {
         <h2>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h2>
         break;
@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item2 in ViewData["joinTbalasProceso1"] as IEnumerable <scorpioweb.Models.PresentacionPeriodicaPersona>)
+                @foreach (var item2 in ViewData["joinTablasPresentacion"] as IEnumerable <scorpioweb.Models.PresentacionPeriodicaPersona>)
                 {
                 <tr>
                     <td>

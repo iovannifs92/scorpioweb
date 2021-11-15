@@ -283,20 +283,19 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            #region Estado Suprvición
+            #region Estado Supervisión
             List<SelectListItem> ListaEstadoS;
             ListaEstadoS = new List<SelectListItem>
             {
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
                 new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
                 new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
-                };
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
+            };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
             ViewBag.idEstadoSupervision = BuscaId(ListaEstadoS, supervision.EstadoSupervision);
             #endregion
-
-
 
             #region Estado Cumplimiento
             List<SelectListItem> ListaEstadoC;
@@ -577,6 +576,7 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
                 new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
                 new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
                 };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
@@ -1577,7 +1577,6 @@ namespace scorpioweb.Controllers
            .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
             var cp = _context.Causapenal
            .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
-
             ViewBag.nombre = persona.NombreCompleto;
             ViewBag.cp = cp.CausaPenal;
 
