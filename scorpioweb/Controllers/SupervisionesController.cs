@@ -568,7 +568,7 @@ namespace scorpioweb.Controllers
                                                             select new Supervision{                                                                
                                                             }).ToList();
 
-             #region Estado Suprvición
+            #region Estado Suprvición
             List<SelectListItem> ListaEstadoS;
             ListaEstadoS = new List<SelectListItem>
             {
@@ -580,7 +580,8 @@ namespace scorpioweb.Controllers
                 };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
-          
+      
+
             #endregion
 
 
