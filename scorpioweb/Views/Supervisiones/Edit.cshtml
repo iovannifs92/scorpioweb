@@ -1,4 +1,4 @@
-﻿@model scorpioweb.Models.Supervision
+@model scorpioweb.Models.Supervision
 
 @{
     ViewData["Title"] = "Supervisión";
@@ -35,10 +35,9 @@
                 }
                 else
                 {
-                    <select class="form-control" name="EstadoSupervision" disabled
-                            asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Value", "Text", @ViewBag.idEstadoSupervision))">
-                    </select>
-                }                
+                    <input asp-for="EstadoSupervision" class="form-control" readonly/>
+                    <span asp-validation-for="EstadoSupervision" class="text-danger"></span>
+                }             
             </div>
             <div class="form-group" style="display:none " readonly>
                 <label asp-for="PersonaIdPersona" class="control-label"></label>
