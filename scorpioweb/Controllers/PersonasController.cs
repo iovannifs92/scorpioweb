@@ -4251,7 +4251,7 @@ namespace scorpioweb.Controllers
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              tipoAdvertencia = "Sin estado de supervisión"
-                                         }).Union
+                                         })/*.Union
                                              (from persona in personaVM
                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -4267,7 +4267,7 @@ namespace scorpioweb.Controllers
                                                  causapenalVM = causapenal,
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
-                                             });
+                                             })*/;
                 ViewBag.Admin = true;
             }
             else
@@ -4361,7 +4361,7 @@ namespace scorpioweb.Controllers
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              tipoAdvertencia = "Sin estado de supervisión"
-                                         }).Union
+                                         })/*.Union
                                             (from persona in personaVM
                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -4377,7 +4377,7 @@ namespace scorpioweb.Controllers
                                                  causapenalVM = causapenal,
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
-                                             });
+                                             })*/;
             }
 
 
