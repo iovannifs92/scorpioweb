@@ -181,6 +181,9 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
+
+
+
             //para er si la  persona tiene o no huella registrada
             var queryhayhuella = from r in _context.Registrohuella
                                  join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
@@ -195,7 +198,6 @@ namespace scorpioweb.Controllers
             {
                 if (personaHuella.Count >= 1)
                 {
-
                     ViewBag.personaIdPersona = personaHuella.Key;
                 };
             }
@@ -4766,5 +4768,26 @@ namespace scorpioweb.Controllers
 
 
         #endregion
+
+
+
+
+        #region -MenuArchivo-
+        public IActionResult MenuArchivo()
+        {
+            return View();
+        }
+        #endregion
+        
+        #region -MenuArchivo-
+        public IActionResult ArchivoMCySCP()
+        {
+            return View();
+        }
+        #endregion
     }
+
+
+
+
 }

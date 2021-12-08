@@ -98,7 +98,10 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "Sentencia absolutoria en procedimiento abreviado", Value = "SENTENCIA ABSOLUTORIA EN PROCEDIMIENTO ABREVIADO" },
             new SelectListItem{ Text = "Sentencia condenatoria en juicio oral", Value = "SENTENCIA CONDENATORIA EN JUICIO ORAL" },
             new SelectListItem{ Text = "Sentencia absolutoria en juicio oral", Value = "SENTENCIA ABSOLUTORIA EN JUICIO ORAL" },
-            new SelectListItem{ Text = "No vinculación a proceso", Value = "NO VINCULACIÓN A PROCESO" }
+            new SelectListItem{ Text = "No vinculación a proceso", Value = "NO VINCULACIÓN A PROCESO" },
+            new SelectListItem{ Text = "Declinción", Value = "DECLINACION" },
+            new SelectListItem{ Text = "Beneficio", Value = "BENEFICIO" },
+            new SelectListItem{ Text = "Prision Preventiva", Value = "PRISION PREVENTIVA" }
         };
 
 
@@ -635,7 +638,8 @@ namespace scorpioweb.Controllers
                                               (spcp.personaVM.Nombre + " " + spcp.personaVM.Paterno + " " + spcp.personaVM.Materno).Contains(searchString) ||
                                               spcp.supervisionVM.EstadoSupervision.Contains(searchString) ||
                                               spcp.causapenalVM.CausaPenal.Contains(searchString) ||
-                                              spcp.personaVM.Supervisor.Contains(searchString)
+                                              spcp.personaVM.Supervisor.Contains(searchString) ||
+                                              (spcp.personaVM.IdPersona.ToString()).Contains(searchString)
                                               );
             }
 
