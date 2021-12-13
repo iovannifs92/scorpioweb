@@ -195,7 +195,6 @@ namespace scorpioweb.Controllers
             {
                 if (personaHuella.Count >= 1)
                 {
-
                     ViewBag.personaIdPersona = personaHuella.Key;
                 };
             }
@@ -4808,5 +4807,26 @@ namespace scorpioweb.Controllers
 
 
         #endregion
+
+
+
+
+        #region -MenuArchivo-
+        public IActionResult MenuArchivo()
+        {
+            return View();
+        }
+        #endregion
+        
+        #region -MenuArchivo-
+        public IActionResult ArchivoMCySCP()
+        {
+            return View();
+        }
+        #endregion
     }
+
+
+
+
 }

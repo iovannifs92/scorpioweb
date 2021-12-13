@@ -265,45 +265,55 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp)
         {
             string currentUser = User.Identity.Name;
-            if (ModelState.IsValid)
+
+            causapenal.Cnpp = cnpp;
+            causapenal.Juez = juez;
+            causapenal.Distrito = distrito;
+            causapenal.Cambio = cambio;
+            causapenal.CausaPenal = cp;
+
+            if (cp == null)
             {
-                int idCausaPenal = ((from table in _context.Causapenal
-                                        select table.IdCausaPenal).Max()) + 1;
-                causapenal.IdCausaPenal = idCausaPenal;
-                #region -Delitos-
-                for (int i = 0; i < datosDelitos.Count; i = i + 2)
-                {
-                    if (datosDelitos[i][1] == currentUser)
-                    {
-                        delitoDB.Tipo = datosDelitos[i][0];
-                        delitoDB.Modalidad = datosDelitos[i + 1][0];
-                        delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
-
-                        _context.Add(delitoDB);
-                        await _context.SaveChangesAsync(null, 1);
-                    }
-                }
-
-                for (int i = 0; i < datosDelitos.Count; i++)
-                {
-                    if (datosDelitos[i][1] == currentUser)
-                    {
-                        datosDelitos.RemoveAt(i);
-                        i--;
-                    }
-                }
-                #endregion
-
-                causapenal.Cnpp = cnpp;
-                causapenal.Juez = juez;
-                causapenal.Distrito = distrito;
-                causapenal.Cambio = cambio;
-                causapenal.CausaPenal = cp;
-                _context.Add(causapenal);
-                await _context.SaveChangesAsync(null, 1);
-                return Json(new { success = true, responseText = Url.Action("Index", "Causaspenales") });
+                return Json(new { success = false, responseText = "Causa penal vacia,\nColoque datos en el campo" });
             }
-            return View(causapenal);
+            else
+            {
+                if (ModelState.IsValid)
+                {
+                    int idCausaPenal = ((from table in _context.Causapenal
+                                         select table.IdCausaPenal).Max()) + 1;
+                    causapenal.IdCausaPenal = idCausaPenal;
+                    #region -Delitos-
+                    for (int i = 0; i < datosDelitos.Count; i = i + 2)
+                    {
+                        if (datosDelitos[i][1] == currentUser)
+                        {
+                            delitoDB.Tipo = datosDelitos[i][0];
+                            delitoDB.Modalidad = datosDelitos[i + 1][0];
+                            delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
+
+                            _context.Add(delitoDB);
+                            await _context.SaveChangesAsync(null, 1);
+                        }
+                    }
+
+                    for (int i = 0; i < datosDelitos.Count; i++)
+                    {
+                        if (datosDelitos[i][1] == currentUser)
+                        {
+                            datosDelitos.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    #endregion
+
+                   
+                    _context.Add(causapenal);
+                    await _context.SaveChangesAsync(null, 1);
+                    return Json(new { success = true, responseText = Url.Action("Index", "Causaspenales") });
+                }
+                return View(causapenal);
+            }
         }
         #endregion
         String BuscaId(List<SelectListItem> lista, String texto)
