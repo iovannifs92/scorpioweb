@@ -181,7 +181,7 @@ namespace scorpioweb.Controllers
             string searchString,
             int? pageNumber)
         {
-            //para er si la  persona tiene o no huella registrada
+            //para ver si la  persona tiene o no huella registrada
             var queryhayhuella = from r in _context.Registrohuella
                                  join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
                                  group r by r.PersonaIdPersona into grup
@@ -4122,7 +4122,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -WarningSupervisor-
-        public async Task<IActionResult> WarningSupervisor()
+        public async Task<IActionResult> WarningSupervisor(string currentFilter)
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -4133,6 +4133,15 @@ namespace scorpioweb.Controllers
             DateTime fechaInformeCoordinador = (DateTime.Now).AddDays(30);
             DateTime fechaHoy = DateTime.Today;
             ViewBag.Admin = false;
+
+            if (currentFilter == null)
+            {
+                ViewBag.Filtro = "TODOS";
+            }
+            else
+            {
+                ViewBag.Filtro = currentFilter;
+            }
 
             foreach (var rol in roles)
             {

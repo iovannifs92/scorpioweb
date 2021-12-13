@@ -3,177 +3,199 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-    <div class="text-center" style="padding-top:1%">
-        <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
-        <br />
-        <a style="width:200px">Alertas</a>
-    </div>
-    <table class="table" style="padding-top:5%">
-        <thead>
-            <tr>
-                <th>
-                    <a>Nombre</a>
-                </th>
-                <th>
-                    <a>Causa Penal</a>
-                </th>
-                <th>
-                    <a>Tipo de alerta</a>
-                </th>
-                <th>
-                    <a>Información de campo</a>
-                </th>
-                <th>
-                    <a>Municipio</a>
-                </th>
-                @if (ViewBag.Admin)
-                {
-                    <th>
-                        <a>Supervisor</a>
-                    </th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in ViewData["alertas"] as IEnumerable<scorpioweb.Models.PlaneacionWarningViewModel>)
-            {
+<div class="text-center" style="padding-top:1%">
+    <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+    <br />
+    <h4>Alertas</h4>
+</div>
 
-            <tr>
-                <td>
-                    @item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre
-                </td>
-                <td>
-                    @item.causapenalVM.CausaPenal
-                </td>
-                @{
-                    switch (@item.tipoAdvertencia)
-                    {
-                        case "Informe fuera de tiempo":
-                            @if (@item.figuraJudicial == "MC")
-                            {
-                                <td>
-                                    Control de supervisión
-                                </td>
-                            }
-                            else
-                            {
-                                @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
+<form asp-action="WarningSupervisor" method="get">
+    <div class="form-group col-xs-4">
+        <label class="control-label">Tipo</label>
+        <select class="form-control" name="currentFilter" id="currentFilter">
+            <option value="TODOS">Todos</option>
+            <option value="INFORME FUERA DE TIEMPO">Informe fuera de tiempo</option>
+            <option value="CONTROL DE SUPERVISIÓN A 3 DÍAS O MENOS">Control de supervisión a 3 días o menos</option>
+            <option value="SIN FECHA DE INFORME">Sin fecha de informe</option>
+            <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
+            <option value="SIN ESTADO DE SUPERVISIÓN">Sin estado de supervisión</option>
+        </select>
+        <button type="submit" class="btn btn-default">
+            <i class="fa fa-search"></i>
+            Buscar
+        </button>
+    </div>
+</form>
+
+<table class="table" style="padding-top:5%">
+    <thead>
+        <tr>
+            <th>
+                <a>Nombre</a>
+            </th>
+            <th>
+                <a>Causa Penal</a>
+            </th>
+            <th>
+                <a>Tipo de alerta</a>
+            </th>
+            <th>
+                <a>Información de campo</a>
+            </th>
+            <th>
+                <a>Municipio</a>
+            </th>
+            @if (ViewBag.Admin)
+            {
+                <th>
+                    <a>Supervisor</a>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["alertas"] as IEnumerable<scorpioweb.Models.PlaneacionWarningViewModel>)
+        {
+            if (@item.tipoAdvertencia.ToLower() == ViewBag.Filtro.ToLower() || ViewBag.Filtro == "TODOS")
+            {
+                <tr>
+                    <td>
+                        @item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre
+                    </td>
+                    <td>
+                        @item.causapenalVM.CausaPenal
+                    </td>
+
+                    @{
+                        switch (@item.tipoAdvertencia)
+                        {
+                            case "Informe fuera de tiempo":
+                                @if (@item.figuraJudicial == "MC")
                                 {
                                     <td>
-                                        Informe en próximos 30 días
+                                        Control de supervisión
                                     </td>
                                 }
                                 else
                                 {
-                                    @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                                    @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
                                     {
-                                        <td style="color:red">
-                                            Informe fuera de tiempo
+                                        <td>
+                                            Informe en próximos 30 días
                                         </td>
                                     }
                                     else
                                     {
-                                        <td style="color:#F0AD00">
-                                            Informe en menos de 5 días
-                                        </td>
+                                        @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                                        {
+                                            <td style="color:red">
+                                                Informe fuera de tiempo
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td style="color:#F0AD00">
+                                                Informe en menos de 5 días
+                                            </td>
+                                        }
                                     }
                                 }
-                            }
-                            <td>
-                                @item.planeacionestrategicaVM.FechaInforme
-                            </td>
-                            break;
-                        case "Control de supervisión a 3 días o menos":
-                            @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
-                            {
-                                <td style="color:red">
-                                    Control de supervisión fuera de tiempo
-                                </td>
-                            }
-                            else
-                            {
-                                <td>
-                                    @item.tipoAdvertencia
-                                </td>
-                            }
-                            <td>
-                                @item.planeacionestrategicaVM.FechaInforme
-                            </td>
-                            break;
-                        case "Sin fecha de informe":
-                            @if (item.figuraJudicial != "MC")
-                            {
-                                <td>
-                                    @item.tipoAdvertencia
-                                </td>
                                 <td>
                                     @item.planeacionestrategicaVM.FechaInforme
                                 </td>
-                            }
-                            else
-                            {
-                                <td>
-                                    Sin control de supervisión
-                                </td>
+                                break;
+                            case "Control de supervisión a 3 días o menos":
+                                @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
+                                {
+                                    <td style="color:red">
+                                        Control de supervisión fuera de tiempo
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        @item.tipoAdvertencia
+                                    </td>
+                                }
                                 <td>
                                     @item.planeacionestrategicaVM.FechaInforme
                                 </td>
-                            }
+                                break;
+                            case "Sin fecha de informe":
+                                @if (item.figuraJudicial != "MC")
+                                {
+                                    <td>
+                                        @item.tipoAdvertencia
+                                    </td>
+                                    <td>
+                                        @item.planeacionestrategicaVM.FechaInforme
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        Sin control de supervisión
+                                    </td>
+                                    <td>
+                                        @item.planeacionestrategicaVM.FechaInforme
+                                    </td>
+                                }
 
-                            break;
-                        case "Sin periodicidad de firma":
-                            <td>
-                                @item.tipoAdvertencia
-                            </td>
-                            <td>
-                                @item.planeacionestrategicaVM.PeriodicidadFirma
-                            </td>
-                            break;
-                        case "Sin estado de supervisión":
-                            <td>
-                                @item.tipoAdvertencia
-                            </td>
-                            <td>
-                                @item.supervisionVM.EstadoSupervision
-                            </td>
-                            break;
-                        case "Se paso el tiempo de la firma":
-                            <td style="color:red">
-                                @item.tipoAdvertencia
-                            </td>
-                            <td>
-                                @item.planeacionestrategicaVM.FechaProximoContacto
-                            </td>
-                            break;
+                                break;
+                            case "Sin periodicidad de firma":
+                                <td>
+                                    @item.tipoAdvertencia
+                                </td>
+                                <td>
+                                    @item.planeacionestrategicaVM.PeriodicidadFirma
+                                </td>
+                                break;
+                            case "Sin estado de supervisión":
+                                <td>
+                                    @item.tipoAdvertencia
+                                </td>
+                                <td>
+                                    @item.supervisionVM.EstadoSupervision
+                                </td>
+                                break;
+                            case "Se paso el tiempo de la firma":
+                                <td style="color:red">
+                                    @item.tipoAdvertencia
+                                </td>
+                                <td>
+                                    @item.planeacionestrategicaVM.FechaProximoContacto
+                                </td>
+                                break;
+                        }
                     }
-                }
-                <td>
-                    @item.municipiosVM.Municipio
-                </td>
-                @if (ViewBag.Admin)
-                {
                     <td>
-                        @item.personaVM.Supervisor
+                        @item.municipiosVM.Municipio
                     </td>
-                }
-                <td>
-                    @item.figuraJudicial
-                </td>
-                <td>
-                    @if (item.tipoAdvertencia == "Sin estado de supervisión")
+                    @if (ViewBag.Admin)
                     {
-                        <a asp-controller="Supervisiones" asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
-                            <i class="fa fa-pencil"></i> Detalle
-                        </a>
+                        <td>
+                            @item.personaVM.Supervisor
+                        </td>
                     }
-                    else
-                    {
-                        <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
-                            <i class="fa fa-pencil"></i> Detalle
-                        </a>
-                    }
-                </td>
-            </tr>
+                    <td>
+                        @item.figuraJudicial
+                    </td>
+                    <td>
+                        @if (item.tipoAdvertencia == "Sin estado de supervisión")
+                        {
+                            <a asp-controller="Supervisiones" asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
+                                <i class="fa fa-pencil"></i> Detalle
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
+                                <i class="fa fa-pencil"></i> Detalle
+                            </a>
+                        }
+                    </td>
+                </tr>
             }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
