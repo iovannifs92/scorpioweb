@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item2 in ViewData["joinTablasPresentacion"] as IEnumerable <scorpioweb.Models.PresentacionPeriodicaPersona>)
+                @foreach (var item2 in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
                 {
                 <tr>
                     <td>
@@ -29,7 +29,7 @@
                         {
                             @(item2.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
                         }
-                    </td>                  
+                    </td>
                 </tr>
                 }
             </tbody>
