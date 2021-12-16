@@ -108,6 +108,17 @@
     #salud:hover {
         background-color: #61C9F2;
     }
+
+
+#vinculacion {
+    background-color: #EC7DAF;
+    color: #fff;
+    border-color: #fff;
+}
+    #vinculacion:hover {
+        background-color: #FF3B93;
+    }
+
 #boton {
     border: solid White;
 }
