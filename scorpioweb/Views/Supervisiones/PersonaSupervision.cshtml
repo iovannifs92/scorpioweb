@@ -170,11 +170,16 @@
                     @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
                 </td>
             }
-            <td>
-                <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
-                    <i class="fa fa-pencil"></i> Editar
-                </a>
-            </td>
+        <td>
+            <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                <i class="fa fa-pencil"></i> Editar
+            </a>   
+        </td>
+        <td>
+            <a type="button" class="btn btn-default" id="edicion" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
+                <i class="fa fa-calendar"></i> Presentaciónes
+            </a>
+        </td>
         </tr>
         }
     </tbody>
