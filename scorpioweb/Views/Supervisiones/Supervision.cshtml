@@ -7,6 +7,52 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
+<style>
+    #vinculacion {
+    background-color: #EC7DAF;
+    color: #fff;
+    border-color: #fff;
+    }
+    #vinculacion:hover {
+        background-color: #FF3B93;
+    }
+
+    #cambio {
+    background-color: #BF7FEC;
+    color: #fff;
+    border-color: #fff;
+    }
+    #cambio:hover {
+        background-color: #AE3DFF;
+    }
+
+    #victima {
+    background-color: #95ECDD;
+    color: #fff;
+    border-color: #fff;
+    }
+    #victima:hover {
+        background-color: #55FFE2;
+    }
+
+    #suspension {
+    background-color: #ECD099;
+    color: #fff;
+    border-color: #fff;
+    }
+    #suspension:hover {
+        background-color: #FEC859;
+    }
+
+    #aer {
+    background-color: #B0DF69;
+    color: #fff;
+    border-color: #fff;
+    }
+    #aer:hover {
+        background-color: #A7FD2A;
+    }
+</style>
 
 
 
@@ -35,7 +81,7 @@
             <a asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Planeación Estrategica</a>
         </div>
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditAer" asp-route-id="@item.supervisionVM.IdSupervision" id="abandonoEstado" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="abandonoestado" class="btn btn-primary btn-lg btn-block btn-huge">AER</a>
+            <a asp-action="EditAer" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="aer" class="btn btn-primary btn-lg btn-block btn-huge">AER</a>
         </div>
     </div>
     <div class="row">
@@ -43,12 +89,12 @@
             <a asp-action="EditRevocacion" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Revocación</a>
         </div>
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditSuspensionseguimiento" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Suspensión Seguimiento</a>
+            <a asp-action="EditSuspensionseguimiento" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="suspension" class="btn btn-primary btn-lg btn-block btn-huge">Suspensión Seguimiento</a>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="ListaVictima" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Victima</a>
+            <a asp-action="ListaVictima" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" id="victima" class="btn btn-primary btn-lg btn-block btn-huge">Victima</a>
         </div>
         <div class="col-md-6" style="padding-top:3%;">
             <a asp-action="ListaBitacora" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Bitacora</a>
@@ -56,15 +102,20 @@
     </div>
     <div class="row">
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditCambiodeobligaciones" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
+            <a asp-action="EditCambiodeobligaciones" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="cambio" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
         </div>
-        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") )
+        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
         {
             <div class="col-md-6" style="padding-top:3%;">
                 <a asp-action="EditCierredecaso" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Cierre de caso</a>
             </div>
-        }            
+        }
+    </div>
+    <div class="row" hidden="hidden">
+        <div class="col-md-6" style="padding-top:3%;">
+            <a id="vinculacion" class="btn btn-primary btn-lg btn-block btn-huge">Vinculación</a>
         </div>
+    </div>
 </div>
     break;
 }

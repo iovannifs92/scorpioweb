@@ -2148,14 +2148,24 @@ namespace scorpioweb.Controllers
                                       personaVM = p
                                   };
             var maxfra = queripersonasis.OrderByDescending(u => u.presentacionperiodicaVM.FechaFirma);
-            if (maxfra == null)
+
+            if (queripersonasis.Count() == 0)
             {
-                ViewBag.MessageNull = "No ha registrado asistencias";
+            return RedirectToAction("PresentacionPeriodicaConfirmation/" + "Personas");
             }
-            ViewData["joinTablasPresentacion"] = maxfra;
-            return View();
+            else
+            {
+                ViewData["joinTablasPresentacion"] = maxfra;
+                return View();
+            }
         }
         #endregion
+
+        public async Task<IActionResult> PresentacionPeriodicaConfirmation()
+        {
+            return View();
+        }
+
 
         #region -SinSupervision-
         public ActionResult SinSupervision()
@@ -2182,7 +2192,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Edicion-        
+         #region -Edicion-        
 
         public async Task<IActionResult> MenuEdicion(int? id)
         {
