@@ -572,7 +572,7 @@ namespace scorpioweb.Controllers
                                                             select new Supervision{                                                                
                                                             }).ToList();
 
-            #region Estado Suprvición
+            #region Estado Supervisión
             List<SelectListItem> ListaEstadoS;
             ListaEstadoS = new List<SelectListItem>
             {

@@ -130,71 +130,71 @@
             traditional: true,
             success: function (result) {
 
-                if (result.length < 10) {
+                if (result.page.length < 10) {
                     document.getElementById("btnNext").disabled = true;
                 }
                 $('#tblPersona').html('');
                 var row = '';
-                for (let i = 0; i < result.length; i++) {
-                    var dateString = result[i].ultimaActualización;
+                for (let i = 0; i < result.page.length; i++) {
+                    var dateString = result.page[i].ultimaActualización;
                     var d = new Date(dateString);
                     var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
                     //if (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP') {
-                    if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
-                        if (result[i].candado == 0) {
+                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
                     } else {
-                        if (result[i].candado == 0) {
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                 + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
                         //}
@@ -203,6 +203,7 @@
                 if (row != '') {
                     $('#tblPersona').append(row);
                 }
+                document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
             },
             error: function (msg) {
                 alert(msg);
@@ -223,75 +224,76 @@
             url: "/Personas/Get?pageNumber=" + page + "&currentFilter=" + searchValue,
             traditional: true,
             success: function (result) {
-                if (result) {
+                if (result.page) {
                     $('#tblPersona').html('');
                     var row = '';
-                    for (let i = 0; i < result.length; i++) {
-                        var dateString = result[i].ultimaActualización;
+                    for (let i = 0; i < result.page.length; i++) {
+                        var dateString = result.page[i].ultimaActualización;
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                        if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
-                            if (result[i].candado == 0) {
+                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                            if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
                         } else {
-                            if (result[i].candado == 0) {
+                            if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                     + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
                         }
                     }
                     if (row != '') {
                         $('#tblPersona').append(row);
-                    }
+                  }
+                  document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
                 }
             },
             error: function (msg) {
@@ -309,71 +311,71 @@
             url: "/Personas/Get?pageNumber=" + page + "&currentFilter=" + searchValue,
             traditional: true,
             success: function (result) {
-                if (result) {
-                    if (result.length < 10) {
+                if (result.page) {
+                    if (result.page.length < 10) {
                         document.getElementById("btnNext").disabled = true;
                     }
                     $('#tblPersona').html('');
                     var row = '';
-                    for (let i = 0; i < result.length; i++) {
-                        var dateString = result[i].ultimaActualización;
+                    for (let i = 0; i < result.page.length; i++) {
+                        var dateString = result.page[i].ultimaActualización;
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                        if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
-                            if (result[i].candado == 0) {
+                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                            if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
                         } else {
-                            if (result[i].candado == 0) {
+                            if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                     + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                             }
                         }
@@ -381,6 +383,7 @@
                     if (row != '') {
                         $('#tblPersona').append(row);
                     }
+                    document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
                 }
             },
             error: function (msg) {
@@ -389,8 +392,7 @@
         });
     };
     function getPersona() {
-        document.getElementById("btnNext").disabled = false;
-        page = page;
+      document.getElementById("btnNext").disabled = false;
         var searchValue = $("#Search").val();
         if (searchValue != "") {
             page = 1
@@ -409,70 +411,70 @@
             url: "/Personas/Get?pageNumber=" + page + "&currentFilter=" + searchValue + "&Search=" + searchValue,
             traditional: true,
             success: function (result) {
-                   if (result.length < 10) {
+                if (result.page.length < 10) {
                     document.getElementById("btnNext").disabled = true;
                 }
                 $('#tblPersona').html('');
                 var row = '';
-                for (let i = 0; i < result.length; i++) {
-                    var dateString = result[i].ultimaActualización;
+                for (let i = 0; i < result.page.length; i++) {
+                    var dateString = result.page[i].ultimaActualización;
                     var d = new Date(dateString);
-                    var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m..";
+                    var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                    if (result[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
-                        /*alert("Fecha " + result[i].ultimaActualización);*/
-                        if (result[i].candado == 0) {
+                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                        /*alert("Fecha " + result.page[i].ultimaActualización);*/
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"+ "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"+ "<th>" + date + "</th>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
                     } else {
-                        if (result[i].candado == 0) {
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a   href=/Personas/Details/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
                                 + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
                     }
@@ -480,6 +482,7 @@
                 if (row != '') {
                     $('#tblPersona').append(row);
                 }
+                document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
             },
             error: function (msg) {
                 alert(msg);
@@ -503,47 +506,48 @@
             url: "/Personas/ListadoSupervisor?pageNumber=" + page,
             traditional: true,
             success: function (result) {
-                if (result.length < 10) {
+                if (result.page.length < 10) {
                     document.getElementById("btnNexts").disabled = true;
                 }
                 $('#tblPersona').html('');
                 var row = '';
-                for (let i = 0; i < result.length; i++) {
-                    var dateString = result[i].ultimaActualización;
+                for (let i = 0; i < result.page.length; i++) {
+                    var dateString = result.page[i].ultimaActualización;
                     var d = new Date(dateString);
                     var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                    if (result[i].candado == 0) {
+                    if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                     }
                 }
                 if (row != '') {
                     $('#tblPersona').append(row);
                 }
+                document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
             },
             error: function (msg) {
                 alert(msg);
@@ -571,47 +575,48 @@
             url: "/Personas/ListadoSupervisor?pageNumber=" + page + "&currentFilter=" + searchValue + "&Search=" + searchValue,
             traditional: true,
             success: function (result) {
-                if (result.length < 10) {
+                if (result.page.length < 10) {
                     document.getElementById("btnNexts").disabled = true;
                 }
                 $('#tblPersona').html('');
                 var row = '';
-                for (let i = 0; i < result.length; i++) {
-                    var dateString = result[i].ultimaActualización;
+                for (let i = 0; i < result.page.length; i++) {
+                    var dateString = result.page[i].ultimaActualización;
                     var d = new Date(dateString);
                     var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                     var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                    if (result[i].candado == 0) {
+                    if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
                 }
                 if (row != '') {
                     $('#tblPersona').append(row);
                 }
+                document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
             },
             error: function (msg) {
                 alert(msg);
@@ -629,48 +634,49 @@
             url: "/Personas/ListadoSupervisor?pageNumber=" + page +"&currentFilter="+searchValue,
             traditional: true,
             success: function (result) {
-                if (result) {
-                    if (result.length < 10) {
+                if (result.page) {
+                    if (result.page.length < 10) {
                         document.getElementById("btnNexts").disabled = true;
                     }
                     $('#tblPersona').html('');
                     var row = '';
-                    for (let i = 0; i < result.length; i++) {
-                        var dateString = result[i].ultimaActualización;
+                    for (let i = 0; i < result.page.length; i++) {
+                        var dateString = result.page[i].ultimaActualización;
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                        if (result[i].candado == 0) {
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                 + "</tr>";
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
-                                + "<td>" + result[i].idPersona + "</td>"
-                                + "<td>" + result[i].nombreCompleto + "</td>"
-                                + "<td>" + result[i].supervisor + "</td>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
                                 + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                 + "</tr>";
                         }
                     }
                     if (row != '') {
                         $('#tblPersona').append(row);
                     }
+                    document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
                 }
             },
             error: function (msg) {
@@ -692,45 +698,46 @@
             url: "/Personas/ListadoSupervisor?pageNumber=" + page + "&currentFilter=" + searchValue,
             traditional: true,
             success: function (result) {
-                if (result) {
+                if (result.page) {
                     $('#tblPersona').html('');
                     var row = '';
-                    for (let i = 0; i < result.length; i++) {
-                        var dateString = result[i].ultimaActualización;
+                    for (let i = 0; i < result.page.length; i++) {
+                        var dateString = result.page[i].ultimaActualización;
                         var d = new Date(dateString);
                         var amOrPm = (d.getHours() < 12) ? "a.m." : "p.m.";
                         var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ' ' + amOrPm;
-                        if (result[i].candado == 0) {
+                        if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
                                     + "</tr>";
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
-                                    + "<td>" + result[i].idPersona + "</td>"
-                                    + "<td>" + result[i].nombreCompleto + "</td>"
-                                    + "<td>" + result[i].supervisor + "</td>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
                                     + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
+                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
+                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
+                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
+                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
+                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
                                     + "</tr>";
                          }
                     }
                     if (row != '') {
                         $('#tblPersona').append(row);
                     }
+                    document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
                 }
             },
             error: function (msg) {
@@ -744,11 +751,11 @@
 <p>
     <a asp-action="Create">
         Nueva entrevista encuadre
-    </a> |
+    </a>
     @if (ViewBag.RolesUsuario == "AdminMCSCP")
     {
         <a asp-action="Reasignacion">
-            Reasignación
+            &ensp;Reasignación
         </a>
     }
 </p>
@@ -801,6 +808,7 @@
         var nextDisabled = !Model.HasNextPage ? "disabled" : "";
     }*@
 
+<p id="page"></p>
 <div id="AllBunton" name="AllBunton">
     <button onclick="getPrevPage()" id="btnPrev" name="btnPrev" class="btn btn-default">Anterior</button>
     <button onclick="getNextPage()" id="btnNext" name="btnNext" class="btn btn-default">Siguiente</button>
@@ -809,5 +817,3 @@
     <button onclick="getSPrevPage()" id="btnPrevs" name="btnPrevs" class="btn btn-default">Anterior</button>
     <button onclick="getSNextPage()" id="btnNexts" name="btnNexts" class="btn btn-default">Siguiente</button>
 </div>
-
-<script src="~/js/jquery-1.11.1.min.js"></script>

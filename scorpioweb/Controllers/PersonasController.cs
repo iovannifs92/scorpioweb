@@ -246,7 +246,6 @@ namespace scorpioweb.Controllers
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
                                                    p.Supervisor.Contains(searchString));
-
                 }
             }
 
@@ -261,9 +260,9 @@ namespace scorpioweb.Controllers
             }
 
             int pageSize = 10;
+            ViewBag.totalPages = (personas.Count() + pageSize - 1) / pageSize;
 
-
-            // Response.Headers.Add("Refresh", "5");
+            //Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
             //return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -271,7 +270,6 @@ namespace scorpioweb.Controllers
 
         Persona persona1;
         List<Persona> personas1;
-
 
         public async Task<ActionResult> Personas()
         {
@@ -340,9 +338,11 @@ namespace scorpioweb.Controllers
                     break;
             }
             int pageSize = 10;
-            // Response.Headers.Add("Refresh", "5");
-            return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
-
+            return Json(new
+            {
+              page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+              totalPages = (personas.Count() + pageSize - 1) / pageSize
+            });
         }
         #endregion
 
@@ -4651,95 +4651,99 @@ namespace scorpioweb.Controllers
             string Search,
             int? pageNumber)
         {
-            #region -ListaUsuarios-            
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            var roles = await userManager.GetRolesAsync(user);
+          #region -ListaUsuarios-            
+          var user = await userManager.FindByNameAsync(User.Identity.Name);
+          var roles = await userManager.GetRolesAsync(user);
 
-            List<string> rolUsuario = new List<string>();
+          List<string> rolUsuario = new List<string>();
 
-            for (int i = 0; i < roles.Count; i++)
+          for (int i = 0; i < roles.Count; i++)
+          {
+            rolUsuario.Add(roles[i]);
+          }
+
+          ViewBag.RolesUsuario = rolUsuario[1];
+
+          String users = user.ToString();
+          ViewBag.RolesUsuarios = users;
+          #endregion
+
+
+          //List<Persona> personas = _context.Persona.ToList();
+          //var personas = _context.Persona;
+          //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
+
+          List<Persona> listaSupervisados = new List<Persona>();
+          listaSupervisados = (from table in _context.Persona
+                               select table).ToList();
+          listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
+          ViewBag.listaSupervisados = listaSupervisados;
+
+
+
+
+          ViewData["CurrentSort"] = sortOrder;
+          ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+          ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+
+          if (Search != null)
+          {
+            pageNumber = 1;
+          }
+          else
+          {
+            Search = currentFilter;
+          }
+          ViewData["CurrentFilter"] = Search;
+
+          var personas = from p in _context.Persona
+                         where p.Supervisor != null
+                         select p;
+
+
+          if (!String.IsNullOrEmpty(Search))
+          {
+            foreach (var item in Search.Split(new char[] { ' ' },
+                StringSplitOptions.RemoveEmptyEntries))
             {
-                rolUsuario.Add(roles[i]);
+              personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
+                                             (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
+                                             p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
+
             }
+          }
 
-            ViewBag.RolesUsuario = rolUsuario[1] ;
+          switch (sortOrder)
+          {
+            case "name_desc":
+              personas = personas.OrderByDescending(p => p.IdPersona);
+              break;
+            default:
+              personas = personas.OrderByDescending(p => p.IdPersona);
+              break;
+          }
 
-            String users = user.ToString();
-            ViewBag.RolesUsuarios = users;
-            #endregion
+          int pageSize = 10;
+          // Response.Headers.Add("Refresh", "5");
+          return Json(new
+          {
+              page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+              totalPages = (personas.Count() + pageSize - 1) / pageSize
+          });
 
-
-            //List<Persona> personas = _context.Persona.ToList();
-            //var personas = _context.Persona;
-            //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
-
-            List<Persona> listaSupervisados = new List<Persona>();
-            listaSupervisados = (from table in _context.Persona
-                                 select table).ToList();
-            listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
-            ViewBag.listaSupervisados = listaSupervisados;
-
-
-
-
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
-
-
-            if (Search != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                Search = currentFilter;
-            }
-            ViewData["CurrentFilter"] = Search;
-
-            var personas = from p in _context.Persona
-                           where p.Supervisor != null
-                           select p;
-
-
-            if (!String.IsNullOrEmpty(Search))
-            {
-                foreach (var item in Search.Split(new char[] { ' ' },
-                    StringSplitOptions.RemoveEmptyEntries))
-                {
-                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) || 
-                                                   p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
-
-                }
-            }
-
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    personas = personas.OrderByDescending(p => p.IdPersona);
-                    break;
-                default:
-                    personas = personas.OrderByDescending(p => p.IdPersona);
-                    break;
-            }
-
-            int pageSize = 10;
-            // Response.Headers.Add("Refresh", "5");
-            return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
-
-            //return Json(new
-            //{
-            //    success = true,
-            //    responseText = "Siguiente",
-            //    sustancia = consumosustancias[contadorSustancia].Sustancia,
-            //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
-            //    cantidad = consumosustancias[contadorSustancia].Cantidad,
-            //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
-            //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
-            //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
-            //});
+                //return Json(new
+                //{
+                //    success = true,
+                //    responseText = "Siguiente",
+                //    sustancia = consumosustancias[contadorSustancia].Sustancia,
+                //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+                //    cantidad = consumosustancias[contadorSustancia].Cantidad,
+                //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+                //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
+                //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
+                //});
 
         }
 
@@ -4763,16 +4767,16 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchValue;
 
             var personas = from p in _context.Persona
-                           where p.Supervisor != null
-                           select p;
+                            where p.Supervisor != null
+                            select p;
             if (!String.IsNullOrEmpty(searchValue))
             {
                 foreach (var item in searchValue.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchValue) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) || 
-                                                   p.Supervisor.Contains(searchValue) || (p.IdPersona.ToString()).Contains(searchValue));
+                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) || 
+                                                    p.Supervisor.Contains(searchValue) || (p.IdPersona.ToString()).Contains(searchValue));
 
                 }
             }
