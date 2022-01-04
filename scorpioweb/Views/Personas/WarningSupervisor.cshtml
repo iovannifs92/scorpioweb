@@ -31,6 +31,9 @@
     <thead>
         <tr>
             <th>
+                <a>ID</a>
+            </th>
+            <th>
                 <a>Nombre</a>
             </th>
             <th>
@@ -59,6 +62,9 @@
             if (@item.tipoAdvertencia.ToLower() == ViewBag.Filtro.ToLower() || ViewBag.Filtro == "TODOS")
             {
                 <tr>
+                    <td>
+                        @item.personaVM.IdPersona
+                    </td>
                     <td>
                         @item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre
                     </td>
