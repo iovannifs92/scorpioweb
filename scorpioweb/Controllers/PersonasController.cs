@@ -4131,7 +4131,24 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -WarningSupervisor-
-        public async Task<IActionResult> WarningSupervisor(string currentFilter)
+        public async Task<IActionResult> WarningSupervisor()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Admin = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+
+            return View();
+        }
+
+        public async Task<IActionResult> filtra(string currentFilter)
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -4180,103 +4197,56 @@ namespace scorpioweb.Controllers
             #region -Jointables-
             if (flagCoordinador)
             {
-                ViewData["alertas"] = (from persona in personaVM
-                                       join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                       join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                       join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                       join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                       join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                       join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                       where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
-                                       select new PlaneacionWarningViewModel
-                                       {
-                                           personaVM = persona,
-                                           supervisionVM = supervision,
-                                           municipiosVM = municipio,
-                                           causapenalVM = causapenal,
-                                           planeacionestrategicaVM = planeacion,
-                                           fraccionesimpuestasVM = fracciones,
-                                           figuraJudicial = fracciones.FiguraJudicial,
-                                           tipoAdvertencia = "Informe fuera de tiempo"
-                                       }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             municipiosVM = municipio,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             fraccionesimpuestasVM = fracciones,
-                                             figuraJudicial = fracciones.FiguraJudicial,
-                                             tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                         }).Union
-                                    (from persona in personaVM
-                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                     join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                     where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                     orderby fracciones.FiguraJudicial
-                                     select new PlaneacionWarningViewModel
-                                     {
-                                         personaVM = persona,
-                                         supervisionVM = supervision,
-                                         municipiosVM = municipio,
-                                         causapenalVM = causapenal,
-                                         planeacionestrategicaVM = planeacion,
-                                         fraccionesimpuestasVM = fracciones,
-                                         figuraJudicial = fracciones.FiguraJudicial,
-                                         tipoAdvertencia = "Sin fecha de informe"
-                                     }).Union
-                                    (from persona in personaVM
-                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                     where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                     select new PlaneacionWarningViewModel
-                                     {
-                                         personaVM = persona,
-                                         supervisionVM = supervision,
-                                         municipiosVM = municipio,
-                                         causapenalVM = causapenal,
-                                         planeacionestrategicaVM = planeacion,
-                                         tipoAdvertencia = "Sin periodicidad de firma"
-                                     }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         where supervision.EstadoSupervision == null
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             municipiosVM = municipio,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             tipoAdvertencia = "Sin estado de supervisión"
-                                         })/*.Union
-                                             (from persona in personaVM
+                switch (currentFilter)
+                {
+                    case "TODOS":
+                        ViewData["alertas"] = (from persona in personaVM
+                                               join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                               join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                               join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                               join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                               join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                               where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
+                                               select new PlaneacionWarningViewModel
+                                               {
+                                                   personaVM = persona,
+                                                   supervisionVM = supervision,
+                                                   municipiosVM = municipio,
+                                                   causapenalVM = causapenal,
+                                                   planeacionestrategicaVM = planeacion,
+                                                   fraccionesimpuestasVM = fracciones,
+                                                   figuraJudicial = fracciones.FiguraJudicial,
+                                                   tipoAdvertencia = "Informe fuera de tiempo"
+                                               }).Union
+                                                (from persona in personaVM
+                                                 join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                                 join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                                 join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                                 join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                                 join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                                 join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                                 where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
+                                                 select new PlaneacionWarningViewModel
+                                                 {
+                                                     personaVM = persona,
+                                                     supervisionVM = supervision,
+                                                     municipiosVM = municipio,
+                                                     causapenalVM = causapenal,
+                                                     planeacionestrategicaVM = planeacion,
+                                                     fraccionesimpuestasVM = fracciones,
+                                                     figuraJudicial = fracciones.FiguraJudicial,
+                                                     tipoAdvertencia = "Control de supervisión a 3 días o menos"
+                                                 }).Union
+                                            (from persona in personaVM
                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE"
+                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                             where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
+                                             orderby fracciones.FiguraJudicial
                                              select new PlaneacionWarningViewModel
                                              {
                                                  personaVM = persona,
@@ -4284,102 +4254,257 @@ namespace scorpioweb.Controllers
                                                  municipiosVM = municipio,
                                                  causapenalVM = causapenal,
                                                  planeacionestrategicaVM = planeacion,
-                                                 tipoAdvertencia = "Se paso el tiempo de la firma"
-                                             })*/;
+                                                 fraccionesimpuestasVM = fracciones,
+                                                 figuraJudicial = fracciones.FiguraJudicial,
+                                                 tipoAdvertencia = "Sin fecha de informe"
+                                             }).Union
+                                            (from persona in personaVM
+                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                             join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                             join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                             where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                             select new PlaneacionWarningViewModel
+                                             {
+                                                 personaVM = persona,
+                                                 supervisionVM = supervision,
+                                                 municipiosVM = municipio,
+                                                 causapenalVM = causapenal,
+                                                 planeacionestrategicaVM = planeacion,
+                                                 tipoAdvertencia = "Sin periodicidad de firma"
+                                             }).Union
+                                                (from persona in personaVM
+                                                 join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                                 join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                                 join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                                 join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                                 join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                                 where supervision.EstadoSupervision == null
+                                                 select new PlaneacionWarningViewModel
+                                                 {
+                                                     personaVM = persona,
+                                                     supervisionVM = supervision,
+                                                     municipiosVM = municipio,
+                                                     causapenalVM = causapenal,
+                                                     planeacionestrategicaVM = planeacion,
+                                                     tipoAdvertencia = "Sin estado de supervisión"
+                                                 })/*.Union
+                                                     (from persona in personaVM
+                                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                                     where planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE"
+                                                     select new PlaneacionWarningViewModel
+                                                     {
+                                                         personaVM = persona,
+                                                         supervisionVM = supervision,
+                                                         municipiosVM = municipio,
+                                                         causapenalVM = causapenal,
+                                                         planeacionestrategicaVM = planeacion,
+                                                         tipoAdvertencia = "Se paso el tiempo de la firma"
+                                                     })*/;
+                        break;
+                    case "INFORME FUERA DE TIEMPO":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                              where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
+                                                  tipoAdvertencia = "Informe fuera de tiempo"
+                                              };
+                        break;
+                    case "CONTROL DE SUPERVISION A 3 DIAS O MENOS":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                              where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
+                                                  tipoAdvertencia = "Control de supervisión a 3 días o menos"
+                                              };
+                        break;
+                    case "SIN FECHA DE INFORME":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                              where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
+                                              orderby fracciones.FiguraJudicial
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
+                                                  tipoAdvertencia = "Sin fecha de informe"
+                                              };
+                        break;
+                    case "SIN PERIODICIDAD DE FIRMA":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  tipoAdvertencia = "Sin periodicidad de firma"
+                                              };
+                        break;
+                    case "SIN ESTADO DE SUPERVISION":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              where supervision.EstadoSupervision == null
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  tipoAdvertencia = "Sin estado de supervisión"
+                                              };
+                        break;
+                }
                 ViewBag.Admin = true;
             }
             else
             {
-                ViewData["alertas"] = (from persona in personaVM
-                                       join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                       join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                       join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                       join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                       join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                       join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                       where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
-                                       select new PlaneacionWarningViewModel
-                                       {
-                                           personaVM = persona,
-                                           supervisionVM = supervision,
-                                           municipiosVM = municipio,
-                                           causapenalVM = causapenal,
-                                           planeacionestrategicaVM = planeacion,
-                                           fraccionesimpuestasVM = fracciones,
-                                           figuraJudicial = fracciones.FiguraJudicial,
-                                           tipoAdvertencia = "Informe fuera de tiempo"
-                                       }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             municipiosVM = municipio,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             fraccionesimpuestasVM = fracciones,
-                                             figuraJudicial = fracciones.FiguraJudicial,
-                                             tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                         }).Union
-                                    (from persona in personaVM
-                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                     join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                     where persona.Supervisor == usuario && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                     orderby fracciones.FiguraJudicial
-                                     select new PlaneacionWarningViewModel
-                                     {
-                                         personaVM = persona,
-                                         supervisionVM = supervision,
-                                         municipiosVM = municipio,
-                                         causapenalVM = causapenal,
-                                         planeacionestrategicaVM = planeacion,
-                                         fraccionesimpuestasVM = fracciones,
-                                         figuraJudicial = fracciones.FiguraJudicial,
-                                         tipoAdvertencia = "Sin fecha de informe"
-                                     }).Union
-                                    (from persona in personaVM
-                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                     join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                     where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                     select new PlaneacionWarningViewModel
-                                     {
-                                         personaVM = persona,
-                                         supervisionVM = supervision,
-                                         municipiosVM = municipio,
-                                         causapenalVM = causapenal,
-                                         planeacionestrategicaVM = planeacion,
-                                         tipoAdvertencia = "Sin periodicidad de firma"
-                                     }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         where persona.Supervisor == usuario && supervision.EstadoSupervision == null
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             municipiosVM = municipio,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             tipoAdvertencia = "Sin estado de supervisión"
-                                         })/*.Union
+                switch (currentFilter)
+                {
+                    case "TODOS":
+                        ViewData["alertas"] = (from persona in personaVM
+                                               join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                               join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                               join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                               join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                               join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                               where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
+                                               select new PlaneacionWarningViewModel
+                                               {
+                                                   personaVM = persona,
+                                                   supervisionVM = supervision,
+                                                   municipiosVM = municipio,
+                                                   causapenalVM = causapenal,
+                                                   planeacionestrategicaVM = planeacion,
+                                                   fraccionesimpuestasVM = fracciones,
+                                                   figuraJudicial = fracciones.FiguraJudicial,
+                                                   tipoAdvertencia = "Informe fuera de tiempo"
+                                               }).Union
+                                               (from persona in personaVM
+                                                join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                                join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                                join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                                join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                                join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                                where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
+                                                select new PlaneacionWarningViewModel
+                                                {
+                                                    personaVM = persona,
+                                                    supervisionVM = supervision,
+                                                    municipiosVM = municipio,
+                                                    causapenalVM = causapenal,
+                                                    planeacionestrategicaVM = planeacion,
+                                                    fraccionesimpuestasVM = fracciones,
+                                                    figuraJudicial = fracciones.FiguraJudicial,
+                                                    tipoAdvertencia = "Control de supervisión a 3 días o menos"
+                                                }).Union
+                                            (from persona in personaVM
+                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                             join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                             join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                             where persona.Supervisor == usuario && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
+                                             orderby fracciones.FiguraJudicial
+                                             select new PlaneacionWarningViewModel
+                                             {
+                                                 personaVM = persona,
+                                                 supervisionVM = supervision,
+                                                 municipiosVM = municipio,
+                                                 causapenalVM = causapenal,
+                                                 planeacionestrategicaVM = planeacion,
+                                                 fraccionesimpuestasVM = fracciones,
+                                                 figuraJudicial = fracciones.FiguraJudicial,
+                                                 tipoAdvertencia = "Sin fecha de informe"
+                                             }).Union
+                                            (from persona in personaVM
+                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                             join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                             join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                             where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                             select new PlaneacionWarningViewModel
+                                             {
+                                                 personaVM = persona,
+                                                 supervisionVM = supervision,
+                                                 municipiosVM = municipio,
+                                                 causapenalVM = causapenal,
+                                                 planeacionestrategicaVM = planeacion,
+                                                 tipoAdvertencia = "Sin periodicidad de firma"
+                                             }).Union
+                                                (from persona in personaVM
+                                                 join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                                 join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                                 join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                                 join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                                 join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                                 where persona.Supervisor == usuario && supervision.EstadoSupervision == null
+                                                 select new PlaneacionWarningViewModel
+                                                 {
+                                                     personaVM = persona,
+                                                     supervisionVM = supervision,
+                                                     municipiosVM = municipio,
+                                                     causapenalVM = causapenal,
+                                                     planeacionestrategicaVM = planeacion,
+                                                     tipoAdvertencia = "Sin estado de supervisión"
+                                                 })/*.Union
                                             (from persona in personaVM
                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -4396,15 +4521,119 @@ namespace scorpioweb.Controllers
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              })*/;
+                        break;
+                    case "INFORME FUERA DE TIEMPO":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                              where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
+                                                  tipoAdvertencia = "Informe fuera de tiempo"
+                                              };
+                        break;
+                    case "CONTROL DE SUPERVISION A 3 DIAS O MENOS":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                              where persona.Supervisor == usuario && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
+                                                  tipoAdvertencia = "Control de supervisión a 3 días o menos"
+                                              };
+                        break;
+                    case "SIN FECHA DE INFORME":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                              where persona.Supervisor == usuario && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
+                                              orderby fracciones.FiguraJudicial
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
+                                                  tipoAdvertencia = "Sin fecha de informe"
+                                              };
+                        break;
+                    case "SIN PERIODICIDAD DE FIRMA":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  tipoAdvertencia = "Sin periodicidad de firma"
+                                              };
+                        break;
+                    case "SIN ESTADO DE SUPERVISION":
+                        ViewData["alertas"] = from persona in personaVM
+                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                              where persona.Supervisor == usuario && supervision.EstadoSupervision == null
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = persona,
+                                                  supervisionVM = supervision,
+                                                  municipiosVM = municipio,
+                                                  causapenalVM = causapenal,
+                                                  planeacionestrategicaVM = planeacion,
+                                                  tipoAdvertencia = "Sin estado de supervisión"
+                                              };
+                        break;
+                }
             }
-
-
-
             #endregion
-            return View();
+
+            return Json(new
+            {
+                success = true,
+                //ViewData["alertas"] se usa como variable de esta funcion y no sirve como ViewData
+                query = ViewData["alertas"]
+            });
         }
         #endregion
-
 
         #endregion
 

@@ -1191,6 +1191,7 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaPeriodicidadFirma;
             ListaPeriodicidadFirma = new List<SelectListItem>
             {
+                new SelectListItem{ Text = "", Value = "" },
                 new SelectListItem{ Text = "Diaria", Value = "DIARIA" },
                 new SelectListItem{ Text = "Semanal", Value = "SEMANAL" },
                 new SelectListItem{ Text = "Quincenal", Value = "QUINCENAL" },
@@ -1200,7 +1201,7 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Semestral", Value = "SEMESTRAL" },
                 new SelectListItem{ Text = "Anual", Value = "ANUAL", },
                 new SelectListItem{ Text = "No aplica", Value = "NO APLICA"}
-                };
+            };
 
             ViewBag.listaPeriodicidadFirma = ListaPeriodicidadFirma;
             ViewBag.idPeriodicidadFirma = BuscaId(ListaPeriodicidadFirma, supervision.PeriodicidadFirma);

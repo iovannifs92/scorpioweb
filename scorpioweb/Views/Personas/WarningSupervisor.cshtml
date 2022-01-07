@@ -2,6 +2,201 @@
     ViewData["Title"] = "Alertas";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#currentFilter').change(function () {
+            var s = document.getElementById("currentFilter");
+            var filtro = s.options[s.selectedIndex].value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/filtra",
+                traditional: true,
+                data: {
+                    currentFilter: filtro,
+                },
+                success: function (result) {
+                    if (result.success) {
+                        $('#tblAlertas').html('');
+                        var row = '';
+                        for (let i = 0; i < result.query.length; i++) {
+                            var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
+                            var d = new Date(dateString);
+                            var hours = d.getHours();
+                            var minutes = d.getMinutes();
+                            var ampm = hours >= 12 ? 'PM' : 'AM';
+                            hours = hours % 12;
+                            hours = hours ? hours : 12; // the hour '0' should be '12'
+                            minutes = minutes < 10 ? '0'+minutes : minutes;
+                            var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
+                            if (dateString == null)
+                            {
+                                date = "";
+                            }
+
+                            row = row
+                                + "<tr>"
+                                + "<td>" + result.query[i].personaVM.idPersona + "</td>"
+                                + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>"
+                                + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+
+                            switch (result.query[i].tipoAdvertencia)
+                            {
+                                case "Informe fuera de tiempo":
+                                    if (result.query[i].figuraJudicial == "MC")
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "Control de supervisión"
+                                            + "</td>";
+                                    }
+                                    else
+                                    {
+                                        var date30 = Date.now();
+                                        date30 += 1000 * 60 * 60 * 24 * 30;
+                                        var date5 = Date.now();
+                                        date5 += 1000 * 60 * 60 * 24 * 5;
+
+                                        if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5)
+                                        {
+                                            row = row
+                                                + "<td>"
+                                                + "    Informe en próximos 30 días"
+                                                + "</td>";
+                                        }
+                                        else
+                                        {
+                                            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                            {
+                                                row = row
+                                                    + "<td style=\"color:red\">"
+                                                    + "    Informe fuera de tiempo"
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td style=\"color:#F0AD00\">"
+                                                    + "    Informe en menos de 5 días"
+                                                    + "</td>";
+                                            }
+                                        }
+                                    }
+                                    row = row
+                                        + "<td>"
+                                        + "    " + date
+                                        + "</td>";
+                                    break;
+                                case "Control de supervisión a 3 días o menos":
+                                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                    {
+                                        row = row
+                                            + "<td style=\"color:red\">"
+                                            + "    Control de supervisión fuera de tiempo"
+                                            + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    " + result.query[i].tipoAdvertencia
+                                            + "</td>";
+                                    }
+                                    row = row
+                                        + "<td>"
+                                        + "    " + date
+                                        + "</td>";
+                                    break;
+                                case "Sin fecha de informe":
+                                    if (result.query[i].figuraJudicial != "MC")
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    " + result.query[i].tipoAdvertencia
+                                            + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    Sin control de supervisión"
+                                            + "</td>";
+                                    }
+                                    row = row
+                                        + "<td>"
+                                        + "    " + date
+                                        + "</td>";
+                                    break;
+                                case "Sin periodicidad de firma":
+                                    row = row
+                                        + "<td>"
+                                        + "    " + result.query[i].tipoAdvertencia
+                                        + "</td>";
+                                    row = row + "<td>";
+                                    if (result.query[i].planeacionestrategicaVM.periodicidadFirma != null)
+                                        row = row + "    " + result.query[i].planeacionestrategicaVM.periodicidadFirma;
+                                    row = row + "</td>";
+                                    break;
+                                case "Sin estado de supervisión":
+                                    row = row
+                                        + "<td>"
+                                        + "    " + result.query[i].tipoAdvertencia
+                                        + "</td>";
+                                    row = row + "<td>";
+                                    if (result.query[i].supervisionVM.estadoSupervision != null)
+                                    {
+                                        row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+                                    }
+                                    row = row + "</td>";
+                                    break;
+                            }
+
+                            row = row
+                                + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
+                                + "<td>" + result.query[i].personaVM.supervisor + "</td>";
+                            row = row + "<td>";
+                            if (result.query[i].figuraJudicial != null)
+                            {
+                                row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                            }
+                            row = row + "</td>";
+                            if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
+                            {
+                                row = row
+                                    + "<td>"
+                                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=TORRES%20ANDRADE%20JESUS&amp;cp=88%2F2020\">"
+                                    + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                    + "    </a >"
+                                    + "</td>";
+                            }
+                            else
+                            {
+                                row = row
+                                    + "<td>"
+                                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                                    + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                    + "    </a >"
+                                    + "</td>";
+                            }
+                            row = row + "</tr>";
+                        }
+                        if (row != '') {
+                            $('#tblAlertas').append(row);
+                        }
+                    } else {
+                        alert(result.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+        $("#currentFilter").change();
+    });
+</script>
 
 <div class="text-center" style="padding-top:1%">
     <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
@@ -15,19 +210,15 @@
         <select class="form-control" name="currentFilter" id="currentFilter">
             <option value="TODOS">Todos</option>
             <option value="INFORME FUERA DE TIEMPO">Informe fuera de tiempo</option>
-            <option value="CONTROL DE SUPERVISIÓN A 3 DÍAS O MENOS">Control de supervisión a 3 días o menos</option>
-            <option value="SIN FECHA DE INFORME">Sin fecha de informe</option>
+            <option value="CONTROL DE SUPERVISION A 3 DIAS O MENOS">Control de supervisión a 3 días o menos</option>
+            <option value="SIN FECHA DE INFORME">Sin fecha de informes/Sin control de supervisión</option>
             <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
-            <option value="SIN ESTADO DE SUPERVISIÓN">Sin estado de supervisión</option>
+            <option value="SIN ESTADO DE SUPERVISION">Sin estado de supervisión</option>
         </select>
-        <button type="submit" class="btn btn-default">
-            <i class="fa fa-search"></i>
-            Buscar
-        </button>
     </div>
 </form>
 
-<table class="table" style="padding-top:5%">
+<table class="table table-striped table-responsive">
     <thead>
         <tr>
             <th>
@@ -54,154 +245,14 @@
                     <a>Supervisor</a>
                 </th>
             }
+            @*<th> se desacomodan dependiendo del filtro
+                <a>Figura Judicial</a>
+            </th>
+            <th>
+                <a>Detalle</a>
+            </th>*@
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in ViewData["alertas"] as IEnumerable<scorpioweb.Models.PlaneacionWarningViewModel>)
-        {
-            if (@item.tipoAdvertencia.ToLower() == ViewBag.Filtro.ToLower() || ViewBag.Filtro == "TODOS")
-            {
-                <tr>
-                    <td>
-                        @item.personaVM.IdPersona
-                    </td>
-                    <td>
-                        @item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre
-                    </td>
-                    <td>
-                        @item.causapenalVM.CausaPenal
-                    </td>
-
-                    @{
-                        switch (@item.tipoAdvertencia)
-                        {
-                            case "Informe fuera de tiempo":
-                                @if (@item.figuraJudicial == "MC")
-                                {
-                                    <td>
-                                        Control de supervisión
-                                    </td>
-                                }
-                                else
-                                {
-                                    @if (@item.planeacionestrategicaVM.FechaInforme < (DateTime.Now).AddDays(30) && @item.planeacionestrategicaVM.FechaInforme > (DateTime.Now).AddDays(5))
-                                    {
-                                        <td>
-                                            Informe en próximos 30 días
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
-                                        {
-                                            <td style="color:red">
-                                                Informe fuera de tiempo
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td style="color:#F0AD00">
-                                                Informe en menos de 5 días
-                                            </td>
-                                        }
-                                    }
-                                }
-                                <td>
-                                    @item.planeacionestrategicaVM.FechaInforme
-                                </td>
-                                break;
-                            case "Control de supervisión a 3 días o menos":
-                                @if (@item.planeacionestrategicaVM.FechaInforme < DateTime.Now)
-                                {
-                                    <td style="color:red">
-                                        Control de supervisión fuera de tiempo
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                        @item.tipoAdvertencia
-                                    </td>
-                                }
-                                <td>
-                                    @item.planeacionestrategicaVM.FechaInforme
-                                </td>
-                                break;
-                            case "Sin fecha de informe":
-                                @if (item.figuraJudicial != "MC")
-                                {
-                                    <td>
-                                        @item.tipoAdvertencia
-                                    </td>
-                                    <td>
-                                        @item.planeacionestrategicaVM.FechaInforme
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                        Sin control de supervisión
-                                    </td>
-                                    <td>
-                                        @item.planeacionestrategicaVM.FechaInforme
-                                    </td>
-                                }
-
-                                break;
-                            case "Sin periodicidad de firma":
-                                <td>
-                                    @item.tipoAdvertencia
-                                </td>
-                                <td>
-                                    @item.planeacionestrategicaVM.PeriodicidadFirma
-                                </td>
-                                break;
-                            case "Sin estado de supervisión":
-                                <td>
-                                    @item.tipoAdvertencia
-                                </td>
-                                <td>
-                                    @item.supervisionVM.EstadoSupervision
-                                </td>
-                                break;
-                            case "Se paso el tiempo de la firma":
-                                <td style="color:red">
-                                    @item.tipoAdvertencia
-                                </td>
-                                <td>
-                                    @item.planeacionestrategicaVM.FechaProximoContacto
-                                </td>
-                                break;
-                        }
-                    }
-                    <td>
-                        @item.municipiosVM.Municipio
-                    </td>
-                    @if (ViewBag.Admin)
-                    {
-                        <td>
-                            @item.personaVM.Supervisor
-                        </td>
-                    }
-                    <td>
-                        @item.figuraJudicial
-                    </td>
-                    <td>
-                        @if (item.tipoAdvertencia == "Sin estado de supervisión")
-                        {
-                            <a asp-controller="Supervisiones" asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
-                                <i class="fa fa-pencil"></i> Detalle
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Supervisiones" asp-action="EditPlaneacionestrategica" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" type="button" class="btn btn-success" id="edicion">
-                                <i class="fa fa-pencil"></i> Detalle
-                            </a>
-                        }
-                    </td>
-                </tr>
-            }
-        }
+    <tbody id="tblAlertas">
     </tbody>
 </table>
