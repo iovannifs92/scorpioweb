@@ -2166,6 +2166,45 @@ namespace scorpioweb.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditComentario(Presentacionperiodica presentacionperiodica, Persona persona)
+        {
+            int idPresentacion = presentacionperiodica.IdpresentacionPeriodica;
+            int idPersona = persona.IdPersona;
+            var comentario = presentacionperiodica.ComentarioFirma.ToUpper();
+            
+            //int idPersona = presentacionperiodica.id
+
+            var comentarioUpdate = (from a in _context.Presentacionperiodica
+                                 where a.IdpresentacionPeriodica == idPresentacion
+                                 select a).FirstOrDefault();
+            comentarioUpdate.ComentarioFirma = comentario;
+            _context.SaveChanges();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PresentacionExists(presentacionperiodica.IdpresentacionPeriodica))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("PresentacionPeriodicaPersona/"+ idPersona);
+        }
+        private bool PresentacionExists(int id)
+        {
+            return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
+        }
+
+
 
         #region -SinSupervision-
         public ActionResult SinSupervision()
