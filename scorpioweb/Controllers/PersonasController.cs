@@ -2165,21 +2165,23 @@ namespace scorpioweb.Controllers
         {
             return View();
         }
-
+        #region -EditarComentario-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditComentario(Presentacionperiodica presentacionperiodica, Persona persona)
         {
             int idPresentacion = presentacionperiodica.IdpresentacionPeriodica;
             int idPersona = persona.IdPersona;
-            var comentario = presentacionperiodica.ComentarioFirma.ToUpper();
-            
-            //int idPersona = presentacionperiodica.id
-
+            var comentario = presentacionperiodica.ComentarioFirma;
+            if(comentario == null)
+            {
+                comentario = "";
+            }
+         
             var comentarioUpdate = (from a in _context.Presentacionperiodica
                                  where a.IdpresentacionPeriodica == idPresentacion
                                  select a).FirstOrDefault();
-            comentarioUpdate.ComentarioFirma = comentario;
+            comentarioUpdate.ComentarioFirma = comentario.ToUpper();
             _context.SaveChanges();
 
             try
@@ -2199,6 +2201,7 @@ namespace scorpioweb.Controllers
             }
             return RedirectToAction("PresentacionPeriodicaPersona/"+ idPersona);
         }
+        #endregion
         private bool PresentacionExists(int id)
         {
             return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
