@@ -4629,6 +4629,8 @@ namespace scorpioweb.Controllers
             return Json(new
             {
                 success = true,
+                user = usuario,
+                admin = flagCoordinador,
                 //ViewData["alertas"] se usa como variable de esta funcion y no sirve como ViewData
                 query = ViewData["alertas"]
             });
