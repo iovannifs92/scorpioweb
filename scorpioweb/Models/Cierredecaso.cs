@@ -12,5 +12,7 @@ namespace scorpioweb.Models
         public DateTime? FechaAprobacion { get; set; }
         public string Autorizo { get; set; }
         public int SupervisionIdSupervision { get; set; }
+        public string Cierredecasocol { get; set; }
+        public string RutaArchivo { get; set; }
     }
 }

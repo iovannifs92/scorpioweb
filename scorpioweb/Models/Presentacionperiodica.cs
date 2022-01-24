@@ -7,6 +7,7 @@ namespace scorpioweb.Models
     {
         public int IdpresentacionPeriodica { get; set; }
         public DateTime? FechaFirma { get; set; }
+        public string ComentarioFirma { get; set; }
         public int? RegistroidHuella { get; set; }
     }
 }

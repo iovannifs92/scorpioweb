@@ -973,17 +973,17 @@ namespace scorpioweb.Controllers
 
             await PermisosEdicion(id);
 
-            var supervision = await _context.Cierredecaso.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
-            if (supervision == null)
+            var cierre = await _context.Cierredecaso.SingleOrDefaultAsync(m => m.SupervisionIdSupervision == id);
+            if (cierre == null)
             {
                 return NotFound();
             }
 
             ViewBag.CierreCaso = listaCierreCaso;
-            ViewBag.idCierreCaso = BuscaId(listaCierreCaso, supervision.ComoConcluyo);
+            ViewBag.idCierreCaso = BuscaId(listaCierreCaso, cierre.ComoConcluyo);
             ViewBag.listaSeCerroCaso = listaNaSiNo;
-            ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, supervision.SeCerroCaso);
-            ViewBag.cierre = supervision.SeCerroCaso;
+            ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, cierre.SeCerroCaso);
+            ViewBag.cierre = cierre.SeCerroCaso;
             #region Autorizo
             List<SelectListItem> ListaAutorizo;
             ListaAutorizo = new List<SelectListItem>
@@ -993,29 +993,55 @@ namespace scorpioweb.Controllers
                 };
 
             ViewBag.listaAutorizo = ListaAutorizo;
-            ViewBag.idAutorizo = BuscaId(ListaAutorizo, supervision.Autorizo);
+            ViewBag.idAutorizo = BuscaId(ListaAutorizo, cierre.Autorizo);
             #endregion
 
+            ViewBag.Achivocierre = cierre.RutaArchivo;
 
 
-            return View(supervision);
+
+            return View(cierre);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCierredecaso(int id, [Bind("IdCierreDeCaso,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,SupervisionIdSupervision")] Cierredecaso cierredecaso)
+        public async Task<IActionResult> EditCierredecaso(int id, [Bind("IdCierreDeCaso,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionIdSupervision")] Cierredecaso cierredecaso, IFormFile archivo)
         {
+           
+            var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == cierredecaso.SupervisionIdSupervision);
+
             if (id != cierredecaso.SupervisionIdSupervision)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var oldCierredecaso = await _context.Cierredecaso.FindAsync(cierredecaso.IdCierreDeCaso, cierredecaso.SupervisionIdSupervision);
-                    _context.Entry(oldCierredecaso).CurrentValues.SetValues(cierredecaso);
+                    var oldcierredecaso = await _context.Cierredecaso.FindAsync(cierredecaso.IdCierreDeCaso, cierredecaso.SupervisionIdSupervision);
+
+                    if (archivo == null)
+                    {
+                        cierredecaso.RutaArchivo = oldcierredecaso.RutaArchivo;
+                    }
+                    else
+                    {
+                        string file_name = cierredecaso.IdCierreDeCaso + "_" + cierredecaso.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(archivo.FileName);
+                        cierredecaso.RutaArchivo = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Cierredecaso");
+
+                        if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                        {
+                            System.IO.File.Delete(Path.Combine(uploads, file_name));
+                        }
+
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await archivo.CopyToAsync(stream);
+                        stream.Close();
+                    }
+
+                    _context.Entry(oldcierredecaso).CurrentValues.SetValues(cierredecaso);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(cierredecaso);
                     //await _context.SaveChangesAsync();

@@ -16,20 +16,41 @@
 
         <table class="table">
             <thead>
-                <tr>
-                    <th>Presentación Periódica</th>
-                </tr>
+                <th>
+                    Presentación Periódica
+                </th>
+
+                <th>
+                    Comentario
+                </th>
             </thead>
             <tbody>
                 @foreach (var item2 in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
                 {
                 <tr>
-                    <td>
-                        @if (item2.presentacionperiodicaVM.FechaFirma != null)
-                        {
-                            @(item2.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
-                        }
-                    </td>
+                    <form asp-action="EditComentario" style="font-size:10px">   
+                        <input name="IdPersona" id="IdPersona" readonly style="display:none" value="@item2.personaVM.IdPersona" />
+                        <input name="IdpresentacionPeriodica" id="IdpresentacionPeriodica" readonly style="display:none" value="@item2.presentacionperiodicaVM.IdpresentacionPeriodica" />
+                        <td>
+                            @if (item2.presentacionperiodicaVM.FechaFirma != null)
+                            {
+                                @(item2.presentacionperiodicaVM.FechaFirma.Value.ToString("dd MMMM yyyy HH:mm"))
+                            }
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <textarea class="form-control" name="ComentarioFirma" id="ComentarioFirma" rows="3" style="width:800px;">@item2.presentacionperiodicaVM.ComentarioFirma</textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i>
+                                    Guardar
+                                </button>
+                            </div>
+                        </td>
+                    </form>
                 </tr>
                 }
             </tbody>
