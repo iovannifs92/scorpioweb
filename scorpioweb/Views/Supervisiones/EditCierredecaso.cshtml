@@ -10,12 +10,14 @@
                 $("#DivNoArchivo").css("display", "block");
                 $("#DivFechaAprobacion").css("display", "block");
                 $("#DivAutorizo").css("display", "block");
+                $("#DivArchivo").css("display", "block");
             }
             else {
                 $("#DivComoConcluyo").css("display", "none");
                 $("#DivNoArchivo").css("display", "none");
                 $("#DivFechaAprobacion").css("display", "none");
                 $("#DivAutorizo").css("display", "none");
+                $("#DivArchivo").css("display", "none");
             }
         });
 
@@ -100,7 +102,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditCierredecaso">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditCierredecaso" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCierreDeCaso" />
             <div class="form-group">
@@ -133,6 +135,27 @@
                             asp-items="@(new SelectList(ViewBag.listaAutorizo, "Value", "Text", @ViewBag.idAutorizo))">
                     </select>
                 </div>
+                @if (ViewBag.Achivocierre != null)
+                {
+                    <div>
+                        <a id="btnEditar" href="~/Cierredecaso/@(ViewBag.Achivocierre)" target="_blank" style="padding-bottom:20px">
+                            Ver archivo
+                            <i class="fa fa-paperclip fa-6"></i>
+                        </a>
+                    </div>
+                    <div class="custom-file" style="padding-bottom:20px">
+                        <label class="control-label">Editar Archivo</label>
+                        <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
+                    </div>
+                }
+                else
+                {
+                    <div class="custom-file" style="padding-bottom:20px" id="DivArchivo">
+                        <label class="control-label">Agregar Archivo</label>
+                        <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
+                    </div>
+                }
+
             }
             @if (ViewBag.cierre == null || ViewBag.cierre == "NO" || ViewBag.cierre == "NA")
             {
@@ -157,6 +180,10 @@
                     <select class="form-control" name="Autorizo"
                             asp-items="@(new SelectList(ViewBag.listaAutorizo, "Value", "Text", @ViewBag.idAutorizo))">
                     </select>
+                </div>
+                <div class="custom-file" style="display: none;" id="DivArchivo">
+                    <label class="control-label">Agregar Archivo</label>
+                    <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
                 </div>
             }
             <input type="hidden" asp-for="SupervisionIdSupervision" />

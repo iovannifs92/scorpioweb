@@ -21,166 +21,513 @@
                     if (result.success) {
                         $('#tblAlertas').html('');
                         var row = '';
-                        for (let i = 0; i < result.query.length; i++) {
-                            var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
-                            var d = new Date(dateString);
-                            var hours = d.getHours();
-                            var minutes = d.getMinutes();
-                            var ampm = hours >= 12 ? 'PM' : 'AM';
-                            hours = hours % 12;
-                            hours = hours ? hours : 12; // the hour '0' should be '12'
-                            minutes = minutes < 10 ? '0'+minutes : minutes;
-                            var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
-                            if (dateString == null)
-                            {
-                                date = "";
+                        if(result.admin)
+                        {
+                            var nortedgepms = false;
+                            var dgepms = false;
+                            if(result.user == "janeth@nortedgepms.com" ||
+                               result.user == "raquel@nortedgepms.com" ||
+                               result.user == "iovannifs92@gmail.com" ||
+                               result.user == "yarim.vargas@dgepms.com"){
+                                nortedgepms = true;
                             }
-
-                            row = row
-                                + "<tr>"
-                                + "<td>" + result.query[i].personaVM.idPersona + "</td>"
-                                + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>"
-                                + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
-
-                            switch (result.query[i].tipoAdvertencia)
+                            if(result.user == "esmeralda.vargas@dgepms.com" ||
+                               result.user == "claudia.armendariz@dgepms.com" ||
+                               result.user == "iovannifs92@gmail.com" ||
+                               result.user == "yarim.vargas@dgepms.com"){
+                                dgepms = true;
+                            }
+                            for (let i = 0; i < result.query.length; i++) 
                             {
-                                case "Informe fuera de tiempo":
-                                    if (result.query[i].figuraJudicial == "MC")
-                                    {
-                                        row = row
-                                            + "<td>"
-                                            + "Control de supervisión"
-                                            + "</td>";
-                                    }
-                                    else
-                                    {
-                                        var date30 = Date.now();
-                                        date30 += 1000 * 60 * 60 * 24 * 30;
-                                        var date5 = Date.now();
-                                        date5 += 1000 * 60 * 60 * 24 * 5;
+                                var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
+                                var d = new Date(dateString);
+                                var hours = d.getHours();
+                                var minutes = d.getMinutes();
+                                var ampm = hours >= 12 ? 'PM' : 'AM';
+                                hours = hours % 12;
+                                hours = hours ? hours : 12; // the hour '0' should be '12'
+                                minutes = minutes < 10 ? '0'+minutes : minutes;
+                                var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
+                                if (dateString == null)
+                                {
+                                    date = "";
+                                }
 
-                                        if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5)
-                                        {
+                                if(nortedgepms && result.query[i].personaVM.supervisor.endsWith("\u0040nortedgepms.com")) 
+                                {
+                                    row = row
+                                        + "<tr>"
+                                        + "<td>" + result.query[i].personaVM.idPersona + "</td>"
+                                        + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>"
+                                        + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+
+                                    switch (result.query[i].tipoAdvertencia)
+                                    {
+                                        case "Informe fuera de tiempo":
+                                            if (result.query[i].figuraJudicial == "MC")
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "Control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                var date30 = Date.now();
+                                                date30 += 1000 * 60 * 60 * 24 * 30;
+                                                var date5 = Date.now();
+                                                date5 += 1000 * 60 * 60 * 24 * 5;
+
+                                                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5)
+                                                {
+                                                    row = row
+                                                        + "<td>"
+                                                        + "    Informe en próximos 30 días"
+                                                        + "</td>";
+                                                }
+                                                else
+                                                {
+                                                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                                    {
+                                                        row = row
+                                                            + "<td style=\"color:red\">"
+                                                            + "    Informe fuera de tiempo"
+                                                            + "</td>";
+                                                    }
+                                                    else
+                                                    {
+                                                        row = row
+                                                            + "<td style=\"color:#F0AD00\">"
+                                                            + "    Informe en menos de 5 días"
+                                                            + "</td>";
+                                                    }
+                                                }
+                                            }
                                             row = row
                                                 + "<td>"
-                                                + "    Informe en próximos 30 días"
+                                                + "    " + date
                                                 + "</td>";
-                                        }
-                                        else
-                                        {
+                                            break;
+                                        case "Control de supervisión a 3 días o menos":
                                             if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
                                             {
                                                 row = row
                                                     + "<td style=\"color:red\">"
-                                                    + "    Informe fuera de tiempo"
+                                                    + "    Control de supervisión fuera de tiempo"
                                                     + "</td>";
                                             }
                                             else
                                             {
                                                 row = row
-                                                    + "<td style=\"color:#F0AD00\">"
-                                                    + "    Informe en menos de 5 días"
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
                                                     + "</td>";
                                             }
-                                        }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin fecha de informe":
+                                            if (result.query[i].figuraJudicial != "MC")
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    Sin control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin periodicidad de firma":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].planeacionestrategicaVM.periodicidadFirma != null)
+                                                row = row + "    " + result.query[i].planeacionestrategicaVM.periodicidadFirma;
+                                            row = row + "</td>";
+                                            break;
+                                        case "Sin estado de supervisión":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].supervisionVM.estadoSupervision != null)
+                                            {
+                                                row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+                                            }
+                                            row = row + "</td>";
+                                            break;
                                     }
-                                    row = row
-                                        + "<td>"
-                                        + "    " + date
-                                        + "</td>";
-                                    break;
-                                case "Control de supervisión a 3 días o menos":
-                                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
-                                    {
-                                        row = row
-                                            + "<td style=\"color:red\">"
-                                            + "    Control de supervisión fuera de tiempo"
-                                            + "</td>";
-                                    }
-                                    else
-                                    {
-                                        row = row
-                                            + "<td>"
-                                            + "    " + result.query[i].tipoAdvertencia
-                                            + "</td>";
-                                    }
-                                    row = row
-                                        + "<td>"
-                                        + "    " + date
-                                        + "</td>";
-                                    break;
-                                case "Sin fecha de informe":
-                                    if (result.query[i].figuraJudicial != "MC")
-                                    {
-                                        row = row
-                                            + "<td>"
-                                            + "    " + result.query[i].tipoAdvertencia
-                                            + "</td>";
-                                    }
-                                    else
-                                    {
-                                        row = row
-                                            + "<td>"
-                                            + "    Sin control de supervisión"
-                                            + "</td>";
-                                    }
-                                    row = row
-                                        + "<td>"
-                                        + "    " + date
-                                        + "</td>";
-                                    break;
-                                case "Sin periodicidad de firma":
-                                    row = row
-                                        + "<td>"
-                                        + "    " + result.query[i].tipoAdvertencia
-                                        + "</td>";
-                                    row = row + "<td>";
-                                    if (result.query[i].planeacionestrategicaVM.periodicidadFirma != null)
-                                        row = row + "    " + result.query[i].planeacionestrategicaVM.periodicidadFirma;
-                                    row = row + "</td>";
-                                    break;
-                                case "Sin estado de supervisión":
-                                    row = row
-                                        + "<td>"
-                                        + "    " + result.query[i].tipoAdvertencia
-                                        + "</td>";
-                                    row = row + "<td>";
-                                    if (result.query[i].supervisionVM.estadoSupervision != null)
-                                    {
-                                        row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
-                                    }
-                                    row = row + "</td>";
-                                    break;
-                            }
 
-                            row = row
-                                + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
-                                + "<td>" + result.query[i].personaVM.supervisor + "</td>";
-                            row = row + "<td>";
-                            if (result.query[i].figuraJudicial != null)
-                            {
-                                row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                                    row = row
+                                        + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
+                                        + "<td>" + result.query[i].personaVM.supervisor + "</td>";
+                                    row = row + "<td>";
+                                    if (result.query[i].figuraJudicial != null)
+                                    {
+                                        row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row + "<td></td>";
+                                    }
+                                    row = row + "</td>";
+                                    if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=TORRES%20ANDRADE%20JESUS&amp;cp=88%2F2020\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+                                    row = row + "</tr>";
+                                }
+                                if(dgepms && result.query[i].personaVM.supervisor.endsWith("\u0040dgepms.com")) 
+                                {
+                                    row = row
+                                        + "<tr>"
+                                        + "<td>" + result.query[i].personaVM.idPersona + "</td>"
+                                        + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>"
+                                        + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+
+                                    switch (result.query[i].tipoAdvertencia)
+                                    {
+                                        case "Informe fuera de tiempo":
+                                            if (result.query[i].figuraJudicial == "MC")
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "Control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                var date30 = Date.now();
+                                                date30 += 1000 * 60 * 60 * 24 * 30;
+                                                var date5 = Date.now();
+                                                date5 += 1000 * 60 * 60 * 24 * 5;
+
+                                                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5)
+                                                {
+                                                    row = row
+                                                        + "<td>"
+                                                        + "    Informe en próximos 30 días"
+                                                        + "</td>";
+                                                }
+                                                else
+                                                {
+                                                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                                    {
+                                                        row = row
+                                                            + "<td style=\"color:red\">"
+                                                            + "    Informe fuera de tiempo"
+                                                            + "</td>";
+                                                    }
+                                                    else
+                                                    {
+                                                        row = row
+                                                            + "<td style=\"color:#F0AD00\">"
+                                                            + "    Informe en menos de 5 días"
+                                                            + "</td>";
+                                                    }
+                                                }
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Control de supervisión a 3 días o menos":
+                                            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                            {
+                                                row = row
+                                                    + "<td style=\"color:red\">"
+                                                    + "    Control de supervisión fuera de tiempo"
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin fecha de informe":
+                                            if (result.query[i].figuraJudicial != "MC")
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    Sin control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin periodicidad de firma":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].planeacionestrategicaVM.periodicidadFirma != null)
+                                                row = row + "    " + result.query[i].planeacionestrategicaVM.periodicidadFirma;
+                                            row = row + "</td>";
+                                            break;
+                                        case "Sin estado de supervisión":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].supervisionVM.estadoSupervision != null)
+                                            {
+                                                row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+                                            }
+                                            row = row + "</td>";
+                                            break;
+                                    }
+
+                                    row = row
+                                        + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
+                                        + "<td>" + result.query[i].personaVM.supervisor + "</td>";
+                                    row = row + "<td>";
+                                    if (result.query[i].figuraJudicial != null)
+                                    {
+                                        row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row + "<td></td>";
+                                    }
+                                    row = row + "</td>";
+                                    if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=TORRES%20ANDRADE%20JESUS&amp;cp=88%2F2020\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+                                    row = row + "</tr>";
+                                }
                             }
-                            row = row + "</td>";
-                            if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
+                        }
+                        else
+                        {
+                            for (let i = 0; i < result.query.length; i++)
                             {
-                                row = row
-                                    + "<td>"
-                                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=TORRES%20ANDRADE%20JESUS&amp;cp=88%2F2020\">"
-                                    + "        <i class=\"fa fa-pencil\"></i> Detalle"
-                                    + "    </a >"
-                                    + "</td>";
+                                var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
+                                var d = new Date(dateString);
+                                var hours = d.getHours();
+                                var minutes = d.getMinutes();
+                                var ampm = hours >= 12 ? 'PM' : 'AM';
+                                hours = hours % 12;
+                                hours = hours ? hours : 12; // the hour '0' should be '12'
+                                minutes = minutes < 10 ? '0'+minutes : minutes;
+                                var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
+                                if (dateString == null)
+                                {
+                                    date = "";
+                                }
+
+                                if(result.query[i].personaVM.supervisor == result.user)
+                                {
+                                    row = row
+                                        + "<tr>"
+                                        + "<td>" + result.query[i].personaVM.idPersona + "</td>"
+                                        + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>"
+                                        + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+
+                                    switch (result.query[i].tipoAdvertencia)
+                                    {
+                                        case "Informe fuera de tiempo":
+                                            if (result.query[i].figuraJudicial == "MC")
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "Control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                var date30 = Date.now();
+                                                date30 += 1000 * 60 * 60 * 24 * 30;
+                                                var date5 = Date.now();
+                                                date5 += 1000 * 60 * 60 * 24 * 5;
+
+                                                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5)
+                                                {
+                                                    row = row
+                                                        + "<td>"
+                                                        + "    Informe en próximos 30 días"
+                                                        + "</td>";
+                                                }
+                                                else
+                                                {
+                                                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                                    {
+                                                        row = row
+                                                            + "<td style=\"color:red\">"
+                                                            + "    Informe fuera de tiempo"
+                                                            + "</td>";
+                                                    }
+                                                    else
+                                                    {
+                                                        row = row
+                                                            + "<td style=\"color:#F0AD00\">"
+                                                            + "    Informe en menos de 5 días"
+                                                            + "</td>";
+                                                    }
+                                                }
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Control de supervisión a 3 días o menos":
+                                            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now())
+                                            {
+                                                row = row
+                                                    + "<td style=\"color:red\">"
+                                                    + "    Control de supervisión fuera de tiempo"
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin fecha de informe":
+                                            if (result.query[i].figuraJudicial != "MC")
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    Sin control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin periodicidad de firma":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].planeacionestrategicaVM.periodicidadFirma != null)
+                                                row = row + "    " + result.query[i].planeacionestrategicaVM.periodicidadFirma;
+                                            row = row + "</td>";
+                                            break;
+                                        case "Sin estado de supervisión":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].supervisionVM.estadoSupervision != null)
+                                            {
+                                                row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+                                            }
+                                            row = row + "</td>";
+                                            break;
+                                    }
+
+                                    row = row + "<td>" + result.query[i].municipiosVM.municipio + "</td>";
+                                    row = row + "<td>";
+                                    if (result.query[i].figuraJudicial != null)
+                                    {
+                                        row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row + "<td></td>";
+                                    }
+                                    row = row + "</td>";
+                                    if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=TORRES%20ANDRADE%20JESUS&amp;cp=88%2F2020\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+                                    row = row + "</tr>";
+                                }
                             }
-                            else
-                            {
-                                row = row
-                                    + "<td>"
-                                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
-                                    + "        <i class=\"fa fa-pencil\"></i> Detalle"
-                                    + "    </a >"
-                                    + "</td>";
-                            }
-                            row = row + "</tr>";
                         }
                         if (row != '') {
                             $('#tblAlertas').append(row);
