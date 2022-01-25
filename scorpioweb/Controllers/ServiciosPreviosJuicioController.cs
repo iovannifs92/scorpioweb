@@ -142,6 +142,16 @@ namespace scorpioweb.Controllers
             }
             return "";
         }
+
+        String removeSlashes(string path)
+        {
+            String cleaned = "";
+
+            for (int i = 0; i < path.Length; i++)
+                if (path[i] != '/')
+                    cleaned += path[i];
+            return cleaned;
+        }
         #endregion
 
 
@@ -395,6 +405,7 @@ namespace scorpioweb.Controllers
                     else
                     {
                         string file_name = serviciospreviosjuicio.IdserviciosPreviosJuicio + "_" + serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
+                        file_name = removeSlashes(file_name);
                         serviciospreviosjuicio.RutaAer = file_name;
                         var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
 
