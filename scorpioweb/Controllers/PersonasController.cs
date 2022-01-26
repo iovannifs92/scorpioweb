@@ -172,6 +172,16 @@ namespace scorpioweb.Controllers
                 return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
             }
         }
+
+        String removeSlashes(string path)
+        {
+            String cleaned = "";
+
+            for (int i = 0; i < path.Length; i++)
+                if (path[i] != '/')
+                    cleaned += path[i];
+            return cleaned;
+        }
         #endregion
 
         #region -Index-
@@ -1752,6 +1762,7 @@ namespace scorpioweb.Controllers
                 if (fotografia != null)
                 {
                     string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
+                    file_name = removeSlashes(file_name);
                     persona.rutaFoto = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
