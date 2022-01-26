@@ -482,7 +482,7 @@ namespace scorpioweb.Controllers
             }
 
             var r = from o in _context.Oficialia
-                    group o by new { o.Recibe }
+                    group o by new { o.UsuarioTurnar }
                     into grupo
                     select grupo.FirstOrDefault();
 
@@ -490,8 +490,8 @@ namespace scorpioweb.Controllers
             {
                 ListaRecibe.Add(new SelectListItem
                 {
-                    Text = recibe.Recibe,
-                    Value = recibe.Recibe
+                    Text = recibe.UsuarioTurnar,
+                    Value = recibe.UsuarioTurnar
                 });
             }
 

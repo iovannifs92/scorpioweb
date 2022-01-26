@@ -55,39 +55,44 @@
             <th>
                 Usuario a Turnar
             </th>
-            <th></th>
+            <th>
+                Capturista
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PaternoMaternoNombre)
-                </td>
-                <td>
-                    @Convert.ToString(string.Format("{0:M/d/yyyy}", @item.FechaEmision))
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CausaPenal)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AsuntoOficio)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UsuarioTurnar)
-                </td>
-                <td>
-                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
-                        <i class="fa fa-pencil"></i>
-                        Editar
-                    </a>
-                    <a class="btn btn-primary" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
-                        <i class="fa fa-copy"></i>
-                        Clonar
-                    </a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaternoMaternoNombre)
+            </td>
+            <td>
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaEmision))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CausaPenal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AsuntoOficio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UsuarioTurnar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capturista)
+            </td>
+            <td>
+                <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </a>
+                <a class="btn btn-primary" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
+                    <i class="fa fa-copy"></i>
+                    Clonar
+                </a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
