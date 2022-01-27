@@ -211,6 +211,18 @@ namespace scorpioweb.Controllers
             #region -ListaUsuarios-            
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Admin = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+
+
+
 
             List<string> rolUsuario = new List<string>();
 
@@ -220,7 +232,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            ViewBag.RolesUsuario = rolUsuario[1]; 
+            ViewBag.RolesUsuario = rolUsuario; 
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;

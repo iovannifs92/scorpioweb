@@ -818,7 +818,7 @@
     <a asp-action="Create">
         Nueva entrevista encuadre
     </a>
-    @if (ViewBag.RolesUsuario == "AdminMCSCP")
+    @if (ViewBag.Admin == true)
     {
         <a asp-action="Reasignacion">
             &ensp;Reasignación
