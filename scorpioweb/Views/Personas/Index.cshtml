@@ -438,6 +438,9 @@
                 if (result.page.length < 10) {
                     document.getElementById("btnNext").disabled = true;
                 }
+                if(result.totalPages == 0){
+                    page = 0;
+                }
                 $('#tblPersona').html('');
                 var row = '';
                 for (let i = 0; i < result.page.length; i++) {
@@ -619,6 +622,9 @@
             success: function (result) {
                 if (result.page.length < 10) {
                     document.getElementById("btnNexts").disabled = true;
+                }
+                if(result.totalPages == 0){
+                    page = 0;
                 }
                 $('#tblPersona').html('');
                 var row = '';
