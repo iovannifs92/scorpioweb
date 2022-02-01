@@ -9,5 +9,6 @@ namespace scorpioweb.Models
         public Fraccionesimpuestas fraccionesimpuestasVM { get; set; }
         public Planeacionestrategica planeacionestrategicaVM { get; set; }
         public int tiempoSupervision { get; set; }
+        public Cierredecaso cierredecasoVM { get; set; }
     }
 }
