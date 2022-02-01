@@ -620,9 +620,6 @@ namespace scorpioweb.Controllers
                             tiempoSupervision = (s.Termino!=null && s.Inicio!=null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays): 0
                         };
 
-            var num = filter.Count();
-
-
             if (supervisor)
             {
                 filter = from p in _context.Persona
