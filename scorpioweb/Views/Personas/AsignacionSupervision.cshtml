@@ -71,7 +71,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.Where(u => u.Supervisor == null))
+            @foreach (var item in Model.Where(u => u.Supervisor == null || u.Supervisor=="Seleccionar"))
             {
                 <tr>
                     <td>
@@ -90,6 +90,7 @@ else
                                 <input type="hidden" asp-for="@item.IdPersona" name="IdPersona" id="IdPersona" />
                                 <select class="form-control" name="Supervisor" id="Supervisor"
                                         asp-items="@(new SelectList(ViewBag.ListadoUsuarios, "Text","Text"))">
+                                        <option>Seleccionar</option>
                                 </select>
                             </div>
                             <div class="form-group">
