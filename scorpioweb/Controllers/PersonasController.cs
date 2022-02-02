@@ -1811,6 +1811,7 @@ namespace scorpioweb.Controllers
             else
             {
                 ViewBag.nombreRegistrado = persona.NombreCompleto;
+                ViewBag.idRegistrado = persona.IdPersona;
             }
             return View();
         }
