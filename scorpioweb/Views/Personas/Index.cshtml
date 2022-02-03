@@ -148,10 +148,9 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    //if (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP') {
-                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
-                            row = row
+                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
@@ -248,7 +247,7 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -346,7 +345,7 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -415,7 +414,7 @@
             }
         });
     };
-    function getPersona() {
+     function getPersona() {
       document.getElementById("btnNext").disabled = false;
         var searchValue = $("#Search").val();
         if (searchValue != "") {
@@ -458,7 +457,7 @@
                     }
                     @*alert(@ViewBag.RolesUsuarios);*@
                     @*alert(@Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)));*@
-                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.RolesUsuario)) == 'AdminMCSCP')) {
+                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         /*alert("Fecha " + result.page[i].ultimaActualización);*/
                         if (result.page[i].candado == 0) {
                             row = row
@@ -824,7 +823,7 @@
     <a asp-action="Create">
         Nueva entrevista encuadre
     </a>
-    @if (ViewBag.RolesUsuario == "AdminMCSCP")
+    @if (ViewBag.Admin == true)
     {
         <a asp-action="Reasignacion">
             &ensp;Reasignación

@@ -572,6 +572,18 @@ namespace scorpioweb.Controllers
                                                             select new Supervision{                                                                
                                                             }).ToList();
 
+
+            List<Cierredecaso> queryFile = (from c in _context.Cierredecaso
+                                            join s in _context.Supervision on c.SupervisionIdSupervision equals s.IdSupervision
+                                            select new Cierredecaso { }).ToList();
+
+
+            if (queryFile != null)
+            {
+                ViewBag.FileCierre = queryFile;
+            }
+
+
             #region Estado Supervisión
             List<SelectListItem> ListaEstadoS;
             ListaEstadoS = new List<SelectListItem>
@@ -584,7 +596,6 @@ namespace scorpioweb.Controllers
                 };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
-      
 
             #endregion
 
@@ -594,11 +605,13 @@ namespace scorpioweb.Controllers
                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
                         join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+                        join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
                         join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                         into PersonaSupervisionCausaPenal
                         from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
                         select new SupervisionPyCP
                         {
+                            cierredecasoVM = c,
                             personaVM = p,
                             supervisionVM = s,
                             causapenalVM = cp,
@@ -612,13 +625,15 @@ namespace scorpioweb.Controllers
                 filter = from p in _context.Persona
                              join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                              join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                         join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                         join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
+                             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+                             join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
+                             join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
                              into PersonaSupervisionCausaPenal
                             from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
                             where p.Supervisor == User.Identity.Name
                              select new SupervisionPyCP
                              {
+                                 cierredecasoVM = c,
                                  personaVM = p,
                                  supervisionVM = s,
                                  causapenalVM = cp,

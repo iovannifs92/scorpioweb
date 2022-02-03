@@ -116,21 +116,21 @@
             @if (@ViewBag.RolesUsuario == "AdminMCSCP" || @ViewBag.RolesUsuario == "Masteradmin")
             {
                 <form asp-action="EdicionMenuSuper" style="font-size:10px">
-                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision"    />
-                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica"    />
-                    <td>
-                        <input style="font-size:9px" name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date/>
-                    </td>
-                    <td>
-                        <input style="font-size:9px" name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
-                    </td>
-                    <td>
-                        <input style="font-size:10px" name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
-                    </td>
-                    <td>
-                        <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px"
-                                asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
-                        </select>
+                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
+                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
+                <td>
+                    <input style="font-size:9px" name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date />
+                </td>
+                <td>
+                    <input style="font-size:9px" name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
+                </td>
+                <td>
+                    <input style="font-size:10px" name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
+                </td>
+                <td>
+                    <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px"
+                            asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
+                    </select>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
@@ -170,16 +170,25 @@
                     @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
                 </td>
             }
-        <td>
-            <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
-                <i class="fa fa-pencil"></i> Editar
-            </a>   
-        </td>
-        <td>
-            <a type="button" class="btn btn-default" id="edicion" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
-                <i class="fa fa-calendar"></i> Presentaciónes
-            </a>
-        </td>
+            <td>
+                <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                    <i class="fa fa-pencil"></i> Editar
+                </a>
+            </td>
+            <td>
+                <a type="button" class="btn btn-default" id="edicion" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
+                    <i class="fa fa-calendar"></i> Presentaciónes
+                </a>
+            </td>
+            <td>
+
+                @if (item.cierredecasoVM.RutaArchivo != null)
+                {
+                    <a style="font-size: x-large;" id="btnEditar" href="~/Cierredecaso/@Html.DisplayFor(modelItem => item.cierredecasoVM.RutaArchivo)" target="_blank">
+                        <i class="fa fa-paperclip fa-9x"></i>
+                    </a>
+                }
+            </td>
         </tr>
         }
     </tbody>
