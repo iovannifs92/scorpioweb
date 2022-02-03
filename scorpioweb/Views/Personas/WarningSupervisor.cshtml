@@ -25,17 +25,13 @@
                         {
                             var nortedgepms = false;
                             var dgepms = false;
-                            if(result.user == "janeth@nortedgepms.com" ||
-                               result.user == "raquel@nortedgepms.com" ||
-                               result.user == "iovannifs92@gmail.com" ||
-                               result.user == "yarim.vargas@dgepms.com"){
-                                nortedgepms = true;
-                            }
-                            if(result.user == "esmeralda.vargas@dgepms.com" ||
-                               result.user == "claudia.armendariz@dgepms.com" ||
-                               result.user == "iovannifs92@gmail.com" ||
-                               result.user == "yarim.vargas@dgepms.com"){
+                            if(result.user != "janeth@nortedgepms.com" &&
+                               result.user != "raquel@nortedgepms.com"){
                                 dgepms = true;
+                            }
+                            if(result.user != "esmeralda.vargas@dgepms.com" &&
+                               result.user != "claudia.armendariz@dgepms.com"){
+                                nortedgepms = true;
                             }
                             for (let i = 0; i < result.query.length; i++) 
                             {
