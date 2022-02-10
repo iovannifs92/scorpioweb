@@ -81,9 +81,9 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Zona 4", Value="ZONA 4"},
             new SelectListItem{ Text="Zona 5", Value="ZONA 5"},
             new SelectListItem{ Text="Zona 6", Value="ZONA 6"},
-            new SelectListItem{ Text="Zona 7", Value="ZONA 7"}            
+            new SelectListItem{ Text="Zona 7", Value="ZONA 7"}
         };
-        
+
 
         private List<SelectListItem> listaUbicacionExpediente = new List<SelectListItem>
         {
@@ -232,7 +232,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            ViewBag.RolesUsuario = rolUsuario; 
+            ViewBag.RolesUsuario = rolUsuario;
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
@@ -362,8 +362,8 @@ namespace scorpioweb.Controllers
             int pageSize = 10;
             return Json(new
             {
-              page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
-              totalPages = (personas.Count() + pageSize - 1) / pageSize
+                page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+                totalPages = (personas.Count() + pageSize - 1) / pageSize
             });
         }
         #endregion
@@ -574,7 +574,7 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuario = rolUsuario;
             return View();
         }
-       
+
 
 
         #endregion
@@ -684,7 +684,7 @@ namespace scorpioweb.Controllers
         {
 
 
-         
+
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
             foreach (var user in userManager.Users)
@@ -795,11 +795,11 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
 
             var sA = from p in _context.Persona
-                           where p.IdPersona == id
-                           select new
-                           {
-                               p.Supervisor
-                           };
+                     where p.IdPersona == id
+                     select new
+                     {
+                         p.Supervisor
+                     };
 
             reasignacionsupervisor.PersonaIdpersona = (persona.IdPersona).ToString();
             reasignacionsupervisor.MotivoRealizo = reasignacionsupervisor.MotivoRealizo;
@@ -814,7 +814,7 @@ namespace scorpioweb.Controllers
                 .FirstOrDefaultAsync(p => p.IdPersona == id);
             personaUpdate.Supervisor = supervisor;
 
-   
+
 
             try
             {
@@ -1477,7 +1477,7 @@ namespace scorpioweb.Controllers
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = normaliza(cp);
-                domicilio.Zona = zona;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                domicilio.Zona = zona;
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
@@ -2175,7 +2175,7 @@ namespace scorpioweb.Controllers
 
             if (queripersonasis.Count() == 0)
             {
-            return RedirectToAction("PresentacionPeriodicaConfirmation/" + "Personas");
+                return RedirectToAction("PresentacionPeriodicaConfirmation/" + "Personas");
             }
             else
             {
@@ -2197,14 +2197,14 @@ namespace scorpioweb.Controllers
             int idPresentacion = presentacionperiodica.IdpresentacionPeriodica;
             int idPersona = persona.IdPersona;
             var comentario = presentacionperiodica.ComentarioFirma;
-            if(comentario == null)
+            if (comentario == null)
             {
                 comentario = "";
             }
-         
+
             var comentarioUpdate = (from a in _context.Presentacionperiodica
-                                 where a.IdpresentacionPeriodica == idPresentacion
-                                 select a).FirstOrDefault();
+                                    where a.IdpresentacionPeriodica == idPresentacion
+                                    select a).FirstOrDefault();
             comentarioUpdate.ComentarioFirma = comentario.ToUpper();
             _context.SaveChanges();
 
@@ -2223,7 +2223,7 @@ namespace scorpioweb.Controllers
                     throw;
                 }
             }
-            return RedirectToAction("PresentacionPeriodicaPersona/"+ idPersona);
+            return RedirectToAction("PresentacionPeriodicaPersona/" + idPersona);
         }
         #endregion
         private bool PresentacionExists(int id)
@@ -2258,7 +2258,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-         #region -Edicion-        
+        #region -Edicion-        
 
         public async Task<IActionResult> MenuEdicion(int? id)
         {
@@ -2697,7 +2697,7 @@ namespace scorpioweb.Controllers
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
                 //persona.UbicacionExpediente = persona.UbicacionExpediente;
-                if (persona.Candado == null){persona.Candado = 0;}
+                if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
                 #region -ConsumoSustancias-
                 //Sustancias editadas
@@ -4958,99 +4958,99 @@ namespace scorpioweb.Controllers
             string Search,
             int? pageNumber)
         {
-          #region -ListaUsuarios-            
-          var user = await userManager.FindByNameAsync(User.Identity.Name);
-          var roles = await userManager.GetRolesAsync(user);
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
 
-          List<string> rolUsuario = new List<string>();
+            List<string> rolUsuario = new List<string>();
 
-          for (int i = 0; i < roles.Count; i++)
-          {
-            rolUsuario.Add(roles[i]);
-          }
-
-          ViewBag.RolesUsuario = rolUsuario[1];
-
-          String users = user.ToString();
-          ViewBag.RolesUsuarios = users;
-          #endregion
-
-
-          //List<Persona> personas = _context.Persona.ToList();
-          //var personas = _context.Persona;
-          //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
-
-          List<Persona> listaSupervisados = new List<Persona>();
-          listaSupervisados = (from table in _context.Persona
-                               select table).ToList();
-          listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
-          ViewBag.listaSupervisados = listaSupervisados;
-
-
-
-
-          ViewData["CurrentSort"] = sortOrder;
-          ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-          ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
-
-
-          if (Search != null)
-          {
-            pageNumber = 1;
-          }
-          else
-          {
-            Search = currentFilter;
-          }
-          ViewData["CurrentFilter"] = Search;
-
-          var personas = from p in _context.Persona
-                         where p.Supervisor != null
-                         select p;
-
-
-          if (!String.IsNullOrEmpty(Search))
-          {
-            foreach (var item in Search.Split(new char[] { ' ' },
-                StringSplitOptions.RemoveEmptyEntries))
+            for (int i = 0; i < roles.Count; i++)
             {
-              personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
-                                             (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
-                                             p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
-
+                rolUsuario.Add(roles[i]);
             }
-          }
 
-          switch (sortOrder)
-          {
-            case "name_desc":
-              personas = personas.OrderByDescending(p => p.IdPersona);
-              break;
-            default:
-              personas = personas.OrderByDescending(p => p.IdPersona);
-              break;
-          }
+            ViewBag.RolesUsuario = rolUsuario[1];
 
-          int pageSize = 10;
-          // Response.Headers.Add("Refresh", "5");
-          return Json(new
-          {
-              page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
-              totalPages = (personas.Count() + pageSize - 1) / pageSize
-          });
+            String users = user.ToString();
+            ViewBag.RolesUsuarios = users;
+            #endregion
 
-                //return Json(new
-                //{
-                //    success = true,
-                //    responseText = "Siguiente",
-                //    sustancia = consumosustancias[contadorSustancia].Sustancia,
-                //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
-                //    cantidad = consumosustancias[contadorSustancia].Cantidad,
-                //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
-                //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
-                //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
-                //});
+
+            //List<Persona> personas = _context.Persona.ToList();
+            //var personas = _context.Persona;
+            //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
+
+            List<Persona> listaSupervisados = new List<Persona>();
+            listaSupervisados = (from table in _context.Persona
+                                 select table).ToList();
+            listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
+            ViewBag.listaSupervisados = listaSupervisados;
+
+
+
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+
+            if (Search != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                Search = currentFilter;
+            }
+            ViewData["CurrentFilter"] = Search;
+
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+
+            if (!String.IsNullOrEmpty(Search))
+            {
+                foreach (var item in Search.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
+                                                   p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+                default:
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+            }
+
+            int pageSize = 10;
+            // Response.Headers.Add("Refresh", "5");
+            return Json(new
+            {
+                page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+                totalPages = (personas.Count() + pageSize - 1) / pageSize
+            });
+
+            //return Json(new
+            //{
+            //    success = true,
+            //    responseText = "Siguiente",
+            //    sustancia = consumosustancias[contadorSustancia].Sustancia,
+            //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+            //    cantidad = consumosustancias[contadorSustancia].Cantidad,
+            //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+            //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
+            //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
+            //});
 
         }
 
@@ -5074,15 +5074,15 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchValue;
 
             var personas = from p in _context.Persona
-                            where p.Supervisor != null
-                            select p;
+                           where p.Supervisor != null
+                           select p;
             if (!String.IsNullOrEmpty(searchValue))
             {
                 foreach (var item in searchValue.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchValue) ||
-                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) || 
+                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) ||
                                                     p.Supervisor.Contains(searchValue) || (p.IdPersona.ToString()).Contains(searchValue));
 
                 }
@@ -5110,7 +5110,7 @@ namespace scorpioweb.Controllers
             //datosSustancias.Clear();            
             List<Persona> listaSupervisados = new List<Persona>();
             listaSupervisados = (from table in _context.Persona
-                            select table).ToList();
+                                 select table).ToList();
             listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
             ViewBag.listaSupervisados = listaSupervisados;
             return View();
@@ -5119,25 +5119,168 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -ArchivoInternoMCSCP-
+        public async Task<IActionResult> ArchivoMCySCP(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           string estadoSuper,
+           int? pageNumber
+           )
 
-
-
-        #region -MenuArchivo-
-        public IActionResult MenuArchivo()
         {
-            return View();
+            #region
+            #endregion
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            //bool supervisor = false;
+
+            //var usuario = await userManager.FindByNameAsync(User.Identity.Name);
+            //var roles = await userManager.GetRolesAsync(usuario);
+
+            //List<string> rolUsuario = new List<string>();
+
+            //for (int i = 0; i < roles.Count; i++)
+            //{
+            //    rolUsuario.Add(roles[i]);
+            //    if (roles[i] == "SupervisorMCSCP")
+            //    {
+            //        supervisor = true;
+            //    }
+            //}
+
+            //ViewBag.RolesUsuario = rolUsuario[1];
+
+            //for (int i = 0; i < roles.Count; i++)
+            //{
+            //    rolUsuario.Add(roles[i]);
+            //}
+
+            //ViewBag.RolesUsuario1 = rolUsuario;
+
+
+            
+
+            List<Archivointernomcscp> archivointernomcscps  = _context.Archivointernomcscp.ToList();
+
+            List<Archivointernomcscp> queryarchivointernomcscppersListadoUsuariosona = (from a in _context.Archivointernomcscp
+                                                             join p in _context.Persona on a.PersonaIdPersona equals p.IdPersona 
+                                                             select new Archivointernomcscp
+                                                             {
+                                                             }).ToList();
+            
+
+            var filter = from p in _context.Persona
+                         join a in _context.Archivointernomcscp on p.IdPersona equals a.PersonaIdPersona
+                         select new ArchivoPersona
+                         {
+                             archivointernomcscpVM = a,
+                             personaVM = p
+                         };
+
+
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                filter = filter.Where(ap => (ap.personaVM.Paterno + " " + ap.personaVM.Materno + " " + ap.personaVM.Nombre).Contains(searchString) ||
+                                              (ap.personaVM.Nombre + " " + ap.personaVM.Paterno + " " + ap.personaVM.Materno).Contains(searchString) ||
+                                              ap.archivointernomcscpVM.Usuario.Contains(searchString) ||
+                                              ap.archivointernomcscpVM.CausaPenal.Contains(searchString) ||
+                                              (ap.archivointernomcscpVM.PersonaIdPersona.ToString()).Contains(searchString)
+                                              );
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.personaVM.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.archivointernomcscpVM.CausaPenal);
+                    break;
+                case "fechaa_desc":
+                    filter = filter.OrderByDescending(spcp => spcp.archivointernomcscpVM.Fecha);
+                    break;
+                default:
+                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    break;
+            }
+
+
+            var norte = "@nortedgepms.com";
+            string mail = "";
+            List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
+            int i = 0;
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo interno", Value = "ARCHIVO INTERNO" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "ARCHIVO GENERAL" });
+            ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "NO UBICADO" });
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
+                {
+                    ListaUbicacion.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = i.ToString()
+                    });
+                }
+            }
+
+            ViewBag.ListaUbicacion = ListaUbicacion;
+            //ViewBag.ListaUbicacionSelect = filter = filter.Where(ap => ap.archivointernomcscpVM.PersonaIdPersona.ToString() = ;
+
+
+
+
+            int pageSize = 10;
+            return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
-        #endregion
-        
-        #region -MenuArchivo-
-        public IActionResult ArchivoMCySCP()
+
+        public JsonResult CambioCusapenal(Archivointernomcscp archivointernomcscp, string cambioCP, string valor)
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
-            return View();
+            archivointernomcscp.CausaPenal = cambioCP;
+            archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(valor);
+
+            var empty = (from a in _context.Archivointernomcscp
+                         where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+                         select a);
+
+            if (empty.Any())
+            {
+                var query = (from a in _context.Archivointernomcscp
+                             where a.IdarchivoInternoMcscp == a.IdarchivoInternoMcscp
+                             select a).FirstOrDefault();
+                query.CausaPenal = archivointernomcscp.CausaPenal;
+                _context.SaveChanges();
+            }
+            var cp = (from a in _context.Archivointernomcscp
+                          where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+                          select a.CausaPenal).FirstOrDefault();
+            //return View();
+
+            return Json(new { success = true, responseText = Convert.ToString(cp), idPersonas = Convert.ToString(archivointernomcscp.IdarchivoInternoMcscp) });
         }
+
+
+
+
         #endregion
     }
-
-
-
-
 }

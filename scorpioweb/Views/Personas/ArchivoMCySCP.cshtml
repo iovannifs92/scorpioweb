@@ -1,0 +1,136 @@
+﻿@model PaginatedList<scorpioweb.Models.ArchivoPersona>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+    function cambioCp(id, value) {
+        //alert("valorres" + cambioid + valor)
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/CambioCusapenal",
+            traditional: true,
+            data: {
+                valor: id,
+                cambioCP: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+
+
+
+</script>
+
+<h2>Archivo MC y SCP </h2>
+
+<form asp-action="ArchivoMCySCP" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="ArchivoMCySCP">Regresar al listado completo</a>
+        </p>
+    </div>
+</form>
+
+<table class="table" style="font-size:10px">
+    <thead>
+        <tr>
+            <th>
+                <a>Id Persona</a>
+            </th>
+            <th>
+                <a asp-action="ArchivoMCySCP" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+            </th>
+            <th>
+                <a asp-action="ArchivoMCySCP" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
+            </th>
+            <th>
+                <a>Fecha</a>
+            </th>
+            <th>
+                <a>Usuario</a>
+            </th>
+            <th>
+                <a>Nueva Ubicación</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+            </td>
+            <td>
+                <input onchange="cambioCp(@item.archivointernomcscpVM.IdarchivoInternoMcscp, value)" name="causapenal" id="causapenal" class="form-control" value=@item.archivointernomcscpVM.CausaPenal />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Usuario)
+            </td>
+            <td>
+                <input type="hidden" asp-for="@item.personaVM.IdPersona" name="IdPersona" id="IdPersona" />
+                <select class="form-control" name="Supervisor" id="Supervisor"
+                        asp-items="@(new SelectList(ViewBag.ListaUbicacion, "Text","Text"))">
+                </select>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p>
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="PersonaSupervision"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="PersonaSupervision"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+
