@@ -21,7 +21,7 @@
     $(document).ready(function () {
         getPersona();
         document.getElementById("btnPrev").disabled = true;
-        document.getElementById("btnPrevs").disabled = true;
+        document.getElementById("btnPrevs").disabled = true;   
     });
     function candado2(id, candado) {
         var personaidpersona = id;
@@ -108,6 +108,46 @@
             }
         });
     };
+    function actualizaUbicacion(id, idPersona, ubicacionAnterior) {
+        var u = document.getElementById("ubicacion" + id);
+        var cambiar = confirm("¿Desea cambiar la ubicación del expediente?");
+        if (cambiar == true) {
+            var sel = u.options[u.selectedIndex].value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/actualizarUbicacion",
+                traditional: true,
+                data: {
+                    ubicacion: sel,
+                    idPersona : idPersona,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        }
+        else {
+            $(u).val(ubicacionAnterior);
+        }
+    };
+    function populate(ListadoUsuarios,selected) {
+        options = "";
+        for(let i=0;i<ListadoUsuarios.length;i++){
+            if(ListadoUsuarios[i].toUpperCase() == selected){
+                options = options + "<option value=\"" + ListadoUsuarios[i].toUpperCase() + "\" selected>" + ListadoUsuarios[i] + "</option>";
+            }
+            else {
+                options = options + "<option value=\"" + ListadoUsuarios[i].toUpperCase() + "\">" + ListadoUsuarios[i] + "</option>";
+            }
+        }
+        return options;  
+    };
     function get() {
         document.getElementById("btnNext").disabled = false;
         var searchValue = $("#Search").val("");
@@ -148,33 +188,71 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
-                             row = row
+                            row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         }
                     } else {
                         if (result.page[i].candado == 0) {
@@ -183,28 +261,65 @@
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         }
-                        //}
                     }
                 }
                 if (row != '') {
@@ -254,26 +369,64 @@
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-pencil'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-unlock'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             }
                         } else {
                             if (result.page[i].candado == 0) {
@@ -282,26 +435,64 @@
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             }
                         }
                     }
@@ -352,26 +543,64 @@
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             }
                         } else {
                             if (result.page[i].candado == 0) {
@@ -380,26 +609,64 @@
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             }
                         }
                     }
@@ -414,8 +681,8 @@
             }
         });
     };
-     function getPersona() {
-      document.getElementById("btnNext").disabled = false;
+    function getPersona() {
+        document.getElementById("btnNext").disabled = false;
         var searchValue = $("#Search").val();
         if (searchValue != "") {
             page = 1
@@ -464,26 +731,65 @@
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
-                                + "<td>" + result.page[i].supervisor + "</td>"+ "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                                + "<td>" + result.page[i].supervisor + "</td>"
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         }
                     } else {
                         if (result.page[i].candado == 0) {
@@ -492,26 +798,64 @@
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a   href=/Personas/Details/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; display: none;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         }
                     }
                 }
@@ -560,32 +904,138 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    if (result.page[i].candado == 0) {
+                    					if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
+                        }
+                    } else {
+                        if (result.page[i].candado == 0) {
+                            row = row
+                                + "<tr valign='middle'>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
+                        } else {
+                            row = row
+                                + "<tr valign='middle'>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
+                        }
                     }
                 }
                 if (row != '') {
@@ -640,33 +1090,139 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    if (result.page[i].candado == 0) {
+                    					if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         } else {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
                                 + "<td>" + result.page[i].nombreCompleto + "</td>"
                                 + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
                         }
+                    } else {
+                        if (result.page[i].candado == 0) {
+                            row = row
+                                + "<tr valign='middle'>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
+                        } else {
+                            row = row
+                                + "<tr valign='middle'>"
+                                + "<td>" + result.page[i].idPersona + "</td>"
+                                + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                + "<td>" + result.page[i].supervisor + "</td>"
+                                + "<th>" + date + "</th>";
+                            row = row + "<div class=\"col-xs-12\">";
+                            row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                            row = row
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            }
+                            else {
+                                row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                row = row + "</select></div>";
+                            } 
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>"; 
+                            row = row + "</td>";
+                            row = row + "</div>"; 
+                        }
+                    }
                 }
                 if (row != '') {
                     $('#tblPersona').append(row);
@@ -708,32 +1264,138 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].candado == 0) {
-                            row = row
-                                + "<tr valign='middle'>"
-                                + "<td>" + result.page[i].idPersona + "</td>"
-                                + "<td>" + result.page[i].nombreCompleto + "</td>"
-                                + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                + "</tr>";
+                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                            if (result.page[i].candado == 0) {
+                                row = row
+                                    + "<tr valign='middle'>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            } else {
+                                row = row
+                                    + "<tr valign='middle'>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            }
                         } else {
-                            row = row
-                                + "<tr valign='middle'>"
-                                + "<td>" + result.page[i].idPersona + "</td>"
-                                + "<td>" + result.page[i].nombreCompleto + "</td>"
-                                + "<td>" + result.page[i].supervisor + "</td>"
-                                + "<th>" + date + "</th>"
-                                + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                + "</tr>";
+                            if (result.page[i].candado == 0) {
+                                row = row
+                                    + "<tr valign='middle'>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            } else {
+                                row = row
+                                    + "<tr valign='middle'>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            }
                         }
                     }
                     if (row != '') {
@@ -777,33 +1439,139 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].candado == 0) {
+                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                            if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a > "
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px;' class='btn btn-primary' onclick='candado2(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></td>"
-                                    + "</tr>";
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
                             } else {
                                 row = row
                                     + "<tr valign='middle'>"
                                     + "<td>" + result.page[i].idPersona + "</td>"
                                     + "<td>" + result.page[i].nombreCompleto + "</td>"
                                     + "<td>" + result.page[i].supervisor + "</td>"
-                                    + "<th>" + date + "</th>"
-                                    + "<td> <a  href=/Personas/Details/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info'><i class='fa fa-eye'></i> Detalles</a>"
-                                    + "<a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a>"
-                                    + "<a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a>"
-                                    + "<a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></td>"
-                                    + "<td> <button style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' onclick='candado2(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></td>"
-                                    + "</tr>";
-                         }
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            }
+                        } else {
+                            if (result.page[i].candado == 0) {
+                                row = row
+                                    + "<tr valign='middle'>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            } else {
+                                row = row
+                                    + "<tr valign='middle'>"
+                                    + "<td>" + result.page[i].idPersona + "</td>"
+                                    + "<td>" + result.page[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.page[i].supervisor + "</td>"
+                                    + "<th>" + date + "</th>";
+                                row = row + "<div class=\"col-xs-12\">";
+                                row = row + "<td>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
+                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                }
+                                else {
+                                    row = row + "<div class=\"col-md-7 col-xs-12\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
+                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } 
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>"; 
+                                row = row + "</td>";
+                                row = row + "</div>"; 
+                            }
+                        }
                     }
                     if (row != '') {
                         $('#tblPersona').append(row);

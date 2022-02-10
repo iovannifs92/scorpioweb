@@ -212,6 +212,8 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
 
             foreach (var rol in roles)
             {
@@ -220,9 +222,20 @@ namespace scorpioweb.Controllers
                     ViewBag.Admin = true;
                 }
             }
-
-
-
+            foreach (var rol in roles)
+            {
+                if (rol == "Masteradmin")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "Archivo")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
 
             List<string> rolUsuario = new List<string>();
 
@@ -236,6 +249,19 @@ namespace scorpioweb.Controllers
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
+
+            List<String> ListaUsuarios = new List<String>();
+            ListaUsuarios.Add("Archivo Interno");
+            ListaUsuarios.Add("Archivo General");
+            ListaUsuarios.Add("No ubicado");
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
+                {
+                    ListaUsuarios.Add(u.ToString());
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
             #endregion
 
             ViewData["CurrentSort"] = sortOrder;
@@ -3153,6 +3179,19 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("MenuEdicion/" + persona.IdPersona, "Personas");
             }
             return View(persona);
+        }
+
+        public async Task<IActionResult> actualizarUbicacion(string ubicacion, int idPersona)
+        {
+            var persona = (from a in _context.Persona
+                           where a.IdPersona == idPersona
+                           select a).FirstOrDefault();
+            persona.UbicacionExpediente = ubicacion;
+            var oldPersona = await _context.Persona.FindAsync(idPersona);
+            _context.Entry(oldPersona).CurrentValues.SetValues(persona);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            return Json(new { success = true });
         }
         #endregion
 
