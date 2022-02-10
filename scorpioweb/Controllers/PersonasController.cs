@@ -5075,9 +5075,7 @@ namespace scorpioweb.Controllers
         public ActionResult OnGetChartData()
         {
 
-            var supervisoresScorpio = from s in _context.Supervision
-                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                                      where s.EstadoSupervision == "VIGENTE"
+            var supervisoresScorpio = from p in _context.Persona
                                       group p by p.Supervisor into grup
                                       select new
                                       {
