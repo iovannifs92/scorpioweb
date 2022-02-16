@@ -5159,7 +5159,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -ArchivoInternoMCSCP-
-        public async Task<IActionResult> ArchivoPrestamos(
+        public async Task<IActionResult> ArchivoPrestamo(
            string sortOrder,
            string currentFilter,
            string SearchString,
@@ -5246,7 +5246,7 @@ namespace scorpioweb.Controllers
                     });
                 }
             }
-
+            
             ViewBag.ListaUbicacion = ListaUbicacion;
 
             int pageSize = 10;
@@ -5385,10 +5385,10 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderByDescending(a => a.archivointernomcscpVM.Fecha);
                     break;
                 default:
-                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    filter = filter.OrderByDescending(spcp => spcp.archivointernomcscpVM.Fecha);
                     break;
             }
-            int pageSize = 10;
+            int pageSize = 100;
 
             //var queryable = query2.AsQueryable();
             return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
