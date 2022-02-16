@@ -9,7 +9,7 @@ namespace scorpioweb.Models
         public int? PersonaIdPersona { get; set; }
         public DateTime? Fecha { get; set; }
         public string Usuario { get; set; }
-        public string NuevaUbiacion { get; set; }
+        public string NuevaUbicacion { get; set; }
         public string CausaPenal { get; set; }
     }
 }

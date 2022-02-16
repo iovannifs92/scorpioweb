@@ -1,0 +1,99 @@
+﻿@model PaginatedList<scorpioweb.Models.ArchivoPersona>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="card-group" style="padding-top:2%">
+    <div class="col-md-12 col-md-12">
+        <h2>Historial de prestamo de Expedientes</h2>
+    </div>
+    <form asp-action="ArchivoHistorial" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+                <button type="submit" class="btn btn-default">
+                    <i class="fa fa-search"></i>
+                    Buscar
+                </button>
+                <a asp-action="ArchivoHistorial">Regresar al listado completo</a>
+            </p>
+        </div>
+    </form>
+
+    <table class="table" style="font-size:10px">
+        <thead>
+            <tr>
+                <th>
+                    <a>Id Persona</a>
+                </th>
+                <th>
+                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+                </th>
+                <th>
+                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
+                </th>
+                <th>
+                    <a>Fecha</a>
+                </th>
+                <th>
+                    <a>Nueva Ubicación</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <scorpioweb.Models.ArchivoPersona>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.archivointernomcscpVM.CausaPenal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.archivointernomcscpVM.NuevaUbicacion)
+                        </td>
+                    </tr>
+                }
+        </tbody>
+    </table>
+</div>
+
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <p>
+        Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+    </p>
+    <a asp-action="ArchivoHistorial"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Anterior
+    </a>
+    <a asp-action="ArchivoHistorial"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Siguiente
+    </a>
+
+    <br />
+    <div>
+        <a asp-action="MenuArchivoMCySCP">Regresar al Menu</a>
+    </div>
+ 
