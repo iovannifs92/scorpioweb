@@ -90,7 +90,7 @@
         </div>
     }
 
-    @if (adminUser)
+    @if (User.IsInRole("ArchivoMCSCP") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
 

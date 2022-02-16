@@ -226,14 +226,14 @@ namespace scorpioweb.Controllers
             {
                 if (rol == "Masteradmin")
                 {
-                    ViewBag.Admin = true;
+                    ViewBag.Masteradmin = true;
                 }
             }
             foreach (var rol in roles)
             {
-                if (rol == "Archivo")
+                if (rol == "ArchivoMCSCP")
                 {
-                    ViewBag.Admin = true;
+                    ViewBag.Archivo = true;
                 }
             }
 
@@ -604,9 +604,6 @@ namespace scorpioweb.Controllers
 
 
         #endregion
-
-
-
 
         #region -AsignaSupervision-
 
@@ -2256,8 +2253,6 @@ namespace scorpioweb.Controllers
         {
             return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
         }
-
-
 
         #region -SinSupervision-
         public ActionResult SinSupervision()
@@ -4914,9 +4909,7 @@ namespace scorpioweb.Controllers
         public ActionResult OnGetChartData()
         {
 
-            var supervisoresScorpio = from s in _context.Supervision
-                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                                      where s.EstadoSupervision == "VIGENTE"
+            var supervisoresScorpio = from p in _context.Persona
                                       group p by p.Supervisor into grup
                                       select new
                                       {
@@ -5283,7 +5276,7 @@ namespace scorpioweb.Controllers
             if (empty.Any())
             {
                 var query = (from a in _context.Archivointernomcscp
-                             where a.IdarchivoInternoMcscp == a.IdarchivoInternoMcscp
+                             where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
                              select a).FirstOrDefault();
                 query.CausaPenal = archivointernomcscp.CausaPenal;
                 _context.SaveChanges();
@@ -5313,7 +5306,6 @@ namespace scorpioweb.Controllers
         #endregion -Update Ubicación archivo y causa penal-
 
         #endregion
-
 
         #region -ArchivoHistorial-
         public async Task<IActionResult> ArchivoHistorial(
@@ -5395,7 +5387,6 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
-
 
         #region -ArchivoNoUbicado-
         public async Task<IActionResult> ArchivoNoUbicado(
