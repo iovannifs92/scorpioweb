@@ -81,9 +81,9 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Zona 4", Value="ZONA 4"},
             new SelectListItem{ Text="Zona 5", Value="ZONA 5"},
             new SelectListItem{ Text="Zona 6", Value="ZONA 6"},
-            new SelectListItem{ Text="Zona 7", Value="ZONA 7"}            
+            new SelectListItem{ Text="Zona 7", Value="ZONA 7"}
         };
-        
+
 
         private List<SelectListItem> listaUbicacionExpediente = new List<SelectListItem>
         {
@@ -226,14 +226,14 @@ namespace scorpioweb.Controllers
             {
                 if (rol == "Masteradmin")
                 {
-                    ViewBag.Admin = true;
+                    ViewBag.Masteradmin = true;
                 }
             }
             foreach (var rol in roles)
             {
-                if (rol == "Archivo")
+                if (rol == "ArchivoMCSCP")
                 {
-                    ViewBag.Admin = true;
+                    ViewBag.Archivo = true;
                 }
             }
 
@@ -245,7 +245,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            ViewBag.RolesUsuario = rolUsuario; 
+            ViewBag.RolesUsuario = rolUsuario;
 
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
@@ -388,8 +388,8 @@ namespace scorpioweb.Controllers
             int pageSize = 10;
             return Json(new
             {
-              page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
-              totalPages = (personas.Count() + pageSize - 1) / pageSize
+                page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+                totalPages = (personas.Count() + pageSize - 1) / pageSize
             });
         }
         #endregion
@@ -432,47 +432,12 @@ namespace scorpioweb.Controllers
             #region -Jointables-
             if (flagCoordinador)
             {
-                if (usuario == "janeth@nortedgepms.com" || usuario == "raquel@nortedgepms.com")
-                {
-                    var warningPlaneacion = (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                             where persona.Supervisor.EndsWith("\u0040nortedgepms.com") && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 fraccionesimpuestasVM = fracciones,
-                                                 figuraJudicial = fracciones.FiguraJudicial,
-                                                 tipoAdvertencia = "Informe fuera de tiempo"
-                                             }).Union
-                                            (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                             where persona.Supervisor.EndsWith("\u0040nortedgepms.com") && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 fraccionesimpuestasVM = fracciones,
-                                                 figuraJudicial = fracciones.FiguraJudicial,
-                                                 tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                             }).Union
-                                        (from persona in personaVM
+                var warningPlaneacion = (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where persona.Supervisor.EndsWith("\u0040nortedgepms.com") && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                         orderby fracciones.FiguraJudicial
+                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = persona,
@@ -481,77 +446,14 @@ namespace scorpioweb.Controllers
                                              planeacionestrategicaVM = planeacion,
                                              fraccionesimpuestasVM = fracciones,
                                              figuraJudicial = fracciones.FiguraJudicial,
-                                             tipoAdvertencia = "Sin fecha de informe"
+                                             tipoAdvertencia = "Informe fuera de tiempo"
                                          }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         where persona.Supervisor.EndsWith("\u0040nortedgepms.com") && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             tipoAdvertencia = "Sin periodicidad de firma"
-                                         }).Union
-                                            (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where persona.Supervisor.EndsWith("\u0040nortedgepms.com") && supervision.EstadoSupervision == null
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 tipoAdvertencia = "Sin estado de supervisión"
-                                             });
-                    ViewBag.Warnings = warningPlaneacion.Count();
-                }
-                else if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "claudia.armendariz@dgepms.com")
-                {
-                    var warningPlaneacion = (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                             where persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 fraccionesimpuestasVM = fracciones,
-                                                 figuraJudicial = fracciones.FiguraJudicial,
-                                                 tipoAdvertencia = "Informe fuera de tiempo"
-                                             }).Union
-                                            (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                             where persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 fraccionesimpuestasVM = fracciones,
-                                                 figuraJudicial = fracciones.FiguraJudicial,
-                                                 tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                             }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
                                          join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                         orderby fracciones.FiguraJudicial
+                                         where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = persona,
@@ -560,115 +462,52 @@ namespace scorpioweb.Controllers
                                              planeacionestrategicaVM = planeacion,
                                              fraccionesimpuestasVM = fracciones,
                                              figuraJudicial = fracciones.FiguraJudicial,
-                                             tipoAdvertencia = "Sin fecha de informe"
+                                             tipoAdvertencia = "Control de supervisión a 3 días o menos"
                                          }).Union
+                                    (from persona in personaVM
+                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                     join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                     where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
+                                     orderby fracciones.FiguraJudicial
+                                     select new PlaneacionWarningViewModel
+                                     {
+                                         personaVM = persona,
+                                         supervisionVM = supervision,
+                                         causapenalVM = causapenal,
+                                         planeacionestrategicaVM = planeacion,
+                                         fraccionesimpuestasVM = fracciones,
+                                         figuraJudicial = fracciones.FiguraJudicial,
+                                         tipoAdvertencia = "Sin fecha de informe"
+                                     }).Union
+                                    (from persona in personaVM
+                                     join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                     join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                                     join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                                     where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                     select new PlaneacionWarningViewModel
+                                     {
+                                         personaVM = persona,
+                                         supervisionVM = supervision,
+                                         causapenalVM = causapenal,
+                                         planeacionestrategicaVM = planeacion,
+                                         tipoAdvertencia = "Sin periodicidad de firma"
+                                     }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         where persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                         where supervision.EstadoSupervision == null
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = persona,
                                              supervisionVM = supervision,
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
-                                             tipoAdvertencia = "Sin periodicidad de firma"
-                                         }).Union
-                                            (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where persona.Supervisor.EndsWith("\u0040dgepms.com") && supervision.EstadoSupervision == null
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 tipoAdvertencia = "Sin estado de supervisión"
-                                             });
-                    ViewBag.Warnings = warningPlaneacion.Count();
-                }
-                else
-                {
-                    var warningPlaneacion = (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                             where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaInformeCoordinador && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "SCP"
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 fraccionesimpuestasVM = fracciones,
-                                                 figuraJudicial = fracciones.FiguraJudicial,
-                                                 tipoAdvertencia = "Informe fuera de tiempo"
-                                             }).Union
-                                            (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                             where planeacion.FechaInforme != null && planeacion.FechaInforme < fechaControl && supervision.EstadoSupervision == "VIGENTE" && fracciones.FiguraJudicial == "MC"
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 fraccionesimpuestasVM = fracciones,
-                                                 figuraJudicial = fracciones.FiguraJudicial,
-                                                 tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                             }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-                                         where planeacion.FechaInforme == null && supervision.EstadoSupervision == "VIGENTE"
-                                         orderby fracciones.FiguraJudicial
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             fraccionesimpuestasVM = fracciones,
-                                             figuraJudicial = fracciones.FiguraJudicial,
-                                             tipoAdvertencia = "Sin fecha de informe"
-                                         }).Union
-                                        (from persona in personaVM
-                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = persona,
-                                             supervisionVM = supervision,
-                                             causapenalVM = causapenal,
-                                             planeacionestrategicaVM = planeacion,
-                                             tipoAdvertencia = "Sin periodicidad de firma"
-                                         }).Union
-                                            (from persona in personaVM
-                                             join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                                             join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                                             join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where supervision.EstadoSupervision == null
-                                             select new PlaneacionWarningViewModel
-                                             {
-                                                 personaVM = persona,
-                                                 supervisionVM = supervision,
-                                                 causapenalVM = causapenal,
-                                                 planeacionestrategicaVM = planeacion,
-                                                 tipoAdvertencia = "Sin estado de supervisión"
-                                             });
-                    ViewBag.Warnings = warningPlaneacion.Count();
-                }
+                                             tipoAdvertencia = "Sin estado de supervisión"
+                                         });
+                ViewBag.Warnings = warningPlaneacion.Count();
             }
             else
             {
@@ -761,13 +600,10 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuario = rolUsuario;
             return View();
         }
-       
+
 
 
         #endregion
-
-
-
 
         #region -AsignaSupervision-
 
@@ -871,7 +707,7 @@ namespace scorpioweb.Controllers
         {
 
 
-         
+
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
             foreach (var user in userManager.Users)
@@ -982,11 +818,11 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
 
             var sA = from p in _context.Persona
-                           where p.IdPersona == id
-                           select new
-                           {
-                               p.Supervisor
-                           };
+                     where p.IdPersona == id
+                     select new
+                     {
+                         p.Supervisor
+                     };
 
             reasignacionsupervisor.PersonaIdpersona = (persona.IdPersona).ToString();
             reasignacionsupervisor.MotivoRealizo = reasignacionsupervisor.MotivoRealizo;
@@ -1001,7 +837,7 @@ namespace scorpioweb.Controllers
                 .FirstOrDefaultAsync(p => p.IdPersona == id);
             personaUpdate.Supervisor = supervisor;
 
-   
+
 
             try
             {
@@ -1664,7 +1500,7 @@ namespace scorpioweb.Controllers
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = normaliza(cp);
-                domicilio.Zona = zona;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+                domicilio.Zona = zona;
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
@@ -2362,7 +2198,7 @@ namespace scorpioweb.Controllers
 
             if (queripersonasis.Count() == 0)
             {
-            return RedirectToAction("PresentacionPeriodicaConfirmation/" + "Personas");
+                return RedirectToAction("PresentacionPeriodicaConfirmation/" + "Personas");
             }
             else
             {
@@ -2384,14 +2220,14 @@ namespace scorpioweb.Controllers
             int idPresentacion = presentacionperiodica.IdpresentacionPeriodica;
             int idPersona = persona.IdPersona;
             var comentario = presentacionperiodica.ComentarioFirma;
-            if(comentario == null)
+            if (comentario == null)
             {
                 comentario = "";
             }
-         
+
             var comentarioUpdate = (from a in _context.Presentacionperiodica
-                                 where a.IdpresentacionPeriodica == idPresentacion
-                                 select a).FirstOrDefault();
+                                    where a.IdpresentacionPeriodica == idPresentacion
+                                    select a).FirstOrDefault();
             comentarioUpdate.ComentarioFirma = comentario.ToUpper();
             _context.SaveChanges();
 
@@ -2410,15 +2246,13 @@ namespace scorpioweb.Controllers
                     throw;
                 }
             }
-            return RedirectToAction("PresentacionPeriodicaPersona/"+ idPersona);
+            return RedirectToAction("PresentacionPeriodicaPersona/" + idPersona);
         }
         #endregion
         private bool PresentacionExists(int id)
         {
             return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
         }
-
-
 
         #region -SinSupervision-
         public ActionResult SinSupervision()
@@ -2445,7 +2279,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-         #region -Edicion-        
+        #region -Edicion-        
 
         public async Task<IActionResult> MenuEdicion(int? id)
         {
@@ -2884,7 +2718,7 @@ namespace scorpioweb.Controllers
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
                 //persona.UbicacionExpediente = persona.UbicacionExpediente;
-                if (persona.Candado == null){persona.Candado = 0;}
+                if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
                 #region -ConsumoSustancias-
                 //Sustancias editadas
@@ -5156,99 +4990,99 @@ namespace scorpioweb.Controllers
             string Search,
             int? pageNumber)
         {
-          #region -ListaUsuarios-            
-          var user = await userManager.FindByNameAsync(User.Identity.Name);
-          var roles = await userManager.GetRolesAsync(user);
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
 
-          List<string> rolUsuario = new List<string>();
+            List<string> rolUsuario = new List<string>();
 
-          for (int i = 0; i < roles.Count; i++)
-          {
-            rolUsuario.Add(roles[i]);
-          }
-
-          ViewBag.RolesUsuario = rolUsuario[1];
-
-          String users = user.ToString();
-          ViewBag.RolesUsuarios = users;
-          #endregion
-
-
-          //List<Persona> personas = _context.Persona.ToList();
-          //var personas = _context.Persona;
-          //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
-
-          List<Persona> listaSupervisados = new List<Persona>();
-          listaSupervisados = (from table in _context.Persona
-                               select table).ToList();
-          listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
-          ViewBag.listaSupervisados = listaSupervisados;
-
-
-
-
-          ViewData["CurrentSort"] = sortOrder;
-          ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-          ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
-
-
-          if (Search != null)
-          {
-            pageNumber = 1;
-          }
-          else
-          {
-            Search = currentFilter;
-          }
-          ViewData["CurrentFilter"] = Search;
-
-          var personas = from p in _context.Persona
-                         where p.Supervisor != null
-                         select p;
-
-
-          if (!String.IsNullOrEmpty(Search))
-          {
-            foreach (var item in Search.Split(new char[] { ' ' },
-                StringSplitOptions.RemoveEmptyEntries))
+            for (int i = 0; i < roles.Count; i++)
             {
-              personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
-                                             (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
-                                             p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
-
+                rolUsuario.Add(roles[i]);
             }
-          }
 
-          switch (sortOrder)
-          {
-            case "name_desc":
-              personas = personas.OrderByDescending(p => p.IdPersona);
-              break;
-            default:
-              personas = personas.OrderByDescending(p => p.IdPersona);
-              break;
-          }
+            ViewBag.RolesUsuario = rolUsuario[1];
 
-          int pageSize = 10;
-          // Response.Headers.Add("Refresh", "5");
-          return Json(new
-          {
-              page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
-              totalPages = (personas.Count() + pageSize - 1) / pageSize
-          });
+            String users = user.ToString();
+            ViewBag.RolesUsuarios = users;
+            #endregion
 
-                //return Json(new
-                //{
-                //    success = true,
-                //    responseText = "Siguiente",
-                //    sustancia = consumosustancias[contadorSustancia].Sustancia,
-                //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
-                //    cantidad = consumosustancias[contadorSustancia].Cantidad,
-                //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
-                //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
-                //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
-                //});
+
+            //List<Persona> personas = _context.Persona.ToList();
+            //var personas = _context.Persona;
+            //var pagedData = PaginatedList<Persona>.CreateAsync(personas, pageIndex, pageSize);
+
+            List<Persona> listaSupervisados = new List<Persona>();
+            listaSupervisados = (from table in _context.Persona
+                                 select table).ToList();
+            listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
+            ViewBag.listaSupervisados = listaSupervisados;
+
+
+
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+
+            if (Search != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                Search = currentFilter;
+            }
+            ViewData["CurrentFilter"] = Search;
+
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+
+            if (!String.IsNullOrEmpty(Search))
+            {
+                foreach (var item in Search.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
+                                                   p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+                default:
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+            }
+
+            int pageSize = 10;
+            // Response.Headers.Add("Refresh", "5");
+            return Json(new
+            {
+                page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+                totalPages = (personas.Count() + pageSize - 1) / pageSize
+            });
+
+            //return Json(new
+            //{
+            //    success = true,
+            //    responseText = "Siguiente",
+            //    sustancia = consumosustancias[contadorSustancia].Sustancia,
+            //    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
+            //    cantidad = consumosustancias[contadorSustancia].Cantidad,
+            //    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
+            //    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
+            //    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
+            //});
 
         }
 
@@ -5272,15 +5106,15 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchValue;
 
             var personas = from p in _context.Persona
-                            where p.Supervisor != null
-                            select p;
+                           where p.Supervisor != null
+                           select p;
             if (!String.IsNullOrEmpty(searchValue))
             {
                 foreach (var item in searchValue.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchValue) ||
-                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) || 
+                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchValue) ||
                                                     p.Supervisor.Contains(searchValue) || (p.IdPersona.ToString()).Contains(searchValue));
 
                 }
@@ -5308,7 +5142,7 @@ namespace scorpioweb.Controllers
             //datosSustancias.Clear();            
             List<Persona> listaSupervisados = new List<Persona>();
             listaSupervisados = (from table in _context.Persona
-                            select table).ToList();
+                                 select table).ToList();
             listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
             ViewBag.listaSupervisados = listaSupervisados;
             return View();
@@ -5317,25 +5151,315 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -ArchivoInternoMCSCP-
+        public async Task<IActionResult> ArchivoPrestamo(
+           string sortOrder,
+           string currentFilter,
+           string SearchString,
+           string estadoSuper,
+           int? pageNumber
+           )
+        {
+           
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            if (SearchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                SearchString = currentFilter;
+            }
+
+
+            List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
+                                                          group a by a.PersonaIdPersona into grp
+                                                          select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
+
+            var filter = from p in _context.Persona
+                         join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
+                         where a.NuevaUbicacion != "NO UBICADO" && a.NuevaUbicacion != "ARCHIVO GENERAL" && a.NuevaUbicacion != "ARCHIVO INTERNO" && a.NuevaUbicacion != "NA" && a.NuevaUbicacion != null
+                         select new ArchivoPersona
+                         {
+                             archivointernomcscpVM = a,
+                             personaVM = p,
+                         };
+
+            ViewData["CurrentFilter"] = SearchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString) ||
+                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString) ||
+                                              (a.personaVM.IdPersona.ToString()).Contains(SearchString)
+                                              );
+                                      
+            }
 
 
 
-        #region -MenuArchivo-
-        public IActionResult MenuArchivo()
+
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(a => a.personaVM.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.CausaPenal);
+                    break;
+                case "fechaa_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.Fecha);
+                    break;
+                default:
+                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    break;
+            }
+
+
+            List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
+            int ii = 0;
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo interno", Value = "ARCHIVO INTERNO" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "ARCHIVO GENERAL" });
+            ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "NO UBICADO" });
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
+                {
+
+                    ListaUbicacion.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = ii.ToString()
+                    });
+                }
+            }
+            
+            ViewBag.ListaUbicacion = ListaUbicacion;
+
+            int pageSize = 10;
+
+           //var queryable = query2.AsQueryable();
+            return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+        #region -Update Ubicación archivo y causa penal-
+        public JsonResult UpdateUyCP(Archivointernomcscp archivointernomcscp, Persona persona, string cambioCP, string idArchivo, string cambioUE, string idpersona, string archivoid)
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
+        {
+
+            #region -Actualizar causa penal-
+            if (idArchivo != null)
+            {
+                archivointernomcscp.CausaPenal = cambioCP;
+                archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(idArchivo);
+            }
+            #endregion
+
+            #region -Actualizar Ubicacion-
+            if (idpersona != null)
+            {
+                archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(archivoid);
+                persona.IdPersona = Int32.Parse(idpersona);
+                persona.UbicacionExpediente = cambioUE.ToUpper();
+            }
+            #endregion
+
+            var empty = (from a in _context.Archivointernomcscp
+                         where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+                         select a);
+
+            if (empty.Any())
+            {
+                var query = (from a in _context.Archivointernomcscp
+                             where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+                             select a).FirstOrDefault();
+                query.CausaPenal = archivointernomcscp.CausaPenal;
+                _context.SaveChanges();
+            }
+            var cp = (from a in _context.Archivointernomcscp
+                      where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+                      select a.CausaPenal).FirstOrDefault();
+
+
+            var emptypersona = (from p in _context.Persona
+                                where p.IdPersona == persona.IdPersona
+                                select p);
+
+            if (emptypersona.Any())
+            {
+                var query = (from p in _context.Persona
+                             where p.IdPersona == persona.IdPersona
+                             select p).FirstOrDefault();
+                query.UbicacionExpediente = persona.UbicacionExpediente;
+                _context.SaveChanges();
+            }
+
+            //return View();
+
+            return Json(new { success = true, responseText = Convert.ToString(cp), idPersonas = Convert.ToString(archivointernomcscp.IdarchivoInternoMcscp) });
+        }
+        #endregion -Update Ubicación archivo y causa penal-
+
+        #endregion
+
+        #region -ArchivoHistorial-
+        public async Task<IActionResult> ArchivoHistorial(
+           string sortOrder,
+           string currentFilter,
+           string SearchString,
+           string estadoSuper,
+           int? pageNumber
+           )
+        {
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            if (SearchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                SearchString = currentFilter;
+            }
+
+
+            //List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
+            //                                                   group a by a.PersonaIdPersona into grp
+            //                                                   select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
+
+            //var filter = from p in _context.Persona
+            //             join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
+            //             select new ArchivoPersona
+            //             {
+            //                 archivointernomcscpVM = a,
+            //                 personaVM = p,
+            //             };
+
+            var filter = from p in _context.Persona
+                         join a in _context.Archivointernomcscp on p.IdPersona equals a.PersonaIdPersona
+                         where a.NuevaUbicacion != null
+                         select new ArchivoPersona
+                         {
+                             archivointernomcscpVM = a,
+                             personaVM = p
+                         };
+
+            ViewData["CurrentFilter"] = SearchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString) ||
+                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString) ||
+                                              (a.personaVM.IdPersona.ToString()).Contains(SearchString)
+                                              );
+
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(a => a.personaVM.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.CausaPenal);
+                    break;
+                case "fechaa_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.Fecha);
+                    break;
+                default:
+                    filter = filter.OrderByDescending(spcp => spcp.archivointernomcscpVM.Fecha);
+                    break;
+            }
+            int pageSize = 100;
+
+            //var queryable = query2.AsQueryable();
+            return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+        #endregion
+
+        #region -ArchivoNoUbicado-
+        public async Task<IActionResult> ArchivoNoUbicado(
+           string sortOrder,
+           string currentFilter,
+           string SearchString,
+           string estadoSuper,
+           int? pageNumber
+           )
+        {
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            if (SearchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                SearchString = currentFilter;
+            }
+
+            var filter = from p in _context.Persona
+                         join a in _context.Archivointernomcscp on p.IdPersona equals a.PersonaIdPersona
+                         where a.NuevaUbicacion == "NO UBICADO"
+                         select new ArchivoPersona
+                         {
+                             archivointernomcscpVM = a,
+                             personaVM = p
+                         };
+
+            ViewData["CurrentFilter"] = SearchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString) ||
+                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString) ||
+                                              (a.personaVM.IdPersona.ToString()).Contains(SearchString)
+                                              );
+
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(a => a.personaVM.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.CausaPenal);
+                    break;
+                case "fechaa_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.Fecha);
+                    break;
+                default:
+                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    break;
+            }
+            int pageSize = 10;
+
+            //var queryable = query2.AsQueryable();
+            return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+        #endregion
+
+
+        public IActionResult MenuArchivoMCySCP()
         {
             return View();
         }
-        #endregion
-        
-        #region -MenuArchivo-
-        public IActionResult ArchivoMCySCP()
-        {
-            return View();
-        }
-        #endregion
-    }
-
-
-
-
+    } 
 }

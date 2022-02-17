@@ -20,29 +20,6 @@
             }
         })
     }
-     function candado(id, candado){
-        var personaidpersona = id;
-         $.ajax({
-            type: "POST",
-             dataType: "json",
-             url: "/Personas/LoockCandado",
-             traditional: true,
-             data: {
-            datoCandado: [candado, personaidpersona],
-             },
-             success: function (response) {
-                 if (response.success) {
-            location.reload();
-                 } else {
-            alert(response.responseText);
-                 }
-             },
-  
-            error: function (response) {
-            location.reload();
-                }
-            });
-        }
 </script>
 
 <h2>Personas Supervisión </h2>
@@ -129,7 +106,7 @@
                 </td>
                 <td>
                     <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px"
-                            asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
+                             asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
                     </select>
                 </td>
                 <td>

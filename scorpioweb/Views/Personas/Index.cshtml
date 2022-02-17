@@ -206,7 +206,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -238,7 +238,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -272,7 +272,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -304,7 +304,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -380,7 +380,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -412,7 +412,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -446,7 +446,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -478,7 +478,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -554,7 +554,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -586,7 +586,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -620,7 +620,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -652,7 +652,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -743,7 +743,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -775,7 +775,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -809,7 +809,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -841,7 +841,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -866,6 +866,7 @@
             },
             error: function (msg) {
                 alert(msg);
+                alert("error1");
             }
         });
     };
@@ -922,7 +923,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -954,7 +955,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -988,7 +989,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -1020,7 +1021,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -1108,7 +1109,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -1140,7 +1141,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -1174,7 +1175,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -1206,7 +1207,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                            if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
@@ -1231,6 +1232,7 @@
             },
             error: function (msg) {
                 alert(msg);
+                alert("error2");
             }
         });
     };
@@ -1282,7 +1284,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1314,7 +1316,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1348,7 +1350,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1380,7 +1382,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1457,7 +1459,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1489,7 +1491,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1523,7 +1525,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";
@@ -1555,7 +1557,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";       
-                                if(@Html.Raw(Json.Serialize(ViewBag.Admin)) == true || @Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     row = row + "<div class=\"col-md-7 col-xs-12\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">"; 
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                     row = row + "</select></div>";

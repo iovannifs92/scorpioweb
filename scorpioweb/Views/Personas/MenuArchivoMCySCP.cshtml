@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewData["Title"] = "Menu Archivo MC y SCP";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+
+<div class="card-group" style="padding-top:2%">
+    <div class="col-md-12 col-md-12">
+        <h2>Archivo MC y SCP </h2>
+    </div>
+    
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Personas" asp-action="ArchivoHistorial">
+                    <img class="card-img-top" src="~/images/folderrecord.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Historial
+                </a>
+            </h4>
+            <p class="card-text">
+                Historial de ubicación de Expedientes
+            </p>
+        </div>
+    </div>
+
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Personas" asp-action="ArchivoNoUbicado">
+                    <img class="card-img-bottom" src="~/images/user_no.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Expedientes no encontrados<span class="badge" style="background-color:red">@ViewBag.Warnings</span>
+                </a>
+            </h4>
+            <p class="card-text">
+                Expedientes no encontrados
+            </p>
+        </div>
+    </div>
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Personas" asp-action="ArchivoPrestamo">
+                    <img class="card-img-bottom" src="~/images/documentation.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Expedientes en prestamo <span class="badge" style="background-color:red">@ViewBag.Warnings</span>
+                </a>
+            </h4>
+            <p class="card-text">
+                Expedientes que se encuentran en prestamo
+            </p>
+        </div>
+    </div>
+</div>
+
