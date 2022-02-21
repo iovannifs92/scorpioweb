@@ -251,6 +251,7 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuarios = users;
 
             List<String> ListaUsuarios = new List<String>();
+            ListaUsuarios.Add("Sin registro");
             ListaUsuarios.Add("Archivo Interno");
             ListaUsuarios.Add("Archivo General");
             ListaUsuarios.Add("No ubicado");
@@ -5224,6 +5225,7 @@ namespace scorpioweb.Controllers
 
             List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
             int ii = 0;
+            ListaUbicacion.Add(new SelectListItem { Text = "Sin registro", Value = "SIN REGISTRO" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo interno", Value = "ARCHIVO INTERNO" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "ARCHIVO GENERAL" });
             ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "NO UBICADO" });
