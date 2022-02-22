@@ -255,6 +255,9 @@ namespace scorpioweb.Controllers
             ListaUsuarios.Add("Archivo Interno");
             ListaUsuarios.Add("Archivo General");
             ListaUsuarios.Add("No ubicado");
+            ListaUsuarios.Add("Dirección");
+            ListaUsuarios.Add("Coordinación Operativa");
+            ListaUsuarios.Add("Coordinación MC y SCP");
             foreach (var u in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
@@ -5228,6 +5231,9 @@ namespace scorpioweb.Controllers
             ListaUbicacion.Add(new SelectListItem { Text = "Sin registro", Value = "SIN REGISTRO" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo interno", Value = "ARCHIVO INTERNO" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "ARCHIVO GENERAL" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Diección", Value = "DIRECCION" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Coordinación Operativa", Value = "COORDINACIÓN OPERATIVA" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Coordinación MC y SCP", Value = "COORDINACIÓN MC Y SCP" });
             ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "NO UBICADO" });
             foreach (var user in userManager.Users)
             {
