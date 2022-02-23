@@ -5,6 +5,21 @@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <script type="text/javascript">
+    function formatDate(dateString){
+        var d = new Date(dateString);
+        var hours = d.getHours();
+        var minutes = d.getMinutes();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0'+minutes : minutes;
+        var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
+        if (dateString == null)
+        {
+            date = "";
+        }
+        return date;
+    };
     $(document).ready(function () {
         $('#currentFilter').change(function () {
             var s = document.getElementById("currentFilter");
@@ -36,18 +51,7 @@
                             for (let i = 0; i < result.query.length; i++) 
                             {
                                 var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
-                                var d = new Date(dateString);
-                                var hours = d.getHours();
-                                var minutes = d.getMinutes();
-                                var ampm = hours >= 12 ? 'PM' : 'AM';
-                                hours = hours % 12;
-                                hours = hours ? hours : 12; // the hour '0' should be '12'
-                                minutes = minutes < 10 ? '0'+minutes : minutes;
-                                var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
-                                if (dateString == null)
-                                {
-                                    date = "";
-                                }
+                                date = formatDate(dateString);
 
                                 if(nortedgepms && result.query[i].personaVM.supervisor.endsWith("\u0040nortedgepms.com")) 
                                 {
@@ -359,18 +363,14 @@
                         {
                             for (let i = 0; i < result.query.length; i++)
                             {
-                                var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
-                                var d = new Date(dateString);
-                                var hours = d.getHours();
-                                var minutes = d.getMinutes();
-                                var ampm = hours >= 12 ? 'PM' : 'AM';
-                                hours = hours % 12;
-                                hours = hours ? hours : 12; // the hour '0' should be '12'
-                                minutes = minutes < 10 ? '0'+minutes : minutes;
-                                var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
-                                if (dateString == null)
+                                if (result.query[i].planeacionestrategicaVM == null)
                                 {
                                     date = "";
+                                }
+                                else
+                                {
+                                    var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
+                                    date = formatDate(dateString);
                                 }
 
                                 if(result.query[i].personaVM.supervisor == result.user)
@@ -378,8 +378,16 @@
                                     row = row
                                         + "<tr>"
                                         + "<td>" + result.query[i].personaVM.idPersona + "</td>"
-                                        + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>"
-                                        + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+                                        + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>";
+                                    
+                                    if(result.query[i].causapenalVM != null)
+                                    {
+                                        row = row + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+                                    }
+                                    else
+                                    {
+                                        row = row + "<td></td>";
+                                    }
 
                                     switch (result.query[i].tipoAdvertencia)
                                     {
@@ -490,6 +498,29 @@
                                             }
                                             row = row + "</td>";
                                             break;
+                                        case "Expediente físico en resguardo":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            var fecha = formatDate(result.query[i].archivointernomcscpVM.fecha);
+                                            var tolerance = Date.now();
+                                            tolerance -= 1000 * 60 * 60 * 24 * 5;
+                                            if (Date.parse(fecha) < tolerance)
+                                            {
+                                                row = row
+                                                    + "<td style=\"color:red\">"
+                                                    + "    " + fecha
+                                                    + "</td>";
+                                            }
+                                            else
+                                            {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + fecha
+                                                    + "</td>";
+                                            }
+                                            break;
                                     }
 
                                     row = row + "<td>" + result.query[i].municipiosVM.municipio + "</td>";
@@ -503,11 +534,15 @@
                                         row = row + "<td></td>";
                                     }
                                     row = row + "</td>";
-                                    if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
+                                    if (result.query[i].tipoAdvertencia == "Expediente físico en resguardo")
+                                    {
+                                        row = row + "<td></td>";
+                                    }
+                                    else if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
                                     {
                                         row = row
                                             + "<td>"
-                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=TORRES%20ANDRADE%20JESUS&amp;cp=88%2F2020\">"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/Edit/131?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
                                             + "        <i class=\"fa fa-pencil\"></i> Detalle"
                                             + "    </a >"
                                             + "</td>";
@@ -552,6 +587,7 @@
         <label class="control-label">Tipo</label>
         <select class="form-control" name="currentFilter" id="currentFilter">
             <option value="TODOS">Todos</option>
+            <option value="EXPEDIENTE FISICO EN RESGUARDO">Expediente físico en resguardo</option>
             <option value="INFORME FUERA DE TIEMPO">Informe fuera de tiempo</option>
             <option value="CONTROL DE SUPERVISION A 3 DIAS O MENOS">Control de supervisión a 3 días o menos</option>
             <option value="SIN FECHA DE INFORME">Sin fecha de informes/Sin control de supervisión</option>

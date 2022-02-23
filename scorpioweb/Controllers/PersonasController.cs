@@ -253,7 +253,7 @@ namespace scorpioweb.Controllers
             List<String> ListaUsuarios = new List<String>();
             ListaUsuarios.Add("Archivo Interno");
             ListaUsuarios.Add("Archivo General");
-            ListaUsuarios.Add("No ubicado");
+            ListaUsuarios.Add("No Ubicado");
             foreach (var u in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
@@ -4295,8 +4295,6 @@ namespace scorpioweb.Controllers
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
                                                          select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
-
-
             #endregion
 
             #region -Jointables-
@@ -4394,7 +4392,8 @@ namespace scorpioweb.Controllers
                                                      causapenalVM = causapenal,
                                                      planeacionestrategicaVM = planeacion,
                                                      tipoAdvertencia = "Sin estado de supervisión"
-                                                 })/*.Union
+                                                 });
+                                                /*.Union
                                                      (from persona in personaVM
                                                      join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                                      join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -4410,7 +4409,7 @@ namespace scorpioweb.Controllers
                                                          causapenalVM = causapenal,
                                                          planeacionestrategicaVM = planeacion,
                                                          tipoAdvertencia = "Se paso el tiempo de la firma"
-                                                     })*/;
+                                                     })*/
                         break;
                     case "INFORME FUERA DE TIEMPO":
                         ViewData["alertas"] = from persona in personaVM
@@ -4517,10 +4516,26 @@ namespace scorpioweb.Controllers
             }
             else
             {
+                List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
+                                                                   group a by a.PersonaIdPersona into grp
+                                                                   select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
+                var archivo = from p in _context.Persona
+                              join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
+                              join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                              where a.NuevaUbicacion == usuario
+                              select new PlaneacionWarningViewModel
+                              {
+                                personaVM = p,
+                                archivointernomcscpVM = a,
+                                municipiosVM = municipio,
+                                tipoAdvertencia = "Expediente físico en resguardo"
+                              };
                 switch (currentFilter)
                 {
                     case "TODOS":
-                        ViewData["alertas"] = (from persona in personaVM
+                        ViewData["alertas"] = archivo.Union
+                                              (from persona in personaVM
                                                join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                                join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
@@ -4626,6 +4641,9 @@ namespace scorpioweb.Controllers
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              })*/;
+                        break;
+                    case "EXPEDIENTE FISICO EN RESGUARDO":
+                        ViewData["alertas"] = archivo;
                         break;
                     case "INFORME FUERA DE TIEMPO":
                         ViewData["alertas"] = from persona in personaVM
@@ -5189,7 +5207,7 @@ namespace scorpioweb.Controllers
 
             var filter = from p in _context.Persona
                          join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
-                         where a.NuevaUbicacion != "NO UBICADO" && a.NuevaUbicacion != "ARCHIVO GENERAL" && a.NuevaUbicacion != "ARCHIVO INTERNO" && a.NuevaUbicacion != "NA" && a.NuevaUbicacion != null
+                         where a.NuevaUbicacion != "No Ubicado" && a.NuevaUbicacion != "Archivo General" && a.NuevaUbicacion != "Archivo Interno" && a.NuevaUbicacion != "NA" && a.NuevaUbicacion != null
                          select new ArchivoPersona
                          {
                              archivointernomcscpVM = a,
@@ -5231,9 +5249,9 @@ namespace scorpioweb.Controllers
 
             List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
             int ii = 0;
-            ListaUbicacion.Add(new SelectListItem { Text = "Archivo interno", Value = "ARCHIVO INTERNO" });
-            ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "ARCHIVO GENERAL" });
-            ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "NO UBICADO" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo Interno", Value = "Archivo Interno" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "Archivo General" });
+            ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "No Ubicado" });
             foreach (var user in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
@@ -5272,7 +5290,7 @@ namespace scorpioweb.Controllers
             {
                 archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(archivoid);
                 persona.IdPersona = Int32.Parse(idpersona);
-                persona.UbicacionExpediente = cambioUE.ToUpper();
+                persona.UbicacionExpediente = cambioUE;
             }
             #endregion
 
@@ -5423,7 +5441,7 @@ namespace scorpioweb.Controllers
 
             var filter = from p in _context.Persona
                          join a in _context.Archivointernomcscp on p.IdPersona equals a.PersonaIdPersona
-                         where a.NuevaUbicacion == "NO UBICADO"
+                         where a.NuevaUbicacion == "No Ubicado"
                          select new ArchivoPersona
                          {
                              archivointernomcscpVM = a,

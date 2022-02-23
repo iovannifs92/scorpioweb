@@ -123,14 +123,14 @@
     <p>
         Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
     </p>
-    <a asp-action="ArchivoMCySCP"
+    <a asp-action="ArchivoPrestamo"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex - 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
        class="btn btn-default @prevDisabled">
         Anterior
     </a>
-    <a asp-action="ArchivoMCySCP"
+    <a asp-action="ArchivoPrestamo"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex + 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
