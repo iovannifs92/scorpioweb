@@ -226,14 +226,14 @@ namespace scorpioweb.Controllers
             {
                 if (rol == "Masteradmin")
                 {
-                    ViewBag.Admin = true;
+                    ViewBag.Masteradmin = true;
                 }
             }
             foreach (var rol in roles)
             {
-                if (rol == "Archivo")
+                if (rol == "ArchivoMCSCP")
                 {
-                    ViewBag.Admin = true;
+                    ViewBag.Archivo = true;
                 }
             }
 
@@ -251,9 +251,13 @@ namespace scorpioweb.Controllers
             ViewBag.RolesUsuarios = users;
 
             List<String> ListaUsuarios = new List<String>();
+            ListaUsuarios.Add("Sin Registro");
             ListaUsuarios.Add("Archivo Interno");
             ListaUsuarios.Add("Archivo General");
             ListaUsuarios.Add("No Ubicado");
+            ListaUsuarios.Add("Dirección");
+            ListaUsuarios.Add("Coordinación Operativa");
+            ListaUsuarios.Add("Coordinación MC y SCP");
             foreach (var u in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
@@ -638,9 +642,6 @@ namespace scorpioweb.Controllers
 
 
         #endregion
-
-
-
 
         #region -AsignaSupervision-
 
@@ -2290,8 +2291,6 @@ namespace scorpioweb.Controllers
         {
             return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
         }
-
-
 
         #region -SinSupervision-
         public ActionResult SinSupervision()
@@ -5002,9 +5001,7 @@ namespace scorpioweb.Controllers
         public ActionResult OnGetChartData()
         {
 
-            var supervisoresScorpio = from s in _context.Supervision
-                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                                      where s.EstadoSupervision == "VIGENTE"
+            var supervisoresScorpio = from p in _context.Persona
                                       group p by p.Supervisor into grup
                                       select new
                                       {
@@ -5277,7 +5274,7 @@ namespace scorpioweb.Controllers
 
             var filter = from p in _context.Persona
                          join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
-                         where a.NuevaUbicacion != "No Ubicado" && a.NuevaUbicacion != "Archivo General" && a.NuevaUbicacion != "Archivo Interno" && a.NuevaUbicacion != "NA" && a.NuevaUbicacion != null
+                         where a.NuevaUbicacion != "No Ubicado" && a.NuevaUbicacion != "Archivo General" && a.NuevaUbicacion != "Archivo Interno" && a.NuevaUbicacion != "NA" && a.NuevaUbicacion != "Sin Registro" && a.NuevaUbicacion != null
                          select new ArchivoPersona
                          {
                              archivointernomcscpVM = a,
@@ -5289,11 +5286,11 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(SearchString))
             {
-                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString) ||
-                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString) ||
+                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString.ToUpper()) ||
+                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString.ToUpper()) ||
                                               (a.personaVM.IdPersona.ToString()).Contains(SearchString)
                                               );
-                                      
+
             }
 
 
@@ -5319,9 +5316,14 @@ namespace scorpioweb.Controllers
 
             List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
             int ii = 0;
+            ListaUbicacion.Add(new SelectListItem { Text = "Sin Registro", Value = "Sin Registro" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo Interno", Value = "Archivo Interno" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "Archivo General" });
             ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "No Ubicado" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Dirección", Value = "Dirección" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Coordinación Operativa", Value = "Coordinación Operativa" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Coordinación MC y SCP", Value = "Coordinación MC y SCP" });
+
             foreach (var user in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
@@ -5347,14 +5349,26 @@ namespace scorpioweb.Controllers
         //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
 
-            #region -Actualizar causa penal-
-            if (idArchivo != null)
-            {
-                archivointernomcscp.CausaPenal = cambioCP;
-                archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(idArchivo);
-            }
-            #endregion
+            //#region -Actualizar causa penal-
+            //if (idArchivo != null)
+            //{
+            //    archivointernomcscp.CausaPenal = cambioCP;
+            //    archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(idArchivo);
+            //}
+            //#endregion
+            //var empty = (from a in _context.Archivointernomcscp
+            //             where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+            //             select a);
 
+            //if (empty.Any())
+            //{
+            //    var query = (from a in _context.Archivointernomcscp
+            //                 where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+            //                 select a).FirstOrDefault();
+            //    query.CausaPenal = archivointernomcscp.CausaPenal;
+            //    _context.SaveChanges();
+            //}
+            
             #region -Actualizar Ubicacion-
             if (idpersona != null)
             {
@@ -5363,23 +5377,6 @@ namespace scorpioweb.Controllers
                 persona.UbicacionExpediente = cambioUE;
             }
             #endregion
-
-            var empty = (from a in _context.Archivointernomcscp
-                         where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
-                         select a);
-
-            if (empty.Any())
-            {
-                var query = (from a in _context.Archivointernomcscp
-                             where a.IdarchivoInternoMcscp == a.IdarchivoInternoMcscp
-                             select a).FirstOrDefault();
-                query.CausaPenal = archivointernomcscp.CausaPenal;
-                _context.SaveChanges();
-            }
-            var cp = (from a in _context.Archivointernomcscp
-                      where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
-                      select a.CausaPenal).FirstOrDefault();
-
 
             var emptypersona = (from p in _context.Persona
                                 where p.IdPersona == persona.IdPersona
@@ -5394,6 +5391,11 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
             }
 
+            var cp = (from a in _context.Persona
+                      where a.IdPersona == persona.IdPersona
+                      select a.UbicacionExpediente).FirstOrDefault();
+
+             
             //return View();
 
             return Json(new { success = true, responseText = Convert.ToString(cp), idPersonas = Convert.ToString(archivointernomcscp.IdarchivoInternoMcscp) });
@@ -5401,7 +5403,6 @@ namespace scorpioweb.Controllers
         #endregion -Update Ubicación archivo y causa penal-
 
         #endregion
-
 
         #region -ArchivoHistorial-
         public async Task<IActionResult> ArchivoHistorial(
@@ -5483,7 +5484,6 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
-
 
         #region -ArchivoNoUbicado-
         public async Task<IActionResult> ArchivoNoUbicado(

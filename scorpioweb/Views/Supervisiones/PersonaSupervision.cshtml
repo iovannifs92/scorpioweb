@@ -1,25 +1,65 @@
 ﻿@model PaginatedList<scorpioweb.Models.SupervisionPyCP>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 <script>
-    showModal = (url, title, id) => {
+    function cambiofechas(ids, campo, value) {
         $.ajax({
-            type: "GET",
-            url: url+"?id="+id,
-            success: function (res) {
-                $("#form-modal .modal-body").html(res);
-                $("#form-modal .modal-title").html(title);
-                $("#form-modal").modal('show');
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisiones/UpdatePersonasupervision",
+            traditional: true,
+            data: {
+                superid: ids,
+                campo: campo,
+                fecha: value,
             },
-            error: function (res) {
-                
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
             }
-        })
-    }
+        });
+    };
+
+    function cambiofechainter(idpe, value) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisiones/UpdatePersonasupervision",
+            traditional: true,
+            data: {
+                planeacionid: idpe,
+                intermedio: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+    function cambioestado(ids, value) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisiones/UpdatePersonasupervision",
+            traditional: true,
+            data: {
+                superid: ids,
+                estados: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+
 </script>
 
 <h2>Personas Supervisión </h2>
@@ -40,6 +80,7 @@
 <table class="table" style="font-size:10px">
     <thead>
         <tr>
+
             <th>
                 <a>ID</a>
             </th>
@@ -64,109 +105,96 @@
             <th>
                 <a asp-action="PersonaSupervision" asp-route-sortOrder="@ViewData["EstadoSupervisionParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Estado de supervisión</a>
             </th>
-
-            @*<th>
-            <a>Tiempo Supervisión (Días)</a>
-        </th>*@
             <th>
                 <a>Supervisor</a>
 
             </th>
         </tr>
     </thead>
-    <tbody>  
+    <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
-            </td>
-            @if (@ViewBag.RolesUsuario == "AdminMCSCP" || @ViewBag.RolesUsuario == "Masteradmin")
-            {
-                <form asp-action="EdicionMenuSuper" style="font-size:10px">
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
+                </td>
+
+                @if (@ViewBag.RolesUsuario == "AdminMCSCP" || @ViewBag.RolesUsuario == "Masteradmin")
+                {
                     <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
                     <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
-                <td>
-                    <input style="font-size:9px" name="Inicio" id="Inicio" class="form-control" value=@item.supervisionVM.Inicio?.Date />
-                </td>
-                <td>
-                    <input style="font-size:9px" name="Termino" id="Termino" class="form-control" value=@item.supervisionVM.Termino?.Date />
-                </td>
-                <td>
-                    <input style="font-size:10px" name="FechaInforme" id="FechaInforme" class="form-control" value=@item.planeacionestrategicaVM.FechaInforme?.Date />
-                </td>
-                <td>
-                    <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px"
-                             asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Value", "Text",item.supervisionVM.EstadoSupervision))">
-                    </select>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
-                </td>
-                <td>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-save"></i>
-                            Guardar
-                        </button>
-                    </div>
-                </td>
-                </form>
-            }
-            else
-            {
-                <td style="font-size:9px">
-                    @(item.supervisionVM.Inicio != null ? item.supervisionVM.Inicio.Value.ToString("dd-MMMM-yyyy") : String.Empty)
-                </td>
-                <td style="font-size:9px">
-                    @(item.supervisionVM.Termino != null ? item.supervisionVM.Termino.Value.ToString("dd-MMMM-yyyy") : String.Empty)
-                </td>
-                <td style="font-size:9px">
-                    @(item.planeacionestrategicaVM.FechaInforme != null ? item.planeacionestrategicaVM.FechaInforme.Value.ToString("dd-MMMM-yyyy") : String.Empty)
-                </td>
-                <td>
-                    @if (@item.supervisionVM.EstadoSupervision == null)
-                    {
-                        <p style="font-size:10px">PENDIENTE</p>
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
-                </td>
-            }
-            <td>
-                <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
-                    <i class="fa fa-pencil"></i> Editar
-                </a>
-            </td>
-            <td>
-                <a type="button" class="btn btn-default" id="edicion" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
-                    <i class="fa fa-calendar"></i> Presentaciónes
-                </a>
-            </td>
-            <td>
-
-                @if (item.cierredecasoVM.RutaArchivo != null)
-                {
-                    <a style="font-size: x-large;" id="btnEditar" href="~/Cierredecaso/@Html.DisplayFor(modelItem => item.cierredecasoVM.RutaArchivo)" target="_blank">
-                        <i class="fa fa-paperclip fa-9x"></i>
-                    </a>
+                    <td>
+                        <input style="font-size:9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Inicio" id="Inicio" class="form-control" value="@item.supervisionVM.Inicio?.Date" />
+                    </td>
+                    <td>
+                        <input style="font-size:9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Termino" id="Termino" class="form-control" value="@item.supervisionVM.Termino?.Date" />
+                    </td>
+                    <td>
+                        <input style="font-size:9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategica, value)" name="FechaInforme" id="FechaInforme" class="form-control" value="@item.planeacionestrategicaVM.FechaInforme?.Date" />
+                    </td>
+                    <td>
+                        <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision, value)"
+                                asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
+                        </select>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
+                    </td>
                 }
-            </td>
-        </tr>
+                else
+                {
+
+                    <td style="font-size:9px">
+                        @(item.supervisionVM.Inicio != null ? item.supervisionVM.Inicio.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                    </td>
+                    <td style="font-size:9px">
+                        @(item.supervisionVM.Termino != null ? item.supervisionVM.Termino.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                    </td>
+                    <td style="font-size:9px">
+                        @(item.planeacionestrategicaVM.FechaInforme != null ? item.planeacionestrategicaVM.FechaInforme.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                    </td>
+                    <td>
+                        @if (@item.supervisionVM.EstadoSupervision == null)
+                        {
+                            <p style="font-size:10px">PENDIENTE</p>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
+                    </td>
+                }
+                <td>
+                    <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                </td>
+                <td>
+                    <a type="button" class="btn btn-default" id="edicion" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
+                        <i class="fa fa-calendar"></i> Presentaciónes
+                    </a>
+                </td>
+                <td>
+                    @if (item.cierredecasoVM.RutaArchivo != null)
+                    {
+                        <a style="font-size: x-large;" id="btnEditar" href="~/Cierredecaso/@Html.DisplayFor(modelItem => item.cierredecasoVM.RutaArchivo)" target="_blank">
+                            <i class="fa fa-paperclip fa-9x"></i>
+                        </a>
+                    }
+                </td>
+            </tr>
         }
     </tbody>
 </table>
@@ -177,7 +205,7 @@
 }
 
 <p>
-   Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
 </p>
 <a asp-action="PersonaSupervision"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
@@ -193,4 +221,3 @@
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
-
