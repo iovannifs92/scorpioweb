@@ -7,24 +7,24 @@
 }
 
 <script>
-    function cambioCP(id, value) {
-        //alert("valorres" + cambioid + valor)
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Personas/UpdateUyCP",
-            traditional: true,
-            data: {
-                idArchivo: id,
-                cambioCP: value,
-            },
-            success: function (response) {
-            },
-            error: function (response) {
-                location.reload();
-            }
-        });
-    };
+    //function cambioCP(id, value) {
+    //    //alert("valorres" + cambioid + valor)
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        url: "/Personas/UpdateUyCP",
+    //        traditional: true,
+    //        data: {
+    //            idArchivo: id,
+    //            cambioCP: value,
+    //        },
+    //        success: function (response) {
+    //        },
+    //        error: function (response) {
+    //            location.reload();
+    //        }
+    //    });
+    //};
 
     function cambioUE(ida, idp, value) {
         $.ajax({
@@ -50,7 +50,7 @@
     <div class="col-md-12 col-md-12">
         <h2>Expedientes en Prestamo</h2>
     </div>
-    <form asp-action="ArchivoMCySCP" method="get">
+    <form asp-action="ArchivoPrestamo" method="get">
         <div class="form-actions no-color">
             <p>
                 Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
@@ -58,7 +58,7 @@
                     <i class="fa fa-search"></i>
                     Buscar
                 </button>
-                <a asp-action="ArchivoMCySCP">Regresar al listado completo</a>
+                <a asp-action="ArchivoPrestamo">Regresar al listado completo</a>
             </p>
         </div>
     </form>
@@ -70,11 +70,11 @@
                     <a>Id Persona</a>
                 </th>
                 <th>
-                    <a asp-action="ArchivoMCySCP" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+                    <a asp-action="ArchivoPrestamo" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
                 </th>
-                <th>
-                    <a asp-action="ArchivoMCySCP" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
-                </th>
+                @*<th>
+                    <a asp-action="ArchivoPrestamo" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
+                </th>*@
                 <th>
                     <a>Fecha</a>
                 </th>
@@ -97,9 +97,9 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
                         </td>
-                        <td>
+                        @*<td>
                             <input onchange="cambioCP(@item.archivointernomcscpVM.IdarchivoInternoMcscp, value)" name="causapenal" id="causapenal" class="form-control" value=@item.archivointernomcscpVM.CausaPenal />
-                        </td>
+                        </td>*@
                         <td>
                             @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
                         </td>
@@ -123,14 +123,14 @@
     <p>
         Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
     </p>
-    <a asp-action="ArchivoMCySCP"
+    <a asp-action="ArchivoPrestamo"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex - 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
        class="btn btn-default @prevDisabled">
         Anterior
     </a>
-    <a asp-action="ArchivoMCySCP"
+    <a asp-action="ArchivoPrestamo"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex + 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"

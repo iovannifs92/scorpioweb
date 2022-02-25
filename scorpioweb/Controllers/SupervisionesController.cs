@@ -685,43 +685,89 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<SupervisionPyCP>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-
-
-
-
-
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PersonaSupervision(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
+        #region -Update Persona supervision-
+        public JsonResult UpdatePersonasupervision(Supervision supervision, Planeacionestrategica planeacionestrategica, string superid, string campo, string planeacionid, string estados, DateTime fecha, DateTime intermedio)
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
-            if (ModelState.IsValid)
+
+            #region -Actualizar fechas en supervision-
+            if (superid != null)
             {
-                try
-                {
-                    var oldSupervision = await _context.Supervision.FindAsync(id);
-                    _context.Entry(oldSupervision).CurrentValues.SetValues(supervision);
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                    //_context.Update(supervision);
-                    //await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SupervisionExists(supervision.IdSupervision))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(PersonaSupervision));
+                supervision.Termino = fecha;
+                supervision.Inicio = fecha;
+                var camps = campo;
+                supervision.IdSupervision = Int32.Parse(superid);
+                supervision.EstadoSupervision = estados;
             }
-            return View(supervision);
+
+            var empty = (from s in _context.Supervision
+                         where s.IdSupervision == supervision.IdSupervision
+                         select s);
+
+            if (empty.Any())
+            {
+                if (campo == "Inicio")
+                {
+                    var query = (from s in _context.Supervision
+                                 where s.IdSupervision == supervision.IdSupervision
+                                 select s).FirstOrDefault();
+                    query.Inicio = supervision.Inicio;
+                    _context.SaveChanges();
+                }
+                if (campo == "Termino")
+                {
+                    var query = (from s in _context.Supervision
+                                 where s.IdSupervision == supervision.IdSupervision
+                                 select s).FirstOrDefault();
+                    query.Termino = supervision.Termino;
+                    _context.SaveChanges();
+                }
+            }
+            #endregion
+
+            #region -actualizacion de fecha en planeacion estrategica-
+            if (planeacionid != null)
+            {
+                planeacionestrategica.FechaInforme = intermedio;
+                planeacionestrategica.IdPlaneacionEstrategica = Int32.Parse(planeacionid);
+
+            }
+
+            var emptype = (from pe in _context.Planeacionestrategica
+                           where pe.IdPlaneacionEstrategica == planeacionestrategica.IdPlaneacionEstrategica
+                           select pe);
+            if (emptype.Any())
+            {
+                var query = (from pe in _context.Planeacionestrategica
+                             where pe.IdPlaneacionEstrategica == planeacionestrategica.IdPlaneacionEstrategica
+                             select pe).FirstOrDefault();
+                query.FechaInforme = planeacionestrategica.FechaInforme;
+                _context.SaveChanges();
+            }
+            #endregion
+
+            #region -actualizacion de estado de supervision-
+            var empty2 = (from s in _context.Supervision
+                          where s.IdSupervision == supervision.IdSupervision
+                          select s);
+            if (empty2.Any())
+            {
+                var query = (from s in _context.Supervision
+                             where s.IdSupervision == supervision.IdSupervision
+                             select s).FirstOrDefault();
+                query.EstadoSupervision = supervision.EstadoSupervision;
+                _context.SaveChanges();
+            }
+
+            #endregion
+            var cp = (from s in _context.Supervision
+                      where s.IdSupervision == supervision.IdSupervision
+                      select s.Inicio).FirstOrDefault();
+
+
+            return Json(new { success = true, responseText = Convert.ToString(cp), idPersonas = Convert.ToString(supervision.IdSupervision) });
         }
+        #endregion -Update Update Persona supervision-
         #endregion
 
         #region -Supervision-

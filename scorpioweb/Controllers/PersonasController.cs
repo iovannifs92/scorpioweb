@@ -5198,11 +5198,11 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(SearchString))
             {
-                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString) ||
-                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString) ||
+                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString.ToUpper()) ||
+                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString.ToUpper()) ||
                                               (a.personaVM.IdPersona.ToString()).Contains(SearchString)
                                               );
-                                      
+
             }
 
 
@@ -5260,14 +5260,26 @@ namespace scorpioweb.Controllers
         //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
 
-            #region -Actualizar causa penal-
-            if (idArchivo != null)
-            {
-                archivointernomcscp.CausaPenal = cambioCP;
-                archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(idArchivo);
-            }
-            #endregion
+            //#region -Actualizar causa penal-
+            //if (idArchivo != null)
+            //{
+            //    archivointernomcscp.CausaPenal = cambioCP;
+            //    archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(idArchivo);
+            //}
+            //#endregion
+            //var empty = (from a in _context.Archivointernomcscp
+            //             where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+            //             select a);
 
+            //if (empty.Any())
+            //{
+            //    var query = (from a in _context.Archivointernomcscp
+            //                 where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
+            //                 select a).FirstOrDefault();
+            //    query.CausaPenal = archivointernomcscp.CausaPenal;
+            //    _context.SaveChanges();
+            //}
+            
             #region -Actualizar Ubicacion-
             if (idpersona != null)
             {
@@ -5276,23 +5288,6 @@ namespace scorpioweb.Controllers
                 persona.UbicacionExpediente = cambioUE.ToUpper();
             }
             #endregion
-
-            var empty = (from a in _context.Archivointernomcscp
-                         where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
-                         select a);
-
-            if (empty.Any())
-            {
-                var query = (from a in _context.Archivointernomcscp
-                             where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
-                             select a).FirstOrDefault();
-                query.CausaPenal = archivointernomcscp.CausaPenal;
-                _context.SaveChanges();
-            }
-            var cp = (from a in _context.Archivointernomcscp
-                      where a.IdarchivoInternoMcscp == archivointernomcscp.IdarchivoInternoMcscp
-                      select a.CausaPenal).FirstOrDefault();
-
 
             var emptypersona = (from p in _context.Persona
                                 where p.IdPersona == persona.IdPersona
@@ -5307,6 +5302,11 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
             }
 
+            var cp = (from a in _context.Persona
+                      where a.IdPersona == persona.IdPersona
+                      select a.UbicacionExpediente).FirstOrDefault();
+
+             
             //return View();
 
             return Json(new { success = true, responseText = Convert.ToString(cp), idPersonas = Convert.ToString(archivointernomcscp.IdarchivoInternoMcscp) });

@@ -31,9 +31,9 @@
             <th>
                 <a asp-action="ArchivoNoUbicado" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
             </th>
-            <th>
+            @*<th>
                 <a asp-action="ArchivoNoUbicado" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
-            </th>
+            </th>*@
             <th>
                 <a>Fecha</a>
             </th>
@@ -53,9 +53,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
                     </td>
-                    <td>
+                    @*<td>
                         @Html.DisplayFor(modelItem => item.archivointernomcscpVM.CausaPenal)
-                    </td>
+                    </td>*@
                     <td>
                         @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
                     </td>
