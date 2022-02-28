@@ -152,6 +152,23 @@ namespace scorpioweb.Controllers
                     cleaned += path[i];
             return cleaned;
         }
+
+        public string removeSpaces(string str)
+        {
+            if(str == null)
+            {
+                return "";
+            }
+            while (str.Length > 0 && str[0] == ' ')
+            {
+                str = str.Substring(1);
+            }
+            while (str.Length > 0 && str[str.Length - 1] == ' ')
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+            return str;
+        }
         #endregion
 
 
@@ -187,8 +204,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString));
+                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(searchString) ||
+                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(searchString));
 
                 }
             }

@@ -150,6 +150,10 @@ namespace scorpioweb.Controllers
 
         public string removeSpaces(string str)
         {
+            if (str == null)
+            {
+                return "";
+            }
             while (str.Length > 0 && str[0] == ' ')
             {
                 str = str.Substring(1);
