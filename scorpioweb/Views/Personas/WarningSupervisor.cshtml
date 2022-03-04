@@ -16,7 +16,7 @@
         return date;
     };
     function populateAdmin(result, i, date) {
-       
+
         var row = '';
         row = row
             + "<tr>"
@@ -29,7 +29,7 @@
         else {
             row = row + "<td></td>";
         }
-      
+
         switch (result.query[i].tipoAdvertencia) {
             case "Informe fuera de tiempo":
                 if (result.query[i].figuraJudicial == "MC") {
@@ -136,10 +136,10 @@
                         + "</td>";
                 } else
                     if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < date3) {
-                    row = row
-                        + "<td style=\"color:orange\">"
-                        + "   Firma en menos de 3 días " 
-                        + "</td>";
+                        row = row
+                            + "<td style=\"color:orange\">"
+                            + "   Firma en menos de 3 días "
+                            + "</td>";
                     }
                 var dateString = result.query[i].planeacionestrategicaVM.fechaProximoContacto;
                 var datepc = formatDate(dateString);
@@ -212,7 +212,7 @@
                                 nortedgepms = true;
                             }
 
-                         
+
                             for (let i = 0; i < result.query.length; i++) {
                                 if (result.query[i].planeacionestrategicaVM == null) {
                                     date = "";
@@ -221,14 +221,14 @@
                                     var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
                                     date = formatDate(dateString);
                                 }
-                              
+
                                 if (nortedgepms && result.query[i].personaVM.supervisor != null && result.query[i].personaVM.supervisor.endsWith("\u0040nortedgepms.com")) {
                                     row = row + populateAdmin(result, i, date);
                                 }
 
                                 if (dgepms && result.query[i].personaVM.supervisor != null && result.query[i].personaVM.supervisor.endsWith("\u0040dgepms.com")) {
                                     row = row + populateAdmin(result, i, date);
-                                   
+
 
                                 }
                             }
@@ -462,7 +462,7 @@
             <option value="SIN FECHA DE INFORME">Sin fecha de informe/Sin control de supervisión</option>
             <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
             <option value="SIN SUPERVISION">Sin supervisión</option>
-           <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
+            <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
         </select>
     </div>
 </form>

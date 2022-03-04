@@ -138,12 +138,12 @@
     };
     function populate(ListadoUsuarios,selected) {
         options = "";
-        for(let i=0;i<ListadoUsuarios.length;i++){
-            if(ListadoUsuarios[i].toUpperCase() == selected){
-                options = options + "<option value=\"" + ListadoUsuarios[i].toUpperCase() + "\" selected>" + ListadoUsuarios[i] + "</option>";
+        for (let i = 0; i < ListadoUsuarios.length; i++){
+            if(ListadoUsuarios[i] == selected){
+                options = options + "<option value=\"" + ListadoUsuarios[i] + "\" selected>" + ListadoUsuarios[i] + "</option>";
             }
             else {
-                options = options + "<option value=\"" + ListadoUsuarios[i].toUpperCase() + "\">" + ListadoUsuarios[i] + "</option>";
+                options = options + "<option value=\"" + ListadoUsuarios[i] + "\">" + ListadoUsuarios[i] + "</option>";
             }
         }
         return options;
