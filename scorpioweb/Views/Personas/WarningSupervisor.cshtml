@@ -5,7 +5,6 @@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <script type="text/javascript">
-
     function formatDate(dateString) {
         if (dateString == null) {
             return "";
@@ -16,20 +15,17 @@
         return date;
     };
     function populateAdmin(result, i, date) {
-
         var row = '';
         row = row
             + "<tr>"
             + "<td>" + result.query[i].personaVM.idPersona + "</td>"
             + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>";
-
         if (result.query[i].causapenalVM != null) {
             row = row + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
         }
         else {
             row = row + "<td></td>";
         }
-
         switch (result.query[i].tipoAdvertencia) {
             case "Informe fuera de tiempo":
                 if (result.query[i].figuraJudicial == "MC") {
@@ -43,7 +39,6 @@
                     date30 += 1000 * 60 * 60 * 24 * 30;
                     var date5 = Date.now();
                     date5 += 1000 * 60 * 60 * 24 * 5;
-
                     if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
                         row = row
                             + "<td>"
@@ -126,6 +121,18 @@
                     + "    " + formatDate(result.query[i].personaVM.ultimaActualización)
                     + "</td>";
                 break;
+            //case "Sin estado de supervisión":
+            //    row = row
+            //        + "<td>"
+            //        + "    " + result.query[i].tipoAdvertencia
+            //        + "</td>";
+            //    row = row + "<td>";
+            //    if (result.query[i].supervisionVM.estadoSupervision != null)
+            //    {
+            //        row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+            //    }
+            //    row = row + "</td>";
+            //    break;
             case "Se paso el tiempo de la firma":
                 var date3 = Date.now();
                 date3 += 1000 * 60 * 60 * 24 * 3;
@@ -149,7 +156,6 @@
                     + "</td>";
                 break;
         }
-
         row = row
             + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
             + "<td>" + result.query[i].personaVM.supervisor + "</td>";
@@ -211,8 +217,6 @@
                                 result.user != "claudia.armendariz@dgepms.com") {
                                 nortedgepms = true;
                             }
-
-
                             for (let i = 0; i < result.query.length; i++) {
                                 if (result.query[i].planeacionestrategicaVM == null) {
                                     date = "";
@@ -221,15 +225,11 @@
                                     var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
                                     date = formatDate(dateString);
                                 }
-
                                 if (nortedgepms && result.query[i].personaVM.supervisor != null && result.query[i].personaVM.supervisor.endsWith("\u0040nortedgepms.com")) {
                                     row = row + populateAdmin(result, i, date);
                                 }
-
                                 if (dgepms && result.query[i].personaVM.supervisor != null && result.query[i].personaVM.supervisor.endsWith("\u0040dgepms.com")) {
                                     row = row + populateAdmin(result, i, date);
-
-
                                 }
                             }
                         }
@@ -242,7 +242,6 @@
                                     var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
                                     date = formatDate(dateString);
                                 }
-
                                 if (result.query[i].personaVM.supervisor == result.user) {
                                     row = row
                                         + "<tr>"
@@ -255,7 +254,6 @@
                                     else {
                                         row = row + "<td></td>";
                                     }
-
                                     switch (result.query[i].tipoAdvertencia) {
                                         case "Informe fuera de tiempo":
                                             if (result.query[i].figuraJudicial == "MC") {
@@ -269,7 +267,6 @@
                                                 date30 += 1000 * 60 * 60 * 24 * 30;
                                                 var date5 = Date.now();
                                                 date5 += 1000 * 60 * 60 * 24 * 5;
-
                                                 if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
                                                     row = row
                                                         + "<td>"
@@ -395,6 +392,18 @@
                                                 + "    " + datepc
                                                 + "</td>";
                                             break;
+                                        //case "Sin estado de supervisión":
+                                        //    row = row
+                                        //        + "<td>"
+                                        //        + "    " + result.query[i].tipoAdvertencia
+                                        //        + "</td>";
+                                        //    row = row + "<td>";
+                                        //    if (result.query[i].supervisionVM.estadoSupervision != null)
+                                        //    {
+                                        //        row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+                                        //    }
+                                        //    row = row + "</td>";
+                                        //    break;
                                     }
                                     row = row + "<td>" + result.query[i].municipiosVM.municipio + "</td>";
                                     row = row + "<td>";
@@ -462,6 +471,7 @@
             <option value="SIN FECHA DE INFORME">Sin fecha de informe/Sin control de supervisión</option>
             <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
             <option value="SIN SUPERVISION">Sin supervisión</option>
+            @*<option value="SIN ESTADO DE SUPERVISION">Sin estado de supervisión</option>*@
             <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
         </select>
     </div>
