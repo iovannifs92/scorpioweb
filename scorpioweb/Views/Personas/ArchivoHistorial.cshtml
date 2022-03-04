@@ -34,13 +34,16 @@
                     <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
                 </th>
                 @*<th>
-                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
-                </th>*@
+            <a asp-action="ArchivoPrestamo" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
+        </th>*@
                 <th>
-                    <a>Fecha</a>
+                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["fecha_desc"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha</a>
                 </th>
+                @*<th>
+            <a>Usuario</a>
+        </th>*@
                 <th>
-                    <a>Nueva Ubicación</a>
+                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["ubicacion_ase"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nueva Ubicación</a>
                 </th>
             </tr>
         </thead>
