@@ -204,8 +204,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(searchString) ||
-                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(searchString));
+                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(normaliza(searchString)) ||
+                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(normaliza(searchString)));
 
                 }
             }
