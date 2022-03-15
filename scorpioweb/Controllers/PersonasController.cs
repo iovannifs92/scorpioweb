@@ -177,12 +177,14 @@ namespace scorpioweb.Controllers
             }
         }
 
-        String removeSlashes(string path)
+        String replaceSlashes(string path)
         {
             String cleaned = "";
 
             for (int i = 0; i < path.Length; i++)
-                if (path[i] != '/')
+                if (path[i] == '/')
+                    cleaned += '-';
+                else
                     cleaned += path[i];
             return cleaned;
         }
@@ -1865,7 +1867,7 @@ namespace scorpioweb.Controllers
                 if (fotografia != null)
                 {
                     string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
-                    file_name = removeSlashes(file_name);
+                    file_name = replaceSlashes(file_name);
                     persona.rutaFoto = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
