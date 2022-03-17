@@ -143,12 +143,14 @@ namespace scorpioweb.Controllers
             return "";
         }
 
-        String removeSlashes(string path)
+        String replaceSlashes(string path)
         {
             String cleaned = "";
 
             for (int i = 0; i < path.Length; i++)
-                if (path[i] != '/')
+                if (path[i] == '/')
+                    cleaned += '-';
+                else
                     cleaned += path[i];
             return cleaned;
         }
@@ -204,8 +206,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(searchString) ||
-                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(searchString));
+                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(normaliza(searchString)) ||
+                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(normaliza(searchString)));
 
                 }
             }
@@ -315,6 +317,7 @@ namespace scorpioweb.Controllers
             if (evidencia != null)
             {
                 string file_name = idAER +"_"+ serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
+                file_name = replaceSlashes(file_name);
                 serviciospreviosjuicio.RutaAer = file_name;
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
                 var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
@@ -422,7 +425,7 @@ namespace scorpioweb.Controllers
                     else
                     {
                         string file_name = serviciospreviosjuicio.IdserviciosPreviosJuicio + "_" + serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
-                        file_name = removeSlashes(file_name);
+                        file_name = replaceSlashes(file_name);
                         serviciospreviosjuicio.RutaAer = file_name;
                         var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
 
