@@ -575,6 +575,7 @@ namespace scorpioweb.Controllers
         {
             ViewBag.idDelito = id;
             ViewBag.inputRequired = true;
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             return View();
         }
 
@@ -615,11 +616,22 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
             var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
-
+    
             if (causapenal == null)
             {
                 return NotFound();
             }
+
+            List<Causapenal> listaCP = new List<Causapenal>();
+            List<Causapenal> CPVM = _context.Causapenal.ToList();
+            listaCP = (
+                from CPTable in CPVM
+                select CPTable
+                ).ToList();
+            ViewBag.cp = listaCP;
+            ViewBag.directorio = _context.Directoriojueces.Select(Directoriojueces => Directoriojueces.Area).ToList();
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
             ViewBag.listaCnpp = listaSiNo;
             ViewBag.idCnpp = BuscaId(listaSiNo, causapenal.Cnpp);
 

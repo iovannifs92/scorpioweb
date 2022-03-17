@@ -1,14 +1,162 @@
 ﻿@model IEnumerable<scorpioweb.Models.CausaDelitoViewModel>
 
 @{
-    ViewData["Title"] = "Causa Penal";
+    ViewData["Title"] = "Editar Causa Penal";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
-<script>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font: 16px Arial;
+    }
+
+    /*the container must be positioned relative:*/
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
+
+    input {
+        border: 2px solid #f2f2f2;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+        input[type=text] {
+            width: 100%;
+        }
+
+        input[type=submit] {
+            background-color: DodgerBlue;
+            color: #f2f2f2;
+            cursor: pointer;
+        }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #f2f2f2;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+        //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
+
+        var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
+        autocomplete(document.getElementById("juez"), jueces);
+
+    });
+
     showModal = (url, title, id) => {
         $.ajax({
             type: "GET",
@@ -25,85 +173,85 @@
     }
 </script>
 
-
-
 @foreach (var item in ViewData["joinTablesCausa"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
 {
-<div class="row">
-    <div>
-        <h1>Causa Penal @item.causaPenalVM.CausaPenal</h1>
-    </div>
-    <div class="form-group col-md-4">
-        <form asp-action="EditCausas">
-            <div class="form-group">
-                <input name="IdCausaPenal" id="IdCausaPenal" value="@item.causaPenalVM.IdCausaPenal" class="form-control" style="display:none " readonly />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Cnpp</label>
-                <select class="form-control" name="Cnpp"
-                        asp-items="@(new SelectList(ViewBag.listaCnpp, "Value", "Text", @ViewBag.idCnpp))">
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Juez</label>
-                <input name="Juez" id="Juez" value="@item.causaPenalVM.Juez" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Cambio</label>
-                <select class="form-control" name="Cambio"
-                        asp-items="@(new SelectList(ViewBag.listaCambio, "Value", "Text", @ViewBag.idCambio))">
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Distrito</label>
-                <select class="form-control" name="Distrito"
-                        asp-items="@(new SelectList(ViewBag.listaDistrito, "Value", "Text", @ViewBag.idDistrito))">
-                </select>
-            </div>
+    <div class="row">
+        <div>
+            <h1>Causa Penal @item.causaPenalVM.CausaPenal</h1>
+        </div>
+        <div class="form-group col-md-4">
+            <form asp-action="EditCausas">
+                <div class="form-group">
+                    <input name="IdCausaPenal" id="IdCausaPenal" value="@item.causaPenalVM.IdCausaPenal" class="form-control" style="display:none " readonly />
+                </div>
+                <div class="form-group col-md-12 autocomplete" style="padding-top:15px;">
+                    <label class="control-label">Juez</label>
+                </div>
+                <div class="form-group col-md-12">
+                    <input required name="juez" id="juez" type="text" maxlength="150" class="form-control" />
+                </div>
 
-            <div class="form-group">
-                <label class="control-label">Causa Penal</label>
-                <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />
-            </div>
-            <div class="form-group">
+                <div class="form-group col-md-12">
+                    <label class="control-label">Cnpp</label>
+                    <select class="form-control" name="Cnpp"
+                            asp-items="@(new SelectList(ViewBag.listaCnpp, "Value", "Text", @ViewBag.idCnpp))">
+                    </select>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label class="control-label">Cambio</label>
+                    <select class="form-control" name="Cambio"
+                            asp-items="@(new SelectList(ViewBag.listaCambio, "Value", "Text", @ViewBag.idCambio))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Distrito</label>
+                    <select class="form-control" name="Distrito"
+                            asp-items="@(new SelectList(ViewBag.listaDistrito, "Value", "Text", @ViewBag.idDistrito))">
+                    </select>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label class="control-label">Causa Penal</label>
+                    <input name="CausaPenal" id="CausaPenal" value="@item.causaPenalVM.CausaPenal" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
+                    {
+                        <a id="btnVer" onclick="showModal('@Url.Action("CreateDelito","Causaspenales",null,Context.Request.Scheme)','Crear Delito',@item.causaPenalVM.IdCausaPenal)" class="btn btn-success">
+                            <i class="fa fa-plus"></i> Crear Delito
+                        </a>
+                    }
+                    @if (ViewBag.tieneDelitos == true)
+                    {
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                            <i class="fa fa-eye"></i> Ver Delitos
+                        </button>
+
+                    }
+                    else
+                    {
+                        <button style="display:none" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                            <i class="fa fa-eye"></i> Ver Delitos
+                        </button>
+                    }
+                </div>
                 @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
                 {
-                    <a id="btnVer" onclick="showModal('@Url.Action("CreateDelito","Causaspenales",null,Context.Request.Scheme)','Crear Delito',@item.causaPenalVM.IdCausaPenal)" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Crear Delito
-                    </a>
+                    <div class="form-group col-md-12">
+                        <button type="submit" id="btnguardarEdit" class="btn btn-primary">
+                            <i class="fa fa-save"></i> Guardar
+                        </button>
+                    </div>
                 }
-                @if (ViewBag.tieneDelitos == true)
-                {
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
-                        <i class="fa fa-eye"></i> Ver Delitos
-                    </button>
-
-                }
-                else
-                {
-                    <button style="display:none" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
-                        <i class="fa fa-eye"></i> Ver Delitos
-                    </button>
-                }
-            </div>
-            @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
-            {
-                <div class="form-group">
-                    <button type="submit" id="btnguardarEdit" class="btn btn-primary">
-                        <i class="fa fa-save"></i> Guardar
-                    </button>
-                </div>
-            }            
-        </form>
-        <a asp-action="Index">Regresar a lista</a>
+            </form>
+            <a asp-action="Index">Regresar a lista</a>
+        </div>
     </div>
-</div>
-
     break;
 }
 
 
-<!-- Modal Familiares Extranjero -->
 <div class="modal fade" id="modalDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -113,30 +261,30 @@
             <div class="modal-body">
                 @foreach (var item in ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
                 {
-                <table class="table table-bordered">
-                    <tr>
-                        <td style="width: 25%;background-color: #E2E2E2;border-color: #fff;color: #000;">Tipo</td>
-                        <td style="width: 65%;">@item.delitoVM.Tipo</td>
-                    </tr>
-                    <tr>
-                        <td style="background-color:#E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
-                        <td>@item.delitoVM.Modalidad</td>
-                        @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
-                        {
-                            <td style="border-right: solid White;
+                    <table class="table table-bordered">
+                        <tr>
+                            <td style="width: 25%;background-color: #E2E2E2;border-color: #fff;color: #000;">Tipo</td>
+                            <td style="width: 65%;">@item.delitoVM.Tipo</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
+                            <td>@item.delitoVM.Modalidad</td>
+                            @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
+                            {
+                                <td style="border-right: solid White;
                                                border-bottom: solid White;
                                                border-top: solid White;">
-                                <a class="btn btn-primary" asp-action="Delito" asp-route-id="@item.delitoVM.IdDelito">
-                                    <i class="fa fa-pencil"></i> Editar
-                                </a>
-                            </td>
-                        }                        
-                    </tr>
-                    <tr>
-                        <td style="background-color: #E2E2E2;border-color: #fff;color: #000;">Especifique delito</td>
-                        <td>@item.delitoVM.EspecificarDelito</td>
-                    </tr>
-                </table>
+                                    <a class="btn btn-primary" asp-action="Delito" asp-route-id="@item.delitoVM.IdDelito">
+                                        <i class="fa fa-pencil"></i> Editar
+                                    </a>
+                                </td>
+                            }
+                        </tr>
+                        <tr>
+                            <td style="background-color: #E2E2E2;border-color: #fff;color: #000;">Especifique delito</td>
+                            <td>@item.delitoVM.EspecificarDelito</td>
+                        </tr>
+                    </table>
 
                 }
 
