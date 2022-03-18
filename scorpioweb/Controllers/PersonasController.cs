@@ -457,6 +457,14 @@ namespace scorpioweb.Controllers
                             supervisionVM = ss.supervisionVM,
                             tipoAdvertencia = "Sin supervisión"
                         };
+            var where2 = from ss in leftJoin
+                        where ss.personaVM.Supervisor == usuario && ss.supervisionVM == null
+                        select new PlaneacionWarningViewModel
+                        {
+                            personaVM = ss.personaVM,
+                            supervisionVM = ss.supervisionVM,
+                            tipoAdvertencia = "Sin supervisión"
+                        };
             if (flagCoordinador)
             {
                 var warningPlaneacion = where.Union
@@ -565,7 +573,7 @@ namespace scorpioweb.Controllers
                                   archivointernomcscpVM = a,
                                   tipoAdvertencia = "Expediente físico en resguardo"
                               };
-                var warningPlaneacion = where.Union
+                var warningPlaneacion = where2.Union
                                         (archivo).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
@@ -1552,7 +1560,7 @@ namespace scorpioweb.Controllers
                 persona.ConsumoSustancias = normaliza(consumoSustancias);
                 persona.Familiares = normaliza(familiares);
                 persona.ReferenciasPersonales = normaliza(referenciasPersonales);
-                persona.UbicacionExpediente = ubicacionExpediente;
+                persona.UbicacionExpediente = normaliza(ubicacionExpediente);
                 persona.UltimaActualización = DateTime.Now;
                 persona.Capturista = currentUser;
                 persona.Candado = 0;
@@ -4384,6 +4392,19 @@ namespace scorpioweb.Controllers
                             municipiosVM = ss.municipiosVM,
                             tipoAdvertencia = "Sin supervisión"
                         };
+
+            var where2 = from ss in leftJoin
+                         where ss.personaVM.Supervisor == usuario &&  ss.supervisionVM == null
+                         select new PlaneacionWarningViewModel
+                         {
+                             personaVM = ss.personaVM,
+                             supervisionVM = ss.supervisionVM,
+                             municipiosVM = ss.municipiosVM,
+                             tipoAdvertencia = "Sin supervisión"
+                         };
+
+
+
             if (flagCoordinador)
             {
                 switch (currentFilter)
@@ -4658,6 +4679,7 @@ namespace scorpioweb.Controllers
                                   municipiosVM = municipio,
                                   tipoAdvertencia = "Expediente físico en resguardo"
                               };
+
                 switch (currentFilter)
                 {
                     case "TODOS":
@@ -4753,7 +4775,7 @@ namespace scorpioweb.Controllers
                                                 planeacionestrategicaVM = planeacion,
                                                 tipoAdvertencia = "Se paso el tiempo de la firma"
                                             }).Union
-                                            (where);
+                                            (where2);
                         /*.Union
                         (from persona in personaVM
                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
@@ -4876,7 +4898,7 @@ namespace scorpioweb.Controllers
                                               };
                         break;
                     case "SIN SUPERVISION":
-                        ViewData["alertas"] = where;
+                        ViewData["alertas"] = where2;
                         break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":
                         ViewData["alertas"] = from persona in personaVM
@@ -5474,7 +5496,7 @@ namespace scorpioweb.Controllers
             {
                 archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(archivoid);
                 persona.IdPersona = Int32.Parse(idpersona);
-                persona.UbicacionExpediente = cambioUE;
+                persona.UbicacionExpediente = normaliza(cambioUE);
             }
             #endregion
 
