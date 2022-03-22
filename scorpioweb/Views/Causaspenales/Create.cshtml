@@ -1,10 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "CrearCausaPenal";
+    ViewData["Title"] = "Crear CausaPenal";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
+
 <style>
     * {
         box-sizing: border-box;
@@ -49,17 +50,17 @@
         right: 0;
     }
 
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff;
-            border-bottom: 1px solid #d4d4d4;
-        }
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+    }
 
-            /*when hovering an item:*/
-            .autocomplete-items div:hover {
-                background-color: #e9e9e9;
-            }
+    /*when hovering an item:*/
+    .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+    }
 
     /*when navigating through the items using the arrow keys:*/
     .autocomplete-active {
@@ -244,6 +245,7 @@
 
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("juez"), jueces);
+       
     });
 </script>
 

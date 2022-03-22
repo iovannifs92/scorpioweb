@@ -697,7 +697,7 @@ namespace scorpioweb.Controllers
                 supervision.Inicio = fecha;
                 var camps = campo;
                 supervision.IdSupervision = Int32.Parse(superid);
-                supervision.EstadoSupervision = estados;
+                supervision.EstadoSupervision = normaliza(estados);
             }
 
             var empty = (from s in _context.Supervision
