@@ -1,0 +1,78 @@
+﻿@model scorpioweb.Models.Prisionespreventivas
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Prisionespreventivas</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NumeroControl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NumeroControl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Paterno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Paterno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Materno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Materno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Genero)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Genero)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaRecepcion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaRecepcion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CausaPenal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CausaPenal)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Delito)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Delito)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Capturista)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Capturista)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Observaciones)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Observaciones)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Idprisionespreventivas">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

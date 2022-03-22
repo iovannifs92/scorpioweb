@@ -1,0 +1,155 @@
+﻿@model scorpioweb.Models.Prisionespreventivas
+
+@{
+    Layout = null;
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+        autocomplete(document.getElementById("Delito"), catalogo);
+    });
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas guardar los datos?');" asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Idprisionespreventivas" class="form-control" />
+            <div class="form-group">
+                <label asp-for="NumeroControl" class="control-label">Número de control de la prisión preventiva</label>
+                <input asp-for="NumeroControl" class="form-control" />
+                <span asp-validation-for="NumeroControl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label">Nombre</label>
+                <input required asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Paterno" class="control-label">Apellido Paterno</label>
+                <input required asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Materno" class="control-label">Apellido Materno</label>
+                <input asp-for="Materno" class="form-control" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Genero" class="control-label">Sexo</label>
+                <span asp-validation-for="Genero" class="text-danger"></span>
+                <select class="form-control" name="Genero" id="Genero"
+                        asp-items="@(new SelectList(ViewBag.listaSexo, "Value", "Text"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaRecepcion" class="control-label">Fecha de recepción</label>
+                <input asp-for="FechaRecepcion" type="date" class="form-control" />
+                <span asp-validation-for="FechaRecepcion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CausaPenal" class="control-label">Causa Penal</label>
+                <input asp-for="CausaPenal" class="form-control" />
+                <span asp-validation-for="CausaPenal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Delito" class="control-label">¿Cuál es el delito al que está vinculado o fue sentenciado?</label>
+                <input name="Delito" id="Delito" type="text" maxlength="150" class="form-control autocomplete" />
+                <span asp-validation-for="Delito" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label">Observaciones</label>
+                <textarea asp-for="Observaciones" class="form-control"></textarea>
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+            <div class="custom-file">
+                <label class="control-label">Archivo</label>
+                <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
+            </div>
+            <div class="form-group" style="padding-top:1%">
+                <button type="submit" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

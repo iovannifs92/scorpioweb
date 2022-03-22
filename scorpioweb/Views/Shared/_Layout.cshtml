@@ -58,6 +58,10 @@
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
                     }
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
+                    {
+                        <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
+                    }
                     @if (User.IsInRole("Masteradmin"))
                     {
                         <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>

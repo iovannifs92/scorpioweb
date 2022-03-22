@@ -1,0 +1,172 @@
+﻿@model PaginatedList<scorpioweb.Models.Prisionespreventivas>
+
+@{
+    ViewData["Title"] = "Prisiones Preventivas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";}
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+</script>
+
+<h2>Prisiones Preventivas</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="Index" class="btn btn-link">
+                Regresar al listado completo
+            </a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Número de control
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Sexo
+            </th>
+            <th>
+                Fecha de recepción
+            </th>
+            <th>
+                Causa Penal
+            </th>
+            <th>
+                Delito
+            </th>
+            <th>
+                Capturista
+            </th>
+            <th>
+                Observaciones
+            </th>
+            <th>
+                Archivo
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroControl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCompleto)
+            </td>
+            <td>
+                @switch (item.Genero)
+                {
+                    case "F":
+                        <span>FEMENINO</span>
+                        break;
+                    case "M":
+                        <span>MASCULINO</span>
+                        break;
+                    default:
+                        <span>NA</span>
+                        break;
+                }
+            </td>
+            <td>
+                @(item.FechaRecepcion != null ? item.FechaRecepcion.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CausaPenal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Delito)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capturista)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Observaciones)
+            </td>
+            <td>
+                @if (item.RutaArchivo != null)
+                {
+                    <a href="~/PP/@Html.DisplayFor(modelItem => item.RutaArchivo)" target="_blank">
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                }
+            </td>
+            <td>
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo"))
+                {
+                    <a id="btnEditar" onclick="showModal('@Url.Action("Edit","PrisionesPreventivas",null,Context.Request.Scheme)','Editar Prisión Preventiva',@item.Idprisionespreventivas)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    <form onsubmit="return confirm('¿Deseas borrar este registro?');" asp-action="Delete" asp-route-id="@item.Idprisionespreventivas">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    </form>
+                }
+                else if(User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
+                {
+                    <a id="btnEditar" onclick="showModal('@Url.Action("Edit","PrisionesPreventivas",null,Context.Request.Scheme)','Ver Prisión Preventiva',@item.Idprisionespreventivas)" class="btn btn-success">
+                        <i class="fa fa-eye"></i> Ver
+                    </a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo"))
+{
+    <div style="padding-top:1%">
+        <a id="btnNuevaPrision" name="btnNuevaPrision" onclick="showModal('@Url.Action("Create","PrisionesPreventivas",null,Context.Request.Scheme)','Crear Nueva Prisión')" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Nueva Prisión
+        </a>
+    </div>
+}
