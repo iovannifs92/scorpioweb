@@ -2795,7 +2795,7 @@ namespace scorpioweb.Controllers
                 persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
                 persona.rutaFoto = normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
-                //persona.UbicacionExpediente = persona.UbicacionExpediente;
+                persona.UbicacionExpediente = normaliza(persona.UbicacionExpediente);
                 if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
                 #region -ConsumoSustancias-
