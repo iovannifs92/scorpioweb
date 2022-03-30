@@ -147,6 +147,9 @@
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
+<p>
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
 <a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
@@ -170,3 +173,4 @@
         </a>
     </div>
 }
+
