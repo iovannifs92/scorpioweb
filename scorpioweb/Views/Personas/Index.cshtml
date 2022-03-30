@@ -1587,30 +1587,6 @@
         });
     };
     //#endregion
-
-
-    $(document).on('keyup', function (e) {
-        if (e.key == "Enter") $('getPersona()').click();
-
-    });
-
-
-    $(".Search").on('keyup', function (e) {
-        if (e.key === 'Enter' || e.keyCode === 13) {
-            document.getElementById("#myBtn").click();
-        }
-    });
-
-
-    //var input = document.getElementById("#Search");
-    //alert("hola alerta 1");
-    //input.addEventListener("keyup", function (event) {
-    //    alert("hola alerta 2");
-    //    if (event.keyCode === 13) {
-    //        event.preventDefault();
-    //        document.getElementById("#myBtn").click();
-    //    }
-    //});
 </script>
 
 <h2>Supervisados MC y SCP</h2>
@@ -1676,17 +1652,14 @@
         if (event.keyCode === 13) {
             event.preventDefault();
             document.getElementById("myBtn").click();
-            //getPersona();
         }
     });
-
-
     var input = document.getElementById("SearchS");
     input.addEventListener("keyup", function (event) {
         if (event.keyCode === 13) {
             event.preventDefault();
             document.getElementById("myBtn2").click();
-            //getPersona();
+          
         }
     });
 </script>
