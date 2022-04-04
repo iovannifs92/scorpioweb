@@ -272,6 +272,9 @@
                         else {
 
                             for (let i = 0; i < result.query.length; i++) {
+                                if(result.query[i].personaVM.supervisor.endsWith("\u0040nortedgepms.com") && result.query[i].tipoAdvertencia == "Se paso el tiempo de la firma"){
+                                    continue;
+                                }
                                 if (result.query[i].planeacionestrategicaVM == null) {
                                     date = "";
                                 }
@@ -511,7 +514,9 @@
             <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
             <option value="SIN SUPERVISION">Sin supervisión</option>
             @*<option value="SIN ESTADO DE SUPERVISION">Sin estado de supervisión</option>*@
-            <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
+            @if (ViewBag.norte == false) {
+                <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
+            }
         </select>
     </div>
 </form>
