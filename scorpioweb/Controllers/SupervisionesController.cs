@@ -1851,7 +1851,11 @@ namespace scorpioweb.Controllers
         }
         public async Task<IActionResult> DeleteRegistro(int? id)
         {
+            
             var Bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
+            var oldBitacora = await _context.Bitacora.FindAsync(Bitacora.IdBitacora, Bitacora.SupervisionIdSupervision);
+            _context.Entry(oldBitacora).CurrentValues.SetValues(Bitacora);
+
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 

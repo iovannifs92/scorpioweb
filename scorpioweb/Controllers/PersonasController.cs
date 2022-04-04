@@ -430,16 +430,40 @@ namespace scorpioweb.Controllers
             List<Persona> personaVM = _context.Persona.ToList();
             List<Supervision> supervisionVM = _context.Supervision.ToList();
             List<Causapenal> causapenalVM = _context.Causapenal.ToList();
+            List<Domicilio> domicilioVM = _context.Domicilio.ToList();
+            List<Municipios> municipiosVM = _context.Municipios.ToList();
             List<Planeacionestrategica> planeacionestrategicaVM = _context.Planeacionestrategica.ToList();
-
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
-
+            List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
+            List<Personacausapenal> personacausapenalsVM = _context.Personacausapenal.ToList();
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
                                                          select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+            List<Archivointernomcscp> queryHistorialArchivoadmin = (from a in _context.Archivointernomcscp
+                                                               group a by a.PersonaIdPersona into grp
+                                                               select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
             #endregion
 
             #region -Jointables-
+
+
+            var archivoadmin = from ha in queryHistorialArchivoadmin
+                               join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                               join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+                               join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                               where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+                               p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA"&& p.UbicacionExpediente != null
+                               join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
+                               from sinsuper in tmp.DefaultIfEmpty()
+                                select new PlaneacionWarningViewModel
+                               {
+                                    municipiosVM = municipio,
+                                    personaVM = p,
+                                    archivointernomcscpVM = ai,
+                                    tipoAdvertencia = "Expediente físico en resguardo"
+                               };
+
             var leftJoin = from persona in personaVM
                            join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona into tmp
                            from sinsupervision in tmp.DefaultIfEmpty()
@@ -465,9 +489,11 @@ namespace scorpioweb.Controllers
                              supervisionVM = ss.supervisionVM,
                              tipoAdvertencia = "Sin supervisión"
                          };
+
             if (flagCoordinador)
             {
-                var warningPlaneacion = where.Union
+                var warningPlaneacion = (where).Union
+                                        (archivoadmin).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
@@ -564,15 +590,25 @@ namespace scorpioweb.Controllers
                 List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
                                                                    group a by a.PersonaIdPersona into grp
                                                                    select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
-                var archivo = from p in _context.Persona
-                              join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
-                              where a.NuevaUbicacion == usuario
-                              select new PlaneacionWarningViewModel
-                              {
-                                  personaVM = p,
-                                  archivointernomcscpVM = a,
-                                  tipoAdvertencia = "Expediente físico en resguardo"
-                              };
+
+
+
+                var archivo = from ha in queryHistorialArchivoadmin
+                                   join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                                   join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+                                   join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                                   join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                   where p.UbicacionExpediente == usuario.ToUpper() && p.UbicacionExpediente != null
+                                   join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
+                                   from sinsuper in tmp.DefaultIfEmpty()
+                                   select new PlaneacionWarningViewModel
+                                   {
+                                       municipiosVM = municipio,
+                                       personaVM = p,
+                                       archivointernomcscpVM = ai,
+                                       tipoAdvertencia = "Expediente físico en resguardo"
+                                   };
+
                 var warningPlaneacion = where2.Union
                                         (archivo).Union
                                         (from persona in personaVM
@@ -4364,13 +4400,39 @@ namespace scorpioweb.Controllers
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
             List<Domicilio> domicilioVM = _context.Domicilio.ToList();
             List<Municipios> municipiosVM = _context.Municipios.ToList();
+            List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
+            List<Personacausapenal> personacausapenalsVM = _context.Personacausapenal.ToList();
+
+    
 
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
                                                          select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+
+
+            List<Archivointernomcscp> queryHistorialArchivoadmin = (from a in _context.Archivointernomcscp
+                                                                    group a by a.PersonaIdPersona into grp
+                                                                    select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
             #endregion
 
             #region -Jointables-
+            var archivoadmin = from ha in queryHistorialArchivoadmin
+                               join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                               join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+                               join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                               where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+                               p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null
+                               join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
+                               from sinsuper in tmp.DefaultIfEmpty()
+                               select new PlaneacionWarningViewModel
+                               {
+                                   municipiosVM = municipio,
+                                   personaVM = p,
+                                   archivointernomcscpVM = ai,
+                                   tipoAdvertencia = "Expediente físico en resguardo"
+                               };
+
             var leftJoin = from persona in personaVM
                            join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                            join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
@@ -4402,7 +4464,6 @@ namespace scorpioweb.Controllers
                              municipiosVM = ss.municipiosVM,
                              tipoAdvertencia = "Sin supervisión"
                          };
-
 
 
             if (flagCoordinador)
@@ -4501,7 +4562,9 @@ namespace scorpioweb.Controllers
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              }).Union
-                                            (where);
+                                            (where).Union
+                                            (archivoadmin)
+                                            ;
                         /*.Union
                         (from persona in personaVM
                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
@@ -4536,6 +4599,9 @@ namespace scorpioweb.Controllers
                                  planeacionestrategicaVM = planeacion,
                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                              })*/
+                        break;
+                    case "EXPEDIENTE FISICO EN RESGUARDO":
+                        ViewData["alertas"] = archivoadmin;
                         break;
                     case "INFORME FUERA DE TIEMPO":
                         ViewData["alertas"] = from persona in personaVM
@@ -4667,16 +4733,20 @@ namespace scorpioweb.Controllers
                 List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
                                                                    group a by a.PersonaIdPersona into grp
                                                                    select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
-                var archivo = from p in _context.Persona
-                              join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
+
+                var archivo = from ha in queryHistorialArchivoadmin
+                              join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                              join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
                               join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                              where a.NuevaUbicacion == usuario
+                              where p.UbicacionExpediente == usuario.ToUpper() && p.UbicacionExpediente != null
+                              join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
+                              from sinsuper in tmp.DefaultIfEmpty()
                               select new PlaneacionWarningViewModel
                               {
-                                  personaVM = p,
-                                  archivointernomcscpVM = a,
                                   municipiosVM = municipio,
+                                  personaVM = p,
+                                  archivointernomcscpVM = ai,
                                   tipoAdvertencia = "Expediente físico en resguardo"
                               };
 
@@ -4939,7 +5009,6 @@ namespace scorpioweb.Controllers
                 }
             }
             #endregion
-
             return Json(new
             {
                 success = true,
@@ -5402,6 +5471,8 @@ namespace scorpioweb.Controllers
                              archivointernomcscpVM = a,
                              personaVM = p,
                          };
+
+            var count = filter.Count();
 
             ViewData["CurrentFilter"] = SearchString;
             ViewData["EstadoS"] = estadoSuper;

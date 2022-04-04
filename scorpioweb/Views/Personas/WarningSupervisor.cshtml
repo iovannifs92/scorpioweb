@@ -26,6 +26,7 @@
         else {
             row = row + "<td></td>";
         }
+        
         switch (result.query[i].tipoAdvertencia) {
             case "Informe fuera de tiempo":
                 if (result.query[i].figuraJudicial == "MC") {
@@ -111,7 +112,28 @@
                     row = row + "    " + result.query[i].planeacionestrategicaVM.periodicidadFirma;
                 row = row + "</td>";
                 break;
-            case "Sin supervisión":
+            case "Expediente físico en resguardo":
+                row = row
+                    + "<td>"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                var fecha = formatDate(result.query[i].archivointernomcscpVM.fecha);
+                var tolerance = Date.now();
+                tolerance -= 1000 * 60 * 60 * 24 * 5;
+                if (Date.parse(fecha) < tolerance) {
+                    row = row
+                        + "<td style=\"color:red\">"
+                        + "    " + fecha
+                        + "</td>";
+                }
+                else {
+                    row = row
+                        + "<td>"
+                        + "    " + fecha
+                        + "</td>";
+                }
+                break;
+            case "Sin supervisión":  
                 row = row
                     + "<td>"
                     + "    " + result.query[i].tipoAdvertencia
@@ -160,16 +182,22 @@
             + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
             + "<td>" + result.query[i].personaVM.supervisor + "</td>";
         row = row + "<td>";
+
+
         if (result.query[i].figuraJudicial != null) {
             row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
         }
         else {
             row = row + "<td></td>";
         }
+ 
         row = row + "</td>";
         if (result.query[i].tipoAdvertencia == "Sin supervisión") {
+      
             row = row + "<td></td>";
+
         }
+    
         //else if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
         //{
         //    row = row
@@ -180,13 +208,20 @@
         //        + "</td>";
         //}
         else {
-            row = row
-                + "<td>"
-                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
-                + "        <i class=\"fa fa-pencil\"></i> Detalle"
-                + "    </a >"
-                + "</td>";
+            if (result.query[i].supervisionVM != null || result.query[i].causapenalVM != null) {
+                row = row
+                    + "<td>"
+                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                    + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                    + "    </a >"
+                    + "</td>";
+            }
+            else {
+                row = row + "<td></td>";
+            }
+            
         }
+        
         row = row + "</tr>";
         return row;
     };
@@ -229,11 +264,13 @@
                                     row = row + populateAdmin(result, i, date);
                                 }
                                 if (dgepms && result.query[i].personaVM.supervisor != null && result.query[i].personaVM.supervisor.endsWith("\u0040dgepms.com")) {
-                                    row = row + populateAdmin(result, i, date);
+                                    row = row + populateAdmin(result, i, date);                                   
                                 }
                             }
+                           
                         }
                         else {
+
                             for (let i = 0; i < result.query.length; i++) {
                                 if (result.query[i].planeacionestrategicaVM == null) {
                                     date = "";
@@ -254,6 +291,7 @@
                                     else {
                                         row = row + "<td></td>";
                                     }
+                              
                                     switch (result.query[i].tipoAdvertencia) {
                                         case "Informe fuera de tiempo":
                                             if (result.query[i].figuraJudicial == "MC") {
@@ -414,6 +452,7 @@
                                         row = row + "<td></td>";
                                     }
                                     row = row + "</td>";
+                                
                                     if (result.query[i].tipoAdvertencia == "Expediente físico en resguardo" || result.query[i].tipoAdvertencia == "Sin supervisión") {
                                         row = row + "<td></td>";
                                     }
