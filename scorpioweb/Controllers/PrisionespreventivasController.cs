@@ -78,16 +78,10 @@ namespace scorpioweb.Controllers
 
         // GET: Prisionespreventivas
         public async Task<IActionResult> Index(
-            string sortOrder,
             string currentFilter,
             string searchString,
             int? pageNumber)
         {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-
-
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -101,6 +95,7 @@ namespace scorpioweb.Controllers
 
             var personas = from p in _context.Prisionespreventivas
                            select p;
+            personas = personas.OrderByDescending(p => p.Idprisionespreventivas);
 
             if (!String.IsNullOrEmpty(searchString))
             {
