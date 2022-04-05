@@ -294,6 +294,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
                 new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
                 new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+                new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
+                new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
                 new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
             };
 
@@ -592,6 +594,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
                 new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
                 new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+                new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
+                new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
                 new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
                 };
 
