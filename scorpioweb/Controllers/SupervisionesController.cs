@@ -1745,7 +1745,7 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 _context.Add(bitacora);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
             }
             return View(bitacora);
@@ -1861,7 +1861,7 @@ namespace scorpioweb.Controllers
             _context.Entry(oldBitacora).CurrentValues.SetValues(Bitacora);
 
             _context.Bitacora.Remove(Bitacora);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             return RedirectToAction("Supervision/" + Bitacora.SupervisionIdSupervision, "Supervisiones");
         }
