@@ -32,6 +32,13 @@ namespace scorpioweb.Models
             audit.PrimaryKey = JsonConvert.SerializeObject(KeyValues);
             audit.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);
             audit.NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues);
+            if (audit.NewValues.Count() > 500) {
+                audit.NewValues = "Nuevo Registro";
+            }
+            if (audit.OldValues.Count() > 500)
+            {
+                audit.OldValues = "Se Borra Registro";
+            }
             audit.AffectedColumns = ChangedColumns.Count == 0 ? null : JsonConvert.SerializeObject(ChangedColumns);
             return audit;
         }
