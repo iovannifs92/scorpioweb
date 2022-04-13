@@ -42,6 +42,7 @@ namespace scorpioweb.Models
         public sbyte? Candado { get; set; }
         public string MotivoCandado { get; set; }
         public string UbicacionExpediente { get; set; }
+        public string Colaboracion { get; set; }
         public string NombreCompleto
         {
             get

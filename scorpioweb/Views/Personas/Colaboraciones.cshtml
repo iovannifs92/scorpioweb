@@ -1,0 +1,55 @@
+﻿@model IEnumerable<scorpioweb.Models.PersonaViewModel>
+
+@{
+    ViewData["Title"] = "Colaboraciones";
+}
+
+<h2>Colaboraciones</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Municipio
+                </th>
+                <th>
+                    Detalles
+                </th>
+                <th>
+                    Procesos
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.municipiosVMDomicilio.Municipio)
+            </td>
+            <td>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
+                    <i class='fa fa-eye'></i> Detalles
+                </a>
+            </td>
+            <td>
+                <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.personaVM.IdPersona">
+                    <i class='fa fa-cogs'></i> Procesos
+                </a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -143,6 +143,13 @@
                     + "    " + formatDate(result.query[i].personaVM.ultimaActualización)
                     + "</td>";
                 break;
+            case "Pendiente de asignación - colaboración":
+                row = row
+                    + "<td>"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row + "<td></td>";
+                break;
             //case "Sin estado de supervisión":
             //    row = row
             //        + "<td>"
@@ -240,7 +247,7 @@
                 success: function (result) {
                     if (result.success) {
                         $('#tblAlertas').html('');
-                        var row = '';
+                        var row = '';                
                         if (result.admin) {
                             var nortedgepms = false;
                             var dgepms = false;
@@ -507,6 +514,7 @@
         <label class="control-label">Tipo</label>
         <select class="form-control" name="currentFilter" id="currentFilter">
             <option value="TODOS">Todos</option>
+            <option value="PENDIENTE DE ASIGNACION - COLABORACION">Pendiente de asignación - colaboración</option>
             <option value="EXPEDIENTE FISICO EN RESGUARDO">Expediente físico en resguardo</option>
             <option value="INFORME FUERA DE TIEMPO">Informe fuera de tiempo</option>
             <option value="CONTROL DE SUPERVISION A 3 DIAS O MENOS">Control de supervisión a 3 días o menos</option>
@@ -542,7 +550,7 @@
             <th>
                 <a>Municipio</a>
             </th>
-            @if (ViewBag.Admin)
+            @if (ViewBag.ShowSupervisor)
             {
                 <th>
                     <a>Supervisor</a>
