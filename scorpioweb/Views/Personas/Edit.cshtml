@@ -747,6 +747,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdPersona" />
             <input type="hidden" asp-for="UbicacionExpediente" />
+            <div class="form-group col-lg-12">
+                <label class="control-label">¿Cuenta con resolución?</label>
+                <select class="form-control" name="TieneResolucion" id="TieneResolucion"
+                        asp-items="@(new SelectList(ViewBag.listaResolucion, "Value", "Text", @ViewBag.idResolucion))">
+                </select>
+            </div>
             <div class="form-group col-md-4">
                 <label asp-for="Paterno" class="control-label"></label>
                 <input asp-for="Paterno" class="form-control" style="text-transform:uppercase" />
@@ -880,6 +886,18 @@
                     <span asp-validation-for="EspecifiqueIdioma" class="text-danger"></span>
                 </div>
             }
+            <div class="form-group col-lg-6">
+                <label class="control-label">¿Pertenece a una comunidad IndÍgena?</label>
+                <select class="form-control" name="ComIndigena" id="ComIndigena"
+                        asp-items="@(new SelectList(ViewBag.listaComindigena, "Value", "Text", @ViewBag.idComindigena))">
+                </select>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="control-label">¿Pertenece a la comunidad LGBTTTIQ?</label>
+                <select class="form-control" name="ComLgbtttiq" id="ComLgbtttiq"
+                        asp-items="@(new SelectList(ViewBag.listaComlgbtttiq, "Value", "Text", @ViewBag.idComlgbtttiq))">
+                </select>
+            </div>
 
             <div class="form-group col-md-12">
                 <label class="control-label">Datos generales colonia</label>
@@ -1009,11 +1027,11 @@
                 </select>
             </div>
             @*<div class="form-group col-md-11">
-                <label class="control-label">Ubicación del Expediente (solo Durango)</label>
-                <select class="form-control" name="UbicacionExpediente" id="UbicacionExpediente"
-                        asp-items="@(new SelectList(ViewBag.listaUbicacionExp, "Value", "Text", @ViewBag.idUbicacionExp))">
-                </select>
-            </div>*@
+            <label class="control-label">Ubicación del Expediente (solo Durango)</label>
+            <select class="form-control" name="UbicacionExpediente" id="UbicacionExpediente"
+                    asp-items="@(new SelectList(ViewBag.listaUbicacionExp, "Value", "Text", @ViewBag.idUbicacionExp))">
+            </select>
+        </div>*@
             <div class="form-group col-md-1" style="padding-top:25px;">
                 <button type="button" class="btn btn-primary" id="btnEditarReferencias">
                     <i class="fa fa-pencil"></i>

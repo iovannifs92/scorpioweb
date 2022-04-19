@@ -1,8 +1,6 @@
 ﻿@model scorpioweb.Models.Fraccionesimpuestas
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-@{
-    ViewData["Title"] = "Fracciones Impuestas";
-}
+@{ ViewData["Title"] = "Fracciones Impuestas"; }
 
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
@@ -58,6 +56,7 @@
     });
 
     showModal = (url, title, id) => {
+        var idSupervision = document.getElementById("IdS").value;
         $.ajax({
             type: "GET",
             url: url + "?id=" + id,
@@ -65,6 +64,10 @@
                 $("#form-modal .modal-body").html(res);
                 $("#form-modal .modal-title").html(title);
                 $("#form-modal").modal('show');
+            },
+            traditional: true,
+            data: {
+                datosBitacora: [idSupervision],
             },
             error: function (res) {
 
@@ -75,9 +78,9 @@
 </script>
 
 <h2>@ViewBag.nombre</h2>
-<h3>CP @ViewBag.cp</h3>
+<h3>@ViewBag.cp</h3>
+<input style="display:none" name="IdS" id="IdS" class="form-control" value="@ViewBag.IdSupervisionGuardar" />
 
-<hr />
 <table class="table" style="text-align:center">
     <thead style="text-align:center">
         <tr>
@@ -105,70 +108,65 @@
     <tbody>
         @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Fraccionesimpuestas>)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FiguraJudicial)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tipo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Autoridad)
-                </td>
-                <td>
-                    @if (item.FechaInicio != null)
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.FiguraJudicial)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Tipo)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Autoridad)
+    </td>
+    <td>
+        @if (item.FechaInicio != null)
+        {@(item.FechaInicio.Value.ToString("dd MMMM yyyy"))}
+    </td>
+    <td>
+        @if (item.FechaTermino != null)
+        {
+@if (DateTime.Now < item.FechaTermino)
+{
+@item.FechaTermino.Value.ToString("dd MMMM yyyy") }
+                    else
                     {
-                        @(item.FechaInicio.Value.ToString("dd MMMM yyyy"))
-                    }
-                </td>
-                <td>
-                    @if (item.FechaTermino != null)
-                    {
-                        @if (DateTime.Now < item.FechaTermino)
-                        {
-                            @item.FechaTermino.Value.ToString("dd MMMM yyyy")
-                        }
-                        else
-                        {
-                            @if (item.FiguraJudicial == "SCP")
-                            {
-                                <span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>
-                            }
-                        }
-                    }
+@if (item.FiguraJudicial == "SCP")
+{
+<span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>}}}
 
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Estado)
-                </td>
-                @if (ViewBag.usuario)
-                {
-                    <td>
-                        <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
-                            <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
-                                <i class="fa fa-pencil"></i> Editar
-                            </a>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fa fa-trash"></i> Borrar
-                            </button>
-                        </form>
-                    </td>
-                }
-            </tr>
-        }
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Estado)
+    </td>
+    @if (ViewBag.usuario)
+    {
+<td>
+    <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
+        <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
+            <i class="fa fa-pencil"></i> Editar
+        </a>
+        <button type="submit" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Borrar
+        </button>
+        <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", null, Context.Request.Scheme)','Acciones de Supervision',@item.IdFracciones)" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Acciones de Supervisión
+        </a>
+    </form>
+
+</td>                }
+</tr>}
     </tbody>
 </table>
 
 @if (ViewBag.usuario)
 {
-    <div>
-        @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
-        <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
-            <i class="fa fa-plus"></i> Añadir Fracciones
-        </button>
-    </div>
-    <br />
-}
+<div>
+    @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
+    <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
+        <i class="fa fa-plus"></i> Añadir Fracciones
+    </button>
+</div>
+                <br />}
 
 <a href='javascript:history.go(-1)'>Regresar</a>
 

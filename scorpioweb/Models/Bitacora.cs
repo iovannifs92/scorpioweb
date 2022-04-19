@@ -12,5 +12,6 @@ namespace scorpioweb.Models
         public string TipoVisita { get; set; }
         public string RutaEvidencia { get; set; }
         public int SupervisionIdSupervision { get; set; }
+        public int? FracionesImpuestasIdFracionesImpuestas { get; set; }
     }
 }

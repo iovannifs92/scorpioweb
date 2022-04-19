@@ -28,6 +28,16 @@
         }
         
         switch (result.query[i].tipoAdvertencia) {
+            case "Sin Resolución":
+                row = row
+                    + "<td style=\"color:red\">"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row
+                    + "<td>"
+                    + "    " + formatDate(result.query[i].personaVM.ultimaActualización)
+                    + "</td>";
+                break;
             case "Informe fuera de tiempo":
                 if (result.query[i].figuraJudicial == "MC") {
                     row = row
@@ -204,7 +214,7 @@
             row = row + "<td></td>";
 
         }
-    
+
         //else if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
         //{
         //    row = row
@@ -224,6 +234,14 @@
                     + "</td>";
             }
             else {
+                if (result.query[i].tipoAdvertencia == "Sin Resolución") {
+                    row = row
+                        + "<td>"
+                        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/MenuEdicion/" + result.query[i].personaVM.idPersona + "\">"
+                        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                        + "    </a >"
+                        + "</td>";
+                }
                 row = row + "<td></td>";
             }
             
@@ -303,6 +321,16 @@
                                     }
                               
                                     switch (result.query[i].tipoAdvertencia) {
+                                        case "Sin Resolución":
+                                            row = row
+                                                + "<td style=\"color:red\">"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row
+                                                + "<td>"
+                                                + "    " + formatDate(result.query[i].personaVM.ultimaActualización)
+                                                + "</td>";
+                                            break;
                                         case "Informe fuera de tiempo":
                                             if (result.query[i].figuraJudicial == "MC") {
                                                 row = row
@@ -461,9 +489,16 @@
                                     else {
                                         row = row + "<td></td>";
                                     }
-                                    row = row + "</td>";
-                                
-                                    if (result.query[i].tipoAdvertencia == "Expediente físico en resguardo" || result.query[i].tipoAdvertencia == "Sin supervisión") {
+                                    row = row + "</td>";                         
+                                    if (result.query[i].tipoAdvertencia == "Expediente físico en resguardo" || result.query[i].tipoAdvertencia == "Sin supervisión" || result.query[i].tipoAdvertencia == "Sin Resolución") {
+                                        if (result.query[i].tipoAdvertencia == "Sin Resolución") {
+                                            row = row
+                                                + "<td>"
+                                                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/MenuEdicion/" + result.query[i].personaVM.idPersona + "\">"
+                                                + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                                + "    </a >"
+                                                + "</td>";
+                                        }
                                         row = row + "<td></td>";
                                     }
                                     //else if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
@@ -515,6 +550,7 @@
         <select class="form-control" name="currentFilter" id="currentFilter">
             <option value="TODOS">Todos</option>
             <option value="PENDIENTE DE ASIGNACION - COLABORACION">Pendiente de asignación - colaboración</option>
+            <option value="SIN RESOLUCION">Sin Resolución</option>
             <option value="EXPEDIENTE FISICO EN RESGUARDO">Expediente físico en resguardo</option>
             <option value="INFORME FUERA DE TIEMPO">Informe fuera de tiempo</option>
             <option value="CONTROL DE SUPERVISION A 3 DIAS O MENOS">Control de supervisión a 3 días o menos</option>
@@ -522,7 +558,8 @@
             <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
             <option value="SIN SUPERVISION">Sin supervisión</option>
             @*<option value="SIN ESTADO DE SUPERVISION">Sin estado de supervisión</option>*@
-            @if (ViewBag.norte == false) {
+            @if (ViewBag.norte == false)
+            {
                 <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
             }
         </select>

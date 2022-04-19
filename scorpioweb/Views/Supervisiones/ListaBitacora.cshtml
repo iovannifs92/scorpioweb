@@ -10,6 +10,7 @@
 
 <script>
     showModal = (url, title, id) => {
+        var IdFracciones = null;
         $.ajax({
             type: "GET",
             url: url + "?id=" + id,
@@ -17,6 +18,9 @@
                 $("#form-modal .modal-body").html(res);
                 $("#form-modal .modal-title").html(title);
                 $("#form-modal").modal('show');
+            },
+            data: {
+                datosBitacora: [IdFracciones],
             },
             error: function (res) {
 

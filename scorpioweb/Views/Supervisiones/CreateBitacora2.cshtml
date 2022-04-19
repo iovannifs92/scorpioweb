@@ -8,7 +8,7 @@
         <form onsubmit="return confirm('¿Deseas guardar los datos?');" asp-action="CreateBitacora" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input readonly name="IdBitacora" id="IdBitacora" class="form-control" style="display:none" />
-            <input readonly name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" class="form-control" style="display:none" value="@ViewBag.idFracciones" />
+            <input readonly name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" class="form-control" style="display:none" value="@ViewBag.FracionesImpuestasIdFracionesImpuestas" />
             <div class="form-group">
                 <label asp-for="Fecha" class="control-label"></label>
                 <input required asp-for="Fecha" class="form-control" />
@@ -41,7 +41,7 @@
                 <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
             </div>
             <input readonly name="IdSupervision" id="IdSupervision" class="form-control" style="display:none" />
-            <input readonly name="SupervisionIdSupervision" id="SupervisionIdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
+            <input readonly name="SupervisionIdSupervision" id="SupervisionIdSupervision" class="form-control" value="@ViewBag.SupervisionIdSupervision" style="display:none" />
             <br />
             <div class="form-group" style="padding-top:15PX">
                 <button type="submit" class="btn btn-primary" ><i class="fa fa-save"></i> Guardar</button>

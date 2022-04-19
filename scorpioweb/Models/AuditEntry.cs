@@ -31,11 +31,11 @@ namespace scorpioweb.Models
             audit.DateTime = DateTime.Now;
             audit.PrimaryKey = JsonConvert.SerializeObject(KeyValues);
             audit.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);
-            audit.NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues);
-            if (audit.NewValues.Count() > 500) {
+            audit.NewValues = NewValues.Count == 0 ? null  : JsonConvert.SerializeObject(NewValues);
+            if (audit.NewValues == null || audit.NewValues.Count() > 500) {
                 audit.NewValues = "Nuevo Registro";
             }
-            if (audit.OldValues.Count() > 500)
+            if (audit.OldValues == null || audit.OldValues.Count() > 500)
             {
                 audit.OldValues = "Se Borra Registro";
             }

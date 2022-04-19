@@ -43,6 +43,9 @@ namespace scorpioweb.Models
         public string MotivoCandado { get; set; }
         public string UbicacionExpediente { get; set; }
         public string Colaboracion { get; set; }
+        public string ComLgbtttiq { get; set; }
+        public string ComIndigena { get; set; }
+        public string TieneResolucion { get; set; }
         public string NombreCompleto
         {
             get

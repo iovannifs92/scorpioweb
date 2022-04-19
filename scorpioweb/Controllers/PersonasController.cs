@@ -449,6 +449,7 @@ namespace scorpioweb.Controllers
             List<Causapenal> causapenalVM = _context.Causapenal.ToList();
             List<Domicilio> domicilioVM = _context.Domicilio.ToList();
             List<Municipios> municipiosVM = _context.Municipios.ToList();
+            List<Estados> estadosVM = _context.Estados.ToList();
             List<Planeacionestrategica> planeacionestrategicaVM = _context.Planeacionestrategica.ToList();
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
             List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
@@ -462,7 +463,31 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -Jointables-
+            var sinResolucion = from p in personaVM
+                                join d in domicilioVM on p.IdPersona equals d.PersonaIdPersona
+                                join e in estadosVM on int.Parse(d.Estado) equals e.Id
+                                join m in municipiosVM on int.Parse(d.Municipio) equals m.Id
+                                where p.TieneResolucion == "NO"
+                                select new PlaneacionWarningViewModel
+                                {
+                                    personaVM = p,
+                                    estadosVM = e,
+                                    municipiosVM = m,
+                                    tipoAdvertencia = "Sin Resolución"
+                                };
 
+            var sinResolucion2 = from p in personaVM
+                                 join d in domicilioVM on p.IdPersona equals d.PersonaIdPersona
+                                 join e in estadosVM on int.Parse(d.Estado) equals e.Id
+                                 join m in municipiosVM on int.Parse(d.Municipio) equals m.Id
+                                 where p.TieneResolucion == "NO" && p.Supervisor == usuario
+                                 select new PlaneacionWarningViewModel
+                                 {
+                                     personaVM = p,
+                                     estadosVM = e,
+                                     municipiosVM = m,
+                                     tipoAdvertencia = "Sin Resolución"
+                                 };
 
             var archivoadmin = from ha in queryHistorialArchivoadmin
                                join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
@@ -509,7 +534,9 @@ namespace scorpioweb.Controllers
 
             if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
-                var warningPlaneacion = (where).Union
+                var warningPlaneacion = 
+                                        (where).Union
+                                        (sinResolucion).Union
                                         (archivoadmin).Union
                                         (from persona in personaVM
                                          join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -652,7 +679,9 @@ namespace scorpioweb.Controllers
                                   tipoAdvertencia = "Expediente físico en resguardo"
                               };
 
-                var warningPlaneacion = where2.Union
+                var warningPlaneacion = 
+                                        (where2).Union
+                                        (sinResolucion2).Union
                                         (archivo).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
@@ -1588,8 +1617,8 @@ namespace scorpioweb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
-            string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
-            string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string especifiqueIdioma,
+            string resolusionstring, string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma, 
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
@@ -1612,7 +1641,8 @@ namespace scorpioweb.Controllers
 
             if (ModelState.ErrorCount <= 1)
             {
-                #region -Persona-            
+                #region -Persona-
+                
                 persona.Nombre = removeSpaces(normaliza(nombre));
                 persona.Paterno = removeSpaces(normaliza(paterno));
                 persona.Materno = removeSpaces(normaliza(materno));
@@ -1627,6 +1657,8 @@ namespace scorpioweb.Controllers
                 persona.EstadoCivil = estadoCivil;
                 persona.Duracion = duracion;
                 persona.OtroIdioma = normaliza(otroIdioma);
+                persona.ComIndigena = normaliza(comIndigena);
+                persona.ComLgbtttiq = normaliza(comLGBTTTIQ);
                 persona.EspecifiqueIdioma = normaliza(especifiqueIdioma);
                 persona.LeerEscribir = normaliza(leerEscribir);
                 persona.Traductor = normaliza(traductor);
@@ -2674,6 +2706,15 @@ namespace scorpioweb.Controllers
             ViewBag.listaPropiedades = listaNoSi;
             ViewBag.idPropiedades = BuscaId(listaNoSi, persona.Propiedades);
 
+            ViewBag.listaResolucion = listaNoSi;
+            ViewBag.idResolucion = BuscaId(listaNoSi, persona.TieneResolucion);
+
+            ViewBag.listaComindigena = listaNoSi;
+            ViewBag.idComindigena = BuscaId(listaNoSi, persona.ComIndigena);
+
+            ViewBag.listaComlgbtttiq = listaNoSi;
+            ViewBag.idComlgbtttiq = BuscaId(listaNoSi, persona.ComLgbtttiq);
+
             //ViewBag.listaUbicacionExp = listaUbicacionExpediente;
             //ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
 
@@ -2868,7 +2909,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado, UbicacionExpediente")] Persona persona)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado, UbicacionExpediente")] Persona persona)
         {
             string currentUser = User.Identity.Name;
 
@@ -2879,6 +2920,7 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
+                persona.TieneResolucion = removeSpaces(normaliza(persona.TieneResolucion));
                 persona.Paterno = removeSpaces(normaliza(persona.Paterno));
                 persona.Materno = removeSpaces(normaliza(persona.Materno));
                 persona.Nombre = removeSpaces(normaliza(persona.Nombre));
@@ -2888,6 +2930,8 @@ namespace scorpioweb.Controllers
                 persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
                 persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
                 persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
+                persona.ComIndigena = normaliza(persona.ComIndigena);
+                persona.ComLgbtttiq = normaliza(persona.ComLgbtttiq);
                 persona.Curp = normaliza(persona.Curp);
                 persona.ConsumoSustancias = normaliza(persona.ConsumoSustancias);
                 persona.Familiares = normaliza(persona.Familiares);
@@ -4470,6 +4514,7 @@ namespace scorpioweb.Controllers
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
             List<Domicilio> domicilioVM = _context.Domicilio.ToList();
             List<Municipios> municipiosVM = _context.Municipios.ToList();
+            List<Estados> estadosVM = _context.Estados.ToList();
             List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
             List<Personacausapenal> personacausapenalsVM = _context.Personacausapenal.ToList();
 
@@ -4486,6 +4531,33 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -Jointables-
+            var sinResolucion = from p in personaVM
+                                join d in domicilioVM on p.IdPersona equals d.PersonaIdPersona
+                                join e in estadosVM on int.Parse(d.Estado) equals e.Id
+                                join m in municipiosVM on int.Parse(d.Municipio) equals m.Id
+                                where p.TieneResolucion == "NO"
+                                select new PlaneacionWarningViewModel
+                                {
+                                    personaVM = p,
+                                    estadosVM = e,
+                                    municipiosVM = m,
+                                    tipoAdvertencia = "Sin Resolución"
+                                };
+
+            var sinResolucion2 = from p in personaVM
+                                 join d in domicilioVM on p.IdPersona equals d.PersonaIdPersona
+                                 join e in estadosVM on int.Parse(d.Estado) equals e.Id
+                                 join m in municipiosVM on int.Parse(d.Municipio) equals m.Id
+                                 where p.TieneResolucion == "NO" && p.Supervisor == usuario
+                                 select new PlaneacionWarningViewModel
+                                 {
+                                     personaVM = p,
+                                     estadosVM = e,
+                                     municipiosVM = m,
+                                     tipoAdvertencia = "Sin Resolución"
+                                 };
+
+
             var archivoadmin = from ha in queryHistorialArchivoadmin
                                join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
                                join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
@@ -4541,7 +4613,8 @@ namespace scorpioweb.Controllers
                 switch (currentFilter)
                 {
                     case "TODOS":
-                        ViewDataAlertasVari = (from persona in personaVM
+                        ViewDataAlertasVari = (sinResolucion).Union
+                                              (from persona in personaVM
                                                join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                                where persona.Colaboracion == "SI"
@@ -4662,6 +4735,9 @@ namespace scorpioweb.Controllers
                              planeacionestrategicaVM = planeacion,
                              tipoAdvertencia = "Sin estado de supervisión"
                          })*/
+                        break;
+                    case "SIN RESOLUCION":
+                        ViewDataAlertasVari = sinResolucion;
                         break;
                     case "EXPEDIENTE FISICO EN RESGUARDO":
                         ViewDataAlertasVari = archivoadmin;
@@ -4844,7 +4920,8 @@ namespace scorpioweb.Controllers
                 switch (currentFilter)
                 {
                     case "TODOS":
-                        ViewData["alertas"] = archivo.Union
+                        ViewData["alertas"] = (sinResolucion2).Union
+                                              (archivo).Union
                                               (from persona in personaVM
                                                join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                                join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -4957,6 +5034,9 @@ namespace scorpioweb.Controllers
                         break;
                     case "EXPEDIENTE FISICO EN RESGUARDO":
                         ViewData["alertas"] = archivo;
+                        break;
+                    case "SIN RESOLUCION":
+                        ViewData["alertas"] = sinResolucion2;
                         break;
                     case "INFORME FUERA DE TIEMPO":
                         ViewData["alertas"] = from persona in personaVM
