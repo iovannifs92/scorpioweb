@@ -1090,8 +1090,8 @@ namespace scorpioweb.Controllers
                                      join saludFisica in saludFisicaVM on persona.IdPersona equals saludFisica.PersonaIdPersona
                                      //join nacimientoEstado in estados on (Int32.Parse(persona.Lnestado)) equals nacimientoEstado.Id
                                      //join nacimientoMunicipio in municipios on (Int32.Parse(persona.Lnmunicipio)) equals nacimientoMunicipio.Id
-                                     //join domicilioEstado in estados on (Int32.Parse(domicilio.Estado)) equals domicilioEstado.Id
-                                     //join domicilioMunicipio in municipios on (Int32.Parse(domicilio.Municipio)) equals domicilioMunicipio.Id
+                                     join domicilioEstado in estados on (Int32.Parse(domicilio.Estado)) equals domicilioEstado.Id
+                                     join domicilioMunicipio in municipios on (Int32.Parse(domicilio.Municipio)) equals domicilioMunicipio.Id
                                      where personaTable.IdPersona == id
                                      select new PersonaViewModel
                                      {
@@ -1101,11 +1101,11 @@ namespace scorpioweb.Controllers
                                          trabajoVM = trabajo,
                                          actividadSocialVM = actividaSocial,
                                          abandonoEstadoVM = abandonoEstado,
-                                         saludFisicaVM = saludFisica
+                                         saludFisicaVM = saludFisica,
                                          //estadosVMPersona=nacimientoEstado,
                                          //municipiosVMPersona=nacimientoMunicipio,  
-                                         //estadosVMDomicilio = domicilioEstado,
-                                         //municipiosVMDomicilio= domicilioMunicipio,
+                                         estadosVMDomicilio = domicilioEstado,
+                                         municipiosVMDomicilio= domicilioMunicipio
                                      };
 
             #endregion
