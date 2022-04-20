@@ -256,6 +256,12 @@ namespace scorpioweb.Controllers
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
 
+            List<String> ListaUsuariosAdminMCSCP = new List<String>();
+            ListaUsuariosAdminMCSCP.Add("Archivo General");
+            ListaUsuariosAdminMCSCP.Add("Expediente Concluido para Razón de Archivo");
+            ViewBag.ListadoUsuariosAdminMCSCP = ListaUsuariosAdminMCSCP;
+
+
             List<String> ListaUsuarios = new List<String>();
             ListaUsuarios.Add("Sin Registro");
             ListaUsuarios.Add("Archivo Interno");
@@ -264,6 +270,8 @@ namespace scorpioweb.Controllers
             ListaUsuarios.Add("Dirección");
             ListaUsuarios.Add("Coordinación Operativa");
             ListaUsuarios.Add("Coordinación MC y SCP");
+            ListaUsuarios.Add("Expediente Concluido para Razón de Archivo");
+
             foreach (var u in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
@@ -427,6 +435,7 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             string usuario = user.ToString();
+            ViewBag.Usuario = usuario;
             DateTime fechaInforme = (DateTime.Now).AddDays(5);
             DateTime fechaControl = (DateTime.Now).AddDays(3);
             DateTime fechaInformeCoordinador = (DateTime.Now).AddDays(30);
@@ -5619,7 +5628,7 @@ namespace scorpioweb.Controllers
 
             var filter = from p in _context.Persona
                          join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
-                         where a.NuevaUbicacion != "NO UBICADO" && a.NuevaUbicacion != "ARCHIVO GENERAL" && a.NuevaUbicacion != "ARCHIVO INTERNO"  && a.NuevaUbicacion != "SIN REGISTRO" && a.NuevaUbicacion != null
+                         where a.NuevaUbicacion != "NO UBICADO" && a.NuevaUbicacion != "ARCHIVO GENERAL" && a.NuevaUbicacion != "ARCHIVO INTERNO"  && a.NuevaUbicacion != "EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO" && a.NuevaUbicacion != "SIN REGISTRO" && a.NuevaUbicacion != null
                          select new ArchivoPersona
                          {
                              archivointernomcscpVM = a,
@@ -5639,10 +5648,6 @@ namespace scorpioweb.Controllers
                                               );
 
             }
-
-
-
-
 
             switch (sortOrder)
             {
@@ -5670,6 +5675,7 @@ namespace scorpioweb.Controllers
             ListaUbicacion.Add(new SelectListItem { Text = "Dirección", Value = "Dirección" });
             ListaUbicacion.Add(new SelectListItem { Text = "Coordinación Operativa", Value = "Coordinación Operativa" });
             ListaUbicacion.Add(new SelectListItem { Text = "Coordinación MC y SCP", Value = "Coordinación MC y SCP" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Expediente Concluido para Razón de Archivo", Value = "Expediente Concluido para Razón de Archivo" });
 
             foreach (var user in userManager.Users)
             {
@@ -5691,6 +5697,89 @@ namespace scorpioweb.Controllers
             //var queryable = query2.AsQueryable();
             return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+        public async Task<IActionResult> RazondeArchivo(
+           string sortOrder,
+           string currentFilter,
+           string SearchString,
+           string estadoSuper,
+           int? pageNumber
+           )
+        {
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            if (SearchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                SearchString = currentFilter;
+            }
+
+
+            List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
+                                                               group a by a.PersonaIdPersona into grp
+                                                               select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
+
+            var filter = from p in _context.Persona
+                         join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
+                         where a.NuevaUbicacion == "EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO" && a.NuevaUbicacion != null
+                         select new ArchivoPersona
+                         {
+                             archivointernomcscpVM = a,
+                             personaVM = p,
+                         };
+
+            var count = filter.Count();
+
+            ViewData["CurrentFilter"] = SearchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.Where(a => (a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString.ToUpper()) ||
+                                              (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString.ToUpper()) ||
+                                              (a.personaVM.IdPersona.ToString()).Contains(SearchString)
+                                              );
+
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(a => a.personaVM.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.CausaPenal);
+                    break;
+                case "fechaa_desc":
+                    filter = filter.OrderByDescending(a => a.archivointernomcscpVM.Fecha);
+                    break;
+                default:
+                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    break;
+            }
+
+
+            List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
+            int ii = 0;
+           
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "Archivo General" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Expediente Concluido para Razón de Archivo", Value = "Expediente Concluido para Razón de Archivo" });
+            ViewBag.ListaUbicacion = ListaUbicacion;
+
+            int pageSize = 10;
+
+            //var queryable = query2.AsQueryable();
+            return View(await PaginatedList<ArchivoPersona>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+
         #region -Update Ubicación archivo y causa penal-
         public JsonResult UpdateUyCP(Archivointernomcscp archivointernomcscp, Persona persona, string cambioCP, string idArchivo, string cambioUE, string idpersona, string archivoid)
         //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)

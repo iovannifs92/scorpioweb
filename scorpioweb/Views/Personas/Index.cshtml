@@ -149,6 +149,21 @@
         }
         return options;
     };
+
+    function populateAdminMCSCP(ListadoUsuariosAdminMCSCP, selected) {
+        options = "";
+        for (let i = 0; i < ListadoUsuariosAdminMCSCP.length; i++) {
+            if (ListadoUsuariosAdminMCSCP[i].toUpperCase() == selected) {
+                options = options + "<option value=\"" + ListadoUsuariosAdminMCSCP[i].toUpperCase() + "\" selected>" + ListadoUsuariosAdminMCSCP[i] + "</option>";
+            }
+            else {
+                options = options + "<option value=\"" + ListadoUsuariosAdminMCSCP[i].toUpperCase() + "\">" + ListadoUsuariosAdminMCSCP[i] + "</option>";
+            }
+        }
+        return options;
+    };
+
+
     function get() {
         document.getElementById("btnNext").disabled = false;
         var searchValue = $("#Search").val("");
@@ -213,9 +228,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
+                                if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                    row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                    row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } else {
                                 row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
+                                }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -245,9 +266,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
+                                if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                    row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                    row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } else {
                                 row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
+                                }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -279,9 +306,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
+                                if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                    row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                    row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } else {
                                 row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
+                                }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -311,9 +344,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
+                                if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                    row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                    row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                    row = row + "</select></div>";
+                                } else {
                                 row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                 row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                 row = row + "</select></div>";
+                                }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -387,9 +426,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                       row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -419,9 +464,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                           row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -453,9 +504,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                           row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -485,9 +542,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                           row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -561,9 +624,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                            row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -593,9 +662,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -627,9 +702,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -659,9 +740,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -750,9 +837,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                    if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -782,9 +875,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -816,9 +915,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                    if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -848,9 +953,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -930,9 +1041,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                    if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -962,9 +1079,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                       row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -996,9 +1119,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                       row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1028,9 +1157,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                       row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -1116,9 +1251,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                    if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1148,9 +1289,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                       row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -1182,9 +1329,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                   if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + poppopulateAdminMCSCPulate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1214,9 +1367,15 @@
                                 row = row + "</select></div>";
                             }
                             else {
-                                row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                row = row + "</select></div>";
+                                    if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                             }
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -1291,9 +1450,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1323,9 +1488,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                            row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -1357,9 +1528,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                            row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1389,9 +1566,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                            row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -1466,9 +1649,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                            row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1498,9 +1687,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                        if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                            row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
@@ -1532,9 +1727,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                           row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
@@ -1564,9 +1765,15 @@
                                     row = row + "</select></div>";
                                 }
                                 else {
-                                    row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
-                                    row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
-                                    row = row + "</select></div>";
+                                       if (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true) {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                           row = row + populateAdminMCSCP(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuariosAdminMCSCP)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    } else {
+                                        row = row + "<div class=\"col-sm col-md-6\"><select disabled class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
+                                        row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
+                                        row = row + "</select></div>";
+                                    }
                                 }
                                 row = row
                                     + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"

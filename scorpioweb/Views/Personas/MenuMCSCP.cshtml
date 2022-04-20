@@ -138,5 +138,24 @@
             </div>
         </div>
     }
+
+    @if (@ViewBag.Usuario == "esmeralda.vargas@dgepms.com" | @ViewBag.Usuario == "claudia.armendariz@dgepms.com")
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Personas" asp-action="RazondeArchivo">
+                        <img class="card-img-top" src="~/images/archive.png" alt="Card image cap" style="padding-bottom:5%;" />
+                        Archivo MC y SCP
+                    </a>
+                </h4>
+                <p class="card-text">
+                    Ubicación de expedientes que se encuentran en la base
+                </p>
+            </div>
+        </div>
+    }
 </div>
+
+
 
