@@ -185,7 +185,6 @@
             },
             traditional: true,
             success: function (result) {
-
                 if (result.page.length < 10) {
                     document.getElementById("btnNext").disabled = true;
                 }
@@ -204,7 +203,7 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                    if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
@@ -402,7 +401,7 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                        if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -600,7 +599,7 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                        if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -771,6 +770,7 @@
     };
     function getPersona() {
         document.getElementById("btnNext").disabled = false;
+        page = page;
         var searchValue = $("#Search").val();
         if (searchValue != "") {
             page = 1
@@ -812,7 +812,7 @@
                     }
                     @*alert(@ViewBag.RolesUsuarios);*@
                     @*alert(@Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)));*@
-                    if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                    if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         /*alert("Fecha " + result.page[i].ultimaActualización);*/
                         if (result.page[i].candado == 0) {
                             row = row
@@ -977,8 +977,12 @@
                 document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
             },
             error: function (msg) {
-                alert(msg);
-                alert("error1");
+                if (msg.status === 500) {
+                    get();
+                } else {
+                    alert(msg.status);
+                    alert("error1");
+                }
             }
         });
     };
@@ -1017,7 +1021,7 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    					if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                    if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
@@ -1227,7 +1231,7 @@
                     if (dateString == null) {
                         date = "";
                     }
-                    					if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                    if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
@@ -1391,8 +1395,12 @@
                 document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
             },
             error: function (msg) {
-                alert(msg);
-                alert("error2");
+                if (msg.status === 500) {
+                    getS();
+                } else {
+                    alert(msg.status);
+                    alert("error1");
+                }
             }
         });
     };
@@ -1426,7 +1434,7 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                        if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -1625,7 +1633,7 @@
                         if (dateString == null) {
                             date = "";
                         }
-                        if (result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))|| (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
+                        if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -1808,9 +1816,9 @@
         </a>
     }
 </p>
-<div id="divbuscar">
+<div class="form-group col-md-12" id="divbuscar">
     Búsqueda:
-    <input  type="text" name="Search" id="Search" />
+    <input type="text" name="Search" id="Search" />
     <button id="myBtn" class="btn btn-default" onclick="getPersona()">
         <i class="fa fa-search"></i>
         Buscar
@@ -1822,7 +1830,7 @@
         Ver solo mis Supervisados
     </a>
 </div>
-<div id="divSbuscar" style="display:none">
+<div class="form-group col-md-12" id="divSbuscar" style="display:none">
     Búsqueda:
     <input type="text" name="SearchS" id="SearchS" />
     <button id="myBtn2" class="btn btn-default" onclick="getSPersona()">
@@ -1861,12 +1869,12 @@
             document.getElementById("myBtn").click();
         }
     });
-    var input = document.getElementById("SearchS");
-    input.addEventListener("keyup", function (event) {
+    var input2 = document.getElementById("SearchS");
+    input2.addEventListener("keyup", function (event) {
         if (event.keyCode === 13) {
             event.preventDefault();
             document.getElementById("myBtn2").click();
-          
+
         }
     });
 </script>

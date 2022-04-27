@@ -440,7 +440,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
             }
             return View(fraccionesimpuestas);
         }
@@ -711,28 +711,33 @@ namespace scorpioweb.Controllers
 
             bool supervisor = false;
 
-            var usuario = await userManager.FindByNameAsync(User.Identity.Name);
-            var roles = await userManager.GetRolesAsync(usuario);
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
 
-            List<string> rolUsuario = new List<string>();
-
-            for (int i = 0; i < roles.Count; i++)
+            foreach (var rol in roles)
             {
-                rolUsuario.Add(roles[i]);
-                if (roles[i] == "SupervisorMCSCP")
+                if (rol == "AdminMCSCP")
                 {
-                    supervisor = true;
+                    ViewBag.Admin = true;
                 }
             }
-
-            ViewBag.RolesUsuario = rolUsuario[1];
-
-            for (int i = 0; i < roles.Count; i++)
+            foreach (var rol in roles)
             {
-                rolUsuario.Add(roles[i]);
+                if (rol == "Masteradmin")
+                {
+                    ViewBag.Masteradmin = true;
+                }
             }
-
-            ViewBag.RolesUsuario1 = rolUsuario;
+            foreach (var rol in roles)
+            {
+                if (rol == "ArchivoMCSCP")
+                {
+                    ViewBag.Archivo = true;
+                }
+            }
 
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
 

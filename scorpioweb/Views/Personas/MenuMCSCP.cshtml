@@ -23,7 +23,7 @@
 
 <div class="card-group" style="padding-top:2%">
 
-    @if (adminUser)
+    @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
 
