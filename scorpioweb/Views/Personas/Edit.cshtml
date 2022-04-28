@@ -87,7 +87,7 @@
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#lnEstado';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
-                var items = '';
+                var items = "<option value='0'>Sin municipio</option>";
                 $("#lnMunicipio").empty();
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
@@ -99,7 +99,7 @@
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                 $("#lnEstado").val(0);
-                var items = "<option value='0'>Selecciona</option>";
+                var items = "<option value='0'>Sin municipio</option>";
                 $('#lnMunicipio').html(items);
                 $("#lnMunicipio").val(0);
                 $("#Estado").css("display", "none");

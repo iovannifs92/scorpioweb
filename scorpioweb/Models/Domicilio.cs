@@ -23,5 +23,7 @@ namespace scorpioweb.Models
         public string Observaciones { get; set; }
         public int PersonaIdPersona { get; set; }
         public string Zona { get; set; }
+        public string Lat { get; set; }
+        public string Lng { get; set; }
     }
 }
