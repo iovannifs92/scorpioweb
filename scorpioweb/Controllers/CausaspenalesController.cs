@@ -261,7 +261,7 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-//        [ValidateAntiForgeryToken] Para poder llamar el metodo desde Oficialia
+        //        [ValidateAntiForgeryToken] Para poder llamar el metodo desde Oficialia
         public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp)
         {
             string currentUser = User.Identity.Name;
@@ -307,10 +307,11 @@ namespace scorpioweb.Controllers
                     }
                     #endregion
 
-                   
+
                     _context.Add(causapenal);
                     await _context.SaveChangesAsync(null, 1);
-                    return Json(new { success = true, responseText = Url.Action("Index", "Causaspenales") });
+                    //return Json(new { success = true, responseText = Url.Action("Index", "Causaspenales") });
+                    return Json(new { success = true,  responseText = Url.Action("Asignacion", "Causaspenales", new { @id = idCausaPenal, @cp = cp }) });
                 }
                 return View(causapenal);
             }
@@ -404,7 +405,7 @@ namespace scorpioweb.Controllers
                 ).ToList();
             }
 
-            
+
 
             ViewBag.personas = listaPersonas;
 
@@ -596,7 +597,7 @@ namespace scorpioweb.Controllers
                 delitoDB.IdDelito = idDelito;
                 _context.Add(delitoDB);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("EditCausas/" + delitoDB.CausaPenalIdCausaPenal, "Causaspenales");    
+                return RedirectToAction("EditCausas/" + delitoDB.CausaPenalIdCausaPenal, "Causaspenales");
             }
             return View(delitoDB);
         }
@@ -616,7 +617,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
             var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
-    
+
             if (causapenal == null)
             {
                 return NotFound();

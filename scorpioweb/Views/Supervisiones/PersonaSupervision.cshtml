@@ -2,6 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 @{
+    ViewBag.Title = "Persona Supervision";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
@@ -128,7 +129,7 @@
                     @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
                 </td>
 
-                @if (@ViewBag.RolesUsuario == "AdminMCSCP" || @ViewBag.RolesUsuario == "Masteradmin")
+                @if (@ViewBag.Admin == true|| @ViewBag.Masteradmin == true)
                 {
                     <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
                     <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />

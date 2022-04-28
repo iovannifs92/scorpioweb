@@ -50,17 +50,17 @@
         right: 0;
     }
 
-    .autocomplete-items div {
-        padding: 10px;
-        cursor: pointer;
-        background-color: #fff;
-        border-bottom: 1px solid #d4d4d4;
-    }
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
 
-    /*when hovering an item:*/
-    .autocomplete-items div:hover {
-        background-color: #e9e9e9;
-    }
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
 
     /*when navigating through the items using the arrow keys:*/
     .autocomplete-active {
@@ -145,11 +145,23 @@
                         juez, Cambio, distrito, cp,
                     },
                     success: function (response) {
-                        if (response.success) {
-                            window.location.href = response.responseText;
+                        //if (response.success) {
+                        //    window.location.href = response.responseText;
+                        //} else {
+                        //    alert(response.responseText);
+                        //}
+                        var msg = confirm("¿Desea seguir con la asignación?");
+                        if (msg == true) {
+                            if (response.success) {
+                                window.location.href = response.responseText;
+                            } else {
+                                alert(response.responseText);
+                            }
                         } else {
-                            alert(response.responseText);
+                            window.location.replace("https://localhost:44359/Causaspenales/ListadeCausas");
                         }
+
+
                     },
                     error: function (response) {
                         alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
@@ -245,7 +257,7 @@
 
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("juez"), jueces);
-       
+
     });
 </script>
 
@@ -296,7 +308,7 @@
 
             <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
-                <input required  id="cp" name="cp" type="text" class="form-control" />
+                <input required id="cp" name="cp" type="text" class="form-control" />
             </div>
             <div class="form-group">
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
