@@ -7,13 +7,14 @@
 }
 
 <link rel="stylesheet" type="text/css" href="~/css/style.css">
-
+<script type='text/javascript' src='~/js/apikey.js'></script>
 <script type="text/javascript">
     var tipo = 0;
     var listSustancia = new Array;
     var listFamiliarReferencia = new Array;
     var listDomSec = new Array;
     var listFamExtranjero = new Array;
+    var key = keys.GOOGLE_API_KEY;
 
     $(document).ready(function () {
         //#region -Municipios-
@@ -975,11 +976,18 @@
                             </div>
                             <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
                                 <div id="map"></div>
+                                <script id="GoogleApi"></script>
                                 <script src="~/js/scripts.js"></script>
-                                <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCVRE55MCbJ9h0QJuwRZqVc1AnIdfDiFA8&callback=iniciarMap&v=weekly"></script>
+                                <script>
+                                    var url = "https://maps.googleapis.com/maps/api/js?key=";
+                                    var api = key;
+                                    var url2 = "&callback=iniciarMap&v=weekly";
+                                    document.getElementById("GoogleApi").src = url + api + url2;
+                                </script>
+                                @*<script src="https://maps.googleapis.com/maps/api/js?key='key'&callback=iniciarMap&v=weekly"></script>*@
                                 <input type="hidden" required id="lat" name="lat" type="text" class="form-control" />
                                 <input type="hidden" id="lng" name="lng" type="text" class="form-control" />
-                                
+
                                 <label class="control-label col-sm-12">La propiedad del lugar o del inmueble, es:</label>
                                 <div class="form-group col-sm-12" style="padding-left:0%;padding-right:0%;">
                                     <div class="form-group col-sm-9">
@@ -1062,7 +1070,7 @@
                                         <option value="ZONA 3">Zona 3</option>
                                         <option value="ZONA 4">Zona 4</option>
                                         <option value="ZONA 5">Zona 5</option>
-                                        <option value="ZONA 6">Zona 6</option>                                                                                                          
+                                        <option value="ZONA 6">Zona 6</option>
                                         <option value="ZONA 7">Zona 7</option>
                                         <option value="NA">NA</option>
                                     </select>
