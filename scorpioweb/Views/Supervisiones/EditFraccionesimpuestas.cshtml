@@ -54,7 +54,6 @@
             });
         });
     });
-
     showModal = (url, title, id) => {
         var idSupervision = document.getElementById("IdS").value;
         $.ajax({
@@ -74,6 +73,71 @@
             }
         })
     }
+    var arr = [];
+    function myFunction(id) {
+        var encontro = false;
+        var doble;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+        if (encontro == false) {
+            arr.push(id);
+        } else {
+            arr.splice(doble,1);
+        }      
+    }
+
+
+    $(document).ready(function () {
+        $('#btnImprimirR').on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Supervisiones/CrearReoprte",
+                traditional: true,
+                data: {
+                    datosidFraccion: arr,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Datos Guardados");
+                    location.reload();
+                }
+            });
+
+        });
+    });
+
+    //function hola() {
+    //    $(document).on("click", "#btnImprimirR", function () {
+    //        //code to get checkboxes on all pages
+    //        var projectsGrid = $('#projectsGrid').dataTable();
+
+    //        var form = $('#PrintableProjectForm');
+
+    //        var selectedProjects = [];
+
+    //        selectedProjects = projectsGrid.$('input[type="checkbox"]').serializeArray();
+
+    //        $(selectedProjects).each(function (i, field) {
+    //            form.append($('<input />').attr('name', 'projectId').attr('hidden', 'hidden').val(field));
+    //        });
+
+    //    });
+    //}
+
+
 
 </script>
 
@@ -84,6 +148,9 @@
 <table class="table" style="text-align:center">
     <thead style="text-align:center">
         <tr>
+            <th>
+                Reporte
+            </th> 
             <th>
                 Figura Judicial
             </th>
@@ -108,65 +175,73 @@
     <tbody>
         @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Fraccionesimpuestas>)
         {
-<tr>
-    <td>
-        @Html.DisplayFor(modelItem => item.FiguraJudicial)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Tipo)
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Autoridad)
-    </td>
-    <td>
-        @if (item.FechaInicio != null)
-        {@(item.FechaInicio.Value.ToString("dd MMMM yyyy"))}
-    </td>
-    <td>
-        @if (item.FechaTermino != null)
-        {
-@if (DateTime.Now < item.FechaTermino)
-{
-@item.FechaTermino.Value.ToString("dd MMMM yyyy") }
-                    else
+        <tr>
+            <td>
+                <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdFracciones)">
+            </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FiguraJudicial)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Tipo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Autoridad)
+        </td>
+        <td>
+            @if (item.FechaInicio != null)
+            {@(item.FechaInicio.Value.ToString("dd MMMM yyyy"))}
+        </td>
+        <td>
+            @if (item.FechaTermino != null)
+            {
+                @if (DateTime.Now < item.FechaTermino){
+                    @item.FechaTermino.Value.ToString("dd MMMM yyyy")
+                }else{
+                   @if (item.FiguraJudicial == "SCP")
                     {
-@if (item.FiguraJudicial == "SCP")
-{
-<span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>}}}
-
-    </td>
-    <td>
-        @Html.DisplayFor(modelItem => item.Estado)
-    </td>
-    @if (ViewBag.usuario)
-    {
-<td>
-    <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
-        <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
-            <i class="fa fa-pencil"></i> Editar
-        </a>
-        <button type="submit" class="btn btn-danger">
-            <i class="fa fa-trash"></i> Borrar
-        </button>
-        <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", null, Context.Request.Scheme)','Acciones de Supervision',@item.IdFracciones)" class="btn btn-primary">
-            <i class="fa fa-plus"></i> Acciones de Supervisión
-        </a>
-    </form>
-
-</td>                }
-</tr>}
+                    <span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>
+                    }
+                }
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Estado)
+        </td>
+        @if (ViewBag.usuario)
+        {
+        <td>
+            <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
+                <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
+                    <i class="fa fa-pencil"></i> Editar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
+                <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", null, Context.Request.Scheme)','Acciones de Supervision',@item.IdFracciones)" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Acciones de Supervisión
+                </a>
+            </form>
+        </td>                
+        }
+        </tr>
+        }
     </tbody>
 </table>
 
-@if (ViewBag.usuario)
-{
+    @if (ViewBag.usuario)
+    {
 <div>
     @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
+    <button id="btnImprimirR" name="btnImprimirR" title="Imprimir Reporte" type="button" class="btn btn-light" >
+        <i class="fa fa-print"></i>
+    </button>
     <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
         <i class="fa fa-plus"></i> Añadir Fracciones
     </button>
-</div>
-                <br />}
+</div>            
+    <br />
+    }
 
 <a href='javascript:history.go(-1)'>Regresar</a>
 

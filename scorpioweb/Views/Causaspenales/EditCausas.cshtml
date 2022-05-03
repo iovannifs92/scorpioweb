@@ -74,6 +74,47 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        //PARA HISTORIAL DE CAUSAS PENBALES 
+        //$('#btnguardarEdit').on("click", function (e) {
+        //    alert("entrando al boton");
+        //    $.ajax({
+        //        type: "POST",
+        //        dataType: "json",
+        //        url: "/Causaspenales/EditCausas",
+        //        traditional: true,
+        //        success: function (response) {
+        //            alert("entrando al boton");
+        //            //if (response.success) {
+        //            //    window.location.href = response.responseText;
+        //            //} else {
+        //            //    alert(response.responseText);
+        //            //}
+        //            var msg = confirm("Hubo cambios en la casa penal?");
+        //            if (msg == true) {
+        //                if (response.success) {
+        //                    window.location.href = response.responseText;
+        //                } else {
+        //                    alert(response.responseText);
+        //                }
+        //            } else {
+        //                window.location.replace("https://localhost:44359/Causaspenales/ListadeCausas");
+        //            }
+
+
+        //        },
+        //        error: function (response) {
+        //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+        //        }
+        //    });
+        //    //}
+        //    //else
+        //    //{
+        //    //    matches = "Esta causa penal ya se encuentran dentro del sistema\n\n" + matches;
+        //    //    alert(matches);
+        //    //}
+        //});
+
+
         function autocomplete(inp, arr) {
             var currentFocus;
             inp.addEventListener("input", function (e) {
@@ -239,7 +280,7 @@
                 @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
                 {
                     <div class="form-group col-md-12">
-                        <button type="submit" id="btnguardarEdit" class="btn btn-primary">
+                        <button type="submit" id="btnguardarEdit" name="btnguardarEdit" class="btn btn-primary">
                             <i class="fa fa-save"></i> Guardar
                         </button>
                     </div>
