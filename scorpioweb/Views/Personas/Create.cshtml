@@ -6,19 +6,19 @@
     ViewBag.Title = "Crear Entrevista";
 }
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+<link rel="stylesheet" type="text/css" href="~/css/style.css">
+<script type='text/javascript' src='~/js/apikey.js'></script>
 <script type="text/javascript">
     var tipo = 0;
     var listSustancia = new Array;
     var listFamiliarReferencia = new Array;
     var listDomSec = new Array;
     var listFamExtranjero = new Array;
-
+    var key = keys.GOOGLE_API_KEY;
 
     $(document).ready(function () {
         //#region -Municipios-
-        var items = "<option value='0'>Selecciona</option>";
+        var items = "<option value='0'>Sin municipio</option>";
         $('#lnMunicipio').html(items);
         $('#municipioD').html(items);
         $('#lnEstado').change(function () {
@@ -27,7 +27,7 @@
             //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
-                var items = '';
+                var items = "<option value='0'>Sin municipio</option>";
                 $("#lnMunicipio").empty();
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
@@ -39,26 +39,7 @@
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                 $("#lnEstado").val(0);
-                var items = "<option value='0'>Selecciona</option>";
-                $('#lnMunicipio').html(items);
-                $("#lnMunicipio").val(0);
-                $("#Estado").css("display", "none");
-                $("#Municipio").css("display", "none");
-                $("#Pais, #Localidad").removeClass("col-md-3");
-                $("#Pais, #Localidad").addClass("col-md-6");
-            }
-            else {
-                $("#Estado").css("display", "block");
-                $("#Municipio").css("display", "block");
-                $("#Pais, #Localidad").removeClass("col-md-6");
-                $("#Pais, #Localidad").addClass("col-md-3");
-            }
-        });
-        $('#lnPais').change(function () {
-            var selectedCountry = $(this).children("option:selected").val();
-            if (selectedCountry != "MEXICO") {
-                $("#lnEstado").val(0);
-                var items = "<option value='0'>Selecciona</option>";
+                var items = "<option value='0'>Sin municipio</option>";
                 $('#lnMunicipio').html(items);
                 $("#lnMunicipio").val(0);
                 $("#Estado").css("display", "none");
@@ -80,7 +61,7 @@
             //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
-                var items = '';
+                var items = "<option value='0'>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
@@ -92,7 +73,7 @@
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                  $("#estadoD").val(0);
-                var items = "<option value='0'>Selecciona</option>";
+                var items = "<option value='0'>Sin municipio</option>";
                 $('#municipioD').html(items);
                 $("#municipioD").val(0);
                 $("#EstadoD").css("display", "none");
@@ -114,7 +95,7 @@
             //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
-                var items = '';
+                var items = "<option value='0'>Sin municipio</option>";
                 $("#municipioDDS").empty();
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
@@ -125,10 +106,10 @@
         $('#paisDS').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
-                 $("#estadoDDS").val(0);
-                var items = "<option value='0'>Selecciona</option>";
+                $("#estadoDDS").val(0);
+                var items = "<option value='0'>Sin municipio</option>";
                 $('#municipioDDS').html(items);
-                var items1 = "<option value='0'>Selecciona</option>";
+                var items1 = "<option value='0'>Sin municipio</option>";
                 $("#municipioDDS").val(items1);
                 $("#EstadoDDS").css("display", "none");
                 $("#MunicipioDDS").css("display", "none");
@@ -678,8 +659,6 @@
         });
     });
 
-
-
     //#region Poner en "No" el dropdown si cancela en todos los modales
     $(document).ready(function () {
         $('#btnCloseCS').on("click", function (e) {
@@ -707,6 +686,18 @@
               var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
               ReferenciasPersonales.value = 'NO';
             }
+        });
+        $('#btnGeocoding').on("click", function (e) {
+            e.preventDefault();
+            var calle = document.getElementById("calle").value;
+            var no = document.getElementById("no").value;
+            var nombre = document.getElementById("nombreCF").value;
+            var cp = document.getElementById("cp").value;
+            var e = document.getElementById("estadoD");
+            var estado = e.options[e.selectedIndex].text;
+            var m = document.getElementById("municipioD");
+            var municipio = m.options[m.selectedIndex].text;
+            getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
     });
 
@@ -984,28 +975,46 @@
                                 </h4>
                             </div>
                             <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
-                                <div class="form-group col-md-12">
-                                    <label class="control-label">La propiedad del lugar o del inmueble, es:</label>
-                                    <select required class="form-control" name="tipoDomicilio">
-                                        <option value="RENTADA">Rentada</option>
-                                        <option value="PRESTADA">Prestada</option>
-                                        <option value="PROPIA">Propia</option>
-                                        <option value="FAMILIAR">Familiar</option>
-                                        <option value="SITUACION DE CALLE">Situación de calle</option>
-                                        <option value="IRREGULAR">Irregular</option>
-                                    </select>
+                                <div id="map"></div>
+                                <script id="GoogleApi"></script>
+                                <script src="~/js/scripts.js"></script>
+                                <script>
+                                    var url = "https://maps.googleapis.com/maps/api/js?key=";
+                                    var api = key;
+                                    var url2 = "&callback=iniciarMap&v=weekly";
+                                    document.getElementById("GoogleApi").src = url + api + url2;
+                                </script>
+                                @*<script src="https://maps.googleapis.com/maps/api/js?key='key'&callback=iniciarMap&v=weekly"></script>*@
+                                <input type="hidden" required id="lat" name="lat" type="text" class="form-control" />
+                                <input type="hidden" id="lng" name="lng" type="text" class="form-control" />
+
+                                <label class="control-label col-sm-12">La propiedad del lugar o del inmueble, es:</label>
+                                <div class="form-group col-sm-12" style="padding-left:0%;padding-right:0%;">
+                                    <div class="form-group col-sm-9">
+                                        <select required class="form-control" name="tipoDomicilio">
+                                            <option value="RENTADA">Rentada</option>
+                                            <option value="PRESTADA">Prestada</option>
+                                            <option value="PROPIA">Propia</option>
+                                            <option value="FAMILIAR">Familiar</option>
+                                            <option value="SITUACION DE CALLE">Situación de calle</option>
+                                            <option value="IRREGULAR">Irregular</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
+                                        <i class="fa fa-map-marker"></i> Posicionar marcador
+                                    </button>
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Calle</label>
-                                    <input required name="calle" type="text" class="form-control" />
+                                    <input required id="calle" name="calle" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="control-label">Número</label>
-                                    <input name="no" type="text" class="form-control" />
+                                    <input id="no" name="no" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Colonia/Fraccionamiento</label>
-                                    <input required name="nombreCF" type="text" class="form-control" maxlength="45" />
+                                    <input required id="nombreCF" name="nombreCF" type="text" class="form-control" maxlength="45" />
                                 </div>
                                 <div class="form-group col-md-4" id="PaisD">
                                     <label class="control-label">País</label>
@@ -1051,7 +1060,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Código Postal</label>
-                                    <input name="cp" type="text" class="form-control" />
+                                    <input id="cp" name="cp" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Elija la zona que le corresponde (únicamente ciudad de Durango)</label>
@@ -1061,7 +1070,7 @@
                                         <option value="ZONA 3">Zona 3</option>
                                         <option value="ZONA 4">Zona 4</option>
                                         <option value="ZONA 5">Zona 5</option>
-                                        <option value="ZONA 6">Zona 6</option>                                                                                                          
+                                        <option value="ZONA 6">Zona 6</option>
                                         <option value="ZONA 7">Zona 7</option>
                                         <option value="NA">NA</option>
                                     </select>

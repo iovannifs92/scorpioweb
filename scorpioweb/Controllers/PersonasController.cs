@@ -1530,17 +1530,9 @@ namespace scorpioweb.Controllers
             TempData["message"] = DateTime.Now;
             List<Municipios> municipiosList = new List<Municipios>();
 
-            if (EstadoId != 0)
-            {
-
-                municipiosList = (from Municipios in _context.Municipios
+            municipiosList = (from Municipios in _context.Municipios
                                   where Municipios.EstadosId == EstadoId
                                   select Municipios).ToList();
-            }
-            else
-            {
-                municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
-            }
 
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
         }
@@ -1552,7 +1544,6 @@ namespace scorpioweb.Controllers
 
             if (EstadoId != 0)
             {
-
                 municipiosList = (from Municipios in _context.Municipios
                                   where Municipios.EstadosId == EstadoId
                                   select Municipios).ToList();
@@ -1614,7 +1605,6 @@ namespace scorpioweb.Controllers
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
                             select table).ToList();
-            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListadoEstados = listaEstados;
             return View();
         }
@@ -1627,7 +1617,7 @@ namespace scorpioweb.Controllers
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
-            string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string cuentaDomicilioSecundario,
+            string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
             /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
             string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
             string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE,
@@ -1719,6 +1709,8 @@ namespace scorpioweb.Controllers
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
                 domicilio.Observaciones = normaliza(observaciones);
+                domicilio.Lat = lat;
+                domicilio.Lng = lng;
                 #endregion
 
                 #region -Domicilio Secundario-   
@@ -2643,8 +2635,6 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
 
-            listaEstados.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
-
             ViewBag.ListadoEstados = listaEstados;
 
             ViewBag.idEstado = persona.Lnestado;
@@ -3321,7 +3311,6 @@ namespace scorpioweb.Controllers
             listaEstadosD = (from table in _context.Estados
                              select table).ToList();
 
-            listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoD = listaEstadosD;
             ViewBag.idEstadoD = domicilio.Estado;
             #endregion
@@ -3337,7 +3326,7 @@ namespace scorpioweb.Controllers
                                     select table).ToList();
             }
 
-            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
             ViewBag.ListaMunicipioD = listaMunicipiosD;
             ViewBag.idMunicipioD = domicilio.Municipio;
             #endregion

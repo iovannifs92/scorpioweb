@@ -14,7 +14,7 @@
             //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
-                var items = '';
+                var items = "<option value='0'>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
@@ -26,7 +26,7 @@
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                  $("#estadoD").val(0);
-                var items = "<option value='0'>Selecciona</option>";
+                var items = "<option value='0'>Sin municipio</option>";
                 $('#municipioD').html(items);
                 $("#municipioD").val(0);
                 $("#EstadoD").css("display", "none");

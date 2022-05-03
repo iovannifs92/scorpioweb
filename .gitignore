@@ -18,6 +18,7 @@
 appsettings.json
 penas2Context.cs
 appsettings.Development.json
+apikey.js
 
 # Build results
 [Dd]ebug/
