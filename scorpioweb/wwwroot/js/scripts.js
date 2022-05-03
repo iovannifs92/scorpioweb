@@ -161,7 +161,8 @@ function fillInAddress(place) {
 				document.getElementById("estadoD").value = e.options[i].value;
 			 }
 		 }
-	     $("#estadoD").change();
+             $("#estadoD").change();
+             alert("Dirección cargada");
          break;
        }
 	   default: {
