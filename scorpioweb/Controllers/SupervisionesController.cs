@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
 using Microsoft.AspNetCore.Http;
 using SautinSoft.Document;
+using SautinSoft.Document.MailMerging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using QRCoder;
@@ -2116,7 +2117,62 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -Imprimir Reporte Supervision-
+        public void imprimirReporteSupervision()
+        {            
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateSCP.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\reporteSupervisionSCP.docx";
 
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            var dataSource = new
+            {
+                Fraccion = new object[]
+                {
+                    new
+                    {
+                        No="I",
+                        TextoFraccion="Residir en el domicilio",
+                        Estatus="CUMPLIENDO",
+                        Actividades="ACTIVIDADES 1"
+                    },
+                    new
+                    {
+                        No="II",
+                        TextoFraccion="No acercarse a la ofendida",
+                        Estatus="CUMPLIENDO",
+                        Actividades="ACTIVIDADES 2"
+                    },
+                    new
+                    {
+                        No="#Algo",
+                        TextoFraccion=(object)null,
+                        Estatus="Algo",
+                        Actividades=string.Empty
+                    },
+                    new
+                    {
+                        No="IV",
+                        TextoFraccion="Participar en programas especiales para la prevención y el tratamiento de adicciones.",
+                        Estatus="INCUMPLIENDO",
+                        Actividades="ACTIVIDADES 4"
+                    },
+                    new
+                    {
+                        No="V",
+                        TextoFraccion="Aprender una profesión u oficio o seguir cursos de capacitación en el lugar o la institución que determine el Juez de control.",
+                        Estatus="CUMPLIENDO",
+                        Actividades="ACTIVIDADES 5"
+                    },
+                }
+            };
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+            dc.MailMerge.Execute(dataSource);
+            dc.Save(resultPath);
+            Response.Redirect("https://localhost:44359/Documentos/reporteSupervisionSCP.docx");
+        }
+        #endregion
 
         #region -Graficos-   
         private static MemoryStream BitmapToBytes(Bitmap img)
