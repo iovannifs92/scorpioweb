@@ -644,8 +644,8 @@ namespace scorpioweb.Controllers
                 //     supervisionVM = supervision,
                 //     causapenalVM = causapenal,
                 //     planeacionestrategicaVM = planeacion,
-                //     tipoAdvertencia = "Sin estado de supervisión"
                 // });
+                //     tipoAdvertencia = "Sin estado de supervisión"
                 ;
                 var warnings = Enumerable.Empty<PlaneacionWarningViewModel>();
                 if (usuario == "janeth@nortedgepms.com" || flagMaster == true)

@@ -1461,6 +1461,16 @@ namespace scorpioweb.Controllers
             return View();
             //return RedirectToAction(nameof(Index));
         }
+
+        #region -CREAR REPORTE FRACCIONES-
+        public async Task<IActionResult> CrearReoprte(string[] datosidFraccion)
+        {
+
+
+        
+            return View();
+        }
+        #endregion
         #endregion
 
         #region -EditPlaneacionestrategica-
@@ -2012,6 +2022,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Firma Periódica", Value="FIRMA PERIODICA"},
               new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
               new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+              new SelectListItem{ Text="Informe de Supervisión", Value="INFORME"},
               new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
