@@ -27,6 +27,7 @@
     //};
 
     function cambioUE(ida, idp, value) {
+        var usuario = '@ViewBag.user';
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -35,6 +36,7 @@
             data: {
                 archivoid: ida,
                 idpersona: idp,
+                usuario: usuario,
                 cambioUE: value,
             },
             success: function (response) {
@@ -78,6 +80,9 @@
                 <th>
                     <a asp-action="ArchivoPrestamo" asp-route-sortOrder="@ViewData["fecha_desc"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha</a>
                 </th>
+                <th>
+                    <a>Ultima actualización</a>
+                </th>
                 @*<th>
                         <a>Usuario</a>
                     </th>*@
@@ -90,26 +95,28 @@
             <scorpioweb.Models.ArchivoPersona>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
-                        </td>
-                        @*<td>
-                            <input onchange="cambioCP(@item.archivointernomcscpVM.IdarchivoInternoMcscp, value)" name="causapenal" id="causapenal" class="form-control" value=@item.archivointernomcscpVM.CausaPenal />
-                        </td>*@
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
-                        </td>
-
-                        <td>
-                            <select class="form-control" name="Supervisor" id="Supervisor" onchange="cambioUE(@item.archivointernomcscpVM.IdarchivoInternoMcscp,@item.personaVM.IdPersona, value)"
-                                    asp-items="@(new SelectList(ViewBag.ListaUbicacion, "Text", "Text", item.archivointernomcscpVM.NuevaUbicacion))">
-                            </select>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.personaVM.Paterno) @Html.DisplayFor(modelItem => item.personaVM.Materno) @Html.DisplayFor(modelItem => item.personaVM.Nombre)
+                    </td>
+                    @*<td>
+            <input onchange="cambioCP(@item.archivointernomcscpVM.IdarchivoInternoMcscp, value)" name="causapenal" id="causapenal" class="form-control" value=@item.archivointernomcscpVM.CausaPenal />
+        </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Usuario)
+                    </td>
+                    <td>
+                        <select class="form-control" name="Supervisor" id="Supervisor" onchange="cambioUE(@item.archivointernomcscpVM.IdarchivoInternoMcscp,@item.personaVM.IdPersona, value)"
+                                asp-items="@(new SelectList(ViewBag.ListaUbicacion, "Text", "Text", item.archivointernomcscpVM.NuevaUbicacion))">
+                        </select>
+                    </td>
+                </tr>
                 }
         </tbody>
     </table>

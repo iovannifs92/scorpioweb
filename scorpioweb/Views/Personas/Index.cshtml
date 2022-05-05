@@ -110,6 +110,7 @@
         });
     };
     function actualizaUbicacion(id, idPersona, ubicacionAnterior) {
+            var usuario = '@ViewBag.user';
         var u = document.getElementById("ubicacion" + id);
         var cambiar = confirm("¿Desea cambiar la ubicación del expediente?");
         if (cambiar == true) {
@@ -121,7 +122,8 @@
                 traditional: true,
                 data: {
                     ubicacion: sel,
-                    idPersona : idPersona,
+                    idPersona: idPersona,
+                    usuario: usuario,
                 },
                 success: function (response) {
                     if (response.success == false) {

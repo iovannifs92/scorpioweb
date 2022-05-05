@@ -39,9 +39,9 @@
                 <th>
                     <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["fecha_desc"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha</a>
                 </th>
-                @*<th>
-            <a>Usuario</a>
-        </th>*@
+                <th>
+                    <a>Ultima actualización</a>
+                </th>
                 <th>
                     <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["ubicacion_ase"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nueva Ubicación</a>
                 </th>
@@ -63,6 +63,9 @@
                         </td>*@
                         <td>
                             @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Fecha)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Usuario)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.archivointernomcscpVM.NuevaUbicacion)
