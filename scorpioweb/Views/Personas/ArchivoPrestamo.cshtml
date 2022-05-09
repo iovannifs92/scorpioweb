@@ -111,11 +111,23 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.archivointernomcscpVM.Usuario)
                     </td>
-                    <td>
-                        <select class="form-control" name="Supervisor" id="Supervisor" onchange="cambioUE(@item.archivointernomcscpVM.IdarchivoInternoMcscp,@item.personaVM.IdPersona, value)"
-                                asp-items="@(new SelectList(ViewBag.ListaUbicacion, "Text", "Text", item.archivointernomcscpVM.NuevaUbicacion))">
-                        </select>
-                    </td>
+                    @if (@ViewBag.user == "sergio.lopez@dgepms.com" && @item.archivointernomcscpVM.NuevaUbicacion == "EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO" || @item.archivointernomcscpVM.NuevaUbicacion == "ARCHIVO GENERAL" )
+                    {
+                        <td>
+                            <select disabled class="form-control" name="Supervisor" id="Supervisor" onchange="cambioUE(@item.archivointernomcscpVM.IdarchivoInternoMcscp,@item.personaVM.IdPersona, value)"
+                                    asp-items="@(new SelectList(ViewBag.ListaUbicacion, "Text", "Text", item.archivointernomcscpVM.NuevaUbicacion))">
+                            </select>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <select class="form-control" name="Supervisor" id="Supervisor" onchange="cambioUE(@item.archivointernomcscpVM.IdarchivoInternoMcscp,@item.personaVM.IdPersona, value)"
+                                    asp-items="@(new SelectList(ViewBag.ListaUbicacion, "Text", "Text", item.archivointernomcscpVM.NuevaUbicacion))">
+                            </select>
+                        </td>
+                    }
+
                 </tr>
                 }
         </tbody>

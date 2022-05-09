@@ -258,6 +258,7 @@ namespace scorpioweb.Controllers
             List<string> ListaUsuariosAdminMCSCP = new List<string>();
             if (users == "esmeralda.vargas@dgepms.com")
             {
+                ListaUsuariosAdminMCSCP.Add("Seleccione");
                 ListaUsuariosAdminMCSCP.Add("Expediente Concluido para Razón de Archivo");
                 foreach (var u in userManager.Users)
                 {
@@ -275,26 +276,14 @@ namespace scorpioweb.Controllers
 
             List<String> ListaUsuarios = new List<String>();
 
-            if (users == "sergio.lopez@dgepms.com")
-            {
-                ListaUsuarios.Add("Sin Registro");
-                ListaUsuarios.Add("Archivo Interno");
-                ListaUsuarios.Add("No Ubicado");
-                ListaUsuarios.Add("Dirección");
-                ListaUsuarios.Add("Coordinación Operativa");
-                ListaUsuarios.Add("Coordinación MC y SCP");  
-            }
-            else
-            {
-                ListaUsuarios.Add("Sin Registro");
-                ListaUsuarios.Add("Archivo Interno");
-                ListaUsuarios.Add("Archivo General");
-                ListaUsuarios.Add("No Ubicado");
-                ListaUsuarios.Add("Dirección");
-                ListaUsuarios.Add("Coordinación Operativa");
-                ListaUsuarios.Add("Coordinación MC y SCP");
-                ListaUsuarios.Add("Expediente Concluido para Razón de Archivo");
-            }
+            ListaUsuarios.Add("Sin Registro");
+            ListaUsuarios.Add("Archivo Interno");
+            ListaUsuarios.Add("Archivo General");
+            ListaUsuarios.Add("No Ubicado");
+            ListaUsuarios.Add("Dirección");
+            ListaUsuarios.Add("Coordinación Operativa");
+            ListaUsuarios.Add("Coordinación MC y SCP");
+            ListaUsuarios.Add("Expediente Concluido para Razón de Archivo");
             foreach (var u in userManager.Users)
             {
                 if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
@@ -1727,7 +1716,7 @@ namespace scorpioweb.Controllers
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = normaliza(cp);
-                domicilio.Zona = zona;
+                domicilio.Zona = normaliza(zona);
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
@@ -3420,7 +3409,7 @@ namespace scorpioweb.Controllers
             domicilio.Referencias = normaliza(domicilio.Referencias);
             domicilio.Horario = normaliza(domicilio.Horario);
             domicilio.Observaciones = normaliza(domicilio.Observaciones);
-            domicilio.Zona = domicilio.Zona;
+            domicilio.Zona = normaliza(domicilio.Zona);
 
 
             if (ModelState.IsValid)
@@ -5654,8 +5643,9 @@ namespace scorpioweb.Controllers
            int? pageNumber
            )
         {
-
-            ViewBag.user = await userManager.FindByNameAsync(User.Identity.Name);
+            var usu = await userManager.FindByNameAsync(User.Identity.Name);
+            String users = usu.ToString();
+            ViewBag.user = users;
   
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -5678,7 +5668,7 @@ namespace scorpioweb.Controllers
 
             var filter = from p in _context.Persona
                          join a in queryHistorialArchivo on p.IdPersona equals a.PersonaIdPersona
-                         where a.NuevaUbicacion != "NO UBICADO" && a.NuevaUbicacion != "ARCHIVO GENERAL" && a.NuevaUbicacion != "ARCHIVO INTERNO" && a.NuevaUbicacion != "EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO" && a.NuevaUbicacion != "SIN REGISTRO" && a.NuevaUbicacion != null
+                         where a.NuevaUbicacion != "NO UBICADO" && a.NuevaUbicacion != "ARCHIVO INTERNO" && a.NuevaUbicacion != "SIN REGISTRO" && a.NuevaUbicacion != null
                          select new ArchivoPersona
                          {
                              archivointernomcscpVM = a,
@@ -5720,6 +5710,7 @@ namespace scorpioweb.Controllers
             int ii = 0;
             ListaUbicacion.Add(new SelectListItem { Text = "Sin Registro", Value = "Sin Registro" });
             ListaUbicacion.Add(new SelectListItem { Text = "Archivo Interno", Value = "Archivo Interno" });
+            ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "Archivo General" });
             ListaUbicacion.Add(new SelectListItem { Text = "No Ubicado", Value = "No Ubicado" });
             ListaUbicacion.Add(new SelectListItem { Text = "Dirección", Value = "Dirección" });
             ListaUbicacion.Add(new SelectListItem { Text = "Coordinación Operativa", Value = "Coordinación Operativa" });
@@ -5822,7 +5813,7 @@ namespace scorpioweb.Controllers
 
             if (users == "esmeralda.vargas@dgepms.com")
             {
-
+                ListaUbicacion.Add(new SelectListItem { Text = "Seleccione", Value = "Seleccione" });
                 ListaUbicacion.Add(new SelectListItem { Text = "Expediente Concluido para Razón de Archivo", Value = "Expediente Concluido para Razón de Archivo" });
                 foreach (var user in userManager.Users)
                 {
