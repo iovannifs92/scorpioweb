@@ -739,6 +739,9 @@ namespace scorpioweb.Controllers
                     }
                 }
 
+                //return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id}) });
+               // return Json(new { success = true, responseText = "Datos Guardados con éxito" /*responseText = Url.Action("ListadeCausas", "Causaspenales",new { @id = id }) */});
+
                 return RedirectToAction(nameof(Index));
             }
             return View();

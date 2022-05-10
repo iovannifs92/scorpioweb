@@ -8,6 +8,7 @@
 
 <script>
     function cambioUE(ida, idp, value) {
+        var usuario = '@ViewBag.user';
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -16,6 +17,7 @@
             data: {
                 archivoid: ida,
                 idpersona: idp,
+                usuario: usuario,
                 cambioUE: value,
             },
             success: function (response) {
