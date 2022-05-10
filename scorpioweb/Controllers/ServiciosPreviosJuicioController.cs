@@ -129,6 +129,10 @@ namespace scorpioweb.Controllers
             {
                 normalizar = normalizar.ToUpper();
             }
+            else
+            {
+                normalizar = "NA";
+            }
             return normalizar;
         }
         String BuscaId(List<SelectListItem> lista, String texto)

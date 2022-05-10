@@ -28,6 +28,10 @@ namespace scorpioweb.Controllers
             {
                 normalizar = normalizar.ToUpper();
             }
+            else
+            {
+                normalizar = "NA";
+            }
             return normalizar;
         }
 

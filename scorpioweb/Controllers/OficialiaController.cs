@@ -51,7 +51,7 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                normalizar = "S-D";
+                normalizar = "NA";
             }
             return normalizar;
         }
@@ -103,8 +103,8 @@ namespace scorpioweb.Controllers
                 {
                     if (datosDelitos[i][1] == currentUser)
                     {
-                        delitoDB.Tipo = datosDelitos[i][0];
-                        delitoDB.Modalidad = datosDelitos[i + 1][0];
+                        delitoDB.Tipo = normaliza(datosDelitos[i][0]);
+                        delitoDB.Modalidad = normaliza(datosDelitos[i + 1][0]);
                         delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
                         delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
 
@@ -124,10 +124,10 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 causapenal.Cnpp = cnpp;
-                causapenal.Juez = juez;
+                causapenal.Juez = normaliza(juez);
                 causapenal.Distrito = distrito;
                 causapenal.Cambio = cambio;
-                causapenal.CausaPenal = cp;
+                causapenal.CausaPenal = normaliza(cp);
                 _context.Add(causapenal);
                 await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction(nameof(Index));

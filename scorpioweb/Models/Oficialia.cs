@@ -36,7 +36,7 @@ namespace scorpioweb.Models
             get
             {
                 string nombreCompleto = "";
-                if (this.Paterno != "S-D")
+                if (this.Paterno != "NA")
                 {
                     if (nombreCompleto != "")
                     {
@@ -44,7 +44,7 @@ namespace scorpioweb.Models
                     }
                     nombreCompleto += this.Paterno;
                 }
-                if (this.Materno != "S-D")
+                if (this.Materno != "NA")
                 {
                     if (nombreCompleto != "")
                     {
@@ -52,7 +52,7 @@ namespace scorpioweb.Models
                     }
                     nombreCompleto += this.Materno;
                 }
-                if (this.Nombre != "S-D")
+                if (this.Nombre != "NA")
                 {
                     if (nombreCompleto != "")
                     {
@@ -68,7 +68,7 @@ namespace scorpioweb.Models
             get
             {
                 string nombreCompleto = "";
-                if (this.Nombre != "S-D")
+                if (this.Nombre != "NA")
                 {
                     if (nombreCompleto != "")
                     {
@@ -76,7 +76,7 @@ namespace scorpioweb.Models
                     }
                     nombreCompleto += this.Nombre;
                 }
-                if (this.Paterno != "S-D")
+                if (this.Paterno != "NA")
                 {
                     if (nombreCompleto != "")
                     {
@@ -84,7 +84,7 @@ namespace scorpioweb.Models
                     }
                     nombreCompleto += this.Paterno;
                 }
-                if (this.Materno != "S-D")
+                if (this.Materno != "NA")
                 {
                     if (nombreCompleto != "")
                     {

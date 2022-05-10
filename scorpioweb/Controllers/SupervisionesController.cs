@@ -113,6 +113,10 @@ namespace scorpioweb.Controllers
             {
                 normalizar = normalizar.ToUpper();
             }
+            else
+            {
+                normalizar = "NA";
+            }
             return normalizar;
         }
         String BuscaId(List<SelectListItem> lista, String texto)
@@ -547,6 +551,9 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    bitacora.Texto = normaliza(bitacora.Texto);
+
+
                     var oldBitacora = await _context.Bitacora.FindAsync(bitacora.IdBitacora, bitacora.SupervisionIdSupervision);
 
                     if (evidencia == null)
@@ -598,7 +605,7 @@ namespace scorpioweb.Controllers
             bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosBitacora[1]);
             bitacora.Fecha = validateDatetime(datosBitacora[2]);
             bitacora.TipoPersona = datosBitacora[3];
-            bitacora.Texto = datosBitacora[4];
+            bitacora.Texto = normaliza(datosBitacora[4]);
             bitacora.TipoVisita = datosBitacora[5];
             bitacora.RutaEvidencia = datosBitacora[6];
 
@@ -1120,6 +1127,8 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    aer.EvaluadorCaso = normaliza(aer.EvaluadorCaso);
+
                     var oldAer = await _context.Aer.FindAsync(aer.IdAer, aer.SupervisionIdSupervision);
                     _context.Entry(oldAer).CurrentValues.SetValues(aer);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1182,6 +1191,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    cambiodeobligaciones.MotivoAprobacion = normaliza(cambiodeobligaciones.MotivoAprobacion);
                     var oldCambiodeobligaciones = await _context.Cambiodeobligaciones.FindAsync(cambiodeobligaciones.IdCambiodeObligaciones, cambiodeobligaciones.SupervisionIdSupervision);
                     _context.Entry(oldCambiodeobligaciones).CurrentValues.SetValues(cambiodeobligaciones);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1264,6 +1274,8 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+
+                    cierredecaso.ComoConcluyo = normaliza(cierredecaso.ComoConcluyo);
                     var oldcierredecaso = await _context.Cierredecaso.FindAsync(cierredecaso.IdCierreDeCaso, cierredecaso.SupervisionIdSupervision);
 
                     if (archivo == null)
@@ -1376,6 +1388,8 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    fraccionesimpuestas.Autoridad = normaliza(fraccionesimpuestas.Autoridad);
+
                     var oldFraccionesimpuestas = await _context.Fraccionesimpuestas.FindAsync(fraccionesimpuestas.IdFracciones, fraccionesimpuestas.SupervisionIdSupervision);
                     _context.Entry(oldFraccionesimpuestas).CurrentValues.SetValues(fraccionesimpuestas);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1535,6 +1549,8 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    planeacionestrategica.MotivoNoPlaneacion = normaliza(planeacionestrategica.MotivoNoPlaneacion);
+
                     var oldPlaneacionestrategica = await _context.Planeacionestrategica.FindAsync(planeacionestrategica.IdPlaneacionEstrategica, planeacionestrategica.SupervisionIdSupervision);
                     _context.Entry(oldPlaneacionestrategica).CurrentValues.SetValues(planeacionestrategica);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1602,6 +1618,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    revocacion.MotivoRevocacion = normaliza(revocacion.MotivoRevocacion);
                     var oldRevocacion = await _context.Revocacion.FindAsync(revocacion.IdRevocacion, revocacion.SupervisionIdSupervision);
                     _context.Entry(oldRevocacion).CurrentValues.SetValues(revocacion);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1664,6 +1681,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    suspensionseguimiento.MotivoSuspension = normaliza(suspensionseguimiento.MotivoSuspension);
                     var oldSuspensionseguimiento = await _context.Suspensionseguimiento.FindAsync(suspensionseguimiento.IdSuspensionSeguimiento, suspensionseguimiento.SupervisionIdSupervision);
                     _context.Entry(oldSuspensionseguimiento).CurrentValues.SetValues(suspensionseguimiento);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);

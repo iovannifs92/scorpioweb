@@ -35,8 +35,14 @@ namespace scorpioweb.Controllers
             {
                 normalizar = normalizar.ToUpper();
             }
+            else
+            {
+                normalizar = "NA";
+            }
             return normalizar;
         }
+
+
 
 
         public CausaspenalesController(penas2Context context, UserManager<ApplicationUser> userManager)
@@ -267,10 +273,10 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
 
             causapenal.Cnpp = cnpp;
-            causapenal.Juez = juez;
+            causapenal.Juez = normaliza(juez);
             causapenal.Distrito = distrito;
             causapenal.Cambio = cambio;
-            causapenal.CausaPenal = cp;
+            causapenal.CausaPenal = normaliza(cp);
 
             if (cp == null)
             {
@@ -288,9 +294,10 @@ namespace scorpioweb.Controllers
                     {
                         if (datosDelitos[i][1] == currentUser)
                         {
-                            delitoDB.Tipo = datosDelitos[i][0];
-                            delitoDB.Modalidad = datosDelitos[i + 1][0];
+                            delitoDB.Tipo = normaliza(datosDelitos[i][0]);
+                            delitoDB.Modalidad = normaliza(datosDelitos[i + 1][0]);
                             delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
+                            delitoDB.EspecificarDelito = normaliza(delitoDB.EspecificarDelito);
 
                             _context.Add(delitoDB);
                             await _context.SaveChangesAsync(null, 1);
@@ -587,8 +594,9 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                delitoDB.Tipo = Tipo;
-                delitoDB.Modalidad = Modalidad;
+                delitoDB.Tipo = normaliza(Tipo);
+                delitoDB.Modalidad = normaliza(Modalidad);
+                delitoDB.EspecificarDelito = normaliza(delitoDB.EspecificarDelito);
                 delitoDB.CausaPenalIdCausaPenal = id;
 
                 int idDelito = ((from table in _context.Delito
@@ -723,6 +731,9 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    causa.Juez = normaliza(causa.Juez);
+                    causa.CausaPenal = normaliza(causa.CausaPenal);
+
                     var oldCausa = await _context.Causapenal.FindAsync(id);
                     _context.Entry(oldCausa).CurrentValues.SetValues(causa);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -779,6 +790,11 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    delito.Tipo = normaliza(delito.Tipo);
+                    delito.Modalidad = normaliza(delito.Modalidad);
+                    delito.EspecificarDelito = normaliza(delito.EspecificarDelito);
+
+
                     var oldDelito = await _context.Delito.FindAsync(id);
                     _context.Entry(oldDelito).CurrentValues.SetValues(delito);
                     //_context.Update(delito);

@@ -143,7 +143,7 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                normalizar = "S-D";
+                normalizar = "NA";
             }
             return normalizar;
         }
@@ -1624,7 +1624,7 @@ namespace scorpioweb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
-            string resolusionstring, string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string resolucion, string nombre, string paterno, string materno, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma, 
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
@@ -1649,7 +1649,7 @@ namespace scorpioweb.Controllers
             if (ModelState.ErrorCount <= 1)
             {
                 #region -Persona-
-                
+                persona.TieneResolucion = normaliza(resolucion);
                 persona.Nombre = removeSpaces(normaliza(nombre));
                 persona.Paterno = removeSpaces(normaliza(paterno));
                 persona.Materno = removeSpaces(normaliza(materno));
@@ -2125,7 +2125,7 @@ namespace scorpioweb.Controllers
             }
             else
             {
-                normalizar = "S-D";
+                normalizar = "NA";
             }
             return normalizar;
         }
@@ -2548,7 +2548,7 @@ namespace scorpioweb.Controllers
                 var file_name = (from a in _context.Persona
                                  where a.IdPersona == persona.IdPersona
                                  select a.rutaFoto).FirstOrDefault();
-                if (file_name == null || file_name == "S-D")
+                if (file_name == null || file_name == "NA")
                 {
                     var query = (from a in _context.Persona
                                  where a.IdPersona == persona.IdPersona
@@ -3578,6 +3578,17 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+
+                    domiciliosecundario.TipoUbicacion = normaliza(domiciliosecundario.TipoUbicacion);
+                    domiciliosecundario.Calle = normaliza(domiciliosecundario.Calle);
+                    domiciliosecundario.No = normaliza(domiciliosecundario.No);
+                    domiciliosecundario.NombreCf = normaliza(domiciliosecundario.NombreCf);
+                    domiciliosecundario.Cp = normaliza(domiciliosecundario.Cp);
+                    domiciliosecundario.Referencias = normaliza(domiciliosecundario.Referencias);
+                    domiciliosecundario.Horario = normaliza(domiciliosecundario.Horario);
+                    domiciliosecundario.Motivo = normaliza(domiciliosecundario.Motivo);
+                    domiciliosecundario.Observaciones = normaliza(domiciliosecundario.Observaciones);
+
                     var oldDomicilio = await _context.Domiciliosecundario.FindAsync(domiciliosecundario.IdDomicilioSecundario);
                     _context.Entry(oldDomicilio).CurrentValues.SetValues(domiciliosecundario);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -3625,21 +3636,21 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> CrearDomicilioSecundario(Domiciliosecundario domiciliosecundario, string[] datosDomicilio)
         {
             domiciliosecundario.IdDomicilio = Int32.Parse(datosDomicilio[0]);
-            domiciliosecundario.TipoDomicilio = datosDomicilio[1];
-            domiciliosecundario.Calle = datosDomicilio[2];
-            domiciliosecundario.No = datosDomicilio[3];
+            domiciliosecundario.TipoDomicilio = normaliza(datosDomicilio[1]);
+            domiciliosecundario.Calle = normaliza(datosDomicilio[2]);
+            domiciliosecundario.No = normaliza(datosDomicilio[3]);
             domiciliosecundario.TipoUbicacion = datosDomicilio[4];
-            domiciliosecundario.NombreCf = datosDomicilio[5];
+            domiciliosecundario.NombreCf = normaliza(datosDomicilio[5]);
             domiciliosecundario.Pais = datosDomicilio[6];
             domiciliosecundario.Estado = datosDomicilio[7];
             domiciliosecundario.Municipio = datosDomicilio[8];
             domiciliosecundario.Temporalidad = datosDomicilio[9];
             domiciliosecundario.ResidenciaHabitual = datosDomicilio[10];
-            domiciliosecundario.Cp = datosDomicilio[11];
-            domiciliosecundario.Referencias = datosDomicilio[12];
-            domiciliosecundario.Motivo = datosDomicilio[13];
-            domiciliosecundario.Horario = datosDomicilio[14];
-            domiciliosecundario.Observaciones = datosDomicilio[15];
+            domiciliosecundario.Cp = normaliza(datosDomicilio[11]);
+            domiciliosecundario.Referencias = normaliza(datosDomicilio[12]);
+            domiciliosecundario.Motivo = normaliza(datosDomicilio[13]);
+            domiciliosecundario.Horario = normaliza(datosDomicilio[14]);
+            domiciliosecundario.Observaciones = normaliza(datosDomicilio[15]);
 
 
             var query = (from a in _context.Domicilio
@@ -3860,6 +3871,7 @@ namespace scorpioweb.Controllers
             trabajo.Puesto = normaliza(trabajo.Puesto);
             trabajo.EmpledorJefe = normaliza(trabajo.EmpledorJefe);
             trabajo.Salario = normaliza(trabajo.Salario);
+            trabajo.TemporalidadSalario = normaliza(trabajo.TemporalidadSalario);
             trabajo.Direccion = normaliza(trabajo.Direccion);
             trabajo.Horario = normaliza(trabajo.Horario);
             trabajo.Observaciones = normaliza(trabajo.Observaciones);
@@ -4291,6 +4303,12 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+
+                    familiaresforaneos.Nombre = normaliza(familiaresforaneos.Nombre);
+                    familiaresforaneos.Estado = normaliza(familiaresforaneos.Estado);
+                    familiaresforaneos.Observaciones = normaliza(familiaresforaneos.Observaciones);
+
+
                     var oldFamiliaresforaneos = await _context.Familiaresforaneos.FindAsync(familiaresforaneos.IdFamiliaresForaneos);
                     _context.Entry(oldFamiliaresforaneos).CurrentValues.SetValues(familiaresforaneos);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -4335,18 +4353,18 @@ namespace scorpioweb.Controllers
         {
 
             familiaresforaneos.PersonaIdPersona = Int32.Parse(datosFamiliarF[0]);
-            familiaresforaneos.Nombre = datosFamiliarF[1];
+            familiaresforaneos.Nombre = normaliza(datosFamiliarF[1]);
             familiaresforaneos.Edad = Int32.Parse(datosFamiliarF[2]);
             familiaresforaneos.Sexo = datosFamiliarF[3];
             familiaresforaneos.Relacion = datosFamiliarF[4];
             familiaresforaneos.TiempoConocerlo = datosFamiliarF[5];
             familiaresforaneos.Pais = datosFamiliarF[6];
-            familiaresforaneos.Estado = datosFamiliarF[7];
+            familiaresforaneos.Estado = normaliza(datosFamiliarF[7]);
             familiaresforaneos.Telefono = datosFamiliarF[8];
             familiaresforaneos.FrecuenciaContacto = datosFamiliarF[9];
             familiaresforaneos.EnteradoProceso = datosFamiliarF[10];
             familiaresforaneos.PuedeEnterarse = datosFamiliarF[11];
-            familiaresforaneos.Observaciones = datosFamiliarF[12];
+            familiaresforaneos.Observaciones = normaliza(datosFamiliarF[12]);
 
             var query = (from a in _context.Abandonoestado
                          where a.PersonaIdPersona == familiaresforaneos.PersonaIdPersona
@@ -5407,7 +5425,7 @@ namespace scorpioweb.Controllers
         {
             persona.Candado = Convert.ToSByte(datoCandado[0] == "true");
             persona.IdPersona = Int32.Parse(datoCandado[1]);
-            persona.MotivoCandado = datoCandado[2];
+            persona.MotivoCandado = normaliza(datoCandado[2]);
 
             var empty = (from p in _context.Persona
                          where p.IdPersona == persona.IdPersona
