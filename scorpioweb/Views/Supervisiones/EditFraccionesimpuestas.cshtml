@@ -98,7 +98,7 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "/Supervisiones/CrearReoprte",
+                url: "/Supervisiones/imprimirReporteSupervision",
                 traditional: true,
                 data: {
                     datosidFraccion: arr,
@@ -111,8 +111,10 @@
                     }
                 },
                 error: function (response) {
-                    alert("Datos Guardados");
-                    location.reload();
+                    alert("Informe Generado");
+                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervisionSCP.docx"
+                    //window.location.href = "http://10.6.60.190/Documentos/reporteSupervisionSCP.docx"
+                    window.location.href = "http://10.6.60.190:432/Documentos/reporteSupervisionSCP.docx"
                 }
             });
 
@@ -233,12 +235,14 @@
     {
 <div>
     @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
-    <button id="btnImprimirR" name="btnImprimirR" title="Imprimir Reporte" type="button" class="btn btn-light" >
-        <i class="fa fa-print"></i>
-    </button>
+
     <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
         <i class="fa fa-plus"></i> Añadir Fracciones
     </button>
+    @*<button id="btnImprimirR" name="btnImprimirR" title="Imprimir Reporte" type="button" class="btn btn-light">
+        <i class="fa fa-print"></i>
+    </button>*@
+    <a id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
 </div>            
     <br />
     }

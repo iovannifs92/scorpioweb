@@ -58,7 +58,6 @@
         $('#estadoD').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#estadoD';
-            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
                 var items = "<option value='0'>Sin municipio</option>";
@@ -698,7 +697,7 @@
             var m = document.getElementById("municipioD");
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
-        });
+      });
     });
 
     $(document).ready(function () {
@@ -984,7 +983,6 @@
                                     var url2 = "&callback=iniciarMap&v=weekly";
                                     document.getElementById("GoogleApi").src = url + api + url2;
                                 </script>
-                                @*<script src="https://maps.googleapis.com/maps/api/js?key='key'&callback=iniciarMap&v=weekly"></script>*@
                                 <input type="hidden" required id="lat" name="lat" type="text" class="form-control" />
                                 <input type="hidden" id="lng" name="lng" type="text" class="form-control" />
 
@@ -1064,7 +1062,7 @@
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Elija la zona que le corresponde (únicamente ciudad de Durango)</label>
-                                    <select required class="form-control" name="zona">
+                                    <select required class="form-control" id="zona" name="zona">
                                         <option value="ZONA 1">Zona 1</option>
                                         <option value="ZONA 2">Zona 2</option>
                                         <option value="ZONA 3">Zona 3</option>
@@ -1072,7 +1070,7 @@
                                         <option value="ZONA 5">Zona 5</option>
                                         <option value="ZONA 6">Zona 6</option>
                                         <option value="ZONA 7">Zona 7</option>
-                                        <option value="NA">NA</option>
+                                        <option value="SIN ZONA ASIGNADA">Sin zona asignada</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12">

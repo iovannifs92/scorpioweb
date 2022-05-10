@@ -1,10 +1,13 @@
 ﻿@model scorpioweb.Models.Domicilio
 
 @* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
+@*<script src="~/js/jquery-1.11.1.min.js"></script>*@
 
-    <script type="text/javascript">
-        var tipo = 0;
+<link rel="stylesheet" type="text/css" href="~/css/style.css">
+<script type='text/javascript' src='~/js/apikey.js'></script>
+<script type="text/javascript">
+    var tipo = 0;
+    var key = keys.GOOGLE_API_KEY;
     $(document).ready(function () {
         //#region -Municipios-
         
@@ -156,10 +159,22 @@
                 }
             });
         });
+        $('#btnGeocoding').on("click", function (e) {
+            e.preventDefault();
+            var calle = document.getElementById("calle").value;
+            var no = document.getElementById("no").value;
+            var nombre = document.getElementById("nombreCF").value;
+            var cp = document.getElementById("cp").value;
+            var e = document.getElementById("estadoD");
+            var estado = e.options[e.selectedIndex].text;
+            var m = document.getElementById("municipioD");
+            var municipio = m.options[m.selectedIndex].text
+            getGeocodingData(calle, no, nombre, cp, municipio, estado);
+        });
         //#endregion
 
     });
-    </script>
+</script>
 
 @{
     ViewData["Title"] = "Domicilio";
@@ -179,30 +194,41 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdDomicilio" />
             <input type="hidden" asp-for="PersonaIdPersona" />
-            <div class="form-group col-lg-12">
-                <label class="control-label">Tipo de Domicilio</label>
+
+            <div id="map"></div>
+            <script id="GoogleApi"></script>
+            <script src="~/js/scripts.js"></script>
+            <script>
+                var url = "https://maps.googleapis.com/maps/api/js?key=";
+                var api = key;
+                var url2 = "&callback=iniciarMap&v=weekly";
+                document.getElementById("GoogleApi").src = url + api + url2;
+            </script>
+            <input type="hidden" required id="lat" name="lat" asp-for="Lat" class="form-control" />
+            <input type="hidden" id="lng" name="lng" asp-for="Lng" class="form-control" />
+
+            <label class="control-label col-sm-12">Tipo de Domicilio</label>
+            <div class="form-group col-sm-9">
                 <select class="form-control" name="tipoDomicilio" id="tipoDomicilio"
                         asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text", @ViewBag.idtDomicilio))">
                 </select>
             </div>
+            <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
+                <i class="fa fa-map-marker"></i> Posicionar marcador
+            </button>
             <div class="form-group col-lg-5">
                 <label asp-for="Calle" class="control-label"></label>
-                <input asp-for="Calle" class="form-control" />
+                <input required id="calle" name="calle" asp-for="Calle" class="form-control" />
                 <span asp-validation-for="Calle" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-2">
-                <label asp-for="No" class="control-label"></label>
-                <input asp-for="No" class="form-control" />
+                <label class="control-label">Número</label>
+                <input id="no" name="no" asp-for="No" class="form-control" />
                 <span asp-validation-for="No" class="text-danger"></span>
             </div>
             <div class="form-group col-lg-5">
                 <label class="control-label">Colonia/Fraccionamiento</label>
-                <input asp-for="TipoUbicacion" class="form-control" />
-                <span asp-validation-for="TipoUbicacion" class="text-danger"></span>
-            </div>
-            <div class="form-group col-lg-12">
-                <label class="control-label">Nombre de Colonia/Fraccionamiento</label>
-                <input asp-for="NombreCf" class="form-control" />
+                <input required id="nombreCF" name="nombreCF" asp-for="NombreCf" class="form-control" />
                 <span asp-validation-for="NombreCf" class="text-danger"></span>
             </div>
 
@@ -263,12 +289,12 @@
             </div>
             <div class="form-group col-lg-4">
                 <label class="control-label">Código Postal</label>
-                <input asp-for="Cp" class="form-control" />
+                <input id="cp" name="cp" asp-for="Cp" class="form-control" />
                 <span asp-validation-for="Cp" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Zona</label>
-                <select class="form-control" name="Zona" id="Zona"
+                <select class="form-control" name="zona" id="zona"
                         asp-items="@(new SelectList(ViewBag.listaZona, "Value", "Text", @ViewBag.idZona))">
                 </select>
             </div>
