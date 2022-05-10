@@ -74,7 +74,7 @@ namespace scorpioweb.Controllers
 
         private List<SelectListItem> listaZonas = new List<SelectListItem>
         {
-            new SelectListItem{ Text="NA", Value="NA"},
+            new SelectListItem{ Text="Sin zona asignada", Value="SIN ZONA ASIGNADA"},
             new SelectListItem{ Text="Zona 1", Value="ZONA 1"},
             new SelectListItem{ Text="Zona 2", Value="ZONA 2"},
             new SelectListItem{ Text="Zona 3", Value="ZONA 3"},
@@ -1554,6 +1554,18 @@ namespace scorpioweb.Controllers
             }
             municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
+        }
+
+        public JsonResult GetZona()
+        {
+            List<Zonas> zonasList = new List<Zonas>();
+            zonasList = (from Zonas in _context.Zonas
+                         select Zonas).ToList();
+            return Json(new
+            {
+                success = true,
+                zonas = zonasList
+            });
         }
 
         public string generaEstado(string id)
@@ -3346,7 +3358,6 @@ namespace scorpioweb.Controllers
             ViewBag.idTemporalidadD = BuscaId(ListaDomicilioT, domicilio.Temporalidad);
             #endregion
 
-
             ViewBag.listaResidenciaHabitual = listaSiNo;
             ViewBag.idResidenciaHabitual = BuscaId(listaSiNo, domicilio.ResidenciaHabitual);
 
@@ -3368,7 +3379,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,PersonaIdPersona, Zona")] Domicilio domicilio)
+        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio)
         {
             if (id != domicilio.PersonaIdPersona)
             {
@@ -3383,7 +3394,8 @@ namespace scorpioweb.Controllers
             domicilio.Horario = normaliza(domicilio.Horario);
             domicilio.Observaciones = normaliza(domicilio.Observaciones);
             domicilio.Zona = domicilio.Zona;
-
+            domicilio.Lat = domicilio.Lat;
+            domicilio.Lng = domicilio.Lng;
 
             if (ModelState.IsValid)
             {
