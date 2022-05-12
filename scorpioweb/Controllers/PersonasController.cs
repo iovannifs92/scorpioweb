@@ -916,6 +916,20 @@ namespace scorpioweb.Controllers
 
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
+            foreach (var usuario in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(usuario, "SupervisorMCSCP"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = usuario.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+
             var queryhayhuella = from r in _context.Registrohuella
                                  join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
                                  group r by r.PersonaIdPersona into grup
@@ -1012,6 +1026,8 @@ namespace scorpioweb.Controllers
             // Response.Headers.Add("Refresh", "5");
             return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditSupervisorReasignacion(Persona persona, Reasignacionsupervisor reasignacionsupervisor)
