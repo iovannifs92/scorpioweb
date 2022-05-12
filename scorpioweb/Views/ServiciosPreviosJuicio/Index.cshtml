@@ -2,9 +2,11 @@
 
 @{
     ViewData["Title"] = "Control AER";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="~/js/jquery-1.11.1.min.js"></script>
+@*<script src="~/js/jquery-1.11.1.min.js"></script>*@
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <style>
     * {
         box-sizing: border-box;
@@ -218,11 +220,11 @@
 
 @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo"))
 {
-<div style="padding-top:1%">
-    @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
-    <a id="btnNuevoRegistro" name="btnNuevoRegistro" onclick="showModal('@Url.Action("Create","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Nuevo Registro')" class="btn btn-primary">
-        <i class="fa fa-plus"></i> Nuevo Registro
-    </a>
-</div>
+    <div style="padding-top:1%">
+        @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
+        <a id="btnNuevoRegistro" name="btnNuevoRegistro" onclick="showModal('@Url.Action("Create","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Nuevo Registro')" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Nuevo Registro
+        </a>
+    </div>
 }
 

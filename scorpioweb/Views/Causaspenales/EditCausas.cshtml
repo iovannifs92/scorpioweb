@@ -6,9 +6,6 @@
 }
 
 
-@* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
-
 <style>
     * {
         box-sizing: border-box;
@@ -73,48 +70,7 @@
 </style>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        //PARA HISTORIAL DE CAUSAS PENBALES 
-        //$('#btnguardarEdit').on("click", function (e) {
-        //    alert("entrando al boton");
-        //    $.ajax({
-        //        type: "POST",
-        //        dataType: "json",
-        //        url: "/Causaspenales/EditCausas",
-        //        traditional: true,
-        //        success: function (response) {
-        //            alert("entrando al boton");
-        //            //if (response.success) {
-        //            //    window.location.href = response.responseText;
-        //            //} else {
-        //            //    alert(response.responseText);
-        //            //}
-        //            var msg = confirm("Hubo cambios en la casa penal?");
-        //            if (msg == true) {
-        //                if (response.success) {
-        //                    window.location.href = response.responseText;
-        //                } else {
-        //                    alert(response.responseText);
-        //                }
-        //            } else {
-        //                window.location.replace("https://localhost:44359/Causaspenales/ListadeCausas");
-        //            }
-
-
-        //        },
-        //        error: function (response) {
-        //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-        //        }
-        //    });
-        //    //}
-        //    //else
-        //    //{
-        //    //    matches = "Esta causa penal ya se encuentran dentro del sistema\n\n" + matches;
-        //    //    alert(matches);
-        //    //}
-        //});
-
-
+    @*$(document).ready(function () {
         function autocomplete(inp, arr) {
             var currentFocus;
             inp.addEventListener("input", function (e) {
@@ -163,6 +119,7 @@
                     }
                 }
             });
+
             function addActive(x) {
                 if (!x) return false;
 
@@ -190,12 +147,14 @@
                 closeAllLists(e.target);
             });
         }
-        //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
+
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+        autocomplete(document.getElementById("tipoD"), catalogo);
 
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("Juez"), jueces);
 
-    });
+    });*@
 
     showModal = (url, title, id) => {
         $.ajax({

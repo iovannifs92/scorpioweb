@@ -8,6 +8,7 @@
 
     $(document).ready(function () {
         $('#RealizoEntrevista').change(function () {
+            console.log("Hola");
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $("#bloqueEntrevista").css("display", "block");
