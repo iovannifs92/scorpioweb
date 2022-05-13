@@ -70,7 +70,39 @@
 </style>
 
 <script type="text/javascript">
-    @*$(document).ready(function () {
+    $(document).ready(function () {
+        $('#btnGuardarDelito').on("click", function (e) {
+            e.preventDefault();
+            var tipodel = document.getElementById("tipoD").value;
+            var modalidad = document.getElementById("modalidadD").value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/GuardarDelito",
+                traditional: true,
+                data: {
+                    datosDelito: [tipodel, modalidad],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("tipoD").value = '';
+                        document.ready = document.getElementById("modalidadD").value = '';
+                        var otraDelito = confirm("¿Agregar otro delito?");
+                        if (otraDelito == true) {
+                            alert("Coloque los datos correspondientes");
+                        } else {
+                            $("#modalCreateDelito").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
         function autocomplete(inp, arr) {
             var currentFocus;
             inp.addEventListener("input", function (e) {
@@ -154,7 +186,7 @@
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("Juez"), jueces);
 
-    });*@
+    });
 
     showModal = (url, title, id) => {
         $.ajax({
@@ -216,9 +248,9 @@
                 <div class="form-group col-md-12">
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
                     {
-                        <a id="btnVer" onclick="showModal('@Url.Action("CreateDelito","Causaspenales",null,Context.Request.Scheme)','Crear Delito',@item.causaPenalVM.IdCausaPenal)" class="btn btn-success">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCreateDelito">
                             <i class="fa fa-plus"></i> Crear Delito
-                        </a>
+                        </button>
                     }
                     @if (ViewBag.tieneDelitos == true)
                     {
@@ -280,6 +312,39 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     <i class="fa fa-close"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear Delito -->
+<div class="modal fade" id="modalCreateDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+                <h1 class="modal-title" style="font-size: 30px; color:#fff;" id="exampleModalLongTitle">Delito</h1>
+            </div>
+            <div class="form-group col-md-12 autocomplete" style="padding-top:15px;">
+                <label class="control-label">Tipo</label>
+            </div>
+            <div class="form-group col-md-12">
+                <input required name="tipoD" id="tipoD" type="text" maxlength="150" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Modalidad</label>
+                <input id="modalidadD" type="text" class="form-control" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary  col-xs-2" data-dismiss="modal" style="margin-right:280px">
+                    <i class="fa fa-close"></i> Cerrar
+                </button>
+                <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar delito
                 </button>
             </div>
         </div>
