@@ -13,7 +13,7 @@
                 $("#form-modal").modal('show');
             },
             traditional: true,
-            data:{
+            data: {
                 datosBitacora: [IdFracciones],
             },
             error: function (res) {
@@ -32,7 +32,7 @@
                     <input readonly style="display:none" name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" value="@item.bitacoraVM.FracionesImpuestasIdFracionesImpuestas" class="form-control" />
                 <div class="form-group col-md-12">
                     <label class="control-label">Fecha</label>
-                    <input id="Fecha" name="Fecha" class="form-control" asp-for="@item.bitacoraVM.Fecha" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                    <input id="Fecha" name="Fecha" class="form-control" asp-for="@item.bitacoraVM.Fecha" type="date" />
                 </div>
                 <div class="form-group col-md-12">
                     <label class="control-label">Tipo de Persona</label>

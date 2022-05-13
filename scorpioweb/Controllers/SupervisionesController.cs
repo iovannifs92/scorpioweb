@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using scorpioweb.Models;
-using Microsoft.AspNetCore.Http;
+using QRCoder;
 using SautinSoft.Document;
 using SautinSoft.Document.MailMerging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using QRCoder;
+using scorpioweb.Models;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace scorpioweb.Controllers
 {
@@ -396,7 +396,7 @@ namespace scorpioweb.Controllers
 
         #region -Editar y borrar fracciones-        
 
-        public async Task<IActionResult> AddOrEdit(int id)
+        public async Task<IActionResult> AddOrEdit(int id, string name, string cp)
         {
             if (id == 0)
             {
@@ -452,7 +452,7 @@ namespace scorpioweb.Controllers
         }
 
 
-        public async Task<IActionResult> DeleteFraccion(int? id)
+        public async Task<IActionResult> DeleteFraccion(int? id, string name, string cp)
         {
             var fraccionesimpuestas = await _context.Fraccionesimpuestas.SingleOrDefaultAsync(m => m.IdFracciones == id);
             var oldfraccionesimpuestas = await _context.Fraccionesimpuestas.FindAsync(fraccionesimpuestas.IdFracciones, fraccionesimpuestas.SupervisionIdSupervision);
@@ -461,7 +461,7 @@ namespace scorpioweb.Controllers
             _context.Fraccionesimpuestas.Remove(fraccionesimpuestas);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
+            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @name = name, @cp = cp });
         }
 
 
@@ -1326,7 +1326,8 @@ namespace scorpioweb.Controllers
 
             List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
             //List<Bitacora> bitacora = _context.Bitacora.ToList();
-            //List<Supervision> supervision = _context.Supervision.ToList();
+            List<Supervision> supervision = _context.Supervision.ToList();
+            List<Persona> personas = _context.Persona.ToList();
 
             ViewData["fracciones"] = from fracciones in fraccionesImpuestas
                                      where fracciones.SupervisionIdSupervision == id
@@ -1373,6 +1374,17 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+            //List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
+            ////List<Bitacora> bitacora = _context.Bitacora.ToList();
+            //List<Supervision> supervision = _context.Supervision.ToList();
+            //List<Persona> personas = _context.Persona.ToList();
+
+            //var persona = from fracciones in fraccionesImpuestas
+            //                         join s in supervision on fracciones.SupervisionIdSupervision equals s.IdSupervision
+            //                         join p in personas on s.PersonaIdPersona equals p.IdPersona
+            //                         where fracciones.SupervisionIdSupervision == id
+            //                         orderby fracciones.IdFracciones
+            //                         select p;
 
             if (ModelState.IsValid)
             {
@@ -1397,7 +1409,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
             }
             return View(fraccionesimpuestas);
         }
@@ -1913,7 +1925,7 @@ namespace scorpioweb.Controllers
 
             ViewData["Bitacora"] = from table in bitacora
                                    where table.SupervisionIdSupervision == id
-                                   orderby table.IdBitacora
+                                   orderby table.Fecha descending
                                    select table;
 
             ViewBag.IdSupervisionGuardar = id;
@@ -1990,10 +2002,16 @@ namespace scorpioweb.Controllers
                     await evidencia.CopyToAsync(stream);
                 }
                 #endregion
+                if(bitacora.FracionesImpuestasIdFracionesImpuestas != null)
+                {
+                    _context.Add(bitacora);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+                }
 
                 _context.Add(bitacora);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Supervision/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
             }
             return View(bitacora);
         }
@@ -2107,10 +2125,18 @@ namespace scorpioweb.Controllers
             var oldBitacora = await _context.Bitacora.FindAsync(Bitacora.IdBitacora, Bitacora.SupervisionIdSupervision);
             _context.Entry(oldBitacora).CurrentValues.SetValues(Bitacora);
 
+            if (Bitacora.FracionesImpuestasIdFracionesImpuestas != null)
+            {
+                _context.Bitacora.Remove(Bitacora);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("EditFraccionesimpuestas/" + Bitacora.SupervisionIdSupervision, "Supervisiones");
+            }
+
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Supervision/" + Bitacora.SupervisionIdSupervision, "Supervisiones");
+            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones");
         }
 
         private bool BitacoraExists(int id)

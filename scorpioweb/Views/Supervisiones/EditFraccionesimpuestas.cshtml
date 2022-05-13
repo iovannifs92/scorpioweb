@@ -213,8 +213,8 @@
         @if (ViewBag.usuario)
         {
         <td>
-            <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones">
-                <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit","Supervisiones",null,Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
+            <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones" asp-route-name="@ViewBag.nombre" asp-route-cp="@ViewBag.cp">
+                <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit", "Supervisiones", null, Context.Request.Scheme)','Edita Fracción',@item.IdFracciones)" class="btn btn-success">
                     <i class="fa fa-pencil"></i> Editar
                 </a>
                 <button type="submit" class="btn btn-danger">
