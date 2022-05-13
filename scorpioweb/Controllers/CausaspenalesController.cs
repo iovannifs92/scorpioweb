@@ -582,8 +582,6 @@ namespace scorpioweb.Controllers
         public IActionResult CreateDelito(int? id)
         {
             ViewBag.idDelito = id;
-            ViewBag.inputRequired = true;
-            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             return View();
         }
 
@@ -720,8 +718,10 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCausas(int? id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa)
+        public async Task<IActionResult> EditCausas(int? id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB)
         {
+            string currentUser = User.Identity.Name;
+
             if (id == null)
             {
                 return NotFound();
@@ -733,6 +733,31 @@ namespace scorpioweb.Controllers
                 {
                     causa.Juez = normaliza(causa.Juez);
                     causa.CausaPenal = normaliza(causa.CausaPenal);
+
+                    #region -Delitos-
+                    for (int i = 0; i < datosDelitos.Count; i = i + 2)
+                    {
+                        if (datosDelitos[i][1] == currentUser)
+                        {
+                            delitoDB.Tipo = normaliza(datosDelitos[i][0]);
+                            delitoDB.Modalidad = normaliza(datosDelitos[i + 1][0]);
+                            delitoDB.CausaPenalIdCausaPenal = causa.IdCausaPenal;
+                            delitoDB.EspecificarDelito = normaliza(delitoDB.EspecificarDelito);
+
+                            _context.Add(delitoDB);
+                            await _context.SaveChangesAsync(null, 1);
+                        }
+                    }
+
+                    for (int i = 0; i < datosDelitos.Count; i++)
+                    {
+                        if (datosDelitos[i][1] == currentUser)
+                        {
+                            datosDelitos.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    #endregion
 
                     var oldCausa = await _context.Causapenal.FindAsync(id);
                     _context.Entry(oldCausa).CurrentValues.SetValues(causa);
