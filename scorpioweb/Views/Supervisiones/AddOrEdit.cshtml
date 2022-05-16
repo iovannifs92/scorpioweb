@@ -3,10 +3,9 @@
 @{
     Layout = null;
 }
-
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="AddOrEdit">
+        <form asp-action="AddOrEdit" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" >
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdFracciones" />
             <div class="form-group">

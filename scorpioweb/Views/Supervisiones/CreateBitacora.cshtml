@@ -5,7 +5,7 @@
 }
 <div class="row">
     <div class="col-md-12">
-        <form onsubmit="return confirm('¿Deseas guardar los datos?');" asp-action="CreateBitacora" enctype="multipart/form-data">
+        <form onsubmit="return confirm('¿Deseas guardar los datos?');" asp-action="CreateBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input readonly name="IdBitacora" id="IdBitacora" class="form-control" style="display:none" />
             <input readonly name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" class="form-control" style="display:none" value="@ViewBag.idFracciones" />

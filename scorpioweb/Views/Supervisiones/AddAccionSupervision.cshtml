@@ -22,70 +22,73 @@
     }
 </script>
 @{int i = 0;}
-    @foreach (var item in ViewData["tablaBiatacora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
-     { i++;
-        <div class="form-group col-md-12">
-            <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditAddAccionSupervision" enctype="multipart/form-data">
-                <label class="control-label">Accion @i</label>
-                    <input readonly style="display:none" name="SupervisionIdSupervision" id="SupervisionIdSupervision" value="@item.bitacoraVM.SupervisionIdSupervision" class="form-control" />
-                    <input readonly style="display:none" name="IdBitacora" id="IdBitacora" value="@item.bitacoraVM.IdBitacora" class="form-control" />
-                    <input readonly style="display:none" name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" value="@item.bitacoraVM.FracionesImpuestasIdFracionesImpuestas" class="form-control" />
-                <div class="form-group col-md-12">
-                    <label class="control-label">Fecha</label>
-                    <input id="Fecha" name="Fecha" class="form-control" asp-for="@item.bitacoraVM.Fecha" type="date" />
-                </div>
-                <div class="form-group col-md-12">
-                    <label class="control-label">Tipo de Persona</label>
-                    <select class="form-control" name="TipoPersona" id="TipoPersona"
-                            asp-items="@(new SelectList(ViewBag.TipoPersona, "Value", "Text",@item.bitacoraVM.TipoPersona))">
-                    </select>
-                </div>
-                <div class="form-group col-md-12">
-                    <label class="control-label">Tipo de Visita</label>
-                    <select class="form-control" name="TipoVisita" id="TipoVisita"
-                            asp-items="@(new SelectList(ViewBag.TipoVisita, "Value", "Text",@item.bitacoraVM.TipoVisita))">
-                    </select>
-                </div>
-                <div class="form-group col-md-12">
-                    <label class="control-label">Texto</label>
-                    <input name="Texto" id="Texto" value="@item.bitacoraVM.Texto" class="form-control" />
-                </div>
+@foreach (var item in ViewData["tablaBiatacora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
+{
+    i++;
+    <div class="form-group col-md-12">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditAddAccionSupervision" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" enctype="multipart/form-data">
+            <label class="control-label">Accion @i</label>
+            <input readonly style="display:none" name="SupervisionIdSupervision" id="SupervisionIdSupervision" value="@item.bitacoraVM.SupervisionIdSupervision" class="form-control" />
+            <input readonly style="display:none" name="IdBitacora" id="IdBitacora" value="@item.bitacoraVM.IdBitacora" class="form-control" />
+            <input readonly style="display:none" name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" value="@item.bitacoraVM.FracionesImpuestasIdFracionesImpuestas" class="form-control" />
+            <div class="form-group col-md-12">
+                <label class="control-label">Fecha</label>
+                <input id="Fecha" name="Fecha" class="form-control" asp-for="@item.bitacoraVM.Fecha" type="date" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tipo de Persona</label>
+                <select class="form-control" name="TipoPersona" id="TipoPersona"
+                        asp-items="@(new SelectList(ViewBag.TipoPersona, "Value", "Text",@item.bitacoraVM.TipoPersona))">
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tipo de Visita</label>
+                <select class="form-control" name="TipoVisita" id="TipoVisita"
+                        asp-items="@(new SelectList(ViewBag.TipoVisita, "Value", "Text",@item.bitacoraVM.TipoVisita))">
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Texto</label>
+                <input name="Texto" id="Texto" value="@item.bitacoraVM.Texto" class="form-control" />
+            </div>
 
-                @if (item.bitacoraVM.RutaEvidencia != null)
-                {
-                    <div class="form-group col-md-12">
-                        <label class="control-label">Evidencia</label>
-                        <a id="btnEditar" style="font-size:20px" href="~/Evidencia/@Html.DisplayFor(modelItem => item.bitacoraVM.RutaEvidencia)" target="_blank">
-                            <i class="fa fa-paperclip fa-6"></i>
-                        </a>
-                    </div>
-                    <div class="form-group col-md-12">
-                        <label class="control-label">Editar Evidencia</label>
-                        <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
-                    </div>
-                    } else{
-                    <div class="form-group col-md-12">
-                        <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
-                    </div>
-                    }
-                <div class="form-group col-lg-3">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-save"></i>
-                        Guardar
-                    </button>
-                </div>  
-                <div class="form-group col-lg-9">
-                    <button asp-action="DeleteRegistro" asp-route-id="@item.bitacoraVM.IdBitacora" onclick="return update();" class="btn btn-danger" type="submit">
-                        <i class="fa fa-trash"></i> Borrar
-                    </button>
+            @if (item.bitacoraVM.RutaEvidencia != null)
+            {
+                <div class="form-group col-md-12">
+                    <label class="control-label">Evidencia</label>
+                    <a id="btnEditar" style="font-size:20px" href="~/Evidencia/@Html.DisplayFor(modelItem => item.bitacoraVM.RutaEvidencia)" target="_blank">
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
                 </div>
-            </form>
-        </div>
-        }
-    @foreach (var item in ViewData["tablaBiatacora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
-    {
-        <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@item.bitacoraVM.SupervisionIdSupervision,  )" class="btn btn-success">
-            <i class="fa fa-plus"></i>  Agregar Registro
-        </a>
-        break;
-    }
+                <div class="form-group col-md-12">
+                    <label class="control-label">Editar Evidencia</label>
+                    <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+                </div>
+            }
+            else
+            {
+                <div class="form-group col-md-12">
+                    <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+                </div>
+            }
+            <div class="form-group col-lg-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
+            </div>
+            <div class="form-group col-lg-9">
+                <button asp-action="DeleteRegistro2" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" onclick="return update();" class="btn btn-danger" type="submit">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
+            </div>
+        </form>
+    </div>
+}
+@foreach (var item in ViewData["tablaBiatacora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
+{
+    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@item.bitacoraVM.SupervisionIdSupervision, nombre = @ViewBag.nombre, cp=@ViewBag.cp}, Context.Request.Scheme)', 'Agregar Registro', null)" class="btn btn-success">
+        <i class="fa fa-plus"></i>  Agregar Registro
+    </a>
+    break;
+}
