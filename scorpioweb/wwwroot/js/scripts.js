@@ -107,6 +107,10 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
             if (estado == "Durango" && municipio == "Durango") {
                 setZona(colonia, cp);
             }
+            else {
+                var z = document.getElementById("zona");
+                z.value = "SIN ZONA ASIGNADA";
+            }
 
             var coord = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
 			if(marker == null) {
@@ -166,6 +170,10 @@ function fillInAddress(place) {
          document.getElementById("nombreCF").value = component.long_name;
          if (municipio == "Durango") {
              setZona(component.long_name);
+         }
+         else {
+             var z = document.getElementById("zona");
+             z.value = "SIN ZONA ASIGNADA";
          }
          break;
        }
