@@ -2520,7 +2520,7 @@ namespace scorpioweb.Controllers
                         }
                         break;
                     case "IX":
-                        No9 = "XI";
+                        No9 = "IX";
                         TextoFraccion9 = tipo9;
                         Estatus9 = estatusF;
                         if (figuraJudicial == "SUSPENSIÓN CONDICIONAL DEL PROCESO")
