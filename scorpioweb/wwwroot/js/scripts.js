@@ -104,7 +104,9 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
             var colonia = getColonia(results[0]);
             var cp = getCP(results[0]);
 
-            setZona(colonia, cp);
+            if (estado == "Durango" && municipio == "Durango") {
+                setZona(colonia, cp);
+            }
 
             var coord = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
 			if(marker == null) {
@@ -151,12 +153,20 @@ function fillInAddress(place) {
   
   var municipio;
   for (const component of place.address_components) {
+      const componentType = component.types[0];
+      if (componentType == "locality") {
+          municipio = component.long_name;
+      }
+  }
+  for (const component of place.address_components) {
      const componentType = component.types[0];
 
      switch (componentType) {
        case "political": {
          document.getElementById("nombreCF").value = component.long_name;
-         setZona(component.long_name);
+         if (municipio == "Durango") {
+             setZona(component.long_name);
+         }
          break;
        }
        case "street_number": {
@@ -183,6 +193,7 @@ function fillInAddress(place) {
 			 }
 		 }
          $("#estadoD").change();
+         alert("Dirección cargada")
          break;
        }
 	   default: {
@@ -190,7 +201,6 @@ function fillInAddress(place) {
 	   }
      }
   }
-  alert("Dirección cargada")
   for (const component of place.address_components) {
      const componentType = component.types[0];
      if (componentType == "locality") {
