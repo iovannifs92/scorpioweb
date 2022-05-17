@@ -38,7 +38,7 @@ var infowindow;
 var cnt = 0;//todo
 
 function iniciarMap() {
-    var coord = { lat: 24.022778, lng: -104.654444 };//centro de Durango
+    var coord = { lat: 24.023601543486198, lng: -104.66070401364269 };//DGEP
     map = new google.maps.Map(document.getElementById('map'),{
       zoom: 12,//12: Town, or city district
       center: coord
@@ -46,14 +46,18 @@ function iniciarMap() {
     infowindow = new google.maps.InfoWindow();
     if (document.getElementById("lat").value != "" && document.getElementById("lng").value != "") {
         var savedCoord = { lat: parseFloat(document.getElementById("lat").value), lng: parseFloat(document.getElementById("lng").value) };
+        geocodeLatLng(new google.maps.Geocoder(), map, new google.maps.LatLng(savedCoord), infowindow, 20);
         marker = new google.maps.Marker({
             position: savedCoord,
             map: map
         });
-        map.setZoom(20);
-        map.setCenter(savedCoord);
-        var geocoder = new google.maps.Geocoder();
-        geocodeLatLng(geocoder, map, new google.maps.LatLng(savedCoord), infowindow);
+    }
+    else {
+        geocodeLatLng(new google.maps.Geocoder(), map, new google.maps.LatLng(coord), infowindow, 12);
+        marker = new google.maps.Marker({
+            position: coord,
+            map: map
+        });
     }
 	
     google.maps.event.addListener(map, "click", (event) => {
@@ -66,8 +70,7 @@ function iniciarMap() {
 		else {
 			marker.setPosition( new google.maps.LatLng( event.latLng ) );
 		}
-		var geocoder = new google.maps.Geocoder();
-		geocodeLatLng(geocoder, map, event.latLng, infowindow);
+        geocodeLatLng(new google.maps.Geocoder(), map, event.latLng, infowindow);
 	});
 }
 
@@ -128,12 +131,12 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
     });
 }
 
-function geocodeLatLng(geocoder, map, latlng, infowindow) {
+function geocodeLatLng(geocoder, map, latlng, infowindow, zoom) {
   geocoder
     .geocode({ location: latlng })
     .then((response) => {
       if (response.results[0]) {
-        map.setZoom(20);
+        map.setZoom(zoom);
 
 		document.getElementById("lat").value = response.results[0].geometry.location.lat();
 		document.getElementById("lng").value = response.results[0].geometry.location.lng();

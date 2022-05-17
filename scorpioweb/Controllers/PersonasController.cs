@@ -1646,6 +1646,14 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
             ViewBag.ListadoEstados = listaEstados;
+
+            List<Municipios> listaMunicipiosD = new List<Municipios>();
+            listaMunicipiosD = (from table in _context.Municipios
+                                where table.EstadosId == 10
+                                select table).ToList();
+
+            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
+            ViewBag.ListaMunicipios = listaMunicipiosD;
             return View();
         }
 
