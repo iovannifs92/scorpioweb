@@ -200,25 +200,18 @@ function fillInAddress(place) {
 				document.getElementById("estadoD").value = e.options[i].value;
 			 }
 		 }
+         document.getElementById("municipioD").text = municipio;
          $("#estadoD").change();
-         alert("Dirección cargada")
          break;
        }
 	   default: {
 		 break;
 	   }
      }
-  }
-  for (const component of place.address_components) {
-     const componentType = component.types[0];
-     if (componentType == "locality") {
-		 var m = document.getElementById("municipioD");
-		 for (let i = 0; i < m.length; i++) {
-			 if(m.options[i].text == component.long_name) {
-				m.value = m.options[i].value;
-			 }
-		 }
-	 }
+    }
+  //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
+  if (localStorage.getItem('municipioD')) {
+      $('#municipioD').val(localStorage.getItem('municipioD'));
   }
 }
 

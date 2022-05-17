@@ -63,10 +63,16 @@
                 var items = "<option value='0'>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
-                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                    if(municipio.text == document.getElementById("municipioD").text) {
+                        items += "<option value='" + municipio.value + "' selected>" + municipio.text + "</option>";
+                    }
+                    else {
+                        items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                    }
                 });
                 $('#municipioD').html(items);
             });
+            localStorage.setItem('municipioD',$('#municipioD').val());
         });
         $('#paisD').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
