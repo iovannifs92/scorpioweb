@@ -200,8 +200,8 @@ function fillInAddress(place) {
 				document.getElementById("estadoD").value = e.options[i].value;
 			 }
 		 }
-         $("#estadoD").change();
-         alert("Dirección cargada")
+             $("#estadoD").change();
+             alert("Dirección cargada")
          break;
        }
 	   default: {
@@ -210,12 +210,12 @@ function fillInAddress(place) {
      }
   }
   for (const component of place.address_components) {
-     const componentType = component.types[0];
+      const componentType = component.types[0];
      if (componentType == "locality") {
-		 var m = document.getElementById("municipioD");
+         var m = document.getElementById("municipioD");
 		 for (let i = 0; i < m.length; i++) {
 			 if(m.options[i].text == component.long_name) {
-				m.value = m.options[i].value;
+                 m.value = m.options[i].value;
 			 }
 		 }
 	 }

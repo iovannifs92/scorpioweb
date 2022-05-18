@@ -303,7 +303,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
-                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
             };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
@@ -794,7 +795,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
-                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
                 };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
