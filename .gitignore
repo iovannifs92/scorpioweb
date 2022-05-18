@@ -345,3 +345,5 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/scorpioweb/Models/desktop.ini
+/scorpioweb/scorpioweb.csproj.bak

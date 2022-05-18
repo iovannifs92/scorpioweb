@@ -46,14 +46,14 @@ function iniciarMap() {
     infowindow = new google.maps.InfoWindow();
     if (document.getElementById("lat").value != "" && document.getElementById("lng").value != "") {
         var savedCoord = { lat: parseFloat(document.getElementById("lat").value), lng: parseFloat(document.getElementById("lng").value) };
-        geocodeLatLng(new google.maps.Geocoder(), map, new google.maps.LatLng(savedCoord), infowindow, 20);
+        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(savedCoord), infowindow, 20);
         marker = new google.maps.Marker({
             position: savedCoord,
             map: map
         });
     }
     else {
-        geocodeLatLng(new google.maps.Geocoder(), map, new google.maps.LatLng(coord), infowindow, 12);
+        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(coord), infowindow, 12);
         marker = new google.maps.Marker({
             position: coord,
             map: map
@@ -69,9 +69,9 @@ function iniciarMap() {
 		}
 		else {
 			marker.setPosition( new google.maps.LatLng( event.latLng ) );
-		}
-        geocodeLatLng(new google.maps.Geocoder(), map, event.latLng, infowindow);
-	});
+        }
+        geocodeLatLng(new google.maps.Geocoder(), event.latLng, infowindow);
+    });
 }
 
 //https://stackoverflow.com/questions/6478914/reverse-geocoding-code
@@ -95,15 +95,13 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
     if(estado != "Selecciona" && estado != "Sin estado") {
         address += ", " + estado;
     }
-	
+
     geocoder.geocode({ 'address': address }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
             alert("No hay direcciones");//alert(status);
         }
         // This is checking to see if the Geoeode Status is OK before proceeding
         if (status == google.maps.GeocoderStatus.OK) {
-            var address = (results[0].formatted_address);
-
             var colonia = getColonia(results[0]);
             var cp = getCP(results[0]);
 
@@ -122,27 +120,45 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
 					map: map
 				});
 			}
-			else {
-				marker.setPosition( new google.maps.LatLng( coord ) );
+            else {
+                marker.setPosition(new google.maps.LatLng(coord));
+                map.setCenter(coord);
 			}
-			geocodeLatLng(geocoder, map, results[0].geometry.location, infowindow);
+			geocodeLatLng(geocoder, results[0].geometry.location, infowindow, 20);
         }
-
     });
 }
 
-function geocodeLatLng(geocoder, map, latlng, infowindow, zoom) {
+function geocodeLatLng(geocoder, latlng, infowindow, zoom) {
   geocoder
     .geocode({ location: latlng })
     .then((response) => {
       if (response.results[0]) {
-        map.setZoom(zoom);
+        if (zoom != undefined) {
+            map.setZoom(zoom);
+        }
 
 		document.getElementById("lat").value = response.results[0].geometry.location.lat();
 		document.getElementById("lng").value = response.results[0].geometry.location.lng();
 		result = response.results[0];
 		infowindow.setContent(response.results[0].formatted_address + ' <button href="/" onclick="event.preventDefault();fillInAddress(result)">Usar dirección</button>');
-		infowindow.open(map, marker);
+        infowindow.open(map, marker);
+
+        if(latlng.lat() != 24.023601543486198 || latlng.lng() != -104.66070401364269) {//no asignar zona en DGEP
+            var municipio = getMunicipio(result);
+            for (const component of result.address_components) {
+                const componentType = component.types[0];
+                if (componentType == "political") {
+                    if (municipio == "Durango") {
+                        setZona(component.long_name);
+                    }
+                    else {
+                        var z = document.getElementById("zona");
+                        z.value = "SIN ZONA ASIGNADA";
+                    }
+                }
+            }
+        }
       } else {
         window.alert("No results found");
       }
@@ -158,13 +174,7 @@ function fillInAddress(place) {
   document.getElementById("municipioD").value = 0;
   document.getElementById("estadoD").value = 0;
   
-  var municipio;
-  for (const component of place.address_components) {
-      const componentType = component.types[0];
-      if (componentType == "locality") {
-          municipio = component.long_name;
-      }
-  }
+  var municipio = getMunicipio(place);
   for (const component of place.address_components) {
      const componentType = component.types[0];
 
@@ -236,6 +246,16 @@ function getCP(place) {
         }
     }
     return "Sin CP";
+}
+
+function getMunicipio(place) {
+    for (const component of place.address_components) {
+        const componentType = component.types[0];
+        if (componentType == "locality") {
+            return component.long_name;
+        }
+    }
+    return "Sin municipio";
 }
 
 function setZona(colonia, cp) {
