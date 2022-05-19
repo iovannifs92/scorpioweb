@@ -20,10 +20,16 @@
                 var items = "<option value='0'>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
-                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                    if(municipio.text == document.getElementById("municipioD").text) {
+                        items += "<option value='" + municipio.value + "' selected>" + municipio.text + "</option>";
+                    }
+                    else {
+                        items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                    }
                 });
                 $('#municipioD').html(items);
             });
+            localStorage.setItem('municipioD',$('#municipioD').val());
         });
         $('#paisD').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
@@ -289,7 +295,7 @@
             </div>
             <div class="form-group col-lg-4">
                 <label class="control-label">Código Postal</label>
-                <input id="cp" name="cp" asp-for="Cp" class="form-control" />
+                <input id="cp" name="cp" type="number" asp-for="Cp" class="form-control" />
                 <span asp-validation-for="Cp" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">
@@ -361,7 +367,7 @@
 </div>
 
 
-<!-- Modal Creacion de nuevo domicilio  entra cuando no hay domicilios secndarios -->
+<!-- Modal Creacion de nuevo domicilio  entra cuando no hay domicilios secundarios -->
 <div class="modal fade" id="modalAddDomSecundario1" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
         <div class="modal-content">

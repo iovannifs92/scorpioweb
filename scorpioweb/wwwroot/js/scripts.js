@@ -38,7 +38,7 @@ var infowindow;
 var cnt = 0;//todo
 
 function iniciarMap() {
-    var coord = { lat: 24.022778, lng: -104.654444 };//centro de Durango
+    var coord = { lat: 24.023601543486198, lng: -104.66070401364269 };//DGEP
     map = new google.maps.Map(document.getElementById('map'),{
       zoom: 12,//12: Town, or city district
       center: coord
@@ -46,14 +46,18 @@ function iniciarMap() {
     infowindow = new google.maps.InfoWindow();
     if (document.getElementById("lat").value != "" && document.getElementById("lng").value != "") {
         var savedCoord = { lat: parseFloat(document.getElementById("lat").value), lng: parseFloat(document.getElementById("lng").value) };
+        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(savedCoord), infowindow, 20);
         marker = new google.maps.Marker({
             position: savedCoord,
             map: map
         });
-        map.setZoom(20);
-        map.setCenter(savedCoord);
-        var geocoder = new google.maps.Geocoder();
-        geocodeLatLng(geocoder, map, new google.maps.LatLng(savedCoord), infowindow);
+    }
+    else {
+        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(coord), infowindow, 12);
+        marker = new google.maps.Marker({
+            position: coord,
+            map: map
+        });
     }
 	
     google.maps.event.addListener(map, "click", (event) => {
@@ -65,10 +69,9 @@ function iniciarMap() {
 		}
 		else {
 			marker.setPosition( new google.maps.LatLng( event.latLng ) );
-		}
-		var geocoder = new google.maps.Geocoder();
-		geocodeLatLng(geocoder, map, event.latLng, infowindow);
-	});
+        }
+        geocodeLatLng(new google.maps.Geocoder(), event.latLng, infowindow);
+    });
 }
 
 //https://stackoverflow.com/questions/6478914/reverse-geocoding-code
@@ -92,15 +95,13 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
     if(estado != "Selecciona" && estado != "Sin estado") {
         address += ", " + estado;
     }
-	
+
     geocoder.geocode({ 'address': address }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
             alert("No hay direcciones");//alert(status);
         }
         // This is checking to see if the Geoeode Status is OK before proceeding
         if (status == google.maps.GeocoderStatus.OK) {
-            var address = (results[0].formatted_address);
-
             var colonia = getColonia(results[0]);
             var cp = getCP(results[0]);
 
@@ -119,27 +120,45 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
 					map: map
 				});
 			}
-			else {
-				marker.setPosition( new google.maps.LatLng( coord ) );
+            else {
+                marker.setPosition(new google.maps.LatLng(coord));
+                map.setCenter(coord);
 			}
-			geocodeLatLng(geocoder, map, results[0].geometry.location, infowindow);
+			geocodeLatLng(geocoder, results[0].geometry.location, infowindow, 20);
         }
-
     });
 }
 
-function geocodeLatLng(geocoder, map, latlng, infowindow) {
+function geocodeLatLng(geocoder, latlng, infowindow, zoom) {
   geocoder
     .geocode({ location: latlng })
     .then((response) => {
       if (response.results[0]) {
-        map.setZoom(20);
+        if (zoom != undefined) {
+            map.setZoom(zoom);
+        }
 
 		document.getElementById("lat").value = response.results[0].geometry.location.lat();
 		document.getElementById("lng").value = response.results[0].geometry.location.lng();
 		result = response.results[0];
 		infowindow.setContent(response.results[0].formatted_address + ' <button href="/" onclick="event.preventDefault();fillInAddress(result)">Usar dirección</button>');
-		infowindow.open(map, marker);
+        infowindow.open(map, marker);
+
+        if(latlng.lat() != 24.023601543486198 || latlng.lng() != -104.66070401364269) {//no asignar zona en DGEP
+            var municipio = getMunicipio(result);
+            for (const component of result.address_components) {
+                const componentType = component.types[0];
+                if (componentType == "political") {
+                    if (municipio == "Durango") {
+                        setZona(component.long_name);
+                    }
+                    else {
+                        var z = document.getElementById("zona");
+                        z.value = "SIN ZONA ASIGNADA";
+                    }
+                }
+            }
+        }
       } else {
         window.alert("No results found");
       }
@@ -155,13 +174,7 @@ function fillInAddress(place) {
   document.getElementById("municipioD").value = 0;
   document.getElementById("estadoD").value = 0;
   
-  var municipio;
-  for (const component of place.address_components) {
-      const componentType = component.types[0];
-      if (componentType == "locality") {
-          municipio = component.long_name;
-      }
-  }
+  var municipio = getMunicipio(place);
   for (const component of place.address_components) {
      const componentType = component.types[0];
 
@@ -200,25 +213,18 @@ function fillInAddress(place) {
 				document.getElementById("estadoD").value = e.options[i].value;
 			 }
 		 }
-             $("#estadoD").change();
-             alert("Dirección cargada")
+         document.getElementById("municipioD").text = municipio;
+         $("#estadoD").change();
          break;
        }
 	   default: {
 		 break;
 	   }
      }
-  }
-  for (const component of place.address_components) {
-      const componentType = component.types[0];
-     if (componentType == "locality") {
-         var m = document.getElementById("municipioD");
-		 for (let i = 0; i < m.length; i++) {
-			 if(m.options[i].text == component.long_name) {
-                 m.value = m.options[i].value;
-			 }
-		 }
-	 }
+    }
+  //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
+  if (localStorage.getItem('municipioD')) {
+      $('#municipioD').val(localStorage.getItem('municipioD'));
   }
 }
 
@@ -240,6 +246,16 @@ function getCP(place) {
         }
     }
     return "Sin CP";
+}
+
+function getMunicipio(place) {
+    for (const component of place.address_components) {
+        const componentType = component.types[0];
+        if (componentType == "locality") {
+            return component.long_name;
+        }
+    }
+    return "Sin municipio";
 }
 
 function setZona(colonia, cp) {
