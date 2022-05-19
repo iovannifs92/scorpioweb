@@ -303,7 +303,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
-                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
             };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
@@ -795,7 +796,8 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
                 new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
-                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" }
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
                 };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
@@ -2521,7 +2523,7 @@ namespace scorpioweb.Controllers
                         }
                         break;
                     case "IX":
-                        No9 = "XI";
+                        No9 = "IX";
                         TextoFraccion9 = tipo9;
                         Estatus9 = estatusF;
                         if (figuraJudicial == "SUSPENSIÓN CONDICIONAL DEL PROCESO")

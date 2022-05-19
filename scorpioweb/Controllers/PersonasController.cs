@@ -1646,6 +1646,14 @@ namespace scorpioweb.Controllers
             listaEstados = (from table in _context.Estados
                             select table).ToList();
             ViewBag.ListadoEstados = listaEstados;
+
+            List<Municipios> listaMunicipiosD = new List<Municipios>();
+            listaMunicipiosD = (from table in _context.Municipios
+                                where table.EstadosId == 10
+                                select table).ToList();
+
+            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
+            ViewBag.ListaMunicipios = listaMunicipiosD;
             return View();
         }
 
@@ -1657,7 +1665,7 @@ namespace scorpioweb.Controllers
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
-            string residenciaHabitual, string cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
+            string residenciaHabitual, int? cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
             /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
             string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
             string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE,
@@ -1736,14 +1744,14 @@ namespace scorpioweb.Controllers
                 #region -Domicilio-
                 domicilio.TipoDomicilio = tipoDomicilio;
                 domicilio.Calle = normaliza(calle);
-                domicilio.No = normaliza(no);
+                domicilio.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
                 domicilio.NombreCf = normaliza(nombreCF);
                 domicilio.Pais = paisD;
                 domicilio.Estado = estadoD;
                 domicilio.Municipio = municipioD;
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
-                domicilio.Cp = normaliza(cp);
+                domicilio.Cp = cp;
                 domicilio.Zona = normaliza(zona);
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
@@ -3430,9 +3438,9 @@ namespace scorpioweb.Controllers
             }
 
             domicilio.Calle = normaliza(domicilio.Calle);
-            domicilio.No = normaliza(domicilio.No);
+            domicilio.No = String.IsNullOrEmpty(domicilio.No) ? domicilio.No : domicilio.No.ToUpper();
             domicilio.NombreCf = normaliza(domicilio.NombreCf);
-            domicilio.Cp = normaliza(domicilio.Cp);
+            domicilio.Cp = domicilio.Cp;
             domicilio.Referencias = normaliza(domicilio.Referencias);
             domicilio.Horario = normaliza(domicilio.Horario);
             domicilio.Observaciones = normaliza(domicilio.Observaciones);

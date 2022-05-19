@@ -20,7 +20,6 @@
         //#region -Municipios-
         var items = "<option value='0'>Sin municipio</option>";
         $('#lnMunicipio').html(items);
-        $('#municipioD').html(items);
         $('#lnEstado').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#lnEstado';
@@ -63,15 +62,21 @@
                 var items = "<option value='0'>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
-                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                    if(municipio.text == document.getElementById("municipioD").text) {
+                        items += "<option value='" + municipio.value + "' selected>" + municipio.text + "</option>";
+                    }
+                    else {
+                        items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                    }
                 });
                 $('#municipioD').html(items);
             });
+            localStorage.setItem('municipioD',$('#municipioD').val());
         });
         $('#paisD').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
-                 $("#estadoD").val(0);
+                $("#estadoD").val(0);
                 var items = "<option value='0'>Sin municipio</option>";
                 $('#municipioD').html(items);
                 $("#municipioD").val(0);
@@ -123,7 +128,7 @@
             }
         });
         //#endregion
-
+        
         //#region -Modales-
         $("#consumoSustancias").change(function () {
             document.getElementById("sustancia").value = 'ALCOHOL';
@@ -1004,15 +1009,15 @@
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Calle</label>
-                                    <input required id="calle" name="calle" type="text" class="form-control" />
+                                    <input required id="calle" name="calle" type="text" value="Calle Pino Suárez" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="control-label">Número</label>
-                                    <input id="no" name="no" type="text" class="form-control" />
+                                    <input id="no" name="no" type="text" value="308" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Colonia/Fraccionamiento</label>
-                                    <input required id="nombreCF" name="nombreCF" type="text" class="form-control" maxlength="45" />
+                                    <input required id="nombreCF" name="nombreCF" type="text" value="Zona Centro" class="form-control" maxlength="45" />
                                 </div>
                                 <div class="form-group col-md-4" id="PaisD">
                                     <label class="control-label">País</label>
@@ -1030,13 +1035,13 @@
                                 <div class="form-group col-md-4" id="EstadoD">
                                     <label class="control-label">Estado</label>
                                     <select class="form-control" name="estadoD" id="estadoD"
-                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" runat="server">
+                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado", 10))" runat="server">
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4" id="MunicipioD">
                                     <label class="control-label">Municipio</label>
                                     <select class="form-control" name="municipioD" id="municipioD"
-                                            asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
+                                            asp-items="@(new SelectList(ViewBag.ListaMunicipios,"Id","Municipio", 282))">
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
@@ -1058,11 +1063,12 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Código Postal</label>
-                                    <input id="cp" name="cp" type="text" class="form-control" />
+                                    <input id="cp" name="cp" type="number" value="34000" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Elija la zona que le corresponde (únicamente ciudad de Durango)</label>
                                     <select required class="form-control" id="zona" name="zona">
+                                        <option value="SIN ZONA ASIGNADA">Sin zona asignada</option>
                                         <option value="ZONA 1">Zona 1</option>
                                         <option value="ZONA 2">Zona 2</option>
                                         <option value="ZONA 3">Zona 3</option>
@@ -1070,7 +1076,6 @@
                                         <option value="ZONA 5">Zona 5</option>
                                         <option value="ZONA 6">Zona 6</option>
                                         <option value="ZONA 7">Zona 7</option>
-                                        <option value="SIN ZONA ASIGNADA">Sin zona asignada</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12">
