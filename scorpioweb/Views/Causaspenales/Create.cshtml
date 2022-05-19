@@ -134,7 +134,6 @@
                     }
                 }
             }
-
             if (matches === "") {
                 $.ajax({
                     type: "POST",
@@ -158,10 +157,8 @@
                                 alert(response.responseText);
                             }
                         } else {
-                            window.location.replace("https://localhost:44359/Causaspenales/ListadeCausas");
+                            window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
                         }
-
-
                     },
                     error: function (response) {
                         alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");

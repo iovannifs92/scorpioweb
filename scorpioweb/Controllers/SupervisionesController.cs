@@ -730,6 +730,7 @@ namespace scorpioweb.Controllers
 
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
             ViewBag.Admin = false;
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
@@ -739,6 +740,7 @@ namespace scorpioweb.Controllers
                 if (rol == "AdminMCSCP")
                 {
                     ViewBag.Admin = true;
+                    supervisor = true;
                 }
             }
             foreach (var rol in roles)
@@ -746,6 +748,7 @@ namespace scorpioweb.Controllers
                 if (rol == "Masteradmin")
                 {
                     ViewBag.Masteradmin = true;
+                    supervisor = true;
                 }
             }
             foreach (var rol in roles)
@@ -820,7 +823,7 @@ namespace scorpioweb.Controllers
                              tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
                          };
 
-            if (supervisor)
+            if (supervisor == false)
             {
                 filter = from p in _context.Persona
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona

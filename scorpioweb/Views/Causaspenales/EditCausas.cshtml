@@ -186,6 +186,47 @@
         var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("Juez"), jueces);
 
+
+
+        //$('#btnguardarEdit').on("click", function (e) {
+        //    e.preventDefault();
+
+        //    var id = document.getElementById("IdCausaPenal").value;
+        //    var juez = document.getElementById("Juez").value;
+        //    var Cambio = document.getElementById("Cambio").value;
+        //    var distrito = document.getElementById("Distrito").value;
+        //    var cp = document.getElementById("CausaPenal").value;
+        //    var Cnpp = document.getElementById("Cnpp").value;
+  
+        //    $.ajax({ 
+        //        type: "POST",
+        //        dataType: "json",
+        //        url: "/Causaspenales/Historialcp",
+        //        traditional: true,
+        //        data: {
+        //            id,juez, Cambio, distrito, cp,Cnpp,
+        //        },
+        //        success: function (response) {
+        //            var msg = confirm("¿Modifico la causa penal?");
+        //            if (msg == true) {
+        //                if (response.success) {
+        //                    window.location.href = response.responseText;
+        //                } else {
+        //                    alert(response.responseText);
+        //                }
+        //            } else {
+        //                window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
+        //            }
+
+
+        //        },
+        //        error: function (response) {
+        //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+        //        }
+        //    });
+        //});
+
+
     });
 
     showModal = (url, title, id) => {
@@ -202,6 +243,13 @@
             }
         })
     }
+
+
+     
+
+
+
+
 </script>
 
 @foreach (var item in ViewData["joinTablesCausa"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
@@ -223,20 +271,20 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label class="control-label">Cnpp</label>
-                    <select class="form-control" name="Cnpp"
+                    <select class="form-control" name="Cnpp" id="Cnpp"
                             asp-items="@(new SelectList(ViewBag.listaCnpp, "Value", "Text", @ViewBag.idCnpp))">
                     </select>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label class="control-label">Cambio</label>
-                    <select class="form-control" name="Cambio"
+                    <select class="form-control" name="Cambio" id="Cambio"
                             asp-items="@(new SelectList(ViewBag.listaCambio, "Value", "Text", @ViewBag.idCambio))">
                     </select>
                 </div>
                 <div class="form-group col-md-12">
                     <label class="control-label">Distrito</label>
-                    <select class="form-control" name="Distrito"
+                    <select class="form-control" name="Distrito" id="Distrito"
                             asp-items="@(new SelectList(ViewBag.listaDistrito, "Value", "Text", @ViewBag.idDistrito))">
                     </select>
                 </div>

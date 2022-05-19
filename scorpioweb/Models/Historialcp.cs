@@ -5,9 +5,9 @@ namespace scorpioweb.Models
 {
     public partial class Historialcp
     {
-        public int Idhistorialcp { get; set; }
-        public string CpAnterior { get; set; }
+        public int IdHistorialcp { get; set; }
         public string Distrito { get; set; }
+        public DateTime? FechaModificacion { get; set; }
         public int? CausapenalIdCausapenal { get; set; }
     }
 }
