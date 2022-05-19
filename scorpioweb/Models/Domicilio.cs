@@ -16,7 +16,7 @@ namespace scorpioweb.Models
         public string Municipio { get; set; }
         public string Temporalidad { get; set; }
         public string ResidenciaHabitual { get; set; }
-        public string Cp { get; set; }
+        public int? Cp { get; set; }
         public string Referencias { get; set; }
         public string Horario { get; set; }
         public string DomcilioSecundario { get; set; }
