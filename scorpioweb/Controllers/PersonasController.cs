@@ -3484,7 +3484,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var domisecu = await _context.Domicilio.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
+            var domisecu = await _context.Domiciliosecundario.SingleOrDefaultAsync(m => m.IdDomicilio == id);
 
             #region -To List databases-
             List<Persona> personaVM = _context.Persona.ToList();
@@ -3494,9 +3494,9 @@ namespace scorpioweb.Controllers
 
             #region -Jointables-
             ViewData["joinTablesDomcilioSec"] = from personaTable in personaVM
-                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.IdDomicilio
+                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.PersonaIdPersona
                                                 join domicilioSec in domiciliosecundarioVM on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
-                                                where personaTable.IdPersona == id
+                                                where domicilioSec.IdDomicilio == id
                                                 select new PersonaViewModel
                                                 {
                                                     domicilioSecundarioVM = domicilioSec
