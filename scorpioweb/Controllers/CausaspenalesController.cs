@@ -671,6 +671,7 @@ namespace scorpioweb.Controllers
 
             List<Delito> delitoVM = _context.Delito.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
+            List<Historialcp> historialcps = _context.Historialcp.ToList();
 
             #region -Jointables-
             ViewData["joinTablesCausa"] =
@@ -683,6 +684,18 @@ namespace scorpioweb.Controllers
 
             // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
             #endregion
+
+            //#region -Jointables-
+            //ViewData["joinTableshistory"] =
+            //                         from hcp in historialcps
+            //                         where hcp.CausapenalIdCausapenal == IdCausaPenal
+            //                         select new CausaDelitoViewModel
+            //                         {
+            //                             historialcp = hcp
+            //                         };
+
+            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+           //endregion
 
 
             List<Delito> delitoVMV = _context.Delito.ToList();
@@ -715,7 +728,7 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB, Historialcp historialcp, string cnpp, string juez, string distrito, string cambio, string cp)
+        public async Task<IActionResult> EditCausas(int? id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB)
         {
             string currentUser = User.Identity.Name;
 
@@ -728,10 +741,8 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-
                     causa.Juez = normaliza(causa.Juez);
                     causa.CausaPenal = normaliza(causa.CausaPenal);
-                    //causa.CausaPenalCompleta = normaliza(cp) + ", Distrito " + distrito + ", " + juez;
 
                     #region -Delitos-
                     for (int i = 0; i < datosDelitos.Count; i = i + 2)
@@ -774,57 +785,13 @@ namespace scorpioweb.Controllers
                     }
                 }
 
-                return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id }) });
-                //return RedirectToAction(nameof(Index));
+                //return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id}) });
+                // return Json(new { success = true, responseText = "Datos Guardados con éxito" /*responseText = Url.Action("ListadeCausas", "Causaspenales",new { @id = id }) */});
+
+                return RedirectToAction(nameof(Index));
             }
             return View();
         }
-
-
-        //[HttpPost]
-        //public async Task<IActionResult> Historialcp(int id,Historialcp historialcp,Causapenal causapenal, string cnpp, string juez, string distrito, string cambio, string cp)
-        //{
-        //    string currentUser = User.Identity.Name;
-
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-
-        //            causapenal.IdCausaPenal = id;
-        //            causapenal.Cnpp = cnpp;
-        //            causapenal.Juez = normaliza(juez);
-        //            causapenal.Distrito = distrito;
-        //            causapenal.Cambio = cambio;
-        //            causapenal.CausaPenal = normaliza(cp);
-        //            //causapenal.CausaPenalCompleta = normaliza(cp) + ", Distrito " + distrito + ", " + juez;
-
-        //            var oldCausa = await _context.Causapenal.FindAsync(id);
-        //            _context.Entry(oldCausa).CurrentValues.SetValues(causapenal);
-        //            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!DelitolExists(causapenal.IdCausaPenal))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-
-        //        return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id }) });
-        //        //return RedirectToAction(nameof(Index));
-        //    }
-        //    return View();
-        //}
 
         #endregion
 
