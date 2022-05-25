@@ -693,19 +693,7 @@ namespace scorpioweb.Controllers
                                      {
                                          historialcp = hcp
                                      };
-
-            if ((ViewData["joinTableshistory"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0)
-            {
-                ViewBag.tieneDelitos = false;
-            }
-            else
-            {
-                ViewBag.tieneDelitos = true;
-            }
-
-
             #endregion
-
 
 
             List<Delito> delitoVMV = _context.Delito.ToList();
