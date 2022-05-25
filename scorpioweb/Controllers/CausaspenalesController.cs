@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -9,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
+using F23.StringSimilarity;
+
 
 namespace scorpioweb.Controllers
 {
@@ -673,6 +676,7 @@ namespace scorpioweb.Controllers
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
             List<Historialcp> historialcps = _context.Historialcp.ToList();
 
+
             #region -Jointables-
             ViewData["joinTablesCausa"] =
                                      from causapenalTable in causaPenalVM
@@ -682,20 +686,26 @@ namespace scorpioweb.Controllers
                                          causaPenalVM = causapenalTable
                                      };
 
-            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+            ViewData["joinTableshistory"] =
+                                     from hcp in historialcps
+                                     where hcp.CausapenalIdCausapenal == IdCausaPenal
+                                     select new CausaDelitoViewModel
+                                     {
+                                         historialcp = hcp
+                                     };
+
+            if ((ViewData["joinTableshistory"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0)
+            {
+                ViewBag.tieneDelitos = false;
+            }
+            else
+            {
+                ViewBag.tieneDelitos = true;
+            }
+
+
             #endregion
 
-            //#region -Jointables-
-            //ViewData["joinTableshistory"] =
-            //                         from hcp in historialcps
-            //                         where hcp.CausapenalIdCausapenal == IdCausaPenal
-            //                         select new CausaDelitoViewModel
-            //                         {
-            //                             historialcp = hcp
-            //                         };
-
-            // ViewBag.Delitos = ((ViewData["joinTablesDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
-           //endregion
 
 
             List<Delito> delitoVMV = _context.Delito.ToList();
@@ -713,7 +723,7 @@ namespace scorpioweb.Controllers
 
                                      };
 
-            //ViewBag.Delitos = ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count()).ToString();
+            
             if ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0)
             {
                 ViewBag.tieneDelitos = false;
@@ -728,7 +738,7 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditCausas(int? id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB)
+        public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB, Historialcp historialcp, string cnpp, string juez, string distrito, string cambio, string cp)
         {
             string currentUser = User.Identity.Name;
 
@@ -741,8 +751,14 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    causa.Juez = normaliza(causa.Juez);
-                    causa.CausaPenal = normaliza(causa.CausaPenal);
+
+                    causa.IdCausaPenal = id;
+                    causa.Cnpp = cnpp;
+                    causa.Juez = normaliza(juez);
+                    causa.Distrito = distrito;
+                    causa.Cambio = cambio;
+                    causa.CausaPenal = normaliza(cp);
+                    //causa.CausaPenalCompleta = normaliza(cp) + ", Distrito " + distrito + ", " + juez;
 
                     #region -Delitos-
                     for (int i = 0; i < datosDelitos.Count; i = i + 2)
@@ -770,6 +786,20 @@ namespace scorpioweb.Controllers
                     #endregion
 
                     var oldCausa = await _context.Causapenal.FindAsync(id);
+                    if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
+                    {
+                        historialcp.Cnpp = oldCausa.Cnpp;
+                        historialcp.Juez = normaliza(oldCausa.Juez);
+                        historialcp.Distrito = oldCausa.Distrito;
+                        historialcp.Cambio = oldCausa.Cambio;
+                        historialcp.Causapenal = normaliza(oldCausa.CausaPenal);
+                        historialcp.FechaModificacion = DateTime.Now;
+                        historialcp.CausapenalIdCausapenal = id;
+
+                        _context.Add(historialcp);
+                        await _context.SaveChangesAsync(null, 1);
+                    }
+
                     _context.Entry(oldCausa).CurrentValues.SetValues(causa);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
@@ -785,10 +815,7 @@ namespace scorpioweb.Controllers
                     }
                 }
 
-                //return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id}) });
-                // return Json(new { success = true, responseText = "Datos Guardados con éxito" /*responseText = Url.Action("ListadeCausas", "Causaspenales",new { @id = id }) */});
-
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id }) });
             }
             return View();
         }
