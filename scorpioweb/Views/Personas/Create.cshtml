@@ -128,7 +128,7 @@
             }
         });
         //#endregion
-        
+
         //#region -Modales-
         $("#consumoSustancias").change(function () {
             document.getElementById("sustancia").value = 'ALCOHOL';
@@ -728,12 +728,37 @@
     //#endregion
 
 
-    //function myFunction(materno) {
-    //    var nombre = document.getElementById("nombre").value;
-    //    var paterno = document.getElementById("paterno").value;
-    //    var materno = materno;
+    function myFunction(materno) {
+        var nombre = document.getElementById("nombre").value;
+        var paterno = document.getElementById("paterno").value;
+        var materno = materno;
 
-    //}
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/similitudNombre",
+            traditional: true,
+            data: {
+                    nombre, paterno, materno,
+            },
+            success: function (response) {
+                if (response.success == true) {
+                    var msg = confirm("Se encontro una persona " + response.porcentaje + "% parecido, ¿Desea ir a la entrevista?");
+                    if (msg == true) {
+                        window.location.href = response.responseText;
+                    } else {
+                    } 
+                } else {
+                }
+                
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+
+
+    }
 </script>
 
 @{
@@ -778,7 +803,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Apellido materno</label>
-                                    <input name="materno"  type="text" class="form-control"  />
+                                    <input name="materno"  type="text" class="form-control" onblur="myFunction(value)" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Alias</label>
