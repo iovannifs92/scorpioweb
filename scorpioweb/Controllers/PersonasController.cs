@@ -227,7 +227,7 @@ namespace scorpioweb.Controllers
             foreach (var q in query)
             {
              r = cosine.Similarity(q.nomcom, nombreCompleto);
-                if(r >= .90)
+                if(r >= .80)
                     {
                     nomCom = q.nomcom;
                     idpersona = q.id;
@@ -3476,7 +3476,11 @@ namespace scorpioweb.Controllers
             ViewBag.idZona = BuscaId(listaZonas, domicilio.Zona);
 
             ViewBag.pais = domicilio.Pais;
+
             ViewBag.domi = domicilio.DomcilioSecundario;
+
+
+
 
             if (domicilio == null)
             {
