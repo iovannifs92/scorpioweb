@@ -190,24 +190,6 @@ namespace scorpioweb.Controllers
             return cleaned;
         }
         #endregion
-
-
-        public void sytingIgual(string[] args)
-        {
-            string s1 = "My first string";
-            string s2 = "My other string...";
-
-            // Let's work with sequences of 2 characters...
-            var cosine = new Cosine(2);
-
-            // For cosine similarity I need the profile of strings
-            var profile1 = cosine.GetProfile(s1);
-            var profile2 = cosine.GetProfile(s2);
-
-            // Prints 0.516185
-            Console.WriteLine(cosine.Similarity(profile1, profile2));
-        }
-
         bool simi = false;
         public JsonResult similitudNombre(string nombre, string paterno, string materno)
         {
