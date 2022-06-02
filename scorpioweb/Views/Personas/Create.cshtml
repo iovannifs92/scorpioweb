@@ -251,17 +251,17 @@
             listSustancia.push(observaciones);
             $('#arraySustancias').val(JSON.stringify(listSustancia));
             alert("Datos Guardados con éxito");
-                        document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
-                        document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
-                        document.ready = document.getElementById("cantidadS").value = '';
-                        document.ready = document.getElementById("ultimoConsumo").value = '';
-                        document.ready = document.getElementById("observacionesConsumo").value = '';
-                        var otraSustancia = confirm("¿Consume alguna otra sustancia?");
-                        if (otraSustancia == true) {
-                            alert("Coloque los datos correspondientes a la nueva sustancia");
-                        } else {
-                            $("#modalConsumoSustancias").modal('hide');
-                        }
+            document.ready = document.getElementById("sustancia").value = 'ALCOHOL';
+            document.ready = document.getElementById("frecuenciaS").value = 'DIARIO';
+            document.ready = document.getElementById("cantidadS").value = '';
+            document.ready = document.getElementById("ultimoConsumo").value = '';
+            document.ready = document.getElementById("observacionesConsumo").value = '';
+            var otraSustancia = confirm("¿Consume alguna otra sustancia?");
+            if (otraSustancia == true) {
+                alert("Coloque los datos correspondientes a la nueva sustancia");
+            } else {
+                $("#modalConsumoSustancias").modal('hide');
+            }
         });
         $('#btnGuardarFamiliar').on("click", function (e) {
             e.preventDefault();
@@ -319,7 +319,6 @@
                 listFamiliarReferencia.push("REFERENCIA");
             }
 
-            alert(listFamiliarReferencia);
             $('#arrayFamiliarReferencia').val(JSON.stringify(listFamiliarReferencia));
             alert("Datos Guardados con éxito");
             document.ready = document.getElementById("AFNombre").value = '';
@@ -1065,7 +1064,7 @@
                                     <label class="control-label">Código Postal</label>
                                     <input id="cp" name="cp" type="number" value="34000" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-12">
+                                <div class="form-group col-md-12" type="hidden">
                                     <label class="control-label">Elija la zona que le corresponde (únicamente ciudad de Durango)</label>
                                     <select required class="form-control" id="zona" name="zona">
                                         <option value="SIN ZONA ASIGNADA">Sin zona asignada</option>

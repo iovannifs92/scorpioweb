@@ -1375,161 +1375,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -EditaSustancias-
-        public ActionResult siguienteSustancia(string[] datosConsumo)
-        {
-            string currentUser = User.Identity.Name;
-            for (int i = 0; i < datosConsumo.Length; i++)
-            {
-                datosSustanciasEditadas.Add(new List<String> { datosConsumo[i], currentUser });
-            }
-
-            if (contadorSustancia == consumosustancias.Count)
-            {
-                return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-            }
-            else
-            {
-                return Json(new
-                {
-                    success = true,
-                    responseText = "Siguiente",
-                    sustancia = consumosustancias[contadorSustancia].Sustancia,
-                    frecuencia = consumosustancias[contadorSustancia].Frecuencia,
-                    cantidad = consumosustancias[contadorSustancia].Cantidad,
-                    ultimoConsumo = consumosustancias[contadorSustancia].UltimoConsumo,
-                    observacionesConsumo = consumosustancias[contadorSustancia].Observaciones,
-                    idConsumoSustancias = consumosustancias[contadorSustancia++].IdConsumoSustancias
-                });
-            }
-        }
-
-        public ActionResult editarSustancias()
-        {
-            contadorSustancia = 1;//por cargar la 1er sustancia
-
-            //por si no se vacian las listas despues de guardar
-            string currentUser = User.Identity.Name;
-            for (int i = 0; i < datosSustanciasEditadas.Count; i++)
-            {
-                if (datosSustanciasEditadas[i][1] == currentUser)
-                {
-                    datosSustanciasEditadas.RemoveAt(i);
-                    i--;
-                }
-            }
-
-            return Json(new { success = true });
-        }
-
-        #endregion
-
-        #region -EditaFamiliar-
-        public ActionResult siguienteFamiliar(string[] datosFamiliar, int tipoGuardado)
-        {
-            string currentUser = User.Identity.Name;
-
-            if (tipoGuardado == 1)
-            {
-                for (int i = 0; i < datosFamiliar.Length; i++)
-                {
-                    datosFamiliaresEditados.Add(new List<String> { datosFamiliar[i], currentUser });
-                }
-
-                if (contadorFamiliares == familiares.Count)
-                {
-                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-                }
-                else
-                {
-                    return Json(new
-                    {
-                        success = true,
-                        responseText = "Siguiente",
-                        nombre = familiares[contadorFamiliares].Nombre,
-                        relacion = familiares[contadorFamiliares].Relacion,
-                        edad = familiares[contadorFamiliares].Edad,
-                        sexo = familiares[contadorFamiliares].Sexo,
-                        dependencia = familiares[contadorFamiliares].Dependencia,
-                        explicaDependencia = familiares[contadorFamiliares].DependenciaExplica,
-                        vivenJuntos = familiares[contadorFamiliares].VivenJuntos,
-                        direccion = familiares[contadorFamiliares].Domicilio,
-                        telefono = familiares[contadorFamiliares].Telefono,
-                        horarioLocalizacion = familiares[contadorFamiliares].HorarioLocalizacion,
-                        enteradoProceso = familiares[contadorFamiliares].EnteradoProceso,
-                        puedeEnterarse = familiares[contadorFamiliares].PuedeEnterarse,
-                        observaciones = familiares[contadorFamiliares].Observaciones,
-                        idAsientoFamiliar = familiares[contadorFamiliares++].IdAsientoFamiliar
-                    });
-                }
-            }
-            else
-            {
-                for (int i = 0; i < datosFamiliar.Length; i++)
-                {
-                    datosReferenciasEditadas.Add(new List<String> { datosFamiliar[i], currentUser });
-                }
-
-                if (contadorReferencias == referenciaspersonales.Count)
-                {
-                    return Json(new { success = true, responseText = "Datos Guardados con éxito" });
-                }
-                else
-                {
-                    return Json(new
-                    {
-                        success = true,
-                        responseText = "Siguiente",
-                        nombre = referenciaspersonales[contadorReferencias].Nombre,
-                        relacion = referenciaspersonales[contadorReferencias].Relacion,
-                        edad = referenciaspersonales[contadorReferencias].Edad,
-                        sexo = referenciaspersonales[contadorReferencias].Sexo,
-                        dependencia = referenciaspersonales[contadorReferencias].Dependencia,
-                        explicaDependencia = referenciaspersonales[contadorReferencias].DependenciaExplica,
-                        vivenJuntos = referenciaspersonales[contadorReferencias].VivenJuntos,
-                        direccion = referenciaspersonales[contadorReferencias].Domicilio,
-                        telefono = referenciaspersonales[contadorReferencias].Telefono,
-                        horarioLocalizacion = referenciaspersonales[contadorReferencias].HorarioLocalizacion,
-                        enteradoProceso = referenciaspersonales[contadorReferencias].EnteradoProceso,
-                        puedeEnterarse = referenciaspersonales[contadorReferencias].PuedeEnterarse,
-                        observaciones = referenciaspersonales[contadorReferencias].Observaciones,
-                        idAsientoFamiliar = referenciaspersonales[contadorReferencias++].IdAsientoFamiliar
-                    });
-                }
-            }
-        }
-
-        public ActionResult editarFamiliares(int tipoGuardado)
-        {
-            string currentUser = User.Identity.Name;
-            if (tipoGuardado == 1)
-            {
-                contadorFamiliares = 1;
-                for (int i = 0; i < datosFamiliaresEditados.Count; i++)
-                {
-                    if (datosFamiliaresEditados[i][1] == currentUser)
-                    {
-                        datosFamiliaresEditados.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-            else if (tipoGuardado == 2)
-            {
-                contadorReferencias = 1;
-                for (int i = 0; i < datosReferenciasEditadas.Count; i++)
-                {
-                    if (datosReferenciasEditadas[i][1] == currentUser)
-                    {
-                        datosReferenciasEditadas.RemoveAt(i);
-                        i--;
-                    }
-                }
-            }
-            return Json(new { success = true });
-        }
-        #endregion
-
         public ActionResult agregarAgregardomiciliosecuendario()
         {
             datosDomiciolioSecundario = new List<List<string>>();
@@ -2644,9 +2489,55 @@ namespace scorpioweb.Controllers
             }
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+            List<string> consumo = new List<string>();
             consumosustancias = await _context.Consumosustancias.Where(m => m.PersonaIdPersona == id).ToListAsync();
+            for (int i = 0; i < consumosustancias.Count; i++)
+            {
+                consumo.Add(consumosustancias[i].Sustancia?.ToString());
+                consumo.Add(consumosustancias[i].Frecuencia?.ToString());
+                consumo.Add(consumosustancias[i].Cantidad?.ToString());
+                consumo.Add(consumosustancias[i].UltimoConsumo?.ToString());
+                consumo.Add(consumosustancias[i].Observaciones?.ToString());
+                consumo.Add(consumosustancias[i].IdConsumoSustancias.ToString());
+            }
+            List<string> asientofamiliares = new List<string>();
             familiares = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "FAMILIAR").ToListAsync();
+            for (int i = 0; i < familiares.Count; i++)
+            {
+                asientofamiliares.Add(familiares[i].Nombre?.ToString());
+                asientofamiliares.Add(familiares[i].Relacion?.ToString());
+                asientofamiliares.Add(familiares[i].Edad?.ToString());
+                asientofamiliares.Add(familiares[i].Sexo?.ToString());
+                asientofamiliares.Add(familiares[i].Dependencia?.ToString());
+                asientofamiliares.Add(familiares[i].DependenciaExplica?.ToString());
+                asientofamiliares.Add(familiares[i].VivenJuntos?.ToString());
+                asientofamiliares.Add(familiares[i].Domicilio?.ToString());
+                asientofamiliares.Add(familiares[i].Telefono?.ToString());
+                asientofamiliares.Add(familiares[i].HorarioLocalizacion?.ToString());
+                asientofamiliares.Add(familiares[i].EnteradoProceso?.ToString());
+                asientofamiliares.Add(familiares[i].PuedeEnterarse?.ToString());
+                asientofamiliares.Add(familiares[i].Observaciones?.ToString());
+                asientofamiliares.Add(familiares[i].IdAsientoFamiliar.ToString());
+            }
+            List<string> asientoreferencias = new List<string>();
             referenciaspersonales = await _context.Asientofamiliar.Where(m => m.PersonaIdPersona == id && m.Tipo == "REFERENCIA").ToListAsync();
+            for (int i = 0; i < referenciaspersonales.Count; i++)
+            {
+                asientoreferencias.Add(referenciaspersonales[i].Nombre?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Relacion?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Edad?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Sexo?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Dependencia?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].DependenciaExplica?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].VivenJuntos?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Domicilio?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Telefono?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].HorarioLocalizacion?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].EnteradoProceso?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].PuedeEnterarse?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].Observaciones?.ToString());
+                asientoreferencias.Add(referenciaspersonales[i].IdAsientoFamiliar.ToString());
+            }
             if (persona == null)
             {
                 return NotFound();
@@ -2806,13 +2697,6 @@ namespace scorpioweb.Controllers
             };
             ViewBag.listaFrecuencia = ListaFrecuencia;
 
-
-
-
-
-
-
-
             if (consumosustancias.Count > 0)
             {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustancias[contadorSustancia].Sustancia);
@@ -2831,6 +2715,10 @@ namespace scorpioweb.Controllers
                 ViewBag.ultimoConsumo = null;
                 ViewBag.observaciones = null;
             }
+
+            ViewBag.ListaConsumo = consumo;
+            ViewBag.ListaAsientoFamiliares = asientofamiliares;
+            ViewBag.ListaAsientoReferencias = asientoreferencias;
             #endregion
 
             #region Familiares
@@ -2884,6 +2772,7 @@ namespace scorpioweb.Controllers
                 ViewBag.idEnteradoProcesoF = BuscaId(listaSiNo, familiares[contadorFamiliares].EnteradoProceso);
                 ViewBag.idPuedeEnterarseF = BuscaId(listaNoSiNA, familiares[contadorFamiliares].PuedeEnterarse);
                 ViewBag.AFobservacionesF = familiares[contadorFamiliares].Observaciones;
+                ViewBag.tipoF = familiares[contadorFamiliares].Tipo;
                 ViewBag.idAsientoFamiliarF = familiares[contadorFamiliares].IdAsientoFamiliar;
                 contadorFamiliares++;
             }
@@ -2926,6 +2815,7 @@ namespace scorpioweb.Controllers
                 ViewBag.idEnteradoProcesoR = BuscaId(listaSiNo, referenciaspersonales[contadorReferencias].EnteradoProceso);
                 ViewBag.idPuedeEnterarseR = BuscaId(listaNoSiNA, referenciaspersonales[contadorReferencias].PuedeEnterarse);
                 ViewBag.AFobservacionesR = referenciaspersonales[contadorReferencias].Observaciones;
+                ViewBag.tipoR = referenciaspersonales[contadorReferencias].Tipo;
                 ViewBag.idAsientoFamiliarR = referenciaspersonales[contadorReferencias].IdAsientoFamiliar;
                 contadorReferencias++;
             }
@@ -2952,8 +2842,11 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado, UbicacionExpediente")] Persona persona)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas)
         {
+            Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
+            Familiaresforaneos familiaresForaneos = new Familiaresforaneos();
+            
             string currentUser = User.Identity.Name;
 
             if (id != persona.IdPersona)
@@ -2986,282 +2879,251 @@ namespace scorpioweb.Controllers
                 persona.Candado = persona.Candado;
                 #region -ConsumoSustancias-
                 //Sustancias editadas
-                for (int i = 0; i < datosSustanciasEditadas.Count; i = i + 6)
+                if (arraySustanciasEditadas != null)
                 {
-                    if (datosSustanciasEditadas[i][1] == currentUser)
+                    JArray sustancias = JArray.Parse(arraySustanciasEditadas);
+
+                    for (int i = 0; i < sustancias.Count; i = i + 6)
                     {
-                        Consumosustancias consumosustanciasBD = new Consumosustancias();
-
-                        consumosustanciasBD.Sustancia = datosSustanciasEditadas[i][0];
-                        consumosustanciasBD.Frecuencia = datosSustanciasEditadas[i + 1][0];
-                        consumosustanciasBD.Cantidad = normaliza(datosSustanciasEditadas[i + 2][0]);
-                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustanciasEditadas[i + 3][0]);
-                        consumosustanciasBD.Observaciones = normaliza(datosSustanciasEditadas[i + 4][0]);
-                        consumosustanciasBD.IdConsumoSustancias = Int32.Parse(datosSustanciasEditadas[i + 5][0]);
-                        consumosustanciasBD.PersonaIdPersona = id;
-
-                        try
+                        int idConsumo = Int32.Parse(sustancias[i + 5].ToString());
+                        if (idConsumo < 0)
                         {
-                            var oldconsumosustanciasBD = await _context.Consumosustancias.FindAsync(consumosustanciasBD.IdConsumoSustancias);
-                            _context.Entry(oldconsumosustanciasBD).CurrentValues.SetValues(consumosustanciasBD);
-                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                            //_context.Update(consumosustanciasBD);
-                            //await _context.SaveChangesAsync();
+                            idConsumo = -idConsumo;
+                            var sustancia = await _context.Consumosustancias.SingleOrDefaultAsync(m => m.IdConsumoSustancias == idConsumo);
+                            _context.Consumosustancias.Remove(sustancia);
                         }
-                        catch (DbUpdateConcurrencyException)
+                        else
                         {
-                            if (!PersonaExists(consumosustanciasBD.PersonaIdPersona))
+                            Consumosustancias consumosustanciasBD = new Consumosustancias();
+
+                            consumosustanciasBD.Sustancia = sustancias[i].ToString();
+                            consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
+                            consumosustanciasBD.Cantidad = normaliza(sustancias[i + 2].ToString());
+                            consumosustanciasBD.UltimoConsumo = validateDatetime(sustancias[i + 3].ToString());
+                            consumosustanciasBD.Observaciones = normaliza(sustancias[i + 4].ToString());
+                            consumosustanciasBD.IdConsumoSustancias = idConsumo;
+                            consumosustanciasBD.PersonaIdPersona = id;
+
+                            try
                             {
-                                return NotFound();
+                                var oldconsumosustanciasBD = await _context.Consumosustancias.FindAsync(consumosustanciasBD.IdConsumoSustancias);
+                                _context.Entry(oldconsumosustanciasBD).CurrentValues.SetValues(consumosustanciasBD);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             }
-                            else
+                            catch (DbUpdateConcurrencyException)
                             {
-                                throw;
+                                if (!PersonaExists(consumosustanciasBD.PersonaIdPersona))
+                                {
+                                    return NotFound();
+                                }
+                                else
+                                {
+                                    throw;
+                                }
                             }
                         }
-                    }
-                }
-
-
-                for (int i = 0; i < datosSustanciasEditadas.Count; i++)
-                {
-                    if (datosSustanciasEditadas[i][1] == currentUser)
-                    {
-                        datosSustanciasEditadas.RemoveAt(i);
-                        i--;
                     }
                 }
 
                 //Sustancias agregadas
                 int idConsumoSustancias = ((from table in _context.Consumosustancias
                                             select table.IdConsumoSustancias).Max());
-                for (int i = 0; i < datosSustancias.Count; i = i + 5)
+                if (arraySustancias != null)
                 {
-                    if (datosSustancias[i][1] == currentUser)
+                    JArray sustancias = JArray.Parse(arraySustancias);
+
+                    for (int i = 0; i < sustancias.Count; i = i + 5)
                     {
                         Consumosustancias consumosustanciasBD = new Consumosustancias();
 
-                        consumosustanciasBD.Sustancia = datosSustancias[i][0];
-                        consumosustanciasBD.Frecuencia = datosSustancias[i + 1][0];
-                        consumosustanciasBD.Cantidad = normaliza(datosSustancias[i + 2][0]);
-                        consumosustanciasBD.UltimoConsumo = validateDatetime(datosSustancias[i + 3][0]);
-                        consumosustanciasBD.Observaciones = normaliza(datosSustancias[i + 4][0]);
+                        consumosustanciasBD.Sustancia = sustancias[i].ToString();
+                        consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
+                        consumosustanciasBD.Cantidad = normaliza(sustancias[i + 2].ToString());
+                        consumosustanciasBD.UltimoConsumo = validateDatetime(sustancias[i + 3].ToString());
+                        consumosustanciasBD.Observaciones = normaliza(sustancias[i + 4].ToString());
                         consumosustanciasBD.PersonaIdPersona = id;
                         consumosustanciasBD.IdConsumoSustancias = ++idConsumoSustancias;
                         _context.Add(consumosustanciasBD);
-                        await _context.SaveChangesAsync(null, 1);
-                    }
-                }
-
-                for (int i = 0; i < datosSustancias.Count; i++)
-                {
-                    if (datosSustancias[i][1] == currentUser)
-                    {
-                        datosSustancias.RemoveAt(i);
-                        i--;
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
                 }
                 #endregion
 
-                #region -Familiares-
+                #region -Familiares editados-
+                if (arrayFamiliaresEditados != null)
+                {
+                    JArray familiarReferencia = JArray.Parse(arrayFamiliaresEditados);
+
+                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                    {
+                        int idAsiento = Int32.Parse(familiarReferencia[i + 13].ToString());
+                        if (idAsiento < 0)
+                        {
+                            idAsiento = -idAsiento;
+                            var asiento = await _context.Asientofamiliar.SingleOrDefaultAsync(m => m.IdAsientoFamiliar == idAsiento);
+                            _context.Asientofamiliar.Remove(asiento);
+                        }
+                        else
+                        {
+                            Asientofamiliar asientoFamiliar = new Asientofamiliar();
+
+                            asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
+                            try
+                            {
+                                asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                            }
+                            catch
+                            {
+                                asientoFamiliar.Edad = 0;
+                            }
+                            asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                            asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                            asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                            asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                            asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                            asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                            asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
+                            asientoFamiliar.Tipo = "FAMILIAR";
+                            asientoFamiliar.PersonaIdPersona = id;
+
+                            try
+                            {
+                                var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
+                                _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                            }
+                            catch (DbUpdateConcurrencyException)
+                            {
+                                if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
+                                {
+                                    return NotFound();
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+
+                #region -Referencias editadas-
+                if (arrayReferenciasEditadas != null)
+                {
+                    JArray familiarReferencia = JArray.Parse(arrayReferenciasEditadas);
+
+                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                    {
+                        int idAsiento = Int32.Parse(familiarReferencia[i + 13].ToString());
+                        if (idAsiento < 0)
+                        {
+                            idAsiento = -idAsiento;
+                            var asiento = await _context.Asientofamiliar.SingleOrDefaultAsync(m => m.IdAsientoFamiliar == idAsiento);
+                            _context.Asientofamiliar.Remove(asiento);
+                        }
+                        else
+                        {
+                            Asientofamiliar asientoFamiliar = new Asientofamiliar();
+
+                            asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
+                            try
+                            {
+                                asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                            }
+                            catch
+                            {
+                                asientoFamiliar.Edad = 0;
+                            }
+                            asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                            asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                            asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                            asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                            asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                            asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                            asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
+                            asientoFamiliar.Tipo = "REFERENCIA";
+                            asientoFamiliar.PersonaIdPersona = id;
+
+                            try
+                            {
+                                var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
+                                _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                            }
+                            catch (DbUpdateConcurrencyException)
+                            {
+                                if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
+                                {
+                                    return NotFound();
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+
+                //Familiares, referencias agregados
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar
                                           select table.IdAsientoFamiliar).Max());
-                //Familiares editados
-                for (int i = 0; i < datosFamiliaresEditados.Count; i = i + 14)
+                if (arrayFamiliarReferencia != null)
                 {
-                    if (datosFamiliaresEditados[i][1] == currentUser)
+                    JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
+                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
                     {
                         Asientofamiliar asientoFamiliar = new Asientofamiliar();
 
-                        asientoFamiliar.Nombre = normaliza(datosFamiliaresEditados[i][0]);
-                        asientoFamiliar.Relacion = datosFamiliaresEditados[i + 1][0];
-                        asientoFamiliar.Edad = Int32.Parse(datosFamiliaresEditados[i + 2][0]);
-                        asientoFamiliar.Sexo = datosFamiliaresEditados[i + 3][0];
-                        asientoFamiliar.Dependencia = datosFamiliaresEditados[i + 4][0];
-                        asientoFamiliar.DependenciaExplica = normaliza(datosFamiliaresEditados[i + 5][0]);
-                        asientoFamiliar.VivenJuntos = datosFamiliaresEditados[i + 6][0];
-                        asientoFamiliar.Domicilio = normaliza(datosFamiliaresEditados[i + 7][0]);
-                        asientoFamiliar.Telefono = datosFamiliaresEditados[i + 8][0];
-                        asientoFamiliar.HorarioLocalizacion = normaliza(datosFamiliaresEditados[i + 9][0]);
-                        asientoFamiliar.EnteradoProceso = datosFamiliaresEditados[i + 10][0];
-                        asientoFamiliar.PuedeEnterarse = datosFamiliaresEditados[i + 11][0];
-                        asientoFamiliar.Observaciones = normaliza(datosFamiliaresEditados[i + 12][0]);
-                        asientoFamiliar.IdAsientoFamiliar = Int32.Parse(datosFamiliaresEditados[i + 13][0]);
-                        asientoFamiliar.Tipo = "FAMILIAR";
-                        asientoFamiliar.PersonaIdPersona = id;
-
+                        asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                        asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                         try
                         {
-                            var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
-                            _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
-                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                            //_context.Update(asientoFamiliar);
-                            //await _context.SaveChangesAsync();
+                            asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
                         }
-                        catch (DbUpdateConcurrencyException)
+                        catch
                         {
-                            if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
-                            {
-                                return NotFound();
-                            }
-                            else
-                            {
-                                throw;
-                            }
+                            asientoFamiliar.Edad = 0;
                         }
-                    }
-                }
-
-
-                for (int i = 0; i < datosFamiliaresEditados.Count; i++)
-                {
-                    if (datosFamiliaresEditados[i][1] == currentUser)
-                    {
-                        datosFamiliaresEditados.RemoveAt(i);
-                        i--;
-                    }
-                }
-
-                //Familiares agregados
-                for (int i = 0; i < datosFamiliares.Count; i = i + 13)
-                {
-                    if (datosFamiliares[i][1] == currentUser)
-                    {
-                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
-
-                        asientoFamiliar.Nombre = normaliza(datosFamiliares[i][0]);
-                        asientoFamiliar.Relacion = datosFamiliares[i + 1][0];
-                        asientoFamiliar.Edad = Int32.Parse(datosFamiliares[i + 2][0]);
-                        asientoFamiliar.Sexo = datosFamiliares[i + 3][0];
-                        asientoFamiliar.Dependencia = datosFamiliares[i + 4][0];
-                        asientoFamiliar.DependenciaExplica = normaliza(datosFamiliares[i + 5][0]);
-                        asientoFamiliar.VivenJuntos = datosFamiliares[i + 6][0];
-                        asientoFamiliar.Domicilio = normaliza(datosFamiliares[i + 7][0]);
-                        asientoFamiliar.Telefono = datosFamiliares[i + 8][0];
-                        asientoFamiliar.HorarioLocalizacion = normaliza(datosFamiliares[i + 9][0]);
-                        asientoFamiliar.EnteradoProceso = datosFamiliares[i + 10][0];
-                        asientoFamiliar.PuedeEnterarse = datosFamiliares[i + 11][0];
-                        asientoFamiliar.Observaciones = normaliza(datosFamiliares[i + 12][0]);
-                        asientoFamiliar.Tipo = "FAMILIAR";
+                        asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                        asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                        asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                        asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                        asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                        asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                        asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                        asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                        asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                        asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                        asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
                         asientoFamiliar.PersonaIdPersona = id;
                         asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
                         _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync(null, 1);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
                     }
                 }
-
-                for (int i = 0; i < datosFamiliares.Count; i++)
-                {
-                    if (datosFamiliares[i][1] == currentUser)
-                    {
-                        datosFamiliares.RemoveAt(i);
-                        i--;
-                    }
-                }
-                #endregion
-
-                #region -Referencias-
-                //Referencias editadas
-                for (int i = 0; i < datosReferenciasEditadas.Count; i = i + 14)
-                {
-                    if (datosReferenciasEditadas[i][1] == currentUser)
-                    {
-                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
-
-                        asientoFamiliar.Nombre = normaliza(datosReferenciasEditadas[i][0]);
-                        asientoFamiliar.Relacion = datosReferenciasEditadas[i + 1][0];
-                        asientoFamiliar.Edad = Int32.Parse(datosReferenciasEditadas[i + 2][0]);
-                        asientoFamiliar.Sexo = datosReferenciasEditadas[i + 3][0];
-                        asientoFamiliar.Dependencia = datosReferenciasEditadas[i + 4][0];
-                        asientoFamiliar.DependenciaExplica = normaliza(datosReferenciasEditadas[i + 5][0]);
-                        asientoFamiliar.VivenJuntos = datosReferenciasEditadas[i + 6][0];
-                        asientoFamiliar.Domicilio = normaliza(datosReferenciasEditadas[i + 7][0]);
-                        asientoFamiliar.Telefono = datosReferenciasEditadas[i + 8][0];
-                        asientoFamiliar.HorarioLocalizacion = normaliza(datosReferenciasEditadas[i + 9][0]);
-                        asientoFamiliar.EnteradoProceso = datosReferenciasEditadas[i + 10][0];
-                        asientoFamiliar.PuedeEnterarse = datosReferenciasEditadas[i + 11][0];
-                        asientoFamiliar.Observaciones = normaliza(datosReferenciasEditadas[i + 12][0]);
-                        asientoFamiliar.IdAsientoFamiliar = Int32.Parse(datosReferenciasEditadas[i + 13][0]);
-                        asientoFamiliar.Tipo = "REFERENCIA";
-                        asientoFamiliar.PersonaIdPersona = id;
-
-                        try
-                        {
-                            var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
-                            _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
-                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                            //_context.Update(asientoFamiliar);
-                            //await _context.SaveChangesAsync();
-                        }
-                        catch (DbUpdateConcurrencyException)
-                        {
-                            if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
-                            {
-                                return NotFound();
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                    }
-                }
-
-
-                for (int i = 0; i < datosReferenciasEditadas.Count; i++)
-                {
-                    if (datosReferenciasEditadas[i][1] == currentUser)
-                    {
-                        datosReferenciasEditadas.RemoveAt(i);
-                        i--;
-                    }
-                }
-
-                //Referencias agregadas
-                for (int i = 0; i < datosReferencias.Count; i = i + 13)
-                {
-                    if (datosReferencias[i][1] == currentUser)
-                    {
-                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
-
-                        asientoFamiliar.Nombre = normaliza(datosReferencias[i][0]);
-                        asientoFamiliar.Relacion = datosReferencias[i + 1][0];
-                        asientoFamiliar.Edad = Int32.Parse(datosReferencias[i + 2][0]);
-                        asientoFamiliar.Sexo = datosReferencias[i + 3][0];
-                        asientoFamiliar.Dependencia = datosReferencias[i + 4][0];
-                        asientoFamiliar.DependenciaExplica = normaliza(datosReferencias[i + 5][0]);
-                        asientoFamiliar.VivenJuntos = datosReferencias[i + 6][0];
-                        asientoFamiliar.Domicilio = normaliza(datosReferencias[i + 7][0]);
-                        asientoFamiliar.Telefono = datosReferencias[i + 8][0];
-                        asientoFamiliar.HorarioLocalizacion = normaliza(datosReferencias[i + 9][0]);
-                        asientoFamiliar.EnteradoProceso = datosReferencias[i + 10][0];
-                        asientoFamiliar.PuedeEnterarse = datosReferencias[i + 11][0];
-                        asientoFamiliar.Observaciones = normaliza(datosReferencias[i + 12][0]);
-                        asientoFamiliar.Tipo = "REFERENCIA";
-                        asientoFamiliar.PersonaIdPersona = id;
-                        asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
-                        _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync(null, 1);
-                    }
-                }
-
-                for (int i = 0; i < datosReferencias.Count; i++)
-                {
-                    if (datosReferencias[i][1] == currentUser)
-                    {
-                        datosReferencias.RemoveAt(i);
-                        i--;
-                    }
-                }
-                #endregion
 
                 try
                 {
-                    var oldPersona = await _context.Persona.FindAsync(id);
+                    /*var oldPersona = await _context.Persona.FindAsync(id);
                     _context.Entry(oldPersona).CurrentValues.SetValues(persona);
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                    //_context.Update(persona);
-                    //await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);*/
+                    _context.Update(persona);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -4047,7 +3909,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAbandonoEstado(int id, [Bind("IdAbandonoEstado,VividoFuera,LugaresVivido,TiempoVivido,MotivoVivido,ViajaHabitual,LugaresViaje,TiempoViaje,MotivoViaje,DocumentacionSalirPais,Pasaporte,Visa,FamiliaresFuera,Cuantos,PersonaIdPersona")] Abandonoestado abandonoestado)
+        public async Task<IActionResult> EditAbandonoEstado(int id, [Bind("IdAbandonoEstado,VividoFuera,LugaresVivido,TiempoVivido,MotivoVivido,ViajaHabitual,LugaresViaje,TiempoViaje,MotivoViaje,DocumentacionSalirPais,Pasaporte,Visa,FamiliaresFuera,Cuantos,PersonaIdPersona")] Abandonoestado abandonoestado, string arrayFamExtranjero, string arrayFamExtranjerosEditados)
         {
             if (id != abandonoestado.PersonaIdPersona)
             {

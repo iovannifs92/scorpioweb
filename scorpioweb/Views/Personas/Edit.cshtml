@@ -7,7 +7,25 @@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
 <script type="text/javascript">
+        var ASIENTO_SIZE = 14;
         var tipo = 0;
+        var listaConsumo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaConsumo))');
+        var listaFamiliares = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaAsientoFamiliares))');
+        var listaReferencias = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaAsientoReferencias))');
+        var contadorSustancia = 1;
+        var contadorFamiliares = 1;
+        var contadorReferencias = 1;
+        var contadorDomSec = 1;
+        var contadorFamExtranjero = 1;
+        var listSustancia = new Array;
+        var listSustanciasEditadas = new Array;
+        var listFamiliarReferencia = new Array;
+        var listFamiliaresEditados = new Array;
+        var listReferenciasEditadas = new Array;
+        var listDomSec = new Array;
+        var listDomSecEditados = new Array;
+        var listFamExtranjero = new Array;
+        var listFamExtranjerosEditados = new Array;
         $(document).ready(function () {
         //#region inicializar
         //#region Editar Sustancias
@@ -202,35 +220,23 @@
             }
         });
         $("#btnAgregarSustancia").click(function () {
-            document.ready = document.getElementById("sustanciaA").value = 'ALCOHOL'
-            document.ready = document.getElementById("frecuenciaA").value = 'DIARIO'
-            document.ready = document.getElementById("cantidadA").value = ''
-            document.ready = document.getElementById("ultimoConsumoA").value = ''
-            document.ready = document.getElementById("observacionesConsumoA").value = ''
+            document.getElementById("sustanciaA").value = 'ALCOHOL'
+            document.getElementById("frecuenciaA").value = 'DIARIO'
+            document.getElementById("cantidadA").value = ''
+            document.getElementById("ultimoConsumoA").value = ''
+            document.getElementById("observacionesConsumoA").value = ''
             $('#modalAgregarSustancias').modal('show')
         });
         $("#btnEditarSustancias").click(function () {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/editarSustancias",
-                traditional: true,
-                success: function (response) {
-                    if (response.success == false) {
-                        alert("response.success == false");
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
             document.getElementById("sustanciaE").value = '@ViewBag.idSustancia';
             document.getElementById("frecuenciaE").value = '@ViewBag.idFrecuencia';
             document.getElementById("cantidadE").value = '@ViewBag.cantidad';
             document.getElementById("ultimoConsumoE").value = '@ViewBag.ultimoConsumo';
             document.getElementById("observacionesConsumoE").value = '@ViewBag.Observaciones';
             document.getElementById("idConsumoSustanciasE").value = '@ViewBag.idConsumoSustancias';
-            $('#modalEditarSustancias').modal('show')
+            $('#modalEditarSustancias').modal('show');
+            contadorSustancia = 1;
+            listSustanciasEditadas.length = 0;
         });
         $("#btnAgregarFamiliar").click(function () {
             if (tipo == 1) {
@@ -239,19 +245,19 @@
             else {
                 document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
             }
-            document.ready = document.getElementById("AFNombreA").value = '';
-            document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
-            document.ready = document.getElementById("AFEdadA").value = '0';
-            document.ready = document.getElementById("AFSexoA").value = 'M';
-            document.ready = document.getElementById("AFDependenciaA").value = 'NO';
-            document.ready = document.getElementById("AFDependenciaExplicaOA").value = '';
-            document.ready = document.getElementById("AFVivenJuntosA").value = 'SI';
-            document.ready = document.getElementById("AFDireccionFamiliarOA").value = '';
-            document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
-            document.ready = document.getElementById("AFLocalizacionA").value = '';
-            document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
-            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
-            document.ready = document.getElementById("AFobservacionesA").value = '';
+            document.getElementById("AFNombreA").value = '';
+            document.getElementById("AFRelacionA").value = 'MAMA';
+            document.getElementById("AFEdadA").value = '0';
+            document.getElementById("AFSexoA").value = 'M';
+            document.getElementById("AFDependenciaA").value = 'NO';
+            document.getElementById("AFDependenciaExplicaOA").value = '';
+            document.getElementById("AFVivenJuntosA").value = 'SI';
+            document.getElementById("AFDireccionFamiliarOA").value = '';
+            document.getElementById("AFtelefonoFamiliarA").value = '';
+            document.getElementById("AFLocalizacionA").value = '';
+            document.getElementById("AFEnteradoProcesoA").value = 'SI';
+            document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+            document.getElementById("AFobservacionesA").value = '';
             $("#AFDependenciaExplicaA").css("display", "none");
             $("#AFDireccionFamiliarA").css("display", "none");
             $("#AFPuedeEnterarseA").css("display", "none");
@@ -261,23 +267,6 @@
             document.getElementById("textoAFREditar").innerHTML = "Asiento Familiar"
             document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarF'
             tipo = 1;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/editarFamiliares",
-                traditional: true,
-                data: {
-                    tipoGuardado: tipo,
-                },
-                success: function (response) {
-                    if (response.success == false) {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
             document.getElementById("AFNombreE").value = '@ViewBag.nombreF';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionF';
             document.getElementById("AFEdadE").value = '@ViewBag.edadF';
@@ -291,33 +280,19 @@
             document.getElementById("AFEnteradoProcesoE").value = '@ViewBag.idEnteradoProcesoF';
             document.getElementById("AFPuedeEnterarseOE").value = '@ViewBag.idPuedeEnterarseF';
             document.getElementById("AFobservacionesE").value = '@ViewBag.AFobservacionesF';
+            document.getElementById("AFTipoE").value = '@ViewBag.tipoF'
             document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarF';
             $("#AFDependenciaExplicaE").css("display", "none");
             $("#AFDireccionFamiliarE").css("display", "none");
             $("#AFPuedeEnterarseE").css("display", "none");
-            $('#modalEditarAsientoFamiliar').modal('show')
+            $('#modalEditarAsientoFamiliar').modal('show');
+            contadorFamiliares = 1;
+            listFamiliaresEditados.length = 0;
         });
         $("#btnEditarReferencias").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Referencia"
             document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarR'
             tipo = 2;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/editarFamiliares",
-                traditional: true,
-                data: {
-                    tipoGuardado: tipo,
-                },
-                success: function (response) {
-                    if (response.success == false) {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
             document.getElementById("AFNombreE").value = '@ViewBag.nombreR';
             document.getElementById("AFRelacionE").value = '@ViewBag.idRelacionR';
             document.getElementById("AFEdadE").value = '@ViewBag.edadR';
@@ -331,11 +306,14 @@
             document.getElementById("AFEnteradoProcesoE").value = '@ViewBag.idEnteradoProcesoR';
             document.getElementById("AFPuedeEnterarseOE").value = '@ViewBag.idPuedeEnterarseR';
             document.getElementById("AFobservacionesE").value = '@ViewBag.AFobservacionesR';
+            document.getElementById("AFTipoE").value = '@ViewBag.TipoR';
             document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarR';
             $("#AFDependenciaExplicaE").css("display", "none");
             $("#AFDireccionFamiliarE").css("display", "none");
             $("#AFPuedeEnterarseE").css("display", "none");
-            $('#modalEditarAsientoFamiliar').modal('show')
+            $('#modalEditarAsientoFamiliar').modal('show');
+            contadorReferencias = 1;
+            listReferenciasEditadas.length = 0;
         });
         //#endregion
         //#region -changeDisplay-
@@ -410,37 +388,24 @@
             var cantidad = document.getElementById("cantidadA").value;
             var ultimoC = document.getElementById("ultimoConsumoA").value;
             var observaciones = document.getElementById("observacionesConsumoA").value;
-            //var user = document.getElementById("usuario").firstChild.nodeValue;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/guardarSustancia",
-                traditional: true,
-                data: {
-                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones/*, user*/],
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert(response.responseText);
-                        document.ready = document.getElementById("sustanciaA").value = 'ALCOHOL';
-                        document.ready = document.getElementById("frecuenciaA").value = 'DIARIO';
-                        document.ready = document.getElementById("cantidadA").value = '';
-                        document.ready = document.getElementById("ultimoConsumoA").value = '';
-                        document.ready = document.getElementById("observacionesConsumoA").value = '';
-                        var otraSustancia = confirm("¿Consume alguna otra sustancia?");
-                        if (otraSustancia == true) {
-                            alert("Coloque los datos correspondientes a la nueva sustancia");
-                        } else {
-                            $("#modalAgregarSustancias").modal('hide');
-                        }
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
+            listSustancia.push(sustancia);
+            listSustancia.push(frecuencia);
+            listSustancia.push(cantidad);
+            listSustancia.push(ultimoC);
+            listSustancia.push(observaciones);
+            $('#arraySustancias').val(JSON.stringify(listSustancia));
+            alert("Datos Guardados con éxito");
+            document.getElementById("sustanciaA").value = 'ALCOHOL';
+            document.getElementById("frecuenciaA").value = 'DIARIO';
+            document.getElementById("cantidadA").value = '';
+            document.getElementById("ultimoConsumoA").value = '';
+            document.getElementById("observacionesConsumoA").value = '';
+            var otraSustancia = confirm("¿Consume alguna otra sustancia?");
+            if (otraSustancia == true) {
+                alert("Coloque los datos correspondientes a la nueva sustancia");
+            } else {
+                $("#modalAgregarSustancias").modal('hide');
+            }
         });
         $('#btnSiguienteSustancia').on("click", function (e) {
             e.preventDefault();
@@ -452,70 +417,46 @@
             var ultimoC = document.getElementById("ultimoConsumoE").value;
             var observaciones = document.getElementById("observacionesConsumoE").value;
             var idConsumo = document.getElementById("idConsumoSustanciasE").value;
-            //var user = document.getElementById("usuario").firstChild.nodeValue;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/siguienteSustancia",
-                traditional: true,
-                data: {
-                    datosConsumo: [sustancia, frecuencia, cantidad, ultimoC, observaciones, idConsumo/*, user*/],
-                },
-                success: function (response) {
-                    if (response.success) {
-                        if (response.responseText == "Datos Guardados con éxito") {
-                            $("#modalEditarSustancias").modal('hide');
-                        }
-                        else {
-                            document.ready = document.getElementById("sustanciaE").value = response.sustancia;
-                            document.ready = document.getElementById("frecuenciaE").value = response.frecuencia;
-                            document.ready = document.getElementById("cantidadE").value = response.cantidad;
-                            document.ready = document.getElementById("ultimoConsumoE").value = response.ultimoConsumo;
-                            document.ready = document.getElementById("observacionesConsumoE").value = response.observacionesConsumo;
-                            document.ready = document.getElementById("idConsumoSustanciasE").value = response.idConsumoSustancias;
-                        }
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
+            listSustanciasEditadas.push(sustancia);
+            listSustanciasEditadas.push(frecuencia);
+            listSustanciasEditadas.push(cantidad);
+            listSustanciasEditadas.push(ultimoC);
+            listSustanciasEditadas.push(observaciones);
+            listSustanciasEditadas.push(idConsumo);
+            $('#arraySustanciasEditadas').val(JSON.stringify(listSustanciasEditadas));
+            if(6*contadorSustancia >= listaConsumo.length)
+            {
+                $("#modalEditarSustancias").modal('hide');
+            }
+            else
+            {
+                document.getElementById("sustanciaE").value = listaConsumo[6*contadorSustancia];
+                document.getElementById("frecuenciaE").value = listaConsumo[6*contadorSustancia + 1];
+                document.getElementById("cantidadE").value = listaConsumo[6*contadorSustancia + 2];
+                document.getElementById("ultimoConsumoE").value = listaConsumo[6*contadorSustancia + 3];
+                document.getElementById("observacionesConsumoE").value = listaConsumo[6*contadorSustancia + 4];
+                document.getElementById("idConsumoSustanciasE").value = listaConsumo[6*contadorSustancia + 5];
+                contadorSustancia++;
+            }
         });
         $('#btnDeleteSustancia').on("click", function (e) {
             e.preventDefault();
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/deleteSustancia",
-                traditional: true,
-                success: function (response) {
-                    if (response.success) {
-                        if (response.responseText == "Datos Guardados con éxito") {
-                            $("#modalEditarSustancias").modal('hide');
-                        }
-                        else if (response.responseText == "Siguiente") {
-                            document.ready = document.getElementById("sustanciaE").value = response.sustancia;
-                            document.ready = document.getElementById("frecuenciaE").value = response.frecuencia;
-                            document.ready = document.getElementById("cantidadE").value = response.cantidad;
-                            document.ready = document.getElementById("ultimoConsumoE").value = response.ultimoConsumo;
-                            document.ready = document.getElementById("observacionesConsumoE").value = response.observacionesConsumo;
-                            document.ready = document.getElementById("idConsumoSustanciasE").value = response.idConsumoSustancias;
-                        }
-                        else if (response.responseText == "Ya No") {
-                            var select = document.getElementById("consumoSustancias");
-                            $(select).val("NO");
-                            $("#modalEditarSustancias").modal('hide');
-                        }
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            var contadorSustanciaPrev = contadorSustancia;
+            btnSiguienteSustancia.click();
+            listSustanciasEditadas[listSustanciasEditadas.length - 1] = -listSustanciasEditadas[listSustanciasEditadas.length - 1];//negative ids means delete
+            $('#arraySustanciasEditadas').val(JSON.stringify(listSustanciasEditadas));
+            if(6*contadorSustanciaPrev >= listaConsumo.length)//se debe de haber borrado el ultimo elemento cuando se borro toda la lista
+            {
+                var i;
+                for(i = 5;i < listSustanciasEditadas.length;i += 6)
+                    if(listSustanciasEditadas[i] > 0)
+                        break;
+                if(i >= listSustanciasEditadas.length)
+                {
+                    var consumoSustancias = document.getElementById('consumoSustancias');
+                    consumoSustancias.value = 'NO';
                 }
-            });
+            }
         });
         $('#btnGuardarFamiliar').on("click", function (e) {
             e.preventDefault();
@@ -526,66 +467,62 @@
             var p = document.getElementById("AFEnteradoProcesoA");
             var e = document.getElementById("AFPuedeEnterarseOA");
             var nombre = document.getElementById("AFNombreA").value;
-            var relacion = r.options[r.selectedIndex].value; /////////////////
+            var relacion = r.options[r.selectedIndex].value;
             var edad = document.getElementById("AFEdadA").value;
-            var sexo = g.options[g.selectedIndex].value; /////////////////
-            var dependencia = d.options[d.selectedIndex].value;/////////////////
+            var sexo = g.options[g.selectedIndex].value;
+            var dependencia = d.options[d.selectedIndex].value;
             var explicaDependencia = document.getElementById("AFDependenciaExplicaOA").value;
-            var vivenJuntos = v.options[v.selectedIndex].value;/////////////////
+            var vivenJuntos = v.options[v.selectedIndex].value;
             var direccion = document.getElementById("AFDireccionFamiliarOA").value;
             var telefono = document.getElementById("AFtelefonoFamiliarA").value;
             var horarioLocalizacion = document.getElementById("AFLocalizacionA").value;
-            var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
-            var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            var enteradoProceso = p.options[p.selectedIndex].value;
+            var puedeEnterarse = e.options[e.selectedIndex].value;
             var observaciones = document.getElementById("AFobservacionesA").value;
-            //var user = document.getElementById("usuario").firstChild.nodeValue;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/guardarFamiliar",
-                traditional: true,
-                data: {
-                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones/*, user*/],
-                    tipoGuardado: tipo,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        if ($.isNumeric(edad)) {
-                            alert(response.responseText);
-                            document.ready = document.getElementById("AFNombreA").value = '';
-                            document.ready = document.getElementById("AFRelacionA").value = 'MAMA';
-                            document.ready = document.getElementById("AFEdadA").value = '0';
-                            document.ready = document.getElementById("AFSexoA").value = 'M';
-                            document.ready = document.getElementById("AFDependenciaA").value = 'NO';
-                            document.ready = document.getElementById("AFDependenciaExplicaOA").value = '';
-                            document.ready = document.getElementById("AFVivenJuntosA").value = 'SI';
-                            document.ready = document.getElementById("AFDireccionFamiliarOA").value = '';
-                            document.ready = document.getElementById("AFtelefonoFamiliarA").value = '';
-                            document.ready = document.getElementById("AFLocalizacionA").value = '';
-                            document.ready = document.getElementById("AFEnteradoProcesoA").value = 'SI';
-                            document.ready = document.getElementById("AFPuedeEnterarseOA").value = 'NA';
-                            document.ready = document.getElementById("AFobservacionesA").value = '';
-                            $("#AFDependenciaExplicaA").css("display", "none");
-                            $("#AFDireccionFamiliarA").css("display", "none");
-                            $("#AFPuedeEnterarseA").css("display", "none");
-                            var otraSustancia = confirm("¿Agregar otra persona?");
-                            if (otraSustancia == true) {
-                                alert("Coloque los datos correspondientes");
-                            } else {
-                                $("#modalAgregarAsientoFamiliar").modal('hide');
-                            }
-                        }
-                        else {
-                            alert("Edad inválida")
-                        }
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
+            listFamiliarReferencia.push(nombre);
+            listFamiliarReferencia.push(relacion);
+            listFamiliarReferencia.push(edad);
+            listFamiliarReferencia.push(sexo);
+            listFamiliarReferencia.push(dependencia);
+            listFamiliarReferencia.push(explicaDependencia);
+            listFamiliarReferencia.push(vivenJuntos);
+            listFamiliarReferencia.push(direccion);
+            listFamiliarReferencia.push(telefono);
+            listFamiliarReferencia.push(horarioLocalizacion);
+            listFamiliarReferencia.push(enteradoProceso);
+            listFamiliarReferencia.push(puedeEnterarse);
+            listFamiliarReferencia.push(observaciones);
+            if (tipo == 1) {
+                listFamiliarReferencia.push("FAMILIAR");
+            }
+            else if (tipo == 2) {
+                listFamiliarReferencia.push("REFERENCIA");
+            }
+
+            $('#arrayFamiliarReferencia').val(JSON.stringify(listFamiliarReferencia));
+            alert("Datos Guardados con éxito");
+            document.getElementById("AFNombreA").value = '';
+            document.getElementById("AFRelacionA").value = 'MAMA';
+            document.getElementById("AFEdadA").value = '0';
+            document.getElementById("AFSexoA").value = 'M';
+            document.getElementById("AFDependenciaA").value = 'NO';
+            document.getElementById("AFDependenciaExplicaOA").value = '';
+            document.getElementById("AFVivenJuntosA").value = 'SI';
+            document.getElementById("AFDireccionFamiliarOA").value = '';
+            document.getElementById("AFtelefonoFamiliarA").value = '';
+            document.getElementById("AFLocalizacionA").value = '';
+            document.getElementById("AFEnteradoProcesoA").value = 'SI';
+            document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+            document.getElementById("AFobservacionesA").value = '';
+            $("#AFDependenciaExplicaA").css("display", "none");
+            $("#AFDireccionFamiliarA").css("display", "none");
+            $("#AFPuedeEnterarseA").css("display", "none");
+            var otraPersona = confirm("¿Agregar otra persona?");
+            if (otraPersona == true) {
+                alert("Coloque los datos correspondientes");
+            } else {
+                $("#modalAgregarAsientoFamiliar").modal('hide');
+            }
         });
         $('#btnSiguienteFamiliar').on("click", function (e) {
             e.preventDefault();
@@ -596,115 +533,145 @@
             var p = document.getElementById("AFEnteradoProcesoE");
             var e = document.getElementById("AFPuedeEnterarseOE");
             var nombre = document.getElementById("AFNombreE").value;
-            var relacion = r.options[r.selectedIndex].value; /////////////////
+            var relacion = r.options[r.selectedIndex].value;
             var edad = document.getElementById("AFEdadE").value;
-            var sexo = g.options[g.selectedIndex].value; /////////////////
-            var dependencia = d.options[d.selectedIndex].value;/////////////////
+            var sexo = g.options[g.selectedIndex].value;
+            var dependencia = d.options[d.selectedIndex].value;
             var explicaDependencia = document.getElementById("AFDependenciaExplicaOE").value;
-            var vivenJuntos = v.options[v.selectedIndex].value;/////////////////
+            var vivenJuntos = v.options[v.selectedIndex].value;
             var direccion = document.getElementById("AFDireccionFamiliarOE").value;
             var telefono = document.getElementById("AFtelefonoFamiliarE").value;
             var horarioLocalizacion = document.getElementById("AFLocalizacionE").value;
-            var enteradoProceso = p.options[p.selectedIndex].value;/////////////////
-            var puedeEnterarse = e.options[e.selectedIndex].value;/////////////////
+            var enteradoProceso = p.options[p.selectedIndex].value;
+            var puedeEnterarse = e.options[e.selectedIndex].value;
             var observaciones = document.getElementById("AFobservacionesE").value;
             var idFamiliar = document.getElementById("AFidAsientoFamiliarE").value;
-            //var user = document.getElementById("usuario").firstChild.nodeValue;
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/siguienteFamiliar",
-                traditional: true,
-                data: {
-                    datosFamiliar: [nombre, relacion, edad, sexo, dependencia, explicaDependencia, vivenJuntos, direccion, telefono, horarioLocalizacion, enteradoProceso, puedeEnterarse, observaciones, idFamiliar/*, user*/],
-                    tipoGuardado: tipo,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        if (response.responseText == "Datos Guardados con éxito") {
-                            $("#modalEditarAsientoFamiliar").modal('hide');
-                        }
-                        else {
-                            document.ready = document.getElementById("AFNombreE").value = response.nombre;
-                            document.ready = document.getElementById("AFRelacionE").value = response.relacion;
-                            document.ready = document.getElementById("AFEdadE").value = response.edad;
-                            document.ready = document.getElementById("AFSexoE").value = response.sexo;
-                            document.ready = document.getElementById("AFDependenciaE").value = response.dependencia;
-                            document.ready = document.getElementById("AFDependenciaExplicaOE").value = response.explicaDependencia;
-                            document.ready = document.getElementById("AFVivenJuntosE").value = response.vivenJuntos;
-                            document.ready = document.getElementById("AFDireccionFamiliarOE").value = response.direccion;
-                            document.ready = document.getElementById("AFtelefonoFamiliarE").value = response.telefono;
-                            document.ready = document.getElementById("AFLocalizacionE").value = response.horarioLocalizacion;
-                            document.ready = document.getElementById("AFEnteradoProcesoE").value = response.enteradoProceso;
-                            document.ready = document.getElementById("AFPuedeEnterarseOE").value = response.puedeEnterarse;
-                            document.ready = document.getElementById("AFobservacionesE").value = response.observaciones;
-                            document.ready = document.getElementById("AFidAsientoFamiliarE").value = response.idAsientoFamiliar;
-                            $("#AFDependenciaExplicaE").css("display", "none");
-                            $("#AFDireccionFamiliarE").css("display", "none");
-                            $("#AFPuedeEnterarseE").css("display", "none");
-                        }
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            if (tipo == 1) {
+                listFamiliaresEditados.push(nombre);
+                listFamiliaresEditados.push(relacion);
+                listFamiliaresEditados.push(edad);
+                listFamiliaresEditados.push(sexo);
+                listFamiliaresEditados.push(dependencia);
+                listFamiliaresEditados.push(explicaDependencia);
+                listFamiliaresEditados.push(vivenJuntos);
+                listFamiliaresEditados.push(direccion);
+                listFamiliaresEditados.push(telefono);
+                listFamiliaresEditados.push(horarioLocalizacion);
+                listFamiliaresEditados.push(enteradoProceso);
+                listFamiliaresEditados.push(puedeEnterarse);
+                listFamiliaresEditados.push(observaciones);
+                listFamiliaresEditados.push(idFamiliar);
+                $('#arrayFamiliaresEditados').val(JSON.stringify(listFamiliaresEditados));
+                if(ASIENTO_SIZE*contadorFamiliares >= listaFamiliares.length)
+                {
+                    $("#modalEditarAsientoFamiliar").modal('hide');
                 }
-            });
+                else
+                {
+                    document.getElementById("AFNombreE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares];
+                    document.getElementById("AFRelacionE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 1];
+                    document.getElementById("AFEdadE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 2];
+                    document.getElementById("AFSexoE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 3];
+                    document.getElementById("AFDependenciaE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 4];
+                    document.getElementById("AFDependenciaExplicaOE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 5];
+                    document.getElementById("AFVivenJuntosE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 6];
+                    document.getElementById("AFDireccionFamiliarOE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 7];
+                    document.getElementById("AFtelefonoFamiliarE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 8];
+                    document.getElementById("AFLocalizacionE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 9];
+                    document.getElementById("AFEnteradoProcesoE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 10];
+                    document.getElementById("AFPuedeEnterarseOE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 11];
+                    document.getElementById("AFobservacionesE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 12];
+                    document.getElementById("AFidAsientoFamiliarE").value = listaFamiliares[ASIENTO_SIZE*contadorFamiliares + 13];
+                    document.getElementById("AFTipoE").value = "FAMILIAR";
+                    contadorFamiliares++;
+                    $("#AFDependenciaExplicaE").css("display", "none");
+                    $("#AFDireccionFamiliarE").css("display", "none");
+                    $("#AFPuedeEnterarseE").css("display", "none");
+                }
+            }
+            else if (tipo == 2) {
+                listReferenciasEditadas.push(nombre);
+                listReferenciasEditadas.push(relacion);
+                listReferenciasEditadas.push(edad);
+                listReferenciasEditadas.push(sexo);
+                listReferenciasEditadas.push(dependencia);
+                listReferenciasEditadas.push(explicaDependencia);
+                listReferenciasEditadas.push(vivenJuntos);
+                listReferenciasEditadas.push(direccion);
+                listReferenciasEditadas.push(telefono);
+                listReferenciasEditadas.push(horarioLocalizacion);
+                listReferenciasEditadas.push(enteradoProceso);
+                listReferenciasEditadas.push(puedeEnterarse);
+                listReferenciasEditadas.push(observaciones);
+                listReferenciasEditadas.push(idFamiliar);
+                $('#arrayReferenciasEditadas').val(JSON.stringify(listReferenciasEditadas));
+                if(ASIENTO_SIZE*contadorReferencias >= listaReferencias.length)
+                {
+                    $("#modalEditarAsientoFamiliar").modal('hide');
+                }
+                else
+                {
+                    document.getElementById("AFNombreE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias];
+                    document.getElementById("AFRelacionE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 1];
+                    document.getElementById("AFEdadE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 2];
+                    document.getElementById("AFSexoE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 3];
+                    document.getElementById("AFDependenciaE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 4];
+                    document.getElementById("AFDependenciaExplicaOE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 5];
+                    document.getElementById("AFVivenJuntosE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 6];
+                    document.getElementById("AFDireccionFamiliarOE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 7];
+                    document.getElementById("AFtelefonoFamiliarE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 8];
+                    document.getElementById("AFLocalizacionE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 9];
+                    document.getElementById("AFEnteradoProcesoE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 10];
+                    document.getElementById("AFPuedeEnterarseOE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 11];
+                    document.getElementById("AFobservacionesE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 12];
+                    document.getElementById("AFidAsientoFamiliarE").value = listaReferencias[ASIENTO_SIZE*contadorReferencias + 13];
+                    document.getElementById("AFTipoE").value = "REFERENCIA";
+                    contadorReferencias++;
+                    $("#AFDependenciaExplicaE").css("display", "none");
+                    $("#AFDireccionFamiliarE").css("display", "none");
+                    $("#AFPuedeEnterarseE").css("display", "none");
+                }
+            }
         });
         $('#btnDeleteFamiliar').on("click", function (e) {
             e.preventDefault();
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/deleteFamiliar",
-                traditional: true,
-                data: {
-                    tipoGuardado: tipo,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        if (response.responseText == "Datos Guardados con éxito") {
-                            $("#modalEditarAsientoFamiliar").modal('hide');
-                        }
-                        else if (response.responseText == "Siguiente") {
-                            document.ready = document.getElementById("AFNombreE").value = response.nombre;
-                            document.ready = document.getElementById("AFRelacionE").value = response.relacion;
-                            document.ready = document.getElementById("AFEdadE").value = response.edad;
-                            document.ready = document.getElementById("AFSexoE").value = response.sexo;
-                            document.ready = document.getElementById("AFDependenciaE").value = response.dependencia;
-                            document.ready = document.getElementById("AFDependenciaExplicaOE").value = response.explicaDependencia;
-                            document.ready = document.getElementById("AFVivenJuntosE").value = response.vivenJuntos;
-                            document.ready = document.getElementById("AFDireccionFamiliarOE").value = response.direccion;
-                            document.ready = document.getElementById("AFtelefonoFamiliarE").value = response.telefono;
-                            document.ready = document.getElementById("AFLocalizacionE").value = response.horarioLocalizacion;
-                            document.ready = document.getElementById("AFEnteradoProcesoE").value = response.enteradoProceso;
-                            document.ready = document.getElementById("AFPuedeEnterarseOE").value = response.puedeEnterarse;
-                            document.ready = document.getElementById("AFobservacionesE").value = response.observaciones;
-                            document.ready = document.getElementById("AFidAsientoFamiliarE").value = response.idAsientoFamiliar;
-                            $("#AFDependenciaExplicaE").css("display", "none");
-                            $("#AFDireccionFamiliarE").css("display", "none");
-                            $("#AFPuedeEnterarseE").css("display", "none");
-                        }
-                        else if (response.responseText == "Ya No") {
-                            if (tipo == 1) {
-                                var select = document.getElementById("Familiares");
-                                $(select).val("NO");
-                            }
-                            else {
-                                var select = document.getElementById("ReferenciasPersonales");
-                                $(select).val("NO");
-                            }
-                            $("#modalEditarAsientoFamiliar").modal('hide');
-                         }
-                    } else {
-                        alert(response.responseText);
+            var contadorFamiliaresPrev = contadorFamiliares;
+            var contadorReferenciasPrev = contadorReferencias;
+            btnSiguienteFamiliar.click();
+            if (tipo == 1) 
+            {
+                listFamiliaresEditados[listFamiliaresEditados.length - 1] = -listFamiliaresEditados[listFamiliaresEditados.length - 1];
+                $('#arrayFamiliaresEditados').val(JSON.stringify(listFamiliaresEditados));
+                if(ASIENTO_SIZE*contadorFamiliaresPrev >= listaFamiliares.length)
+                {
+                    var i;
+                    for(i = ASIENTO_SIZE - 1;i < listFamiliaresEditados.length;i += ASIENTO_SIZE)
+                        if(listFamiliaresEditados[i] > 0)
+                            break;
+                    if(i >= listFamiliaresEditados.length)
+                    {
+                        var Familiares = document.getElementById('Familiares');
+                        Familiares.value = 'NO';
                     }
-                },
-                error: function (response) {
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 }
-            });
+            }
+            else
+            {
+                listReferenciasEditadas[listReferenciasEditadas.length - 1] = -listReferenciasEditadas[listReferenciasEditadas.length - 1];
+                $('#arrayReferenciasEditadas').val(JSON.stringify(listReferenciasEditadas));
+                if(ASIENTO_SIZE*contadorReferenciasPrev >= listaReferencias.length)
+                {
+                    var i;
+                    for(i = ASIENTO_SIZE - 1;i < listReferenciasEditadas.length;i += ASIENTO_SIZE)
+                        if(listReferenciasEditadas[i] > 0)
+                            break;
+                    if(i >= listReferenciasEditadas.length)
+                    {
+                        var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+                        ReferenciasPersonales.value = 'NO';
+                    }
+                }
+            }
         });
     });
 
@@ -757,6 +724,15 @@
                 <label asp-for="Paterno" class="control-label"></label>
                 <input asp-for="Paterno" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Paterno" class="text-danger"></span>
+                <input hidden name="arraySustancias" id="arraySustancias" type="text" />
+                <input hidden name="arraySustanciasEditadas" id="arraySustanciasEditadas" type="text" />
+                <input hidden name="arrayFamiliarReferencia" id="arrayFamiliarReferencia" type="text" />
+                <input hidden name="arrayFamiliaresEditados" id="arrayFamiliaresEditados" type="text" />
+                <input hidden name="arrayReferenciasEditadas" id="arrayReferenciasEditadas" type="text" />
+                <input hidden name="arrayDomSec" id="arrayDomSec" type="text" />
+                <input hidden name="arrayDomSecEditados" id="arrayDomSecEditados" type="text" />
+                <input hidden name="arrayFamExtranjero" id="arrayFamExtranjero" type="text" />
+                <input hidden name="arrayFamExtranjeroEditados" id="arrayFamExtranjeroEditados" type="text" />
             </div>
             <div class="form-group col-md-4">
                 <label asp-for="Materno" class="control-label"></label>
@@ -1198,6 +1174,7 @@
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFREditar"></h5>
             </div>
             <div class="modal-body">
+                <input type="hidden" name="AFTipoE" id="AFTipoE" />
                 <input type="hidden" name="AFidAsientoFamiliarE" id="AFidAsientoFamiliarE" />
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
