@@ -4,5 +4,6 @@
     {
         public Delito delitoVM { get; set; }
         public Causapenal causaPenalVM { get; set; }
+        public Historialcp historialcp { get; set; }
     }
 }

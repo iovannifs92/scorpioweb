@@ -188,43 +188,33 @@
 
 
 
-        //$('#btnguardarEdit').on("click", function (e) {
-        //    e.preventDefault();
+        $('#btnguardarEdit').on("click", function (e) {
+            e.preventDefault();
+            var id = document.getElementById("IdCausaPenal").value;
+            var juez = document.getElementById("Juez").value;
+            var Cambio = document.getElementById("Cambio").value;
+            var distrito = document.getElementById("Distrito").value;
+            var cp = document.getElementById("CausaPenal").value;
+            var Cnpp = document.getElementById("Cnpp").value;
 
-        //    var id = document.getElementById("IdCausaPenal").value;
-        //    var juez = document.getElementById("Juez").value;
-        //    var Cambio = document.getElementById("Cambio").value;
-        //    var distrito = document.getElementById("Distrito").value;
-        //    var cp = document.getElementById("CausaPenal").value;
-        //    var Cnpp = document.getElementById("Cnpp").value;
-  
-        //    $.ajax({ 
-        //        type: "POST",
-        //        dataType: "json",
-        //        url: "/Causaspenales/Historialcp",
-        //        traditional: true,
-        //        data: {
-        //            id,juez, Cambio, distrito, cp,Cnpp,
-        //        },
-        //        success: function (response) {
-        //            var msg = confirm("¿Modifico la causa penal?");
-        //            if (msg == true) {
-        //                if (response.success) {
-        //                    window.location.href = response.responseText;
-        //                } else {
-        //                    alert(response.responseText);
-        //                }
-        //            } else {
-        //                window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
-        //            }
-
-
-        //        },
-        //        error: function (response) {
-        //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-        //        }
-        //    });
-        //});
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/EditCausas",
+                traditional: true,
+                data: {
+                    id, juez, Cambio, distrito, cp, Cnpp,
+                },
+                success: function (response) {
+                    //location.reload();
+                    window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
+                },
+                error: function (response) {
+                    alert("ERROR" + response)
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
 
 
     });
@@ -245,7 +235,7 @@
     }
 
 
-     
+
 
 
 
@@ -399,3 +389,64 @@
     </div>
 </div>
 
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jQuery UI Dialog - Default functionality</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<script>
+    $(function () {
+        $("#dialog").dialog();
+    });
+    function myFunction(juez, cnpp, cambio, distrito, cp) {
+        document.getElementById("Juez").value = juez;
+        document.getElementById("Cnpp").value = cnpp;
+        document.getElementById("Cambio").value = cambio;
+        document.getElementById("Distrito").value = distrito;
+        document.getElementById("CausaPenal").value = cp;
+    }
+</script>
+
+
+<div id="dialog" title="Historial de causas penales ">
+    @{int i = 0;}
+    @foreach (var item in ViewData["joinTableshistory"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
+    {
+        i++;
+        <div class="row">
+            <div class="form-group">
+                <div class="form-group">
+                    <input name="IdCausaPenal" id="IdCausaPenal" value="@item.historialcp.CausapenalIdCausapenal" class="form-control" style="display:none " readonly />
+                </div>
+                <label style="font-size: 10px;" class="control-label">Causa penal anterior @i</label>
+                <div class="form-group col-md-12" style="font-size: 10px; ">
+                    <label class="control-label">Juez</label><br />
+                    @Html.Label((string)@item.historialcp.Juez)
+                </div>
+                <div class="form-group col-md-12" style="font-size: 10px;">
+                    <label class="control-label">CNPP</label><br />
+                    @Html.Label((string)@item.historialcp.Cnpp)
+                </div>
+                <div class="form-group col-md-12" style="font-size: 10px;">
+                    <label class="control-label">Cambio</label><br />
+                    @Html.Label((string)@item.historialcp.Cambio)
+                </div>
+                <div class="form-group col-md-12" style="font-size: 10px; ">
+                    <label class="control-label">Distrito</label><br />
+                    @Html.Label((string)@item.historialcp.Distrito)
+                </div>
+                <div class="form-group col-md-12" style="font-size: 10px; ">
+                    <label class="control-label">Causa Penal</label><br />
+                    @Html.Label((string)@item.historialcp.Causapenal)
+                </div>
+                <div class="form-group col-md-12" style="font-size: 10px; ">
+                    <button type="button" id="btnUseCp" name="btnUseCp" class="btn btn-success"  onclick="myFunction('@item.historialcp.Juez','@item.historialcp.Cnpp','@item.historialcp.Cambio','@item.historialcp.Distrito','@item.historialcp.Causapenal')">
+                        <i class=""></i> Usar Causa
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

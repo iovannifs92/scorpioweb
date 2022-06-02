@@ -23,6 +23,7 @@ using System.Data;
 using Google.DataTable.Net.Wrapper.Extension;
 using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
+using F23.StringSimilarity;
 
 using System.Threading;
 using Newtonsoft.Json.Linq;
@@ -189,6 +190,47 @@ namespace scorpioweb.Controllers
             return cleaned;
         }
         #endregion
+        bool simi = false;
+        public JsonResult similitudNombre(string nombre, string paterno, string materno)
+        {
+            var nombreCompleto = normaliza(paterno) + " " + normaliza(materno) + " " + normaliza(nombre);
+
+            var query = from p in _context.Persona
+                        select new
+                        {
+                            nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                            id = p.IdPersona
+                        };
+
+            int idpersona = 0;
+            string nomCom = "";
+            var cosine = new Cosine(2);
+            double r = 0;
+            foreach (var q in query)
+            {
+             r = cosine.Similarity(q.nomcom, nombreCompleto);
+                if(r >= .80)
+                    {
+                    nomCom = q.nomcom;
+                    idpersona = q.id;
+                    simi = true;
+                    break;
+                }
+            }
+
+            if(simi == true)
+            {
+                double i = r*100;
+                int porcentaje = (int)Math.Floor(i);
+                string id = idpersona.ToString();
+                return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
+            }
+            else
+            {
+                return Json(new { success = false});
+            }
+            return Json(new { success = false });
+        }
 
         #region -Index-
         public async Task<IActionResult> Index(
@@ -911,9 +953,6 @@ namespace scorpioweb.Controllers
            string searchString,
            int? pageNumber)
         {
-
-
-
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
             foreach (var usuario in userManager.Users)
@@ -3281,7 +3320,11 @@ namespace scorpioweb.Controllers
             ViewBag.idZona = BuscaId(listaZonas, domicilio.Zona);
 
             ViewBag.pais = domicilio.Pais;
+
             ViewBag.domi = domicilio.DomcilioSecundario;
+
+
+
 
             if (domicilio == null)
             {
@@ -3346,7 +3389,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var domisecu = await _context.Domicilio.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
+            var domisecu = await _context.Domiciliosecundario.SingleOrDefaultAsync(m => m.IdDomicilio == id);
 
             #region -To List databases-
             List<Persona> personaVM = _context.Persona.ToList();
@@ -3356,9 +3399,9 @@ namespace scorpioweb.Controllers
 
             #region -Jointables-
             ViewData["joinTablesDomcilioSec"] = from personaTable in personaVM
-                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.IdDomicilio
+                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.PersonaIdPersona
                                                 join domicilioSec in domiciliosecundarioVM on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
-                                                where personaTable.IdPersona == id
+                                                where domicilioSec.IdDomicilio == id
                                                 select new PersonaViewModel
                                                 {
                                                     domicilioSecundarioVM = domicilioSec
