@@ -1,7 +1,6 @@
 ﻿@{
-    ViewBag.Title = "Crear Entrevista";
+    Layout = null;
 }
-
 <script type="text/javascript">
     //region Guardar AddFamiliarForaneo
     $('#btnGuaardarFamiliarF1').on("click", function (e) {
@@ -53,9 +52,15 @@
     i++;
     <div class="form-group col-md-12">
         <form asp-action="EditFamiliaresForaneos">
-            <input type="hidden" name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
-
-            <input type="hidden" name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
+            <div>
+                <h4>Familiar Foraneo <span>@i</span> </h4>
+            </div>
+            <div class="form-group col-md-6">
+                <input type="hidden" name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
+            </div>
+            <div class="form-group col-lg-6">
+                <input type="hidden" name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
+            </div>
 
             <div class="form-group col-md-12">
                 <label class="control-label">Nombre</label>
@@ -146,11 +151,14 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input type="hidden" name="IdFamiliaresForaneos" type="text" class="form-control" />
+                    <input type="hidden" name="IdFamiliaresForaneos" style="display:none" type="text" class="form-control" />
                 </div>
                 @foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
                 {
-                    <input type="hidden" readonly name="PersonaIdPersona" id="PersonaIdPersonaFE" class="form-control" value="@item.familiaresForaneosVM.PersonaIdPersona" />
+                    <div class="form-group">
+                        <label type="hidden" class="control-label">Persona IdPersona</label>
+                        <input readonly type="hidden" name="PersonaIdPersona" id="PersonaIdPersonaFE" class="form-control" value="@item.familiaresForaneosVM.PersonaIdPersona" />
+                    </div>
                     break;
                 }
 
