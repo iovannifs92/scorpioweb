@@ -3218,6 +3218,8 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.idPersona = id;
             ViewData["Nombre"] = nombre;
             var domicilio = await _context.Domicilio.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
 
@@ -3383,14 +3385,21 @@ namespace scorpioweb.Controllers
 
         #region Edit Dmicilio Secundario
 
-        public async Task<IActionResult> EditDomSecundario2(int? id)
+        public async Task<IActionResult> EditDomSecundario2(int? id, string nombre, string idPersona)
         {
+            int index = idPersona.IndexOf("?");
+            if (index >= 0)
+                idPersona = idPersona.Substring(0, index);
+
+            ViewBag.idPersona = idPersona; 
+            ViewBag.nombre = nombre;
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var domisecu = await _context.Domiciliosecundario.SingleOrDefaultAsync(m => m.IdDomicilio == id);
+            var domisecu = await _context.Domicilio.SingleOrDefaultAsync(m => m.PersonaIdPersona == id);
 
             #region -To List databases-
             List<Persona> personaVM = _context.Persona.ToList();
@@ -3400,9 +3409,9 @@ namespace scorpioweb.Controllers
 
             #region -Jointables-
             ViewData["joinTablesDomcilioSec"] = from personaTable in personaVM
-                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.PersonaIdPersona
+                                                join domicilio in domicilioVM on personaTable.IdPersona equals domicilio.IdDomicilio
                                                 join domicilioSec in domiciliosecundarioVM on domicilio.IdDomicilio equals domicilioSec.IdDomicilio
-                                                where domicilioSec.IdDomicilio == id
+                                                where personaTable.IdPersona == id
                                                 select new PersonaViewModel
                                                 {
                                                     domicilioSecundarioVM = domicilioSec
@@ -3514,7 +3523,7 @@ namespace scorpioweb.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomSecundario([Bind("IdDomicilioSecundario,IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,Motivo,Observaciones")] Domiciliosecundario domiciliosecundario, Domicilio domicilio)
+        public async Task<IActionResult> EditDomSecundario([Bind("IdDomicilioSecundario,IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,Motivo,Observaciones")] Domiciliosecundario domiciliosecundario,string nombre, string idPersona)
         {
             if (ModelState.IsValid)
             {
@@ -3530,6 +3539,7 @@ namespace scorpioweb.Controllers
                     domiciliosecundario.Horario = normaliza(domiciliosecundario.Horario);
                     domiciliosecundario.Motivo = normaliza(domiciliosecundario.Motivo);
                     domiciliosecundario.Observaciones = normaliza(domiciliosecundario.Observaciones);
+
 
                     var oldDomicilio = await _context.Domiciliosecundario.FindAsync(domiciliosecundario.IdDomicilioSecundario);
                     _context.Entry(oldDomicilio).CurrentValues.SetValues(domiciliosecundario);
@@ -3548,12 +3558,12 @@ namespace scorpioweb.Controllers
                     //    throw;
                     //}
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("EditDomicilio/" + idPersona, "Personas", new { nombre = nombre});
             }
             return View();
         }
 
-        public async Task<IActionResult> DeleteConfirmedDom(int? id)
+        public async Task<IActionResult> DeleteConfirmedDom(int? id, int idpersona)
         {
             var domseundario = await _context.Domiciliosecundario.SingleOrDefaultAsync(m => m.IdDomicilioSecundario == id);
             _context.Domiciliosecundario.Remove(domseundario);
@@ -3572,7 +3582,7 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("EditDomicilio/" + domseundario.IdDomicilio, "Personas");
+            return RedirectToAction("EditDomicilio/" + idpersona, "Personas");
         }
 
         public async Task<IActionResult> CrearDomicilioSecundario(Domiciliosecundario domiciliosecundario, string[] datosDomicilio)
@@ -3581,13 +3591,13 @@ namespace scorpioweb.Controllers
             domiciliosecundario.TipoDomicilio = normaliza(datosDomicilio[1]);
             domiciliosecundario.Calle = normaliza(datosDomicilio[2]);
             domiciliosecundario.No = normaliza(datosDomicilio[3]);
-            domiciliosecundario.TipoUbicacion = datosDomicilio[4];
+            domiciliosecundario.TipoUbicacion = normaliza(datosDomicilio[4]);
             domiciliosecundario.NombreCf = normaliza(datosDomicilio[5]);
             domiciliosecundario.Pais = datosDomicilio[6];
             domiciliosecundario.Estado = datosDomicilio[7];
             domiciliosecundario.Municipio = datosDomicilio[8];
-            domiciliosecundario.Temporalidad = datosDomicilio[9];
-            domiciliosecundario.ResidenciaHabitual = datosDomicilio[10];
+            domiciliosecundario.Temporalidad = normaliza(datosDomicilio[9]);
+            domiciliosecundario.ResidenciaHabitual = normaliza(datosDomicilio[10]);
             domiciliosecundario.Cp = normaliza(datosDomicilio[11]);
             domiciliosecundario.Referencias = normaliza(datosDomicilio[12]);
             domiciliosecundario.Motivo = normaliza(datosDomicilio[13]);
@@ -3601,12 +3611,18 @@ namespace scorpioweb.Controllers
             query.DomcilioSecundario = "SI";
             _context.SaveChanges();
 
+            var query2 = (from p in _context.Persona
+                          join d in _context.Domicilio on p.IdPersona equals d.IdDomicilio
+                          join ds in _context.Domiciliosecundario on d.IdDomicilio equals ds.IdDomicilio
+                          where ds.IdDomicilioSecundario == domiciliosecundario.IdDomicilio
+                          select p);
+
 
 
             _context.Add(domiciliosecundario);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("EditDomicilio/" + domiciliosecundario.IdDomicilio, "Personas");
+            return RedirectToAction("EditDomicilio/" + query.PersonaIdPersona, "Personas");
         }
         #endregion
 

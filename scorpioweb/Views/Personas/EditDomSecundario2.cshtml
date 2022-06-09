@@ -130,12 +130,13 @@
 
 </script>
 
+
 @{int i = 0;}
 @foreach (var item in ViewData["joinTablesDomcilioSec"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
 {
     i++;
     <div class="form-group col-md-12">
-        <form asp-action="EditDomSecundario">
+        <form asp-action="EditDomSecundario" asp-route-nombre="@ViewBag.nombre" asp-route-idPersona="@ViewBag.idPersona">
             <div>
                 <h4>Domicilio Secundario <span>@i</span> </h4>
             </div>
@@ -180,7 +181,7 @@
                 </select>
             </div>
             <div class="form-group col-md-4" id="DivMunicipioEDS">
-                <label class="control-label">Estado</label>
+                <label class="control-label">Municipio</label>
                 <select class="form-control" name="Municipio" id="municipioEDS"
                         asp-items="@(new SelectList(ViewBag.ListaMunicipioED, "Id", "Municipio", item.domicilioSecundarioVM.Municipio))">
                 </select>
@@ -225,7 +226,7 @@
                 <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalAddDomSecundario" class="btn btn-success">
                     <i class="fa fa-plus"></i> Añadir Domicilio
                 </button>
-                <button asp-action="DeleteConfirmedDom" asp-route-id="@item.domicilioSecundarioVM.IdDomicilioSecundario" onclick="return update();" class="btn btn-danger" type="submit">
+                <button asp-action="DeleteConfirmedDom" asp-route-id="@item.domicilioSecundarioVM.IdDomicilioSecundario" asp-route-nombre="@ViewBag.nombre" asp-route-idpersona="@ViewBag.idPersona" onclick="return update();" class="btn btn-danger" type="submit">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
             </div>

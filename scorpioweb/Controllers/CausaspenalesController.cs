@@ -735,6 +735,27 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            var queryhcp = from hcp in _context.Historialcp
+                           where hcp.CausapenalIdCausapenal == id
+                           select hcp.Cnpp + " " + hcp.Juez + " " + hcp.Cambio + " " + hcp.Distrito + " " + hcp.Causapenal
+
+                            ;
+
+            var queryhcpN = normaliza(cnpp) + " " + normaliza(juez) + " " + normaliza(cambio) + " " + normaliza(distrito) + " " + normaliza(cp);
+
+            var cosine = new Cosine(2);
+            double r = 0;
+            var simi = false;
+            foreach (var q in queryhcp)
+            {
+                r = cosine.Similarity(q, queryhcpN);
+                if (r == 1)
+                {
+                    simi = true;
+                    break;
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -772,21 +793,24 @@ namespace scorpioweb.Controllers
                         }
                     }
                     #endregion
-
                     var oldCausa = await _context.Causapenal.FindAsync(id);
-                    if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
+                    if (simi != true)
                     {
-                        historialcp.Cnpp = oldCausa.Cnpp;
-                        historialcp.Juez = normaliza(oldCausa.Juez);
-                        historialcp.Distrito = oldCausa.Distrito;
-                        historialcp.Cambio = oldCausa.Cambio;
-                        historialcp.Causapenal = normaliza(oldCausa.CausaPenal);
-                        historialcp.FechaModificacion = DateTime.Now;
-                        historialcp.CausapenalIdCausapenal = id;
+                        if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
+                        {
+                            historialcp.Cnpp = oldCausa.Cnpp;
+                            historialcp.Juez = normaliza(oldCausa.Juez);
+                            historialcp.Distrito = oldCausa.Distrito;
+                            historialcp.Cambio = oldCausa.Cambio;
+                            historialcp.Causapenal = normaliza(oldCausa.CausaPenal);
+                            historialcp.FechaModificacion = DateTime.Now;
+                            historialcp.CausapenalIdCausapenal = id;
 
-                        _context.Add(historialcp);
-                        await _context.SaveChangesAsync(null, 1);
+                            _context.Add(historialcp);
+                            await _context.SaveChangesAsync(null, 1);
+                        }
                     }
+                    
 
                     _context.Entry(oldCausa).CurrentValues.SetValues(causa);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
