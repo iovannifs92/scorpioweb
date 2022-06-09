@@ -38,7 +38,7 @@ var infowindow;
 var cnt = 0;//todo
 
 function iniciarMap() {
-    var coord = { lat: 24.023601543486198, lng: -104.66070401364269 };//DGEP
+    var coord = { lat: 24.0234962, lng: -104.6606269 };//DGEP
     map = new google.maps.Map(document.getElementById('map'),{
       zoom: 12,//12: Town, or city district
       center: coord
@@ -168,7 +168,7 @@ function fillInAddress(place) {
   document.getElementById("calle").value = "";
   document.getElementById("cp").value = "";
   document.getElementById("municipioD").value = 0;
-  document.getElementById("estadoD").value = 0;
+//  document.getElementById("estadoD").value = 0;
   
   var municipio = getMunicipio(place);
   var z = document.getElementById("zona");
@@ -196,12 +196,25 @@ function fillInAddress(place) {
        case "administrative_area_level_1": {
 		 var e = document.getElementById("estadoD");
 		 for (let i = 0; i < e.length; i++) {
-			 if(e.options[i].text == component.long_name) {
+             if (e.options[i].text == component.long_name) {
 				document.getElementById("estadoD").value = e.options[i].value;
 			 }
-		 }
-         document.getElementById("municipioD").text = municipio;
+         }
          $("#estadoD").change();
+         var m = document.getElementById("municipioD");
+         var i;
+         for (i = 0; i < m.length; i++) {
+             if (m.options[i].text == municipio) {
+                 m.text = municipio;
+                 break;
+             }
+         }
+         if (i == m.length && municipio != "Sin municipio") {
+             if (document.getElementById("nombreCF").value != "") {
+                 document.getElementById("nombreCF").value += ", ";
+             }
+             document.getElementById("nombreCF").value += municipio;
+         }
          break;
        }
 	   default: {

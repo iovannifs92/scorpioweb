@@ -1538,6 +1538,8 @@ namespace scorpioweb.Controllers
 
             listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
             ViewBag.ListaMunicipios = listaMunicipiosD;
+
+            ViewBag.colonias = _context.Zonas.Select(Zonas => Zonas.Colonia).ToList();
             return View();
         }
 
@@ -3323,8 +3325,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.domi = domicilio.DomcilioSecundario;
 
-
-
+            ViewBag.colonias = _context.Zonas.Select(Zonas => Zonas.Colonia).ToList();
 
             if (domicilio == null)
             {
