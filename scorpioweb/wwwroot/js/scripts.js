@@ -168,7 +168,7 @@ function fillInAddress(place) {
   document.getElementById("calle").value = "";
   document.getElementById("cp").value = "";
   document.getElementById("municipioD").value = 0;
-//  document.getElementById("estadoD").value = 0;
+  document.getElementById("estadoD").value = 0;
   
   var municipio = getMunicipio(place);
   var z = document.getElementById("zona");
@@ -200,8 +200,9 @@ function fillInAddress(place) {
 				document.getElementById("estadoD").value = e.options[i].value;
 			 }
          }
-         $("#estadoD").change();
          var m = document.getElementById("municipioD");
+         m.text = municipio;
+         $("#estadoD").change();
          var i;
          for (i = 0; i < m.length; i++) {
              if (m.options[i].text == municipio) {
