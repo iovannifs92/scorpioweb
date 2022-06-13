@@ -46,14 +46,14 @@ function iniciarMap() {
     infowindow = new google.maps.InfoWindow();
     if (document.getElementById("lat").value != "" && document.getElementById("lng").value != "") {
         var savedCoord = { lat: parseFloat(document.getElementById("lat").value), lng: parseFloat(document.getElementById("lng").value) };
-        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(savedCoord), infowindow, false, 20);
+        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(savedCoord), infowindow, 20);
         marker = new google.maps.Marker({
             position: savedCoord,
             map: map
         });
     }
     else {
-        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(coord), infowindow, false, 12);
+        geocodeLatLng(new google.maps.Geocoder(), new google.maps.LatLng(coord), infowindow, 12);
         marker = new google.maps.Marker({
             position: coord,
             map: map
@@ -70,7 +70,7 @@ function iniciarMap() {
 		else {
 			marker.setPosition( new google.maps.LatLng( event.latLng ) );
         }
-        geocodeLatLng(new google.maps.Geocoder(), event.latLng, infowindow, true);
+        geocodeLatLng(new google.maps.Geocoder(), event.latLng, infowindow);
     });
 }
 
@@ -105,14 +105,6 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
             var colonia = getColonia(results[0]);
             var cp = getCP(results[0]);
 
-            if (estado == "Durango" && municipio == "Durango") {
-                setZona(colonia, cp);
-            }
-            else {
-                var z = document.getElementById("zona");
-                z.value = "SIN ZONA ASIGNADA";
-            }
-
             var coord = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
 			if(marker == null) {
 				marker = new google.maps.Marker({
@@ -124,12 +116,12 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
                 marker.setPosition(new google.maps.LatLng(coord));
                 map.setCenter(coord);
             }
-			geocodeLatLng(geocoder, results[0].geometry.location, infowindow, 20, true);
+			geocodeLatLng(geocoder, results[0].geometry.location, infowindow, 20);
         }
     });
 }
 
-function geocodeLatLng(geocoder, latlng, infowindow, asignarZona, zoom) {
+function geocodeLatLng(geocoder, latlng, infowindow, zoom) {
   geocoder
     .geocode({ location: latlng })
     .then((response) => {
@@ -143,18 +135,6 @@ function geocodeLatLng(geocoder, latlng, infowindow, asignarZona, zoom) {
 		result = response.results[0];
 		infowindow.setContent(response.results[0].formatted_address + ' <button href="/" onclick="event.preventDefault();fillInAddress(result)">Usar dirección</button>');
         infowindow.open(map, marker);
-
-        if(asignarZona) {
-            var municipio = getMunicipio(result);
-            var z = document.getElementById("zona");
-            z.value = "SIN ZONA ASIGNADA";
-            if (municipio == "Durango") {
-                var colonia = getColonia(result);
-                var cp = getCP(result);
-
-                setZona(colonia, cp);
-            }
-        }
       } else {
         window.alert("No results found");
       }
@@ -163,75 +143,72 @@ function geocodeLatLng(geocoder, latlng, infowindow, asignarZona, zoom) {
 }
 
 function fillInAddress(place) {
-  document.getElementById("nombreCF").value = "";
-  document.getElementById("no").value = "";
-  document.getElementById("calle").value = "";
-  document.getElementById("cp").value = "";
-  document.getElementById("municipioD").value = 0;
-  document.getElementById("estadoD").value = 0;
-  
-  var municipio = getMunicipio(place);
-  var z = document.getElementById("zona");
-  z.value = "SIN ZONA ASIGNADA";
-  for (const component of place.address_components) {
-     const componentType = component.types[0];
+    var colonia = getColonia(place);
+    if (colonia != "Sin colonia" || document.getElementById("nombreCF").value == "") {
+        document.getElementById("nombreCF").value = "";
+        document.getElementById("no").value = "";
+        document.getElementById("calle").value = "";
+        document.getElementById("cp").value = "";
+        document.getElementById("municipioD").value = 0;
+        document.getElementById("estadoD").value = 0;
 
-     switch (componentType) {
-       case "political": {
-         document.getElementById("nombreCF").value = component.long_name;
-         break;
-       }
-       case "street_number": {
-		 document.getElementById("no").value = component.long_name;
-         break;
-       }
-       case "route": {
-		 document.getElementById("calle").value = component.long_name;
-         break;
-       }
-       case "postal_code": {
-		 document.getElementById("cp").value = component.long_name;
-         break;
-       }
-       case "administrative_area_level_1": {
-		 var e = document.getElementById("estadoD");
-		 for (let i = 0; i < e.length; i++) {
-             if (e.options[i].text == component.long_name) {
-				document.getElementById("estadoD").value = e.options[i].value;
-			 }
-         }
-         var m = document.getElementById("municipioD");
-         m.text = municipio;
-         $("#estadoD").change();
-         var i;
-         for (i = 0; i < m.length; i++) {
-             if (m.options[i].text == municipio) {
-                 m.text = municipio;
-                 break;
-             }
-         }
-         if (i == m.length && municipio != "Sin municipio") {
-             if (document.getElementById("nombreCF").value != "") {
-                 document.getElementById("nombreCF").value += ", ";
-             }
-             document.getElementById("nombreCF").value += municipio;
-         }
-         break;
-       }
-	   default: {
-		 break;
-	   }
-     }
-  }
-  var colonia = getColonia(place);
-  var cp = getCP(place);
-  if (municipio == "Durango") {
-      setZona(colonia, cp);
-  }
-  //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
-  if (localStorage.getItem('municipioD')) {
-      $('#municipioD').val(localStorage.getItem('municipioD'));
-  }
+        var municipio = getMunicipio(place);
+        for (const component of place.address_components) {
+            const componentType = component.types[0];
+
+            switch (componentType) {
+                case "political": {
+                    document.getElementById("nombreCF").value = component.long_name;
+                    break;
+                }
+                case "street_number": {
+                    document.getElementById("no").value = component.long_name;
+                    break;
+                }
+                case "route": {
+                    document.getElementById("calle").value = component.long_name;
+                    break;
+                }
+                case "postal_code": {
+                    document.getElementById("cp").value = component.long_name;
+                    break;
+                }
+                case "administrative_area_level_1": {
+                    var e = document.getElementById("estadoD");
+                    for (let i = 0; i < e.length; i++) {
+                        if (e.options[i].text == component.long_name) {
+                            document.getElementById("estadoD").value = e.options[i].value;
+                        }
+                    }
+                    var m = document.getElementById("municipioD");
+                    m.text = municipio;
+                    $("#estadoD").change();
+                    var i;
+                    for (i = 0; i < m.length; i++) {
+                        if (m.options[i].text == municipio) {
+                            m.text = municipio;
+                            break;
+                        }
+                    }
+                    if (i == m.length && municipio != "Sin municipio") {
+                        if (document.getElementById("nombreCF").value != "") {
+                            document.getElementById("nombreCF").value += ", ";
+                        }
+                        document.getElementById("nombreCF").value += municipio;
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+
+        //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
+        if (localStorage.getItem('municipioD')) {
+            $('#municipioD').val(localStorage.getItem('municipioD'));
+        }
+    }
 }
 
 function getColonia(place) {
@@ -262,39 +239,4 @@ function getMunicipio(place) {
         }
     }
     return "Sin municipio";
-}
-
-function setZona(colonia, cp) {
-    $.ajax({
-        type: "POST",
-        dataType: "json",
-        url: "/Personas/GetZona",
-        traditional: true,
-        success: function (response) {
-            if (response.success == false) {
-                alert("response.success == false");
-            }
-            else {
-                var matches = 0;
-                for (let i = 0; i < response.zonas.length; i++) {
-                    if (response.zonas[i].colonia == colonia) {
-                        matches++;
-                    }
-                }
-                var z = document.getElementById("zona");
-                for (let i = 0; i < response.zonas.length; i++) {
-                    if (response.zonas[i].colonia == colonia && (matches <= 1 || response.zonas[i].cp == cp)) {
-                        for (let j = 0; j < z.length; j++) {
-                            if (z.options[j].text == response.zonas[i].zona) {
-                                z.value = z.options[j].value;
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        error: function (response) {
-            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-        }
-    });
 }
