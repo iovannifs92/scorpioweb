@@ -280,6 +280,7 @@ namespace scorpioweb.Controllers
             causapenal.Distrito = distrito;
             causapenal.Cambio = cambio;
             causapenal.CausaPenal = normaliza(cp);
+            causapenal.Fechacreacion = DateTime.Now;
 
             if (cp == null)
             {
