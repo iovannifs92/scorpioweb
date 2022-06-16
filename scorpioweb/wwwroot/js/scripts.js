@@ -143,14 +143,35 @@ function geocodeLatLng(geocoder, latlng, infowindow, zoom) {
 }
 
 function fillInAddress(place) {
+    var municipio = getMunicipio(place);
+    var e = document.getElementById("estadoD");
+    var estadoAnterior = e.value;
+    var estado = getEstado(place);
+    e.value = 0;
+    for (let i = 0; i < e.length; i++) {
+        if (e.options[i].text == estado) {
+            e.value = e.options[i].value;
+            break;
+        }
+    }
+    var m = document.getElementById("municipioD");
+    var municipioAnterior = m.options[m.selectedIndex].text;
+    m.text = municipio;
+    $("#estadoD").change();
+    var esMunicipio = false;
+    for (i = 0; i < m.length; i++) {
+        if (m.options[i].text == municipio) {
+            m.value = m.options[i].value;
+            esMunicipio = true;
+            break;
+        }
+    }
     var colonia = getColonia(place);
-    if (colonia != "Sin colonia" || document.getElementById("nombreCF").value == "") {
+    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("nombreCF").value == "") {
         document.getElementById("nombreCF").value = "";
         document.getElementById("no").value = "";
         document.getElementById("calle").value = "";
         document.getElementById("cp").value = "";
-        document.getElementById("municipioD").value = 0;
-        document.getElementById("estadoD").value = 0;
 
         var municipio = getMunicipio(place);
         for (const component of place.address_components) {
@@ -173,41 +194,26 @@ function fillInAddress(place) {
                     document.getElementById("cp").value = component.long_name;
                     break;
                 }
-                case "administrative_area_level_1": {
-                    var e = document.getElementById("estadoD");
-                    for (let i = 0; i < e.length; i++) {
-                        if (e.options[i].text == component.long_name) {
-                            document.getElementById("estadoD").value = e.options[i].value;
-                        }
-                    }
-                    var m = document.getElementById("municipioD");
-                    m.text = municipio;
-                    $("#estadoD").change();
-                    var i;
-                    for (i = 0; i < m.length; i++) {
-                        if (m.options[i].text == municipio) {
-                            m.text = municipio;
-                            break;
-                        }
-                    }
-                    if (i == m.length && municipio != "Sin municipio") {
-                        if (document.getElementById("nombreCF").value != "") {
-                            document.getElementById("nombreCF").value += ", ";
-                        }
-                        document.getElementById("nombreCF").value += municipio;
-                    }
-                    break;
-                }
                 default: {
                     break;
                 }
             }
         }
-
+        if (esMunicipio == false && municipio != "Sin municipio") {
+            if (document.getElementById("nombreCF").value != "") {
+                document.getElementById("nombreCF").value += ", ";
+            }
+            document.getElementById("nombreCF").value += municipio;
+        }
         //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
         if (localStorage.getItem('municipioD')) {
             $('#municipioD').val(localStorage.getItem('municipioD'));
         }
+    }
+    else {
+        e.value = estadoAnterior;
+        m.text = municipioAnterior;
+        $("#estadoD").change();
     }
 }
 
@@ -239,4 +245,14 @@ function getMunicipio(place) {
         }
     }
     return "Sin municipio";
+}
+
+function getEstado(place) {
+    for (const component of place.address_components) {
+        const componentType = component.types[0];
+        if (componentType == "administrative_area_level_1") {
+            return component.long_name;
+        }
+    }
+    return "Sin estado";
 }
