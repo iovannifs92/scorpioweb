@@ -273,6 +273,10 @@ namespace scorpioweb.Controllers
         //        [ValidateAntiForgeryToken] Para poder llamar el metodo desde Oficialia
         public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp)
         {
+            var usuario = await userManager.FindByNameAsync(User.Identity.Name);
+            String users = usuario.ToString();
+            
+            
             string currentUser = User.Identity.Name;
 
             causapenal.Cnpp = cnpp;
@@ -281,6 +285,7 @@ namespace scorpioweb.Controllers
             causapenal.Cambio = cambio;
             causapenal.CausaPenal = normaliza(cp);
             causapenal.Fechacreacion = DateTime.Now;
+            causapenal.Usuario = users;
 
             if (cp == null)
             {

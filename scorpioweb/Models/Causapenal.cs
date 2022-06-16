@@ -12,5 +12,6 @@ namespace scorpioweb.Models
         public string Distrito { get; set; }
         public string CausaPenal { get; set; }
         public DateTime? Fechacreacion { get; set; }
+        public string Usuario { get; set; }
     }
 }
