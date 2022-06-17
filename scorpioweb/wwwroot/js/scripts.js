@@ -39,9 +39,9 @@ var cnt = 0;//todo
 
 function iniciarMap() {
     var coord = { lat: 24.0234962, lng: -104.6606269 };//DGEP
-    map = new google.maps.Map(document.getElementById('map'),{
-      zoom: 12,//12: Town, or city district
-      center: coord
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,//12: Town, or city district
+        center: coord
     });
     infowindow = new google.maps.InfoWindow();
     if (document.getElementById("lat").value != "" && document.getElementById("lng").value != "") {
@@ -59,16 +59,16 @@ function iniciarMap() {
             map: map
         });
     }
-	
+
     google.maps.event.addListener(map, "click", (event) => {
-		if(marker == null) {
-			marker = new google.maps.Marker({
-				position: event.latLng,
+        if (marker == null) {
+            marker = new google.maps.Marker({
+                position: event.latLng,
                 map: map
             });
-		}
-		else {
-			marker.setPosition( new google.maps.LatLng( event.latLng ) );
+        }
+        else {
+            marker.setPosition(new google.maps.LatLng(event.latLng));
         }
         geocodeLatLng(new google.maps.Geocoder(), event.latLng, infowindow);
     });
@@ -79,20 +79,20 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
     // This is making the Geocode request
     var geocoder = new google.maps.Geocoder();
     var address;
-    if(no == "") {
+    if (no == "") {
         address = calle;
     }
     else {
         address = calle + " " + no;
     }
     address += ", " + nombre;
-	if(cp != "") {
-		address += ", " + cp;
-	}
-    if(municipio != "Sin municipio") {
+    if (cp != "") {
+        address += ", " + cp;
+    }
+    if (municipio != "Sin municipio") {
         address += ", " + municipio;
     }
-    if(estado != "Selecciona" && estado != "Sin estado") {
+    if (estado != "Selecciona" && estado != "Sin estado") {
         address += ", " + estado;
     }
 
@@ -106,40 +106,40 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
             var cp = getCP(results[0]);
 
             var coord = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
-			if(marker == null) {
-				marker = new google.maps.Marker({
-					position: coord,
-					map: map
-				});
-			}
+            if (marker == null) {
+                marker = new google.maps.Marker({
+                    position: coord,
+                    map: map
+                });
+            }
             else {
                 marker.setPosition(new google.maps.LatLng(coord));
                 map.setCenter(coord);
             }
-			geocodeLatLng(geocoder, results[0].geometry.location, infowindow, 20);
+            geocodeLatLng(geocoder, results[0].geometry.location, infowindow, 20);
         }
     });
 }
 
 function geocodeLatLng(geocoder, latlng, infowindow, zoom) {
-  geocoder
-    .geocode({ location: latlng })
-    .then((response) => {
-      if (response.results[0]) {
-        if (zoom != undefined) {
-            map.setZoom(zoom);
-        }
+    geocoder
+        .geocode({ location: latlng })
+        .then((response) => {
+            if (response.results[0]) {
+                if (zoom != undefined) {
+                    map.setZoom(zoom);
+                }
 
-		document.getElementById("lat").value = response.results[0].geometry.location.lat();
-		document.getElementById("lng").value = response.results[0].geometry.location.lng();
-		result = response.results[0];
-		infowindow.setContent(response.results[0].formatted_address + ' <button href="/" onclick="event.preventDefault();fillInAddress(result)">Usar dirección</button>');
-        infowindow.open(map, marker);
-      } else {
-        window.alert("No results found");
-      }
-    })
-    .catch((e) => window.alert("Geocoder failed due to: " + e));
+                document.getElementById("lat").value = response.results[0].geometry.location.lat();
+                document.getElementById("lng").value = response.results[0].geometry.location.lng();
+                result = response.results[0];
+                infowindow.setContent(response.results[0].formatted_address + ' <button href="/" onclick="event.preventDefault();fillInAddress(result)">Usar dirección</button>');
+                infowindow.open(map, marker);
+            } else {
+                window.alert("No results found");
+            }
+        })
+        .catch((e) => window.alert("Geocoder failed due to: " + e));
 }
 
 function fillInAddress(place) {
@@ -178,6 +178,10 @@ function fillInAddress(place) {
             const componentType = component.types[0];
 
             switch (componentType) {
+                case "neighborhood": {
+                    document.getElementById("nombreCF").value = component.long_name;
+                    break;
+                }
                 case "political": {
                     document.getElementById("nombreCF").value = component.long_name;
                     break;
@@ -218,13 +222,24 @@ function fillInAddress(place) {
 }
 
 function getColonia(place) {
+    var colonia = "Sin colonia";
     for (const component of place.address_components) {
         const componentType = component.types[0];
-        if (componentType == "political") {
-            return component.long_name;
+        switch (componentType) {
+            case "neighborhood": {
+                colonia = component.long_name;
+                break;
+            }
+            case "political": {// political overwrites neighborhood
+                colonia = component.long_name;
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
-    return "Sin colonia";
+    return colonia;
 }
 
 function getCP(place) {
