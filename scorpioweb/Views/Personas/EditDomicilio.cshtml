@@ -465,19 +465,8 @@
             @if (User.IsInRole("Masteradmin"))
             {
                 <div class="form-group col-md-12">
-                    <label class="control-label">Zona</label>
-                    <select class="form-control" name="zona" id="zona"
-                            asp-items="@(new SelectList(ViewBag.listaZona, "Value", "Text", @ViewBag.idZona))">
-                    </select>
-                </div>
-            }
-            else
-            {
-                <div class="form-group col-md-12" type="hidden">
-                    <label class="control-label">Zona</label>
-                    <select class="form-control" name="zona" id="zona"
-                            asp-items="@(new SelectList(ViewBag.listaZona, "Value", "Text", @ViewBag.idZona))">
-                    </select>
+                    <label class="control-label">Zona: </label>
+                    <label class="form-label" name="zona" id="zona">@ViewBag.idZona</label>
                 </div>
             }
             <div class="form-group col-lg-12">

@@ -102,9 +102,6 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
         }
         // This is checking to see if the Geoeode Status is OK before proceeding
         if (status == google.maps.GeocoderStatus.OK) {
-            var colonia = getColonia(results[0]);
-            var cp = getCP(results[0]);
-
             var coord = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
             if (marker == null) {
                 marker = new google.maps.Marker({
