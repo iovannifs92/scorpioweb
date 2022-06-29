@@ -208,9 +208,9 @@ namespace scorpioweb.Controllers
             double r = 0;
             foreach (var q in query)
             {
-             r = cosine.Similarity(q.nomcom, nombreCompleto);
-                if(r >= .80)
-                    {
+                r = cosine.Similarity(q.nomcom, nombreCompleto);
+                if (r >= .80)
+                {
                     nomCom = q.nomcom;
                     idpersona = q.id;
                     simi = true;
@@ -218,16 +218,16 @@ namespace scorpioweb.Controllers
                 }
             }
 
-            if(simi == true)
+            if (simi == true)
             {
-                double i = r*100;
+                double i = r * 100;
                 int porcentaje = (int)Math.Floor(i);
                 string id = idpersona.ToString();
                 return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
             }
             else
             {
-                return Json(new { success = false});
+                return Json(new { success = false });
             }
             return Json(new { success = false });
         }
