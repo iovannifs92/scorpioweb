@@ -1959,7 +1959,7 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
                 #endregion
             }
-            return RedirectToAction("ListadoSupervisor", "Personas");
+            return RedirectToAction("RegistroConfirmation/" + 0, "Personas");
         }
         #endregion
 
