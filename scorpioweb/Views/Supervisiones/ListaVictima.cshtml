@@ -26,8 +26,21 @@
 </script>
 
 <h2>Victima</h2>
-<h4>Nombre: @ViewBag.nombre</h4>
-<h4>CP: @ViewBag.cp</h4>
+<div class="col-md-12">
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.idpersona</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Nombre:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.nombre</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">
+            Causa Penal
+            <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
+    </div>
+</div>
 <table class="table">
     <thead style="text-align:center">
         <tr>
@@ -45,45 +58,47 @@
     <tbody>
         @foreach (var item in ViewData["Victima"] as IEnumerable<scorpioweb.Models.Victima>)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreV)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TipoRelacion)
-            </td>
-            @if (ViewBag.usuario)
-            {
+            <tr>
                 <td>
-                    <form onsubmit="return confirm('¿Deseas borrar Victima?');" asp-action="DeleteVictima" asp-route-id="@item.IdVictima">
-                        <a id="btnVer" onclick="showModal('@Url.Action("VerVictima","Supervisiones",null,Context.Request.Scheme)','Datos Victima',@item.IdVictima)" class="btn btn-info">
-                            <i class="fa fa-eye"></i> Ver
-                        </a>
-                        <a id="btnEditar" onclick="showModal('@Url.Action("EditVictima","Supervisiones",null,Context.Request.Scheme)','Edita Victima',@item.IdVictima)" class="btn btn-success">
-                            <i class="fa fa-pencil"></i> Editar
-                        </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Borrar
-                        </button>
-                    </form>
+                    @Html.DisplayFor(modelItem => item.NombreV)
                 </td>
-            }
-        </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Telefono)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoRelacion)
+                </td>
+                @if (ViewBag.usuario)
+                {
+                    <td>
+                        <form onsubmit="return confirm('¿Deseas borrar Victima?');" asp-action="DeleteVictima" asp-route-id="@item.IdVictima" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona">
+                            <a id="btnVer" onclick="showModal('@Url.Action("VerVictima","Supervisiones",new {id=@item.IdVictima, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, cp=@ViewBag.cp},Context.Request.Scheme)','Datos Victima',null)" class="btn btn-info">
+                                <i class="fa fa-eye"></i> Ver
+                            </a>
+                            <a id="btnEditar" onclick="showModal('@Url.Action("EditVictima","Supervisiones",new {id=@item.IdVictima, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, cp=@ViewBag.cp},Context.Request.Scheme)','Edita Victima',null)" class="btn btn-success">
+                                <i class="fa fa-pencil"></i> Editar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Borrar
+                            </button>
+                        </form>
+                    </td>
+                }
+            </tr>
         }
     </tbody>
 </table>
 
 @if (ViewBag.usuario)
 {
-    <a id="btnCreate" onclick="showModal('@Url.Action("CreateVictima", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
-        <i class="fa fa-plus"></i>  Agregar Victima
+
+    //<a id="btnCreate" onclick="showModal('@Url.Action("CreateVictima", "Supervisiones", null, Context.Request.Scheme)','Agregar Registro',@ViewBag.IdSupervisionGuardar )" class="btn btn-primary">
+    <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("CreateVictima", "Supervisiones", new {id=@ViewBag.IdSupervisionGuardar, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, cp=@ViewBag.cp}, Context.Request.Scheme)','Agregar Registro',null)" class="btn btn-primary">
+        <i class="fa fa-plus"></i>Agregar Victima
     </a>
 }
 
 <br />
 <div>
-    <a href='javascript:history.go(-1)'>Regresar</a>
+    <a href='javascript:history.go(-1)'>Regresar</a>s
 </div>

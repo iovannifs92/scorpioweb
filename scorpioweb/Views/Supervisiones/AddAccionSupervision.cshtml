@@ -26,7 +26,7 @@
 {
     i++;
     <div class="form-group col-md-12">
-        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditAddAccionSupervision" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" enctype="multipart/form-data">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditAddAccionSupervision" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" enctype="multipart/form-data">
             <label class="control-label">Accion @i</label>
             <input readonly style="display:none" name="SupervisionIdSupervision" id="SupervisionIdSupervision" value="@item.bitacoraVM.SupervisionIdSupervision" class="form-control" />
             <input readonly style="display:none" name="IdBitacora" id="IdBitacora" value="@item.bitacoraVM.IdBitacora" class="form-control" />
@@ -78,7 +78,7 @@
                 </button>
             </div>
             <div class="form-group col-lg-9">
-                <button asp-action="DeleteRegistro2" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" onclick="return update();" class="btn btn-danger" type="submit">
+                <button asp-action="DeleteRegistro2" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" onclick="return update();" class="btn btn-danger" type="submit">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
             </div>
@@ -87,7 +87,7 @@
 }
 @foreach (var item in ViewData["tablaBiatacora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
 {
-    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@item.bitacoraVM.SupervisionIdSupervision, nombre = @ViewBag.nombre, cp=@ViewBag.cp}, Context.Request.Scheme)', 'Agregar Registro', null)" class="btn btn-success">
+    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@item.bitacoraVM.SupervisionIdSupervision, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, cp=@ViewBag.cp}, Context.Request.Scheme)', 'Agregar Registro', null)" class="btn btn-success">
         <i class="fa fa-plus"></i>  Agregar Registro
     </a>
     break;
