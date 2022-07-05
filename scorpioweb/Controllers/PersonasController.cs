@@ -192,9 +192,9 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        bool simi = false;
-        public JsonResult similitudNombre(string nombre, string paterno, string materno)
+        public JsonResult testSimilitud(string nombre, string paterno, string materno)
         {
+            bool simi = false;
             var nombreCompleto = normaliza(paterno) + " " + normaliza(materno) + " " + normaliza(nombre);
 
             var query = from p in _context.Persona
@@ -208,6 +208,11 @@ namespace scorpioweb.Controllers
             string nomCom = "";
             var cosine = new Cosine(2);
             double r = 0;
+            var list = new List<Tuple<string, int, double>>();
+
+            List<string> listaNombre = new List<string>();
+
+
             foreach (var q in query)
             {
                 r = cosine.Similarity(q.nomcom, nombreCompleto);
@@ -215,16 +220,22 @@ namespace scorpioweb.Controllers
                 {
                     nomCom = q.nomcom;
                     idpersona = q.id;
+                    list.Add(new Tuple<string, int, double>(nomCom, idpersona, r));
                     simi = true;
-                    break;
                 }
             }
 
+            var tupleWithMaxItem1 = list.OrderBy(x => x.Item1).First();
+
+
+
+
+
             if (simi == true)
             {
-                double i = r * 100;
+                double i = tupleWithMaxItem1.Item3 * 100;
                 int porcentaje = (int)Math.Floor(i);
-                string id = idpersona.ToString();
+                string id = tupleWithMaxItem1.Item2.ToString();
                 return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
             }
             else
@@ -233,6 +244,48 @@ namespace scorpioweb.Controllers
             }
             return Json(new { success = false });
         }
+
+        //bool simi = false;
+        //public JsonResult similitudNombre(string nombre, string paterno, string materno)
+        //{
+        //    var nombreCompleto = normaliza(paterno) + " " + normaliza(materno) + " " + normaliza(nombre);
+
+        //    var query = from p in _context.Persona
+        //                select new
+        //                {
+        //                    nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
+        //                    id = p.IdPersona
+        //                };
+
+        //    int idpersona = 0;
+        //    string nomCom = "";
+        //    var cosine = new Cosine(2);
+        //    double r = 0;
+        //    foreach (var q in query)
+        //    {
+        //        r = cosine.Similarity(q.nomcom, nombreCompleto);
+        //        if (r >= .80)
+        //        {
+        //            nomCom = q.nomcom;
+        //            idpersona = q.id;
+        //            simi = true;
+        //            break;
+        //        }
+        //    }
+
+        //    if (simi == true)
+        //    {
+        //        double i = r * 100;
+        //        int porcentaje = (int)Math.Floor(i);
+        //        string id = idpersona.ToString();
+        //        return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
+        //    }
+        //    else
+        //    {
+        //        return Json(new { success = false });
+        //    }
+        //    return Json(new { success = false });
+        //}
 
 
         #region -Index-
