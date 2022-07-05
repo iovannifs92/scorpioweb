@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -190,6 +191,7 @@ namespace scorpioweb.Controllers
             return cleaned;
         }
         #endregion
+
         bool simi = false;
         public JsonResult similitudNombre(string nombre, string paterno, string materno)
         {
@@ -231,6 +233,7 @@ namespace scorpioweb.Controllers
             }
             return Json(new { success = false });
         }
+
 
         #region -Index-
         public async Task<IActionResult> Index(
@@ -2883,7 +2886,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas)
         {
             Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
             Familiaresforaneos familiaresForaneos = new Familiaresforaneos();
@@ -2918,6 +2921,7 @@ namespace scorpioweb.Controllers
                 persona.UbicacionExpediente = normaliza(persona.UbicacionExpediente);
                 if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
+                persona.MotivoCandado = normaliza(persona.MotivoCandado);
                 #region -ConsumoSustancias-
                 //Sustancias editadas
                 if (arraySustanciasEditadas != null)

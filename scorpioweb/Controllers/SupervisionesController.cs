@@ -2192,8 +2192,7 @@ namespace scorpioweb.Controllers
                     }
                 }
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
-
-                //return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+                
             }
             return View(bitacora);
         }
