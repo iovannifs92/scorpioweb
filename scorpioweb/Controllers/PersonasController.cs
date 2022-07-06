@@ -213,12 +213,10 @@ namespace scorpioweb.Controllers
             int cut = (int)(0.8*personasCount);
             var cosine = new Cosine(2);
             string[] CURP = new string[personasCount];
-            Debug.WriteLine("start");
             for (int i = 0; i < personasCount; i++)
             {
                 CURP[i] = curp(listaPersonas[i].paterno, listaPersonas[i].materno, listaPersonas[i].fnacimiento, listaPersonas[i].genero, listaPersonas[i].lnestado, listaPersonas[i].nombre);
             }
-            Debug.WriteLine("curps calculadas");
             int falsosNegativos = 0;
             int falsosPositivos = 0;
             int falsosPositivosTotal = 0;
