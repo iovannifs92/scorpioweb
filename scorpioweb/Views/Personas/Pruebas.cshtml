@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Pruebas";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnContarFalsos').on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/contarFalsos",
+                traditional: true
+            });
+        });
+    });
+</script>
+
+<h2>Pruebas</h2>
+
+<button type="button" class="btn btn-danger" id="btnContarFalsos" name="btnContarFalsos">
+    Contar falsos
+</button>
