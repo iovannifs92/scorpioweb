@@ -227,10 +227,6 @@ namespace scorpioweb.Controllers
 
             var tupleWithMaxItem1 = list.OrderBy(x => x.Item1).First();
 
-
-
-
-
             if (simi == true)
             {
                 double i = tupleWithMaxItem1.Item3 * 100;
