@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -208,11 +209,12 @@ namespace scorpioweb.Controllers
                                id = p.IdPersona
                            };
             var listaPersonas = personas.ToList();
-            int cut = (int)(0.8*personas.Count());
+            var personasCount = personas.Count();
+            int cut = (int)(0.8*personasCount);
             var cosine = new Cosine(2);
-            string[] CURP = new string[personas.Count()];
+            string[] CURP = new string[personasCount];
             Debug.WriteLine("start");
-            for (int i = 0; i < personas.Count(); i++)
+            for (int i = 0; i < personasCount; i++)
             {
                 CURP[i] = curp(listaPersonas[i].paterno, listaPersonas[i].materno, listaPersonas[i].fnacimiento, listaPersonas[i].genero, listaPersonas[i].lnestado, listaPersonas[i].nombre);
             }
@@ -220,7 +222,7 @@ namespace scorpioweb.Controllers
             int falsosNegativos = 0;
             int falsosPositivos = 0;
             int falsosPositivosTotal = 0;
-            for (int i = cut; i < personas.Count(); i++)
+            for (int i = cut; i < personasCount; i++)
             {
                 string nombreCompleto = listaPersonas[i].nomcom;
                 double mx = 0;
@@ -325,9 +327,9 @@ namespace scorpioweb.Controllers
             return curp.ToString();
         }
 
-        bool simi = false;
-        public JsonResult similitudNombre(string nombre, string paterno, string materno)
+        public JsonResult testSimilitud(string nombre, string paterno, string materno)
         {
+            bool simi = false;
             var nombreCompleto = normaliza(paterno) + " " + normaliza(materno) + " " + normaliza(nombre);
 
             var query = from p in _context.Persona
@@ -341,6 +343,11 @@ namespace scorpioweb.Controllers
             string nomCom = "";
             var cosine = new Cosine(2);
             double r = 0;
+            var list = new List<Tuple<string, int, double>>();
+
+            List<string> listaNombre = new List<string>();
+
+
             foreach (var q in query)
             {
                 r = cosine.Similarity(q.nomcom, nombreCompleto);
@@ -348,16 +355,18 @@ namespace scorpioweb.Controllers
                 {
                     nomCom = q.nomcom;
                     idpersona = q.id;
+                    list.Add(new Tuple<string, int, double>(nomCom, idpersona, r));
                     simi = true;
-                    break;
                 }
             }
 
+            var tupleWithMaxItem1 = list.OrderBy(x => x.Item3).Last();
+
             if (simi == true)
             {
-                double i = r * 100;
+                double i = tupleWithMaxItem1.Item3 * 100;
                 int porcentaje = (int)Math.Floor(i);
-                string id = idpersona.ToString();
+                string id = tupleWithMaxItem1.Item2.ToString();
                 return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
             }
             return Json(new { success = false });
@@ -3019,7 +3028,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas)
         {
             Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
             Familiaresforaneos familiaresForaneos = new Familiaresforaneos();
@@ -3054,6 +3063,7 @@ namespace scorpioweb.Controllers
                 persona.UbicacionExpediente = normaliza(persona.UbicacionExpediente);
                 if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
+                persona.MotivoCandado = normaliza(persona.MotivoCandado);
                 #region -ConsumoSustancias-
                 //Sustancias editadas
                 if (arraySustanciasEditadas != null)

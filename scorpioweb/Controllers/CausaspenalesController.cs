@@ -518,7 +518,7 @@ namespace scorpioweb.Controllers
                 _context.Add(cambiodeobligaciones);
                 _context.Add(revocacion);
                 await _context.SaveChangesAsync(null, 1);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Supervision", "Supervisiones", new { @id = idSupervision});
             }
             return View(personacausapenal);
         }

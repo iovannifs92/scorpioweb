@@ -286,7 +286,7 @@
 
                     addActive(x);
                 } else if (e.keyCode == 38) { //up
-
+                    alert(9)
                     currentFocus--;
 
                     addActive(x);
@@ -306,7 +306,6 @@
                 removeActive(x);
                 if (currentFocus >= x.length) currentFocus = 0;
                 if (currentFocus < 0) currentFocus = (x.length - 1);
-
                 x[currentFocus].classList.add("autocomplete-active");
             }
             function removeActive(x) {
