@@ -1638,13 +1638,42 @@ namespace scorpioweb.Controllers
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = cp;
-                domicilio.Zona = normaliza(zona);
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
                 domicilio.Observaciones = normaliza(observaciones);
                 domicilio.Lat = lat;
                 domicilio.Lng = lng;
+
+                int index = domicilio.NombreCf.IndexOf(@",");
+                string colonia;
+                if (index == -1)
+                {
+                    colonia = domicilio.NombreCf;
+                }
+                else
+                {
+                    colonia = domicilio.NombreCf.Substring(0, index);
+                }
+                domicilio.Zona = "SIN ZONA ASIGNADA";
+                List<Zonas> zonasList = new List<Zonas>();
+                zonasList = (from Zonas in _context.Zonas
+                             select Zonas).ToList();
+                int matches = 0;
+                for (int i = 0; i < zonasList.Count; i++)
+                {
+                    if (zonasList[i].Colonia.ToUpper() == colonia)
+                    {
+                        matches++;
+                    }
+                }
+                for (int i = 0; i < zonasList.Count; i++)
+                {
+                    if (zonasList[i].Colonia.ToUpper() == colonia && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
+                    {
+                        domicilio.Zona = zonasList[i].Zona.ToUpper();
+                    }
+                }
                 #endregion
 
                 #region -Domicilio Secundario-   
@@ -3327,7 +3356,14 @@ namespace scorpioweb.Controllers
 
             ViewBag.domi = domicilio.DomcilioSecundario;
 
-            ViewBag.colonias = _context.Zonas.Select(Zonas => Zonas.Colonia).ToList();
+            var colonias = from p in _context.Zonas
+                           orderby p.Colonia
+                           select p;
+            ViewBag.colonias = colonias.ToList();
+
+            ViewBag.colonia = domicilio.NombreCf;
+
+            ViewBag.coloniaCP = (domicilio.NombreCf + ", " + domicilio.Cp).ToUpper();
 
             if (domicilio == null)
             {
@@ -3338,7 +3374,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio)
+        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio, string combobox)
         {
             if (id != domicilio.PersonaIdPersona)
             {
@@ -3347,13 +3383,25 @@ namespace scorpioweb.Controllers
 
             domicilio.Calle = normaliza(domicilio.Calle);
             domicilio.No = String.IsNullOrEmpty(domicilio.No) ? domicilio.No : domicilio.No.ToUpper();
-            domicilio.NombreCf = normaliza(domicilio.NombreCf);
             //domicilio.Cp = domicilio.Cp;
             domicilio.Referencias = normaliza(domicilio.Referencias);
             domicilio.Horario = normaliza(domicilio.Horario);
             domicilio.Observaciones = normaliza(domicilio.Observaciones);
             //domicilio.Lat = domicilio.Lat;
             //domicilio.Lng = domicilio.Lng;
+
+            List<Zonas> zonasList = new List<Zonas>();
+            zonasList = (from Zonas in _context.Zonas
+                         select Zonas).ToList();
+
+            domicilio.NombreCf = "NA";
+            for (int i = 0; i < zonasList.Count; i++)
+            {
+                if (zonasList[i].Idzonas.ToString() == combobox)
+                {
+                    domicilio.NombreCf = zonasList[i].Colonia.ToUpper();
+                }
+            }
 
             int index = domicilio.NombreCf.IndexOf(@",");
             string colonia;
@@ -3366,9 +3414,6 @@ namespace scorpioweb.Controllers
                 colonia = domicilio.NombreCf.Substring(0, index);
             }
             domicilio.Zona = "SIN ZONA ASIGNADA";
-            List<Zonas> zonasList = new List<Zonas>();
-            zonasList = (from Zonas in _context.Zonas
-                         select Zonas).ToList();
             int matches = 0;
             for (int i = 0; i < zonasList.Count; i++)
             {
