@@ -6,31 +6,7 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="/resources/demos/style.css">
 <link rel="stylesheet" type="text/css" href="~/css/style.css">
-<script src="~/js/jquery-1.12.4.js"></script>
 <script src="~/js/jquery-ui.js"></script>
-<style>
-    .custom-combobox {
-        position: relative;
-        display: inline-block;
-    }
-
-    .custom-combobox-toggle {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        margin-left: -1px;
-        padding: 0;
-    }
-
-    .custom-combobox-input {
-        margin: 0;
-        padding: 5px 10px;
-    }
-
-    .entrada {
-        width: 300px;
-    }
-</style>
 <script type='text/javascript' src='~/js/apikey.js'></script>
 <script type="text/javascript">
     var tipo = 0;
@@ -199,6 +175,7 @@
                 }
             });
         });
+        //#endregion
 
         $('#btnGeocoding').on("click", function (e) {
             e.preventDefault();
@@ -212,7 +189,6 @@
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
-        //#endregion
 
         $('#combobox').change(function () {
             document.getElementById("inputAutocomplete").value = localStorage.getItem('colonia');
@@ -227,13 +203,6 @@
                 e.preventDefault();
             }
         });
-
-        var cb = document.getElementById("combobox");
-        for (var i = 0; i < cb.options.length;i++) {
-            if(cb.options[i].text.toUpperCase() == "@ViewBag.coloniaCP") {
-                cb.selectedIndex = i;
-            }
-        }
     });
     $(function () {
         $.widget("custom.combobox", {

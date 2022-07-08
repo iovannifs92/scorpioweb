@@ -1682,7 +1682,13 @@ namespace scorpioweb.Controllers
             listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
             ViewBag.ListaMunicipios = listaMunicipiosD;
 
-            ViewBag.colonias = _context.Zonas.Select(Zonas => Zonas.Colonia).ToList();
+            var colonias = from p in _context.Zonas
+                           orderby p.Colonia
+                           select p;
+            ViewBag.colonias = colonias.ToList();
+
+            ViewBag.colonia = "Zona Centro";
+
             return View();
         }
 
@@ -1705,7 +1711,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero)
+            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string combobox)
         {
 
             string currentUser = User.Identity.Name;
@@ -1774,7 +1780,6 @@ namespace scorpioweb.Controllers
                 domicilio.TipoDomicilio = tipoDomicilio;
                 domicilio.Calle = normaliza(calle);
                 domicilio.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
-                domicilio.NombreCf = normaliza(nombreCF);
                 domicilio.Pais = paisD;
                 domicilio.Estado = estadoD;
                 domicilio.Municipio = municipioD;
@@ -1788,6 +1793,19 @@ namespace scorpioweb.Controllers
                 domicilio.Lat = lat;
                 domicilio.Lng = lng;
 
+                List<Zonas> zonasList = new List<Zonas>();
+                zonasList = (from Zonas in _context.Zonas
+                             select Zonas).ToList();
+
+                domicilio.NombreCf = "NA";
+                for (int i = 0; i < zonasList.Count; i++)
+                {
+                    if (zonasList[i].Idzonas.ToString() == combobox)
+                    {
+                        domicilio.NombreCf = zonasList[i].Colonia.ToUpper();
+                    }
+                }
+
                 int index = domicilio.NombreCf.IndexOf(@",");
                 string colonia;
                 if (index == -1)
@@ -1799,9 +1817,6 @@ namespace scorpioweb.Controllers
                     colonia = domicilio.NombreCf.Substring(0, index);
                 }
                 domicilio.Zona = "SIN ZONA ASIGNADA";
-                List<Zonas> zonasList = new List<Zonas>();
-                zonasList = (from Zonas in _context.Zonas
-                             select Zonas).ToList();
                 int matches = 0;
                 for (int i = 0; i < zonasList.Count; i++)
                 {
@@ -3506,8 +3521,6 @@ namespace scorpioweb.Controllers
             ViewBag.colonias = colonias.ToList();
 
             ViewBag.colonia = domicilio.NombreCf;
-
-            ViewBag.coloniaCP = (domicilio.NombreCf + ", " + domicilio.Cp).ToUpper();
 
             if (domicilio == null)
             {
