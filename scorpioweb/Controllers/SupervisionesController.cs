@@ -275,7 +275,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Edit-
-        public async Task<IActionResult> Edit(int? id, string nombre, string cp)
+        public async Task<IActionResult> Edit(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -284,6 +284,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
 
@@ -397,7 +398,7 @@ namespace scorpioweb.Controllers
 
         #region -Editar y borrar fracciones-        
 
-        public async Task<IActionResult> AddOrEdit(string nombre, string cp, int id)
+        public async Task<IActionResult> AddOrEdit(string nombre, string cp, int id, string idpersona)
         {
 
             int index = cp.IndexOf("?");
@@ -412,6 +413,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.cp = cp;
             ViewBag.nombre = nombre;
+            ViewBag.idpersona = idpersona;
 
 
             var fraccionesimpuestas = await _context.Fraccionesimpuestas.SingleOrDefaultAsync(m => m.IdFracciones == id);
@@ -434,7 +436,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddOrEdit([Bind("IdFracciones,Tipo,Autoridad,FechaInicio,FechaTermino,Estado,Evidencia,FiguraJudicial,SupervisionIdSupervision")] Fraccionesimpuestas fraccionesimpuestas, string nombre, string cp)
+        public async Task<IActionResult> AddOrEdit([Bind("IdFracciones,Tipo,Autoridad,FechaInicio,FechaTermino,Estado,Evidencia,FiguraJudicial,SupervisionIdSupervision")] Fraccionesimpuestas fraccionesimpuestas, string nombre, string cp, string idpersona)
         {
             if (ModelState.IsValid)
             {
@@ -457,13 +459,13 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp });
+                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona=idpersona });
             }
             return View(fraccionesimpuestas);
         }
 
 
-        public async Task<IActionResult> DeleteFraccion(int? id, string nombre, string cp)
+        public async Task<IActionResult> DeleteFraccion(int? id, string nombre, string cp, string idpersona)
         {
             var fraccionesimpuestas = await _context.Fraccionesimpuestas.SingleOrDefaultAsync(m => m.IdFracciones == id);
             var oldfraccionesimpuestas = await _context.Fraccionesimpuestas.FindAsync(fraccionesimpuestas.IdFracciones, fraccionesimpuestas.SupervisionIdSupervision);
@@ -472,12 +474,12 @@ namespace scorpioweb.Controllers
             _context.Fraccionesimpuestas.Remove(fraccionesimpuestas);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp });
+            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona= idpersona });
         }
 
 
         #region -Acciones de supervision-
-        public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int id, string[] datosBitacora)
+        public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int id, string idpersona, string[] datosBitacora)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
@@ -486,6 +488,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.cp = cp;
             ViewBag.nombre = nombre;
+            ViewBag.idpersona = idpersona;
 
             if (id == null)
             {
@@ -505,7 +508,7 @@ namespace scorpioweb.Controllers
             var snbitacora = await _context.Bitacora.Where(m => m.FracionesImpuestasIdFracionesImpuestas == id).ToListAsync();
             if (snbitacora.Count == 0)
             {
-                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, nombre = nombre, @cp = cp });
+                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, nombre = nombre, @cp = cp, @idpersona=idpersona });
             }
 
             ViewData["tablaBiatacora"] = from Bitacora in bitacora
@@ -560,7 +563,7 @@ namespace scorpioweb.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAddAccionSupervision([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision,FracionesImpuestasIdFracionesImpuestas ")] Bitacora bitacora, IFormFile evidencia ,string nombre, string cp)
+        public async Task<IActionResult> EditAddAccionSupervision([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision,FracionesImpuestasIdFracionesImpuestas ")] Bitacora bitacora, IFormFile evidencia ,string nombre, string cp, string idpersona)
         {
             bitacora.Texto = normaliza(bitacora.Texto);
 
@@ -614,7 +617,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp });
+                return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp,@idpersona=idpersona });
             }
             return View();
         }
@@ -638,7 +641,7 @@ namespace scorpioweb.Controllers
 
             return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones");
         }
-        public async Task<IActionResult> DeleteRegistro2(int? id, string nombre, string cp)
+        public async Task<IActionResult> DeleteRegistro2(int? id, string nombre, string cp, string idpersona)
         {
             var Bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
             var oldBitacora = await _context.Bitacora.FindAsync(Bitacora.IdBitacora, Bitacora.SupervisionIdSupervision);
@@ -648,7 +651,7 @@ namespace scorpioweb.Controllers
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("EditFraccionesimpuestas/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp });
+            return RedirectToAction("EditFraccionesimpuestas/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona = idpersona });
 
         }
 
@@ -1077,7 +1080,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Aer-
-        public async Task<IActionResult> EditAer(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditAer(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -1086,6 +1089,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
 
@@ -1167,7 +1171,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCambiodeobligaciones-
-        public async Task<IActionResult> EditCambiodeobligaciones(int? id, string nombre, string cp, string cambio)
+        public async Task<IActionResult> EditCambiodeobligaciones(int? id, string nombre, string cp, string idpersona, string cambio)
         {
             if (id == null)
             {
@@ -1176,6 +1180,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
 
@@ -1230,8 +1235,12 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditCierredecaso-
-        public async Task<IActionResult> EditCierredecaso(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditCierredecaso(int? id, string nombre, string cp, string idpersona)
         {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
             if (id == null)
             {
                 return NotFound();
@@ -1335,7 +1344,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Fraccionesimpuestas-
-        public async Task<IActionResult> EditFraccionesimpuestas(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditFraccionesimpuestas(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -1344,6 +1353,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
             var snbitacora = await _context.Bitacora.Where(m => m.SupervisionIdSupervision == id).ToListAsync();
@@ -1494,7 +1504,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditPlaneacionestrategica-
-        public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditPlaneacionestrategica(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -1503,6 +1513,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
 
@@ -1583,7 +1594,7 @@ namespace scorpioweb.Controllers
         #region -Revocacion-
 
 
-        public async Task<IActionResult> EditRevocacion(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditRevocacion(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -1592,6 +1603,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
 
@@ -1649,7 +1661,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EditSuspensionseguimiento-
-        public async Task<IActionResult> EditSuspensionseguimiento(int? id, string nombre, string cp)
+        public async Task<IActionResult> EditSuspensionseguimiento(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -1658,6 +1670,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             await PermisosEdicion(id);
 
@@ -1714,18 +1727,23 @@ namespace scorpioweb.Controllers
         #region -EditVictima-
 
         #region -Lista Victima-
-        public async Task<IActionResult> ListaVictima(int? id)
+        public async Task<IActionResult> ListaVictima(int? id, string cp, string nombre, string idpersona )
         {
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+
             var supervision = _context.Supervision
             .SingleOrDefault(m => m.IdSupervision == id);
 
             var persona = _context.Persona
            .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
-            var cp = _context.Causapenal
+            var cpp = _context.Causapenal
            .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
 
-            ViewBag.nombre = persona.NombreCompleto;
-            ViewBag.cp = cp.CausaPenal;
+      
 
             await PermisosEdicion(id);
 
@@ -1746,10 +1764,18 @@ namespace scorpioweb.Controllers
 
 
         #region -Create Victima-
-        public IActionResult CreateVictima(int? id, string nombre, string cp)
+        public IActionResult CreateVictima(int? id, string nombre, string cp, string idpersona)
         {
+
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+        
             ViewBag.IdSupervisionGuardar = id;
             return View();
         }
@@ -1757,8 +1783,18 @@ namespace scorpioweb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVictima(Victima victima, string IdVictima, string NombreV, string Edad, string Telefono, string ConoceDetenido, string TipoRelacion,
-            string TiempoConocerlo, string ViveSupervisado, string Direccion, string Victimacol, string Observaciones, string SupervisionIdSupervision)
+            string TiempoConocerlo, string ViveSupervisado, string Direccion, string Victimacol, string Observaciones, string SupervisionIdSupervision, string nombre, string cp, string idpersona)
         {
+
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
             string currentUser = User.Identity.Name;
             if (ModelState.ErrorCount <= 1)
             {
@@ -1780,11 +1816,11 @@ namespace scorpioweb.Controllers
 
                 var persona = _context.Persona
                .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
-                var cp = _context.Causapenal
+                var cpp = _context.Causapenal
                .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
 
-                ViewBag.Npersona = persona.NombreCompleto;
-                ViewBag.cp = cp.CausaPenal;
+                //ViewBag.Npersona = persona.NombreCompleto;
+                //ViewBag.cp = cpp.CausaPenal;
 
                 int idVictima = ((from table in _context.Victima
                                   select table.IdVictima).Max()) + 1;
@@ -1792,13 +1828,23 @@ namespace scorpioweb.Controllers
                 victima.IdVictima = idVictima;
                 _context.Add(victima);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
+                //return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones");
             }
             return View(victima);
         }
 
-        public async Task<IActionResult> Editvictima(int? id)
+        public async Task<IActionResult> Editvictima(int? id, string nombre, string cp, string idpersona)
         {
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
             if (id == null)
             {
                 return NotFound();
@@ -1860,7 +1906,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Editvictima(int id, [Bind("IdVictima,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,SupervisionIdSupervision, Observaciones")] Victima victima)
+        public async Task<IActionResult> Editvictima(int id, [Bind("IdVictima,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,SupervisionIdSupervision, Observaciones")] Victima victima, string nombre, string cp, string idpersona)
         {
             if (ModelState.IsValid)
             {
@@ -1881,19 +1927,19 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/" + victima.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
             }
             return View();
         }
-        public async Task<IActionResult> DeleteVictima(int? id)
+        public async Task<IActionResult> DeleteVictima(int? id, string nombre, string cp, string idpersona)
         {
             var Victima = await _context.Victima.SingleOrDefaultAsync(m => m.IdVictima == id);
             _context.Victima.Remove(Victima);
             await _context.SaveChangesAsync();
+            return RedirectToAction("ListaVictima/" + Victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
 
-            return RedirectToAction("Supervision/" + Victima.SupervisionIdSupervision, "Supervisiones");
         }
-        public async Task<IActionResult> VerVictima(int? id)
+        public async Task<IActionResult> VerVictima(int? id, string nombre, string cp, string idpersona)
         {
             if (id == null)
             {
@@ -1910,17 +1956,21 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Bitacora-
-        public async Task<IActionResult> ListaBitacora(int? id)
+        public async Task<IActionResult> ListaBitacora(int? id, string nombre, string cp, string idpersona)
         {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
             var supervision = _context.Supervision
             .SingleOrDefault(m => m.IdSupervision == id);
 
             var persona = _context.Persona
            .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
-            var cp = _context.Causapenal
+            var cpp = _context.Causapenal
            .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
-            ViewBag.nombre = persona.NombreCompleto;
-            ViewBag.cp = cp.CausaPenal;
+            //ViewBag.nombre = persona.NombreCompleto;
+            //ViewBag.cp = cp.CausaPenal;
 
             await PermisosEdicion(id);
 
@@ -1938,7 +1988,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #region -Create Bitacora-
-        public IActionResult CreateBitacora(string nombre, string cp, int id,  string[] datosBitacora)
+        public IActionResult CreateBitacora(string nombre, string cp, int id,int idpersona,  string[] datosBitacora)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
@@ -1947,6 +1997,9 @@ namespace scorpioweb.Controllers
 
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+
 
             ViewBag.IdSupervisionGuardar = id;
             var idfraciones = datosBitacora[0];
@@ -1958,13 +2011,14 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-        public IActionResult CreateBitacora2(string nombre, string cp, int id, int SupervisionIdSupervision)
+        public IActionResult CreateBitacora2(string nombre, string cp, int id, int SupervisionIdSupervision, string idpersona)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
                 cp = cp.Substring(0, index);
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
 
             ViewBag.FracionesImpuestasIdFracionesImpuestas = id;
             ViewBag.SupervisionIdSupervision = SupervisionIdSupervision;
@@ -1975,7 +2029,7 @@ namespace scorpioweb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
-            string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IFormFile evidencia, string nombre, string cp)
+            string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IFormFile evidencia, string nombre, string cp, string idpersona)
         {
 
             string currentUser = User.Identity.Name;
@@ -2021,18 +2075,26 @@ namespace scorpioweb.Controllers
                 {
                     _context.Add(bitacora);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp });
+                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
                 }
 
                 _context.Add(bitacora);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cpp });
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
             }
             return View(bitacora);
         }
         #endregion
-        public async Task<IActionResult> EditBitacora(int id)
+        public async Task<IActionResult> EditBitacora(int id, string nombre, string cp, int idpersona )
         {
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
             if (id == null)
             {
                 return NotFound();
@@ -2078,7 +2140,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision")] Bitacora bitacora, IFormFile evidencia)
+        public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision")] Bitacora bitacora, IFormFile evidencia, string nombre, string cp, string idpersona)
         {
             bitacora.Texto = normaliza(bitacora.Texto);
 
@@ -2129,11 +2191,12 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
+                
             }
             return View(bitacora);
         }
-        public async Task<IActionResult> DeleteRegistro(int? id, string nombre, string cp)
+        public async Task<IActionResult> DeleteRegistro(int? id, string nombre, string cp, string idpersona)
         {
             var Bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
             var oldBitacora = await _context.Bitacora.FindAsync(Bitacora.IdBitacora, Bitacora.SupervisionIdSupervision);
@@ -2142,7 +2205,7 @@ namespace scorpioweb.Controllers
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp });
+            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona= idpersona });
         } 
         private bool BitacoraExists(int id)
         {

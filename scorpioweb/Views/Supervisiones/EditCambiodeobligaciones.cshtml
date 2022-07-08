@@ -23,9 +23,21 @@
 }
 
 <h2>Cambio de obligaciónes</h2>
-<h4>Nombre: @ViewBag.nombre</h4>
-<h4>CP: @ViewBag.cp</h4>
-<h4></h4>
+<div class="col-md-12">
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.idpersona</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Nombre:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.nombre</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">
+            Causa Penal
+            <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
+    </div>
+</div>
 <hr />
 <div class="row">
     <div class="col-md-4">
