@@ -31,7 +31,7 @@ $("#confirmDialog").dialog({
     },
 });
 
-var marker = null;//si local, sale primero la infowindow vacia
+var marker = null;//si es variable local, sale primero la infowindow vacia
 var result;
 var map;
 var infowindow;
@@ -164,7 +164,7 @@ function fillInAddress(place) {
         }
     }
     var colonia = getColonia(place);
-    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("combobox").value == "") {
+    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("inputAutocomplete").value == "") {
         document.getElementById("no").value = "";
         document.getElementById("calle").value = "";
         document.getElementById("cp").value = "";
