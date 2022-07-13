@@ -6,72 +6,10 @@
     ViewBag.Title = "Crear Entrevista";
 }
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
 <link rel="stylesheet" type="text/css" href="~/css/style.css">
-
-@*para que el autocomplete no desplaze*@
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    /*body {
-        font: 16px Arial;
-    }*/
-
-    /*the container must be positioned relative:*/
-    .autocomplete {
-        position: relative;
-        display: inline-block;
-    }
-
-    input {
-        border: 2px solid #f2f2f2;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 16px;
-    }
-
-        input[type=text] {
-            width: 100%;
-        }
-
-        input[type=submit] {
-            background-color: DodgerBlue;
-            color: #f2f2f2;
-            cursor: pointer;
-        }
-
-    .autocomplete-items {
-        position: absolute;
-        border: 1px solid #d4d4d4;
-        border-bottom: none;
-        border-top: none;
-        z-index: 99;
-        /*position the autocomplete items to be the same width as the container:*/
-        top: 100%;
-        left: 0;
-        right: 0;
-    }
-
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff;
-            border-bottom: 1px solid #d4d4d4;
-        }
-
-            /*when hovering an item:*/
-            .autocomplete-items div:hover {
-                background-color: #e9e9e9;
-            }
-
-    /*when navigating through the items using the arrow keys:*/
-    .autocomplete-active {
-        background-color: DodgerBlue !important;
-        color: #f2f2f2;
-    }
-</style>
-
+<script src="~/js/jquery-ui.js"></script>
 <script type='text/javascript' src='~/js/apikey.js'></script>
 <script type="text/javascript">
     var tipo = 0;
@@ -731,6 +669,7 @@
             }
         });
         //#endregion
+
         $.validator.setDefaults({
             ignore: "collapse1"
         });
@@ -768,95 +707,18 @@
             e.preventDefault();
             var calle = document.getElementById("calle").value;
             var no = document.getElementById("no").value;
-            var nombre = document.getElementById("nombreCF").value;
+            var nombre = document.getElementById("combobox").value;
             var cp = document.getElementById("cp").value;
             var e = document.getElementById("estadoD");
             var estado = e.options[e.selectedIndex].text;
             var m = document.getElementById("municipioD");
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
-      });
-    });
+        });
 
-    $(document).ready(function () {
-        function autocomplete(inp, arr) {
-            var currentFocus;
-            inp.addEventListener("input", function (e) {
-                var a, b, i, val = this.value;
-                closeAllLists();
-                if (!val) { return false; }
-                currentFocus = -1;
-                a = document.createElement("DIV");
-                a.setAttribute("id", this.id + "autocomplete-list");
-                a.setAttribute("class", "autocomplete-items");
-                this.parentNode.appendChild(a);
-                for (i = 0; i < arr.length; i++) {
-                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
-                        b = document.createElement("DIV");
-                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                        b.innerHTML += arr[i].substr(val.length);
-                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
-                            inp.value = this.getElementsByTagName("input")[0].value;
-
-                            closeAllLists();
-                        });
-                        a.appendChild(b);
-                    }
-                }
-            });
-
-            inp.addEventListener("keydown", function (e) {
-                var x = document.getElementById(this.id + "autocomplete-list");
-                if (x) x = x.getElementsByTagName("div");
-                if (e.keyCode == 40) {
-
-                    currentFocus++;
-
-                    addActive(x);
-                } else if (e.keyCode == 38) { //up
-
-                    currentFocus--;
-
-                    addActive(x);
-                } else if (e.keyCode == 13) {
-
-                    e.preventDefault();
-                    if (currentFocus > -1) {
-
-                        if (x) x[currentFocus].click();
-                    }
-                }
-            });
-            function addActive(x) {
-
-                if (!x) return false;
-
-                removeActive(x);
-                if (currentFocus >= x.length) currentFocus = 0;
-                if (currentFocus < 0) currentFocus = (x.length - 1);
-
-                x[currentFocus].classList.add("autocomplete-active");
-            }
-            function removeActive(x) {
-
-                for (var i = 0; i < x.length; i++) {
-                    x[i].classList.remove("autocomplete-active");
-                }
-            }
-            function closeAllLists(elmnt) {
-                var x = document.getElementsByClassName("autocomplete-items");
-                for (var i = 0; i < x.length; i++) {
-                    if (elmnt != x[i] && elmnt != inp) {
-                        x[i].parentNode.removeChild(x[i]);
-                    }
-                }
-            }
-            document.addEventListener("click", function (e) {
-                closeAllLists(e.target);
-            });
-        }
-        var colonias = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.colonias))');
-        autocomplete(document.getElementById("nombreCF"), colonias);
+        $('#combobox').change(function () {
+            document.getElementById("inputAutocomplete").value = localStorage.getItem('colonia');
+        });
 
         var form = document.getElementById("forma");
         r = document.getElementById("municipioD");
@@ -866,6 +728,164 @@
                 alert("Seleccione el municipio donde vive");
                 e.preventDefault();
             }
+        });
+    });
+
+    $(function () {
+        $.widget("custom.combobox", {
+            _create: function () {
+                this.wrapper = $("<span>")
+                    .insertAfter(this.element);
+                this.element.hide();
+                this._createAutocomplete();
+                this._createShowAllButton();
+            },
+            _createAutocomplete: function () {
+                var selected = this.element.children(":selected"),
+                    value = "@ViewBag.colonia";
+                this.input = $("<input id=inputAutocomplete>")
+                    .appendTo(this.wrapper)
+                    .val(value)
+                    .attr("title", "")
+                    .addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left form-control entrada")
+                    .autocomplete({
+                        delay: 0,
+                        minLength: 0,
+                        source: $.proxy(this, "_source")
+                    })
+                    .tooltip({
+                        classes: {
+                            "ui-tooltip": "ui-state-highlight"
+                        }
+                    });
+                this._on(this.input, {
+                    click: function (event, ui) {
+                        //$("input").focus();
+                        var e = jQuery.Event("keydown");
+                        e.which = 13; // ascii carriage return code
+                        $("input").trigger(e);
+                    },
+                    autocompleteselect: function (event, ui) {
+                        ui.item.option.selected = true;
+                        this._trigger("select", event, {
+                            item: ui.item.option
+                        });
+
+                        var colonia = ui.item.option.text;
+                        var index = colonia.lastIndexOf(",");
+                        document.getElementById("cp").value = colonia.substr(index + 2);
+                    },
+                    autocompleteclose: function (event, ui) {
+                        var autocomplete = document.getElementById("inputAutocomplete");
+                        var cb = document.getElementById("combobox");
+                        var colonia = cb.options[cb.selectedIndex].text;
+                        if (autocomplete.value == colonia) {
+                            var index = colonia.lastIndexOf(",");
+                            autocomplete.value = colonia.substr(0, index);
+                        }
+                    },
+                    autocompletechange: "_removeIfInvalid"
+                });
+            },
+            _createShowAllButton: function () {
+                var input = this.input,
+                    wasOpen = false;
+                $("<a>")
+                    .attr("tabIndex", -1)
+                    .attr("title", "Show All Items")
+                    .tooltip()
+                    .appendTo(this.wrapper)
+                    .button({
+                        icons: {
+                            primary: "ui-icon-triangle-1-s"
+                        },
+                        text: false
+                    })
+                    .removeClass("ui-corner-all")
+                    .addClass("custom-combobox-toggle ui-corner-right")
+                    .on("mousedown", function () {
+                        wasOpen = input.autocomplete("widget").is(":visible");
+                    })
+                    .on("click", function () {
+                        input.trigger("focus");
+                        // Close if already visible
+                        if (wasOpen) {
+                            return;
+                        }
+                        // Pass empty string as value to search for, displaying all results
+                        input.autocomplete("search", "");
+                    });
+            },
+            _source: function (request, response) {
+                var res = request.term.split(" ");
+
+                var matcher = [];
+                for (i = 0; i < res.length; i++) {
+                    matcher[i] = new RegExp($.ui.autocomplete.escapeRegex(res[i]), "i");
+                }
+
+                var resultset = [];
+                response(this.element.children("option").map(function () {
+                    var text = $(this).text();
+
+                    for (i = 0; i < res.length; i++) {
+                        if (!this.value || (request.term && !matcher[i].test(text)))
+                        return;
+                    }
+                    resultset.push({
+                        label: text,
+                        value: text,
+                        option: this
+                    });
+                }));
+                response(resultset);
+                    
+                $("#btnCausaPenal").css("display", "block");
+            },
+            _removeIfInvalid: function (event, ui) {
+                // Selected an item, nothing to do
+                if (ui.item) {
+                    return;
+                }
+                // Search for a match (case-insensitive)
+                var value = this.input.val(),
+                    valueLowerCase = value.toLowerCase(),
+                    valid = false;
+                this.element.children("option").each(function () {
+                    if ($(this).text().toLowerCase() === valueLowerCase) {
+                        this.selected = valid = true;
+                        return false;
+                    }
+                });
+
+                // Found a match, nothing to do
+                if (valid) {
+                    return;
+                }
+                // Remove invalid value
+                this.input
+                    //leave value
+                    //.val("")
+                    .attr("title", value + " didn't match any item")
+                    .tooltip("open");
+                this.element.val("");
+                this._delay(function () {
+                    this.input.tooltip("close").attr("title", "");
+                }, 2500);
+                this.input.autocomplete("instance").term = "";
+            },
+            _destroy: function () {
+                this.wrapper.remove();
+                this.element.show();
+            }
+        });
+        $("#combobox").combobox({
+            create: function () {
+                $("input").focus();
+            }
+        });
+        $("#toggle").on("click", function () {
+            $("#combobox").toggle();
         });
     });
 
@@ -1208,9 +1228,11 @@
                                     <label class="control-label">Número</label>
                                     <input id="no" name="no" type="text" value="308-A" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-5 autocomplete">
+                                <div class="form-group col-md-5">
                                     <label class="control-label">Colonia/Fraccionamiento/Localidad</label>
-                                    <input required id="nombreCF" name="nombreCF" type="text" value="Zona Centro" class="form-control" maxlength="45" />
+                                    <select class="form-control" id="combobox" name="combobox" style="display:none;"
+                                            asp-items="@(new SelectList(ViewBag.colonias, "Idzonas", "ColoniaCP"))">
+                                    </select>
                                 </div>
                                 <div class="form-group col-md-4" id="PaisD">
                                     <label class="control-label">País</label>

@@ -26,10 +26,11 @@ using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
 using F23.StringSimilarity;
 using MySql.Data.MySqlClient;
-
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
+using System.Text;
+using System.Diagnostics;
 
 namespace scorpioweb.Controllers
 {
@@ -194,6 +195,137 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        public void contarFalsos()
+        {
+            var personas = from p in _context.Persona
+                           select new
+                           {
+                               paterno = p.Paterno,
+                               materno = p.Materno,
+                               fnacimiento = p.Fnacimiento,
+                               genero = p.Genero,
+                               lnestado = p.Lnestado,
+                               nombre = p.Nombre,
+                               nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                               id = p.IdPersona
+                           };
+            var listaPersonas = personas.ToList();
+            var personasCount = personas.Count();
+            int cut = (int)(0.8*personasCount);
+            var cosine = new Cosine(2);
+            string[] CURP = new string[personasCount];
+            for (int i = 0; i < personasCount; i++)
+            {
+                CURP[i] = curp(listaPersonas[i].paterno, listaPersonas[i].materno, listaPersonas[i].fnacimiento, listaPersonas[i].genero, listaPersonas[i].lnestado, listaPersonas[i].nombre);
+            }
+            int falsosNegativos = 0;
+            int falsosPositivos = 0;
+            int falsosPositivosTotal = 0;
+            for (int i = cut; i < personasCount; i++)
+            {
+                string nombreCompleto = listaPersonas[i].nomcom;
+                double mx = 0;
+                int mxId = 0;
+                for(int j = 0;j < cut;j++) 
+                {
+                    double r = cosine.Similarity(listaPersonas[j].nomcom, nombreCompleto);
+                    if(r > mx)
+                    {
+                        mx = r;
+                        mxId = j;
+                    }
+                }
+                if (mx < 0.87 && CURP[mxId] == CURP[i])
+                {
+                    falsosNegativos++;
+                }
+                if (mx >= 0.87 && CURP[mxId] != CURP[i])
+                {
+                    if (CURP[i].IndexOf("*") == -1 && CURP[mxId].IndexOf("*") == -1)
+                    {
+                        Debug.WriteLine(nombreCompleto + ", " + listaPersonas[mxId].nomcom + ", " + CURP[i] + ", " + CURP[mxId] + ", " + listaPersonas[i].id + ", " + listaPersonas[mxId].id + ", " + mx + ", curp: " + cosine.Similarity(CURP[i], CURP[mxId]));
+                        falsosPositivos++;
+                    }
+                    falsosPositivosTotal++;
+                }
+            }
+            Debug.WriteLine("falsos Negativos " + falsosNegativos);
+            Debug.WriteLine("falsos Positivos " + falsosPositivos);
+            Debug.WriteLine("falsos Positivos Total " + falsosPositivosTotal);
+        }
+
+        //Curp sin contar homonimos a 17 caracteres
+        public string curp(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
+        {
+            int i;
+            StringBuilder curp = new StringBuilder("*********");
+
+            curp[0] = paterno[0];
+            for (i = 0; i < paterno.Length; i++)
+            {
+                if ("AEIOU".IndexOf(paterno[i]) >= 0)
+                {
+                    break;
+                }
+            }
+            if (i < paterno.Length)
+            {
+                curp[1] = paterno[i];
+            }
+            curp[2] = materno[0];
+            curp[3] = nombre[0];
+            curp.Insert(4, fnacimiento.Value.ToString("yyMMdd"));
+            if (genero == "M")
+                curp[10] = 'H';
+            else if (genero == "F")
+                curp[10] = 'M';
+            //https://es.wikipedia.org/wiki/Plantilla:Abreviaciones_de_los_estados_de_M%C3%A9xico
+            string[] abreviacionesEstados = { "**", "AG", "BC", "BS", "CM", "CO", "CL", "CS", "CH", "CX", "DG", "GT", "GR", "HG", "JC", "EM", "MI", "MO", "NA", "NL", "OA", "PU", "QT", "QR", "SL", "SI", "SO", "TB", "TM", "TL", "VE", "YU", "ZA" };
+            curp.Insert(11, abreviacionesEstados[Int32.Parse(lnestado)]);
+            for (i = 1; i < paterno.Length; i++)
+            {
+                if ("AEIOU".IndexOf(paterno[i]) == -1)
+                {
+                    break;
+                }
+            }
+            if (i < paterno.Length)
+            {
+                curp[13] = paterno[i];
+            }
+            for (i = 1; i < materno.Length; i++)
+            {
+                if ("AEIOU".IndexOf(materno[i]) == -1)
+                {
+                    break;
+                }
+            }
+            if (i < materno.Length)
+            {
+                curp[14] = materno[i];
+            }
+            for (i = 1; i < nombre.Length; i++)
+            {
+                if ("AEIOU".IndexOf(nombre[i]) == -1)
+                {
+                    break;
+                }
+            }
+            if (i < nombre.Length)
+            {
+                curp[15] = nombre[i];
+            }
+            if (Int32.Parse(fnacimiento.Value.ToString("yyyy")) < 2000)
+            {
+                curp[16] = '0';
+            }
+            else
+            {
+                curp[16] = 'A';
+            }
+            return curp.ToString();
+        }
+
         public JsonResult testSimilitud(string nombre, string paterno, string materno)
         {
             bool simi = false;
@@ -218,7 +350,7 @@ namespace scorpioweb.Controllers
             foreach (var q in query)
             {
                 r = cosine.Similarity(q.nomcom, nombreCompleto);
-                if (r >= .80)
+                if (r >= 0.87)
                 {
                     nomCom = q.nomcom;
                     idpersona = q.id;
@@ -236,55 +368,13 @@ namespace scorpioweb.Controllers
                 string id = tupleWithMaxItem1.Item2.ToString();
                 return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
             }
-            else
-            {
-                return Json(new { success = false });
-            }
             return Json(new { success = false });
         }
 
-        //bool simi = false;
-        //public JsonResult similitudNombre(string nombre, string paterno, string materno)
-        //{
-        //    var nombreCompleto = normaliza(paterno) + " " + normaliza(materno) + " " + normaliza(nombre);
-
-        //    var query = from p in _context.Persona
-        //                select new
-        //                {
-        //                    nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
-        //                    id = p.IdPersona
-        //                };
-
-        //    int idpersona = 0;
-        //    string nomCom = "";
-        //    var cosine = new Cosine(2);
-        //    double r = 0;
-        //    foreach (var q in query)
-        //    {
-        //        r = cosine.Similarity(q.nomcom, nombreCompleto);
-        //        if (r >= .80)
-        //        {
-        //            nomCom = q.nomcom;
-        //            idpersona = q.id;
-        //            simi = true;
-        //            break;
-        //        }
-        //    }
-
-        //    if (simi == true)
-        //    {
-        //        double i = r * 100;
-        //        int porcentaje = (int)Math.Floor(i);
-        //        string id = idpersona.ToString();
-        //        return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
-        //    }
-        //    else
-        //    {
-        //        return Json(new { success = false });
-        //    }
-        //    return Json(new { success = false });
-        //}
-
+        public ActionResult Pruebas()
+        {
+            return View();
+        }
 
         #region -Index-
         public async Task<IActionResult> Index(
@@ -1579,7 +1669,13 @@ namespace scorpioweb.Controllers
             listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
             ViewBag.ListaMunicipios = listaMunicipiosD;
 
-            ViewBag.colonias = _context.Zonas.Select(Zonas => Zonas.Colonia).ToList();
+            var colonias = from p in _context.Zonas
+                           orderby p.Colonia
+                           select p;
+            ViewBag.colonias = colonias.ToList();
+
+            ViewBag.colonia = "Zona Centro";
+
             return View();
         }
 
@@ -1602,7 +1698,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero)
+            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string combobox)
         {
 
             string currentUser = User.Identity.Name;
@@ -1671,20 +1767,58 @@ namespace scorpioweb.Controllers
                 domicilio.TipoDomicilio = tipoDomicilio;
                 domicilio.Calle = normaliza(calle);
                 domicilio.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
-                domicilio.NombreCf = normaliza(nombreCF);
                 domicilio.Pais = paisD;
                 domicilio.Estado = estadoD;
                 domicilio.Municipio = municipioD;
                 domicilio.Temporalidad = temporalidad;
                 domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
                 domicilio.Cp = cp;
-                domicilio.Zona = normaliza(zona);
                 domicilio.Referencias = normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
                 domicilio.Horario = normaliza(horario);
                 domicilio.Observaciones = normaliza(observaciones);
                 domicilio.Lat = lat;
                 domicilio.Lng = lng;
+
+                List<Zonas> zonasList = new List<Zonas>();
+                zonasList = (from Zonas in _context.Zonas
+                             select Zonas).ToList();
+
+                domicilio.NombreCf = "NA";
+                for (int i = 0; i < zonasList.Count; i++)
+                {
+                    if (zonasList[i].Idzonas.ToString() == combobox)
+                    {
+                        domicilio.NombreCf = zonasList[i].Colonia.ToUpper();
+                    }
+                }
+
+                int index = domicilio.NombreCf.IndexOf(@",");
+                string colonia;
+                if (index == -1)
+                {
+                    colonia = domicilio.NombreCf;
+                }
+                else
+                {
+                    colonia = domicilio.NombreCf.Substring(0, index);
+                }
+                domicilio.Zona = "SIN ZONA ASIGNADA";
+                int matches = 0;
+                for (int i = 0; i < zonasList.Count; i++)
+                {
+                    if (zonasList[i].Colonia.ToUpper() == colonia)
+                    {
+                        matches++;
+                    }
+                }
+                for (int i = 0; i < zonasList.Count; i++)
+                {
+                    if (zonasList[i].Colonia.ToUpper() == colonia && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
+                    {
+                        domicilio.Zona = zonasList[i].Zona.ToUpper();
+                    }
+                }
                 #endregion
 
                 #region -Domicilio Secundario-   
@@ -3368,7 +3502,12 @@ namespace scorpioweb.Controllers
 
             ViewBag.domi = domicilio.DomcilioSecundario;
 
-            ViewBag.colonias = _context.Zonas.Select(Zonas => Zonas.Colonia).ToList();
+            var colonias = from p in _context.Zonas
+                           orderby p.Colonia
+                           select p;
+            ViewBag.colonias = colonias.ToList();
+
+            ViewBag.colonia = domicilio.NombreCf;
 
             if (domicilio == null)
             {
@@ -3379,7 +3518,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio)
+        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio, string combobox)
         {
             if (id != domicilio.PersonaIdPersona)
             {
@@ -3388,13 +3527,25 @@ namespace scorpioweb.Controllers
 
             domicilio.Calle = normaliza(domicilio.Calle);
             domicilio.No = String.IsNullOrEmpty(domicilio.No) ? domicilio.No : domicilio.No.ToUpper();
-            domicilio.NombreCf = normaliza(domicilio.NombreCf);
             //domicilio.Cp = domicilio.Cp;
             domicilio.Referencias = normaliza(domicilio.Referencias);
             domicilio.Horario = normaliza(domicilio.Horario);
             domicilio.Observaciones = normaliza(domicilio.Observaciones);
             //domicilio.Lat = domicilio.Lat;
             //domicilio.Lng = domicilio.Lng;
+
+            List<Zonas> zonasList = new List<Zonas>();
+            zonasList = (from Zonas in _context.Zonas
+                         select Zonas).ToList();
+
+            domicilio.NombreCf = "NA";
+            for (int i = 0; i < zonasList.Count; i++)
+            {
+                if (zonasList[i].Idzonas.ToString() == combobox)
+                {
+                    domicilio.NombreCf = zonasList[i].Colonia.ToUpper();
+                }
+            }
 
             int index = domicilio.NombreCf.IndexOf(@",");
             string colonia;
@@ -3407,9 +3558,6 @@ namespace scorpioweb.Controllers
                 colonia = domicilio.NombreCf.Substring(0, index);
             }
             domicilio.Zona = "SIN ZONA ASIGNADA";
-            List<Zonas> zonasList = new List<Zonas>();
-            zonasList = (from Zonas in _context.Zonas
-                         select Zonas).ToList();
             int matches = 0;
             for (int i = 0; i < zonasList.Count; i++)
             {

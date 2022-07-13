@@ -9,5 +9,12 @@ namespace scorpioweb.Models
         public string Zona { get; set; }
         public string Colonia { get; set; }
         public int Cp { get; set; }
+        public string ColoniaCP 
+        {
+            get
+            {
+                return this.Colonia + ", " + this.Cp;
+            }
+        }
     }
 }
