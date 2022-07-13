@@ -720,29 +720,29 @@
                         asp-items="@(new SelectList(ViewBag.listaResolucion, "Value", "Text", @ViewBag.idResolucion))">
                 </select>
             </div>
+            <input hidden name="arraySustancias" id="arraySustancias" type="text" />
+            <input hidden name="arraySustanciasEditadas" id="arraySustanciasEditadas" type="text" />
+            <input hidden name="arrayFamiliarReferencia" id="arrayFamiliarReferencia" type="text" />
+            <input hidden name="arrayFamiliaresEditados" id="arrayFamiliaresEditados" type="text" />
+            <input hidden name="arrayReferenciasEditadas" id="arrayReferenciasEditadas" type="text" />
+            <input hidden name="arrayDomSec" id="arrayDomSec" type="text" />
+            <input hidden name="arrayDomSecEditados" id="arrayDomSecEditados" type="text" />
+            <input hidden name="arrayFamExtranjero" id="arrayFamExtranjero" type="text" />
+            <input hidden name="arrayFamExtranjeroEditados" id="arrayFamExtranjeroEditados" type="text" />
+            <div class="form-group col-md-4">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input required asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
             <div class="form-group col-md-4">
                 <label asp-for="Paterno" class="control-label"></label>
-                <input asp-for="Paterno" class="form-control" style="text-transform:uppercase" />
+                <input required asp-for="Paterno" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Paterno" class="text-danger"></span>
-                <input hidden name="arraySustancias" id="arraySustancias" type="text" />
-                <input hidden name="arraySustanciasEditadas" id="arraySustanciasEditadas" type="text" />
-                <input hidden name="arrayFamiliarReferencia" id="arrayFamiliarReferencia" type="text" />
-                <input hidden name="arrayFamiliaresEditados" id="arrayFamiliaresEditados" type="text" />
-                <input hidden name="arrayReferenciasEditadas" id="arrayReferenciasEditadas" type="text" />
-                <input hidden name="arrayDomSec" id="arrayDomSec" type="text" />
-                <input hidden name="arrayDomSecEditados" id="arrayDomSecEditados" type="text" />
-                <input hidden name="arrayFamExtranjero" id="arrayFamExtranjero" type="text" />
-                <input hidden name="arrayFamExtranjeroEditados" id="arrayFamExtranjeroEditados" type="text" />
             </div>
             <div class="form-group col-md-4">
                 <label asp-for="Materno" class="control-label"></label>
                 <input asp-for="Materno" class="form-control" />
                 <span asp-validation-for="Materno" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-4">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Alias" class="control-label"></label>
@@ -763,7 +763,7 @@
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Fecha de nacimiento</label>
-                <input asp-for="Fnacimiento" type="date" class="form-control" />
+                <input required asp-for="Fnacimiento" type="date" class="form-control" />
                 <span asp-validation-for="Fnacimiento" class="text-danger"></span>
             </div>
 
