@@ -6,10 +6,9 @@ namespace scorpioweb.Models
     public partial class Historialeliminacion
     {
         public int IdhistorialEliminacion { get; set; }
-        public string Nombre { get; set; }
-        public string Paterno { get; set; }
-        public string Materno { get; set; }
-        public int? Idpersona { get; set; }
+        public int? Id { get; set; }
+        public string Descripcion { get; set; }
+        public string Tipo { get; set; }
         public string Razon { get; set; }
         public string Usuario { get; set; }
         public string Supervisor { get; set; }

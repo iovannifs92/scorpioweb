@@ -5450,10 +5450,9 @@ namespace scorpioweb.Controllers
             try
             {
                 borrar = true;
-                historialeliminacion.Idpersona = idpersona;
-                historialeliminacion.Nombre = query.Nombre;
-                historialeliminacion.Materno = query.Materno;
-                historialeliminacion.Paterno = query.Paterno;
+                historialeliminacion.Id = idpersona;
+                historialeliminacion.Descripcion = query.Paterno +" "+ query.Materno +" "+ query.Nombre ;
+                historialeliminacion.Tipo = "PERSONA";
                 historialeliminacion.Razon = razon;
                 historialeliminacion.Usuario = user;
                 historialeliminacion.Fecha = DateTime.Now;
