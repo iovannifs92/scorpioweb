@@ -5418,7 +5418,7 @@ namespace scorpioweb.Controllers
                             where rh.PersonaIdPersona == idpersona
                             select pp;
 
-            if (antesDel.Any() && antesDel2.Any())
+            if (antesDel.Any() || antesDel2.Any())
             {
                 borrar = false;
                 var tiene = "Supervisión o presentaciones periodicas";
