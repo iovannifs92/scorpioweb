@@ -109,10 +109,11 @@
             }
         });
     };
-    function borrarPersona(id) {
+    @*function borrarPersona(id) {
         var personaidpersona = id;
         var usuario = '@ViewBag.user';
         var cambiar = confirm("¿Desea borrar el registro?");
+
         if (cambiar == true) {
             let razon = prompt("Porque desea borrar el registro?", "");
             if (razon == null || razon == "") {
@@ -145,7 +146,71 @@
         } else {
             //location.reload();
         }
-    };
+    };*@
+
+
+
+    function borrarPersona(id) {
+        var personaidpersona = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/antesdelete",
+            traditional: true,
+            data: {
+                datoPersona: [personaidpersona],
+            },
+            success: function (response) {
+                if (response.borrar == false) {
+                    alert("No se ha borrado porque tiene una supervisión o presentaciónes periodicas");
+                } else {
+                    function borrarPersonas(id) {
+                        alert(id);
+                        var usuario = '@ViewBag.user';
+                        let razon = prompt("Porque desea borrar el registro?", "");
+                        if (razon == null || razon == "") {
+                            return;
+                            text = "NA";
+                        } else {
+                            text = razon;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Personas/deletePersona",
+                            traditional: true,
+                            data: {
+                                datoPersona: [id, razon, usuario],
+                            },
+                            success: function (response) {
+                                if (response.borrar == true) {
+                                    alert("El Registro ha sido borrado");
+                                    location.reload();
+                                } else {
+                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                }
+                            },
+                            error: function (response) {
+                                alert(response.error);
+                                
+                            }
+                        });
+                    };
+                    borrarPersonas(id);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+        }
+        return innerFunc;
+    }
+
 
 
     function actualizaUbicacion(id, idPersona, ubicacionAnterior) {

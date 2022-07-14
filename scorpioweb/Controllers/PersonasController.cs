@@ -5397,17 +5397,18 @@ namespace scorpioweb.Controllers
 
         #region -Borrar-
         // GET: Personas/Delete/5
-        public JsonResult deletePersona(Persona persona, Historialeliminacion historialeliminacion, string[] datoPersona)
+        public JsonResult antesdelete(Persona persona, Historialeliminacion historialeliminacion, string[] datoPersona)
         //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
             var borrar = false;
             var idpersona = Int32.Parse(datoPersona[0]);
-            var razon = normaliza(datoPersona[1]);
-            var user = normaliza(datoPersona[2]);
+            //var razon = normaliza(datoPersona[1]);
+            //var user = normaliza(datoPersona[2]);
 
             var query = (from p in _context.Persona
-                        where p.IdPersona == idpersona
+                         where p.IdPersona == idpersona
                          select p).FirstOrDefault();
+
 
             var antesDel = from s in _context.Supervision
                            where s.PersonaIdPersona == idpersona
@@ -5418,38 +5419,55 @@ namespace scorpioweb.Controllers
                             where rh.PersonaIdPersona == idpersona
                             select pp;
 
+            var nom = query.NombreCompleto;
+
             if (antesDel.Any() || antesDel2.Any())
             {
                 borrar = false;
-                var tiene = "Supervisión o presentaciones periodicas";
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar, error = tiene });
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar, nombre = nom });
             }
-            else
-            {
-                try
-                {
-                    borrar = true;
-                    historialeliminacion.Idpersona = idpersona;
-                    historialeliminacion.Nombre = query.Nombre;
-                    historialeliminacion.Materno = query.Materno;
-                    historialeliminacion.Paterno = query.Paterno;
-                    historialeliminacion.Razon = razon;
-                    historialeliminacion.Usuario = user;
-                    historialeliminacion.Fecha = DateTime.Now;
-                    historialeliminacion.Supervisor = normaliza(query.Supervisor);
-                    _context.Add(historialeliminacion);
-                    _context.SaveChanges();
-                    _context.Database.ExecuteSqlCommand("CALL spBorrarPersona(" + idpersona + ")");
-                    return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
-                }
-                catch (Exception ex)
-                {
-                    borrar = false;
-                    return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar, error = ex });
-                }
-                
-            }
+            var stadoc = (from p in _context.Persona
+                          where p.IdPersona == persona.IdPersona
+                          select p.IdPersona).FirstOrDefault();
 
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona) });
+
+        }
+
+
+        public JsonResult deletePersona(Persona persona, Historialeliminacion historialeliminacion, string[] datoPersona)
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
+        {
+            var borrar = false;
+            var idpersona = Int32.Parse(datoPersona[0]);
+            var razon = normaliza(datoPersona[1]);
+            var user = normaliza(datoPersona[2]);
+
+            var query = (from p in _context.Persona
+                         where p.IdPersona == idpersona
+                         select p).FirstOrDefault();
+
+            try
+            {
+                borrar = true;
+                historialeliminacion.Idpersona = idpersona;
+                historialeliminacion.Nombre = query.Nombre;
+                historialeliminacion.Materno = query.Materno;
+                historialeliminacion.Paterno = query.Paterno;
+                historialeliminacion.Razon = razon;
+                historialeliminacion.Usuario = user;
+                historialeliminacion.Fecha = DateTime.Now;
+                historialeliminacion.Supervisor = normaliza(query.Supervisor);
+                _context.Add(historialeliminacion);
+                _context.SaveChanges();
+                _context.Database.ExecuteSqlCommand("CALL spBorrarPersona(" + idpersona + ")");
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar, error = ex });
+            }
             var stadoc = (from p in _context.Persona
                           where p.IdPersona == persona.IdPersona
                           select p.IdPersona).FirstOrDefault();
