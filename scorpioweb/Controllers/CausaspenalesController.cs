@@ -122,8 +122,9 @@ namespace scorpioweb.Controllers
            int? pageNumber)
         {
 
-            #region -ListaUsuarios-            
+            #region -ListaUsuarios- 
             var user = await userManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.user = user;
             var roles = await userManager.GetRolesAsync(user);
 
             List<string> rolUsuario = new List<string>();
@@ -344,6 +345,82 @@ namespace scorpioweb.Controllers
         }
 
         #region -Delete-
+        public JsonResult antesdelete(Causapenal causapenal, Personacausapenal personacausapenal, string[] datocp)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datocp[0]);
+
+            var query = (from c in _context.Causapenal
+                         where c.IdCausaPenal == id
+                         select c).FirstOrDefault();
+
+            var antesdel = from pc in _context.Personacausapenal
+                           where pc.CausaPenalIdCausaPenal == id
+                           select pc;
+
+            if (antesdel.Any())
+            {
+                return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar});
+            }
+            else
+            {
+                borrar = true;
+                return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar });
+            }
+            var stadoc = (from c in _context.Causapenal
+                          where c.IdCausaPenal == id
+                          select c.IdCausaPenal).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(id) });
+        }
+
+
+        public JsonResult deletecp(Causapenal causapenal, Historialeliminacion historialeliminacion, string[] datocp)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datocp[0]);
+            var razon = normaliza(datocp[1]);
+            var user = normaliza(datocp[2]);
+
+            var query = (from c in _context.Causapenal
+                         where c.IdCausaPenal == id
+                         select c).FirstOrDefault();
+
+            try
+            {
+                borrar = true;
+                historialeliminacion.Id = id;
+                historialeliminacion.Descripcion = query.CausaPenal;
+                historialeliminacion.Tipo = "CAUSA PENAL";
+                historialeliminacion.Razon = razon;
+                historialeliminacion.Usuario = user;
+                historialeliminacion.Fecha = DateTime.Now;
+                historialeliminacion.Supervisor = "NA";
+                _context.Add(historialeliminacion);
+                _context.SaveChanges();
+                var causapenals = _context.Causapenal.FirstOrDefault(m => m.IdCausaPenal == id);
+                _context.Causapenal.Remove(causapenals);
+                _context.SaveChanges();
+
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex; 
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar});
+            }
+
+            var stadoc = (from c in _context.Causapenal
+                          where c.IdCausaPenal == id
+                          select c.IdCausaPenal).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(id) });
+        }
+
+
+
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
