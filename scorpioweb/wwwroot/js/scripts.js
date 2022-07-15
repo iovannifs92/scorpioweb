@@ -166,7 +166,6 @@ function fillInAddress(place) {
     }
     var colonia = getColonia(place);
     if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("nombreCF").value == "") {
-        document.getElementById("nombreCF").value = "";
         document.getElementById("no").value = "";
         document.getElementById("calle").value = "";
         document.getElementById("cp").value = "";
@@ -178,11 +177,11 @@ function fillInAddress(place) {
 
             switch (componentType) {
                 case "neighborhood": {
-                    document.getElementById("nombreCF").value = component.long_name;
+                    setColonia(component.long_name);
                     break;
                 }
                 case "political": {
-                    document.getElementById("nombreCF").value = component.long_name;
+                    setColonia(component.long_name);
                     break;
                 }
                 case "street_number": {
