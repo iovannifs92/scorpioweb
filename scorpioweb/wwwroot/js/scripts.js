@@ -36,6 +36,7 @@ var result;
 var map;
 var infowindow;
 var cnt = 0;//todo
+var coloniaGlobal;
 
 function iniciarMap() {
     var coord = { lat: 24.0234962, lng: -104.6606269 };//DGEP
@@ -168,7 +169,7 @@ function fillInAddress(place) {
         document.getElementById("no").value = "";
         document.getElementById("calle").value = "";
         document.getElementById("cp").value = "";
-        localStorage.setItem('colonia', '');
+        coloniaGlobal = "";// localStorage.setItem('colonia', '');
 
         var municipio = getMunicipio(place);
         for (const component of place.address_components) {
@@ -201,14 +202,17 @@ function fillInAddress(place) {
             }
         }
         if (esMunicipio == false && municipio != "Sin municipio") {
-            if (localStorage.getItem('colonia') != "") {
-                localStorage.setItem('colonia', localStorage.getItem('colonia') + ", " + municipio);
+            //if (localStorage.getItem('colonia') != "") {
+            if (coloniaGlobal != "") {
+                //localStorage.setItem('colonia', localStorage.getItem('colonia') + ", " + municipio);
+                coloniaGlobal = coloniaGlobal + ", " + municipio;
             }
             else {
-                localStorage.setItem('colonia', municipio);
+                coloniaGlobal = municipio;//localStorage.setItem('colonia', municipio);
             }
         }
-        $('#combobox').change();
+        document.getElementById("inputAutocomplete").value = coloniaGlobal;// localStorage.getItem('colonia');
+        //$('#combobox').change();
         //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
         if (localStorage.getItem('municipioD')) {
             $('#municipioD').val(localStorage.getItem('municipioD'));
@@ -223,14 +227,14 @@ function fillInAddress(place) {
 
 function setColonia(colonia) {
     var cb = document.getElementById("combobox");
-    localStorage.setItem('colonia', colonia);
+    coloniaGlobal = colonia; //localStorage.setItem('colonia', colonia);
     colonia = colonia.toUpperCase();
     for (var i = 0; i < cb.options.length; i++) {
         var coloniaCP = cb.options[i].text;
         var index = coloniaCP.lastIndexOf(",");
         if (coloniaCP.substr(0, index).toUpperCase() == colonia) {
             cb.selectedIndex = i;
-            localStorage.setItem('colonia', coloniaCP.substr(0, index));
+            coloniaGlobal = coloniaCP.substr(0, index); //localStorage.setItem('colonia', coloniaCP.substr(0, index));
         }
     }
 }
