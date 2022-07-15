@@ -215,7 +215,7 @@
             _createAutocomplete: function () {
                 var selected = this.element.children(":selected"),
                     value = "@ViewBag.colonia";
-                this.input = $("<input id=inputAutocomplete>")
+                this.input = $("<input id=inputAutocomplete name=inputAutocomplete>")
                     .appendTo(this.wrapper)
                     .val(value)
                     .attr("title", "")
