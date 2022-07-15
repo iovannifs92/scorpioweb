@@ -3508,6 +3508,18 @@ namespace scorpioweb.Controllers
 
             ViewBag.colonia = domicilio.NombreCf;
 
+            List<Zonas> zonasList = new List<Zonas>();
+            zonasList = (from Zonas in _context.Zonas
+                         select Zonas).ToList();
+            ViewBag.idZona = 1;//first selected by default
+            for (int i = 0; i < zonasList.Count; i++)
+            {
+                if (zonasList[i].Colonia.ToString().ToUpper() == domicilio.NombreCf.ToUpper())
+                {
+                    ViewBag.idZona = zonasList[i].Idzonas;
+                }
+            }
+
             if (domicilio == null)
             {
                 return NotFound();
