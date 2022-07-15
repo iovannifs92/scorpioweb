@@ -6,6 +6,72 @@
 
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript">
+    function borrarCp(id) {
+        var idcp = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Causaspenales/antesdelete",
+            traditional: true,
+            data: {
+                datocp: [idcp],
+            },
+            success: function (response) {
+                if (response.borrar == false) {
+                    alert("No se ha borrado porque ya esta asignada a una persona");
+                } else {
+                    function borrarcp(id) {
+                        var usuario = '@ViewBag.user';
+                        let razon = prompt("Porque desea borrar el registro?", "");
+                        if (razon == null || razon == "") {
+                            return;
+                            text = "NA";
+                        } else {
+                            text = razon;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Causaspenales/deletecp",
+                            traditional: true,
+                            data: {
+                                datocp: [id, razon, usuario],
+                            },
+                            success: function (response) {
+                                if (response.borrar == true) {
+                                    alert("El Registro ha sido borrado");
+                                    location.reload();
+                                } else {
+                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                }
+                            },
+                            error: function (response) {
+                                alert(response.error);
+
+                            }
+                        });
+                    };
+                    borrarcp(id);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+        }
+        return innerFunc;
+    }
+</script>
+
+
+
+
 <h2>Control de Causas Penales</h2>
 @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
 {
@@ -87,9 +153,19 @@
                             <a style="margin-bottom:5px;width: 100%" class="btn btn-primary" asp-action="Asignacion" asp-route-id="@item.IdCausaPenal" asp-route-cp="@item.CausaPenal">
                                 <i class="fa fa-plus"></i>  Asignación
                             </a>
-                        </form>
+                        </form> 
                     }
                 </td>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia"))
+                    {
+                    <td>
+                        <form>
+                            <a style="margin-bottom:5px" class="btn btn-danger hidden-md-down" onclick="borrarCp(@item.IdCausaPenal)">
+                                <i class="fa fa-trash"></i> Borrar
+                            </a>
+                        </form>
+                    </td>
+                    }
             </tr>
         }
     </tbody>

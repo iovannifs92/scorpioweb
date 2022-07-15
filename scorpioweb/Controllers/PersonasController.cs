@@ -1654,8 +1654,7 @@ namespace scorpioweb.Controllers
         // GET: Personas/Create
         [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
         public IActionResult Create(Estados Estados)
-        {
-            //datosSustancias.Clear();            
+        {          
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
                             select table).ToList();
@@ -5376,12 +5375,9 @@ namespace scorpioweb.Controllers
         #region -Borrar-
         // GET: Personas/Delete/5
         public JsonResult antesdelete(Persona persona, Historialeliminacion historialeliminacion, string[] datoPersona)
-        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
             var borrar = false;
             var idpersona = Int32.Parse(datoPersona[0]);
-            //var razon = normaliza(datoPersona[1]);
-            //var user = normaliza(datoPersona[2]);
 
             var query = (from p in _context.Persona
                          where p.IdPersona == idpersona
@@ -5414,7 +5410,6 @@ namespace scorpioweb.Controllers
 
 
         public JsonResult deletePersona(Persona persona, Historialeliminacion historialeliminacion, string[] datoPersona)
-        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
             var borrar = false;
             var idpersona = Int32.Parse(datoPersona[0]);
@@ -5424,7 +5419,6 @@ namespace scorpioweb.Controllers
             var query = (from p in _context.Persona
                          where p.IdPersona == idpersona
                          select p).FirstOrDefault();
-
             try
             {
                 borrar = true;
@@ -5452,6 +5446,7 @@ namespace scorpioweb.Controllers
             return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona) });
 
         }
+
         // POST: Personas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
