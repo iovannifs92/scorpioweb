@@ -12,6 +12,7 @@ using scorpioweb.Data;
 using scorpioweb.Models;
 using scorpioweb.Services;
 using Microsoft.AspNetCore.Authorization;
+using MySql.Data.MySqlClient;
 
 
 namespace scorpioweb
@@ -24,6 +25,7 @@ namespace scorpioweb
         }
 
         public IConfiguration Configuration { get; }
+
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -85,5 +87,7 @@ namespace scorpioweb
 
             //Rotativa.AspNetCore.RotativaConfiguration.Setup(env, "..\\Rotativa\\Windows\\");
         }
+
+        
     }
 }

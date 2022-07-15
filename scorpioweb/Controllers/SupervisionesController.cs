@@ -407,7 +407,7 @@ namespace scorpioweb.Controllers
 
             if (id == 0)
             {
-                return View();
+                return View(); 
             }
 
 

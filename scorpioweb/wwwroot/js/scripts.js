@@ -31,7 +31,7 @@ $("#confirmDialog").dialog({
     },
 });
 
-var marker = null;//si es variable local, sale primero la infowindow vacia
+var marker = null;//si local, sale primero la infowindow vacia
 var result;
 var map;
 var infowindow;
@@ -165,11 +165,12 @@ function fillInAddress(place) {
         }
     }
     var colonia = getColonia(place);
-    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("inputAutocomplete").value == "") {
+    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("nombreCF").value == "") {
+        document.getElementById("nombreCF").value = "";
         document.getElementById("no").value = "";
         document.getElementById("calle").value = "";
         document.getElementById("cp").value = "";
-        coloniaGlobal = "";// localStorage.setItem('colonia', '');
+        coloniaGlobal = "";
 
         var municipio = getMunicipio(place);
         for (const component of place.address_components) {
@@ -177,11 +178,11 @@ function fillInAddress(place) {
 
             switch (componentType) {
                 case "neighborhood": {
-                    setColonia(component.long_name);
+                    document.getElementById("nombreCF").value = component.long_name;
                     break;
                 }
                 case "political": {
-                    setColonia(component.long_name);
+                    document.getElementById("nombreCF").value = component.long_name;
                     break;
                 }
                 case "street_number": {
@@ -202,17 +203,14 @@ function fillInAddress(place) {
             }
         }
         if (esMunicipio == false && municipio != "Sin municipio") {
-            //if (localStorage.getItem('colonia') != "") {
-            if (coloniaGlobal != "") {
-                //localStorage.setItem('colonia', localStorage.getItem('colonia') + ", " + municipio);
-                coloniaGlobal = coloniaGlobal + ", " + municipio;
+            if (coloniaGlobal == "") {
+                coloniaGlobal = municipio;
             }
             else {
-                coloniaGlobal = municipio;//localStorage.setItem('colonia', municipio);
+                coloniaGlobal = coloniaGlobal + ", " + municipio;
             }
         }
-        document.getElementById("inputAutocomplete").value = coloniaGlobal;// localStorage.getItem('colonia');
-        //$('#combobox').change();
+        document.getElementById("inputAutocomplete").value = coloniaGlobal;
         //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
         if (localStorage.getItem('municipioD')) {
             $('#municipioD').val(localStorage.getItem('municipioD'));
@@ -227,14 +225,14 @@ function fillInAddress(place) {
 
 function setColonia(colonia) {
     var cb = document.getElementById("combobox");
-    coloniaGlobal = colonia; //localStorage.setItem('colonia', colonia);
+    coloniaGlobal = colonia;
     colonia = colonia.toUpperCase();
     for (var i = 0; i < cb.options.length; i++) {
         var coloniaCP = cb.options[i].text;
         var index = coloniaCP.lastIndexOf(",");
         if (coloniaCP.substr(0, index).toUpperCase() == colonia) {
             cb.selectedIndex = i;
-            coloniaGlobal = coloniaCP.substr(0, index); //localStorage.setItem('colonia', coloniaCP.substr(0, index));
+            coloniaGlobal = coloniaCP.substr(0, index);
         }
     }
 }

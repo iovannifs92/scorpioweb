@@ -109,6 +109,109 @@
             }
         });
     };
+    @*function borrarPersona(id) {
+        var personaidpersona = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+
+        if (cambiar == true) {
+            let razon = prompt("Porque desea borrar el registro?", "");
+            if (razon == null || razon == "") {
+                return;
+                text = "NA";
+            } else {
+                text = razon;
+            }
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/deletePersona",
+                traditional: true,
+                data: {
+                    datoPersona: [personaidpersona, razon, usuario],
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("No se ha borrado porque tiene una supervisión o presentaciónes periodicas");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        } else {
+            //location.reload();
+        }
+    };*@
+
+
+
+    function borrarPersona(id) {
+        var personaidpersona = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/antesdelete",
+            traditional: true,
+            data: {
+                datoPersona: [personaidpersona],
+            },
+            success: function (response) {
+                if (response.borrar == false) {
+                    alert("No se ha borrado porque tiene una supervisión o presentaciónes periodicas");
+                } else {
+                    function borrarPersonas(id) {
+                        var usuario = '@ViewBag.user';
+                        let razon = prompt("Porque desea borrar el registro?", "");
+                        if (razon == null || razon == "") {
+                            return;
+                            text = "NA";
+                        } else {
+                            text = razon;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Personas/deletePersona",
+                            traditional: true,
+                            data: {
+                                datoPersona: [id, razon, usuario],
+                            },
+                            success: function (response) {
+                                if (response.borrar == true) {
+                                    alert("El Registro ha sido borrado");
+                                    location.reload();
+                                } else {
+                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                }
+                            },
+                            error: function (response) {
+                                alert(response.error);
+                                
+                            }
+                        });
+                    };
+                    borrarPersonas(id);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+        }
+        return innerFunc;
+    }
+
+
+
     function actualizaUbicacion(id, idPersona, ubicacionAnterior) {
             var usuario = '@ViewBag.user';
         var u = document.getElementById("ubicacion" + id);
@@ -219,6 +322,8 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                            row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if (@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -262,6 +367,8 @@
                                 + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -308,6 +415,8 @@
                                 + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -441,6 +550,8 @@
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
+                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                                row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                    if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -484,6 +595,8 @@
                                     + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -663,6 +776,8 @@
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                                row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -706,6 +821,8 @@
                                     + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -901,6 +1018,8 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
+                            + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                            row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -944,6 +1063,8 @@
                                 + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                            + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -1133,6 +1254,8 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
+                            + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                            row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -1176,6 +1299,8 @@
                                 + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                            + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -1367,6 +1492,8 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                            row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -1410,6 +1537,8 @@
                                 + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                            row = row
+                            + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -1594,6 +1723,8 @@
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                                row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -1637,6 +1768,8 @@
                                     + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
@@ -1817,6 +1950,8 @@
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
+                                row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
@@ -1860,6 +1995,8 @@
                                     + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                                 row = row
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                                 if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
