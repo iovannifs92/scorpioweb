@@ -1,0 +1,187 @@
+﻿@model PaginatedList<scorpioweb.Models.Contactos>
+@{
+    ViewData["Title"] = "Contactos";
+    Layout = "";
+}
+
+<link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/css/main.css">
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" href="~/css/bootstraplocal.css"
+      asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+      asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+
+
+<style>
+    .tableFixHead {
+        overflow: auto;
+        height: 800px;
+    }
+
+        .tableFixHead thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+    /* Just common table stuff. Really. */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        padding: 8px 16px;
+    }
+
+    th {
+        background: #eee;
+    }
+</style>
+
+<script>
+    function editarContacto(id, name, campo) {
+        var ids = id;
+        var value = campo;
+        var nameCampo = name;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/updatecontact",
+            traditional: true,
+            data: {
+                id: ids,
+                value: value,
+                nameCampo: nameCampo,
+            },
+                 success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+
+</script>
+
+<h1 style="text-align:center">Contactos</h1>
+<div class="row">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" id="forma">
+            <div class="container sub-page forma">
+                <div class="container">
+                    <div class="panel-group">
+                        <div id="datosMunicipio" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">MUNICIPIOS</p>
+                                </h4>
+                            </div>
+                            <div id="collapse3" class="panel-collapse show tableFixHead" style="padding-top:1%;">
+                                <div class="table-responsive">
+                                    <table id="mytable" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Municipio</th>
+                                                <th scope="col">Dependencia</th>
+                                                <th scope="col">Nombre del titular</th>
+                                                <th scope="col">Correo</th>
+                                                <th scope="col">Telefono</th>
+                                                <th scope="col">Exetención</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in ((List<Contactos>)TempData["listconM"]).GroupBy(x => x.Lugar))
+                                            {
+                                                <tr>
+                                                    <th rowspan="4">
+                                                        @Html.DisplayFor(modelItem => item.Key)
+                                                    </th>
+                                                </tr>
+                                                foreach (Contactos data in ((List<Contactos>)TempData["listconM"]).Where(x => x.Lugar == item.Key))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => data.Dependencia)
+                                                        </td>
+                                                        <td>
+                                                            <input onchange="editarContacto(@data.Idcontactomunicipio, name, value)" name="NombreTitular" id="NombreTitular" class="form-control" asp-for="@data.NombreTitular" />
+                                                        </td>
+                                                        <td>
+                                                            <input onchange="editarContacto(@data.Idcontactomunicipio, name, value)" name="Correo" id="Correo" class="form-control" asp-for="@data.Correo" />
+                                                        </td>
+                                                        <td>
+                                                            <input onchange="editarContacto(@data.Idcontactomunicipio, name, value)" name="Telefono" id="Telefono" class="form-control" asp-for="@data.Telefono" />
+                                                        </td>
+                                                        <td>
+                                                            <input onchange="editarContacto(@data.Idcontactomunicipio, name, value)" name="Extencion" id="Extencion" class="form-control" asp-for="@data.Extencion" />
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="datosMunicipio" class="panel panel panel-primary" style="border-color:#fff;">
+                            <div class="panel-heading" style="color: #fff; background-color: #0078A7; border-color: #848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
+                                <h4 class="panel-title">
+                                    <p style="margin-bottom:unset">ESTADOS</p>
+                                </h4>
+                            </div>
+                            <div id="collapse3" class="panel-collapse show tableFixHead" style="padding-top:1%;">
+                                <div class="table-responsive">
+                                    <table id="mytable" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Estado</th>
+                                                <th scope="col">Dependencia</th>
+                                                <th scope="col">Nombre del titular</th>
+                                                <th scope="col">Correo</th>
+                                                <th scope="col">Telefono</th>
+                                                <th scope="col">Exetención</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in ((List<Contactos>)TempData["listconE"]))
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Lugar)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Dependencia)
+                                                    </td>
+                                                    <td>
+                                                        <input onchange="editarContacto(@item.Idcontactomunicipio, name, value)" name="NombreTitular" id="NombreTitular" class="form-control" asp-for="@item.NombreTitular" />
+                                                    </td>
+                                                    <td>
+                                                        <input onchange="editarContacto(@item.Idcontactomunicipio, name, value)" name="Correo" id="Correo" class="form-control" asp-for="@item.Correo" />
+                                                    </td>
+                                                    <td>
+                                                        <input onchange="editarContacto(@item.Idcontactomunicipio, name, value)" name="Telefono" id="Telefono" class="form-control" asp-for="@item.Telefono" />
+                                                    </td>
+                                                    <td>
+                                                        <input onchange="editarContacto(@item.Idcontactomunicipio, name, value)" name="Extencion" id="Extencion" class="form-control" asp-for="@item.Extencion" />
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>

@@ -392,12 +392,13 @@ namespace scorpioweb.Controllers
                 historialeliminacion.Id = id;
                 historialeliminacion.Descripcion = query.CausaPenal;
                 historialeliminacion.Tipo = "CAUSA PENAL";
-                historialeliminacion.Razon = razon;
+                historialeliminacion.Razon = normaliza(razon);
                 historialeliminacion.Usuario = user;
                 historialeliminacion.Fecha = DateTime.Now;
                 historialeliminacion.Supervisor = "NA";
                 _context.Add(historialeliminacion);
                 _context.SaveChanges();
+
                 var causapenals = _context.Causapenal.FirstOrDefault(m => m.IdCausaPenal == id);
                 _context.Causapenal.Remove(causapenals);
                 _context.SaveChanges();

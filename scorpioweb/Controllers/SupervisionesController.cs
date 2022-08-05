@@ -407,7 +407,7 @@ namespace scorpioweb.Controllers
 
             if (id == 0)
             {
-                return View(); 
+                return View();
             }
 
 
@@ -459,7 +459,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona=idpersona });
+                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
             }
             return View(fraccionesimpuestas);
         }
@@ -474,7 +474,7 @@ namespace scorpioweb.Controllers
             _context.Fraccionesimpuestas.Remove(fraccionesimpuestas);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona= idpersona });
+            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona = idpersona });
         }
 
 
@@ -508,7 +508,7 @@ namespace scorpioweb.Controllers
             var snbitacora = await _context.Bitacora.Where(m => m.FracionesImpuestasIdFracionesImpuestas == id).ToListAsync();
             if (snbitacora.Count == 0)
             {
-                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, nombre = nombre, @cp = cp, @idpersona=idpersona });
+                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, nombre = nombre, @cp = cp, @idpersona = idpersona });
             }
 
             ViewData["tablaBiatacora"] = from Bitacora in bitacora
@@ -563,7 +563,7 @@ namespace scorpioweb.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAddAccionSupervision([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision,FracionesImpuestasIdFracionesImpuestas ")] Bitacora bitacora, IFormFile evidencia ,string nombre, string cp, string idpersona)
+        public async Task<IActionResult> EditAddAccionSupervision([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,SupervisionIdSupervision,FracionesImpuestasIdFracionesImpuestas ")] Bitacora bitacora, IFormFile evidencia, string nombre, string cp, string idpersona)
         {
             bitacora.Texto = normaliza(bitacora.Texto);
 
@@ -617,7 +617,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp,@idpersona=idpersona });
+                return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
             }
             return View();
         }
@@ -660,6 +660,82 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Delete-
+
+        public JsonResult antesdelete(Supervision supervision, Fraccionesimpuestas fraccionesimpuestas, string[] datosuper)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datosuper[0]);
+
+            var antesdel = from s in _context.Supervision
+                           join fi in _context.Fraccionesimpuestas on s.IdSupervision equals fi.SupervisionIdSupervision
+                           where s.IdSupervision == id
+                           select s;
+
+            if (antesdel.Any())
+            {
+                return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar });
+            }
+            else
+            {
+                borrar = true;
+                return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar });
+            }
+            var stadoc = (from s in _context.Supervision
+                          where s.IdSupervision == id
+                          select s.IdSupervision).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idSupervision = Convert.ToString(id) });
+        }
+        public JsonResult deletesuper(Supervision supervision, Historialeliminacion historialeliminacion, string[] datosuper)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datosuper[0]);
+            var razon = normaliza(datosuper[1]);
+            var user = normaliza(datosuper[2]);
+
+            var query = (from s in _context.Supervision
+                         join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                         where s.IdSupervision == id
+                         select s).FirstOrDefault();
+            var queryP = (from s in _context.Supervision
+                         join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                         where s.IdSupervision == id
+                         select p).FirstOrDefault();
+
+            try
+            {
+                borrar = true;
+                historialeliminacion.Id = id;
+                historialeliminacion.Descripcion = "IDPERSONA= "+ query.PersonaIdPersona + " IDCAUSAPENAL= " +query.CausaPenalIdCausaPenal+" IDSUPERVISIÓN= "+query.PersonaIdPersona;
+                historialeliminacion.Tipo = "SUPERVISIÓN";
+                historialeliminacion.Razon = normaliza(razon);
+                historialeliminacion.Usuario = normaliza(user);
+                historialeliminacion.Fecha = DateTime.Now;
+                historialeliminacion.Supervisor = normaliza(queryP.Supervisor);
+                _context.Add(historialeliminacion);
+                _context.SaveChanges();
+
+                _context.Database.ExecuteSqlCommand("CALL spBorrarSupervision(" + id + ")");
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+
+            var stadoc = (from c in _context.Causapenal
+                          where c.IdCausaPenal == id
+                          select c.IdCausaPenal).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(id) });
+        }
+
+
+
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -820,7 +896,7 @@ namespace scorpioweb.Controllers
                          select new SupervisionPyCP
                          {
                              cierredecasoVM = c,
-                             personaVM = p,
+                             personaVM = p, 
                              supervisionVM = s,
                              causapenalVM = cp,
                              planeacionestrategicaVM = pe,
@@ -895,7 +971,6 @@ namespace scorpioweb.Controllers
 
         #region -Update Persona supervision-
         public JsonResult UpdatePersonasupervision(Supervision supervision, Planeacionestrategica planeacionestrategica, string superid, string campo, string planeacionid, string estados, DateTime fecha, DateTime intermedio)
-        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
         {
 
             #region -Actualizar fechas en supervision-

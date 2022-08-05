@@ -74,11 +74,11 @@
             else {
                 $("#DivbtnAdd").css("display", "block");
                 $("#DivbtnAdd").css("padding", "25px");
-                $("#DivbtnEditar").css("display", "none"); 
+                $("#DivbtnEditar").css("display", "none");
             }
 
         });
-        //Para abrir vista temporal en modal 
+        //Para abrir vista temporal en modal
         showModal = (url, title, id) => {
 
             $.ajax({
@@ -135,8 +135,8 @@
 
         });
         //#endregion
-        //region Guardar AdddomicilioModal en caso de que 
-        //no tenga domicilios secundarios para agregar el primero 
+        //region Guardar AdddomicilioModal en caso de que
+        //no tenga domicilios secundarios para agregar el primero
         $('#btnAddDomiSecu').on("click", function (e) {
             e.preventDefault();
             var IdDomicilio = document.getElementById("IdDomicilioM").value;
@@ -214,7 +214,8 @@
             },
             _createAutocomplete: function () {
                 var selected = this.element.children(":selected"),
-                    value = "@ViewBag.colonia";
+                    value = String("@ViewBag.colonia");
+                //alert("@ViewBag.colonia");
                 this.input = $("<input id=inputAutocomplete>")
                     .appendTo(this.wrapper)
                     .val(value)
@@ -311,7 +312,7 @@
                     });
                 }));
                 response(resultset);
-                    
+
                 $("#btnCausaPenal").css("display", "block");
             },
             _removeIfInvalid: function (event, ui) {
@@ -423,6 +424,7 @@
                         asp-items="@(new SelectList(ViewBag.colonias, "Idzonas", "ColoniaCP", @ViewBag.idZona))">
                 </select>
             </div>
+            <button id="toggle">Show underlying select</button>
             @if (ViewBag.pais == "MEXICO")
             {
                 <div class="form-group col-md-4" id="PaisD">
@@ -506,7 +508,7 @@
                         asp-items="@(new SelectList(ViewBag.listacuentaDomicilioSecundario, "Value", "Text", @ViewBag.idcuentaDomicilioSecundario))">
                 </select>
             </div>
- 
+
             @if (ViewBag.domi == "SI")
             {
                 <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnAdd" style="display:none">
