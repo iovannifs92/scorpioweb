@@ -125,11 +125,11 @@
             },
             success: function (response) {
                 if (response.borrar == false) {
-                    alert("No se ha borrado porque tiene una supervisión o presentaciónes periodicas");
+                    alert("El registro no puede ser borrado ya que tiene supervisiones y/o huella asignada");
                 } else {
                     function borrarPersonas(id) {
                         var usuario = '@ViewBag.user';
-                        let razon = prompt("Porque desea borrar el registro?", "");
+                        let razon = prompt("Describa la razón para borrar el registro", "");
                         if (razon == null || razon == "") {
                             return;
                             text = "NA";

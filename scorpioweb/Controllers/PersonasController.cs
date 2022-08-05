@@ -1697,7 +1697,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string combobox)
+            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string inputAutocomplete)
         {
 
             string currentUser = User.Identity.Name;
@@ -1779,41 +1779,24 @@ namespace scorpioweb.Controllers
                 domicilio.Lat = lat;
                 domicilio.Lng = lng;
 
+                domicilio.NombreCf = normaliza(inputAutocomplete);
+
                 List<Zonas> zonasList = new List<Zonas>();
                 zonasList = (from Zonas in _context.Zonas
                              select Zonas).ToList();
 
-                domicilio.NombreCf = "NA";
-                for (int i = 0; i < zonasList.Count; i++)
-                {
-                    if (zonasList[i].Idzonas.ToString() == combobox)
-                    {
-                        domicilio.NombreCf = zonasList[i].Colonia.ToUpper();
-                    }
-                }
-
-                int index = domicilio.NombreCf.IndexOf(@",");
-                string colonia;
-                if (index == -1)
-                {
-                    colonia = domicilio.NombreCf;
-                }
-                else
-                {
-                    colonia = domicilio.NombreCf.Substring(0, index);
-                }
                 domicilio.Zona = "SIN ZONA ASIGNADA";
                 int matches = 0;
                 for (int i = 0; i < zonasList.Count; i++)
                 {
-                    if (zonasList[i].Colonia.ToUpper() == colonia)
+                    if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf)
                     {
                         matches++;
                     }
                 }
                 for (int i = 0; i < zonasList.Count; i++)
                 {
-                    if (zonasList[i].Colonia.ToUpper() == colonia && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
+                    if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
                     {
                         domicilio.Zona = zonasList[i].Zona.ToUpper();
                     }
@@ -3495,7 +3478,7 @@ namespace scorpioweb.Controllers
             ViewBag.idcuentaDomicilioSecundario = BuscaId(listaNoSi, domicilio.DomcilioSecundario);
 
             ViewBag.listaZona = listaZonas;
-            ViewBag.idZona = BuscaId(listaZonas, domicilio.Zona);
+            ViewBag.zona = BuscaId(listaZonas, domicilio.Zona);
 
             ViewBag.pais = domicilio.Pais;
 
@@ -3531,7 +3514,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio, string combobox)
+        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomicilio,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaIdPersona,Zona")] Domicilio domicilio, string inputAutocomplete)
         {
             if (id != domicilio.PersonaIdPersona)
             {
@@ -3547,41 +3530,24 @@ namespace scorpioweb.Controllers
             //domicilio.Lat = domicilio.Lat;
             //domicilio.Lng = domicilio.Lng;
 
+            domicilio.NombreCf = normaliza(inputAutocomplete);
+
             List<Zonas> zonasList = new List<Zonas>();
             zonasList = (from Zonas in _context.Zonas
                          select Zonas).ToList();
-
-            domicilio.NombreCf = "NA";
-            for (int i = 0; i < zonasList.Count; i++)
-            {
-                if (zonasList[i].Idzonas.ToString() == combobox)
-                {
-                    domicilio.NombreCf = zonasList[i].Colonia.ToUpper();
-                }
-            }
-
-            int index = domicilio.NombreCf.IndexOf(@",");
-            string colonia;
-            if(index == -1)
-            {
-                colonia = domicilio.NombreCf;
-            }
-            else
-            { 
-                colonia = domicilio.NombreCf.Substring(0, index);
-            }
+           
             domicilio.Zona = "SIN ZONA ASIGNADA";
             int matches = 0;
             for (int i = 0; i < zonasList.Count; i++)
             {
-                if (zonasList[i].Colonia.ToUpper() == colonia)
+                if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf)
                 {
                     matches++;
                 }
             }
             for (int i = 0; i < zonasList.Count; i++)
             {
-                if (zonasList[i].Colonia.ToUpper() == colonia && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
+                if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
                 {
                     domicilio.Zona = zonasList[i].Zona.ToUpper();
                 }
