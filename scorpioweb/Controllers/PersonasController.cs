@@ -6345,6 +6345,7 @@ namespace scorpioweb.Controllers
                 contactos.Telefono = value;
                 contactos.Correo = value;
                 contactos.Extencion = value;
+                contactos.Dependencia = value;
                 contactos.Idcontactomunicipio = Int32.Parse(id);
             }
 
@@ -6384,6 +6385,14 @@ namespace scorpioweb.Controllers
                                  where s.Idcontactomunicipio == contactos.Idcontactomunicipio
                                  select s).FirstOrDefault();
                     query.Extencion = contactos.Extencion;
+                    _context.SaveChanges();
+                }
+                if (nameCampo == "Dependencia")
+                {
+                    var query = (from s in _context.Contactos
+                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                                 select s).FirstOrDefault();
+                    query.Dependencia = contactos.Dependencia;
                     _context.SaveChanges();
                 }
             }
