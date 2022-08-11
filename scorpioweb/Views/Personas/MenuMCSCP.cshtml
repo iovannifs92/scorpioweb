@@ -13,13 +13,23 @@
     {
         adminUser = true;
     }
-    if (item == "Oficialia" || item=="Asistente")
+    if (item == "Oficialia" || item == "Asistente")
     {
         oficialia = true;
     }
 }
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
+
+
+<script>
+    function myFunction() {
+        window.open("http://10.6.60.190/Personas/Contactos", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=900,height=400");
+        //window.open("https://localhost:44359/Personas/Contactos", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=900,height=400");
+    }
+</script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div class="card-group" style="padding-top:2%">
 
@@ -156,6 +166,35 @@
         </div>
     }
 </div>
+<div class="bg-light clearfix">
+    <section class="buttons">
+        <a onclick="myFunction()" class="fa fa-address-book float-right"></a>
+    </section>
+</div>
+
+
+
+
+<style>
+    .buttons a {
+        text-decoration: none;
+        font-size: 28px;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        background: #314652;
+        color: #f1f1f1;
+        border-radius: 50%;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+        transition: all .4s ease-in-out;
+    }
+
+    .buttons a:hover {
+        transform: scale(1.2);
+    }
+
+</style>
 
 
 

@@ -60,6 +60,65 @@
             }
         });
     };
+    function borrarsuper(id) {
+        var idsuper = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisiones/antesdelete",
+            traditional: true,
+            data: {
+                datosuper: [idsuper],
+            },
+            success: function (response) {
+                if (response.borrar == false) {
+                    alert("No se ha borrado porque el supervisado tiene fracciones impuestas");
+                } else {
+                    function borrarcp(id) {
+                        var usuario = '@ViewBag.user';
+                        let razon = prompt("Porque desea borrar el registro?", "");
+                        if (razon == null || razon == "") {
+                            return;
+                            text = "NA";
+                        } else {
+                            text = razon;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Supervisiones/deletesuper",
+                            traditional: true,
+                            data: {
+                                datosuper: [id, razon, usuario],
+                            },
+                            success: function (response) {
+                                if (response.borrar == true) {
+                                    alert("El Registro ha sido borrado");
+                                    location.reload();
+                                } else {
+                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                }
+                            },
+                            error: function (response) {
+                                alert(response.error);
+
+                            }
+                        });
+                    };
+                    borrarcp(id);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+        }
+        return innerFunc;
+    };
 
 </script>
 
@@ -177,15 +236,21 @@
                     </td>
                 }
                 <td>
-                    <a type="button" class="btn btn-success" id="edicion" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                    <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarsuper(@item.supervisionVM.IdSupervision)">
+                        <i class="fa fa-trash"></i> 
+                    </a>
+                </td>
+                <td>
+                    <a type="button" class="btn btn-success" id="edicion" title="Edición" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-default" id="edicion" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
+                    <a type="button" class="btn btn-default" id="edicion" title="Presentaciónes" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
                         <i class="fa fa-calendar"></i> Presentaciónes
                     </a>
                 </td>
+                
                 <td>
                     @if (item.cierredecasoVM.RutaArchivo != null)
                     {

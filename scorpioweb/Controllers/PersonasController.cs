@@ -3488,9 +3488,11 @@ namespace scorpioweb.Controllers
                            orderby p.Colonia
                            select p;
             ViewBag.colonias = colonias.ToList();
-
             ViewBag.colonia = domicilio.NombreCf;
 
+            var colonia = domicilio.NombreCf;
+
+ 
             List<Zonas> zonasList = new List<Zonas>();
             zonasList = (from Zonas in _context.Zonas
                          select Zonas).ToList();
@@ -5425,7 +5427,7 @@ namespace scorpioweb.Controllers
                 historialeliminacion.Id = idpersona;
                 historialeliminacion.Descripcion = query.Paterno +" "+ query.Materno +" "+ query.Nombre ;
                 historialeliminacion.Tipo = "PERSONA";
-                historialeliminacion.Razon = razon;
+                historialeliminacion.Razon = normaliza(razon);
                 historialeliminacion.Usuario = user;
                 historialeliminacion.Fecha = DateTime.Now;
                 historialeliminacion.Supervisor = normaliza(query.Supervisor);
@@ -6296,6 +6298,107 @@ namespace scorpioweb.Controllers
         public IActionResult MenuArchivoMCySCP()
         {
             return View();
+        }  
+        public IActionResult Contactos()
+        {
+            List<Contactos> conM = (from cm in _context.Contactos
+                                     where cm.EstadoMunicipio == "MUNICIPIO"
+                                    select new Contactos
+                                    { 
+                                        Idcontactomunicipio = cm.Idcontactomunicipio,
+                                        Lugar = cm.Lugar,
+                                        Dependencia = cm.Dependencia,
+                                        NombreTitular = cm.NombreTitular,
+                                        Correo = cm.Correo,
+                                        Telefono = cm.Telefono,
+                                        Extencion = cm.Extencion
+                                    }).ToList();
+             
+            TempData["listconM"] = conM;
+
+
+            List<Contactos> conE = (from cm in _context.Contactos
+                                    where cm.EstadoMunicipio == "ESTADO"
+                                    select new Contactos
+                                    {
+                                        Idcontactomunicipio = cm.Idcontactomunicipio,
+                                        Lugar = cm.Lugar,
+                                        Dependencia = cm.Dependencia,
+                                        NombreTitular = cm.NombreTitular,
+                                        Correo = cm.Correo,
+                                        Telefono = cm.Telefono,
+                                        Extencion = cm.Extencion
+                                    }).ToList();
+
+            TempData["listconE"] = conE;
+
+
+            return View();
         }
+
+        #region -Update Contacto-
+        public JsonResult updatecontact(Persona persona,Contactos contactos, string id,string nameCampo, string value)
+        {
+            if (id != null)
+            {
+                contactos.NombreTitular = value;
+                contactos.Telefono = value;
+                contactos.Correo = value;
+                contactos.Extencion = value;
+                contactos.Dependencia = value;
+                contactos.Idcontactomunicipio = Int32.Parse(id);
+            }
+
+            var empty = (from s in _context.Contactos
+                         where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                         select s);
+
+            if (empty.Any())
+            {
+                if (nameCampo == "NombreTitular")
+                {
+                    var query = (from s in _context.Contactos
+                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                                 select s).FirstOrDefault();
+                    query.NombreTitular = contactos.NombreTitular;
+                    _context.SaveChanges();
+                }
+                if (nameCampo == "Correo")
+                {
+                    var query = (from s in _context.Contactos
+                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                                 select s).FirstOrDefault();
+                    query.Correo = contactos.Correo;
+                    _context.SaveChanges();
+                }
+                if (nameCampo == "Telefono")
+                {
+                    var query = (from s in _context.Contactos
+                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                                 select s).FirstOrDefault();
+                    query.Telefono = contactos.Telefono;
+                    _context.SaveChanges();
+                }
+                if (nameCampo == "Extencion")
+                {
+                    var query = (from s in _context.Contactos
+                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                                 select s).FirstOrDefault();
+                    query.Extencion = contactos.Extencion;
+                    _context.SaveChanges();
+                }
+                if (nameCampo == "Dependencia")
+                {
+                    var query = (from s in _context.Contactos
+                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
+                                 select s).FirstOrDefault();
+                    query.Dependencia = contactos.Dependencia;
+                    _context.SaveChanges();
+                }
+            }
+
+            return Json(new { success = true, responseText = Convert.ToString(0), idPersonas = Convert.ToString(contactos.Idcontactomunicipio) });
+        }
+        #endregion
     }
 }
