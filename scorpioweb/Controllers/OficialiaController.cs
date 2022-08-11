@@ -614,10 +614,16 @@ namespace scorpioweb.Controllers
         {
             string[] idList = ids.Substring(1, ids.Length - 2).Split(',');
 
-            string area = "SIN AREA";
-            //area = from a in _context.Areas
-            //       where a.UserName == supervisor
-            //       select a;
+            string area;
+            var record = _context.Areas.FirstOrDefault(a => a.UserName == supervisor);
+            if (record == null)
+            {
+                area = "SIN AREA";
+            }
+            else
+            {
+                area = record.Area;
+            }
 
             var oficios = from o in _context.Oficialia
                           select o;

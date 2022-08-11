@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace scorpioweb.Enums
+namespace scorpioweb.Models
 {
     public partial class Areas
     {
