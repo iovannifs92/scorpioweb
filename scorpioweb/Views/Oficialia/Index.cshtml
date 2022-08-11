@@ -3,33 +3,58 @@
     ViewData["Title"] = "Oficialía de Partes";
 }
 
-<div class="col-sm-12 col-md-12" style="padding-top:0%">
-    <div class="card-group">
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Oficialia" asp-action="EditRegistros">
-                        <img class="card-img-top" src="~/images/data-entry.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Editar Registro
-                    </a>
-                </h4>
-                <p class="card-text">
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
+{
+    <div class="col-sm-12 col-md-12" style="padding-top:0%">
+        <div class="card-group">
+            <div class="col-sm-3 col-md-3 card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a asp-controller="Oficialia" asp-action="EditRegistros">
+                            <img class="card-img-top" src="~/images/data-entry.png" alt="Card image cap" style="padding-bottom:5%;">
+                            Editar Registro
+                        </a>
+                    </h4>
+                    <p class="card-text">
 
-                </p>
+                    </p>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Oficialia" asp-action="Reportes">
-                        <img class="card-img-top" src="~/images/seo-report.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Reportes
-                    </a>
-                </h4>
-                <p class="card-text">
+            <div class="col-sm-3 col-md-3 card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a asp-controller="Oficialia" asp-action="Reportes">
+                            <img class="card-img-top" src="~/images/seo-report.png" alt="Card image cap" style="padding-bottom:5%;">
+                            Reportes
+                        </a>
+                    </h4>
+                    <p class="card-text">
 
-                </p>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
+else
+{
+    <div class="col-xs-12">
+        <div class="col-sm-6 col-md-6 col-xs-offset-3" style="padding-top:0%">
+            <div class="card-group">
+                <div class="col-sm-3 col-md-3 card text-center">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <a asp-controller="Oficialia" asp-action="EditRegistros">
+                                <img class="card-img-top" src="~/images/data-entry.png" alt="Card image cap" style="padding-bottom:5%;">
+                                Editar Registro
+                            </a>
+                        </h4>
+                        <p class="card-text">
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

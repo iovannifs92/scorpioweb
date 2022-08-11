@@ -116,16 +116,19 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Observaciones)
             </td>
-            <td>
-                <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
-                    <i class="fa fa-pencil"></i>
-                    Editar
-                </a>
-                <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
-                    <i class="fa fa-copy"></i>
-                    Clonar
-                </a>
-            </td>
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
+            {
+                <td>
+                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </a>
+                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
+                        <i class="fa fa-copy"></i>
+                        Clonar
+                    </a>
+                </td>
+            }
         </tr>
         }
     </tbody>
@@ -137,11 +140,14 @@
 }
 
 <div>
-<div>
-    <a asp-action="Captura" id="btnNuevoRegistro" name="btnNuevoRegistro" class="btn btn-primary">
-        <i class="fa fa-plus"></i> Nuevo Registro
-    </a>
-</div>
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
+{
+    <div>
+        <a asp-action="Captura" id="btnNuevoRegistro" name="btnNuevoRegistro" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Nuevo Registro
+        </a>
+    </div>
+}
 <a asp-action="EditRegistros"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
