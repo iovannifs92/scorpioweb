@@ -8,11 +8,28 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#inicial").change(function () {
+            $("#buscar").click();
+        });
+        $("#final").change(function () {
+            $("#buscar").click();
+        });
+        $("#UsuarioTurnar").change(function () {
+            $("#buscar").click();
+        });
+        $("#Capturista").change(function () {
+            $("#buscar").click();
+        });
+    });
+</script>
+
 <h2>Generación de Reportes</h2>
 
 <form asp-action="Reportes" method="get">
-    <div class="container" style="padding-bottom:1%">
-        <button type="submit" class="btn btn-info col-xs-1 p-1">
+    <div class="container" style="padding-bottom:1%;display:none">
+        <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
             <i class="fa fa-search"></i>
             Buscar
         </button>

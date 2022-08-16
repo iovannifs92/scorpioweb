@@ -8,12 +8,29 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#inicial").change(function () {
+            $("#buscar").click();
+        });
+        $("#final").change(function () {
+            $("#buscar").click();
+        });
+        $("#UsuarioTurnar").change(function () {
+            $("#buscar").click();
+        });
+        $("#Capturista").change(function () {
+            $("#buscar").click();
+        });
+    });
+</script>
+
 <h2>Edición de Registros de Oficialía</h2>
 
 <form asp-action="EditRegistros" method="get">
     <div class="container" style="padding-bottom:1%">
         <input type="text" class="col-xs-2 col-xs-offset-0" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
-        <button type="submit" class="btn btn-info col-xs-1 p-1">
+        <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
             <i class="fa fa-search"></i>
             Buscar
         </button>
