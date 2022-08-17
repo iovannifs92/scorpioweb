@@ -79,10 +79,10 @@
     <br>
     <div class="row">
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersona" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Supervisión</a>
+            <a asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal"  asp-route-idpersona="@item.personaVM.IdPersona" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Supervisión</a>
         </div>
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="EditFraccionesimpuestas" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersona" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Fracciónes Impuestas</a>
+            <a asp-action="EditFraccionesimpuestas" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersona" asp-route-idcp="@item.causapenalVM.IdCausaPenal" asp-route-supervisor="@item.personaVM.Supervisor" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Fracciónes Impuestas</a>
         </div>
     </div>
     <div class="row">
@@ -106,7 +106,7 @@
             <a asp-action="ListaVictima" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersona" id="victima" class="btn btn-primary btn-lg btn-block btn-huge">Victima</a>
         </div>
         <div class="col-md-6" style="padding-top:3%;">
-            <a asp-action="ListaBitacora" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersona" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Bitacora</a>
+            <a asp-action="ListaBitacora" asp-route-id="@item.supervisionVM.IdSupervision" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersona" asp-route-idcp="@item.causapenalVM.IdCausaPenal" asp-route-supervisor="@item.personaVM.Supervisor" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Bitacora</a>
         </div>
     </div>
     <div class="row">

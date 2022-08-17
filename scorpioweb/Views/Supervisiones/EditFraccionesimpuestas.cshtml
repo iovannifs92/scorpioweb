@@ -203,14 +203,14 @@
         @if (ViewBag.usuario)
         {
         <td>
-            <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona">
-                <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Fracción', null)" class="btn btn-success">
+            <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" asp-route-idpersona="@ViewBag.idpersona">
+                <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Fracción', null)" class="btn btn-success">
                     <i class="fa fa-pencil"></i> Editar
                 </a>
                 <button type="submit" class="btn btn-danger">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
-                <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervision',null)" class="btn btn-primary">
+                <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervision',null)" class="btn btn-primary">
                     <i class="fa fa-plus"></i> Acciones de Supervisión
                 </a>
             </form>
