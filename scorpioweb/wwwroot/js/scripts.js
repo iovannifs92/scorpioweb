@@ -100,7 +100,7 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
         if (status !== google.maps.GeocoderStatus.OK) {
             alert("No hay direcciones");//alert(status);
         }
-        // This is checking to see if the Geoeode Status is OK before proceeding
+        // This is checking to see if the Geocode Status is OK before proceeding
         if (status == google.maps.GeocoderStatus.OK) {
             var coord = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
             if (marker == null) {

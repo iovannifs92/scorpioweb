@@ -6,6 +6,7 @@ namespace scorpioweb.Models
 {
     public class OficialiaReporte
     {
+        public int IdOficialia { get; set; }
         public string NumOficio { get; set; }
         public string FechaRecepcion { get; set; }
         public string FechaEmision { get; set; }

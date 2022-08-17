@@ -311,8 +311,6 @@
                     });
                 }));
                 response(resultset);
-
-                $("#btnCausaPenal").css("display", "block");
             },
             _removeIfInvalid: function (event, ui) {
                 // Selected an item, nothing to do
@@ -423,7 +421,6 @@
                         asp-items="@(new SelectList(ViewBag.colonias, "Idzonas", "ColoniaCP", @ViewBag.idZona))">
                 </select>
             </div>
-            <button id="toggle">Show underlying select</button>
             @if (ViewBag.pais == "MEXICO")
             {
                 <div class="form-group col-md-4" id="PaisD">

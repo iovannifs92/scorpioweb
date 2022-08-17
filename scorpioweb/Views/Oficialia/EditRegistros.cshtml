@@ -8,32 +8,65 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
-<h2>Edición Oficialia</h2>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#inicial").change(function () {
+            $("#buscar").click();
+        });
+        $("#final").change(function () {
+            $("#buscar").click();
+        });
+        $("#UsuarioTurnar").change(function () {
+            $("#buscar").click();
+        });
+        $("#Capturista").change(function () {
+            $("#buscar").click();
+        });
+    });
+</script>
+
+<h2>Edición de Registros de Oficialía</h2>
 
 <form asp-action="EditRegistros" method="get">
-    <h4 style="padding-left:30px">
-        Rango de fecha
-    </h4>
-    <div class="col-xs-12">
-        <div class="col-xs-4">
-            <label>
-                Inicial
-            </label>
-            <input type="date" id="inicial" name="inicial" value="@ViewData["inicial"]" />
-        </div>
-        <div class="col-xs-4">
-            <label>
-                Final
-            </label>
-            <input type="date" id="final" name="final" value="@ViewData["final"]" />
-        </div>
-        <div>
-            <input type="text" class="col-xs-2" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
-        </div>
-        <button type="submit" class="btn btn-default col-xs-2">
+    <div class="container" style="padding-bottom:1%">
+        <input type="text" class="col-xs-2 col-xs-offset-0" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
+        <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
             <i class="fa fa-search"></i>
             Buscar
         </button>
+    </div>
+    <div class="col-xs-2">
+        <h4>
+            Fecha de Recepción:
+        </h4>
+    </div>
+    <div class="col-xs-1">
+        <label>
+            Inicial
+        </label>
+        <input type="date" id="inicial" name="inicial" value="@ViewData["inicial"]" />
+    </div>
+    <div class="col-xs-1 col-xs-offset-1">
+        <label>
+            Final
+        </label>
+        <input type="date" id="final" name="final" value="@ViewData["final"]" />
+    </div>
+    <div class="col-xs-3 col-xs-offset-1">
+        <label>
+            Supervisor
+        </label>
+        <select class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
+                asp-items="@(new SelectList(ViewBag.supervisores, "Text", "Text", @ViewBag.UsuarioTurnar))">
+        </select>
+    </div>
+    <div class="col-xs-3">
+        <label>
+            ¿Quién captura?
+        </label>
+        <select class="form-control" name="Capturista" id="Capturista"
+                asp-items="@(new SelectList(ViewBag.usuariosOficialia, "Text", "Text", @ViewBag.Capturista))">
+        </select>
     </div>
 </form>
 
@@ -41,22 +74,31 @@
     <thead>
         <tr>
             <th>
-                Nombre
+                Fecha de Recepción
             </th>
             <th>
                 Fecha de Emisión
             </th>
             <th>
-                Causa Penal
+                Expide
             </th>
             <th>
-                Asunto del oficio
+                Asunto del Oficio
+            </th>
+            <th>
+                Nombre del Imputado
+            </th>
+            <th>
+                Carpeta de Ejecución 
+            </th>
+            <th>
+                Causa Penal
             </th>
             <th>
                 Usuario a Turnar
             </th>
             <th>
-                Capturista
+                Observaciones
             </th>
         </tr>
     </thead>
@@ -65,33 +107,45 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.PaternoMaternoNombre)
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaRecepcion))
             </td>
             <td>
                 @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaEmision))
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CausaPenal)
+                @Html.DisplayFor(modelItem => item.Expide)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AsuntoOficio)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.NombrePaternoMaterno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CausaPenal)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.UsuarioTurnar)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Capturista)
+                @Html.DisplayFor(modelItem => item.Observaciones)
             </td>
-            <td>
-                <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
-                    <i class="fa fa-pencil"></i>
-                    Editar
-                </a>
-                <a class="btn btn-primary" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
-                    <i class="fa fa-copy"></i>
-                    Clonar
-                </a>
-            </td>
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
+            {
+                <td>
+                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
+                        <i class="fa fa-pencil"></i>
+                        Editar
+                    </a>
+                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
+                        <i class="fa fa-copy"></i>
+                        Clonar
+                    </a>
+                </td>
+            }
         </tr>
         }
     </tbody>
@@ -103,9 +157,14 @@
 }
 
 <div>
-@*<p>*@
-    <a asp-action="Captura">Nuevo Registro</a>
-@*</p>*@
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
+{
+    <div>
+        <a asp-action="Captura" id="btnNuevoRegistro" name="btnNuevoRegistro" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Nuevo Registro
+        </a>
+    </div>
+}
 <a asp-action="EditRegistros"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"

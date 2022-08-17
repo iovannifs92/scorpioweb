@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<scorpioweb.Models.Oficialia>
+
+@{
     ViewData["Title"] = "Reportes Oficialia";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -6,44 +8,145 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 
-<h2>Generación Reportes</h2>
-<div class="row">
-    <div class="col-sm-6 col-xs-12">
-        <form asp-action="Reportes">
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <td><b>Fecha de entrega a la coordinación:</b></td>
-                        <td>
-                            <input required type="date" class="form-control" name="fechaInicio" id="fechaInicio" />
-                        </td>
-                        <td>
-                            <input required type="date" class="form-control" name="fechaFin" id="fechaFin" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="form-group">
-                <label class="control-label">
-                    ¿A quién se entrega?
-                </label>
-                <select required class="form-control" name="entrega" id="entrega"
-                        asp-items="@(new SelectList(ViewBag.recibe, "Text","Text"))">
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="control-label">
-                    ¿Quién captura?
-                </label>
-                <select required class="form-control" name="captura" id="captura" 
-                        asp-items="@(new SelectList(ViewBag.capturista, "Text","Text"))">
-                </select>
-            </div>
-            <div class="form-group">
-                <button type="submit" id="btnImprime" name="btnImprime" class="btn btn-primary">
-                    <i class="fa fa-print"></i> Imprimir Reporte
-                </button>
-            </div>
-        </form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#inicial").change(function () {
+            $("#buscar").click();
+        });
+        $("#final").change(function () {
+            $("#buscar").click();
+        });
+        $("#UsuarioTurnar").change(function () {
+            $("#buscar").click();
+        });
+        $("#Capturista").change(function () {
+            $("#buscar").click();
+        });
+    });
+</script>
+
+<h2>Generación de Reportes</h2>
+
+<form asp-action="Reportes" method="get">
+    <div class="container" style="padding-bottom:1%;display:none">
+        <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
+            <i class="fa fa-search"></i>
+            Buscar
+        </button>
     </div>
-</div>
+    <div class="col-xs-2">
+        <h4>
+            Fecha de Recepción:
+        </h4>
+    </div>
+    <div class="col-xs-1">
+        <label>
+            Inicial
+        </label>
+        <input type="date" id="inicial" name="inicial" value="@ViewData["inicial"]" />
+    </div>
+    <div class="col-xs-1 col-xs-offset-1">
+        <label>
+            Final
+        </label>
+        <input type="date" id="final" name="final" value="@ViewData["final"]" />
+    </div>
+    <div class="col-xs-3 col-xs-offset-1">
+        <label>
+            Supervisor
+        </label>
+        <select class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
+                asp-items="@(new SelectList(ViewBag.supervisores, "Text", "Text", @ViewBag.UsuarioTurnar))">
+        </select>
+    </div>
+    <div class="col-xs-3">
+        <label>
+            ¿Quién captura?
+        </label>
+        <select class="form-control" name="Capturista" id="Capturista"
+                asp-items="@(new SelectList(ViewBag.usuariosOficialia, "Text", "Text", @ViewBag.Capturista))">
+        </select>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Fecha de Recepción
+            </th>
+            <th>
+                Fecha de Emisión
+            </th>
+            <th>
+                Expide
+            </th>
+            <th>
+                Asunto del Oficio
+            </th>
+            <th>
+                Nombre del Imputado
+            </th>
+            <th>
+                Carpeta de Ejecución 
+            </th>
+            <th>
+                Causa Penal
+            </th>
+            <th>
+                Usuario a Turnar
+            </th>
+            <th>
+                Observaciones
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaRecepcion))
+            </td>
+            <td>
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaEmision))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Expide)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AsuntoOficio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombrePaternoMaterno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CausaPenal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UsuarioTurnar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Observaciones)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<form asp-action="Reportes">
+    <input hidden type="text" value=@Html.Raw(Json.Serialize(@ViewBag.ids)) name="ids" id="ids" />
+    <input hidden type="date" value="@ViewData["inicial"]" name="startDate" id="startDate" />
+    <input hidden type="date" value="@ViewData["final"]" name="endDate" id="endDate" />
+    <input hidden type="text" value="@ViewBag.UsuarioTurnar" name="supervisor" id="supervisor" />
+    <input hidden type="text" value="@ViewBag.Capturista" name="capturer" id="capturer" />
+    <div class="form-group">
+        <button type="submit" id="btnImprime" name="btnImprime" class="btn btn-primary">
+            <i class="fa fa-print"></i> Imprimir Reporte
+        </button>
+    </div>
+</form>
+

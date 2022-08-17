@@ -156,7 +156,8 @@ namespace scorpioweb.Controllers
                 Value = i.ToString()
             });
             i++;
-            foreach (var user in userManager.Users)
+            var users = userManager.Users.OrderBy(r => r.UserName);
+            foreach (var user in users)
             {
                 ListaUsuarios.Add(new SelectListItem
                 {
@@ -235,7 +236,7 @@ namespace scorpioweb.Controllers
                 }
                 _context.Add(oficialia);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("EditRegistros", "Oficialia");
             }
             return View(oficialia);
         }
@@ -244,37 +245,59 @@ namespace scorpioweb.Controllers
             string currentFilter,
             DateTime? inicial,
             DateTime? final,
+            string UsuarioTurnar,
+            string Capturista,
             int? pageNumber)
         {
-            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
-            int j = 0;
-            foreach (var usuario in userManager.Users)
+            List<SelectListItem> ListaUsuariosOficialia = new List<SelectListItem>();
+            int i = 0;
+            ListaUsuariosOficialia.Add(new SelectListItem
             {
-                ListaUsuarios.Add(new SelectListItem
+                Text = "todos",
+                Value = i.ToString()
+            });
+            i++;
+            var usersOficialia = userManager.Users.OrderBy(r => r.UserName);
+            foreach (var u in usersOficialia)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
                 {
-                    Text = usuario.ToString(),
+                    ListaUsuariosOficialia.Add(new SelectListItem
+                    {
+                        Text = u.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.usuariosOficialia = ListaUsuariosOficialia;
+
+            var supervisores = from o in _context.Oficialia
+                               where o.UsuarioTurnar != null
+                               orderby o.UsuarioTurnar
+                               select o.UsuarioTurnar;
+            supervisores = supervisores.Distinct();
+            List<SelectListItem> ListaSupervisores = new List<SelectListItem>();
+            int j = 0;
+            ListaSupervisores.Add(new SelectListItem
+            {
+                Text = "todos",
+                Value = j.ToString()
+            });
+            j++;
+            foreach (var supervisor in supervisores)
+            {
+                ListaSupervisores.Add(new SelectListItem
+                {
+                    Text = supervisor.ToString(),
                     Value = j.ToString()
                 });
                 j++;
             }
-            ViewBag.usuarios = ListaUsuarios;
+            ViewBag.supervisores = ListaSupervisores;
 
-            #region -ListaUsuarios-            
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            var roles = await userManager.GetRolesAsync(user);
-
-            List<string> rolUsuario = new List<string>();
-
-            for (int i = 0; i < roles.Count; i++)
-            {
-                rolUsuario.Add(roles[i]);
-            }
-
-            ViewBag.RolesUsuario = rolUsuario;
-
-            String users = user.ToString();
-            ViewBag.RolesUsuarios = users;
-            #endregion
+            ViewBag.UsuarioTurnar = UsuarioTurnar;
+            ViewBag.Capturista = Capturista;
 
             ViewData["CurrentFilter"] = currentFilter;
             if (inicial != null)
@@ -291,12 +314,22 @@ namespace scorpioweb.Controllers
 
             if (inicial != null)
             {
-                oficios = oficios.Where(o => o.FechaEmision != null && DateTime.Compare((DateTime)inicial, (DateTime)o.FechaEmision) <= 0);
+                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)inicial.Value.Date, (DateTime)o.FechaRecepcion.Value.Date) <= 0);
             }
 
             if (final != null)
             {
-                oficios = oficios.Where(o => o.FechaEmision != null && DateTime.Compare((DateTime)o.FechaEmision, (DateTime)final) <= 0);
+                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
+            }
+
+            if (UsuarioTurnar != null && UsuarioTurnar != "todos")
+            {
+                oficios = oficios.Where(o => o.UsuarioTurnar != null && o.UsuarioTurnar == UsuarioTurnar);
+            }
+
+            if (Capturista != null && Capturista != "todos")
+            {
+                oficios = oficios.Where(o => o.Capturista != null && o.Capturista == Capturista);
             }
 
             if (currentFilter != null)
@@ -347,7 +380,8 @@ namespace scorpioweb.Controllers
                 Value = i.ToString()
             });
             i++;
-            foreach (var user in userManager.Users)
+            var users = userManager.Users.OrderBy(r => r.UserName);
+            foreach (var user in users)
             {
                 ListaUsuarios.Add(new SelectListItem
                 {
@@ -461,73 +495,161 @@ namespace scorpioweb.Controllers
             return View(oficialia);
         }
 
-
-        public async Task<IActionResult> Reportes()
+        public async Task<IActionResult> Reportes(
+            string currentFilter,
+            DateTime? inicial,
+            DateTime? final,
+            string UsuarioTurnar,
+            string Capturista)
         {
-            List<SelectListItem> ListaCapturista = new List<SelectListItem>();
-            List<SelectListItem> ListaRecibe = new List<SelectListItem>();
-
-            var c = from o in _context.Oficialia
-                    group o by new { o.Capturista }
-                    into grupo
-                    select grupo.FirstOrDefault();
-
-            foreach (var capturista in c)
+            List<SelectListItem> ListaUsuariosOficialia = new List<SelectListItem>();
+            int i = 0;
+            ListaUsuariosOficialia.Add(new SelectListItem
             {
-                ListaCapturista.Add(new SelectListItem
+                Text = "todos",
+                Value = i.ToString()
+            });
+            i++;
+            var usersOficialia = userManager.Users.OrderBy(r => r.UserName);
+            foreach (var u in usersOficialia)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
                 {
-                    Text = capturista.Capturista,
-                    Value = capturista.Capturista
+                    ListaUsuariosOficialia.Add(new SelectListItem
+                    {
+                        Text = u.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.usuariosOficialia = ListaUsuariosOficialia;
+
+            var supervisores = from o in _context.Oficialia
+                               where o.UsuarioTurnar != null
+                               orderby o.UsuarioTurnar
+                               select o.UsuarioTurnar;
+            supervisores = supervisores.Distinct();
+            List <SelectListItem> ListaSupervisores = new List<SelectListItem>();
+            int j = 0;
+            ListaSupervisores.Add(new SelectListItem
+            {
+                Text = "todos",
+                Value = j.ToString()
+            });
+            j++;
+            foreach (var supervisor in supervisores)
+            {
+                ListaSupervisores.Add(new SelectListItem
+                {
+                    Text = supervisor.ToString(),
+                    Value = j.ToString()
                 });
+                j++;
+            }
+            ViewBag.supervisores = ListaSupervisores;
+
+            ViewBag.UsuarioTurnar = UsuarioTurnar;
+            ViewBag.Capturista = Capturista;
+
+            ViewData["CurrentFilter"] = currentFilter;
+            if (inicial != null)
+            {
+                ViewData["inicial"] = Convert.ToDateTime(inicial).ToString("yyyy-MM-dd");
+            }
+            if (final != null)
+            {
+                ViewData["final"] = Convert.ToDateTime(final).ToString("yyyy-MM-dd");
             }
 
-            var r = from o in _context.Oficialia
-                    group o by new { o.UsuarioTurnar }
-                    into grupo
-                    select grupo.FirstOrDefault();
+            var oficios = from o in _context.Oficialia
+                          select o;
 
-            foreach (var recibe in r)
+            if (inicial != null)
             {
-                ListaRecibe.Add(new SelectListItem
-                {
-                    Text = recibe.UsuarioTurnar,
-                    Value = recibe.UsuarioTurnar
-                });
+                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)inicial.Value.Date, (DateTime)o.FechaRecepcion.Value.Date) <= 0);
             }
 
+            if (final != null)
+            {
+                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
+            }
 
-            ViewBag.capturista = ListaCapturista;
-            ViewBag.recibe = ListaRecibe;
-            return View();
+            if (UsuarioTurnar != null && UsuarioTurnar != "todos")
+            {
+                oficios = oficios.Where(o => o.UsuarioTurnar != null && o.UsuarioTurnar == UsuarioTurnar);
+            }
+
+            if (Capturista != null && Capturista != "todos")
+            {
+                oficios = oficios.Where(o => o.Capturista != null && o.Capturista == Capturista);
+            }
+
+            if (currentFilter != null)
+            {
+                foreach (var item in currentFilter.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    oficios = oficios.Where(o => (o.UsuarioTurnar != null && o.UsuarioTurnar.Contains(currentFilter.ToLower())) ||
+                                             (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
+                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
+                                             (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)));
+                }
+            }
+            var ids = from o in oficios
+                      select o.IdOficialia;
+            ViewBag.ids = ids.ToList();
+            return View(await oficios.ToListAsync());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public void Reportes(DateTime fechaInicio, DateTime fechaFin, string entrega, string captura)
+        public void Reportes(string ids,
+            DateTime startDate,
+            DateTime endDate,
+            DateTime? inicial,
+            DateTime? final,
+            string supervisor,
+            string capturer)
         {
+            string[] idList = ids.Substring(1, ids.Length - 2).Split(',');
 
-            IEnumerable<OficialiaReporte> dataOficialia = from o in _context.Oficialia.AsEnumerable()
-                              where o.Capturista == captura
-                              && o.Recibe == entrega
-                              && (o.FechaRecepcion >= fechaInicio && o.FechaRecepcion <= fechaFin)
-                              select new OficialiaReporte{
-                                  FechaRecepcion = (o.FechaRecepcion.Value).ToString("dd-MMMM-yyyy"),
-                                  FechaEmision= (o.FechaEmision.Value).ToString("dd-MMMM-yyyy"),
-                                  Expide=o.Expide,
-                                  AsuntoOficio=o.AsuntoOficio,
-                                  Paterno=o.Paterno,
-                                  Materno=o.Materno,
-                                  Nombre=o.Nombre,
-                                  CausaPenal=o.CausaPenal,
-                                  CarpetaEjecucion=o.CarpetaEjecucion,
-                                  Observaciones=o.Observaciones
-                              };
+            string area;
+            var record = _context.Areas.FirstOrDefault(a => a.UserName == supervisor);
+            if (record == null)
+            {
+                area = "SIN AREA";
+            }
+            else
+            {
+                area = record.Area;
+            }
+
+            var oficios = from o in _context.Oficialia
+                          select o;
+
+            IEnumerable<OficialiaReporte> dataOficialia = from o in oficios
+                                                          where idList.Contains(o.IdOficialia.ToString())
+                                                          select new OficialiaReporte
+                                                          {
+                                                              IdOficialia = o.IdOficialia,
+                                                              FechaRecepcion = (o.FechaRecepcion.Value).ToString("dd-MMMM-yyyy"),
+                                                              FechaEmision = (o.FechaEmision.Value).ToString("dd-MMMM-yyyy"),
+                                                              Expide = o.Expide,
+                                                              AsuntoOficio = o.AsuntoOficio,
+                                                              Paterno = o.Paterno,
+                                                              Materno = o.Materno,
+                                                              Nombre = o.Nombre,
+                                                              CausaPenal = o.CausaPenal,
+                                                              CarpetaEjecucion = o.CarpetaEjecucion,
+                                                              Observaciones = o.Observaciones
+                                                          };
 
             //item.FechaDetencion.Value.ToString("dd-MMMM-yyyy")
 
             //string xmlOficialia = SerializeObject<List<Oficialia>>(listaOficialia);
 
-            
+
             #region -GeneraDocumento-
             DataSet ds = new DataSet();
             //ds.ReadXml(new StringReader(xmlOficialia));
@@ -541,17 +663,18 @@ namespace scorpioweb.Controllers
             {
                 new
                 {
-                    FechaInicio=fechaInicio.ToString("dd-MMMM-yyyy"),
-                    FechaFin=fechaFin.ToString("dd-MMMM-yyyy"),
-                    Entrega=entrega.Substring(0, (entrega.IndexOf("@"))),
-                    Captura=captura.Substring(0, (captura.IndexOf("@")))
+                    FechaInicio=startDate.ToString("dd-MMMM-yyyy"),
+                    FechaFin=endDate.ToString("dd-MMMM-yyyy"),
+                    Entrega=supervisor,
+                    Capturista=capturer,
+                    Area=area
                 }
             };
 
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveUnusedFields;
             dc.MailMerge.Execute(dataSource);
             dc.MailMerge.Execute(dataOficialia, "OficialiaReporte");
-            
+
 
             dc.Save(resultPath);
 
