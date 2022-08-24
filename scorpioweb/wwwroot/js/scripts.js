@@ -31,12 +31,11 @@ $("#confirmDialog").dialog({
     },
 });
 
-var marker = null;//si local, sale primero la infowindow vacia
+var marker = null;//si es variable local, sale primero la infowindow vacia
 var result;
 var map;
 var infowindow;
 var cnt = 0;//todo
-var coloniaGlobal;
 
 function iniciarMap() {
     var coord = { lat: 24.0234962, lng: -104.6606269 };//DGEP
@@ -165,11 +164,11 @@ function fillInAddress(place) {
         }
     }
     var colonia = getColonia(place);
-    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("nombreCF").value == "") {
+    if (esMunicipio == false || municipio == "Sin municipio" || colonia != "Sin colonia" || document.getElementById("inputAutocomplete").value == "") {
         document.getElementById("no").value = "";
         document.getElementById("calle").value = "";
         document.getElementById("cp").value = "";
-        coloniaGlobal = "";
+        localStorage.setItem('colonia', '');
 
         var municipio = getMunicipio(place);
         for (const component of place.address_components) {
@@ -202,14 +201,14 @@ function fillInAddress(place) {
             }
         }
         if (esMunicipio == false && municipio != "Sin municipio") {
-            if (coloniaGlobal == "") {
-                coloniaGlobal = municipio;
+            if (localStorage.getItem('colonia') != "") {
+                localStorage.setItem('colonia', localStorage.getItem('colonia') + ", " + municipio);
             }
             else {
-                coloniaGlobal = coloniaGlobal + ", " + municipio;
+                localStorage.setItem('colonia', municipio);
             }
         }
-        document.getElementById("inputAutocomplete").value = coloniaGlobal;
+        $('#combobox').change();
         //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
         if (localStorage.getItem('municipioD')) {
             $('#municipioD').val(localStorage.getItem('municipioD'));
@@ -224,14 +223,14 @@ function fillInAddress(place) {
 
 function setColonia(colonia) {
     var cb = document.getElementById("combobox");
-    coloniaGlobal = colonia;
+    localStorage.setItem('colonia', colonia);
     colonia = colonia.toUpperCase();
     for (var i = 0; i < cb.options.length; i++) {
         var coloniaCP = cb.options[i].text;
         var index = coloniaCP.lastIndexOf(",");
         if (coloniaCP.substr(0, index).toUpperCase() == colonia) {
             cb.selectedIndex = i;
-            coloniaGlobal = coloniaCP.substr(0, index);
+            localStorage.setItem('colonia', coloniaCP.substr(0, index));
         }
     }
 }
@@ -244,6 +243,7 @@ function getColonia(place) {
             case "neighborhood": {
                 colonia = component.long_name;
                 break;
+
             }
             case "political": {// political overwrites neighborhood
                 colonia = component.long_name;
