@@ -1977,48 +1977,6 @@ namespace scorpioweb.Controllers
                 }*/
                 #endregion
 
-                #region -Referencias-
-                /*for (int i = 0; i < datosReferencias.Count; i = i + 13)
-                {
-                    if (datosReferencias[i][1] == currentUser)
-                    {
-                        asientoFamiliar.Nombre = normaliza(datosReferencias[i][0]);
-                        asientoFamiliar.Relacion = datosReferencias[i + 1][0];
-                        try
-                        {
-                            asientoFamiliar.Edad = Int32.Parse(datosReferencias[i + 2][0]);
-                        }
-                        catch
-                        {
-                            asientoFamiliar.Edad = 0;
-                        }
-                        asientoFamiliar.Sexo = datosReferencias[i + 3][0];
-                        asientoFamiliar.Dependencia = datosReferencias[i + 4][0];
-                        asientoFamiliar.DependenciaExplica = normaliza(datosReferencias[i + 5][0]);
-                        asientoFamiliar.VivenJuntos = datosReferencias[i + 6][0];
-                        asientoFamiliar.Domicilio = normaliza(datosReferencias[i + 7][0]);
-                        asientoFamiliar.Telefono = datosReferencias[i + 8][0];
-                        asientoFamiliar.HorarioLocalizacion = normaliza(datosReferencias[i + 9][0]);
-                        asientoFamiliar.EnteradoProceso = datosReferencias[i + 10][0];
-                        asientoFamiliar.PuedeEnterarse = datosReferencias[i + 11][0];
-                        asientoFamiliar.Observaciones = normaliza(datosReferencias[i + 12][0]);
-                        asientoFamiliar.Tipo = "REFERENCIA";
-                        asientoFamiliar.PersonaIdPersona = idPersona;
-                        _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                    }
-                }
-
-                for (int i = 0; i < datosReferencias.Count; i++)
-                {
-                    if (datosReferencias[i][1] == currentUser)
-                    {
-                        datosReferencias.RemoveAt(i);
-                        i--;
-                    }
-                }*/
-                #endregion
-
                 #region -Domicilio Secundario-
                 if (arrayDomSec != null)
                 {
@@ -2064,7 +2022,14 @@ namespace scorpioweb.Controllers
                     {
                         familiaresForaneos.Nombre = normaliza(famExtranjero[i].ToString());
                         familiaresForaneos.Relacion = famExtranjero[i + 1].ToString();
-                        familiaresForaneos.Edad = Int32.Parse(famExtranjero[i + 2].ToString());
+                        try
+                        {
+                            familiaresForaneos.Edad = Int32.Parse(famExtranjero[i + 2].ToString());
+                        }
+                        catch
+                        {
+                            familiaresForaneos.Edad = 0;
+                        }
                         familiaresForaneos.Sexo = famExtranjero[i + 3].ToString();
                         familiaresForaneos.TiempoConocerlo = famExtranjero[i + 4].ToString();
                         familiaresForaneos.Pais = famExtranjero[i + 5].ToString();
@@ -4509,7 +4474,14 @@ namespace scorpioweb.Controllers
 
             familiaresforaneos.PersonaIdPersona = Int32.Parse(datosFamiliarF[0]);
             familiaresforaneos.Nombre = normaliza(datosFamiliarF[1]);
-            familiaresforaneos.Edad = Int32.Parse(datosFamiliarF[2]);
+            try
+            {
+                familiaresforaneos.Edad = Int32.Parse(datosFamiliarF[2]);
+            }
+            catch
+            {
+                familiaresforaneos.Edad = 0;
+            }
             familiaresforaneos.Sexo = datosFamiliarF[3];
             familiaresforaneos.Relacion = datosFamiliarF[4];
             familiaresforaneos.TiempoConocerlo = datosFamiliarF[5];
