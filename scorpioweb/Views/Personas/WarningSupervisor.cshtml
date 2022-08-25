@@ -172,7 +172,7 @@
             //    }
             //    row = row + "</td>";
             //    break;
-            case "Se paso el tiempo de la firma":
+          case "Se paso el tiempo de la firma":
                 var date3 = Date.now();
                 date3 += 1000 * 60 * 60 * 24 * 3;
                 if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < Date.now()) {
@@ -180,20 +180,14 @@
                         + "<td style=\"color:red\">"
                         + "    " + result.query[i].tipoAdvertencia
                         + "</td>";
-                } else
-                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < date3) {
-                        row = row
-                            + "<td style=\"color:orange\">"
-                            + "   Firma en menos de 3 días "
-                            + "</td>";
-                    }
+                }
                 var dateString = result.query[i].planeacionestrategicaVM.fechaProximoContacto;
                 var datepc = formatDate(dateString);
                 row = row
                     + "<td>"
                     + "    " + datepc
                     + "</td>";
-                break;
+            break;
         }
         row = row
             + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
@@ -205,7 +199,7 @@
             row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
         }
         else {
-            row = row + "<td></td>";
+             row = row + "<td></td>";
         }
  
         row = row + "</td>";
@@ -228,7 +222,7 @@
             if (result.query[i].supervisionVM != null || result.query[i].causapenalVM != null) {
                 row = row
                     + "<td>"
-                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                    + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "&amp;idpersona=" + result.query[i].personaVM.idPersona + "\">"
                     + "        <i class=\"fa fa-pencil\"></i> Detalle"
                     + "    </a >"
                     + "</td>";
@@ -447,27 +441,21 @@
                                                 + "</td>";
                                             break;
                                         case "Se paso el tiempo de la firma":
-                                            var date3 = Date.now();
-                                            date3 += 1000 * 60 * 60 * 24 * 3;
-                                            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < Date.now()) {
-                                                row = row
-                                                    + "<td style=\"color:red\">"
-                                                    + "    " + result.query[i].tipoAdvertencia
-                                                    + "</td>";
-                                            } else
-                                                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < date3) {
-                                                    row = row
-                                                        + "<td style=\"color:orange\">"
-                                                        + "   Firma en menos de 3 días "
-                                                        + "</td>";
-                                                }
-                                            var dateString = result.query[i].planeacionestrategicaVM.fechaProximoContacto;
-                                            var datepc = formatDate(dateString);
+                                        var date3 = Date.now();
+                                        date3 += 1000 * 60 * 60 * 24 * 3;
+                                        if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < Date.now()) {
                                             row = row
-                                                + "<td>"
-                                                + "    " + datepc
+                                                + "<td style=\"color:red\">"
+                                                + "    " + result.query[i].tipoAdvertencia
                                                 + "</td>";
-                                            break;
+                                        }
+                                        var dateString = result.query[i].planeacionestrategicaVM.fechaProximoContacto;
+                                        var datepc = formatDate(dateString);
+                                        row = row
+                                            + "<td>"
+                                            + "    " + datepc
+                                            + "</td>";
+                                        break;
                                         //case "Sin estado de supervisión":
                                         //    row = row
                                         //        + "<td>"
@@ -513,7 +501,7 @@
                                     else {
                                         row = row
                                             + "<td>"
-                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "\">"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "&amp;idpersona=" + result.query[i].personaVM.idPersona + "\">"
                                             + "        <i class=\"fa fa-pencil\"></i> Detalle"
                                             + "    </a >"
                                             + "</td>";
