@@ -358,16 +358,19 @@ namespace scorpioweb.Controllers
                     simi = true;
                 }
             }
-
-            var tupleWithMaxItem1 = list.OrderBy(x => x.Item3).Last();
-
-            if (simi == true)
+            if(list.Count() != 0)
             {
-                double i = tupleWithMaxItem1.Item3 * 100;
-                int porcentaje = (int)Math.Floor(i);
-                string id = tupleWithMaxItem1.Item2.ToString();
-                return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
+                var tupleWithMaxItem1 = list.OrderBy(x => x.Item3).Last();
+
+                if (simi == true)
+                {
+                    double i = tupleWithMaxItem1.Item3 * 100;
+                    int porcentaje = (int)Math.Floor(i);
+                    string id = tupleWithMaxItem1.Item2.ToString();
+                    return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
+                }
             }
+           
             return Json(new { success = false });
         }
 
@@ -637,6 +640,7 @@ namespace scorpioweb.Controllers
             DateTime fechaInforme = (DateTime.Now).AddDays(5);
             DateTime fechaControl = (DateTime.Now).AddDays(3);
             DateTime fechaInformeCoordinador = (DateTime.Now).AddDays(30);
+            DateTime fechahoy = DateTime.Now;
             Boolean flagMaster = false;
             //Double comparaFecha;
             ViewBag.Warnings = 0;
@@ -819,13 +823,16 @@ namespace scorpioweb.Controllers
                                          }).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                         where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaControl && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                         where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechahoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = persona,
                                              supervisionVM = supervision,
+                                             fraccionesimpuestasVM = fracciones,
+                                             figuraJudicial = fracciones.FiguraJudicial,
                                              causapenalVM = causapenal,
                                              planeacionestrategicaVM = planeacion,
                                              tipoAdvertencia = "Se paso el tiempo de la firma"
@@ -940,13 +947,16 @@ namespace scorpioweb.Controllers
                                      }).Union
                                     (from persona in personaVM
                                      join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                     join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                      join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                      join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                     where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaControl && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA" 
+                                     where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechahoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA" 
                                      select new PlaneacionWarningViewModel
                                      {
                                          personaVM = persona,
                                          supervisionVM = supervision,
+                                         fraccionesimpuestasVM = fracciones,
+                                         figuraJudicial = fracciones.FiguraJudicial,
                                          causapenalVM = causapenal,
                                          planeacionestrategicaVM = planeacion,
                                          tipoAdvertencia = "Se paso el tiempo de la firma"
@@ -1325,13 +1335,14 @@ namespace scorpioweb.Controllers
             string selectem1 = LNE.FirstOrDefault().Estado.ToString();
             ViewBag.lnestado = selectem1.ToUpper();
 
-            var LNM = (from m in _context.Municipios
-                       join p in _context.Persona on m.Id equals int.Parse(p.Lnestado)
+            var LNM = (from p in  _context.Persona
+                       join m in _context.Municipios on p.Lnmunicipio equals m.Id.ToString()
                        where p.IdPersona == id
-                       select new
-                       {
-                           m.Municipio
-                       });
+                       select new { 
+                        m.Municipio
+                        });
+
+
 
             string selectem2 = LNM.FirstOrDefault().Municipio.ToString();
             ViewBag.lnmunicipio = selectem2.ToUpper();
@@ -4895,15 +4906,19 @@ namespace scorpioweb.Controllers
                                              }).Union
                                             (from persona in personaVM
                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaControl && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA" 
+                                             where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                             orderby planeacion.FechaProximoContacto descending
                                              select new PlaneacionWarningViewModel
                                              {
                                                  personaVM = persona,
                                                  supervisionVM = supervision,
+                                                 fraccionesimpuestasVM = fracciones,
+                                                 figuraJudicial = fracciones.FiguraJudicial,
                                                  municipiosVM = municipio,
                                                  causapenalVM = causapenal,
                                                  planeacionestrategicaVM = planeacion,
@@ -5023,17 +5038,21 @@ namespace scorpioweb.Controllers
                         ViewDataAlertasVari = where;
                         break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":
-                        ViewDataAlertasVari = from persona in personaVM
+                          ViewDataAlertasVari = from persona in personaVM
                                               join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                               join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                               join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                               join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                              where persona.Supervisor != null && persona.Supervisor!=null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaControl && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                              where persona.Supervisor != null && persona.Supervisor!=null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                              orderby planeacion.FechaProximoContacto descending
                                               select new PlaneacionWarningViewModel
                                               {
                                                   personaVM = persona,
                                                   supervisionVM = supervision,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
                                                   municipiosVM = municipio,
                                                   causapenalVM = causapenal,
                                                   planeacionestrategicaVM = planeacion,
@@ -5193,15 +5212,19 @@ namespace scorpioweb.Controllers
                                              }).Union
                                             (from persona in personaVM
                                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                             join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaControl && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                             where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                             orderby planeacion.FechaProximoContacto descending
                                              select new PlaneacionWarningViewModel
                                              {
                                                  personaVM = persona,
                                                  supervisionVM = supervision,
+                                                 fraccionesimpuestasVM = fracciones,
+                                                 figuraJudicial = fracciones.FiguraJudicial,
                                                  municipiosVM = municipio,
                                                  causapenalVM = causapenal,
                                                  planeacionestrategicaVM = planeacion,
@@ -5321,15 +5344,19 @@ namespace scorpioweb.Controllers
                     case "SE PASO EL TIEMPO DE LA FIRMA":
                         ViewData["alertas"] = from persona in personaVM
                                               join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                               join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                               join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                               join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                              where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaControl && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                              where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                              orderby planeacion.FechaProximoContacto descending 
                                               select new PlaneacionWarningViewModel
                                               {
                                                   personaVM = persona,
                                                   supervisionVM = supervision,
+                                                  fraccionesimpuestasVM = fracciones,
+                                                  figuraJudicial = fracciones.FiguraJudicial,
                                                   municipiosVM = municipio,
                                                   causapenalVM = causapenal,
                                                   planeacionestrategicaVM = planeacion,
