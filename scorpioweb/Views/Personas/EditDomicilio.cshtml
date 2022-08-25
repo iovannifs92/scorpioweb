@@ -25,7 +25,7 @@
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#estadoD';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
-                var items = "<option value='0'>Sin municipio</option>";
+                var items = "<option value=''>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
                     if(municipio.text == document.getElementById("municipioD").text) {
@@ -193,15 +193,8 @@
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
 
-        var form = document.getElementById("forma");
-        r = document.getElementById("municipioD");
-
-        form.addEventListener('submit', function(e) {
-            if(r.options[r.selectedIndex].text == "Sin municipio"){
-                alert("Seleccione el municipio donde vive");
-                e.preventDefault();
-            }
-        });
+        document.getElementById("municipioD").text = "@ViewBag.MunicipioD";
+        $("#estadoD").change();
     });
     $(function () {
         $.widget("custom.combobox", {
@@ -437,7 +430,7 @@
                 </div>
                 <div class="form-group col-md-4" id="MunicipioD">
                     <label class="control-label">Municipio</label>
-                    <select class="form-control" name="Municipio" id="municipioD"
+                    <select required class="form-control" name="Municipio" id="municipioD"
                             asp-items="@(new SelectList(ViewBag.ListaMunicipioD, "Id", "Municipio",  @ViewBag.idMunicipioD))">
                     </select>
                 </div>
@@ -448,18 +441,6 @@
                     <label class="control-label">País</label>
                     <select class="form-control" name="Pais" id="paisD"
                             asp-items="@(new SelectList(ViewBag.ListaPaisD, "Value", "Text", @ViewBag.idPaisD))">
-                    </select>
-                </div>
-                <div class="form-group col-md-4" style="display:none" id="EstadoD">
-                    <label class="control-label">Estado</label>
-                    <select class="form-control" name="Estado" id="estadoD"
-                            asp-items="@(new SelectList(ViewBag.ListaEstadoD, "Id", "Estado", @ViewBag.idEstadoD))">
-                    </select>
-                </div>
-                <div class="form-group col-md-4" style="display:none" id="MunicipioD">
-                    <label class="control-label">Municipio</label>
-                    <select class="form-control" name="Municipio" id="municipioD"
-                            asp-items="@(new SelectList(ViewBag.ListaMunicipioD, "Id", "Municipio",  @ViewBag.idMunicipioD))">
                     </select>
                 </div>
             }

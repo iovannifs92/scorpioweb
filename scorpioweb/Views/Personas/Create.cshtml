@@ -67,7 +67,7 @@
             var ddlsource = '#estadoD';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 //alert("entrando en JSON");
-                var items = "<option value='0'>Sin municipio</option>";
+                var items = "<option value=''>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
                     if(municipio.text == document.getElementById("municipioD").text) {
@@ -714,15 +714,8 @@
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
 
-        var form = document.getElementById("forma");
-        r = document.getElementById("municipioD");
-
-        form.addEventListener('submit', function(e) {
-            if(r.options[r.selectedIndex].text == "Sin municipio"){
-                alert("Seleccione el municipio donde vive");
-                e.preventDefault();
-            }
-        });
+        document.getElementById("municipioD").text = "Durango";
+        $("#estadoD").change();
     });
 
     $(function () {
@@ -1218,7 +1211,7 @@
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="control-label">Número</label>
-                                    <input id="no" name="no" type="text" value="308-A" class="form-control" />
+                                    <input id="no" name="no" type="text" value="308" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Colonia/Fraccionamiento/Localidad</label>
@@ -1247,7 +1240,7 @@
                                 </div>
                                 <div class="form-group col-md-4" id="MunicipioD">
                                     <label class="control-label">Municipio</label>
-                                    <select class="form-control" name="municipioD" id="municipioD"
+                                    <select required class="form-control" name="municipioD" id="municipioD"
                                             asp-items="@(new SelectList(ViewBag.ListaMunicipios,"Id","Municipio", 282))">
                                     </select>
                                 </div>
@@ -1475,11 +1468,11 @@
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Trabaja actualmente?</label>
                                     <select required class="form-control" name="trabaja" id="trabaja">
-                                        <option value="SI">Si</option>
                                         <option value="NO">No</option>
+                                        <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-12" id="tipoOcupacion">
+                                <div class="form-group col-md-12" id="tipoOcupacion" style="display:none">
                                     <label class="control-label">Tipo de ocupación</label>
                                     <select required class="form-control" name="tipoOcupacion" id="tipoOcupacion">
                                         <option value="NA">NA</option>
@@ -1494,15 +1487,15 @@
                                         <option value="TRABAJADORES EN ACTIVIDADES ELEMENTALES Y DE APOYO">Trabajadores en actividades elementales y de apoyo</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6" id="puesto">
+                                <div class="form-group col-md-6" id="puesto" style="display:none">
                                     <label class="control-label">Puesto</label>
                                     <input maxlength="45" name="" type="puesto" id="puesto" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="empleadorJefe">
+                                <div class="form-group col-md-6" id="empleadorJefe" style="display:none">
                                     <label class="control-label">Empleador/Jefe inmediato</label>
                                     <input maxlength="150" name="empleadorJefe" id="empleadorJefe" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="enteradoProceso">
+                                <div class="form-group col-md-6" id="enteradoProceso" style="display:none">
                                     <label class="control-label">¿Esta enterado(a) de su proceso penal?</label>
                                     <select class="form-control" name="enteradoProceso" id="enteradoProceso">
                                         <option value="NA">NA</option>
@@ -1510,7 +1503,7 @@
                                         <option value="NO">No</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6" id="sePuedeEnterar">
+                                <div class="form-group col-md-6" id="sePuedeEnterar" style="display:none">
                                     <label class="control-label">¿Se puede enterar?</label>
                                     <select class="form-control" name="sePuedeEnterar" id="sePuedeEnterar">
                                         <option value="NA">NA</option>
@@ -1518,7 +1511,7 @@
                                         <option value="NO">No</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-12" id="tiempoTrabajando">
+                                <div class="form-group col-md-12" id="tiempoTrabajando" style="display:none">
                                     <label class="control-label">Tiempo</label>
                                     <select required class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
                                         <option value="MAS DE 10 AÑOS">Más de 10 años</option>
@@ -1531,11 +1524,11 @@
                                         <option value="SIN TRABAJO DURANTE MAS DE 3 MESES">Tiene más de 3 meses sin actividad laboral</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6" id="salario">
+                                <div class="form-group col-md-6" id="salario" style="display:none">
                                     <label class="control-label">Salario ($)</label>
                                     <input maxlength="45" name="salario" id="salario" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="temporalidadSalario">
+                                <div class="form-group col-md-6" id="temporalidadSalario" style="display:none">
                                     <label class="control-label">Cada cuando le pagan</label>
                                     <select class="form-control" name="temporalidadSalario" id="temporalidadSalario">
                                         <option value="NA">NA</option>
@@ -1545,15 +1538,15 @@
                                         <option value="MENSUAL">Mensual</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-12" id="direccionT">
+                                <div class="form-group col-md-12" id="direccionT" style="display:none">
                                     <label class="control-label">Dirección</label>
                                     <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="horarioT">
+                                <div class="form-group col-md-6" id="horarioT" style="display:none">
                                     <label class="control-label">Horario de trabajo</label>
                                     <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="telefonoT">
+                                <div class="form-group col-md-6" id="telefonoT" style="display:none">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
                                 </div>

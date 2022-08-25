@@ -98,7 +98,7 @@ function getGeocodingData(calle, no, nombre, cp, municipio, estado) {
 
     geocoder.geocode({ 'address': address }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
-            alert("No hay direcciones");//alert(status);
+            alert("No hay direcciones");
         }
         // This is checking to see if the Geocode Status is OK before proceeding
         if (status == google.maps.GeocoderStatus.OK) {

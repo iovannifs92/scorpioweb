@@ -1378,7 +1378,7 @@ namespace scorpioweb.Controllers
                                    select table).ToList();
             }
 
-            listaMunicipios.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            listaMunicipios.Insert(0, new Municipios { Id = null, Municipio = "Selecciona" });
 
             ViewBag.ListadoMunicipios = listaMunicipios;
             ViewBag.idMunicipio = persona.Lnmunicipio;
@@ -1665,7 +1665,7 @@ namespace scorpioweb.Controllers
                                 where table.EstadosId == 10
                                 select table).ToList();
 
-            listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
+            listaMunicipiosD.Insert(0, new Municipios { Id = null, Municipio = "Sin municipio" });
             ViewBag.ListaMunicipios = listaMunicipiosD;
 
             var colonias = from p in _context.Zonas
@@ -3419,6 +3419,14 @@ namespace scorpioweb.Controllers
             listaMunicipiosD.Insert(0, new Municipios { Id = 0, Municipio = "Sin municipio" });
             ViewBag.ListaMunicipioD = listaMunicipiosD;
             ViewBag.idMunicipioD = domicilio.Municipio;
+            ViewBag.MunicipioD = "Sin municipio";
+            for (int i = 0; i < listaMunicipiosD.Count; i++)
+            {
+                if (listaMunicipiosD[i].Id.ToString() == domicilio.Municipio)
+                {
+                    ViewBag.MunicipioD = listaMunicipiosD[i].Municipio;
+                }
+            }
             #endregion
 
             #region TemporalidadDomicilio
