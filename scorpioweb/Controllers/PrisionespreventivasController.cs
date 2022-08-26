@@ -174,7 +174,7 @@ namespace scorpioweb.Controllers
         }
 
         // GET: Prisionespreventivas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int? numeroControl)
         {
             if (id == null)
             {
@@ -192,6 +192,16 @@ namespace scorpioweb.Controllers
             ViewBag.listaSexo = listaSexo;
             ViewBag.idGenero = prisionespreventivas.Genero;
             ViewBag.delito = prisionespreventivas.Delito;
+
+            if (numeroControl == 0)
+            {
+                prisionespreventivas.NumeroControl = null;
+                ViewBag.numeroControl = null;
+            }
+            else
+            {
+                ViewBag.numeroControl = prisionespreventivas.NumeroControl;
+            }
 
             return View(prisionespreventivas);
         }
@@ -255,6 +265,41 @@ namespace scorpioweb.Controllers
             return View(prisionespreventivas);
         }
 
+        public async Task<IActionResult> Duplicate(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var prisionespreventivas = await _context.Prisionespreventivas.SingleOrDefaultAsync(m => m.Idprisionespreventivas == id);
+            if (prisionespreventivas == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                int count = (from table in _context.Prisionespreventivas
+                             select table.Idprisionespreventivas).Count();
+                int idPrisionesPreventivas;
+                if (count == 0)
+                {
+                    idPrisionesPreventivas = 1;
+                }
+                else
+                {
+                    idPrisionesPreventivas = ((from table in _context.Prisionespreventivas
+                                    select table.Idprisionespreventivas).Max()) + 1;
+                }
+                prisionespreventivas.Idprisionespreventivas = idPrisionesPreventivas;
+
+                _context.Add(prisionespreventivas);
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                return RedirectToAction("Edit", new { id = idPrisionesPreventivas, numeroControl = 0 });
+            }
+            return View(prisionespreventivas);
+        }
         // GET: Prisionespreventivas/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

@@ -84,18 +84,20 @@
         }
         var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
         autocomplete(document.getElementById("Delito"), catalogo);
+
+        document.getElementById("NumeroControl").value = "@ViewBag.numeroControl";
     });
 </script>
 
 <div class="row">
     <div class="col-md-12">
-        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="Edit" enctype="multipart/form-data">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Idprisionespreventivas" />
             <input type="hidden" asp-for="Capturista" />
             <div class="form-group">
                 <label asp-for="NumeroControl" class="control-label">Número de control de la prisión preventiva</label>
-                <input asp-for="NumeroControl" class="form-control" />
+                <input asp-for="NumeroControl" class="form-control" id="NumeroControl"/>
                 <span asp-validation-for="NumeroControl" class="text-danger"></span>
             </div>
             <div class="form-group">
