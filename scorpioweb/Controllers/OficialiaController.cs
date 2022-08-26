@@ -19,9 +19,11 @@ using System.Xml;
 using System.Text;
 using SautinSoft.Document.MailMerging;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace scorpioweb.Controllers
 {
+    [Authorize]
     public class OficialiaController : Controller
     {
         #region -Variables Globales-
