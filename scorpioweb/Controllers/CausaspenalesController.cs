@@ -821,9 +821,7 @@ namespace scorpioweb.Controllers
 
             var queryhcp = from hcp in _context.Historialcp
                            where hcp.CausapenalIdCausapenal == id
-                           select hcp.Cnpp + " " + hcp.Juez + " " + hcp.Cambio + " " + hcp.Distrito + " " + hcp.Causapenal
-
-                            ;
+                           select hcp.Cnpp + " " + hcp.Juez + " " + hcp.Cambio + " " + hcp.Distrito + " " + hcp.Causapenal;
 
             var queryhcpN = normaliza(cnpp) + " " + normaliza(juez) + " " + normaliza(cambio) + " " + normaliza(distrito) + " " + normaliza(cp);
 
