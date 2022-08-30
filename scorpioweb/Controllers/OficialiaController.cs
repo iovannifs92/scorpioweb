@@ -154,7 +154,7 @@ namespace scorpioweb.Controllers
             int i = 0;
             ListaUsuarios.Add(new SelectListItem
             {
-                Text = "Selecciona",
+                Text = "",
                 Value = i.ToString()
             });
             i++;
