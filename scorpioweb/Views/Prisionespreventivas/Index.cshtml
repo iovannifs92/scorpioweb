@@ -124,7 +124,10 @@
                     <a id="btnEditar" onclick="showModal('@Url.Action("Edit","PrisionesPreventivas",null,Context.Request.Scheme)','Editar Prisión Preventiva',@item.Idprisionespreventivas)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
-                    <form onsubmit="return confirm('¿Deseas borrar este registro?');" asp-action="Delete" asp-route-id="@item.Idprisionespreventivas">
+                    <a id="btnClonar" style="margin-top: 10px" onclick="showModal('@Url.Action("Duplicate","PrisionesPreventivas",null,Context.Request.Scheme)', 'Registro Copiado', @item.Idprisionespreventivas)" class="btn btn-primary">
+                        <i class="fa fa-copy"></i> Clonar
+                    </a>
+                    <form onsubmit="return confirm('¿Deseas borrar este registro?');" style="margin-top: 10px" asp-action="Delete" asp-route-id="@item.Idprisionespreventivas">
                         <button type="submit" class="btn btn-danger">
                             <i class="fa fa-trash"></i> Borrar
                         </button>

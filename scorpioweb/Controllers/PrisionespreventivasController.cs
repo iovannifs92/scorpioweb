@@ -174,7 +174,7 @@ namespace scorpioweb.Controllers
         }
 
         // GET: Prisionespreventivas/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int? numeroControl)
         {
             if (id == null)
             {
@@ -182,9 +182,16 @@ namespace scorpioweb.Controllers
             }
 
             var prisionespreventivas = await _context.Prisionespreventivas.SingleOrDefaultAsync(m => m.Idprisionespreventivas == id);
+
             if (prisionespreventivas == null)
             {
                 return NotFound();
+            }
+
+            // Set to negative for cloning, positive for edit
+            if (numeroControl != null)
+            {
+                prisionespreventivas.Idprisionespreventivas = -(int)prisionespreventivas.Idprisionespreventivas;
             }
 
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
@@ -192,6 +199,16 @@ namespace scorpioweb.Controllers
             ViewBag.listaSexo = listaSexo;
             ViewBag.idGenero = prisionespreventivas.Genero;
             ViewBag.delito = prisionespreventivas.Delito;
+
+            if (numeroControl == 0)
+            {
+                prisionespreventivas.NumeroControl = null;
+                ViewBag.numeroControl = null;
+            }
+            else
+            {
+                ViewBag.numeroControl = prisionespreventivas.NumeroControl;
+            }
 
             return View(prisionespreventivas);
         }
@@ -207,12 +224,38 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    bool clone = false;
+                    if(prisionespreventivas.Idprisionespreventivas < 0)
+                    {
+                        clone = true;
+                        prisionespreventivas.Idprisionespreventivas = -prisionespreventivas.Idprisionespreventivas;
+                    }
+
+
                     prisionespreventivas.Paterno = normaliza(prisionespreventivas.Paterno);
                     prisionespreventivas.Materno = normaliza(prisionespreventivas.Materno);
                     prisionespreventivas.Nombre = normaliza(prisionespreventivas.Nombre);
                     prisionespreventivas.CausaPenal = normaliza(prisionespreventivas.CausaPenal);
                     prisionespreventivas.Observaciones = normaliza(prisionespreventivas.Observaciones);
                     var oldPrisionespreventivas = await _context.Prisionespreventivas.FindAsync(prisionespreventivas.Idprisionespreventivas);
+
+                    if (clone)
+                    {
+                        int count = (from table in _context.Prisionespreventivas
+                                     select table.Idprisionespreventivas).Count();
+                        int idPrisionesPreventivas;
+                        if (count == 0)
+                        {
+                            idPrisionesPreventivas = 1;
+                        }
+                        else
+                        {
+                            idPrisionesPreventivas = ((from table in _context.Prisionespreventivas
+                                                       select table.Idprisionespreventivas).Max()) + 1;
+                        }
+                        prisionespreventivas.Idprisionespreventivas = idPrisionesPreventivas;
+                    }
+
                     #region -EditarArchivo-
                     if (archivo == null)
                     {
@@ -236,8 +279,16 @@ namespace scorpioweb.Controllers
                     }
                     #endregion
 
-                    _context.Entry(oldPrisionespreventivas).CurrentValues.SetValues(prisionespreventivas);
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    if (clone)
+                    {
+                        _context.Add(prisionespreventivas);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                    }
+                    else
+                    {
+                        _context.Entry(oldPrisionespreventivas).CurrentValues.SetValues(prisionespreventivas);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -255,6 +306,19 @@ namespace scorpioweb.Controllers
             return View(prisionespreventivas);
         }
 
+        public async Task<IActionResult> Duplicate(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Edit", new { id = id, numeroControl = 0 });
+            }
+            return View();
+        }
         // GET: Prisionespreventivas/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
