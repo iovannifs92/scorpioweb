@@ -177,7 +177,6 @@
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
-        //document.getElementById("municipioD").text = "@ViewBag.MunicipioD";$("#estadoD").change();
     });
     $(function () {
         $.widget("custom.combobox", {
@@ -376,17 +375,17 @@
             <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
                 <i class="fa fa-map-marker"></i> Posicionar marcador
             </button>
-            <div class="form-group col-lg-5">
+            <div class="form-group col-xs-5">
                 <label asp-for="Calle" class="control-label"></label>
                 <input required id="calle" name="calle" asp-for="Calle" class="form-control" />
                 <span asp-validation-for="Calle" class="text-danger"></span>
             </div>
-            <div class="form-group col-lg-2">
+            <div class="form-group col-xs-2">
                 <label class="control-label">Número</label>
                 <input id="no" name="no" asp-for="No" class="form-control" />
                 <span asp-validation-for="No" class="text-danger"></span>
             </div>
-            <div class="form-group col-lg-5">
+            <div class="form-group col-xs-5">
                 <label class="control-label">Colonia/Fraccionamiento/Localidad</label>
                 <select required class="form-control" id="combobox" name="combobox" style="display:none;"
                         asp-items="@(new SelectList(ViewBag.colonias, "Idzonas", "ColoniaCP", @ViewBag.idZona))">
@@ -429,13 +428,13 @@
                         asp-items="@(new SelectList(ViewBag.ListaTemporalidad,  "Value", "Text", @ViewBag.idTemporalidadD))">
                 </select>
             </div>
-            <div class="form-group col-lg-4">
+            <div class="form-group col-xs-4">
                 <label class="control-label">¿Este domicilio es su residencia habitual?</label>
                 <select class="form-control" name="ResidenciaHabitual" id="ResidenciaHabitual"
                         asp-items="@(new SelectList(ViewBag.listaResidenciaHabitual, "Value", "Text", @ViewBag.idResidenciaHabitual))">
                 </select>
             </div>
-            <div class="form-group col-lg-4">
+            <div class="form-group col-xs-4">
                 <label class="control-label">Código Postal</label>
                 <input id="cp" name="cp" type="number" asp-for="Cp" class="form-control" />
                 <span asp-validation-for="Cp" class="text-danger"></span>
