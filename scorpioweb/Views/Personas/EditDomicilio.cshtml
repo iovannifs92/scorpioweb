@@ -20,7 +20,6 @@
             $.ajaxSetup({
                 async: false
             });
-
             localStorage.setItem('municipioAnterior',$('#municipioD').val());
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#estadoD';
@@ -38,7 +37,6 @@
                 $('#municipioD').html(items);
             });
             localStorage.setItem('municipioD',$('#municipioD').val());
-
             $.ajaxSetup({
                 async: true
             });
@@ -61,9 +59,7 @@
                 $("#PaisD").removeClass("col-md-12");
                 $("#PaisD").addClass("col-md-4");
             }
-
         });
-
         $('#DomcilioSecundario').change(function () {
             var selecteddom = $(this).children("option:selected").val();
             if (selecteddom == "SI") {
@@ -76,11 +72,9 @@
                 $("#DivbtnAdd").css("padding", "25px");
                 $("#DivbtnEditar").css("display", "none");
             }
-
         });
         //Para abrir vista temporal en modal
         showModal = (url, title, id) => {
-
             $.ajax({
                 type: "GET",
                 url: url + "?id=" + id,
@@ -90,30 +84,25 @@
                     $("#form-modal").modal('show');
                 },
                 error: function (res) {
-
                 }
             })
         }
-
         //#endregion
         //*Combobox Modal AdddomicilioSecundario*/
         var items = "<option value='0'>Selecciona</option>";
         $('#MunicipioM').html(items);
-
         $('#EstadoM').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipioED";
             var ddlsource = '#EstadoM';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 var items = '';
                 $("#MunicipioM").empty();
-
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
                 });
                 $('#MunicipioM').html(items);
             });
         });
-
         $('#PaisM').change(function () {
         var selectedCountry = $(this).children("option:selected").val();
         if (selectedCountry != "MEXICO") {
@@ -123,16 +112,13 @@
             $("#MunicipioM").val(0);
             $("#DivEstadoM").css("display", "none");
             $("#DivMunicipioM").css("display", "none");
-
         }
         else {
             $('#MunicipioM').html(items);
             $("#MunicipioM").val(0);
             $("#DivEstadoM").css("display", "block");
             $("#DivMunicipioM").css("display", "block");
-
             }
-
         });
         //#endregion
         //region Guardar AdddomicilioModal en caso de que
@@ -179,7 +165,6 @@
             });
         });
         //#endregion
-
         $('#btnGeocoding').on("click", function (e) {
             e.preventDefault();
             var calle = document.getElementById("calle").value;
@@ -192,9 +177,16 @@
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
-
-        document.getElementById("municipioD").text = "@ViewBag.MunicipioD";
-        $("#estadoD").change();
+        //document.getElementById("municipioD").text = "@ViewBag.MunicipioD";
+        //$("#estadoD").change();
+        var form = document.getElementById("forma");
+        r = document.getElementById("municipioD");
+        form.addEventListener('submit', function(e) {
+            if(r.options[r.selectedIndex].text == "Sin municipio"){
+                alert("Seleccione el municipio donde vive");
+                e.preventDefault();
+            }
+        });
     });
     $(function () {
         $.widget("custom.combobox", {
@@ -235,7 +227,6 @@
                         this._trigger("select", event, {
                             item: ui.item.option
                         });
-
                         var colonia = ui.item.option.text;
                         var index = colonia.lastIndexOf(",");
                         document.getElementById("cp").value = colonia.substr(index + 2);
@@ -283,16 +274,13 @@
             },
             _source: function (request, response) {
                 var res = request.term.split(" ");
-
                 var matcher = [];
                 for (i = 0; i < res.length; i++) {
                     matcher[i] = new RegExp($.ui.autocomplete.escapeRegex(res[i]), "i");
                 }
-
                 var resultset = [];
                 response(this.element.children("option").map(function () {
                     var text = $(this).text();
-
                     for (i = 0; i < res.length; i++) {
                         if (!this.value || (request.term && !matcher[i].test(text)))
                         return;
@@ -320,7 +308,6 @@
                         return false;
                     }
                 });
-
                 // Found a match, nothing to do
                 if (valid) {
                     return;
@@ -636,4 +623,3 @@
         </div>
     </div>
 </div>
-
