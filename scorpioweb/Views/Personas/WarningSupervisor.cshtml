@@ -204,10 +204,21 @@
  
         row = row + "</td>";
         if (result.query[i].tipoAdvertencia == "Sin supervisión") {
-      
-            row = row + "<td></td>";
-
+             row = row
+                        + "<td>"
+                        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Causaspenales/ListadeCausas/"+"\">"
+                        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                        + "    </a >"
+                        + "</td>";
+            row = row + "<td></td>";   
         }
+
+        //row = row
+        //        + "<td>"
+        //        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Causaspenales/ListadeCausas""\">"
+        //        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+        //        + "    </a >"
+        //        + "</td>";
 
         //else if (result.query[i].tipoAdvertencia == "Sin estado de supervisión")
         //{
@@ -231,7 +242,7 @@
                 if (result.query[i].tipoAdvertencia == "Sin Resolución") {
                     row = row
                         + "<td>"
-                        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/MenuEdicion/" + result.query[i].personaVM.idPersona + "\">"
+                        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/Edit/" + result.query[i].personaVM.idPersona + "\">"
                         + "        <i class=\"fa fa-pencil\"></i> Detalle"
                         + "    </a >"
                         + "</td>";
@@ -477,12 +488,23 @@
                                     else {
                                         row = row + "<td></td>";
                                     }
+                                    if (result.query[i].tipoAdvertencia == "Sin supervisión") {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Causaspenales/ListadeCausas/"+"\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                        row = row + "<td></td>";   
+                                    } else {
+                                        row = row + "<td></td>";
+                                    }
                                     row = row + "</td>";                         
                                     if (result.query[i].tipoAdvertencia == "Expediente físico en resguardo" || result.query[i].tipoAdvertencia == "Sin supervisión" || result.query[i].tipoAdvertencia == "Sin Resolución") {
                                         if (result.query[i].tipoAdvertencia == "Sin Resolución") {
                                             row = row
                                                 + "<td>"
-                                                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/MenuEdicion/" + result.query[i].personaVM.idPersona + "\">"
+                                                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/Edit/" + result.query[i].personaVM.idPersona + "\">"
                                                 + "        <i class=\"fa fa-pencil\"></i> Detalle"
                                                 + "    </a >"
                                                 + "</td>";
