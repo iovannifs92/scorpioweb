@@ -1942,12 +1942,19 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            ViewBag.ConoceDetenido = listaSiNoNa;
-            ViewBag.idConoceDetenido = BuscaId(listaSiNoNa, Victima.ConoceDetenido);
-
             #endregion
 
-
+            #region ConoceDetenido
+            List<SelectListItem> ListaConoceDetenido;
+            ListaConoceDetenido = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="NA", Value="NA"},
+              new SelectListItem{ Text="Si", Value="SI"},
+              new SelectListItem{ Text="No", Value="NO"},
+            };
+            ViewBag.ConoceDetenido = ListaConoceDetenido;
+            ViewBag.idConoceDetenido = BuscaId(ListaConoceDetenido, Victima.ConoceDetenido);
+            #endregion
 
 
             #region Relacion
