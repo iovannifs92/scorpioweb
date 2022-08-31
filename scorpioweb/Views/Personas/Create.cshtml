@@ -713,16 +713,7 @@
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
-        //document.getElementById("municipioD").text = "Durango";
-        //$("#estadoD").change();
-        var form = document.getElementById("forma");
-        r = document.getElementById("municipioD");
-        form.addEventListener('submit', function(e) {
-            if(r.options[r.selectedIndex].text == "Sin municipio"){
-                alert("Seleccione el municipio donde vive");
-                e.preventDefault();
-            }
-        });
+        //document.getElementById("municipioD").text = "Durango";$("#estadoD").change();
     });
 
     $(function () {
