@@ -16,12 +16,12 @@
     var key = keys.GOOGLE_API_KEY;
 
     function toUTF8(str) {      
-        str = str.replace("&#xC1;", "Á");
-        str = str.replace("&#201;", "É");
-        str = str.replace("&#205;", "Í");
-        str = str.replace("&#xD3;", "Ó");
-        str = str.replace("&#218;", "Ú");
-        str = str.replace("&#209;", "Ñ");
+        str = str.replace(new RegExp('&#xC1;', 'g'), 'Á');
+        str = str.replace(new RegExp('&#201;', 'g'), 'É');
+        str = str.replace(new RegExp('&#205;', 'g'), 'Í');
+        str = str.replace(new RegExp('&#xD3;', 'g'), 'Ó');
+        str = str.replace(new RegExp('&#218;', 'g'), 'Ú');
+        str = str.replace(new RegExp('&#209;', 'g'), 'Ñ');
         return str;
     }
 
