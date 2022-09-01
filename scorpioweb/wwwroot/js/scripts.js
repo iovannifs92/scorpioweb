@@ -155,6 +155,7 @@ function fillInAddress(place) {
     var municipioAnterior = m.options[m.selectedIndex].text;
     m.text = municipio;
     $("#estadoD").change();
+    m.text = "";
     var esMunicipio = false;
     for (i = 0; i < m.length; i++) {
         if (m.options[i].text == municipio) {
