@@ -208,6 +208,7 @@ function fillInAddress(place) {
                 localStorage.setItem('colonia', municipio);
             }
         }
+        document.getElementById("inputAutocomplete").value = localStorage.getItem('colonia');
         $('#combobox').change();
         //https://stackoverflow.com/questions/29534194/select-drop-down-on-change-reload-reverts-to-first-option
         if (localStorage.getItem('municipioD')) {
