@@ -14,6 +14,18 @@
 <script type="text/javascript">
     var tipo = 0;
     var key = keys.GOOGLE_API_KEY;
+
+    function toUTF8(str) {      
+        str = str.replace("&#xC1;", "Á");
+        str = str.replace("&#201;", "É");
+        str = str.replace("&#205;", "Í");
+        str = str.replace("&#xD3;", "Ó");
+        str = str.replace("&#218;", "Ú");
+        str = str.replace("&#209;", "Ñ");
+        return str;
+    }
+
+
     $(document).ready(function () {
         //#region -Municipios-
         $('#estadoD').change(function () {
@@ -189,7 +201,7 @@
             },
             _createAutocomplete: function () {
                 var selected = this.element.children(":selected"),
-                    value = "@ViewBag.colonia";
+                    value = toUTF8("@ViewBag.colonia");
                 this.input = $("<input id=inputAutocomplete name=inputAutocomplete>")
                     .appendTo(this.wrapper)
                     .val(value)
