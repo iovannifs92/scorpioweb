@@ -516,17 +516,15 @@ namespace scorpioweb.Controllers
                                bitacoravm = bo
                            };
 
-            var where = (from bn in leftjoin
-                         where bn.oficialiavm.UsuarioTurnar == supervisor && bn.oficialiavm.IdCausaPenal == idcp && bn.bitacoravm == null
-                         select bn.oficialiavm.IdOficialia).ToList();
+            var wheres = (from bn in leftjoin
+                          where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
+                          group bn by bn.oficialiavm.IdOficialia into grp
+                          select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
 
-            List<string> AuthorList = new List<string>();
-            for (int i = 0; i < where.Count; i++)
-            {
-                AuthorList.Add(where[i].ToString());
-            }
+            var select = (from wh in wheres
+                          select wh.oficialiavm.IdOficialia).ToList();
 
-            ViewBag.OficiosCausa = AuthorList;
+            ViewBag.expoficialia = select;
             #endregion
 
 
@@ -2121,15 +2119,21 @@ namespace scorpioweb.Controllers
                                personavm = p,
                                bitacoravm = bo
                            };
+            var wheres = (from bn in leftjoin
+                        where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
+                        group bn by bn.oficialiavm.IdOficialia into grp
+                        select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
 
-            var where = (from bn in leftjoin
-                       where bn.oficialiavm.UsuarioTurnar == supervisor && bn.oficialiavm.IdCausaPenal == idcp && bn.bitacoravm == null
-                       select bn.oficialiavm.IdOficialia).ToList();
+            var select = (from wh in wheres
+                         select wh.oficialiavm.IdOficialia).ToList();
+  
+            ViewBag.expoficialia = select;
+
 
             List<string> AuthorList = new List<string>();
-            for (int i = 0; i < where.Count; i++)
+            for (int i = 0; i < select.Count; i++)
             {
-                AuthorList.Add(where[i].ToString());
+                AuthorList.Add(select[i].ToString());
             }
 
             ViewBag.OficiosCausa = AuthorList;

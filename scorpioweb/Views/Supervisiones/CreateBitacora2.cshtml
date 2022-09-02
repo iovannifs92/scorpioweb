@@ -175,9 +175,11 @@
                 <input required asp-for="Fecha" type="date" class="form-control" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-4 autocomplete">
-                <label class="control-label">Id Oficialiaa</label>
-                <input name="idoficialia" id="idoficialia" type="text" maxlength="150" class="form-control" />
+           <div class="form-group col-md-4">
+                <label class="control-label">IdOficialia</label>
+                <select class="form-control" name="idoficialia" id="idoficialia"
+                        asp-items="@(new SelectList(ViewBag.expoficialia, "Value"))">
+                </select>
             </div>
             <div class="form-group">
                 <label class="control-label">Supervisado / Víctima</label>
