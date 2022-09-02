@@ -21,13 +21,24 @@
 >
     var tipo = 0;
     var key = keys.GOOGLE_API_KEY;
+
+    function toUTF8(str) {      
+        str = str.replace(new RegExp('&#xC1;', 'g'), 'Á');
+        str = str.replace(new RegExp('&#201;', 'g'), 'É');
+        str = str.replace(new RegExp('&#205;', 'g'), 'Í');
+        str = str.replace(new RegExp('&#xD3;', 'g'), 'Ó');
+        str = str.replace(new RegExp('&#218;', 'g'), 'Ú');
+        str = str.replace(new RegExp('&#209;', 'g'), 'Ñ');
+        return str;
+    }
+
+
     $(document).ready(function () {
         //#region -Municipios-
         $('#estadoD').change(function () {
             $.ajaxSetup({
                 async: false
             });
-
             localStorage.setItem('municipioAnterior',$('#municipioD').val());
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#estadoD';
@@ -45,7 +56,6 @@
                 $('#municipioD').html(items);
             });
             localStorage.setItem('municipioD',$('#municipioD').val());
-
             $.ajaxSetup({
                 async: true
             });
@@ -68,9 +78,7 @@
                 $("#PaisD").removeClass("col-md-12");
                 $("#PaisD").addClass("col-md-4");
             }
-
         });
-
         $('#DomcilioSecundario').change(function () {
             var selecteddom = $(this).children("option:selected").val();
             if (selecteddom == "SI") {
@@ -83,11 +91,9 @@
                 $("#DivbtnAdd").css("padding", "25px");
                 $("#DivbtnEditar").css("display", "none");
             }
-
         });
         //Para abrir vista temporal en modal
         showModal = (url, title, id) => {
-
             $.ajax({
                 type: "GET",
                 url: url + "?id=" + id,
@@ -97,30 +103,25 @@
                     $("#form-modal").modal('show');
                 },
                 error: function (res) {
-
                 }
             })
         }
-
         //#endregion
         //*Combobox Modal AdddomicilioSecundario*/
         var items = "<option value='0'>Selecciona</option>";
         $('#MunicipioM').html(items);
-
         $('#EstadoM').change(function () {
             var url = '@Url.Content("~/")' + "Personas/GetMunicipioED";
             var ddlsource = '#EstadoM';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 var items = '';
                 $("#MunicipioM").empty();
-
                 $.each(data, function (i, municipio) {
                     items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
                 });
                 $('#MunicipioM').html(items);
             });
         });
-
         $('#PaisM').change(function () {
         var selectedCountry = $(this).children("option:selected").val();
         if (selectedCountry != "MEXICO") {
@@ -130,16 +131,13 @@
             $("#MunicipioM").val(0);
             $("#DivEstadoM").css("display", "none");
             $("#DivMunicipioM").css("display", "none");
-
         }
         else {
             $('#MunicipioM').html(items);
             $("#MunicipioM").val(0);
             $("#DivEstadoM").css("display", "block");
             $("#DivMunicipioM").css("display", "block");
-
             }
-
         });
         //#endregion
         //region Guardar AdddomicilioModal en caso de que
@@ -186,7 +184,6 @@
             });
         });
         //#endregion
-
         $('#btnGeocoding').on("click", function (e) {
             e.preventDefault();
             var calle = document.getElementById("calle").value;
@@ -199,9 +196,6 @@
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
-
-        document.getElementById("municipioD").text = "@ViewBag.MunicipioD";
-        $("#estadoD").change();
     });
     $(function () {
         $.widget("custom.combobox", {
@@ -214,7 +208,7 @@
             },
             _createAutocomplete: function () {
                 var selected = this.element.children(":selected"),
-                    value = "@ViewBag.colonia";
+                    value = toUTF8("@ViewBag.colonia");
                 this.input = $("<input id=inputAutocomplete name=inputAutocomplete>")
                     .appendTo(this.wrapper)
                     .val(value)
@@ -242,7 +236,6 @@
                         this._trigger("select", event, {
                             item: ui.item.option
                         });
-
                         var colonia = ui.item.option.text;
                         var index = colonia.lastIndexOf(",");
                         document.getElementById("cp").value = colonia.substr(index + 2);
@@ -290,16 +283,13 @@
             },
             _source: function (request, response) {
                 var res = request.term.split(" ");
-
                 var matcher = [];
                 for (i = 0; i < res.length; i++) {
                     matcher[i] = new RegExp($.ui.autocomplete.escapeRegex(res[i]), "i");
                 }
-
                 var resultset = [];
                 response(this.element.children("option").map(function () {
                     var text = $(this).text();
-
                     for (i = 0; i < res.length; i++) {
                         if (!this.value || (request.term && !matcher[i].test(text)))
                         return;
@@ -327,7 +317,6 @@
                         return false;
                     }
                 });
-
                 // Found a match, nothing to do
                 if (valid) {
                     return;
@@ -405,17 +394,17 @@
             <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
                 <i class="fa fa-map-marker"></i> Posicionar marcador
             </button>
-            <div class="form-group col-lg-5">
+            <div class="form-group col-xs-5">
                 <label asp-for="Calle" class="control-label"></label>
                 <input required id="calle" name="calle" asp-for="Calle" class="form-control" />
                 <span asp-validation-for="Calle" class="text-danger"></span>
             </div>
-            <div class="form-group col-lg-2">
+            <div class="form-group col-xs-2">
                 <label class="control-label">Número</label>
                 <input id="no" name="no" asp-for="No" class="form-control" />
                 <span asp-validation-for="No" class="text-danger"></span>
             </div>
-            <div class="form-group col-lg-5">
+            <div class="form-group col-xs-5">
                 <label class="control-label">Colonia/Fraccionamiento/Localidad</label>
                 <select required class="form-control" id="combobox" name="combobox" style="display:none;"
                         asp-items="@(new SelectList(ViewBag.colonias, "Idzonas", "ColoniaCP", @ViewBag.idZona))">
@@ -458,13 +447,13 @@
                         asp-items="@(new SelectList(ViewBag.ListaTemporalidad,  "Value", "Text", @ViewBag.idTemporalidadD))">
                 </select>
             </div>
-            <div class="form-group col-lg-4">
+            <div class="form-group col-xs-4">
                 <label class="control-label">¿Este domicilio es su residencia habitual?</label>
                 <select class="form-control" name="ResidenciaHabitual" id="ResidenciaHabitual"
                         asp-items="@(new SelectList(ViewBag.listaResidenciaHabitual, "Value", "Text", @ViewBag.idResidenciaHabitual))">
                 </select>
             </div>
-            <div class="form-group col-lg-4">
+            <div class="form-group col-xs-4">
                 <label class="control-label">Código Postal</label>
                 <input id="cp" name="cp" type="number" asp-for="Cp" class="form-control" />
                 <span asp-validation-for="Cp" class="text-danger"></span>
@@ -643,4 +632,3 @@
         </div>
     </div>
 </div>
-

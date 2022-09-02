@@ -2201,6 +2201,25 @@ namespace scorpioweb.Controllers
             return View();
         }
 
+
+        #region -siNumero-
+        public static int siNumero(string numero)
+        {
+            int id = 0;
+
+            try
+            {
+                id=int.Parse(numero);
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return id;
+        }
+        #endregion
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona, string idoficialia,
@@ -2218,10 +2237,8 @@ namespace scorpioweb.Controllers
                 bitacora.TipoPersona = normaliza(tipoPersona);
                 bitacora.TipoVisita = normaliza(tipoVisita);
                 bitacora.Texto = normaliza(Texto);
-                bitacora.OficialiaIdOficialia = int.Parse(idOficialia);
+                bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                 bitacora.FechaRegistro = DateTime.Now;
-                bitacora.OficialiaIdOficialia = int.Parse(idoficialia);
-
 
                 var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
