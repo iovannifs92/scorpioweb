@@ -85,10 +85,9 @@
                     @Html.DisplayFor(modelItem => item.Texto)
                 </td>
                 <td>
-
                     @if (item.RutaEvidencia != null)
                     {
-                        <a id="btnEditar" href="~/Evidencia/@Html.DisplayFor(modelItem => item.RutaEvidencia)" target="_blank">
+                        <a href="~/Evidencia/@Html.DisplayFor(modelItem => item.RutaEvidencia)" target="_blank">
                             <i class="fa fa-paperclip fa-6"></i>
                         </a>
                     }
@@ -114,7 +113,7 @@
 </table>
 @if (ViewBag.usuario)
 {
-    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@ViewBag.IdSupervisionGuardar, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona,supervisor=@ViewBag.supervisor,idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Agregar Registro',null )" class="btn btn-primary">
+    <a onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@ViewBag.IdSupervisionGuardar, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona,supervisor=@ViewBag.supervisor,idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Agregar Registro',null )" class="btn btn-primary">
         <i class="fa fa-plus"></i>  Agregar Registro
     </a>
 }
