@@ -17,11 +17,11 @@
 
     function toUTF8(str) {      
         str = str.replace(new RegExp('&#xC1;', 'g'), 'Á');
-        str = str.replace(new RegExp('&#201;', 'g'), 'É');
-        str = str.replace(new RegExp('&#205;', 'g'), 'Í');
+        str = str.replace(new RegExp('&#xC9;', 'g'), 'É');
+        str = str.replace(new RegExp('&#xCD;', 'g'), 'Í');
         str = str.replace(new RegExp('&#xD3;', 'g'), 'Ó');
-        str = str.replace(new RegExp('&#218;', 'g'), 'Ú');
-        str = str.replace(new RegExp('&#209;', 'g'), 'Ñ');
+        str = str.replace(new RegExp('&#xDA;', 'g'), 'Ú');
+        str = str.replace(new RegExp('&#xD1;', 'g'), 'Ñ');
         return str;
     }
 
