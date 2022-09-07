@@ -1,4 +1,4 @@
-﻿@model PaginatedList<scorpioweb.Models.Oficialia>
+﻿@model PaginatedList<scorpioweb.Models.OficialiaBitacora>
 
 @{
     ViewData["Title"] = "EditRegistros";
@@ -100,6 +100,9 @@
             <th>
                 Observaciones
             </th>
+            <th>
+                Archivo
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -107,40 +110,48 @@
         {
         <tr>
             <td>
-                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaRecepcion))
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.oficialiaVM.FechaRecepcion))
             </td>
             <td>
-                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaEmision))
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.oficialiaVM.FechaEmision))
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Expide)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.Expide)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.AsuntoOficio)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.AsuntoOficio)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.NombrePaternoMaterno)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.NombrePaternoMaterno)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.CarpetaEjecucion)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CausaPenal)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.CausaPenal)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UsuarioTurnar)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.UsuarioTurnar)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Observaciones)
+                @Html.DisplayFor(modelItem => item.oficialiaVM.Observaciones)
+            </td>
+            <td style="text-align:center">
+                @if (item.BitacoraRutaEvidencia != null)
+                {
+                    <a href="~/Evidencia/@Html.DisplayFor(modelItem => item.BitacoraRutaEvidencia)" target="_blank">
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                }
             </td>
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
             {
                 <td>
-                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
+                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.oficialiaVM.IdOficialia" asp-route-titulo="Editar Oficialía">
                         <i class="fa fa-pencil"></i>
                         Editar
                     </a>
-                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
+                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.oficialiaVM.IdOficialia" asp-route-titulo="Registro Copiado">
                         <i class="fa fa-copy"></i>
                         Clonar
                     </a>

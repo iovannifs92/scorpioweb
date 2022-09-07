@@ -311,27 +311,33 @@ namespace scorpioweb.Controllers
                 ViewData["final"] = Convert.ToDateTime(final).ToString("yyyy-MM-dd");
             }
 
-            var oficios = from o in _context.Oficialia
-                          select o;
+            var oficios = from oficialia in _context.Oficialia
+                          join bitacora in _context.Bitacora on oficialia.IdOficialia equals bitacora.OficialiaIdOficialia into tmp
+                          from right in tmp.DefaultIfEmpty()
+                          select new OficialiaBitacora
+                          {
+                              oficialiaVM = oficialia,
+                              BitacoraRutaEvidencia = right.RutaEvidencia
+                          };
 
             if (inicial != null)
             {
-                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)inicial.Value.Date, (DateTime)o.FechaRecepcion.Value.Date) <= 0);
+                oficios = oficios.Where(o => o.oficialiaVM.FechaRecepcion != null && DateTime.Compare((DateTime)inicial.Value.Date, (DateTime)o.oficialiaVM.FechaRecepcion.Value.Date) <= 0);
             }
 
             if (final != null)
             {
-                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
+                oficios = oficios.Where(o => o.oficialiaVM.FechaRecepcion != null && DateTime.Compare((DateTime)o.oficialiaVM.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
             }
 
             if (UsuarioTurnar != null && UsuarioTurnar != "todos")
             {
-                oficios = oficios.Where(o => o.UsuarioTurnar != null && o.UsuarioTurnar == UsuarioTurnar);
+                oficios = oficios.Where(o => o.oficialiaVM.UsuarioTurnar != null && o.oficialiaVM.UsuarioTurnar == UsuarioTurnar);
             }
 
             if (Capturista != null && Capturista != "todos")
             {
-                oficios = oficios.Where(o => o.Capturista != null && o.Capturista == Capturista);
+                oficios = oficios.Where(o => o.oficialiaVM.Capturista != null && o.oficialiaVM.Capturista == Capturista);
             }
 
             if (currentFilter != null)
@@ -339,15 +345,15 @@ namespace scorpioweb.Controllers
                 foreach (var item in currentFilter.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    oficios = oficios.Where(o => (o.UsuarioTurnar != null && o.UsuarioTurnar.Contains(currentFilter.ToLower())) ||
-                                             (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
-                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
-                                             (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)));
+                    oficios = oficios.Where(o => (o.oficialiaVM.UsuarioTurnar != null && o.oficialiaVM.UsuarioTurnar.Contains(currentFilter.ToLower())) ||
+                                             (o.oficialiaVM.Paterno + " " + o.oficialiaVM.Materno + " " + o.oficialiaVM.Nombre).Contains(currentFilter.ToUpper()) ||
+                                             (o.oficialiaVM.Nombre + " " + o.oficialiaVM.Paterno + " " + o.oficialiaVM.Materno).Contains(currentFilter.ToUpper()) ||
+                                             (o.oficialiaVM.CausaPenal != null && o.oficialiaVM.CausaPenal.Contains(currentFilter)));
                 }
             }
 
             int pageSize = 10;
-            return View(await PaginatedList<Oficialia>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<OficialiaBitacora>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         public async Task<IActionResult> Edit(int? id, string titulo)

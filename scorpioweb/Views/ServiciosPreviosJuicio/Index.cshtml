@@ -161,7 +161,7 @@
                 <td>
                     @(item.FechaDetencion != null ? item.FechaDetencion.Value.ToString("dd-MMMM-yyyy") : String.Empty)
                 </td>
-                <td>
+                <td style="text-align:center">
                     @if (item.RutaAer != null)
                     {
                         <a id="btnEditar" href="~/AER/@Html.DisplayFor(modelItem => item.RutaAer)" target="_blank">
