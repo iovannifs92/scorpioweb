@@ -26,6 +26,7 @@
         var listDomSecEditados = new Array;
         var listFamExtranjero = new Array;
         var listFamExtranjerosEditados = new Array;
+
         $(document).ready(function () {
         //#region inicializar
         //#region Editar Sustancias
@@ -284,7 +285,13 @@
             document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarF';
             $("#AFDependenciaExplicaE").css("display", "none");
             $("#AFDireccionFamiliarE").css("display", "none");
-            $("#AFPuedeEnterarseE").css("display", "none");
+            var EnteradoProceso = document.getElementById("AFEnteradoProcesoE");
+            if (EnteradoProceso.value == "NO") {
+                $("#AFPuedeEnterarseE").css("display", "block");
+            }
+            else {
+                $("#AFPuedeEnterarseE").css("display", "none");
+            }
             $('#modalEditarAsientoFamiliar').modal('show');
             contadorFamiliares = 1;
             listFamiliaresEditados.length = 0;
@@ -310,7 +317,13 @@
             document.getElementById("AFidAsientoFamiliarE").value = '@ViewBag.idAsientoFamiliarR';
             $("#AFDependenciaExplicaE").css("display", "none");
             $("#AFDireccionFamiliarE").css("display", "none");
-            $("#AFPuedeEnterarseE").css("display", "none");
+            var EnteradoProceso = document.getElementById("AFEnteradoProcesoE");
+            if (EnteradoProceso.value == "NO") {
+                $("#AFPuedeEnterarseE").css("display", "block");
+            }
+            else {
+                $("#AFPuedeEnterarseE").css("display", "none");
+            }
             $('#modalEditarAsientoFamiliar').modal('show');
             contadorReferencias = 1;
             listReferenciasEditadas.length = 0;
@@ -586,7 +599,13 @@
                     contadorFamiliares++;
                     $("#AFDependenciaExplicaE").css("display", "none");
                     $("#AFDireccionFamiliarE").css("display", "none");
-                    $("#AFPuedeEnterarseE").css("display", "none");
+                    var EnteradoProceso = document.getElementById("AFEnteradoProcesoE");
+                    if (EnteradoProceso.value == "NO") {
+                        $("#AFPuedeEnterarseE").css("display", "block");
+                    }
+                    else {
+                        $("#AFPuedeEnterarseE").css("display", "none");
+                    }
                 }
             }
             else if (tipo == 2) {
@@ -629,7 +648,13 @@
                     contadorReferencias++;
                     $("#AFDependenciaExplicaE").css("display", "none");
                     $("#AFDireccionFamiliarE").css("display", "none");
-                    $("#AFPuedeEnterarseE").css("display", "none");
+                    var EnteradoProceso = document.getElementById("AFEnteradoProcesoE");
+                    if (EnteradoProceso.value == "NO") {
+                        $("#AFPuedeEnterarseE").css("display", "block");
+                    }
+                    else {
+                        $("#AFPuedeEnterarseE").css("display", "none");
+                    }
                 }
             }
         });
@@ -1177,7 +1202,7 @@
                 <input type="hidden" name="AFidAsientoFamiliarE" id="AFidAsientoFamiliarE" />
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
-                    <input class="form-control" maxlength="150" name="AFNombreE" type="text" id="AFNombreE" value="@ViewBag.nombre" />
+                    <input class="form-control" maxlength="150" name="AFNombreE" type="text" id="AFNombreE"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Relación</label>
@@ -1187,7 +1212,7 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Edad</label>
-                    <input class="form-control" name="AFEdadE" type="number" id="AFEdadE" value="@ViewBag.edad" />
+                    <input class="form-control" name="AFEdadE" type="number" id="AFEdadE"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Genero</label>
@@ -1203,7 +1228,7 @@
                 </div>
                 <div style="padding-top:1%; display:none;" id="AFDependenciaExplicaE">
                     <label class="control-label" for="AFDependenciaExplicaE">Explicar en que depende de él y cada cuanto</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="AFDependenciaExplicaOE" id="AFDependenciaExplicaOE">@ViewBag.dependenciaExplica</textarea>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFDependenciaExplicaOE" id="AFDependenciaExplicaOE"></textarea>
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">¿Vive con él?</label>
@@ -1213,15 +1238,15 @@
                 </div>
                 <div style="padding-top:1%; display:none;" id="AFDireccionFamiliarE">
                     <label class="control-label">Dirección</label>
-                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOE" id="AFDireccionFamiliarOE" type="text" value="@ViewBag.domicilio" />
+                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOE" id="AFDireccionFamiliarOE" type="text"/>
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Teléfono (10 dígitos)</label>
-                    <input name="AFtelefonoFamiliarE" id="AFtelefonoFamiliarE" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" value="@ViewBag.telefono" />
+                    <input name="AFtelefonoFamiliarE" id="AFtelefonoFamiliarE" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control"/>
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="AFDependenciaExplica">Días y horarios en que se encuentra</label>
-                    <textarea maxlength="200" class="form-control" rows="2" name="AFLocalizacionE" id="AFLocalizacionE">@ViewBag.horarioLocalizacion</textarea>
+                    <textarea maxlength="200" class="form-control" rows="2" name="AFLocalizacionE" id="AFLocalizacionE"></textarea>
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">¿Enterado de su proceso penal?</label>
@@ -1237,7 +1262,7 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="AFobservaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" name="AFobservacionesE" id="AFobservacionesE">@ViewBag.AFobservaciones</textarea>
+                    <textarea maxlength="250" class="form-control" name="AFobservacionesE" id="AFobservacionesE"></textarea>
                 </div>
             </div>
 
