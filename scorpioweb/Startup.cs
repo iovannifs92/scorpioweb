@@ -13,7 +13,9 @@ using scorpioweb.Models;
 using scorpioweb.Services;
 using Microsoft.AspNetCore.Authorization;
 using MySql.Data.MySqlClient;
-
+using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace scorpioweb
 {
@@ -30,6 +32,9 @@ namespace scorpioweb
         public void ConfigureServices(IServiceCollection services)
         {
             var conexion = Configuration.GetConnectionString("DefaultConnection");
+
+            services.Configure<WebEncoderOptions>(options =>
+                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(conexion));
