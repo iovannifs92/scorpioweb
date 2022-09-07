@@ -937,8 +937,8 @@
             <div class="container sub-page forma">
                 <div class="container">
                     <div class="panel-group">
-                        <div id="datosGenerales" class="panel panel-primary ">
-                            <div class="panel-heading " style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
+                        <div id="datosGenerales" class="panel panel-primary">
+                            <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
                                 <h4 class="panel-title">
                                     <p style="margin-bottom:unset">Datos Generales</p>
                                 </h4>
@@ -1122,14 +1122,14 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-12" style="padding-left:0%;">Añadir Referencias</label>
+                                <div class="form-group col-md-12">
+                                    <label class="control-label" >Añadir Referencias</label>
                                     <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group style="padding-left:15px;padding-right:15px;">
+                                <div class="form-group">
                                     <label class="control-label">Ubicación del expediente (únicamente Durango)</label>
                                     <select required class="form-control" name="ubicacionExpediente">
                                         <option value="NA">NA</option>
@@ -1163,8 +1163,9 @@
                                         <option value="MCSCP7-4">MCSCP7-4</option>
                                     </select>
                                 </div>
+                                <div class="col-md-12"> 
 
-
+                                </div>
                             </div>
                         </div>
                         <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1186,7 +1187,7 @@
                                 <input type="hidden" required id="lat" name="lat" type="text" class="form-control" />
                                 <input type="hidden" id="lng" name="lng" type="text" class="form-control" />
 
-                                <label class="control-label col-sm-12">La propiedad del lugar o del inmueble, es:</label>
+                                <label style="padding-top:30px;" class="control-label col-sm-12">La propiedad del lugar o del inmueble, es:</label>
                                 <div class="form-group col-sm-12" style="padding-left:0%;padding-right:0%;">
                                     <div class="form-group col-sm-9">
                                         <select required class="form-control" name="tipoDomicilio">
@@ -1198,7 +1199,7 @@
                                             <option value="IRREGULAR">Irregular</option>
                                         </select>
                                     </div>
-                                    <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
+                                    <button class="btn btn-primary form-group col-sm-3" type="button"  id="btnGeocoding" name="btnGeocoding">
                                         <i class="fa fa-map-marker"></i> Posicionar marcador
                                     </button>
                                 </div>
@@ -1411,14 +1412,14 @@
                                 </h4>
                             </div>
                             <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-6">
                                     <label class="control-label">¿Actualmente estudia?</label>
                                     <select required class="form-control" name="estudia" id="estudia">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3" id="">
+                                <div class="form-group col-md-6" id="">
                                     <label class="control-label">Último grado de estudios</label>
                                     <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
                                         <option value="PRIMARIA">Primaria</option>
@@ -1438,19 +1439,19 @@
                                     <label class="control-label">Horarios:</label>
                                     <input maxlength="100" name="horarioE" id="horarioE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="direccionE" style="display:none">
+                                <div class="form-group col-md-12" id="direccionE" style="display:none">
                                     <label class="control-label">Dirección</label>
                                     <input maxlength="150" name="direccionE" id="direccionE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="telefonoE" style="display:none">
+                                <div class="form-group col-md-12" id="telefonoE" style="display:none">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group" style="padding-left:15px;padding-right:15px;">
+                                
+                                <div class="form-group" style="padding-left:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
                                 </div>
-
                             </div>
                         </div>
                         <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;">
