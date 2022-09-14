@@ -3293,11 +3293,9 @@ namespace scorpioweb.Controllers
 
                 try
                 {
-                    /*var oldPersona = await _context.Persona.FindAsync(id);
+                    var oldPersona = await _context.Persona.FindAsync(id);
                     _context.Entry(oldPersona).CurrentValues.SetValues(persona);
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);*/
-                    _context.Update(persona);
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
