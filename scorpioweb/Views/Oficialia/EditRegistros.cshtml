@@ -153,11 +153,13 @@
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
             {
                 <td>
-                    <a id="btnEditar" onclick="showModal('@Url.Action("Edit","Oficialia",null,Context.Request.Scheme)','Editar Oficialía',@item.oficialiaVM.IdOficialia)" class="btn btn-success">
-                        <i class="fa fa-pencil"></i> Editar
+                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.oficialiaVM.IdOficialia" asp-route-titulo="Editar Oficialía">
+                        <i class="fa fa-pencil"></i>
+                        Editar
                     </a>
-                    <a id="btnClonar" style="margin-top: 10px" onclick="showModal('@Url.Action("Duplicate","Oficialia",null,Context.Request.Scheme)', 'Registro Copiado', @item.oficialiaVM.IdOficialia)" class="btn btn-primary">
-                        <i class="fa fa-copy"></i> Clonar
+                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.oficialiaVM.IdOficialia" asp-route-titulo="Registro Copiado">
+                        <i class="fa fa-copy"></i>
+                        Clonar
                     </a>
                 </td>
             }
