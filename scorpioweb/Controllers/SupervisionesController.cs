@@ -16,6 +16,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace scorpioweb.Controllers
@@ -2277,7 +2279,7 @@ namespace scorpioweb.Controllers
 
                 _context.Add(bitacora);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
             return View(bitacora);
         }
