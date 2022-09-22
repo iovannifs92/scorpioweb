@@ -9,21 +9,24 @@
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    ID
-                </th>
-                <th>
-                    Nombre
-                </th>
-                <th>
-                    Municipio
-                </th>
-                <th>
-                    Detalles
-                </th>
-                <th>
-                    Procesos
-                </th>
+            <th>
+                ID
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Municipio
+            </th>
+            <th>
+                Caso Especial
+            </th>
+            <th>
+                Detalles
+            </th>
+            <th>
+                Procesos
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -38,6 +41,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.municipiosVMDomicilio.Municipio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CasoEspecial)
             </td>
             <td>
                 <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
