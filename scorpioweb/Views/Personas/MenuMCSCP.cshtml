@@ -135,16 +135,20 @@
         </div>
     }
 
+
     @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
                     <a asp-controller="Personas" asp-action="Colaboraciones">
-                        <img class="card-img-bottom" src="~/images/agreement.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Colaboraciones
+                        <img class="card-img-bottom" src="~/images/especiales.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Casos Especiales
                     </a>
                 </h4>
+                <p class="card-text">
+                    Resguardo Domiciliario, TTA, Colaboraciones
+                </p>
             </div>
         </div>
     }

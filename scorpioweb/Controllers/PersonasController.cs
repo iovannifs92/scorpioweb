@@ -616,15 +616,28 @@ namespace scorpioweb.Controllers
         #region -Colaboraciones-
         public async Task<IActionResult> Colaboraciones()
         {
-            var colaboraciones = from persona in _context.Persona
-                                 join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
-                                 join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
-                                 where persona.Colaboracion == "SI"
-                                 select new PersonaViewModel
-                                 {
-                                     personaVM = persona,
-                                     municipiosVMDomicilio = municipio
-                                 };
+            var colaboraciones = (from persona in _context.Persona
+                                  join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
+                                  join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                                  join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona
+                                  join fraccion in _context.Fraccionesimpuestas on supervision.IdSupervision equals fraccion.SupervisionIdSupervision
+                                  where fraccion.Tipo == "XIII" && supervision.EstadoSupervision == "VIGENTE" && fraccion.FiguraJudicial == "MC"
+                                  select new PersonaViewModel
+                                  {
+                                      personaVM = persona,
+                                      municipiosVMDomicilio = municipio,
+                                      CasoEspecial = "Resguardo Domiciliario"
+                                  }).Union
+                                 (from persona in _context.Persona
+                                  join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
+                                  join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                                  where persona.Colaboracion == "SI"
+                                  select new PersonaViewModel
+                                  {
+                                      personaVM = persona,
+                                      municipiosVMDomicilio = municipio,
+                                      CasoEspecial = "Colaboración"
+                                  });
 
             return View(colaboraciones);
         }
@@ -5374,10 +5387,6 @@ namespace scorpioweb.Controllers
         #endregion
 
         #endregion
-
-
-
-
 
         #region -Borrar-
         // GET: Personas/Delete/5
