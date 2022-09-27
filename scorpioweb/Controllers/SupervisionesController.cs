@@ -2274,7 +2274,7 @@ namespace scorpioweb.Controllers
                 {
                     _context.Add(bitacora);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp=idcp });
+                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp=idcp });
                 }
 
                 _context.Add(bitacora);
@@ -2282,7 +2282,7 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
             return View(bitacora);
-        }
+        } 
         #endregion
         public async Task<IActionResult> EditBitacora(int id, string nombre, string cp, int idpersona, string supervisor, int idcp)
         {
@@ -2437,7 +2437,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona, @idcp = idcp, @supervisor = supervisor });
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @idcp = idcp, @supervisor = supervisor });
                 
             }
             return View(bitacora);
