@@ -74,6 +74,9 @@
     <thead>
         <tr>
             <th>
+                ID
+            </th>
+            <th>
                 Fecha de Recepción
             </th>
             <th>
@@ -109,6 +112,9 @@
         @foreach (var item in Model)
         {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.oficialiaVM.IdOficialia)
+            </td>
             <td>
                 @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.oficialiaVM.FechaRecepcion))
             </td>

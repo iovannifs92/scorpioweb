@@ -16,6 +16,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace scorpioweb.Controllers
@@ -27,8 +29,7 @@ namespace scorpioweb.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment,
-                        RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
@@ -55,7 +56,12 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="No", Value="NO"},
             new SelectListItem{ Text="NA", Value="NA"}
         };
-        private List<SelectListItem> listaFracciones = new List<SelectListItem>
+        private List<SelectListItem> listaSiNo = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"}
+        };
+    private List<SelectListItem> listaFracciones = new List<SelectListItem>
         {
             new SelectListItem{ Text="I", Value="I"},
             new SelectListItem{ Text="II", Value="II"},
@@ -326,12 +332,15 @@ namespace scorpioweb.Controllers
             ViewBag.idEstadoCumplimiento = BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
             #endregion
 
+            ViewBag.listaTTA = listaSiNo;
+            ViewBag.idTTA = BuscaId(listaSiNo, supervision.Tta);
+
             return View(supervision);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal")] Supervision supervision)
+        public async Task<IActionResult> Edit(int id, [Bind("IdSupervision,Inicio,Termino,EstadoSupervision,PersonaIdPersona,EstadoCumplimiento,CausaPenalIdCausaPenal, Tta")] Supervision supervision)
         {
             if (id != supervision.IdSupervision)
             {
@@ -2270,7 +2279,7 @@ namespace scorpioweb.Controllers
 
                 _context.Add(bitacora);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
             return View(bitacora);
         }

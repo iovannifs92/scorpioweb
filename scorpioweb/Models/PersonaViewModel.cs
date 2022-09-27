@@ -25,5 +25,6 @@ namespace scorpioweb.Models
         public Familiaresforaneos familiaresForaneosVM { get; set; }
         public Asientofamiliar asientoFamiliarVM { get; set; }
         public Delito delitoDM { get; set; }
+        public string CasoEspecial { get; set; }
     }
 }
