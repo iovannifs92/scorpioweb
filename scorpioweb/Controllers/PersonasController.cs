@@ -2287,11 +2287,41 @@ namespace scorpioweb.Controllers
 
             DocumentCore dc = DocumentCore.Load(templatePath);
 
+            string lnacimientoCleaned = "";
+            if (vistaPersona[0].personaVM.Lnlocalidad != "NA")
+            {
+                if (lnacimientoCleaned != "")
+                {
+                    lnacimientoCleaned += ",";
+                }
+                lnacimientoCleaned += vistaPersona[0].personaVM.Lnlocalidad;
+            }
+            if (vistaPersona[0].municipiosVMPersona.Municipio != "Sin municipio")
+            {
+                if (lnacimientoCleaned != "")
+                {
+                    lnacimientoCleaned += ",";
+                }
+                lnacimientoCleaned += vistaPersona[0].municipiosVMPersona.Municipio.ToUpper();
+            }
+            if (vistaPersona[0].estadosVMPersona.Estado != "Sin estado")
+            {
+                if (lnacimientoCleaned != "")
+                {
+                    lnacimientoCleaned += ",";
+                }
+                lnacimientoCleaned += vistaPersona[0].estadosVMPersona.Estado.ToUpper();
+            }
+            if (lnacimientoCleaned != "")
+            {
+                lnacimientoCleaned += ",";
+            }
+            lnacimientoCleaned += vistaPersona[0].personaVM.Lnpais;
             var dataSource = new[] { new {
                 nombre = vistaPersona[0].personaVM.Paterno+" "+ vistaPersona[0].personaVM.Materno +" "+ vistaPersona[0].personaVM.Nombre,
                 genero = vistaPersona[0].personaVM.Genero,
-                lnacimiento=vistaPersona[0].personaVM.Lnlocalidad+", "+ vistaPersona[0].municipiosVMPersona.Municipio +", "+ vistaPersona[0].estadosVMPersona.Estado+", "+vistaPersona[0].personaVM.Lnpais,
-                fnacimiento=(Convert.ToDateTime(vistaPersona[0].personaVM.Fnacimiento)).ToString("dd MMMM yyyy"),
+                lnacimiento = lnacimientoCleaned,
+                fnacimiento =(Convert.ToDateTime(vistaPersona[0].personaVM.Fnacimiento)).ToString("dd MMMM yyyy"),
                 edad=vistaPersona[0].personaVM.Edad,
                 estadocivil=vistaPersona[0].personaVM.EstadoCivil,
                 duracionestadocivil=vistaPersona[0].personaVM.Duracion,
@@ -2751,6 +2781,10 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
               new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
               new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Argentina", Value="ARGENTINA"},
+              new SelectListItem{ Text="Brasil", Value="BRASIL"},
+              new SelectListItem{ Text="Venezuela", Value="VENEZUELA"},
+              new SelectListItem{ Text="Puerto Rico", Value="PUERTO RICO"},
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
 
@@ -3414,6 +3448,10 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
               new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
               new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Argentina", Value="ARGENTINA"},
+              new SelectListItem{ Text="Brasil", Value="BRASIL"},
+              new SelectListItem{ Text="Venezuela", Value="VENEZUELA"},
+              new SelectListItem{ Text="Puerto Rico", Value="PUERTO RICO"},
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
 
@@ -3648,6 +3686,10 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
               new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
               new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Argentina", Value="ARGENTINA"},
+              new SelectListItem{ Text="Brasil", Value="BRASIL"},
+              new SelectListItem{ Text="Venezuela", Value="VENEZUELA"},
+              new SelectListItem{ Text="Puerto Rico", Value="PUERTO RICO"},
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
 
@@ -4281,6 +4323,10 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
               new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
               new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Argentina", Value="ARGENTINA"},
+              new SelectListItem{ Text="Brasil", Value="BRASIL"},
+              new SelectListItem{ Text="Venezuela", Value="VENEZUELA"},
+              new SelectListItem{ Text="Puerto Rico", Value="PUERTO RICO"},
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
 
@@ -4411,6 +4457,10 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
               new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
               new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Argentina", Value="ARGENTINA"},
+              new SelectListItem{ Text="Brasil", Value="BRASIL"},
+              new SelectListItem{ Text="Venezuela", Value="VENEZUELA"},
+              new SelectListItem{ Text="Puerto Rico", Value="PUERTO RICO"},
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
 
