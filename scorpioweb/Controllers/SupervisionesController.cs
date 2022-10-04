@@ -2901,7 +2901,7 @@ namespace scorpioweb.Controllers
             #endregion
 
             string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateSCP.docx";
-            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\reporteSupervisionSCP.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\reporteSupervision.docx";
 
 
             DocumentCore dc = DocumentCore.Load(templatePath);
