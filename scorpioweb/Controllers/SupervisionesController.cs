@@ -468,7 +468,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
+                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
             }
             return View(fraccionesimpuestas);
         }
@@ -483,7 +483,7 @@ namespace scorpioweb.Controllers
             _context.Fraccionesimpuestas.Remove(fraccionesimpuestas);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona = idpersona });
+            return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
         }
 
 
@@ -519,7 +519,7 @@ namespace scorpioweb.Controllers
             var snbitacora = await _context.Bitacora.Where(m => m.FracionesImpuestasIdFracionesImpuestas == id).ToListAsync();
             if (snbitacora.Count == 0)
             {
-                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, nombre = nombre, @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp=idcp });
+                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp=idcp });
             }
 
 
@@ -671,7 +671,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
             return View();
         }
@@ -705,7 +705,7 @@ namespace scorpioweb.Controllers
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("EditFraccionesimpuestas/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona = idpersona, idcp = idcp, @supervisor = supervisor });
+            return RedirectToAction("EditFraccionesimpuestas/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, idcp = idcp, @supervisor = supervisor });
 
         }
 
@@ -1933,7 +1933,7 @@ namespace scorpioweb.Controllers
                 victima.IdVictima = idVictima;
                 _context.Add(victima);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
+                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
                 //return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones");
             }
             return View(victima);
@@ -2039,7 +2039,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
+                return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
             }
             return View();
         }
@@ -2048,7 +2048,7 @@ namespace scorpioweb.Controllers
             var Victima = await _context.Victima.SingleOrDefaultAsync(m => m.IdVictima == id);
             _context.Victima.Remove(Victima);
             await _context.SaveChangesAsync();
-            return RedirectToAction("ListaVictima/" + Victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = nombre, @cp = cp, @idpersona = idpersona });
+            return RedirectToAction("ListaVictima/" + Victima.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
 
         }
         public async Task<IActionResult> VerVictima(int? id, string nombre, string cp, string idpersona)
@@ -2451,7 +2451,7 @@ namespace scorpioweb.Controllers
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { nombre = nombre, @cp = cp, @idpersona= idpersona, @idcp=idcp, @supervisor = supervisor });
+            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona= idpersona, @idcp=idcp, @supervisor = supervisor });
         } 
         private bool BitacoraExists(int id)
         {
