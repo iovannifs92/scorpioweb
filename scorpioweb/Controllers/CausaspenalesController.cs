@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
 using F23.StringSimilarity;
-
+using Newtonsoft.Json.Linq;
 
 namespace scorpioweb.Controllers
 {
@@ -508,37 +508,56 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id/*, int persona_idPersona*/)
+        public async Task<IActionResult> Asignacion(Personacausapenal personacausapenal, string PersonaAsignada, Supervision supervision, Suspensionseguimiento suspensionseguimiento, Aer aer, Planeacionestrategica planeacionestrategica, Cierredecaso cierredecaso, Cambiodeobligaciones cambiodeobligaciones, Revocacion revocacion, Fraccionesimpuestas fraccionesimpuestas, Victima victima, int id/*, int persona_idPersona*/)
         {
             string currentUser = User.Identity.Name;
 
             if (ModelState.IsValid)
             {
-                if (selectedPersona.Count == 0)
+                #region -Sacar solo enteros-
+                string personaA = PersonaAsignada;
+                string valueINT = string.Empty;
+                int idpersona = 0;
+
+                for (int i = 0; i < personaA.Length; i++)
                 {
-                    return RedirectToAction(nameof(Index));
+                    if (Char.IsDigit(personaA[i]))
+                        valueINT += personaA[i];
                 }
 
-                int idPersona = Int32.Parse(selectedPersona[0]);
-                //int idPersona = persona_idPersona;
-                //Por el la primera opcion vacia
-                if (idPersona == 0)
+                if (valueINT.Length > 0)
+                    idpersona = int.Parse(valueINT);
+                
+                    
+                #endregion
+
+                if (idpersona == 0)
                 {
                     return RedirectToAction(nameof(Index));
                 }
 
                 int idPersonaCausaPenal = ((from table in _context.Personacausapenal
                                             select table.IdPersonaCausapenal).Max()) + 1;
+           
+               
+                #region -ConsumoSustancias-
+                if (idpersona != 0)
+                {
+                    
+                    personacausapenal.PersonaIdPersona = Convert.ToInt32(idpersona);
+                    personacausapenal.CausaPenalIdCausaPenal = id;
+                    personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
+                    _context.Add(personacausapenal);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                }
 
-                personacausapenal.IdPersonaCausapenal = idPersonaCausaPenal;
-                personacausapenal.PersonaIdPersona = idPersona;
-                personacausapenal.CausaPenalIdCausaPenal = id;
+                #endregion
 
                 #region agregar 1 entrada a Supervision
                 int idSupervision = ((from table in _context.Supervision
                                       select table.IdSupervision).Max()) + 1;
                 supervision.IdSupervision = idSupervision;
-                supervision.PersonaIdPersona = idPersona;
+                supervision.PersonaIdPersona = idpersona;
                 supervision.CausaPenalIdCausaPenal = id;
                 supervision.EstadoSupervision = "VIGENTE";
                 supervision.Tta = "NO";
@@ -586,7 +605,7 @@ namespace scorpioweb.Controllers
                 revocacion.SupervisionIdSupervision = idSupervision;
                 #endregion
 
-                _context.Add(personacausapenal);
+                //_context.Add(personacausapenal);
                 _context.Add(supervision);
                 await _context.SaveChangesAsync(null, 1);
                 //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas

@@ -2249,6 +2249,7 @@ namespace scorpioweb.Controllers
 
                 var persona = _context.Persona
                .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
+
                 var cpp = _context.Causapenal
                .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
 

@@ -1945,7 +1945,7 @@ namespace scorpioweb.Controllers
                 #region -ConsumoSustancias-
                 if (arraySustancias != null)
                 {
-                    JArray sustancias = JArray.Parse(arraySustancias);
+                    JArray sustancias = JArray.Parse(arraySustancias);  
 
                     for (int i = 0; i < sustancias.Count; i = i + 5)
                     {
