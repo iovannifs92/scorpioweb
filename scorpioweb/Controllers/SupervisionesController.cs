@@ -2247,15 +2247,6 @@ namespace scorpioweb.Controllers
                 var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
 
-                var persona = _context.Persona
-               .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
-
-                var cpp = _context.Causapenal
-               .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
-
-                ViewBag.Npersona = persona.NombreCompleto;
-                ViewBag.cp = cpp.CausaPenal;
-
                 int idBitacora = ((from table in _context.Bitacora
                                    select table.IdBitacora).Max()) + 1;
 
@@ -2271,6 +2262,7 @@ namespace scorpioweb.Controllers
                     await evidencia.CopyToAsync(stream);
                 }
                 #endregion
+
                 if(bitacora.FracionesImpuestasIdFracionesImpuestas != null)
                 {
                     _context.Add(bitacora);
