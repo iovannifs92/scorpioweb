@@ -2101,12 +2101,18 @@ namespace scorpioweb.Controllers
 
 
             List<Bitacora> bitacora = _context.Bitacora.ToList();
-            var a = 0;
+            List<Fraccionesimpuestas> fraccionesimpuestas = _context.Fraccionesimpuestas.ToList();
 
-            ViewData["Bitacora"] = from table in bitacora
-                                   where table.SupervisionIdSupervision == id
-                                   orderby table.Fecha descending
-                                   select table;
+            ViewData["BitacoraFracciones"] = from b in bitacora
+                                             join fi in fraccionesimpuestas on b.FracionesImpuestasIdFracionesImpuestas equals fi.IdFracciones into tmp
+                                             from fleft in tmp.DefaultIfEmpty()
+                                             where b.SupervisionIdSupervision == id
+                                             orderby b.Fecha descending
+                                             select new BitacoraViewModal
+                                             {
+                                                 bitacoraVM = b,
+                                                 fraccionesimpuestasVM = fleft
+                                             };
 
             ViewBag.IdSupervisionGuardar = id;
 
