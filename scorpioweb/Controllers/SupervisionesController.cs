@@ -608,6 +608,9 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
               new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
               new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
+              new SelectListItem{ Text="Citatorio", Value="CITATORIO"},
+              new SelectListItem{ Text="Visita Domiciliar", Value="VISITA DOMICILIAR"},
+              new SelectListItem{ Text="Notificación a Víctima", Value="NOTIFICACION A VICTIMA"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
             #endregion
@@ -2260,6 +2263,7 @@ namespace scorpioweb.Controllers
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                     await evidencia.CopyToAsync(stream);
+                    stream.Close();
                 }
                 #endregion
 
@@ -2365,6 +2369,9 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
               new SelectListItem{ Text="Informe de Supervisión", Value="INFORME"},
               new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
+              new SelectListItem{ Text="Citatorio", Value="CITATORIO"},
+              new SelectListItem{ Text="Visita Domiciliar", Value="VISITA DOMICILIAR"},
+              new SelectListItem{ Text="Notificación a Víctima", Value="NOTIFICACION A VICTIMA"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
             ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
