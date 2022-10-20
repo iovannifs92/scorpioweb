@@ -608,6 +608,9 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
               new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
               new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
+              new SelectListItem{ Text="Citatorio", Value="CITATORIO"},
+              new SelectListItem{ Text="Visita Domiciliar", Value="VISITA DOMICILIAR"},
+              new SelectListItem{ Text="Notificación a Víctima", Value="NOTIFICACION A VICTIMA"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
             #endregion
@@ -2098,12 +2101,18 @@ namespace scorpioweb.Controllers
 
 
             List<Bitacora> bitacora = _context.Bitacora.ToList();
-            var a = 0;
+            List<Fraccionesimpuestas> fraccionesimpuestas = _context.Fraccionesimpuestas.ToList();
 
-            ViewData["Bitacora"] = from table in bitacora
-                                   where table.SupervisionIdSupervision == id
-                                   orderby table.Fecha descending
-                                   select table;
+            ViewData["BitacoraFracciones"] = from b in bitacora
+                                             join fi in fraccionesimpuestas on b.FracionesImpuestasIdFracionesImpuestas equals fi.IdFracciones into tmp
+                                             from fleft in tmp.DefaultIfEmpty()
+                                             where b.SupervisionIdSupervision == id
+                                             orderby b.Fecha descending
+                                             select new BitacoraViewModal
+                                             {
+                                                 bitacoraVM = b,
+                                                 fraccionesimpuestasVM = fleft
+                                             };
 
             ViewBag.IdSupervisionGuardar = id;
 
@@ -2260,6 +2269,7 @@ namespace scorpioweb.Controllers
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                     await evidencia.CopyToAsync(stream);
+                    stream.Close();
                 }
                 #endregion
                     
@@ -2365,6 +2375,9 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
               new SelectListItem{ Text="Informe de Supervisión", Value="INFORME"},
               new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
+              new SelectListItem{ Text="Citatorio", Value="CITATORIO"},
+              new SelectListItem{ Text="Visita Domiciliar", Value="VISITA DOMICILIAR"},
+              new SelectListItem{ Text="Notificación a Víctima", Value="NOTIFICACION A VICTIMA"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
             ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
