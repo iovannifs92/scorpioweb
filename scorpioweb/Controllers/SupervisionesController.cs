@@ -2259,12 +2259,10 @@ namespace scorpioweb.Controllers
                 int idBitacora = ((from table in _context.Bitacora
                                    select table.IdBitacora).Max()) + 1;
 
-                bitacora.IdBitacora = idBitacora;
-
                 #region -Guardar archivo-
                 if (evidencia != null)
                 {
-                    string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    string file_name = idBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
                     bitacora.RutaEvidencia = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
@@ -2282,6 +2280,14 @@ namespace scorpioweb.Controllers
 
                 _context.Add(bitacora);
                 await _context.SaveChangesAsync();
+
+                bitacora = await _context.Bitacora.OrderByDescending(b => b.IdBitacora).FirstOrDefaultAsync();
+                if (bitacora.IdBitacora != idBitacora && evidencia != null)
+                {
+                    bitacora.RutaEvidencia = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                }
+
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
             return View(bitacora);
