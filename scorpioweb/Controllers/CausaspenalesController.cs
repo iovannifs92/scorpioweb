@@ -512,6 +512,12 @@ namespace scorpioweb.Controllers
         {
             string currentUser = User.Identity.Name;
 
+            if (PersonaAsignada == null)
+            {
+
+                return RedirectToAction(nameof(Index));
+            }
+
             if (ModelState.IsValid)
             {
                 #region -Sacar solo enteros-
@@ -538,9 +544,9 @@ namespace scorpioweb.Controllers
 
                 int idPersonaCausaPenal = ((from table in _context.Personacausapenal
                                             select table.IdPersonaCausapenal).Max()) + 1;
-           
-               
-                #region -ConsumoSustancias-
+
+
+                #region -AddPesonaCausapenal-
                 if (idpersona != 0)
                 {
                     
@@ -605,7 +611,7 @@ namespace scorpioweb.Controllers
                 revocacion.SupervisionIdSupervision = idSupervision;
                 #endregion
 
-                //_context.Add(personacausapenal);
+
                 _context.Add(supervision);
                 await _context.SaveChangesAsync(null, 1);
                 //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
