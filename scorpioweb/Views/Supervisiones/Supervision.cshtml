@@ -54,28 +54,76 @@
     }
 </style>
 
+<script>
+    function candado(id, candado) {
+
+        var personaidpersona = id;
+        let text;
+        if (candado == true) {
+            let razon = prompt("Razón de Bloqueo", "");
+            if (razon == null || razon == "") {
+                text = "NA";
+            } else {
+                text = razon;
+            }
+        } else {
+            text = "NA";
+        }
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisiones/LoockCandado",
+            traditional: true,
+            data: {
+                datoCandado: [candado, personaidpersona, text],
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.responseText);
+                }
+            },
+            error: function(response) {
+                location.reload();
+            }
+        });
+    }
+</script>
+
 
 
 @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
 {
     <h2 class="blockquote text-center">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
-    <div class="col-md-12">
-        <div class=col-md-6>
-            <h3 style="text-align:center" class="blockquote text-center">Id Persona:</h3>
-            <h3 style="text-align:center" class="blockquote text-center">@item.personaVM.IdPersona</h3>
-        </div>
-        <div class=col-md-6>
-            <h3 style="text-align:center" class="blockquote text-center">Causa Penal:</h3>
-            <h3 style="text-align:center" class="blockquote text-center">@item.causapenalVM.CausaPenal</h3>
-        </div>
-
+    
+    <div class=col-md-6>
+        <h3 style="text-align:left" class="blockquote text-center">Id Persona:</h3>
+        <h3 style="text-align:center" class="blockquote text-center">@item.personaVM.IdPersona</h3>
     </div>
-    break;
+    <div class=col-md-6>
+        <h3 style="text-align:center" class="blockquote text-center">Causa Penal:</h3>
+        <h3 style="text-align:center" class="blockquote text-center">@item.causapenalVM.CausaPenal</h3>
+    </div>
+    @if (@item.personaVM.Candado == 0)
+    {
+    <div class="col-md-12 text-center">
+        <button class="btn btn-primary btn-lg fa fa-unlock" onclick="candado(@item.personaVM.IdPersona,true)"></button>
+    </div>
+    }else
+    {
+    <div class="col-md-12 text-center">
+        <button title="@item.personaVM.MotivoCandado" class="btn btn-danger btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersona,false)"></button>
+    </div>
+    }
+
+break;
 }
 @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
 {
     //El color de el boton se define con el Id
-<div class="container">
+<div class="container col-md-12">
     <br>
     <div class="row">
         <div class="col-md-6" style="padding-top:3%;">
@@ -131,4 +179,6 @@
 
 
 <br />
-<a href='javascript:history.go(-1)'>Regresar</a>
+<div class=col-md-6 style="margin-top: 20px">
+<a style="" href='javascript:history.go(-1)'>Regresar</a>
+</div>

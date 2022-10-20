@@ -2270,7 +2270,7 @@ namespace scorpioweb.Controllers
                     stream.Close();
                 }
                 #endregion
-
+                    
                 if(bitacora.FracionesImpuestasIdFracionesImpuestas != null)
                 {
                     _context.Add(bitacora);
@@ -3062,7 +3062,48 @@ namespace scorpioweb.Controllers
             }
         }
 
-        #endregion        
+        #endregion
+
+        #region -Actualizar Candado-
+        public JsonResult LoockCandado(Persona persona, string[] datoCandado)
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
+        {
+            persona.Candado = Convert.ToSByte(datoCandado[0] == "true");
+            persona.IdPersona = Int32.Parse(datoCandado[1]);
+            persona.MotivoCandado = normaliza(datoCandado[2]);
+
+            var empty = (from p in _context.Persona
+                         where p.IdPersona == persona.IdPersona
+                         select p);
+
+            if (empty.Any())
+            {
+                var query = (from p in _context.Persona
+                             where p.IdPersona == persona.IdPersona
+                             select p).FirstOrDefault();
+                query.Candado = persona.Candado;
+                query.MotivoCandado = persona.MotivoCandado;
+                _context.SaveChanges();
+            }
+            var stadoc = (from p in _context.Persona
+                          where p.IdPersona == persona.IdPersona
+                          select p.Candado).FirstOrDefault();
+            //return View();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona) });
+        }
+        public JsonResult getEstadodeCanadado(int id)
+        {
+            //IEnumerable<Persona> shops = _context.Persona;
+            //return Json(shops.Select(u => new { u.Candado, u.IdPersona }).Where(u => u.IdPersona == id));
+
+            var stadoc = (from p in _context.Persona
+                          where p.IdPersona == id
+                          select p.Candado);
+
+            return Json(stadoc);
+        }
+        #endregion
 
         #region -PermisosEdicion-
         public async Task<IActionResult> PermisosEdicion(int? id)
