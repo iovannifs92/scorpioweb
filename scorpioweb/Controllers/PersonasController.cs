@@ -769,11 +769,34 @@ namespace scorpioweb.Controllers
                              tipoAdvertencia = "Sin supervisión"
                          };
 
+            var personasConSupervision = from persona in personaVM
+                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join fracciones in fraccionesimpuestasVM on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                         select new Supervision
+                                         {
+                                             IdSupervision = supervision.IdSupervision
+                                         };
+            List<int> idSupervisiones = personasConSupervision.Select(x => x.IdSupervision).Distinct().ToList();
+            var joins = from persona in personaVM
+                        join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                        join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                        join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                        join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                        select new PlaneacionWarningViewModel
+                        {
+                            personaVM = persona,
+                            supervisionVM = supervision,
+                            municipiosVM = municipio,
+                            causapenalVM = causapenal,
+                            tipoAdvertencia = "Sin figura judicial"
+                        };
+
             if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
                 var warningPlaneacion = (where).Union
                                         (sinResolucion).Union
                                         (archivoadmin).Union
+                                        (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                         (from persona in personaVM
                                          join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
                                          join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
@@ -909,6 +932,7 @@ namespace scorpioweb.Controllers
                                         (where2).Union
                                         (sinResolucion2).Union
                                         (archivo).Union
+                                        (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.personaVM.Supervisor == usuario && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                         (from persona in personaVM
                                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
@@ -987,22 +1011,7 @@ namespace scorpioweb.Controllers
                                          planeacionestrategicaVM = planeacion,
                                          tipoAdvertencia = "Se paso el tiempo de la firma"
                                      })
-
-                //.Union
-                //(from persona in personaVM
-                // join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                // join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                // join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                // where persona.Supervisor == usuario && supervision.EstadoSupervision == null
-                // select new PlaneacionWarningViewModel
-                // {
-                //     personaVM = persona,
-                //     supervisionVM = supervision,
-                //     causapenalVM = causapenal,
-                //     planeacionestrategicaVM = planeacion,
-                //     tipoAdvertencia = "Sin estado de supervisión"
-                // });
-                ;
+                                     ;
                 ViewBag.Warnings = warningPlaneacion.Count();
             }
             #endregion
@@ -4839,6 +4848,28 @@ namespace scorpioweb.Controllers
                              tipoAdvertencia = "Sin supervisión"
                          };
 
+            var personasConSupervision = from persona in personaVM
+                                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                                         join fracciones in fraccionesimpuestasVM on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                                         select new Supervision
+                                         {
+                                             IdSupervision = supervision.IdSupervision
+                                         };
+            List<int> idSupervisiones = personasConSupervision.Select(x => x.IdSupervision).Distinct().ToList();
+            var joins = from persona in personaVM
+                        join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                        join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                        join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                        join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                        select new PlaneacionWarningViewModel
+                        {
+                            personaVM = persona,
+                            supervisionVM = supervision,
+                            municipiosVM = municipio,
+                            causapenalVM = causapenal,
+                            tipoAdvertencia = "Sin figura judicial"
+                        };
+
             if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
                 var ViewDataAlertasVari = Enumerable.Empty<PlaneacionWarningViewModel>();
@@ -4952,25 +4983,9 @@ namespace scorpioweb.Controllers
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              }).Union
                                             (where).Union
-                                            (archivoadmin)
+                                            (archivoadmin).Union
+                                            (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE"))
                                             ;
-                        /*.Union
-                        (from persona in personaVM
-                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                         where supervision.EstadoSupervision == null
-                         select new PlaneacionWarningViewModel
-                         {
-                             personaVM = persona,
-                             supervisionVM = supervision,
-                             municipiosVM = municipio,
-                             causapenalVM = causapenal,
-                             planeacionestrategicaVM = planeacion,
-                             tipoAdvertencia = "Sin estado de supervisión"
-                         })*/
                         break;
                     case "SIN RESOLUCION":
                         ViewDataAlertasVari = sinResolucion;
@@ -5064,6 +5079,9 @@ namespace scorpioweb.Controllers
                     case "SIN SUPERVISION":
                         ViewDataAlertasVari = where;
                         break;
+                    case "SIN FIGURA JUDICIAL":
+                        ViewDataAlertasVari = joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE");
+                        break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":
                           ViewDataAlertasVari = from persona in personaVM
                                               join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
@@ -5098,24 +5116,6 @@ namespace scorpioweb.Controllers
                                                   tipoAdvertencia = "Pendiente de asignación - colaboración"
                                               };
                         break;
-                        //case "SIN ESTADO DE SUPERVISION":
-                        //    ViewData["alertas"] = from persona in personaVM
-                        //                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                        //                          join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                        //                          join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                        //                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                        //                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                        //                          where supervision.EstadoSupervision == null
-                        //                          select new PlaneacionWarningViewModel
-                        //                          {
-                        //                              personaVM = persona,
-                        //                              supervisionVM = supervision,
-                        //                              municipiosVM = municipio,
-                        //                              causapenalVM = causapenal,
-                        //                              planeacionestrategicaVM = planeacion,
-                        //                              tipoAdvertencia = "Sin estado de supervisión"
-                        //                          };
-                        //    break;
                 }
 
                 var warnings = Enumerable.Empty<PlaneacionWarningViewModel>();
@@ -5256,25 +5256,9 @@ namespace scorpioweb.Controllers
                                                  causapenalVM = causapenal,
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
-                                             }).Union
-                                            (where2);
-                        /*.Union
-                        (from persona in personaVM
-                         join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                         join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                         join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                         join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                         join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                         where persona.Supervisor == usuario && supervision.EstadoSupervision == null
-                         select new PlaneacionWarningViewModel
-                         {
-                             personaVM = persona,
-                             supervisionVM = supervision,
-                             municipiosVM = municipio,
-                             causapenalVM = causapenal,
-                             planeacionestrategicaVM = planeacion,
-                             tipoAdvertencia = "Sin estado de supervisión"
-                         })*/
+                                             })
+                                            .Union(joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE"))
+                                            .Union(where2);
                         break;
                     case "EXPEDIENTE FISICO EN RESGUARDO":
                         ViewData["alertas"] = archivo;
@@ -5368,6 +5352,9 @@ namespace scorpioweb.Controllers
                     case "SIN SUPERVISION":
                         ViewData["alertas"] = where2;
                         break;
+                    case "SIN FIGURA JUDICIAL":
+                        ViewData["alertas"] = joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE");
+                        break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":
                         ViewData["alertas"] = from persona in personaVM
                                               join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
@@ -5390,24 +5377,6 @@ namespace scorpioweb.Controllers
                                                   tipoAdvertencia = "Se paso el tiempo de la firma"
                                               };
                         break;
-                        //case "SIN ESTADO DE SUPERVISION":
-                        //    ViewData["alertas"] = from persona in personaVM
-                        //                          join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                        //                          join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                        //                          join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                        //                          join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                        //                          join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                        //                          where persona.Supervisor == usuario && supervision.EstadoSupervision == null
-                        //                          select new PlaneacionWarningViewModel
-                        //                          {
-                        //                              personaVM = persona,
-                        //                              supervisionVM = supervision,
-                        //                              municipiosVM = municipio,
-                        //                              causapenalVM = causapenal,
-                        //                              planeacionestrategicaVM = planeacion,
-                        //                              tipoAdvertencia = "Sin estado de supervisión"
-                        //                          };
-                        //    break;
                 }
             }
             #endregion

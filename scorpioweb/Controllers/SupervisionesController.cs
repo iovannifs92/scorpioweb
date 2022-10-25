@@ -2238,7 +2238,6 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> CreateBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona, string idoficialia,
             string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IFormFile evidencia, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp)
         {
-
             string currentUser = User.Identity.Name;
             if (ModelState.ErrorCount <= 1)
             {
@@ -2255,21 +2254,6 @@ namespace scorpioweb.Controllers
 
                 var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
-
-                int idBitacora = ((from table in _context.Bitacora
-                                   select table.IdBitacora).Max()) + 1;
-
-                #region -Guardar archivo-
-                if (evidencia != null)
-                {
-                    string file_name = idBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
-                    bitacora.RutaEvidencia = file_name;
-                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
-                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                    await evidencia.CopyToAsync(stream);
-                    stream.Close();
-                }
-                #endregion
                     
                 if(bitacora.FracionesImpuestasIdFracionesImpuestas != null)
                 {
@@ -2282,11 +2266,18 @@ namespace scorpioweb.Controllers
                 await _context.SaveChangesAsync();
 
                 bitacora = await _context.Bitacora.OrderByDescending(b => b.IdBitacora).FirstOrDefaultAsync();
-                if (bitacora.IdBitacora != idBitacora && evidencia != null)
+                #region -Guardar archivo-
+                if (evidencia != null)
                 {
-                    bitacora.RutaEvidencia = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    bitacora.RutaEvidencia = file_name;
+                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                    await evidencia.CopyToAsync(stream);
+                    stream.Close();
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
+                #endregion
 
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
