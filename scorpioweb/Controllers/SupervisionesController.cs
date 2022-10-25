@@ -2154,7 +2154,7 @@ namespace scorpioweb.Controllers
 
             var select = (from wh in wheres
                          select wh.oficialiavm.IdOficialia).ToList();
-  
+
             ViewBag.expoficialia = select;
             #endregion
 
