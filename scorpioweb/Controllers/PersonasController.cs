@@ -689,9 +689,11 @@ namespace scorpioweb.Controllers
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
             List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
             List<Personacausapenal> personacausapenalsVM = _context.Personacausapenal.ToList();
+
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
                                                          select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+
             List<Archivointernomcscp> queryHistorialArchivoadmin = (from a in _context.Archivointernomcscp
                                                                     group a by a.PersonaIdPersona into grp
                                                                     select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
@@ -2451,60 +2453,33 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("SinSupervision");
             }
 
-            List<Supervision> SupervisionVM = _context.Supervision.ToList();
+       
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
-            List<Planeacionestrategica> planeacionestrategicasVM = _context.Planeacionestrategica.ToList();
-            List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
-            List<Persona> personaVM = _context.Persona.ToList();
+        
+
+            List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
+                                                         group f by f.SupervisionIdSupervision into grp
+                                                         select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
 
 
-            #region -JointablesProcesos-
+            var queryCausas = from c in _context.Causapenal
+                              join s in _context.Supervision on c.IdCausaPenal equals s.CausaPenalIdCausaPenal
+                              join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                              join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+                              join f in queryFracciones on s.IdSupervision equals f.SupervisionIdSupervision into tmp
+                              from sinfracciones in tmp.DefaultIfEmpty()
+                              where p.IdPersona == id
+                              select new Procesos
+                              {
+                                  supervisionVM = s,
+                                  causapenalVM = c,
+                                  personaVM = p,
+                                  planeacionestrategicaVM = pe,
+                                  fraccionesimpuestasVM = ((sinfracciones == null) ? null : sinfracciones)  
+                              };
 
-            var queryPro = (from s in _context.Supervision
-                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                            join c in _context.Causapenal on s.CausaPenalIdCausaPenal equals c.IdCausaPenal
-                            join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision
-                            join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                            where s.PersonaIdPersona == id
-                            group c by c.IdCausaPenal into grup
-                            select grup
-                          );
+            ViewData["joinTbalasProceso1"] = queryCausas.ToList();
 
-
-            var q = queryPro.ToList();
-
-
-            List<Procesos> lists = new List<Procesos>();
-
-
-            for (int i = 0; i < q.Count; i++)
-            {
-
-                var querya = from c in _context.Causapenal
-                             join s in _context.Supervision on c.IdCausaPenal equals s.CausaPenalIdCausaPenal
-                             join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                             join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision
-                             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                             where p.IdPersona == id && q[i].Key.Equals(c.IdCausaPenal)
-                             select new Procesos
-                             {
-                                 supervisionVM = s,
-                                 causapenalVM = c,
-                                 personaVM = p,
-                                 fraccionesimpuestasVM = f,
-                                 planeacionestrategicaVM = pe
-                             };
-
-                var maxfra = querya.OrderByDescending(u => u.fraccionesimpuestasVM.IdFracciones).FirstOrDefault();
-                lists.Add(maxfra);
-
-            }
-
-
-
-            ViewData["joinTbalasProceso1"] = lists;
-
-            #endregion
             return View();
         }
         #endregion

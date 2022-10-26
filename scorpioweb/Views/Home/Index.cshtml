@@ -248,9 +248,37 @@
                         <p>Condición en Libertad</p>
                     </div>
                 </div>
+@*
+                <div class="col-md-12 text-center">
+                    <button class="btn btn-primary btn-lg fa fa-unlock" onclick="api(true)"></button>
+                </div>*@
                 <!-- end first count item -->
 
             </div>
         </div>
     </div>
 </section>
+@*
+<script>
+    function api(folio) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Api/Imprimir",
+            traditional: true,
+            data: {
+                datoCandado: folio,
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.responseText);
+                }
+            },
+            error: function(response) {
+                location.reload();
+            }
+        });
+    }
+</script>*@

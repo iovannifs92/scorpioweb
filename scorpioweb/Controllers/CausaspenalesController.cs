@@ -849,6 +849,11 @@ namespace scorpioweb.Controllers
                            where hcp.CausapenalIdCausapenal == id
                            select hcp.Cnpp + " " + hcp.Juez + " " + hcp.Cambio + " " + hcp.Distrito + " " + hcp.Causapenal;
 
+
+            var quer2 = from g in _context.Historialcp
+                        where g.CausapenalIdCausapenal == id
+                        select g;
+
             var queryhcpN = normaliza(cnpp) + " " + normaliza(juez) + " " + normaliza(cambio) + " " + normaliza(distrito) + " " + normaliza(cp);
 
             var cosine = new Cosine(2);
