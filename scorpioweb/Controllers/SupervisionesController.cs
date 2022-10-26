@@ -1015,7 +1015,8 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
                     break;
             }
-
+            //Vigente al principio, Concluido al final
+            filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoSupervision);
 
             //var personas = _context.Persona
             //    .FromSql("CALL informeSemanal")
