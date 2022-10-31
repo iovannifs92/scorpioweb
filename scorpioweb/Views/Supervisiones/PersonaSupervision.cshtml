@@ -126,14 +126,31 @@
 
 <form asp-action="PersonaSupervision" method="get">
     <div class="form-actions no-color">
-        <p>
-            Búsqueda por nombre o causa penal: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <button type="submit" class="btn btn-default">
+        <div class="col-xs-4">
+            <label>
+                Búsqueda por nombre o causa penal
+            </label>
+            <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+        </div>
+        <div class="col-xs-3">
+            <label>
+                Estado de supervisión
+            </label>
+            <select class="form-control" name="estadoSuper" id="estadoSuper"
+                asp-items="@(new SelectList(ViewBag.listaFiltroEstadoSupervision, "Text", "Text", @ViewData["EstadoS"]))">
+            </select>
+        </div>
+        <br/>
+        <div class="col-xs-2">
+            <button type="submit" class="btn btn-default" style="margin-top:5px">
                 <i class="fa fa-search"></i>
                 Buscar
             </button>
-            <a asp-action="PersonaSupervision">Regresar al listado completo</a>
-        </p>
+        </div>
+        <br/>
+        @*<br/>
+        <br/>*@
+        <a asp-action="PersonaSupervision">Regresar al listado completo</a>
     </div>
 </form>
 
@@ -203,7 +220,7 @@
                     </td>
                     <td>
                         <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision, value)"
-                                asp-items="@(new SelectList(@ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
+                                asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
                         </select>
                     </td>
                     <td>

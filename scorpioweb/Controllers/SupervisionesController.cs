@@ -940,10 +940,23 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
                 new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
                 new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
-                };
-
+            };
             ViewBag.listaEstadoSupervision = ListaEstadoS;
 
+            List<SelectListItem> ListaFiltroEstadoS;
+            ListaFiltroEstadoS = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "TODOS" },
+                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
+                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
+                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+                new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
+                new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
+                new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
+            };
+            ViewBag.listaFiltroEstadoSupervision = ListaFiltroEstadoS;
             #endregion
 
 
@@ -1004,6 +1017,11 @@ namespace scorpioweb.Controllers
                                               spcp.personaVM.Supervisor.Contains(searchString) ||
                                               (spcp.personaVM.IdPersona.ToString()).Contains(searchString)
                                               );
+            }
+
+            if (estadoSuper != null && estadoSuper != "Todos")
+            {
+                filter = filter.Where(spcp => spcp.supervisionVM.EstadoSupervision == estadoSuper);
             }
 
             switch (sortOrder)
