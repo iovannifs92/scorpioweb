@@ -1,5 +1,4 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -132,7 +131,7 @@ namespace scorpioweb.Controllers
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            _hostingEnvironment = hostingEnvironment;
+                
             this.roleManager = roleManager;
             this.userManager = userManager;
 
@@ -6320,10 +6319,27 @@ namespace scorpioweb.Controllers
         }  
         public IActionResult Contactos()
         {
+
+
+            //var listaEstado = from table in _context.Estados
+            //             orderby table.Estado
+            //             where table.Id != 0
+            //             select new EstadoMunicipio
+            //             {
+            //                 estadosVM = table,
+
+            //             };
+
+
+
+
+            //ViewData["ListaEstados"] = listaEstado;
+
+
             List<Contactos> conM = (from cm in _context.Contactos
-                                     where cm.EstadoMunicipio == "MUNICIPIO"
+                                    where cm.EstadoMunicipio == "MUNICIPIO"
                                     select new Contactos
-                                    { 
+                                    {
                                         Idcontactomunicipio = cm.Idcontactomunicipio,
                                         Lugar = cm.Lugar,
                                         Dependencia = cm.Dependencia,
@@ -6332,7 +6348,7 @@ namespace scorpioweb.Controllers
                                         Telefono = cm.Telefono,
                                         Extencion = cm.Extencion
                                     }).ToList();
-             
+
             TempData["listconM"] = conM;
 
 
@@ -6354,6 +6370,15 @@ namespace scorpioweb.Controllers
 
             return View();
         }
+
+        public IActionResult AddContacto()
+        {
+            
+
+
+            return View();
+        }
+
 
         #region -Update Contacto-
         public JsonResult updatecontact(Persona persona,Contactos contactos, string id,string nameCampo, string value)
