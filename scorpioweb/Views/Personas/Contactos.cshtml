@@ -66,9 +66,17 @@
         });
     };
 
+    function myFunction() {
+    //window.open("http://10.6.60.190/Personas/Contactos", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=900,height=400");
+        window.open("https://localhost:44359/Personas/AddContacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=400,height=400");
+    }
+
 </script>
 
-<h1 style="text-align:center">Contactos</h1>
+
+<div class="col-md-12">
+    <h1 style="text-align:center">Contactos<button class="btn btn-primary float-right fa fa-plus" style="margin-right:50px" onclick="myFunction()"></button></h1> 
+</div>
 <div class="row">
     <div class="col-md-4">
         <form enctype="multipart/form-data" id="forma">
@@ -184,3 +192,9 @@
         </form>
     </div>
 </div>
+
+
+
+ 
+
+
