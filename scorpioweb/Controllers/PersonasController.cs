@@ -6321,51 +6321,51 @@ namespace scorpioweb.Controllers
         {
 
 
-            //var listaEstado = from table in _context.Estados
-            //             orderby table.Estado
-            //             where table.Id != 0
-            //             select new EstadoMunicipio
-            //             {
-            //                 estadosVM = table,
+            var listaEstado = from table in _context.Estados
+                              orderby table.Estado
+                              where table.Id != 0
+                              select new EstadoMunicipio
+                              {
+                                  estadosVM = table,
 
-            //             };
-
-
+                              };
 
 
-            //ViewData["ListaEstados"] = listaEstado;
 
 
-            List<Contactos> conM = (from cm in _context.Contactos
-                                    where cm.EstadoMunicipio == "MUNICIPIO"
-                                    select new Contactos
-                                    {
-                                        Idcontactomunicipio = cm.Idcontactomunicipio,
-                                        Lugar = cm.Lugar,
-                                        Dependencia = cm.Dependencia,
-                                        NombreTitular = cm.NombreTitular,
-                                        Correo = cm.Correo,
-                                        Telefono = cm.Telefono,
-                                        Extencion = cm.Extencion
-                                    }).ToList();
-
-            TempData["listconM"] = conM;
+            ViewData["ListaEstados"] = listaEstado;
 
 
-            List<Contactos> conE = (from cm in _context.Contactos
-                                    where cm.EstadoMunicipio == "ESTADO"
-                                    select new Contactos
-                                    {
-                                        Idcontactomunicipio = cm.Idcontactomunicipio,
-                                        Lugar = cm.Lugar,
-                                        Dependencia = cm.Dependencia,
-                                        NombreTitular = cm.NombreTitular,
-                                        Correo = cm.Correo,
-                                        Telefono = cm.Telefono,
-                                        Extencion = cm.Extencion
-                                    }).ToList();
+            //List<Contactos> conM = (from cm in _context.Contactos
+            //                        where cm.EstadoMunicipio == "MUNICIPIO"
+            //                        select new Contactos
+            //                        {
+            //                            Idcontactomunicipio = cm.Idcontactomunicipio,
+            //                            Lugar = cm.Lugar,
+            //                            Dependencia = cm.Dependencia,
+            //                            NombreTitular = cm.NombreTitular,
+            //                            Correo = cm.Correo,
+            //                            Telefono = cm.Telefono,
+            //                            Extencion = cm.Extencion
+            //                        }).ToList();
 
-            TempData["listconE"] = conE;
+            //TempData["listconM"] = conM;
+
+
+            //List<Contactos> conE = (from cm in _context.Contactos
+            //                        where cm.EstadoMunicipio == "ESTADO"
+            //                        select new Contactos
+            //                        {
+            //                            Idcontactomunicipio = cm.Idcontactomunicipio,
+            //                            Lugar = cm.Lugar,
+            //                            Dependencia = cm.Dependencia,
+            //                            NombreTitular = cm.NombreTitular,
+            //                            Correo = cm.Correo,
+            //                            Telefono = cm.Telefono,
+            //                            Extencion = cm.Extencion
+            //                        }).ToList();
+
+            //TempData["listconE"] = conE;
 
 
             return View();
