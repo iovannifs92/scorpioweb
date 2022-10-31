@@ -112,6 +112,12 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "Por declinación", Value = "POR DECLINACION" }
         };
 
+        private List<SelectListItem> listaMotivoAprobacion = new List<SelectListItem>
+        {
+            new SelectListItem{ Text = "NA", Value = "NA" },
+            new SelectListItem{ Text = "Cambio de MC a SCP", Value = "CAMBIO DE MC A SCP" },
+            new SelectListItem{ Text = "Cambio de SCP a MC", Value = "CAMBIO DE SCP A MC" }
+        };
 
         public string normaliza(string normalizar)
         {
@@ -1015,7 +1021,8 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
                     break;
             }
-
+            //Vigente al principio, Concluido al final
+            filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoSupervision);
 
             //var personas = _context.Persona
             //    .FromSql("CALL informeSemanal")
@@ -1325,6 +1332,9 @@ namespace scorpioweb.Controllers
             ViewBag.listaSediocambio = listaNaSiNo;
             ViewBag.idSediocambio = BuscaId(listaNaSiNo, supervision.SeDioCambio);
             ViewBag.cambio = supervision.SeDioCambio;
+
+            ViewBag.listaMotivoAprobacion = listaMotivoAprobacion;
+            ViewBag.idMotivoAprobacion = BuscaId(listaMotivoAprobacion, supervision.MotivoAprobacion);
 
             return View(supervision);
         }
