@@ -13,5 +13,7 @@ namespace scorpioweb.Models
         public string Telefono { get; set; }
         public string Extencion { get; set; }
         public string EstadoMunicipio { get; set; }
+
+        
     }
 }

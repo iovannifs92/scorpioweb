@@ -59,8 +59,9 @@
                 </div>
                 <div class="form-group" id="DivMotivoAprobacion">
                     <label class="control-label"> Motivo de Aprobación</label>
-                    <input asp-for="MotivoAprobacion" class="form-control" />
-                    <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
+                    <select class="form-control" name="MotivoAprobacion" id="MotivoAprobacion"
+                        asp-items="@(new SelectList(ViewBag.listaMotivoAprobacion, "Value", "Text", @ViewBag.idMotivoAprobacion))">
+                    </select>
                 </div>
             }
             @if (ViewBag.cambio == null || ViewBag.cambio == "NO" || ViewBag.cambio == "NA")
