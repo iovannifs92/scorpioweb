@@ -170,14 +170,22 @@
         </div>
     }
 </div>
-<div class="bg-light clearfix">
-    <section class="buttons">
-        <a onclick="myFunction()" class="fa fa-address-book float-right"></a>
+<div class="bg-light clearfix" id="seccionBotones">
+    <section class="buttons" style="padding-right: 1em;">
+        <a onclick="myFunction()" class="fa fa-address-book float-right" id="agenda"></a>        
+    </section>
+    <section class="buttons" style="padding-right: 1em;">
+        @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+        {
+            <a  class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesAdmin</a>
+        }
+        else
+        {
+            <a  class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesUsuario</a>
+        }
+
     </section>
 </div>
-
-
-
 
 <style>
     .buttons a {
@@ -186,8 +194,7 @@
         width: 60px;
         height: 60px;
         line-height: 60px;
-        text-align: center;
-        background: #314652;
+        text-align: center;        
         color: #f1f1f1;
         border-radius: 50%;
         box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
@@ -197,6 +204,20 @@
     .buttons a:hover {
         transform: scale(1.2);
     }
+
+    #agenda {
+        background: #314652;
+    }
+
+    #mensajeSistema {
+        background: #0078A7;
+    }
+
+    #seccionBotones{
+        padding-top: 1em;
+    }
+
+
 
 </style>
 
