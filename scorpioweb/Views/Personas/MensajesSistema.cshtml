@@ -37,9 +37,12 @@
             <th>
                 Fecha
             </th>
-            <th>
-                Supervisor
-            </th>
+            @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+                {
+                    <th>
+                        Supervisor
+                    </th>        
+                }             
             <th>
                 Id Persona
             </th>
@@ -67,9 +70,12 @@
                 <td>
                     @item.FechaCreacion.Value.ToString("dd MMMM yyyy hh:mm")
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Usuario)
-                </td>
+                @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Usuario)
+                    </td>         
+                }                
                 <td>
                     @Html.DisplayFor(modelItem => item.PersonaIdPersona)
                 </td>

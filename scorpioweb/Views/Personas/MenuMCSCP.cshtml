@@ -177,11 +177,15 @@
     <section class="buttons" style="padding-right: 1em;">
         @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
         {
-            <a  class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesAdmin</a>
+            @if(ViewBag.MensajesAdmin>0){
+                <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesAdmin</a>
+            }            
         }
         else
         {
-            <a  class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesUsuario</a>
+            @if(ViewBag.MensajesUsuario>0){
+                <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesUsuario</a>
+            }            
         }
 
     </section>
