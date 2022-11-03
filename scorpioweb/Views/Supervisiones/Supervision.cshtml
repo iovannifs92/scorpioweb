@@ -96,27 +96,26 @@
 
 @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
 {
-    <h2 class="blockquote text-center">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
+    <h2 class="blockquote text-center"><a href="@("http://10.6.60.190/Personas/Details/"+item.personaVM.IdPersona)" target="_blank">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</a></h2>
     
     <div class=col-md-6>
         <h3 style="text-align:left" class="blockquote text-center">Id Persona:</h3>
-        <h3 style="text-align:center" class="blockquote text-center">@item.personaVM.IdPersona</h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="@("http://10.6.60.190/Personas/Procesos/"+item.personaVM.IdPersona)" target="_blank">@item.personaVM.IdPersona</a></h3>
     </div>
     <div class=col-md-6>
         <h3 style="text-align:center" class="blockquote text-center">Causa Penal:</h3>
-        <h3 style="text-align:center" class="blockquote text-center">@item.causapenalVM.CausaPenal</h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="@("http://10.6.60.190/Causaspenales/DetailsCP/"+item.causapenalVM.IdCausaPenal)" target="_blank">@item.causapenalVM.CausaPenal</a></h3>
     </div>
+    <div class="col-md-12 text-center">
     @if (@item.personaVM.Candado == 0)
     {
-    <div class="col-md-12 text-center">
         <button class="btn btn-primary btn-lg fa fa-unlock" onclick="candado(@item.personaVM.IdPersona,true)"></button>
-    </div>
     }else
     {
-    <div class="col-md-12 text-center">
-        <button title="@item.personaVM.MotivoCandado" class="btn btn-danger btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersona,false)"></button>
-    </div>
+        <button title="@item.personaVM.MotivoCandado" class="btn btn-primary btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersona,false)"></button>    
     }
+    <a class="btn btn-info btn-lg fa fa-calendar" href="@("http://10.6.60.190/Personas/PresentacionPeriodicaPersona/"+item.personaVM.IdPersona)" target="_blank"></a>
+    </div>
 
 break;
 }
