@@ -186,6 +186,10 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-inicial="@ViewData["inicial"]"
+   asp-route-final="@ViewData["final"]"
+   asp-route-UsuarioTurnar="@ViewBag.UsuarioTurnar"
+   asp-route-Capturista="@ViewBag.Capturista"
    class="btn btn-default col-xs-offset-6 col-sm-offset-7 col-lg-offset-9 @prevDisabled">
     Anterior
 </a>
@@ -193,6 +197,10 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-inicial="@ViewData["inicial"]"
+   asp-route-final="@ViewData["final"]"
+   asp-route-UsuarioTurnar="@ViewBag.UsuarioTurnar"
+   asp-route-Capturista="@ViewBag.Capturista"
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
