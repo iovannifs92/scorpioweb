@@ -126,9 +126,9 @@
 
 <form asp-action="PersonaSupervision" method="get">
     <div class="form-actions no-color">
-        <div class="col-xs-4">
+        <div class="col-xs-3">
             <label>
-                Búsqueda por nombre o causa penal
+                Búsqueda por nombre o CP
             </label>
             <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
         </div>
@@ -140,6 +140,14 @@
                 asp-items="@(new SelectList(ViewBag.listaFiltroEstadoSupervision, "Text", "Text", @ViewData["EstadoS"]))">
             </select>
         </div>
+        <div class="col-xs-2">
+            <label>
+                Figura judicial
+            </label>
+            <select class="form-control" name="figuraJudicial" id="figuraJudicial"
+                asp-items="@(new SelectList(ViewBag.listaFiguraJudicial, "Text", "Text", @ViewData["FiguraJ"]))">
+            </select>
+        </div>
         <br/>
         <div class="col-xs-2">
             <button type="submit" class="btn btn-default" style="margin-top:5px">
@@ -148,8 +156,6 @@
             </button>
         </div>
         <br/>
-        @*<br/>
-        <br/>*@
         <a asp-action="PersonaSupervision">Regresar al listado completo</a>
     </div>
 </form>
@@ -293,6 +299,8 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-figuraJudicial="@ViewData["FiguraJ"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
@@ -300,6 +308,8 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-figuraJudicial="@ViewData["FiguraJ"]"
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>

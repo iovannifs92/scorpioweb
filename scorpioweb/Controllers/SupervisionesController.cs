@@ -849,6 +849,7 @@ namespace scorpioweb.Controllers
            string currentFilter,
            string searchString,
            string estadoSuper,
+           string figuraJudicial,
            int? pageNumber
            )
 
@@ -959,7 +960,14 @@ namespace scorpioweb.Controllers
             ViewBag.listaFiltroEstadoSupervision = ListaFiltroEstadoS;
             #endregion
 
-
+            List<SelectListItem> listaFiguraJ = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "TODOS" },
+                new SelectListItem{ Text = "Sin Figura Judicial", Value = "SIN FIGURA JUDICIAL" },
+                new SelectListItem{ Text = "MC", Value = "MC" },
+                new SelectListItem{ Text = "SCP", Value = "SCP" },
+            };
+            ViewBag.listaFiguraJudicial = listaFiguraJ;
 
             var filter = from p in _context.Persona
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
@@ -1006,7 +1014,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
-
+            ViewData["FiguraJ"] = figuraJudicial;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -1022,6 +1030,18 @@ namespace scorpioweb.Controllers
             if (estadoSuper != null && estadoSuper != "Todos")
             {
                 filter = filter.Where(spcp => spcp.supervisionVM.EstadoSupervision == estadoSuper);
+            }
+
+            if (figuraJudicial != null)
+            {
+                if (figuraJudicial == "Sin Figura Judicial")
+                {
+                    filter = filter.Where(spcp => spcp.fraccionesimpuestasVM.FiguraJudicial == null);
+                }
+                else
+                {
+                    filter = filter.Where(spcp => spcp.fraccionesimpuestasVM.FiguraJudicial == figuraJudicial);
+                }
             }
 
             switch (sortOrder)
