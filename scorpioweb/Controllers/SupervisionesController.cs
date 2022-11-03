@@ -1032,7 +1032,7 @@ namespace scorpioweb.Controllers
                 filter = filter.Where(spcp => spcp.supervisionVM.EstadoSupervision == estadoSuper);
             }
 
-            if (figuraJudicial != null)
+            if (figuraJudicial != null && figuraJudicial != "Todos")
             {
                 if (figuraJudicial == "Sin Figura Judicial")
                 {
