@@ -1,0 +1,102 @@
+﻿@model IEnumerable<scorpioweb.Models.Mensajesistema>
+
+
+@{
+    ViewData["Title"] = "Mensajes del sistema";
+}
+
+<script type="text/javascript">
+    function mensajeVisto(idMsg){        
+        $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/MensajeVisto",
+                traditional: true,
+                data: {
+                    id: idMsg
+                },
+                success: function (response) {                    
+                    document.getElementById("fila"+idMsg).remove();
+                },
+                error: function (response) {
+                    alert("hubo un error");
+                }
+            });
+    }
+
+</script>
+
+<h2>Mensajes Sistema</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mensaje
+            </th>
+            <th>
+                Fecha
+            </th>
+            @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+                {
+                    <th>
+                        Supervisor
+                    </th>        
+                }             
+            <th>
+                Id Persona
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Valor Anterior
+            </th>
+            <th>
+                Nuevo Valor
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            @if ((item.Activo).Equals("1"))
+            {
+              <tr id="@("fila"+item.IdMensajeSistema)">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mensaje)
+                </td>
+                <td>
+                    @item.FechaCreacion.Value.ToString("dd MMMM yyyy hh:mm")
+                </td>
+                @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Usuario)
+                    </td>         
+                }                
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonaIdPersona)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorAnterior)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorNuevo)
+                </td>
+                <td>
+                    @if(item.Colectivo!="1" || User.IsInRole("Masteradmin")){
+                        <a class="btn btn-danger" onclick="mensajeVisto(@item.IdMensajeSistema)">
+                            <i class='fa fa-trash'></i>
+                        </a>
+                    }                    
+                </td>
+            </tr>  
+            }
+        }
+    </tbody>
+</table>

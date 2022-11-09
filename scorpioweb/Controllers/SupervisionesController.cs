@@ -849,6 +849,7 @@ namespace scorpioweb.Controllers
            string currentFilter,
            string searchString,
            string estadoSuper,
+           string figuraJudicial,
            int? pageNumber
            )
 
@@ -940,13 +941,33 @@ namespace scorpioweb.Controllers
                 new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
                 new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
                 new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
-                };
-
+            };
             ViewBag.listaEstadoSupervision = ListaEstadoS;
 
+            List<SelectListItem> ListaFiltroEstadoS;
+            ListaFiltroEstadoS = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "TODOS" },
+                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
+                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
+                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+                new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
+                new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
+                new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
+                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
+            };
+            ViewBag.listaFiltroEstadoSupervision = ListaFiltroEstadoS;
             #endregion
 
-
+            List<SelectListItem> listaFiguraJ = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "TODOS" },
+                new SelectListItem{ Text = "Sin Figura Judicial", Value = "SIN FIGURA JUDICIAL" },
+                new SelectListItem{ Text = "MC", Value = "MC" },
+                new SelectListItem{ Text = "SCP", Value = "SCP" },
+            };
+            ViewBag.listaFiguraJudicial = listaFiguraJ;
 
             var filter = from p in _context.Persona
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
@@ -993,7 +1014,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
-
+            ViewData["FiguraJ"] = figuraJudicial;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -1004,6 +1025,23 @@ namespace scorpioweb.Controllers
                                               spcp.personaVM.Supervisor.Contains(searchString) ||
                                               (spcp.personaVM.IdPersona.ToString()).Contains(searchString)
                                               );
+            }
+
+            if (estadoSuper != null && estadoSuper != "Todos")
+            {
+                filter = filter.Where(spcp => spcp.supervisionVM.EstadoSupervision == estadoSuper);
+            }
+
+            if (figuraJudicial != null && figuraJudicial != "Todos")
+            {
+                if (figuraJudicial == "Sin Figura Judicial")
+                {
+                    filter = filter.Where(spcp => spcp.fraccionesimpuestasVM.FiguraJudicial == null);
+                }
+                else
+                {
+                    filter = filter.Where(spcp => spcp.fraccionesimpuestasVM.FiguraJudicial == figuraJudicial);
+                }
             }
 
             switch (sortOrder)
@@ -2768,10 +2806,18 @@ namespace scorpioweb.Controllers
                         Estatus1 = estatusF;
                         if(figuraJudicial== "MEDIDAS CAUTELARES")
                         {
-                            Actividades1 = "CON FECHA "+ inicio+" COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
+                            if (presentaciones != "")
+                            {
+                                Actividades1 = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
                                 "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
-                                "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n"+ 
+                                "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
                                 presentaciones;
+                            }
+                            foreach (var act in actividades)
+                            {
+                                Actividades1 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
+
                         }
                         else
                         {
@@ -2850,10 +2896,17 @@ namespace scorpioweb.Controllers
                         Estatus9 = estatusF;
                         if (figuraJudicial == "SUSPENSIÓN CONDICIONAL DEL PROCESO")
                         {
-                            Actividades9 = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
+                            if (presentaciones != "")
+                            {
+                                Actividades9 = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
                                 "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
                                 "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
                                 presentaciones;
+                            }
+                            foreach (var act in actividades)
+                            {
+                                Actividades9 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
                         }
                         else
                         {

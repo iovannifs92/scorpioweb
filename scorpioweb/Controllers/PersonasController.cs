@@ -1017,6 +1017,15 @@ namespace scorpioweb.Controllers
             }
             #endregion
 
+
+            ViewBag.MensajesAdmin = (from mensaje in _context.Mensajesistema
+                                    where mensaje.Activo == "1"
+                                    select mensaje).Count();
+
+            ViewBag.MensajesUsuario = (from mensaje in _context.Mensajesistema
+                                       where mensaje.Activo == "1" && mensaje.Usuario == usuario || mensaje.Colectivo == "1"
+                                       select mensaje).Count();
+
             List<string> rolUsuario = new List<string>();
 
             for (int i = 0; i < roles.Count; i++)
@@ -6438,6 +6447,7 @@ namespace scorpioweb.Controllers
             return Json(new { success = true, responseText = Convert.ToString(0), Contacto = Convert.ToString(contactos.Idcontactos) });
         }
         #endregion
+
         #region -EditContacto-
         public async Task<IActionResult> EditContacto(int? id)
         {
@@ -6720,7 +6730,51 @@ namespace scorpioweb.Controllers
         {
             return _context.Contactos.Any(e => e.Idcontactos == id);
         }
+        #endregion
 
+        #region -MensajesSistema-
+        public async Task<IActionResult> MensajesSistema()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            string usuario = user.ToString();
+
+            ViewBag.Admin = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Masteradmin")
+                {
+                    ViewBag.Admin = true;
+                }
+                if (rol == "AdminMCSCP")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+
+            var mensajes = from mensaje in _context.Mensajesistema
+                           select mensaje;
+
+            if (ViewBag.Admin == false)
+            {
+                mensajes = from mensaje in _context.Mensajesistema
+                           where mensaje.Usuario == usuario || mensaje.Colectivo == "1"
+                           select mensaje;
+            }
+
+            return View(mensajes);
+        }
+        #endregion
+
+        #region -MensajeVisto-
+        public async Task<IActionResult> MensajeVisto(int id)
+        {
+            var mensajes = await _context.Mensajesistema.SingleOrDefaultAsync(m => m.IdMensajeSistema == id);
+            mensajes.Activo = "0";
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return Json(new { success = true });
+        }
         #endregion
 
     }

@@ -45,7 +45,7 @@ namespace scorpioweb.Controllers
             var tableAdolescente = (from a in _context.Adolescentes
                                     join aad in _context.AerAdolescentesDetalles on a.Folio equals aad.Folio
                                     where a.Folio == id
-                                    select new 
+                                    select new
                                     {
                                         adolescentesVM = a,
                                         aerAdolescentesDetallesVM = aad
