@@ -41,18 +41,9 @@ namespace scorpioweb.Controllers
             var persona = _context.Adolescentes
                .SingleOrDefault(m => m.Folio == id);
 
-            #region -List BD-
-            List<Adolescentes> adolescentesVM = _context.Adolescentes.ToList();
-            List<AerAdolescentesDetalles> aerAdolescentesDetallesVM = _context.AerAdolescentesDetalles.ToList();
-            List<Fro> frosVM = _context.Fros.ToList();
-            List<FroAdolescentes> froAdolescentesVM = _context.FroAdolescentes.ToList();
-
-            #endregion
-
             #region -joinTables-
-
-            var tableAdolescente = (from a in adolescentesVM
-                                    join aad in aerAdolescentesDetallesVM on a.Folio equals aad.Folio
+            var tableAdolescente = (from a in _context.Adolescentes
+                                    join aad in _context.AerAdolescentesDetalles on a.Folio equals aad.Folio
                                     where a.Folio == id
                                     select new 
                                     {
@@ -60,25 +51,22 @@ namespace scorpioweb.Controllers
                                         aerAdolescentesDetallesVM = aad
                                     }).ToList();
 
-            IEnumerable<FroAdolescentes> dataO = from fro in frosVM
-                                                 join froA in froAdolescentesVM on fro.IdDescFro equals froA.IdDesc
+            IEnumerable<FroAdolescentes> dataO = from fro in _context.Fros
+                                                 join froA in _context.FroAdolescentes on fro.IdDescFro equals froA.IdDesc
                                                  where fro.EntrevistaFolio == id && froA.Tipo == "O"
                                                  orderby fro.IdDescFro
                                                  select new FroAdolescentes
                                                  {
                                                      Descripcion = froA.Descripcion
                                                  };
-            IEnumerable<FroAdolescentes> dataR = from fro in frosVM
-                                                 join froA in froAdolescentesVM on fro.IdDescFro equals froA.IdDesc
+            IEnumerable<FroAdolescentes> dataR = from fro in _context.Fros
+                                                 join froA in _context.FroAdolescentes on fro.IdDescFro equals froA.IdDesc
                                                  where fro.EntrevistaFolio == id && froA.Tipo == "R"
                                                  orderby fro.IdDescFro
                                                  select new FroAdolescentes
                                                  {
                                                      Descripcion = froA.Descripcion
                                                  };
-
-
-
 
             #endregion
 

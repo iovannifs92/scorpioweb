@@ -1,0 +1,385 @@
+﻿@{
+    ViewData["Title"] = "Contactos";
+    Layout = "";
+}
+    <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/main.css">
+    <script src="~/js/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="~/css/bootstraplocal.css"
+          asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+          asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:400,600">
+
+    <style>
+        body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    main {
+      height: 100%;
+      width: 100%;
+    }
+
+    aside {
+      background-color: #233460;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 20%;
+      z-index: 1;
+    }
+
+    section {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      overflow: hidden;
+    }
+
+    label {
+      display: inline-block;
+      padding: 7px 10px;
+      background-color: transparent;
+      cursor: pointer;
+      margin: 10px;
+      z-index: 3;
+      position: fixed;
+    }
+
+    .bar {
+      display: block;
+      background-color: #233460
+;
+      width: 30px;
+      height: 3px;
+      border-radius: 5px;
+      margin: 5px auto;
+      transition: background-color .5s ease-in, transform .5s ease-in, width .5s ease-in;
+    }
+
+    .content {
+      top: 0;
+      bottom: 0;
+      position: absolute;
+      right: 0;
+      left: 0;
+      background-color: #fff;
+      z-index: 2;
+      transition: transform .5s ease-in-out;
+    }
+
+    h1 {
+      margin: 0;
+      position: relative;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      text-align: center;
+      font-size: 40px;
+    }
+
+    .asideList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      margin-top: 100px;
+      margin-right:10px;
+      text-align: right;
+      border-top: 2px solid rgba(255, 255, 255, .7);
+    }
+
+    .asideAnchor {
+      border-bottom: 2px solid rgba(255, 255, 255, .7);
+      padding: 20px 0;
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 500;
+      position: relative;
+      transition: color .3s .15s ease-in;
+    }
+
+    .asideAnchor::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 100%;
+      background-color: #fff;
+      width: 0;
+      transition: width .3s ease-in;
+      z-index: -1;
+    }
+
+    .asideAnchor:hover {
+      color: #233460
+;
+    }
+
+    .asideAnchor:hover::after {
+      width: 100%;
+    }
+
+  
+
+    input[type="checkbox"]:checked ~ .content {
+      transform: translateX(20%);
+    }
+
+    input[type="checkbox"]:checked ~ label .bar {
+      background-color: #fff;
+    }
+
+    input[type="checkbox"]:checked ~ label .top {
+      -webkit-transform: translateY(0px) rotateZ(45deg);
+      -moz-transform: translateY(0px) rotateZ(45deg);
+      -ms-transform: translateY(0px) rotateZ(45deg);
+      -o-transform: translateY(0px) rotateZ(45deg);
+      transform: translateY(0px) rotateZ(45deg);
+    }
+
+    input[type="checkbox"]:checked ~ label .bottom {
+      -webkit-transform: translateY(-15px) rotateZ(-45deg);
+      -moz-transform: translateY(-15px) rotateZ(-45deg);
+      -ms-transform: translateY(-15px) rotateZ(-45deg);
+      -o-transform: translateY(-15px) rotateZ(-45deg);
+      transform: translateY(-15px) rotateZ(-45deg);
+    }
+
+    input[type="checkbox"]:checked ~ label .middle {
+      width: 0;
+    }
+
+    .middle {
+      margin: 0 auto;
+    }
+
+    .ua {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      color: #233460;
+      font-size: 2em;
+      z-index: 2;
+    }
+    
+    #div1 {
+     overflow:scroll;
+     height:400px;
+     width:1200px;
+    }  
+    #div1 table {
+    width:1200px;
+    height:600px;
+    background-color:lightgray;
+    }
+
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+      $('#dtDynamicVerticalScrollExample').DataTable({
+        "scrollY": "50vh",
+        "scrollCollapse": true,
+      });
+      $('.dataTables_length').addClass('bs-select');
+    });
+    function myFunction() {
+    window.open("/Personas/AddContacto/", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=400,height=400");
+    }
+    function EditContacto(id) {
+    window.open("/Personas/EditContacto/" + id, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=400,height=400");
+    }
+
+    //var arr = [];
+    //function maracar(id) {
+    //    var encontro = false;
+    //    var doble;
+    //    for (var i = 0; i < arr.length; i++) {
+    //        if (arr[i] === id) {
+    //            encontro = true;
+    //            doble = i;
+    //            break;
+    //        }
+    //    }
+    //    if (encontro == false) {
+    //        arr.push(id);
+    //    } else {
+    //        arr.splice(doble,1);
+    //    }      
+    //}
+
+    function Imprimir() {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personas/imprimirContactos",
+                traditional: true,
+                success: function (response) {
+                    if (response.success) {
+                         window.location.href = "http://10.6.60.190/Documentos/ContactosDGEPMS.docx"
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Ha ocurrido un error contacte con el Administrador");
+                }
+            });         
+    }
+
+     function Destacados(id, destacado) {
+        var idContacto = id;
+        let text;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/Destacado",
+            traditional: true,
+            data: {
+                datoContacto: [destacado, idContacto],
+            },
+            success: function (response) {
+                if (response.success) {
+                   location.reload();
+                } else {
+                    alert(response.responseText);
+                }
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+
+</script>
+
+<main>
+  <aside>
+    <ul class="asideList">
+      <li><a onclick="myFunction()" class="asideAnchor fa fa-plus">  Contacto</a></li>
+      <li><a asp-action="Contacto" asp-route-sortOrder="@ViewData["destacados"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" class="asideAnchor fa fa-star">  Destacados</a></li>
+      <li><a onclick="Imprimir()" class="asideAnchor fa fa-upload"> Exportar</a></li>
+ 
+    </ul>
+  </aside>
+  <section>
+    <input type="checkbox" id="myInput">
+    <label for="myInput">
+      <span class="bar top"></span>
+      <span class="bar middle"></span>
+      <span class="bar bottom"></span>
+    </label>
+
+    <div class="content col-md-12">
+        <div style="margin-top:50px;">
+            <h1>Contactos</h1>
+        </div>
+        <div style="margin-left:100px;margin-top:50px;">
+            <form asp-action="Contacto" method="get">
+                <div class="form-actions no-color">
+                    <p> Búsqueda: <input type="text" name="SearchString" />
+                        <button type="submit" class="btn btn-default">
+                            <i class="fa fa-search"></i>
+                            Buscar
+                        </button>
+                        <a asp-action="Contacto">Regresar al listado completo</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+        <div id="div1" style="overflow:auto;">
+            <table class="table table-striped table-bordered table-sm" cellspacing="0"
+              width="100%">
+                <thead>
+                    <tr>
+                        @*<th>
+                            Marcar
+                        </th>*@
+                        <th>
+                            Lugar
+                        </th>
+                        <th>
+                            Dependencia
+                        </th>
+                        <th>
+                            Titular
+                        </th>
+                        <th>
+                            Correo
+                        </th>
+                        <th>
+                            Telefono
+                        </th>
+                        <th>
+                            Extención
+                        </th>                        
+                        <th>
+                            
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewData["ListaContactos"] as IEnumerable<scorpioweb.Models.Contactos>)
+                    {
+                        <tr>
+                           @* <td>
+                               <input type="checkbox" id="myCheck" onclick="maracar(@item.Idcontactos)">                 
+                            </td>*@
+                            <th>
+                                @Html.DisplayFor(modelItem => item.Lugar)
+                            </th>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Dependencia)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Titular)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Correo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Telefono)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Extencion)
+                            </td>
+                            <td>
+                                <a type="button" class="btn btn-success" id="Editar" title="Editar" onclick="EditContacto(@item.Idcontactos)">
+                                    <i class="fa fa-pencil"></i> 
+                                </a>
+                                <a type="button" class="btn btn-danger" id="borrar" title="Borrar" asp-action="DeleteContacto" asp-route-id="@item.Idcontactos">
+                                    <i class="fa fa-trash"></i> 
+                                </a>
+                                @if(item.Destacado == 0){
+                                     <a type="button" class="btn btn-default" id="borrar" title="Destacado"  onclick="Destacados(@item.Idcontactos,true)">
+                                    <i class="fa fa-star"></i> 
+                                    </a>
+                                }else{
+                                    <a type="button" class="btn btn-warning" id="borrar" title="Destacado"  onclick="Destacados(@item.Idcontactos,false)">
+                                    <i class="fa fa-star"></i> 
+                                    </a>
+                                }
+                                
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+  </section>
+</main>
+

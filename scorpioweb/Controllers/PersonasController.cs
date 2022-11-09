@@ -30,6 +30,8 @@ using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Text;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
+using SautinSoft.Document.MailMerging;
 
 namespace scorpioweb.Controllers
 {
@@ -131,7 +133,7 @@ namespace scorpioweb.Controllers
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-                
+            _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
 
@@ -6317,10 +6319,8 @@ namespace scorpioweb.Controllers
         {
             return View();
         }  
-        public IActionResult Contactos()
+        public IActionResult Contacto(string SearchString, string sortOrder)
         {
-
-
             var listaEstado = from table in _context.Estados
                               orderby table.Estado
                               where table.Id != 0
@@ -6330,119 +6330,398 @@ namespace scorpioweb.Controllers
 
                               };
 
-
-
-
             ViewData["ListaEstados"] = listaEstado;
 
 
-            //List<Contactos> conM = (from cm in _context.Contactos
-            //                        where cm.EstadoMunicipio == "MUNICIPIO"
-            //                        select new Contactos
-            //                        {
-            //                            Idcontactomunicipio = cm.Idcontactomunicipio,
-            //                            Lugar = cm.Lugar,
-            //                            Dependencia = cm.Dependencia,
-            //                            NombreTitular = cm.NombreTitular,
-            //                            Correo = cm.Correo,
-            //                            Telefono = cm.Telefono,
-            //                            Extencion = cm.Extencion
-            //                        }).ToList();
-
-            //TempData["listconM"] = conM;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["destacados"] = String.IsNullOrEmpty(sortOrder) ? "destacados" : "";
+            ViewData["dependencia"] = sortOrder == "dependencia" ? "date_desc" : "dependencia";
 
 
-            //List<Contactos> conE = (from cm in _context.Contactos
-            //                        where cm.EstadoMunicipio == "ESTADO"
-            //                        select new Contactos
-            //                        {
-            //                            Idcontactomunicipio = cm.Idcontactomunicipio,
-            //                            Lugar = cm.Lugar,
-            //                            Dependencia = cm.Dependencia,
-            //                            NombreTitular = cm.NombreTitular,
-            //                            Correo = cm.Correo,
-            //                            Telefono = cm.Telefono,
-            //                            Extencion = cm.Extencion
-            //                        }).ToList();
+            var Contactos = from c in _context.Contactos
+                            select c;
 
-            //TempData["listconE"] = conE;
+          
 
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                foreach (var item in SearchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    Contactos = Contactos.Where(a => (a.Lugar).Contains(SearchString.ToUpper()) ||
+                                              (a.Telefono).Contains(SearchString.ToUpper()) ||
+                                              (a.Dependencia).Contains(SearchString.ToUpper()) ||
+                                              (a.Correo).Contains(SearchString.ToUpper())
+                                              );
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "destacados":
+                    Contactos = Contactos.OrderByDescending(a => a.Destacado);
+                    break;
+                case "dependencia":
+                    Contactos = Contactos.OrderByDescending(a => a.Dependencia);
+                    break;
+                default:
+                    Contactos = Contactos.OrderBy(spcp => spcp.Lugar);
+                    break;
+            }
+
+            ViewData["ListaContactos"] = Contactos;
 
             return View();
         }
-
         public IActionResult AddContacto()
         {
-            
+            List<Estados> listaEstadosD = new List<Estados>();
+            listaEstadosD = (from table in _context.Estados
+                             select table).ToList();
+
+            ViewBag.ListaEstadoD = listaEstadosD;
 
 
             return View();
         }
 
-
         #region -Update Contacto-
-        public JsonResult updatecontact(Persona persona,Contactos contactos, string id,string nameCampo, string value)
+        public JsonResult CreateContactos(Contactos contactos, string Categoria, int EstadoC, int MunicipioC, string Dependencia, string Titular, string Telefono, string Extencion, string Correo)
         {
-            if (id != null)
+            try
             {
-                contactos.NombreTitular = value;
-                contactos.Telefono = value;
-                contactos.Correo = value;
-                contactos.Extencion = value;
-                contactos.Dependencia = value;
-                contactos.Idcontactomunicipio = Int32.Parse(id);
+                if (MunicipioC == null || MunicipioC == 0)
+                {
+                    string Estado = (from table in _context.Estados
+                                     where table.Id == EstadoC
+                                     select table.Estado).First().ToString();
+                    contactos.Lugar = Estado.ToUpper();
+                    contactos.Categoria = "ESTADO";
+                }
+                else
+                {
+                    string Estado = (from table in _context.Estados
+                                     where table.Id == EstadoC
+                                     select table.Estado).First().ToString();
+
+                    string Municipio = (from table in _context.Municipios
+                                        where table.Id == MunicipioC
+                                        select table.Municipio).First().ToString();
+
+                    var munestado = Estado + ", " + Municipio;
+
+                    contactos.Lugar = munestado.ToUpper();
+                    contactos.Categoria = "MUNICIPIO";
+                }
+
+
+                //victima.NombreV = normaliza(NombreV);
+               
+                contactos.Dependencia = Dependencia.ToUpper();
+                contactos.Titular = Titular.ToUpper();
+                contactos.Correo = Correo.ToUpper();
+                contactos.Telefono = Telefono.ToUpper();
+                contactos.Extencion = Extencion.ToUpper();
+                contactos.Destacado = 0;
+
+                _context.Add(contactos);
+                _context.SaveChanges();
+
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, responseText = ex });
             }
 
-            var empty = (from s in _context.Contactos
-                         where s.Idcontactomunicipio == contactos.Idcontactomunicipio
-                         select s);
-
-            if (empty.Any())
-            {
-                if (nameCampo == "NombreTitular")
-                {
-                    var query = (from s in _context.Contactos
-                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
-                                 select s).FirstOrDefault();
-                    query.NombreTitular = contactos.NombreTitular;
-                    _context.SaveChanges();
-                }
-                if (nameCampo == "Correo")
-                {
-                    var query = (from s in _context.Contactos
-                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
-                                 select s).FirstOrDefault();
-                    query.Correo = contactos.Correo;
-                    _context.SaveChanges();
-                }
-                if (nameCampo == "Telefono")
-                {
-                    var query = (from s in _context.Contactos
-                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
-                                 select s).FirstOrDefault();
-                    query.Telefono = contactos.Telefono;
-                    _context.SaveChanges();
-                }
-                if (nameCampo == "Extencion")
-                {
-                    var query = (from s in _context.Contactos
-                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
-                                 select s).FirstOrDefault();
-                    query.Extencion = contactos.Extencion;
-                    _context.SaveChanges();
-                }
-                if (nameCampo == "Dependencia")
-                {
-                    var query = (from s in _context.Contactos
-                                 where s.Idcontactomunicipio == contactos.Idcontactomunicipio
-                                 select s).FirstOrDefault();
-                    query.Dependencia = contactos.Dependencia;
-                    _context.SaveChanges();
-                }
-            }
-
-            return Json(new { success = true, responseText = Convert.ToString(0), idPersonas = Convert.ToString(contactos.Idcontactomunicipio) });
+            return Json(new { success = true, responseText = Convert.ToString(0), Contacto = Convert.ToString(contactos.Idcontactos) });
         }
         #endregion
+        #region -EditContacto-
+        public async Task<IActionResult> EditContacto(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var contacto = await _context.Contactos.SingleOrDefaultAsync(m => m.Idcontactos == id);
+            if (contacto == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Categoria = contacto.Categoria;
+            ViewBag.Destacado = contacto.Destacado;
+            ViewBag.idContacto = contacto.Idcontactos;
+
+
+            #region Categoria
+            List<SelectListItem> listaCategoria;
+            listaCategoria = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Estado", Value="ESTADO"},
+              new SelectListItem{ Text="Municipio", Value="MUNICIPIO"},
+            };
+
+            ViewBag.listaCategoria = listaCategoria;
+            ViewBag.idCategoria = BuscaId(listaCategoria, contacto.Categoria);
+            #endregion
+
+            #region -Listado Estados-
+            List<Estados> listaEstados = new List<Estados>();
+            listaEstados = (from table in _context.Estados
+                            select table).ToList();
+
+
+            #endregion
+
+            #region Municipios 
+            var Lugar = new List<string>();
+            var estado = "";
+            var muni = "";
+            if (contacto.Categoria == "MUNICIPIO")
+            {
+                String str = contacto.Lugar;
+
+                char[] spearator = { ',' };
+                Int32 count = 2;
+
+                // Using the Method
+                String[] strlist = str.Split(spearator,
+                       count, StringSplitOptions.None);
+
+                foreach (String s in strlist)
+                {
+                    Lugar.Add(s);
+                }
+
+                char[] charsToTrim = { ' ' };
+                estado = Lugar[0];
+                muni = Lugar[1].Trim(charsToTrim);
+
+                var sacarEsatado = (from table in _context.Estados
+                                    where table.Estado == estado
+                                    select table.Id).First();
+
+
+                var sacarMunicipio = (from table in _context.Municipios
+                                      where table.EstadosId == sacarEsatado && table.Municipio == muni
+                                      select table.Id).First().ToString();
+
+                #region Lnmunicipio
+             
+                List<Municipios> listaMunicipios = new List<Municipios>();
+
+                listaMunicipios = (from table in _context.Municipios
+                                   where table.EstadosId == sacarEsatado
+                                   select table).ToList();
+
+                listaMunicipios.Insert(0, new Municipios { Id = null, Municipio = "Selecciona" });
+
+                ViewBag.ListadoEstados = listaEstados;
+                ViewBag.idEstado = sacarEsatado;
+
+                ViewBag.ListadoMunicipios = listaMunicipios;
+                ViewBag.idMunicipio = sacarMunicipio;
+                #endregion
+            }
+            else
+            {
+
+                
+
+                #region -Sacar estado-
+                var sacarEsatado = (from table in _context.Estados
+                                    where table.Estado == contacto.Lugar
+                                    select table.Id).First();
+
+
+                List<Municipios> listaMunicipios = new List<Municipios>();
+
+                listaMunicipios = (from table in _context.Municipios
+                                   where table.EstadosId == sacarEsatado
+                                   select table).ToList();
+
+                listaMunicipios.Insert(0, new Municipios { Id = null, Municipio = "Selecciona" });
+
+
+                ViewBag.ListadoEstados = listaEstados;
+                ViewBag.idEstado = sacarEsatado;
+
+                ViewBag.ListadoMunicipios = listaMunicipios;
+
+                #endregion
+            }
+            #endregion
+
+            return View(contacto);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditContacto(int id, [Bind("Idcontactos,Categoria,Lugar,Dependencia,Titular,Correo,Telefono,Extencion,Destacado")] Contactos contactos, int Estado, int Municipio)
+        {
+
+            var contacto = _context.Contactos
+               .SingleOrDefault(m => m.Idcontactos == id);
+
+            if (id != contacto.Idcontactos)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                if(contactos.Categoria == "ESTADO" || Municipio == 0)
+                {
+                    string EditEstado = (from table in _context.Estados
+                                            where table.Id == Estado
+                                            select table.Estado).First().ToString();
+                    contacto.Lugar = EditEstado.ToUpper();
+                    contacto.Categoria = "ESTADO";
+                }
+                else
+                {
+
+                    string EditEstado = (from table in _context.Estados
+                                            where table.Id == Estado
+                                            select table.Estado).First().ToString();
+
+                    string EditMunicipio = (from table in _context.Municipios
+                                            where table.Id == Municipio
+                                            select table.Municipio).First().ToString();
+                    var munestado = EditEstado + ", " + EditMunicipio;
+
+                    contactos.Lugar = munestado.ToUpper();
+
+                    contacto.Categoria = "MUNICIPIO";
+                }
+
+        
+                contacto.Dependencia = contactos.Dependencia.ToUpper();
+                contacto.Titular = contactos.Titular.ToUpper();
+                contacto.Correo = contactos.Correo.ToUpper();
+                contacto.Telefono = contactos.Telefono.ToUpper();
+                contacto.Extencion = contacto.Extencion.ToUpper();
+                contacto.Destacado = contactos.Destacado;
+
+                _context.Update(contacto);
+                await _context.SaveChangesAsync();
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ContactoExists(contacto.Idcontactos))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction("EditContacto/" + contacto.Idcontactos, "Personas");
+        }
+        #endregion
+
+        #region -Delete Contacto-
+        public async Task<IActionResult> DeleteContacto(int? id)
+        {
+            var contacto = await _context.Contactos.SingleOrDefaultAsync(m => m.Idcontactos == id);
+
+            _context.Contactos.Remove(contacto);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Contacto", "Personas");
+        }
+        #endregion
+
+        #region -Imprimir Reporte Supervision-
+        public JsonResult imprimirContactos(Contactos contactos)
+        {
+            //List<Contactos> lista = new List<Contactos>();
+            //#region -Define contenido de variables-
+            //for (int i = 0; i < datosidContacto.Length; i++)
+            //{
+            //    var Contactos = (from a in _context.Contactos
+            //                                where a.Idcontactos == (Convert.ToInt32(datosidContacto[i]))
+            //                            select a).ToList();
+
+
+            //}
+            //#endregion
+
+
+            IEnumerable<Contactos> dataContactos = from c in _context.Contactos
+                                                   select new Contactos
+                                                   {
+                                                       Lugar = c.Lugar,
+                                                       Dependencia = c.Dependencia,
+                                                       Titular = c.Titular,
+                                                       Correo = c.Correo,
+                                                       Telefono = c.Telefono,
+                                                       Extencion = c.Extencion                                          
+                                                   };
+
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateContactos.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\ContactosDGEPMS.docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+
+         
+            dc.MailMerge.Execute(dataContactos, "Contactos");
+            dc.Save(resultPath);
+
+            
+            return Json(new { success = true, responseText = Convert.ToString(0), Contacto = Convert.ToString(contactos.Idcontactos) });
+
+            //Response.Redirect("https://localhost:44359/Documentos/ContactosDGEPMS.docx");
+            //Response.Redirect("http://10.6.60.190/Documentos/ContactosDGEPMS.docx");
+
+        }
+        #endregion
+        #region -Destacados-
+
+        public JsonResult Destacado(Contactos contactos, Persona persona, string[] datoContacto)
+        {
+            contactos.Destacado = Convert.ToSByte(datoContacto[0] == "true");
+            contactos.Idcontactos = Int32.Parse(datoContacto[1]);
+
+            var empty = (from c in _context.Contactos
+                         where c.Idcontactos == contactos.Idcontactos
+                         select c);
+            if (empty.Any())
+            {
+                var query = (from c in _context.Contactos
+                             where c.Idcontactos == contactos.Idcontactos
+                             select c).FirstOrDefault();
+                query.Destacado = contactos.Destacado;
+                _context.SaveChanges();
+            }
+            var stadoc = (from c in _context.Contactos
+                          where c.Idcontactos == contactos.Idcontactos
+                          select c.Destacado).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(persona.IdPersona) });
+         
+        }
+
+
+
+        #endregion
+
+        #region -ContactoExists-
+        private bool ContactoExists(int id)
+        {
+            return _context.Contactos.Any(e => e.Idcontactos == id);
+        }
+
+        #endregion
+
     }
 }
