@@ -42,7 +42,6 @@ namespace scorpioweb.Controllers
                .SingleOrDefault(m => m.Folio == id);
 
             #region -joinTables-
-
             var tableAdolescente = (from a in _context.Adolescentes
                                     join aad in _context.AerAdolescentesDetalles on a.Folio equals aad.Folio
                                     where a.Folio == id
@@ -68,6 +67,7 @@ namespace scorpioweb.Controllers
                                                  {
                                                      Descripcion = froA.Descripcion
                                                  };
+
             #endregion
 
             #region -Generar Reporte-

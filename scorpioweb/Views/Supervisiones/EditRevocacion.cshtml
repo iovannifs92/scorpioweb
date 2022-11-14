@@ -92,9 +92,11 @@
     </div>
 </div>
 
+
 <div>
-    <a href='javascript:history.go(-1)'>Regresar</a>
+    <a asp-action="Supervision" asp-route-id="@Model.SupervisionIdSupervision" class="btn btn-link">Regresar</a>
 </div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

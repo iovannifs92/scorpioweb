@@ -2302,13 +2302,6 @@ namespace scorpioweb.Controllers
 
                 var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
-                    
-                if(bitacora.FracionesImpuestasIdFracionesImpuestas != null)
-                {
-                    _context.Add(bitacora);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp=idcp });
-                }
 
                 _context.Add(bitacora);
                 await _context.SaveChangesAsync();
@@ -2327,7 +2320,14 @@ namespace scorpioweb.Controllers
                 }
                 #endregion
 
-                return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                if (bitacora.FracionesImpuestasIdFracionesImpuestas != null)
+                {
+                    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                }
+                else
+                {
+                    return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                }
             }
             return View(bitacora);
         } 
