@@ -5168,8 +5168,10 @@ namespace scorpioweb.Controllers
                 switch (currentFilter)
                 {
                     case "TODOS":
-                        ViewData["alertas"] = (sinResolucion2).Union
+                        ViewData["alertas"] = (where2).Union
+                                              (sinResolucion2).Union
                                               (archivo).Union
+                                              (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.personaVM.Supervisor == usuario && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                               (from persona in personaVM
                                                join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
                                                join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -5265,8 +5267,7 @@ namespace scorpioweb.Controllers
                                                  planeacionestrategicaVM = planeacion,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              })
-                                            .Union(joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE"))
-                                            .Union(where2);
+                                             ;
                         break;
                     case "EXPEDIENTE FISICO EN RESGUARDO":
                         ViewData["alertas"] = archivo;
@@ -5361,7 +5362,7 @@ namespace scorpioweb.Controllers
                         ViewData["alertas"] = where2;
                         break;
                     case "SIN FIGURA JUDICIAL":
-                        ViewData["alertas"] = joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE");
+                        ViewData["alertas"] = joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.personaVM.Supervisor == usuario && s.supervisionVM.EstadoSupervision == "VIGENTE");
                         break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":
                         ViewData["alertas"] = from persona in personaVM
