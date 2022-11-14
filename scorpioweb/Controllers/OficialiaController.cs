@@ -687,8 +687,8 @@ namespace scorpioweb.Controllers
             dc.Save(resultPath);
 
 
-            Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
-            //Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/reporteOficialia.docx");
+            Response.Redirect("http://10.6.60.190/Documentos/reporteOficialia.docx");
             #endregion
 
             //return RedirectToAction("Reportes", "Oficialia");

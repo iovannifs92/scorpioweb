@@ -1,0 +1,61 @@
+﻿@model scorpioweb.Models.Calendario
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Calendario</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Mensaje)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Mensaje)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaEvento)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaEvento)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Prioridad)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Prioridad)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Usuario)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Tipo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tipo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaCreacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaCreacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PersonaIdPersona)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PersonaIdPersona)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Idcalendario">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
