@@ -168,9 +168,9 @@
         @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Fraccionesimpuestas>)
         {
         <tr>
-            <td>
-                <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdFracciones)">
-            </td>
+        <td>
+            <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdFracciones)">
+        </td>
         <td>
             @Html.DisplayFor(modelItem => item.FiguraJudicial)
         </td>
@@ -223,21 +223,21 @@
 
     @if (ViewBag.usuario)
     {
-<div>
-    @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
+    <div>
+        @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
 
-    <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
-        <i class="fa fa-plus"></i> Añadir Fracciones
-    </button>
+        <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Añadir Fracciones
+        </button>
 
-    <a id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
-</div>            
+        <a id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
+    </div>            
     <br />
     }
 
-<a href='javascript:history.go(-1)'>Regresar</a>
-
-
+<div>
+    <a asp-action="Supervision" asp-route-id="@ViewBag.IdSupervisionGuardar" class="btn btn-link">Regresar</a>
+</div>
 
 
 <!-- Modal Creacion de nueva fraccion -->
