@@ -34,16 +34,23 @@
                 var events = [];
 
                 for(var i = 0; i < data.length; i++){
-                    
                     const idcalendario=data[i].Idcalendario;
                     const mensaje=data[i].Mensaje;
                     const fecha = data[i].FechaEvento;
+                    const color=data[i].Color;
+                    let url="";
+                    if(data[i].Idcalendario == 0){
+                        url=new URL('http://10.6.60.190/Supervisiones/Supervision/'+data[i].IdSupervision);
+                    }
                     events.push({
                         'id': idcalendario,
                         'title': mensaje,
                         'start': fecha,
+                        'color':color,
+                        'url': url,
                     });  
                 }
+                console.log(events);
 
 
                 var calendar = new FullCalendar.Calendar(calendarEl, {

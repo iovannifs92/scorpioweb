@@ -66,6 +66,24 @@ namespace scorpioweb.Controllers
             }
             return "";
         }
+
+        public string colorPrioridad(string prioridad)
+        {
+            string color = "";
+            switch (prioridad)
+            {
+                case "BAJA":
+                    color = "#2CAD1E";
+                    break;
+                case "MEDIA":
+                    color = "#E0CB26";
+                    break;
+                case "ALTA":
+                    color = "#E00101";
+                    break;
+            }
+            return color;
+        }
         #endregion
 
         #region -Initialize events-
@@ -84,30 +102,65 @@ namespace scorpioweb.Controllers
                 }
             }
 
-            var tasks = from s in _context.Supervision
-                        join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
-                        join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                        where t.Usuario == usuario
-                        select new
-                        {
-                            Idcalendario = t.Idcalendario,
-                            FechaEvento = t.FechaEvento,
-                            Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje
-                        };
+            var calendario = (from s in _context.Supervision
+                         join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
+                         join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                         where t.Usuario == usuario
+                         select new
+                         {
+                             Idcalendario = t.Idcalendario,
+                             FechaEvento = t.FechaEvento,
+                             Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje,
+                             Color = colorPrioridad(t.Prioridad),
+                             IdSupervision = s.IdSupervision
+                         });
+
+            var informes = (from s in _context.Supervision
+                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                            join pl in _context.Planeacionestrategica on s.IdSupervision equals pl.SupervisionIdSupervision
+                            where p.Supervisor == usuario && s.EstadoSupervision == "VIGENTE"
+                            select new
+                            {
+                                Idcalendario = 0,
+                                FechaEvento = pl.FechaInforme,
+                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- INFORME SUPERVISIÓN",
+                                Color = "#E00101",
+                                IdSupervision =s.IdSupervision
+                            });
+
 
             if (flagCoordinador)
             {
-                tasks = from s in _context.Supervision
+                calendario = from s in _context.Supervision
                             join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
                             join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
                             select new
                             {
                                 Idcalendario = t.Idcalendario,
                                 FechaEvento = t.FechaEvento,
-                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje+" --- "+p.Supervisor
+                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje+" --- "+p.Supervisor,
+                                Color= colorPrioridad(t.Prioridad),
+                                IdSupervision = s.IdSupervision
                             };
+
+                informes = (from s in _context.Supervision
+                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                            join pl in _context.Planeacionestrategica on s.IdSupervision equals pl.SupervisionIdSupervision
+                            where s.EstadoSupervision == "VIGENTE"
+                            select new
+                            {
+                                Idcalendario = 0,
+                                FechaEvento = pl.FechaInforme,
+                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- INFORME SUPERVISIÓN --- " + p.Supervisor,
+                                Color = "#E00101",
+                                IdSupervision = s.IdSupervision
+                            });
             }
+
             
+
+            var tasks = calendario.Union(informes);
+
 
             return Json(tasks, new Newtonsoft.Json.JsonSerializerSettings());
         }
