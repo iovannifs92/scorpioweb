@@ -32,6 +32,9 @@ using System.Text;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using SautinSoft.Document.MailMerging;
+using DocumentFormat.OpenXml.Office.Word;
+using System.Data.SqlClient;
+using scorpioweb.Data;
 
 namespace scorpioweb.Controllers
 {
@@ -667,7 +670,7 @@ namespace scorpioweb.Controllers
             DateTime fechaInformeCoordinador = (DateTime.Now).AddDays(30);
             DateTime fechahoy = DateTime.Now;
             Boolean flagMaster = false;
-            //Double comparaFecha;
+
             ViewBag.Warnings = 0;
 
             foreach (var rol in roles)
@@ -887,7 +890,6 @@ namespace scorpioweb.Controllers
                                              planeacionestrategicaVM = planeacion,
                                              tipoAdvertencia = "Se paso el tiempo de la firma"
                                          });
-               // var count = warningPlaneacion.Count();
                 var warnings = Enumerable.Empty<PlaneacionWarningViewModel>();
                 if (usuario == "janeth@nortedgepms.com" || flagMaster == true)
                 {
@@ -929,7 +931,7 @@ namespace scorpioweb.Controllers
                                   tipoAdvertencia = "Expediente físico en resguardo"
                               };
 
-                var warningPlaneacion = 
+                var warningPlaneacion =
                                         (where2).Union
                                         (sinResolucion2).Union
                                         (archivo).Union
@@ -1001,7 +1003,7 @@ namespace scorpioweb.Controllers
                                      join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
                                      join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                      join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                     where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechahoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA" 
+                                     where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && persona.Supervisor == usuario && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechahoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
                                      select new PlaneacionWarningViewModel
                                      {
                                          personaVM = persona,
@@ -1016,7 +1018,6 @@ namespace scorpioweb.Controllers
                 ViewBag.Warnings = warningPlaneacion.Count();
             }
             #endregion
-
 
             ViewBag.MensajesAdmin = (from mensaje in _context.Mensajesistema
                                     where mensaje.Activo == "1"
