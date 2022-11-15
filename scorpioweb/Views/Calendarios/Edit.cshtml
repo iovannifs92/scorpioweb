@@ -14,6 +14,11 @@
                 <span asp-validation-for="Mensaje" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label>Descripción</label>
+                <input asp-for="Tipo" class="form-control" />
+                <span asp-validation-for="Tipo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="FechaEvento" class="control-label"></label>
                 <input asp-for="FechaEvento" class="form-control" />
                 <span asp-validation-for="FechaEvento" class="text-danger"></span>
@@ -23,20 +28,12 @@
                 <input asp-for="Prioridad" class="form-control" />
                 <span asp-validation-for="Prioridad" class="text-danger"></span>
             </div>
-                <input type="hidden" asp-for="Usuario"/>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
+                <input type="hidden" asp-for="Usuario"/>            
                 <input type="hidden" asp-for="FechaCreacion" />
+                <input type="hidden" asp-for="SupervisionIdSupervision" class="form-control" />
             <div class="form-group">
-                <label asp-for="PersonaIdPersona" class="control-label"></label>
-                <input asp-for="PersonaIdPersona" class="form-control" />
-                <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
+                <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
+                <a asp-action="Delete" asp-route-id="@ViewBag.idCalendario" class="btn btn-danger"><i class="fa fa-trash"></i> Borrar</a>
             </div>
         </form>
     </div>

@@ -85,13 +85,13 @@ namespace scorpioweb.Controllers
 
         public IActionResult Create(int id)
         {
-            ViewBag
+            ViewBag.idSupervision = id;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Mensaje,FechaEvento,Prioridad,Tipo,PersonaIdPersona")] Calendario calendario)
+        public async Task<IActionResult> Create([Bind("Mensaje,FechaEvento,Prioridad,Tipo,SupervisionIdSupervision")] Calendario calendario)
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -121,12 +121,15 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.idCalendario = id;
+
             return View(calendario);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("Idcalendario,Mensaje,FechaEvento,Prioridad,Usuario,Tipo,FechaCreacion,PersonaIdPersona")] Calendario calendario)
+        public async Task<IActionResult> Edit([Bind("Idcalendario,Mensaje,FechaEvento,Prioridad,Usuario,Tipo,FechaCreacion,SupervisionIdSupervision")] Calendario calendario)
         {
             if (ModelState.IsValid)
             {
@@ -156,18 +159,9 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var calendario = await _context.Calendario
-                .SingleOrDefaultAsync(m => m.Idcalendario == id);
-            if (calendario == null)
-            {
-                return NotFound();
-            }
-
+            var calendario = await _context.Calendario.SingleOrDefaultAsync(m => m.Idcalendario == id);
+            _context.Calendario.Remove(calendario);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
             return View(calendario);
         }
 
@@ -177,7 +171,7 @@ namespace scorpioweb.Controllers
         {
             var calendario = await _context.Calendario.SingleOrDefaultAsync(m => m.Idcalendario == id);
             _context.Calendario.Remove(calendario);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
             return RedirectToAction(nameof(Index));
         }
 

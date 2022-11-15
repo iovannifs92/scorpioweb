@@ -12,6 +12,6 @@ namespace scorpioweb.Models
         public string Usuario { get; set; }
         public string Tipo { get; set; }
         public DateTime? FechaCreacion { get; set; }
-        public int? PersonaIdPersona { get; set; }
+        public int? SupervisionIdSupervision { get; set; }
     }
 }
