@@ -21,6 +21,14 @@ namespace scorpioweb.Controllers
         private readonly penas2Context _context;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+
+        private List<SelectListItem> prioridad = new List<SelectListItem>
+
+        {
+            new SelectListItem{ Text="BAJA", Value="BAJA"},
+            new SelectListItem{ Text="MEDIA", Value="MEDIA"},
+            new SelectListItem{ Text="ALTA", Value="ALTA"}
+        };
         #endregion
 
         #region -Constructor-
@@ -45,47 +53,78 @@ namespace scorpioweb.Controllers
                 normalizar = "NA";
             }
             return normalizar;
-        } 
+        }
+
+        String BuscaId(List<SelectListItem> lista, String texto)
+        {
+            foreach (var item in lista)
+            {
+                if (normaliza(item.Value) == normaliza(texto))
+                {
+                    return item.Value;
+                }
+            }
+            return "";
+        }
         #endregion
 
-        public async Task<IActionResult>getCalendarTasks()
+        #region -Initialize events-
+        public async Task<IActionResult> getCalendarTasks()
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
+            bool flagCoordinador = false;
             string usuario = user.ToString();
 
-            var tasks = (from task in _context.Calendario
-                        where task.Usuario == usuario
-                        select task).ToList();
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    flagCoordinador = true;
+                }
+            }
+
+            var tasks = from s in _context.Supervision
+                        join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
+                        join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                        where t.Usuario == usuario
+                        select new
+                        {
+                            Idcalendario = t.Idcalendario,
+                            FechaEvento = t.FechaEvento,
+                            Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje
+                        };
+
+            if (flagCoordinador)
+            {
+                tasks = from s in _context.Supervision
+                            join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
+                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                            select new
+                            {
+                                Idcalendario = t.Idcalendario,
+                                FechaEvento = t.FechaEvento,
+                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje+" --- "+p.Supervisor
+                            };
+            }
+            
 
             return Json(tasks, new Newtonsoft.Json.JsonSerializerSettings());
         }
+        #endregion
 
+        #region -Index-
         public async Task<IActionResult> Index()
         {
             return View(await _context.Calendario.ToListAsync());
-        }
+        } 
+        #endregion
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var calendario = await _context.Calendario
-                .SingleOrDefaultAsync(m => m.Idcalendario == id);
-            if (calendario == null)
-            {
-                return NotFound();
-            }
-
-            return View(calendario);
-        }
-
+        #region -Create-
         public IActionResult Create(int id)
         {
             ViewBag.idSupervision = id;
+            ViewBag.prioridad = prioridad;
             return View();
         }
 
@@ -102,13 +141,16 @@ namespace scorpioweb.Controllers
                 calendario.Usuario = usuario;
                 calendario.FechaCreacion = DateTime.Now;
                 calendario.Mensaje = normaliza(calendario.Mensaje);
+                calendario.Tipo = normaliza(calendario.Tipo);
                 _context.Add(calendario);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(calendario);
-        }
+        } 
+        #endregion
 
+        #region -Edit-
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,6 +163,22 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            var nombre = (from s in _context.Supervision
+                         join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                         where s.IdSupervision == calendario.SupervisionIdSupervision
+                         select new
+                         {
+                             nombreCompleto = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                             causaPenal = cp.CausaPenal
+                         }).Single();
+
+            ViewBag.datosGenerales = nombre.nombreCompleto + " " + nombre.causaPenal;
+            ViewBag.supervision = calendario.SupervisionIdSupervision;
+
+            ViewBag.listaPrioridad = prioridad;
+            ViewBag.idPrioridad = BuscaId(prioridad, calendario.Prioridad);
 
             ViewBag.idCalendario = id;
 
@@ -136,6 +194,7 @@ namespace scorpioweb.Controllers
                 try
                 {
                     calendario.Mensaje = normaliza(calendario.Mensaje);
+                    calendario.Tipo = normaliza(calendario.Tipo);
                     var oldCalendario = await _context.Calendario.FindAsync(calendario.Idcalendario);
 
                     _context.Entry(oldCalendario).CurrentValues.SetValues(calendario);
@@ -156,18 +215,10 @@ namespace scorpioweb.Controllers
             }
             return View(calendario);
         }
+        #endregion
 
-        public async Task<IActionResult> Delete(int? id)
-        {
-            var calendario = await _context.Calendario.SingleOrDefaultAsync(m => m.Idcalendario == id);
-            _context.Calendario.Remove(calendario);
-            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return View(calendario);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        #region -Delete-
+        public async Task<IActionResult> EventDelete(int? id)
         {
             var calendario = await _context.Calendario.SingleOrDefaultAsync(m => m.Idcalendario == id);
             _context.Calendario.Remove(calendario);
@@ -178,6 +229,7 @@ namespace scorpioweb.Controllers
         private bool CalendarioExists(int id)
         {
             return _context.Calendario.Any(e => e.Idcalendario == id);
-        }
+        } 
+        #endregion
     }
 }

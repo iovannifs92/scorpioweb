@@ -11,12 +11,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Mensaje" class="control-label"></label>
-                <input asp-for="Mensaje" class="form-control" />
+                <input maxlength="100" asp-for="Mensaje" class="form-control" />
                 <span asp-validation-for="Mensaje" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label>Descripción</label>
-                <input asp-for="Tipo" class="form-control" />
+                <textarea maxlength="400" class="form-control" rows="2" name="Tipo" id="Tipo"></textarea>
                 <span asp-validation-for="Tipo" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -26,8 +26,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="Prioridad" class="control-label"></label>
-                <input asp-for="Prioridad" class="form-control" />
-                <span asp-validation-for="Prioridad" class="text-danger"></span>
+                <select class="form-control" name="Prioridad" id="Prioridad"
+                        asp-items="@(new SelectList(ViewBag.prioridad, "Value", "Text"))">
+                </select>
             </div>            
                 <input type="hidden" asp-for="SupervisionIdSupervision" class="form-control" value="@ViewBag.idSupervision"/>
             <div class="form-group">
