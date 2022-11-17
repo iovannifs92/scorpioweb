@@ -2311,7 +2311,7 @@ namespace scorpioweb.Controllers
                 #region -Guardar archivo-
                 if (evidencia != null)
                 {
-                    string file_name = bitacora.IdBitacora + "" + bitacora.SupervisionIdSupervision + "" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
                     bitacora.RutaEvidencia = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);

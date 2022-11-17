@@ -89,6 +89,7 @@ namespace scorpioweb.Controllers
         #region -Initialize events-
         public async Task<IActionResult> getCalendarTasks()
         {
+            #region -Variables de usuario-
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             bool flagCoordinador = false;
@@ -100,50 +101,27 @@ namespace scorpioweb.Controllers
                 {
                     flagCoordinador = true;
                 }
-            }
+            } 
+            #endregion
 
-            var calendario = (from s in _context.Supervision
-                         join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
-                         join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                         where t.Usuario == usuario
-                         select new
-                         {
-                             Idcalendario = t.Idcalendario,
-                             FechaEvento = t.FechaEvento,
-                             Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje,
-                             Color = colorPrioridad(t.Prioridad),
-                             IdSupervision = s.IdSupervision
-                         });
-
-            var informes = (from s in _context.Supervision
-                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                            join pl in _context.Planeacionestrategica on s.IdSupervision equals pl.SupervisionIdSupervision
-                            where p.Supervisor == usuario && s.EstadoSupervision == "VIGENTE"
-                            select new
-                            {
-                                Idcalendario = 0,
-                                FechaEvento = pl.FechaInforme,
-                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- INFORME SUPERVISIÓN",
-                                Color = "#E00101",
-                                IdSupervision =s.IdSupervision
-                            });
-
-
-            if (flagCoordinador)
-            {
-                calendario = from s in _context.Supervision
+            #region -Eventos del calendario-
+            var calendario = from s in _context.Supervision
                             join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
                             join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
                             select new
                             {
                                 Idcalendario = t.Idcalendario,
                                 FechaEvento = t.FechaEvento,
-                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje+" --- "+p.Supervisor,
-                                Color= colorPrioridad(t.Prioridad),
-                                IdSupervision = s.IdSupervision
+                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje + (!flagCoordinador ? "" : (" --- "+p.Supervisor)),
+                                Color = colorPrioridad(t.Prioridad),
+                                IdSupervision = s.IdSupervision, 
+                                Tipo = 1,
+                                Supervisor=p.Supervisor
                             };
+            #endregion
 
-                informes = (from s in _context.Supervision
+            #region -Informes de supervisión-
+            var informes = (from s in _context.Supervision
                             join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
                             join pl in _context.Planeacionestrategica on s.IdSupervision equals pl.SupervisionIdSupervision
                             where s.EstadoSupervision == "VIGENTE"
@@ -151,16 +129,21 @@ namespace scorpioweb.Controllers
                             {
                                 Idcalendario = 0,
                                 FechaEvento = pl.FechaInforme,
-                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- INFORME SUPERVISIÓN --- " + p.Supervisor,
+                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- INFORME SUPERVISIÓN" + (!flagCoordinador ? "" : (" --- " + p.Supervisor)),
                                 Color = "#E00101",
-                                IdSupervision = s.IdSupervision
-                            });
-            }
+                                IdSupervision = s.IdSupervision,
+                                Tipo = 2,
+                                Supervisor = p.Supervisor
+                            }); 
+            #endregion
 
-            
+            if (!flagCoordinador)
+            {
+                calendario = calendario.Where(p => p.Supervisor == usuario);
+                informes = informes.Where(p => p.Supervisor == usuario);
+            }            
 
             var tasks = calendario.Union(informes);
-
 
             return Json(tasks, new Newtonsoft.Json.JsonSerializerSettings());
         }
