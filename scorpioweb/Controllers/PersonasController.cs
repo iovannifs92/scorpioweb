@@ -24,7 +24,6 @@ using Google.DataTable.Net.Wrapper.Extension;
 using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
 using F23.StringSimilarity;
-using MySql.Data.MySqlClient;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
