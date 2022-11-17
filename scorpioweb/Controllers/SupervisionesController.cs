@@ -2203,6 +2203,20 @@ namespace scorpioweb.Controllers
             var select = (from wh in wheres
                          select wh.oficialiavm.IdOficialia).ToList();
 
+            var fracionesImpuestas = (from s in _context.Supervision
+                                      join fi in _context.Fraccionesimpuestas on s.IdSupervision equals fi.SupervisionIdSupervision
+                                      where fi.SupervisionIdSupervision == id
+                                      select new BitacoraViewModal
+                                      {
+
+                                          fraccionesimpuestasVM = fi
+                                      });
+            ViewBag.contFrac = fracionesImpuestas.Count();
+            
+                                     
+
+            ViewData["FraccionesImpuestasBitaccora"] = fracionesImpuestas;
+
             ViewBag.expoficialia = select;
             #endregion
 
@@ -2281,44 +2295,76 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona, string idoficialia,
-            string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IFormFile evidencia, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp)
+
+    public async Task<IActionResult> AgregarBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
+            string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidFraccion)
         {
             string currentUser = User.Identity.Name;
-            if (ModelState.ErrorCount <= 1)
+            int idbitacora = ((from table in _context.Bitacora
+                               select table.IdBitacora).Max());
+            var path = "";
+            foreach (var formFile in files)
             {
-                if (FracionesImpuestasIdFracionesImpuestas != null)
+                if (formFile.Length > 0)
                 {
-                    bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(FracionesImpuestasIdFracionesImpuestas);
-                }
-                bitacora.Fecha = Fecha;
-                bitacora.TipoPersona = normaliza(tipoPersona);
-                bitacora.TipoVisita = normaliza(tipoVisita);
-                bitacora.Texto = normaliza(Texto);
-                bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
-                bitacora.FechaRegistro = DateTime.Now;
-
-                var supervision = _context.Supervision
-               .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
-
-                _context.Add(bitacora);
-                await _context.SaveChangesAsync();
-
-                bitacora = await _context.Bitacora.OrderByDescending(b => b.IdBitacora).FirstOrDefaultAsync();
-                #region -Guardar archivo-
-                if (evidencia != null)
-                {
-                    string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                    string file_name = idbitacora + "_" + SupervisionIdSupervision + "_" + idpersona + Path.GetExtension(formFile.FileName);
                     bitacora.RutaEvidencia = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                    await evidencia.CopyToAsync(stream);
+                    await formFile.CopyToAsync(stream);
                     stream.Close();
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
-                #endregion
+            }
+
+            if (ModelState.ErrorCount <= 1)
+            {
+                
+                    for (int i = 0; i < datosidFraccion.Length; i++)
+                    {
+                        
+                        bitacora.Fecha = Fecha;
+                        bitacora.TipoPersona = normaliza(tipoPersona);
+                        bitacora.TipoVisita = normaliza(tipoVisita);
+                        bitacora.Texto = normaliza(Texto);
+                        bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
+                        bitacora.FechaRegistro = DateTime.Now;
+                        bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
+                        bitacora.IdBitacora = ++idbitacora;
+                        bitacora.RutaEvidencia = bitacora.RutaEvidencia;
+
+                        var supervision = _context.Supervision
+                        .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
+                        _context.Add(bitacora);
+                        _context.SaveChanges();
+
+                }
+
+                if (datosidFraccion.Length == 0)
+                {
+                    if (FracionesImpuestasIdFracionesImpuestas != null)
+                    {
+                        bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(FracionesImpuestasIdFracionesImpuestas);
+                    }
+                    bitacora.Fecha = Fecha;
+                    bitacora.TipoPersona = normaliza(tipoPersona);
+                    bitacora.TipoVisita = normaliza(tipoVisita);
+                    bitacora.Texto = normaliza(Texto);
+                    bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
+                    bitacora.FechaRegistro = DateTime.Now;
+
+                    var supervision = _context.Supervision
+                   .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
+                    _context.Add(bitacora);
+                    await _context.SaveChangesAsync();
+
+                    bitacora = await _context.Bitacora.OrderByDescending(b => b.IdBitacora).FirstOrDefaultAsync();
+
+
+
+                }
 
                 if (bitacora.FracionesImpuestasIdFracionesImpuestas != null)
                 {
@@ -2328,9 +2374,12 @@ namespace scorpioweb.Controllers
                 {
                     return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
                 }
+
             }
             return View(bitacora);
-        } 
+        }
+
+
         #endregion
         public async Task<IActionResult> EditBitacora(int id, string nombre, string cp, int idpersona, string supervisor, int idcp)
         {
@@ -2440,6 +2489,8 @@ namespace scorpioweb.Controllers
         {
             bitacora.Texto = normaliza(bitacora.Texto);
             bitacora.OficialiaIdOficialia = bitacora.OficialiaIdOficialia;
+
+
 
             var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
