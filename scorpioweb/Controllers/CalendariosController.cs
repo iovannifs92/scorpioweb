@@ -157,7 +157,7 @@ namespace scorpioweb.Controllers
                                    {
                                        Idcalendario = 0,
                                        FechaEvento = s.FechaProximoContacto,
-                                       Mensaje = s.Nombre + " --- INFORME SUPERVISIÓN" + (!flagCoordinador ? "" : (" --- " + s.Supervisor)),
+                                       Mensaje = s.Nombre + " --- PRÓXIMO CONTACTO" + (!flagCoordinador ? "" : (" --- " + s.Supervisor)),
                                        Color = "#2CAD1E",
                                        IdSupervision = s.IdSupervision,
                                        Tipo = 3,
