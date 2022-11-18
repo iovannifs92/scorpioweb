@@ -14,6 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="fullcalendar\**" />
+    <Content Remove="fullcalendar\**" />
+    <EmbeddedResource Remove="fullcalendar\**" />
+    <None Remove="fullcalendar\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Migrations\20200625003843_update.cs" />
     <Compile Remove="Migrations\20200625003843_update.Designer.cs" />
     <Compile Remove="Migrations\20201102175557_AddRutaFoto.cs" />

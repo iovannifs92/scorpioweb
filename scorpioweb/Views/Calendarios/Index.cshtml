@@ -1,0 +1,160 @@
+﻿@model IEnumerable<scorpioweb.Models.Calendario>
+
+@{
+    ViewData["Title"] = "Calendario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    var events = [];
+
+    $(document).ready(function () {
+        $('#filtro').on('change', function()
+        {
+            const date = new Date();
+            let selector = document.querySelector("#filtro");
+            var calendarEl = document.getElementById('calendar');  
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                    locale: 'es',
+                    headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                    },
+                    eventClick:  function(info, jsEvent, view) {
+                        showModal('@Url.Action("Edit","Calendarios",null,Context.Request.Scheme)', 'Editar Evento', info.event.id);
+                    },
+                    eventDidMount: function(arg) {
+                      let val = selector.value;
+                      if (!(val == arg.event.extendedProps.tipo || val == "all")) {
+                        arg.el.style.display = "none";
+                      }
+                    },
+                    initialDate: date,
+                    navLinks: true, 
+                    businessHours: true,
+                    editable: false,
+                    selectable: true,
+                    dayMaxEvents: true,
+                    events: events
+                });
+
+                calendar.render();
+        });
+    });
+
+
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+
+    $(function() {
+        getEventosCalendario();
+    });
+
+    function getEventosCalendario(){
+        $.get('/Calendarios/getCalendarTasks')
+            .done(function (data){                
+                const date = new Date();
+                var calendarEl = document.getElementById('calendar');  
+                let selector = document.querySelector("#filtro");
+
+                for(var i = 0; i < data.length; i++){
+                    const idcalendario=data[i].Idcalendario;
+                    const mensaje=data[i].Mensaje;
+                    const fecha = data[i].FechaEvento;
+                    const color=data[i].Color;
+                    const tipo=data[i].Tipo;
+                    let url="";
+                    if(data[i].Idcalendario == 0){
+                        url=new URL('http://10.6.60.190/Supervisiones/Supervision/'+data[i].IdSupervision);
+                    }
+                    events.push({
+                        'id': idcalendario,
+                        'title': mensaje,
+                        'start': fecha,
+                        'color':color,
+                        'url': url,
+                        'tipo': tipo,
+                    });  
+                }
+                console.log(events);
+
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    locale: 'es',
+                    headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                    },
+                    eventClick:  function(info, jsEvent, view) {
+                        showModal('@Url.Action("Edit","Calendarios",null,Context.Request.Scheme)', 'Editar Evento', info.event.id);
+                    },
+                    eventDidMount: function(arg) {
+                      let val = selector.value;
+                      if (!(val == arg.event.extendedProps.tipo || val == "all")) {
+                        arg.el.style.display = "none";
+                      }
+                    },
+                    initialDate: date,
+                    navLinks: true, 
+                    businessHours: true,
+                    editable: false,
+                    selectable: true,
+                    dayMaxEvents: true,
+                    events: events
+                });
+
+                calendar.render();
+                selector.addEventListener('change', function() {
+                    calendar.refetchEvents();
+                });
+                });
+    }
+</script>
+
+<style>
+
+  body {
+    margin: 40px 10px;
+    padding: 0;
+    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+    font-size: 14px;
+  }
+
+  #calendar {
+    max-width: 80%;
+    margin: 0 auto;
+    padding-top: 2%;
+    padding-bottom: 2%;
+  }
+
+  #filtro{
+  }
+
+</style>
+
+<form style="padding-top: 2%;">
+    <div class="form-actions no-color">
+    <select class="form-control" id="filtro">
+      <option value="all">Todos</option>
+      <option value="1">Eventos programados</option>
+      <option value="2">Informes de supervisión</option>
+    </select>
+    </div>
+</form>
+
+
+<div id='calendar'></div>

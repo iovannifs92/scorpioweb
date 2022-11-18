@@ -1,0 +1,44 @@
+﻿@model scorpioweb.Models.Calendario
+
+@{
+    Layout = null;
+}
+<div class="row">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas modificar el evento?');" asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <input type="hidden" asp-for="Idcalendario" />
+            <div class="form-group" style="text-align:center">
+                <h4><a href="@("http://10.6.60.190/Supervisiones/Supervision/"+ViewBag.supervision)" target="_blank">@ViewBag.datosGenerales</a></h4>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mensaje" class="control-label"></label>
+                <input maxlength="100" asp-for="Mensaje" class="form-control" />
+                <span asp-validation-for="Mensaje" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea maxlength="400" class="form-control" rows="2" name="Tipo" id="Tipo" asp-for="Tipo"></textarea>
+                <span asp-validation-for="Tipo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaEvento" class="control-label"></label>
+                <input asp-for="FechaEvento" class="form-control" />
+                <span asp-validation-for="FechaEvento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Prioridad" class="control-label"></label>
+                <select class="form-control" name="Prioridad" id="Prioridad"
+                        asp-items="@(new SelectList(ViewBag.listaPrioridad, "Value", "Text", @ViewBag.idPrioridad))">
+                </select>                
+            </div>
+                <input type="hidden" asp-for="Usuario"/>            
+                <input type="hidden" asp-for="FechaCreacion" />
+                <input type="hidden" asp-for="SupervisionIdSupervision" class="form-control" />
+            <div class="form-group">
+                <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
+                <a asp-action="EventDelete" asp-route-id="@ViewBag.idCalendario" class="btn btn-danger" onclick="return confirm('Quieres borrar este evento?');"><i class="fa fa-trash"></i> Borrar</a>
+            </div>
+        </form>
+    </div>
+</div>
