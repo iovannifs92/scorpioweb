@@ -6663,16 +6663,15 @@ namespace scorpioweb.Controllers
             //}
             //#endregion
 
-
             IEnumerable<Contactos> dataContactos = from c in _context.Contactos
                                                    select new Contactos
                                                    {
-                                                       Lugar = c.Lugar,
-                                                       Dependencia = c.Dependencia,
-                                                       Titular = c.Titular,
-                                                       Correo = c.Correo,
-                                                       Telefono = c.Telefono,
-                                                       Extencion = c.Extencion                                          
+                                                       Lugar = ((c.Lugar == "") ? " " : (c.Lugar == null) ? " " : c.Lugar),
+                                                       Dependencia = ((c.Dependencia == "") ? " " : (c.Dependencia == null) ? " " : c.Lugar),
+                                                       Titular = ((c.Titular == "") ? " " : (c.Titular == null) ? " " : c.Titular), 
+                                                       Correo = ((c.Correo == "") ? " " : (c.Correo == null) ? " " : c.Correo),
+                                                       Telefono = ((c.Telefono == "") ? " " : (c.Telefono == null) ? " " : c.Telefono),
+                                                       Extencion = ((c.Extencion == "") ? " " : (c.Extencion == null) ? " " : c.Extencion),                                       
                                                    };
 
             string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateContactos.docx";

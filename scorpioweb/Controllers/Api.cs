@@ -80,12 +80,12 @@ namespace scorpioweb.Controllers
                 #region -Datos Generales-
                 nombre = tableAdolescente[0].adolescentesVM.Nombre,
                 genero= tableAdolescente[0].adolescentesVM.Genero,
-                nacionalidad = tableAdolescente[0].adolescentesVM.Nacionalidad,
+                nacionalidad = ((tableAdolescente[0].adolescentesVM.Nacionalidad == "") ? " " : (tableAdolescente[0].adolescentesVM.Nacionalidad == null) ? " " : tableAdolescente[0].adolescentesVM.Nacionalidad),
                 fnacimiento =(Convert.ToDateTime(tableAdolescente[0].adolescentesVM.FechaNacimiento)).ToString("dd MMMM yyyy"),
                 estadocivil = tableAdolescente[0].adolescentesVM.Estadocivil,
                 duracionestadocivil = tableAdolescente[0].adolescentesVM.Duracionestadocivil,
                 hablaidioma = tableAdolescente[0].adolescentesVM.HablaEsp,
-                //leerescribir = tableAdolescente[0].adolescentesVM.,
+                //leerescribir = tableAdolescente[0].adolescentesVM.,   
                 //telefono = tableAdolescente[0].adolescentesVM.numeotelefono,
                 hijos = tableAdolescente[0].adolescentesVM.DependientesEco,
                 lnacimiento = tableAdolescente[0].adolescentesVM.MunicipioNac +" " + tableAdolescente[0].adolescentesVM.EstadoNac,
@@ -111,38 +111,38 @@ namespace scorpioweb.Controllers
                 direccion = tableAdolescente[0].adolescentesVM.DomicilioAct,
                 tiempoendomicilio = tableAdolescente[0].adolescentesVM.TiempoRad,
                 domiciliosecundario = tableAdolescente[0].adolescentesVM.DomicilioSec,
-                direcciondomiciliosecundario = tableAdolescente[0].adolescentesVM.DireccionDomsec,
+                direcciondomiciliosecundario = ((tableAdolescente[0].adolescentesVM.DireccionDomsec == "") ? " " : (tableAdolescente[0].adolescentesVM.DireccionDomsec == null) ? " " : tableAdolescente[0].adolescentesVM.DireccionDomsec),
                 //residenciahabitual = tableAdolescente[0].adolescentesVM.,
                 #endregion
                 #region -Estudia-
                 estudia = tableAdolescente[0].adolescentesVM.Estudia,
-                institucionestudios = tableAdolescente[0].adolescentesVM.InstitucionEst,
-                direccionescuela = tableAdolescente[0].adolescentesVM.DireccionEst,
+                institucionestudios = ((tableAdolescente[0].adolescentesVM.InstitucionEst == "") ? " " : (tableAdolescente[0].adolescentesVM.InstitucionEst == null) ? " " : tableAdolescente[0].adolescentesVM.InstitucionEst),
+                direccionescuela = ((tableAdolescente[0].adolescentesVM.DireccionEst == "") ? " " : (tableAdolescente[0].adolescentesVM.DireccionEst == null) ? " " : tableAdolescente[0].adolescentesVM.DireccionEst),
                 gradoestudios = tableAdolescente[0].adolescentesVM.UltimoGradoEstudios,
                 // horarioescuela = tableAdolescente[0].adolescentesVM.,
                 // telefonoescuela = tableAdolescente[0].adolescentesVM.,
                 #endregion
                 #region -Trabaja-
                 trabaja = tableAdolescente[0].adolescentesVM.Trabaja,
-                lugartrabajo = tableAdolescente[0].adolescentesVM.LugarTrab,
-                direcciontrabajo = tableAdolescente[0].adolescentesVM.DireccionTrab,
-                puesto = tableAdolescente[0].adolescentesVM.Ocupacion,
-                salario = tableAdolescente[0].adolescentesVM.Salario,
+                lugartrabajo = ((tableAdolescente[0].adolescentesVM.LugarTrab == "") ? " " : (tableAdolescente[0].adolescentesVM.LugarTrab == null) ? " " : tableAdolescente[0].adolescentesVM.LugarTrab),
+                direcciontrabajo = ((tableAdolescente[0].adolescentesVM.DireccionTrab == "") ? " " : (tableAdolescente[0].adolescentesVM.DireccionTrab == null) ? " " : tableAdolescente[0].adolescentesVM.DireccionTrab),
+                puesto = ((tableAdolescente[0].adolescentesVM.Ocupacion == "") ? " " : (tableAdolescente[0].adolescentesVM.Ocupacion == null) ? " " : tableAdolescente[0].adolescentesVM.Ocupacion),
+                salario = ((tableAdolescente[0].adolescentesVM.Salario == "") ? " " : (tableAdolescente[0].adolescentesVM.Salario == null) ? " " : tableAdolescente[0].adolescentesVM.Salario),
                 tiempotrabajando = tableAdolescente[0].adolescentesVM.TiempoTrab,
                 //tipoocupacion = tableAdolescente[0].adolescentesVM.TiempoTrab,
                 #endregion
                 #region -ActividadaSocial-
                 tipoactividad = tableAdolescente[0].adolescentesVM.GrupoPert,
                 tiempoactividad = tableAdolescente[0].adolescentesVM.TiempoGrupo,
-                lugaractividad = tableAdolescente[0].adolescentesVM.LugarActividad,
+                lugaractividad = ((tableAdolescente[0].adolescentesVM.LugarActividad == "") ? " " : (tableAdolescente[0].adolescentesVM.LugarActividad == null) ? " " : tableAdolescente[0].adolescentesVM.LugarActividad),
                 #endregion
                 #region -abandonoEstado-
-                viajahabitualmente = tableAdolescente[0].adolescentesVM.Viajahabitualmente,
+                viajahabitualmente = ((tableAdolescente[0].adolescentesVM.Viajahabitualmente == "") ? " " : (tableAdolescente[0].adolescentesVM.Viajahabitualmente == null) ? " " : tableAdolescente[0].adolescentesVM.Viajahabitualmente),
                 tiempoviajes = tableAdolescente[0].adolescentesVM.Tiempoviajes,
                 documentacion = tableAdolescente[0].adolescentesVM.Documentacion,
                 visa = tableAdolescente[0].adolescentesVM.Visa,
-                lugaresviaje = tableAdolescente[0].adolescentesVM.Lugaresviaje,
-                motivoviajes = tableAdolescente[0].adolescentesVM.Motivoviajes,
+                lugaresviaje = ((tableAdolescente[0].adolescentesVM.Viajahabitualmente == "") ? " " : (tableAdolescente[0].adolescentesVM.Viajahabitualmente == null) ? " " : tableAdolescente[0].adolescentesVM.Viajahabitualmente),
+                motivoviajes = ((tableAdolescente[0].adolescentesVM.Motivoviajes == "") ? " " : (tableAdolescente[0].adolescentesVM.Motivoviajes == null) ? " " : tableAdolescente[0].adolescentesVM.Motivoviajes),
                 pasaporte = tableAdolescente[0].adolescentesVM.Pasaporte,
                 familiaresestado = tableAdolescente[0].adolescentesVM.FamEst,
                 frecuenciafamiliarestado = tableAdolescente[0].adolescentesVM.FreqFamEst,
@@ -150,8 +150,8 @@ namespace scorpioweb.Controllers
                 frecuenciafamiliarpais = tableAdolescente[0].adolescentesVM.FreqFamPais,
                 #endregion
                 #region -Salud-
-                enfermedadfisca = tableAdolescente[0].adolescentesVM.Enfermedad,
-                enfermedadmental = tableAdolescente[0].adolescentesVM.TipoEnfermedad,
+                enfermedadfisca = ((tableAdolescente[0].adolescentesVM.Enfermedad == "") ? " " : (tableAdolescente[0].adolescentesVM.Enfermedad == null) ? " " : tableAdolescente[0].adolescentesVM.Enfermedad),
+                enfermedadmental = ((tableAdolescente[0].adolescentesVM.TipoEnfermedad == "") ? " " : (tableAdolescente[0].adolescentesVM.TipoEnfermedad == null) ? " " : tableAdolescente[0].adolescentesVM.TipoEnfermedad),
                 nombreenfermedad = tableAdolescente[0].adolescentesVM.NombreEnfermedad,
                 consumosustancias = tableAdolescente[0].adolescentesVM.ConsumeDrog,
                 tratamiento = tableAdolescente[0].adolescentesVM.Tratamiento,
@@ -188,7 +188,7 @@ namespace scorpioweb.Controllers
                 //amenazatestigo = tableAdolescente[0].adolescentesVM.AmenazasTca,
                 #endregion
                 #region -RIESGOS DETECTADOS-
-                
+
                 #endregion
                 #region -FACTORES DE ESTABILIDAD DETECTADOS-
                 #endregion
