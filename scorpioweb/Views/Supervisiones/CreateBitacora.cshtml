@@ -10,16 +10,88 @@
 <link rel="stylesheet" type="text/css" href="~/css/style.css">
 <script src="~/js/jquery-ui.js"></script>
 
+<script>
+    var arr = [];
+    function marcar(id) {
+        var encontro = false;
+        var doble;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+        if (encontro == false) {
+            arr.push(id);
+        } else {
+            arr.splice(doble,1);
+        }      
+    };
+
+
+    function uploadFiles(inputId) {
+        var input = document.getElementById(inputId); //get file input id
+        var files = input.files; //get files
+        var formData = new FormData(); //create form
+
+        var nombre = '@ViewBag.nombre';
+        var cp = '@ViewBag.cp';
+        var idPersona = '@ViewBag.idpersona';
+        var idCp = '@ViewBag.idcp';
+        var supervisor = '@ViewBag.supervisor';
+        var idpersona = '@ViewBag.idpersona';
+
+        for (var i = 0; i != files.length; i++) {
+        formData.append("files", files[i]); //loop through all files and append
+        }
+
+        formData.append('idBitacora', $("#IdBitacora").val());
+        formData.append('Fecha', $("#Fecha").val());
+        formData.append('idFraccionesImpuestas', $("#FracionesImpuestasIdFracionesImpuestas").val());
+        formData.append('idOficialia', $("#idoficialia").val());
+        formData.append('tipoPersona', $("#tipoPersona").val());
+        formData.append('tipoVisita', $("#tipoVisita").val());
+        formData.append('Texto', $("#Texto").val());
+        formData.append('IdSupervision', $("#IdSupervision").val());
+        formData.append('SupervisionIdSupervision', $("#SupervisionIdSupervision").val());
+        formData.append('nombre', nombre);
+        formData.append('cp', cp);
+        formData.append('idCp', idCp);
+        formData.append('supervisor', supervisor);
+        formData.append('idpersona', idpersona);
+        //formData.append('datosidFraccion', arr);
+         for (var i = 0; i < arr.length; i++) {
+          formData.append('datosidFraccion[]', arr[i]);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Supervisiones/AgregarBitacora",
+            processData: false,
+            contentType: false,
+            data: formData, 
+            success: function(data) {
+                alert('Datos guardados con exito!!');
+                location.reload();
+            }
+        });
+    };
+
+</script>
+
+
+
+
 
 <div class="row">
     <div class="col-md-12">
-        <form onsubmit="return confirm('¿Deseas guardar los datos?');" asp-action="CreateBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" asp-route-idcp="@ViewBag.idcp" asp-route-supervisor="@ViewBag.supervisor" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input readonly name="IdBitacora" id="IdBitacora" class="form-control" style="display:none" />
             <input readonly name="FracionesImpuestasIdFracionesImpuestas" id="FracionesImpuestasIdFracionesImpuestas" class="form-control" style="display:none" value="@ViewBag.idFracciones" />
             <div class="form-group col-md-8">
                 <label asp-for="Fecha" class="control-label"></label>
-                <input required asp-for="Fecha" type="date" class="form-control" />
+                <input required asp-for="Fecha" name="Fecha" id="Fecha" type="date" class="form-control" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
             <div class="form-group col-md-4">
@@ -50,9 +122,26 @@
                     <option value="NOTIFICACION A VICTIMA">Notificación a Víctima</option>
                 </select>
             </div>
+            @if(ViewBag.contFrac != 0){
+
+            <div class="form-group">
+                <label class="control-label">Acción de Supervisión</label>
+            </div>
+                 @foreach (var item in ViewData["FraccionesImpuestasBitaccora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
+                {
+
+                   <div class="form-group">                  
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" @*id="@(fid+i)"*@ value="option1" onclick="marcar(@item.fraccionesimpuestasVM.IdFracciones)">
+                            <label class="form-check-label">@item.fraccionesimpuestasVM.FiguraJudicial @item.fraccionesimpuestasVM.Tipo</label>
+                        </div>
+                    </div> 
+                }
+            }
+           
             <div class="form-group">
                 <label asp-for="Texto" class="control-label"></label>
-                <textarea asp-for="Texto" class="form-control" cols="20" rows="5"></textarea>
+                <textarea asp-for="Texto" class="form-control" cols="20" rows="5" id="Texto" name="Texto"></textarea>
                 <span asp-validation-for="Texto" class="text-danger"></span>
             </div>
             <div class="custom-file">
@@ -62,9 +151,8 @@
             <input readonly name="SupervisionIdSupervision" id="SupervisionIdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
             <br />
             <div class="form-group" style="padding-top:15PX">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+                <button id="btnBitacora" name="btnBitacora" onclick="uploadFiles('evidencia')" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
 
             </div>
-        </form>
     </div>
 </div>

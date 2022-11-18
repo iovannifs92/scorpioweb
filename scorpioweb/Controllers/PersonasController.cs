@@ -24,7 +24,6 @@ using Google.DataTable.Net.Wrapper.Extension;
 using Google.DataTable.Net.Wrapper;
 using MySql.Data.MySqlClient;
 using F23.StringSimilarity;
-using MySql.Data.MySqlClient;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
@@ -4980,7 +4979,7 @@ namespace scorpioweb.Controllers
                                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
                                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                                             where persona.Supervisor != null && persona.Supervisor.EndsWith("\u0040dgepms.com") && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
+                                             where persona.Supervisor != null && planeacion.FechaProximoContacto != null && planeacion.FechaProximoContacto < fechaHoy && supervision.EstadoSupervision == "VIGENTE" && planeacion.PeriodicidadFirma != "NO APLICA"
                                              orderby planeacion.FechaProximoContacto descending
                                              select new PlaneacionWarningViewModel
                                              {
@@ -6666,16 +6665,15 @@ namespace scorpioweb.Controllers
             //}
             //#endregion
 
-
             IEnumerable<Contactos> dataContactos = from c in _context.Contactos
                                                    select new Contactos
                                                    {
-                                                       Lugar = c.Lugar,
-                                                       Dependencia = c.Dependencia,
-                                                       Titular = c.Titular,
-                                                       Correo = c.Correo,
-                                                       Telefono = c.Telefono,
-                                                       Extencion = c.Extencion                                          
+                                                       Lugar = ((c.Lugar == "") ? " " : (c.Lugar == null) ? " " : c.Lugar),
+                                                       Dependencia = ((c.Dependencia == "") ? " " : (c.Dependencia == null) ? " " : c.Lugar),
+                                                       Titular = ((c.Titular == "") ? " " : (c.Titular == null) ? " " : c.Titular), 
+                                                       Correo = ((c.Correo == "") ? " " : (c.Correo == null) ? " " : c.Correo),
+                                                       Telefono = ((c.Telefono == "") ? " " : (c.Telefono == null) ? " " : c.Telefono),
+                                                       Extencion = ((c.Extencion == "") ? " " : (c.Extencion == null) ? " " : c.Extencion),                                       
                                                    };
 
             string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateContactos.docx";
