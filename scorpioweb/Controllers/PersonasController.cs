@@ -732,9 +732,7 @@ namespace scorpioweb.Controllers
                                join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
-                               p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null
-                               join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
-                               from sinsuper in tmp.DefaultIfEmpty()
+                               p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null 
                                select new PlaneacionWarningViewModel
                                {
                                    municipiosVM = municipio,
@@ -913,20 +911,19 @@ namespace scorpioweb.Controllers
 
 
                 var archivo = from ha in queryHistorialArchivoadmin
-                              join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
-                              join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
-                              join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
-                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                              where p.UbicacionExpediente == usuario.ToUpper() && p.UbicacionExpediente != null
-                              join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
-                              from sinsuper in tmp.DefaultIfEmpty()
-                              select new PlaneacionWarningViewModel
-                              {
-                                  municipiosVM = municipio,
-                                  personaVM = p,
-                                  archivointernomcscpVM = ai,
-                                  tipoAdvertencia = "Expediente físico en resguardo"
-                              };
+                                join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                                join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+                                join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+                                p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null && p.UbicacionExpediente == usuario.ToUpper()
+                                select new PlaneacionWarningViewModel
+                                {
+                                    municipiosVM = municipio,
+                                    personaVM = p,
+                                    archivointernomcscpVM = ai,
+                                    tipoAdvertencia = "Expediente físico en resguardo"
+                                };
 
                 var warningPlaneacion = 
                                         (where2).Union
@@ -4815,8 +4812,6 @@ namespace scorpioweb.Controllers
                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
                                where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
                                p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null
-                               join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
-                               from sinsuper in tmp.DefaultIfEmpty()
                                select new PlaneacionWarningViewModel
                                {
                                    municipiosVM = municipio,
@@ -4824,6 +4819,9 @@ namespace scorpioweb.Controllers
                                    archivointernomcscpVM = ai,
                                    tipoAdvertencia = "Expediente físico en resguardo"
                                };
+
+
+
 
             var leftJoin = from persona in personaVM
                            join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -5155,9 +5153,8 @@ namespace scorpioweb.Controllers
                               join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
                               join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                              where p.UbicacionExpediente == usuario.ToUpper() && p.UbicacionExpediente != null
-                              join supervision in supervisionVM on p.IdPersona equals supervision.PersonaIdPersona into tmp
-                              from sinsuper in tmp.DefaultIfEmpty()
+                              where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+                              p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null && p.UbicacionExpediente == usuario.ToUpper()
                               select new PlaneacionWarningViewModel
                               {
                                   municipiosVM = municipio,
@@ -5165,7 +5162,6 @@ namespace scorpioweb.Controllers
                                   archivointernomcscpVM = ai,
                                   tipoAdvertencia = "Expediente físico en resguardo"
                               };
-
                 switch (currentFilter)
                 {
                     case "TODOS":
