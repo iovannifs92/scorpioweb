@@ -101,7 +101,23 @@ namespace scorpioweb.Controllers
                 {
                     flagCoordinador = true;
                 }
-            } 
+            }
+            #endregion
+
+            #region -Query para supervisiones-
+            var supervisiones = from s in _context.Supervision
+                                join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                                join pl in _context.Planeacionestrategica on s.IdSupervision equals pl.SupervisionIdSupervision
+                                where s.EstadoSupervision == "VIGENTE"
+                                select new
+                                {
+                                    IdSupervision = s.IdSupervision,
+                                    Nombre = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                                    FechaInforme = pl.FechaInforme,
+                                    FechaProximoContacto = pl.FechaProximoContacto,
+                                    Supervisor = p.Supervisor,
+                                    EstadoSupervision = s.EstadoSupervision
+                                }; 
             #endregion
 
             #region -Eventos del calendario-
@@ -121,29 +137,42 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -Informes de supervisión-
-            var informes = (from s in _context.Supervision
-                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                            join pl in _context.Planeacionestrategica on s.IdSupervision equals pl.SupervisionIdSupervision
-                            where s.EstadoSupervision == "VIGENTE"
+            var informes = (from s in supervisiones
                             select new
                             {
                                 Idcalendario = 0,
-                                FechaEvento = pl.FechaInforme,
-                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- INFORME SUPERVISIÓN" + (!flagCoordinador ? "" : (" --- " + p.Supervisor)),
+                                FechaEvento = s.FechaInforme,
+                                Mensaje = s.Nombre + " --- INFORME SUPERVISIÓN" + (!flagCoordinador ? "" : (" --- " + s.Supervisor)),
                                 Color = "#E00101",
                                 IdSupervision = s.IdSupervision,
                                 Tipo = 2,
-                                Supervisor = p.Supervisor
-                            }); 
+                                Supervisor = s.Supervisor
+                            });
+            #endregion
+
+            #region -Próximo contacto-
+            var proximoContacto = (from s in supervisiones
+                                   where s.FechaProximoContacto != null
+                                   select new
+                                   {
+                                       Idcalendario = 0,
+                                       FechaEvento = s.FechaProximoContacto,
+                                       Mensaje = s.Nombre + " --- PRÓXIMO CONTACTO" + (!flagCoordinador ? "" : (" --- " + s.Supervisor)),
+                                       Color = "#2CAD1E",
+                                       IdSupervision = s.IdSupervision,
+                                       Tipo = 3,
+                                       Supervisor = s.Supervisor
+                                   });
             #endregion
 
             if (!flagCoordinador)
             {
                 calendario = calendario.Where(p => p.Supervisor == usuario);
                 informes = informes.Where(p => p.Supervisor == usuario);
+                proximoContacto = proximoContacto.Where(p => p.Supervisor == usuario);
             }            
 
-            var tasks = calendario.Union(informes);
+            var tasks = calendario.Union(informes).Union(proximoContacto);
 
             return Json(tasks, new Newtonsoft.Json.JsonSerializerSettings());
         }

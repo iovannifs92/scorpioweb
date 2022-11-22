@@ -278,7 +278,6 @@
                            
                         }
                         else {
-
                             for (let i = 0; i < result.query.length; i++) {
                                 if(result.query[i].personaVM.supervisor.endsWith("\u0040nortedgepms.com") && result.query[i].tipoAdvertencia == "Se paso el tiempo de la firma"){
                                     continue;
@@ -290,7 +289,7 @@
                                     var dateString = result.query[i].planeacionestrategicaVM.fechaInforme;
                                     date = formatDate(dateString);
                                 }
-                                if (result.query[i].personaVM.supervisor == result.user) {
+                                if (result.query[i].personaVM.supervisor == result.user || (result.query[i].tipoAdvertencia == "Expediente físico en resguardo" && result.query[i].personaVM.ubicacionExpediente == result.user.toUpperCase())) {
                                     row = row
                                         + "<tr>"
                                         + "<td>" + result.query[i].personaVM.idPersona + "</td>"
