@@ -73,6 +73,7 @@
     <Folder Include="wwwroot\AER\" />
     <Folder Include="wwwroot\AER\" />
     <Folder Include="wwwroot\Cierredecaso\" />
+    <Folder Include="wwwroot\Expedientes\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" bundleconfig_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
