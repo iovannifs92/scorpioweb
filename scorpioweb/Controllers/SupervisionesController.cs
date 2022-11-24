@@ -990,25 +990,7 @@ namespace scorpioweb.Controllers
 
             if (supervisor == false)
             {
-                filter = from p in _context.Persona
-                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                         join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                         join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
-                         join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
-                         into PersonaSupervisionCausaPenal
-                         from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
-                         where p.Supervisor == User.Identity.Name
-                         select new SupervisionPyCP
-                         {
-                             cierredecasoVM = c,
-                             personaVM = p,
-                             supervisionVM = s,
-                             causapenalVM = cp,
-                             planeacionestrategicaVM = pe,
-                             fraccionesimpuestasVM = fraccion,
-                             tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
-                         };
+                filter = filter.Where(p => p.personaVM.Supervisor == User.Identity.Name);
             }
 
 
@@ -1056,7 +1038,7 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoCumplimiento);
                     break;
                 default:
-                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    filter = filter.OrderByDescending(spcp => spcp.personaVM.IdPersona);
                     break;
             }
             //Vigente al principio, Concluido al final
