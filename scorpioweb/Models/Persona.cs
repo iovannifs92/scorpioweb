@@ -9,6 +9,8 @@ namespace scorpioweb.Models
         public string Nombre { get; set; }
         public string Paterno { get; set; }
         public string Materno { get; set; }
+        public string NombrePadre { get; set; }
+        public string NombreMadre { get; set; }
         public string Alias { get; set; }
         public string Genero { get; set; }
         public int? Edad { get; set; }

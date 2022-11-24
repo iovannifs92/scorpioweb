@@ -199,6 +199,15 @@
         $("#Familiares").change(function () {
             var opcion = $(this).children("option:selected").val()
             document.getElementById("textoAFRAgregar").innerHTML = "Asiento Familiar"
+            document.getElementById("AFRelacionA").innerHTML = 
+                        "<option value='ESPOSO (A)'>Esposo(a)</option>\
+                        <option value='HERMANO (A)'>Hermano(a)</option>\
+                        <option value='HIJO (A)'>Hijo(a)</option>\
+                        <option value='ABUELO (A)'>Abuelo(a)</option>\
+                        <option value='FAMILIAR 1 NIVEL'>Familiar 1 nivel</option>\
+                        <option value='AMIGO'>Amigo</option>\
+                        <option value='CONOCIDO'>Conocido</option>\
+                        <option value='OTRO'>Otro</option>";
             if (opcion == "SI") {
                 tipo = 1;
                 $('#modalAgregarAsientoFamiliar').modal('show')
@@ -211,6 +220,17 @@
         $("#ReferenciasPersonales").change(function () {
             var opcion = $(this).children("option:selected").val()
             document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
+            document.getElementById("AFRelacionA").innerHTML =
+                            "<option value='MAMA'>Máma</option>\
+                            <option value='PAPA'>Pápa</option>\
+                            <option value='ESPOSO (A)'>Esposo(a)</option>\
+                            <option value='HERMANO (A)'>Hermano(a)</option>\
+                            <option value='HIJO (A)'>Hijo(a)</option>\
+                            <option value='ABUELO (A)'>Abuelo(a)</option>\
+                            <option value='FAMILIAR 1 NIVEL'>Familiar 1 nivel</option>\
+                            <option value='AMIGO'>Amigo</option>\
+                            <option value='CONOCIDO'>Conocido</option>\
+                            <option value='OTRO'>Otro</option>";
             if (opcion == "SI") {
                 tipo = 2;
                 $('#modalAgregarAsientoFamiliar').modal('show')
@@ -246,8 +266,9 @@
             else {
                 document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
             }
+
             document.getElementById("AFNombreA").value = '';
-            document.getElementById("AFRelacionA").value = 'MAMA';
+            document.getElementById("AFRelacionA").value = 'ESPOSO (A)';
             document.getElementById("AFEdadA").value = '0';
             document.getElementById("AFSexoA").value = 'M';
             document.getElementById("AFDependenciaA").value = 'NO';
@@ -768,6 +789,16 @@
                 <label asp-for="Materno" class="control-label"></label>
                 <input asp-for="Materno" class="form-control" />
                 <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Nombre del padre</label>
+                <input asp-for="NombrePadre" class="form-control" />
+                <span asp-validation-for="NombrePadre" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Nombre de la madre</label>
+                <input asp-for="NombreMadre" class="form-control" />
+                <span asp-validation-for="NombreMadre" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Alias" class="control-label"></label>
@@ -1298,16 +1329,6 @@
                 <div class="form-group col-md-4">
                     <label class="control-label">Relación</label>
                     <select class="form-control" name="AFRelacionA" id="AFRelacionA">
-                        <option value="MAMA">Máma</option>
-                        <option value="PAPA">Pápa</option>
-                        <option value="ESPOSO (A)">Esposo(a)</option>
-                        <option value="HERMANO (A)">Hermano(a)</option>
-                        <option value="HIJO (A)">Hijo(a)</option>
-                        <option value="ABUELO (A)">Abuelo(a)</option>
-                        <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
-                        <option value="AMIGO">Amigo</option>
-                        <option value="CONOCIDO">Conocido</option>
-                        <option value="OTRO">Otro</option>
                     </select>
                 </div>
                 <div class="form-group col-md-4">
