@@ -41,6 +41,7 @@
         var idCp = '@ViewBag.idcp';
         var supervisor = '@ViewBag.supervisor';
         var idpersona = '@ViewBag.idpersona';
+        var FracionesImpuestasIdFracionesImpuestas = '@ViewBag.idfraccionesimpuestas';
 
         for (var i = 0; i != files.length; i++) {
         formData.append("files", files[i]); //loop through all files and append
@@ -60,6 +61,7 @@
         formData.append('idCp', idCp);
         formData.append('supervisor', supervisor);
         formData.append('idpersona', idpersona);
+        formData.append('FracionesImpuestasIdFracionesImpuestas', FracionesImpuestasIdFracionesImpuestas);
         //formData.append('datosidFraccion', arr);
          for (var i = 0; i < arr.length; i++) {
           formData.append('datosidFraccion[]', arr[i]);
@@ -122,8 +124,7 @@
                     <option value="NOTIFICACION A VICTIMA">Notificación a Víctima</option>
                 </select>
             </div>
-            @if(ViewBag.contFrac != 0){
-
+            @if(@ViewBag.countFrac != null){
             <div class="form-group">
                 <label class="control-label">Acción de Supervisión</label>
             </div>

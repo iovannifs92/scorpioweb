@@ -506,6 +506,7 @@ namespace scorpioweb.Controllers
             ViewBag.idpersona = idpersona;
             ViewBag.supervisor = supervisor;
             ViewBag.idcp = idcp;
+            ViewBag.idfraccionesimpuestas = id;
 
             if (id == null)
             {
@@ -2168,7 +2169,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #region -Create Bitacora-
-        public IActionResult CreateBitacora(string nombre, string cp, int id,string supervisor, int idcp, int idpersona,  string[] datosBitacora)
+        public IActionResult CreateBitacora(string nombre, string cp, int id,string supervisor, int idcp, int idpersona,int idfraccionesimpuestas)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
@@ -2179,6 +2180,7 @@ namespace scorpioweb.Controllers
             ViewBag.idpersona = idpersona;
             ViewBag.idcp = idcp;
             ViewBag.supervisor = supervisor;
+            ViewBag.idfraccionesimpuestas = idfraccionesimpuestas;
             #region -Select idOficialia
 
             List<Bitacora> bitacorasvm = _context.Bitacora.ToList();
@@ -2211,22 +2213,21 @@ namespace scorpioweb.Controllers
 
                                           fraccionesimpuestasVM = fi
                                       });
-            ViewBag.contFrac = fracionesImpuestas.Count();
-            
-                                     
 
-            ViewData["FraccionesImpuestasBitaccora"] = fracionesImpuestas;
+
+            ViewBag.countFrac = null;
+
+            if (idfraccionesimpuestas == 0)
+            {
+                ViewBag.countFrac = fracionesImpuestas.Count();
+                ViewData["FraccionesImpuestasBitaccora"] = fracionesImpuestas;
+            }
+            
 
             ViewBag.expoficialia = select;
             #endregion
 
             ViewBag.IdSupervisionGuardar = id;
-            var idfraciones = datosBitacora[0];
-
-            if (idfraciones != null)
-            {
-                ViewBag.idFracciones = Int32.Parse(idfraciones);
-            }
 
             return View();
         }
