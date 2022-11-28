@@ -718,7 +718,7 @@ namespace scorpioweb.Controllers
             foreach (var q in query)
             {
                 r = cosine.Similarity(q.cp, cp);
-                if (r >= 0.6)
+                if (r >= 0.75)
                 {
                     trialCP = q.cp;
                     idCP = q.id;
