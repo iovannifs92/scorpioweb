@@ -506,6 +506,7 @@ namespace scorpioweb.Controllers
             ViewBag.idpersona = idpersona;
             ViewBag.supervisor = supervisor;
             ViewBag.idcp = idcp;
+            ViewBag.idfraccionesimpuestas = id;
 
             if (id == null)
             {
@@ -990,25 +991,7 @@ namespace scorpioweb.Controllers
 
             if (supervisor == false)
             {
-                filter = from p in _context.Persona
-                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                         join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-                         join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
-                         join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
-                         into PersonaSupervisionCausaPenal
-                         from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
-                         where p.Supervisor == User.Identity.Name
-                         select new SupervisionPyCP
-                         {
-                             cierredecasoVM = c,
-                             personaVM = p,
-                             supervisionVM = s,
-                             causapenalVM = cp,
-                             planeacionestrategicaVM = pe,
-                             fraccionesimpuestasVM = fraccion,
-                             tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
-                         };
+                filter = filter.Where(p => p.personaVM.Supervisor == User.Identity.Name);
             }
 
 
@@ -1056,7 +1039,7 @@ namespace scorpioweb.Controllers
                     filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoCumplimiento);
                     break;
                 default:
-                    filter = filter.OrderBy(spcp => spcp.personaVM.Paterno);
+                    filter = filter.OrderByDescending(spcp => spcp.personaVM.IdPersona);
                     break;
             }
             //Vigente al principio, Concluido al final
@@ -2168,7 +2151,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #region -Create Bitacora-
-        public IActionResult CreateBitacora(string nombre, string cp, int id,string supervisor, int idcp, int idpersona,  string[] datosBitacora)
+        public IActionResult CreateBitacora(string nombre, string cp, int id,string supervisor, int idcp, int idpersona,int idfraccionesimpuestas)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
@@ -2179,6 +2162,7 @@ namespace scorpioweb.Controllers
             ViewBag.idpersona = idpersona;
             ViewBag.idcp = idcp;
             ViewBag.supervisor = supervisor;
+            ViewBag.idfraccionesimpuestas = idfraccionesimpuestas;
             #region -Select idOficialia
 
             List<Bitacora> bitacorasvm = _context.Bitacora.ToList();
@@ -2211,22 +2195,21 @@ namespace scorpioweb.Controllers
 
                                           fraccionesimpuestasVM = fi
                                       });
-            ViewBag.contFrac = fracionesImpuestas.Count();
-            
-                                     
 
-            ViewData["FraccionesImpuestasBitaccora"] = fracionesImpuestas;
+
+            ViewBag.countFrac = null;
+
+            if (idfraccionesimpuestas == 0)
+            {
+                ViewBag.countFrac = fracionesImpuestas.Count();
+                ViewData["FraccionesImpuestasBitaccora"] = fracionesImpuestas;
+            }
+            
 
             ViewBag.expoficialia = select;
             #endregion
 
             ViewBag.IdSupervisionGuardar = id;
-            var idfraciones = datosBitacora[0];
-
-            if (idfraciones != null)
-            {
-                ViewBag.idFracciones = Int32.Parse(idfraciones);
-            }
 
             return View();
         }

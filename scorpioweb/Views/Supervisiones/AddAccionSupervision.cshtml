@@ -103,7 +103,7 @@
 }
 @foreach (var item in ViewData["tablaBiatacora"] as IEnumerable<scorpioweb.Models.BitacoraViewModal>)
 {
-    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@item.bitacoraVM.SupervisionIdSupervision, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona,idcp=@ViewBag.idcp, supervisor=@ViewBag.supervisor, cp=@ViewBag.cp}, Context.Request.Scheme)', 'Agregar Registro', null)" class="btn btn-success">
+    <a id="btnEditar" onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@item.bitacoraVM.SupervisionIdSupervision, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona,idcp=@ViewBag.idcp, supervisor=@ViewBag.supervisor,idfraccionesimpuestas = @ViewBag.idfraccionesimpuestas, cp=@ViewBag.cp}, Context.Request.Scheme)', 'Agregar Registro', null)" class="btn btn-success">
         <i class="fa fa-plus"></i>  Agregar Registro
     </a>
     break;
