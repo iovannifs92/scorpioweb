@@ -7,6 +7,7 @@
 
 <script>
     var events = [];
+    
 
     $(document).ready(function () {
         $('#filtro').on('change', function()
@@ -64,11 +65,12 @@
     });
 
     function getEventosCalendario(){
-        $.get('/Calendarios/getCalendarTasks')
+        $.get('/Calendarios/getCalendarTasks?origen='+'@ViewBag.origen')
             .done(function (data){                
                 const date = new Date();
                 var calendarEl = document.getElementById('calendar');  
                 let selector = document.querySelector("#filtro");
+                var tipoCalendario = '@ViewBag.origen';
 
                 for(var i = 0; i < data.length; i++){
                     const idcalendario=data[i].Idcalendario;
@@ -78,7 +80,9 @@
                     const tipo=data[i].Tipo;
                     let url="";
                     if(data[i].Idcalendario == 0){
-                        url=new URL('http://10.6.60.190/Supervisiones/Supervision/'+data[i].IdSupervision);
+                        if (tipoCalendario == 1) {
+                            url=new URL('http://10.6.60.190/Supervisiones/Supervision/'+data[i].IdSupervision);
+                        }                        
                     }
                     events.push({
                         'id': idcalendario,
@@ -146,16 +150,25 @@
 
 </style>
 
+
 <form style="padding-top: 2%;">
     <div class="form-actions no-color">
-    <select class="form-control" id="filtro">
-      <option value="all">Todos</option>
-      <option value="1">Eventos programados</option>
-      <option value="2">Informes de supervisión</option>
-      <option value="3">Próximo Contacto</option>
-    </select>
+        @if(ViewBag.origen == 1)
+        {
+            <select class="form-control" id="filtro">
+              <option value="all">Todos</option>
+              <option value="1">Eventos programados</option>
+              <option value="2">Informes de supervisión</option>
+              <option value="3">Próximo Contacto</option>
+            </select>
+        }
+        else
+        {
+            <select class="form-control" id="filtro" style="display:none">
+              <option value="all">Todos</option>
+            </select>
+        }
     </div>
 </form>
-
 
 <div id='calendar'></div>

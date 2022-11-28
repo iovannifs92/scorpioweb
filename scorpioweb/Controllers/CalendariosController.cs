@@ -86,8 +86,8 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Initialize events-
-        public async Task<IActionResult> getCalendarTasks()
+        #region -getEventosMCySCP-
+        public async Task<object> getEventosMCySCP()
         {
             #region -Variables de usuario-
             var user = await userManager.FindByNameAsync(User.Identity.Name);
@@ -117,23 +117,23 @@ namespace scorpioweb.Controllers
                                     FechaProximoContacto = pl.FechaProximoContacto,
                                     Supervisor = p.Supervisor,
                                     EstadoSupervision = s.EstadoSupervision
-                                }; 
+                                };
             #endregion
 
             #region -Eventos del calendario-
             var calendario = from s in _context.Supervision
-                            join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
-                            join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                            select new
-                            {
-                                Idcalendario = t.Idcalendario,
-                                FechaEvento = t.FechaEvento,
-                                Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje + (!flagCoordinador ? "" : (" --- "+p.Supervisor)),
-                                Color = colorPrioridad(t.Prioridad),
-                                IdSupervision = s.IdSupervision, 
-                                Tipo = 1,
-                                Supervisor=p.Supervisor
-                            };
+                             join t in _context.Calendario on s.IdSupervision equals t.SupervisionIdSupervision
+                             join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                             select new
+                             {
+                                 Idcalendario = t.Idcalendario,
+                                 FechaEvento = t.FechaEvento,
+                                 Mensaje = p.Paterno + " " + p.Materno + " " + p.Nombre + " --- " + t.Mensaje + (!flagCoordinador ? "" : (" --- " + p.Supervisor)),
+                                 Color = colorPrioridad(t.Prioridad),
+                                 IdSupervision = s.IdSupervision,
+                                 Tipo = 1,
+                                 Supervisor = p.Supervisor
+                             };
             #endregion
 
             #region -Informes de supervisión-
@@ -170,17 +170,64 @@ namespace scorpioweb.Controllers
                 calendario = calendario.Where(p => p.Supervisor == usuario);
                 informes = informes.Where(p => p.Supervisor == usuario);
                 proximoContacto = proximoContacto.Where(p => p.Supervisor == usuario);
-            }            
+            }
 
             var tasks = calendario.Union(informes).Union(proximoContacto);
+            return tasks;
+        }
+        #endregion
+
+        #region -getEventosMCySCP-
+        public async Task<object> getEventosOficialia()
+        {
+            #region -Variables de usuario-
+            /*var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool flagCoordinador = false;
+            string usuario = user.ToString();
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    flagCoordinador = true;
+                }
+            }*/
+            #endregion
+
+            #region -Query para terminos-
+            var terminos = from o in _context.Oficialia
+                                where o.TieneTermino =="SI"
+                                select new
+                                {
+                                    Idcalendario = 0,
+                                    FechaEvento = o.FechaTermino,
+                                    Mensaje = o.PaternoMaternoNombre + " ---- " +o.AsuntoOficio,
+                                    Color = "#E00101",
+                                    IdSupervision = o.IdOficialia,
+                                    Tipo = 1,
+                                    Supervisor = o.Recibe
+                                };
+            #endregion
+            return terminos;
+        }
+        #endregion
+
+
+
+        #region -Initialize events-
+        public async Task<IActionResult> getCalendarTasks(int origen) /*Origen: 1=MCySPC, 2=Oficialia*/
+        {   
+            var tasks = await(origen == 1 ? getEventosMCySCP() : getEventosOficialia());
 
             return Json(tasks, new Newtonsoft.Json.JsonSerializerSettings());
         }
         #endregion
 
         #region -Index-
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int origen) /*Origen: 1=MCySPC, 2=Oficialia*/
         {
+            ViewBag.origen = origen;
             return View(await _context.Calendario.ToListAsync());
         } 
         #endregion
