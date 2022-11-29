@@ -21,6 +21,10 @@
           asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
     <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
 
+    @*PDF Visualizador*@
+    <link href="https://cdn.syncfusion.com/ej2/17.2.28/material.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.syncfusion.com/ej2/17.2.28/dist/ej2.min.js" type="text/javascript"></script>
+
     @*Main jQuery*@
     <script src="~/js/jquery-1.11.1.min.js"></script>
     @*Contact form validation*@
@@ -73,9 +77,10 @@
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
-    </nav>
+    </nav>    
     <div class="container body-content">
         @RenderBody()
+        
         <hr />
         <footer>
             <div class="clearfix">
@@ -117,6 +122,8 @@
     @RenderSection("Scripts", required: false)
 
     <a onclick="topFunction()" id="back-top"><i class="fa fa-angle-up fa-3x" id="fangle" name="fangle"></i></a>
-
+    <ej-script-manager></ej-script-manager>
+    <!-- Syncfusion Essential JS 2 ScriptManager -->
+    <ejs-scripts></ejs-scripts>
 </body>
 </html>

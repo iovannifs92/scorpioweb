@@ -20,6 +20,9 @@ using System.Text;
 using SautinSoft.Document.MailMerging;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using F23.StringSimilarity;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Text.RegularExpressions;
 
 namespace scorpioweb.Controllers
 {
@@ -692,6 +695,53 @@ namespace scorpioweb.Controllers
             #endregion
 
             //return RedirectToAction("Reportes", "Oficialia");
+        }
+
+        public async Task<IActionResult> CPList(string cp)
+        {
+            bool simi = false;
+            cp = normaliza(cp);
+
+            var query = from c in _context.Causapenal
+                        select new
+                        {
+                            cp = c.CausaPenal,
+                            id = c.IdCausaPenal
+                        };
+
+            int idCP = 0;
+            string trialCP = "";
+            var cosine = new Cosine(2);
+            double r = 0;
+            var list = new List<Tuple<string, int, double>>();
+
+            foreach (var q in query)
+            {
+                r = cosine.Similarity(q.cp, cp);
+                if (r >= 0.75)
+                {
+                    trialCP = q.cp;
+                    idCP = q.id;
+                    list.Add(new Tuple<string, int, double>(trialCP, idCP, r));
+                    simi = true;
+                }
+            }
+
+            list = list.OrderByDescending(x => x.Item3).ToList();
+
+            List<Causapenal> CPquery = _context.Causapenal.ToList();
+
+            List<Causapenal> CPList = new List<Causapenal>();
+            foreach (var c in list)
+            {
+                var item = (from a in CPquery
+                            where a.IdCausaPenal == c.Item2
+                            select a).First();
+                CPList.Add(item);
+            }
+            ViewData["CPList"] = CPList;
+
+            return View();
         }
 
         #region -SerializeObject-

@@ -12,7 +12,7 @@
                     <h4 class="card-title">
                         <a asp-controller="Oficialia" asp-action="EditRegistros">
                             <img class="card-img-top" src="~/images/data-entry.png" alt="Card image cap" style="padding-bottom:5%;">
-                            Editar Registro
+                            Consulta y creación de registros
                         </a>
                     </h4>
                     <p class="card-text">
@@ -33,6 +33,19 @@
                     </p>
                 </div>
             </div>
+            <div class="col-sm-3 col-md-3 card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="2">
+                            <img class="card-img-top" src="~/images/schedule.png" alt="Card image cap" style="padding-bottom:5%;">
+                            Calendario
+                        </a>
+                    </h4>
+                    <p class="card-text">
+
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -46,7 +59,7 @@ else
                         <h4 class="card-title">
                             <a asp-controller="Oficialia" asp-action="EditRegistros">
                                 <img class="card-img-top" src="~/images/data-entry.png" alt="Card image cap" style="padding-bottom:5%;">
-                                Editar Registro
+                                Consulta de registros
                             </a>
                         </h4>
                         <p class="card-text">

@@ -725,20 +725,22 @@ namespace scorpioweb.Controllers
                                      tipoAdvertencia = "Sin Resolución"
                                  };
 
-            var archivoadmin = from ha in queryHistorialArchivoadmin
-                               join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
-                               join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
-                               join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
-                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                               where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
-                               p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null 
-                               select new PlaneacionWarningViewModel
-                               {
-                                   municipiosVM = municipio,
-                                   personaVM = p,
-                                   archivointernomcscpVM = ai,
-                                   tipoAdvertencia = "Expediente físico en resguardo"
-                               };
+            #region -Expediente Físico en Resguardo-
+            //var archivoadmin = from ha in queryHistorialArchivoadmin
+            //                   join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+            //                   join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+            //                   join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+            //                   join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //                   where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+            //                   p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null
+            //                   select new PlaneacionWarningViewModel
+            //                   {
+            //                       municipiosVM = municipio,
+            //                       personaVM = p,
+            //                       archivointernomcscpVM = ai,
+            //                       tipoAdvertencia = "Expediente físico en resguardo"
+            //                   }; 
+            #endregion
 
             var leftJoin = from persona in personaVM
                            join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona into tmp
@@ -810,7 +812,7 @@ namespace scorpioweb.Controllers
             {
                 var warningPlaneacion = (where).Union
                                         (sinResolucion).Union
-                                        (archivoadmin).Union
+                                        //(archivoadmin).Union
                                         (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                         (from t in table
                                          where t.personaVM.Colaboracion == "SI"
@@ -908,25 +910,27 @@ namespace scorpioweb.Controllers
 
 
 
-                var archivo = from ha in queryHistorialArchivoadmin
-                                join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
-                                join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
-                                join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
-                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
-                                p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null && p.UbicacionExpediente == usuario.ToUpper()
-                                select new PlaneacionWarningViewModel
-                                {
-                                    municipiosVM = municipio,
-                                    personaVM = p,
-                                    archivointernomcscpVM = ai,
-                                    tipoAdvertencia = "Expediente físico en resguardo"
-                                };
+                #region -Expediente Físico en Resguardo-
+                //var archivo = from ha in queryHistorialArchivoadmin
+                //              join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                //              join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+                //              join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                //              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                //              where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+                //              p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null && p.UbicacionExpediente == usuario.ToUpper()
+                //              select new PlaneacionWarningViewModel
+                //              {
+                //                  municipiosVM = municipio,
+                //                  personaVM = p,
+                //                  archivointernomcscpVM = ai,
+                //                  tipoAdvertencia = "Expediente físico en resguardo"
+                //              }; 
+                #endregion
 
                 var warningPlaneacion =
                                         (where2).Union
                                         (sinResolucion2).Union
-                                        (archivo).Union
+                                        //(archivo).Union
                                         (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.personaVM.Supervisor == usuario && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                         (from t in table
                                          where t.personaVM.Supervisor == usuario && t.planeacionestrategicaVM.FechaInforme != null && t.planeacionestrategicaVM.FechaInforme < fechaInformeCoordinador && t.supervisionVM.EstadoSupervision == "VIGENTE" && t.fraccionesimpuestasVM.FiguraJudicial == "SCP"
@@ -4791,20 +4795,22 @@ namespace scorpioweb.Controllers
                                  };
 
 
-            var archivoadmin = from ha in queryHistorialArchivoadmin
-                               join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
-                               join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
-                               join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
-                               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                               where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
-                               p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null
-                               select new PlaneacionWarningViewModel
-                               {
-                                   municipiosVM = municipio,
-                                   personaVM = p,
-                                   archivointernomcscpVM = ai,
-                                   tipoAdvertencia = "Expediente físico en resguardo"
-                               };
+            #region -Expediente Físico en Resguardo-
+            //var archivoadmin = from ha in queryHistorialArchivoadmin
+            //                   join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+            //                   join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+            //                   join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+            //                   join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //                   where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+            //                   p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null
+            //                   select new PlaneacionWarningViewModel
+            //                   {
+            //                       municipiosVM = municipio,
+            //                       personaVM = p,
+            //                       archivointernomcscpVM = ai,
+            //                       tipoAdvertencia = "Expediente físico en resguardo"
+            //                   }; 
+            #endregion
 
 
 
@@ -4970,16 +4976,16 @@ namespace scorpioweb.Controllers
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              }).Union
                                             (where).Union
-                                            (archivoadmin).Union
+                                            //(archivoadmin).Union
                                             (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE"))
                                             ;
                         break;
                     case "SIN RESOLUCION":
                         ViewDataAlertasVari = sinResolucion;
                         break;
-                    case "EXPEDIENTE FISICO EN RESGUARDO":
-                        ViewDataAlertasVari = archivoadmin;
-                        break;
+                    //case "EXPEDIENTE FISICO EN RESGUARDO":
+                    //    ViewDataAlertasVari = archivoadmin;
+                    //    break;
                     case "INFORME FUERA DE TIEMPO":
                         ViewDataAlertasVari = from t in table
                                               where t.planeacionestrategicaVM.FechaInforme != null && t.planeacionestrategicaVM.FechaInforme < fechaInformeCoordinador && t.supervisionVM.EstadoSupervision == "VIGENTE" && t.fraccionesimpuestasVM.FiguraJudicial == "SCP"
@@ -5104,26 +5110,29 @@ namespace scorpioweb.Controllers
                                                                    group a by a.PersonaIdPersona into grp
                                                                    select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
 
-                var archivo = from ha in queryHistorialArchivoadmin
-                              join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
-                              join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
-                              join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
-                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                              where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
-                              p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null && p.UbicacionExpediente == usuario.ToUpper()
-                              select new PlaneacionWarningViewModel
-                              {
-                                  municipiosVM = municipio,
-                                  personaVM = p,
-                                  archivointernomcscpVM = ai,
-                                  tipoAdvertencia = "Expediente físico en resguardo"
-                              };
+                #region -Expediente Físico en Resguardo-
+                //var archivo = from ha in queryHistorialArchivoadmin
+                //              join ai in archivointernomcscpsVM on ha.IdarchivoInternoMcscp equals ai.IdarchivoInternoMcscp
+                //              join p in personaVM on ha.PersonaIdPersona equals p.IdPersona
+                //              join domicilio in domicilioVM on p.IdPersona equals domicilio.PersonaIdPersona
+                //              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                //              where p.UbicacionExpediente != "ARCHIVO INTERNO" && p.UbicacionExpediente != "ARCHIVO GENERAL" &&
+                //              p.UbicacionExpediente != "NO UBICADO" && p.UbicacionExpediente != "SIN REGISTRO" && p.UbicacionExpediente != "NA" && p.UbicacionExpediente != null && p.UbicacionExpediente == usuario.ToUpper()
+                //              select new PlaneacionWarningViewModel
+                //              {
+                //                  municipiosVM = municipio,
+                //                  personaVM = p,
+                //                  archivointernomcscpVM = ai,
+                //                  tipoAdvertencia = "Expediente físico en resguardo"
+                //              }; 
+                #endregion
+
                 switch (currentFilter)
                 {
                     case "TODOS":
                         ViewData["alertas"] = (where2).Union
                                               (sinResolucion2).Union
-                                              (archivo).Union
+                                              //(archivo).Union
                                               (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.personaVM.Supervisor == usuario && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                               (from t in table
                                                where t.personaVM.Supervisor == usuario && t.planeacionestrategicaVM.FechaInforme != null && t.planeacionestrategicaVM.FechaInforme < fechaInformeCoordinador && t.supervisionVM.EstadoSupervision == "VIGENTE" && t.fraccionesimpuestasVM.FiguraJudicial == "SCP"
@@ -5198,9 +5207,9 @@ namespace scorpioweb.Controllers
                                              })
                                              ;
                         break;
-                    case "EXPEDIENTE FISICO EN RESGUARDO":
-                        ViewData["alertas"] = archivo;
-                        break;
+                    //case "EXPEDIENTE FISICO EN RESGUARDO":
+                    //    ViewData["alertas"] = archivo;
+                    //    break;
                     case "SIN RESOLUCION":
                         ViewData["alertas"] = sinResolucion2;
                         break;
