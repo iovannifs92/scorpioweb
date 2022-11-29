@@ -331,7 +331,7 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -379,7 +379,7 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) ) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -423,7 +423,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -513,7 +513,7 @@
                                      + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                    if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -559,7 +559,7 @@
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -605,7 +605,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -649,7 +649,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -739,7 +739,7 @@
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -785,7 +785,7 @@
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -831,7 +831,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -875,7 +875,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -981,7 +981,7 @@
                             + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1027,7 +1027,7 @@
                             + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                               if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1073,7 +1073,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1117,7 +1117,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1217,7 +1217,7 @@
                             + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1263,7 +1263,7 @@
                             + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1309,7 +1309,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1353,7 +1353,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1455,7 +1455,7 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1501,7 +1501,7 @@
                             + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1547,7 +1547,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                 if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1591,7 +1591,7 @@
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                            if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1686,7 +1686,7 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1732,7 +1732,7 @@
                                     + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                    if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1778,7 +1778,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1822,7 +1822,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1913,7 +1913,7 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -1959,7 +1959,7 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -2005,7 +2005,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
@@ -2049,7 +2049,7 @@
                                     + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                                 row = row
                                     + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px; display: none;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true) {
+                                if(@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true || @Html.Raw(Json.Serialize(ViewBag.Archivo)) == true || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios))) {
                                     if (result.page[i].ubicacionExpediente == 'EXPEDIENTE CONCLUIDO PARA RAZÓN DE ARCHIVO' || result.page[i].ubicacionExpediente == 'ARCHIVO GENERAL' && @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) == 'sergio.lopez@dgepms.com') {
                                     row = row + "<div class=\"col-sm col-md-6\"><select disabled  class=\"form-control\" style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' id=\"ubicacion" + i + "\" onchange=\"actualizaUbicacion(" + i + ", " + result.page[i].idPersona + ", '" + result.page[i].ubicacionExpediente + "')\">";
                                     row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);

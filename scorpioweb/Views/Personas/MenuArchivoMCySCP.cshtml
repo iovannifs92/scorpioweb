@@ -11,7 +11,7 @@
     <div class="col-md-12 col-md-12">
         <h2>Archivo MC y SCP </h2>
     </div>
-    @if (User.IsInRole("ArchivoMCSCP") || User.IsInRole("Masteradmin"))
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
@@ -53,6 +53,19 @@
                 </p>
             </div>
         </div>
+       @* <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Personas" asp-action="RazondeArchivo">
+                        <img class="card-img-top" src="~/images/archive.png" alt="Card image cap" style="padding-bottom:5%;" />
+                        Expediente para razón de archivo
+                    </a>
+                </h4>
+                <p class="card-text">
+                    Expediente para razón de archivo
+                </p>
+            </div>
+        </div>*@
     }
 </div>
 

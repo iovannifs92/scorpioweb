@@ -444,7 +444,6 @@ namespace scorpioweb.Controllers
                 rolUsuario.Add(roles[i]);
             }
 
-
             ViewBag.RolesUsuario = rolUsuario;
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
@@ -460,10 +459,6 @@ namespace scorpioweb.Controllers
                         ListaUsuariosAdminMCSCP.Add(u.ToString());
                     }
                 }
-            }else if (users == "claudia.armendariz@dgepms.com")
-            {
-                ListaUsuariosAdminMCSCP.Add("Seleccione");
-                ListaUsuariosAdminMCSCP.Add("Archivo General");
             }
             ViewBag.ListadoUsuariosAdminMCSCP = ListaUsuariosAdminMCSCP;
 
