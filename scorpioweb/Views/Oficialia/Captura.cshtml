@@ -105,6 +105,18 @@
                 url = url.replace(-1, cp);
                 showModal(url, 'Eliga una causa penal', null);
             });
+            $('#btnSave').on("click", function (e) {
+                e.preventDefault();
+                var cp = document.getElementById("CausaPenal");
+                var idCausaPenal = document.getElementById("idCausaPenal");
+                if (cp.value != "" && idCausaPenal.value == "") {
+                    var flag = confirm("Se va a guardar un registro sin causa penal asignada. ¿Desea continuar?");
+                    if (flag == false) {
+                        return;
+                    }
+                }
+                btnSubmit.click();
+            });
 
             function autocomplete(inp, arr) {
                 var currentFocus;
@@ -418,8 +430,10 @@
                     <span asp-validation-for="Observaciones" class="text-danger"></span>
                 </div>
                 <div class="form-group col-xs-12" style="padding-left:0%">
-                    <button class="btn btn-primary" type="submit">
+                    <button class="btn btn-primary" id="btnSave" name="btnSave">
                         <i class="fa fa-save"></i> Guardar
+                    </button>
+                    <button class="btn btn-primary" type="submit" id="btnSubmit" name="btnSubmit" style="display:none">
                     </button>
                 </div>
             </form>
