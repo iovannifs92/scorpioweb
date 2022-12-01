@@ -104,7 +104,12 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
                     },
                     eventClick:  function(info, jsEvent, view) {
-                        showModal('@Url.Action("Edit","Calendarios",null,Context.Request.Scheme)', 'Editar Evento', info.event.id);
+                        if (tipoCalendario == 1) {
+                            showModal('@Url.Action("Edit","Calendarios",null,Context.Request.Scheme)', 'Editar Evento', info.event.id);
+                        }
+                        else{
+                            showModal('@Url.Action("EditOficialia","Calendarios",null,Context.Request.Scheme)', 'Evento', info.event.id);
+                        }
                     },
                     eventDidMount: function(arg) {
                       let val = selector.value;
@@ -160,6 +165,7 @@
               <option value="1">Eventos programados</option>
               <option value="2">Informes de supervisión</option>
               <option value="3">Próximo Contacto</option>
+              <option value="4">Presentación Periódica</option>
             </select>
         }
         else
