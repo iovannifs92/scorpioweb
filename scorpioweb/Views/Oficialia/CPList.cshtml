@@ -11,7 +11,6 @@
             cp.value = $("input[type='radio'][name='radioGroup']:checked").val();
             var idCausaPenal = document.getElementById("idCausaPenal");
             idCausaPenal.value = $("input[type='radio'][name='radioGroup']:checked").attr('placeholder');
-            $("#modalCausaPenal").modal('hide');
         });
     });
 </script>
@@ -52,6 +51,6 @@
         </tr>
     }
 </table>
-<button class="btn btn-primary" id="btnElegir" name="btnElegir"     type="submit">
+<button class="btn btn-primary" id="btnElegir" name="btnElegir">
     Elegir
 </button>
