@@ -3246,5 +3246,20 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
+
+        #region -CalendarioEventosProgramados-
+        public IActionResult CalendarioEventosProgramados(int id)
+        {
+            ViewBag.idSupervision = id;
+
+            ViewData["eventos"] = from c in _context.Calendario
+                          where c.SupervisionIdSupervision == id
+                          orderby c.FechaEvento descending
+                          select c;
+
+            return View();
+        }
+
+        #endregion
     }
 }
