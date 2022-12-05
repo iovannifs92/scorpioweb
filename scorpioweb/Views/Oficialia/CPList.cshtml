@@ -6,12 +6,23 @@
     $(document).ready(function () {
         $('#btnElegir').on("click", function (e) {
             e.preventDefault();
-            var cp = document.getElementById("CausaPenal");
-            //https://stackoverflow.com/questions/15839169/how-to-get-value-of-selected-radio-button
-            cp.value = $("input[type='radio'][name='radioGroup']:checked").val();
-            var idCausaPenal = document.getElementById("idCausaPenal");
-            idCausaPenal.value = $("input[type='radio'][name='radioGroup']:checked").attr('placeholder');
-            $("#modalCausaPenal").modal('hide');
+            const radioButtons = document.querySelectorAll('input[name="radioGroup"]');
+            let selectedSize;
+            let checked = false;
+            for (const radioButton of radioButtons) {
+                if (radioButton.checked) {
+                    checked = true;
+                    break;
+                }
+            }
+            if(checked)
+            {
+                var cp = document.getElementById("CausaPenal");
+                //https://stackoverflow.com/questions/15839169/how-to-get-value-of-selected-radio-button
+                cp.value = $("input[type='radio'][name='radioGroup']:checked").val();
+                var idCausaPenal = document.getElementById("idCausaPenal");
+                idCausaPenal.value = $("input[type='radio'][name='radioGroup']:checked").attr('placeholder');
+            }
         });
     });
 </script>
@@ -52,6 +63,8 @@
         </tr>
     }
 </table>
-<button class="btn btn-primary" id="btnElegir" name="btnElegir"     type="submit">
+@*<form>*@
+<button class="btn btn-primary" id="btnElegir" name="btnElegir">
     Elegir
 </button>
+@*</form>*@

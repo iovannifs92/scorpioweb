@@ -46,14 +46,14 @@
                         + "</td>";
                 }
                 else {
-                    var date30 = Date.now();
-                    date30 += 1000 * 60 * 60 * 24 * 30;
+                    var date60 = Date.now();
+                    date60 += 1000 * 60 * 60 * 24 * 60;
                     var date5 = Date.now();
                     date5 += 1000 * 60 * 60 * 24 * 5;
-                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
+                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date60 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
                         row = row
                             + "<td>"
-                            + "    Informe en próximos 30 días"
+                            + "    Informe en próximos 60 días"
                             + "</td>";
                     }
                     else {
@@ -321,14 +321,14 @@
                                                     + "</td>";
                                             }
                                             else {
-                                                var date30 = Date.now();
-                                                date30 += 1000 * 60 * 60 * 24 * 30;
+                                                var date60 = Date.now();
+                                                date60 += 1000 * 60 * 60 * 24 * 60;
                                                 var date5 = Date.now();
                                                 date5 += 1000 * 60 * 60 * 24 * 5;
-                                                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date30 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
+                                                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date60 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
                                                     row = row
                                                         + "<td>"
-                                                        + "    Informe en próximos 30 días"
+                                                        + "    Informe en próximos 60 días"
                                                         + "</td>";
                                                 }
                                                 else {

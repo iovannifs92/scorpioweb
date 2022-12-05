@@ -662,7 +662,7 @@ namespace scorpioweb.Controllers
             ViewBag.Usuario = usuario;
             DateTime fechaInforme = (DateTime.Today).AddDays(5);
             DateTime fechaControl = (DateTime.Today).AddDays(3);
-            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(30);
+            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
             DateTime fechahoy = DateTime.Today;
             Boolean flagMaster = false;
 
@@ -4715,7 +4715,7 @@ namespace scorpioweb.Controllers
             string usuario = user.ToString();
             DateTime fechaInforme = (DateTime.Today).AddDays(5);
             DateTime fechaControl = (DateTime.Today).AddDays(3);
-            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(30);
+            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
             DateTime fechaHoy = DateTime.Today;
 
             if (currentFilter == null)

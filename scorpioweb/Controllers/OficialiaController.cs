@@ -387,7 +387,7 @@ namespace scorpioweb.Controllers
             int i = 0;
             ListaUsuarios.Add(new SelectListItem
             {
-                Text = "Selecciona",
+                Text = "",
                 Value = i.ToString()
             });
             i++;
@@ -697,9 +697,8 @@ namespace scorpioweb.Controllers
             //return RedirectToAction("Reportes", "Oficialia");
         }
 
-        public async Task<IActionResult> CPList(string cp)
+        public IActionResult CPList(string cp)
         {
-            bool simi = false;
             cp = normaliza(cp);
 
             var query = from c in _context.Causapenal
@@ -723,7 +722,6 @@ namespace scorpioweb.Controllers
                     trialCP = q.cp;
                     idCP = q.id;
                     list.Add(new Tuple<string, int, double>(trialCP, idCP, r));
-                    simi = true;
                 }
             }
 
