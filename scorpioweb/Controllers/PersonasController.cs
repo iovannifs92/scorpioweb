@@ -758,7 +758,7 @@ namespace scorpioweb.Controllers
                             personaVM = ss.personaVM,
                             supervisionVM = ss.supervisionVM,
                             tipoAdvertencia = "Sin supervisión"
-                        };
+                        }; 
             var where2 = from ss in leftJoin
                          where ss.personaVM.Supervisor == usuario && ss.supervisionVM == null
                          select new PlaneacionWarningViewModel
