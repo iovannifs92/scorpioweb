@@ -127,7 +127,7 @@
         <button class="btn btn-primary btn-lg fa fa-unlock" onclick="candado(@item.personaVM.IdPersona,true)"></button>
     }else
     {
-        <button title="@item.personaVM.MotivoCandado" class="btn btn-primary btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersona,false)"></button>    
+        <button title="@item.personaVM.MotivoCandado" class="btn btn-danger btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersona,false)"></button>    
     }
     <a class="btn btn-info btn-lg fa fa-pencil" href="@("http://10.6.60.190/Personas/PresentacionPeriodicaPersona/"+item.personaVM.IdPersona)" target="_blank"></a>
     <a class="btn btn-success btn-lg fa fa-calendar" onclick="showModal('@Url.Action("Create","Calendarios",null,Context.Request.Scheme)','Nuevo evento', @item.supervisionVM.IdSupervision)">   </a>

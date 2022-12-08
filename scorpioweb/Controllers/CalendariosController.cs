@@ -22,12 +22,24 @@ namespace scorpioweb.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
+        private List<SelectListItem> listaNoSi = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="No", Value="NO"},
+            new SelectListItem{ Text="Si", Value="SI"}
+        };
         private List<SelectListItem> prioridad = new List<SelectListItem>
 
         {
             new SelectListItem{ Text="BAJA", Value="BAJA"},
             new SelectListItem{ Text="MEDIA", Value="MEDIA"},
             new SelectListItem{ Text="ALTA", Value="ALTA"}
+        };
+        private List<SelectListItem> frecuencia = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="Diariamente", Value="DIARIAMENTE"},
+            new SelectListItem{ Text="Semanalmente", Value="SEMANALMENTE"},
+            new SelectListItem{ Text="Quincenalmente", Value="QUINCENALMENTE"},
+            new SelectListItem{ Text="Mensualmente", Value="MENSUALMENTE"}
         };
         #endregion
 
@@ -237,12 +249,14 @@ namespace scorpioweb.Controllers
         {
             ViewBag.idSupervision = id;
             ViewBag.prioridad = prioridad;
+            ViewBag.repite = listaNoSi;
+            ViewBag.frecuencia = frecuencia;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Mensaje,FechaEvento,Prioridad,Tipo,SupervisionIdSupervision")] Calendario calendario)
+        public async Task<IActionResult> Create([Bind("Mensaje,Repite,Frecuencia,Repeticiones,FechaEvento,Prioridad,Tipo,SupervisionIdSupervision")] Calendario calendario, int Repeticiones)
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -254,9 +268,35 @@ namespace scorpioweb.Controllers
                 calendario.FechaCreacion = DateTime.Now;
                 calendario.Mensaje = normaliza(calendario.Mensaje);
                 calendario.Tipo = normaliza(calendario.Tipo);
-                _context.Add(calendario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if(calendario.Repite == "SI")
+                {
+                    for (int i = 0; i < Repeticiones; i++)
+                    {
+                        _context.Add(calendario);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        switch (calendario.Frecuencia)
+                        {
+                            case "DIARIAMENTE":
+                                calendario.FechaEvento = ((DateTime)calendario.FechaEvento).AddDays(1);
+                                break;
+                            case "SEMANALMENTE":
+                                calendario.FechaEvento = ((DateTime)calendario.FechaEvento).AddDays(7);
+                                break;
+                            case "QUINCENALMENTE":
+                                calendario.FechaEvento = ((DateTime)calendario.FechaEvento).AddDays(15);
+                                break;
+                            case "MENSUALMENTE":
+                                calendario.FechaEvento = ((DateTime)calendario.FechaEvento).AddMonths(1);
+                                break;
+                        }
+                    }
+                }
+                else 
+                {
+                    _context.Add(calendario);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction(nameof(Index), new { origen = 1});
             }
             return View(calendario);
         } 
@@ -323,7 +363,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { origen = 1 });
             }
             return View(calendario);
         }
