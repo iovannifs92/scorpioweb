@@ -702,40 +702,31 @@ namespace scorpioweb.Controllers
             cp = normaliza(cp);
 
             var query = from c in _context.Causapenal
-                        select new
-                        {
-                            cp = c.CausaPenal,
-                            id = c.IdCausaPenal
-                        };
+                        select c;
 
             int idCP = 0;
             string trialCP = "";
             var cosine = new Cosine(2);
             double r = 0;
-            var list = new List<Tuple<string, int, double>>();
+            var list = new List<Tuple<double, Causapenal>>();
 
             foreach (var q in query)
             {
-                r = cosine.Similarity(q.cp, cp);
+                r = cosine.Similarity(q.CausaPenal, cp);
                 if (r >= 0.75)
                 {
-                    trialCP = q.cp;
-                    idCP = q.id;
-                    list.Add(new Tuple<string, int, double>(trialCP, idCP, r));
+                    list.Add(new Tuple<double, Causapenal>(r, q));
                 }
             }
 
-            list = list.OrderByDescending(x => x.Item3).ToList();
+            list = list.OrderByDescending(x => x.Item1).ToList();
 
             List<Causapenal> CPquery = _context.Causapenal.ToList();
 
             List<Causapenal> CPList = new List<Causapenal>();
             foreach (var c in list)
             {
-                var item = (from a in CPquery
-                            where a.IdCausaPenal == c.Item2
-                            select a).First();
-                CPList.Add(item);
+                CPList.Add(c.Item2);
             }
             ViewData["CPList"] = CPList;
 

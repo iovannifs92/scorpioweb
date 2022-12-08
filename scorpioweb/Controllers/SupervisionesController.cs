@@ -1174,67 +1174,67 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EdicionMenuSuper(Supervision supervision, Planeacionestrategica planeacionestrategica)
-        {
-            int idSuper = supervision.IdSupervision;
-            int idPlaneacion = planeacionestrategica.IdPlaneacionEstrategica;
-            var fInicio = supervision.Inicio;
-            var fTermino = supervision.Termino;
-            var fInforme = planeacionestrategica.FechaInforme;
-            string estadoS = supervision.EstadoSupervision;
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EdicionMenuSuper(Supervision supervision, Planeacionestrategica planeacionestrategica)
+        //{
+        //    int idSuper = supervision.IdSupervision;
+        //    int idPlaneacion = planeacionestrategica.IdPlaneacionEstrategica;
+        //    var fInicio = supervision.Inicio;
+        //    var fTermino = supervision.Termino;
+        //    var fInforme = planeacionestrategica.FechaInforme;
+        //    string estadoS = supervision.EstadoSupervision;
 
 
-            supervision.Inicio = fInicio;
-            supervision.Termino = fTermino;
-            supervision.EstadoSupervision = estadoS;
-            planeacionestrategica.FechaInforme = fInforme;
+        //    supervision.Inicio = fInicio;
+        //    supervision.Termino = fTermino;
+        //    supervision.EstadoSupervision = estadoS;
+        //    planeacionestrategica.FechaInforme = fInforme;
 
-            var fInicioUpdate = (from a in _context.Supervision
-                                 where a.IdSupervision == idSuper
-                                 select a).FirstOrDefault();
-            fInicioUpdate.Inicio = fInicio;
-            _context.SaveChanges();
+        //    var fInicioUpdate = (from a in _context.Supervision
+        //                         where a.IdSupervision == idSuper
+        //                         select a).FirstOrDefault();
+        //    fInicioUpdate.Inicio = fInicio;
+        //    _context.SaveChanges();
 
-            var fTerminoUpdate = (from a in _context.Supervision
-                                  where a.IdSupervision == idSuper
-                                  select a).FirstOrDefault();
-            fTerminoUpdate.Termino = fTermino;
-            _context.SaveChanges();
-
-
-            var estadoSUpdate = (from a in _context.Supervision
-                                 where a.IdSupervision == idSuper
-                                 select a).FirstOrDefault();
-            estadoSUpdate.EstadoSupervision = estadoS;
-            _context.SaveChanges();
+        //    var fTerminoUpdate = (from a in _context.Supervision
+        //                          where a.IdSupervision == idSuper
+        //                          select a).FirstOrDefault();
+        //    fTerminoUpdate.Termino = fTermino;
+        //    _context.SaveChanges();
 
 
-            var fInformeUpdate = (from a in _context.Planeacionestrategica
-                                  where a.IdPlaneacionEstrategica == idPlaneacion
-                                  select a).FirstOrDefault();
-            fInformeUpdate.FechaInforme = fInforme;
-            _context.SaveChanges();
+        //    var estadoSUpdate = (from a in _context.Supervision
+        //                         where a.IdSupervision == idSuper
+        //                         select a).FirstOrDefault();
+        //    estadoSUpdate.EstadoSupervision = estadoS;
+        //    _context.SaveChanges();
 
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SupervisionExists(supervision.IdSupervision))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction("PersonaSupervision");
-        }
+        //    var fInformeUpdate = (from a in _context.Planeacionestrategica
+        //                          where a.IdPlaneacionEstrategica == idPlaneacion
+        //                          select a).FirstOrDefault();
+        //    fInformeUpdate.FechaInforme = fInforme;
+        //    _context.SaveChanges();
+
+
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!SupervisionExists(supervision.IdSupervision))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+        //    return RedirectToAction("PersonaSupervision");
+        //}
 
 
         #endregion
