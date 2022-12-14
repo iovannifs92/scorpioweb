@@ -3105,6 +3105,7 @@ namespace scorpioweb.Controllers
                             idConsumo = -idConsumo;
                             var sustancia = await _context.Consumosustancias.SingleOrDefaultAsync(m => m.IdConsumoSustancias == idConsumo);
                             _context.Consumosustancias.Remove(sustancia);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                         }
                         else
                         {
@@ -3176,6 +3177,7 @@ namespace scorpioweb.Controllers
                             idAsiento = -idAsiento;
                             var asiento = await _context.Asientofamiliar.SingleOrDefaultAsync(m => m.IdAsientoFamiliar == idAsiento);
                             _context.Asientofamiliar.Remove(asiento);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                         }
                         else
                         {
@@ -3241,6 +3243,7 @@ namespace scorpioweb.Controllers
                             idAsiento = -idAsiento;
                             var asiento = await _context.Asientofamiliar.SingleOrDefaultAsync(m => m.IdAsientoFamiliar == idAsiento);
                             _context.Asientofamiliar.Remove(asiento);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                         }
                         else
                         {
