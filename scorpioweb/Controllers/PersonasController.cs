@@ -35,6 +35,7 @@ using SautinSoft.Document.MailMerging;
 using DocumentFormat.OpenXml.Office.Word;
 using System.Data.SqlClient;
 using scorpioweb.Data;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace scorpioweb.Controllers
 {
@@ -1711,7 +1712,9 @@ namespace scorpioweb.Controllers
                            select p;
             ViewBag.colonias = colonias.ToList();
 
-            ViewBag.colonia = "Zona Centro";
+            ViewBag.coloniaDGEP = "Zona Centro";
+            ViewBag.calleDGEP = "Calle Miguel de Cervantes Saavedra";
+            ViewBag.noDGEP = "502";
 
             return View();
         }

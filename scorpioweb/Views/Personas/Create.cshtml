@@ -713,6 +713,24 @@
             var municipio = m.options[m.selectedIndex].text;
             getGeocodingData(calle, no, nombre, cp, municipio, estado);
         });
+
+        $('#btnSave').on("click", function (e) {
+            e.preventDefault();
+            var calle = document.getElementById("calle").value;
+            var no = document.getElementById("no").value;
+            if (calle == "@ViewBag.calleDGEP" && no == "@ViewBag.noDGEP") {
+                var flag = confirm("¿Desea guardar la entrevista con la dirección Miguel de Cervantes Saavedra 502?");
+                if (flag == false) {
+                    return;
+                }
+            }
+            else{
+                if(confirm('¿Deseas guardar los datos de toda la entrevista?') == false){
+                    return;
+                }
+            }
+            btnSubmit.click();
+        });
     });
 
     $(function () {
@@ -726,7 +744,7 @@
             },
             _createAutocomplete: function () {
                 var selected = this.element.children(":selected"),
-                    value = "@ViewBag.colonia";
+                    value = "@ViewBag.coloniaDGEP";
                 this.input = $("<input id=inputAutocomplete name=inputAutocomplete>")
                     .appendTo(this.wrapper)
                     .val(value)
@@ -933,7 +951,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form onsubmit="return confirm('¿Deseas guardar los datos de toda la entrevista?');" asp-action="Create" enctype="multipart/form-data" id="forma">
+        <form asp-action="Create" enctype="multipart/form-data" id="forma">
             <div class="container sub-page forma">
                 <div class="container">
                     <div class="panel-group">
@@ -1216,11 +1234,11 @@
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Calle</label>
-                                    <input required id="calle" name="calle" type="text" value="Calle Pino Suárez" class="form-control" />
+                                    <input required id="calle" name="calle" type="text" value="@ViewBag.calleDGEP" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-2">
                                     <label class="control-label">Número</label>
-                                    <input id="no" name="no" type="text" value="308" class="form-control" />
+                                    <input id="no" name="no" type="text" value="@ViewBag.noDGEP" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Colonia/Fraccionamiento/Localidad</label>
@@ -1778,9 +1796,11 @@
                 <div class="custom-file col-md-12" style="margin-bottom:20px">
                     <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" accept="image/*" lang="es">
                 </div>
-                <div class="form-group " style="margin-top:20px">
-                    <button class="btn btn-primary" type="submit">
+                <div class="form-group col-xs-12" style="padding-left:0%">
+                    <button class="btn btn-primary" id="btnSave" name="btnSave">
                         <i class="fa fa-save"></i> Guardar
+                    </button>
+                    <button class="btn btn-primary" type="submit" id="btnSubmit" name="btnSubmit" style="display:none">
                     </button>
                 </div>
             </div>
