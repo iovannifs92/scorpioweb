@@ -8,7 +8,8 @@
     <div class="col-md-12">
         <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" asp-route-idcp="@ViewBag.idcp" asp-route-supervisor="@ViewBag.supervisor" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdBitacora" />
+            <input type="hidden" asp-for="IdBitacora" readonly />
+            <input type="hidden" asp-for="FechaRegistro" readonly />
             <div class="form-group col-lg-8">
                 <label asp-for="Fecha" class="control-label"></label>
                 <input asp-for="Fecha" type="date" class="form-control" />

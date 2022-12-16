@@ -14,7 +14,7 @@
         var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear();
         return date;
     };
-    function populateAdmin(result, i, date) {
+    function populateAdmin(result, i, date) {        
         var row = '';
         row = row
             + "<tr>"
@@ -248,7 +248,7 @@
                 success: function (result) {
                     if (result.success) {
                         $('#tblAlertas').html('');
-                        var row = '';                
+                        var row = '';    
                         if (result.admin) {
                             var nortedgepms = false;
                             var dgepms = false;
