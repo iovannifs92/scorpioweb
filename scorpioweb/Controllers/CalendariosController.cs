@@ -256,7 +256,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Mensaje,Repite,Frecuencia,Repeticiones,FechaEvento,Prioridad,Tipo,SupervisionIdSupervision")] Calendario calendario, int Repeticiones)
+        public async Task<IActionResult> Create([Bind("Mensaje,Repite,Frecuencia,FechaEvento,Prioridad,Tipo,SupervisionIdSupervision")] Calendario calendario, int Repeticiones)
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
