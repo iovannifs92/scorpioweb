@@ -71,7 +71,8 @@
                 <input type="hidden" asp-for="SupervisionIdSupervision" class="form-control" value="@ViewBag.idSupervision"/>
             <div class="form-group">
                  <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
-            </div>
+            </div>            
         </form>
+        <a onclick="showModal('@Url.Action("CalendarioEventosProgramados","Supervisiones",null,Context.Request.Scheme)','Eventos Programados', @ViewBag.idSupervision)">Ver eventos programados</a>
     </div>
 </div>

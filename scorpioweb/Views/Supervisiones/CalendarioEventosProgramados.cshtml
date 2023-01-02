@@ -1,0 +1,46 @@
+﻿@model scorpioweb.Models.Calendario
+
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                Mensaje
+            </th>
+            <th>
+                Descripción
+            </th>
+            <th>
+                Fecha Evento
+            </th>
+            <th>
+                Prioridad
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in ViewData["eventos"] as IEnumerable<scorpioweb.Models.Calendario>)
+    {
+    <tr>
+        <th>
+            @item.Mensaje
+        </th>
+        <th>
+            @item.Tipo
+        </th>
+        <th>
+            @item.FechaEvento
+        </th>
+        <th>
+            @item.Prioridad
+        </th>
+    </tr>
+    }
+    </tbody>
+</table>
+    <a onclick="showModal('@Url.Action("Create","Calendarios",null,Context.Request.Scheme)','Nuevo evento', @ViewBag.idSupervision)">Regresar</a>
+</div>
