@@ -1,0 +1,33 @@
+﻿@model scorpioweb.Models.Oficialia
+
+@{
+    Layout = null;
+}
+<div class="row">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas modificar el evento?');" asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
+            <input type="hidden" asp-for="IdOficialia" />
+            <div class="form-group">
+                <label class="control-label">Nombre</label>
+                <input readonly asp-for="PaternoMaternoNombre" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Fecha de Recepción</label>
+                <input readonly asp-for="FechaRecepcion" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Asunto Oficio</label>
+                <input readonly asp-for="AsuntoOficio" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Usuario al que se turno</label>
+                <input readonly asp-for="UsuarioTurnar" class="form-control" />
+            </div>
+            <div class="form-group">
+@*                <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
+                <a asp-action="EventDelete" asp-route-id="@ViewBag.idCalendario" class="btn btn-danger" onclick="return confirm('Quieres borrar este evento?');"><i class="fa fa-trash"></i> Borrar</a>
+*@          </div>
+        </form>
+    </div>
+</div>

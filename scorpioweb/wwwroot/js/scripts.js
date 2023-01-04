@@ -38,7 +38,7 @@ var infowindow;
 var cnt = 0;//todo
 
 function iniciarMap() {
-    var coord = { lat: 24.0234962, lng: -104.6606269 };//DGEP
+    var coord = { lat: 24.0234806, lng: -104.6605743 };//DGEP
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,//12: Town, or city district
         center: coord
