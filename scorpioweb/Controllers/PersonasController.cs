@@ -6532,11 +6532,11 @@ namespace scorpioweb.Controllers
 
 
 
-                contacto.Dependencia = contactos.Dependencia.ToUpper();
-                contacto.Titular = contactos.Titular.ToUpper();
+                contacto.Dependencia = contactos.Dependencia == null ? "NA" : contactos.Dependencia.ToUpper();
+                contacto.Titular = contactos.Titular == null ? "NA" : contactos.Titular.ToUpper();
                 contacto.Correo = contactos.Correo == null ? "NA" : contactos.Correo.ToUpper(); 
-                contacto.Telefono = contactos.Telefono.ToUpper();
-                contacto.Extencion = contacto.Extencion.ToUpper();
+                contacto.Telefono = contactos.Telefono == null ? "NA" : contactos.Telefono.ToUpper();
+                contacto.Extencion = contactos.Extencion == null ? "NA" : contacto.Extencion.ToUpper();
                 contacto.Destacado = contactos.Destacado;
 
                 _context.Update(contacto);
