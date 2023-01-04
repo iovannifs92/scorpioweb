@@ -34,7 +34,6 @@
         var input = document.getElementById(inputId); //get file input id
         var files = input.files; //get files
         var formData = new FormData(); //create form
-
         var nombre = '@ViewBag.nombre';
         var cp = '@ViewBag.cp';
         var idPersona = '@ViewBag.idpersona';
@@ -42,7 +41,6 @@
         var supervisor = '@ViewBag.supervisor';
         var idpersona = '@ViewBag.idpersona';
         var FracionesImpuestasIdFracionesImpuestas = '@ViewBag.idfraccionesimpuestas';
-
         for (var i = 0; i != files.length; i++) {
         formData.append("files", files[i]); //loop through all files and append
         }

@@ -549,7 +549,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -ListadoSupervisor-
+          #region -ListadoSupervisor-
         public async Task<IActionResult> ListadoSupervisor(
             string sortOrder,
             string currentFilter,
@@ -596,7 +596,7 @@ namespace scorpioweb.Controllers
 
             switch (sortOrder)
             {
-                case "name_desc":
+                case "name_desc": 
                     personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
                 default:
@@ -6522,10 +6522,11 @@ namespace scorpioweb.Controllers
                     contacto.Categoria = "MUNICIPIO";
                 }
 
-        
+
+
                 contacto.Dependencia = contactos.Dependencia.ToUpper();
                 contacto.Titular = contactos.Titular.ToUpper();
-                contacto.Correo = contactos.Correo.ToUpper();
+                contacto.Correo = contactos.Correo == null ? "NA" : contactos.Correo.ToUpper(); 
                 contacto.Telefono = contactos.Telefono.ToUpper();
                 contacto.Extencion = contacto.Extencion.ToUpper();
                 contacto.Destacado = contactos.Destacado;
