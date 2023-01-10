@@ -284,13 +284,13 @@
                 <input asp-for="PersonaIdPersona" class="form-control" />
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
-            <div class="custom-file form-group col-lg-12" style="padding-bottom:20px">
-                <label class="control-label">Reporte Técnico</label>
-                <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
-            </div>
             <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo"))
             {
+                <div class="custom-file form-group col-lg-12" style="padding-bottom:20px">
+                    <label class="control-label">Reporte Técnico</label>
+                    <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+                </div>
                 <div class="input-group" style="padding-top:1%">
                     <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
                 </div>

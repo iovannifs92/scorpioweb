@@ -1,0 +1,147 @@
+﻿@model PaginatedList<scorpioweb.Models.Oficialia>
+
+@*https://stackoverflow.com/questions/66919901/how-to-add-toggle-button-on-razor-page*@
+@section Scripts
+    {
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+            .slider.round:before {
+                border-radius: 50%;
+            }
+    </style>
+}
+
+<script type="text/javascript">
+    function toggle(id) {
+        $.ajax({
+            type: "POST",
+            url: "/Oficialia/Toggle",
+            traditional: true,
+            data: {
+                id,
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+    }
+</script>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Número del Oficio
+            </th>
+            <th>
+            Fecha de Recepción
+            </th>
+            <th>
+                Asunto del Oficio
+            </th>
+            <th>
+                Seguimiento
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdOficialia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumOficio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaRecepcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AsuntoOficio)
+            </td>
+            <td>
+                <label class="switch">
+                    @if (@item.Seguimiento == "SI"){
+                        <input type="checkbox" onclick="toggle(@item.IdOficialia)" checked=true>
+                    }
+                    else{
+                        <input type="checkbox" onclick="toggle(@item.IdOficialia)" check=false>
+                    }
+                    <span class="slider round"></span>
+                </label>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<a asp-action="Seguimiento"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   class="btn btn-default col-xs-offset-6 col-sm-offset-7 col-lg-offset-9 @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Seguimiento"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
