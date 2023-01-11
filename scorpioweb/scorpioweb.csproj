@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\AER\" />
-    <Folder Include="wwwroot\AER\" />
     <Folder Include="wwwroot\Cierredecaso\" />
     <Folder Include="wwwroot\Expedientes\" />
   </ItemGroup>

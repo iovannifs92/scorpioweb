@@ -79,7 +79,44 @@
             }
         });
     }
+    $(document).ready(function () {
+        $("#inicial").change(function () {
+            $("#buscar").click();
+        });
+        $("#final").change(function () {
+                $("#buscar").click();
+        });
+    });
 </script>
+
+<form asp-action="Seguimiento" method="get" style="padding-top:2%">
+    <div class="col-xs-2 col-xs-offset-1">
+        <h4>
+            Fecha de Recepción
+        </h4>
+    </div>
+    <div class="container col-xs-9" style="padding-bottom:1%;padding-top:1%">
+        <input type="text" class="col-xs-2 col-xs-offset-0" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
+        <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
+            <i class="fa fa-search"></i>
+            Buscar
+        </button>
+    </div>
+    <div class ="col-xs-12">
+        <div class="col-xs-1">
+            <label>
+                Inicial
+            </label>
+            <input type="date" id="inicial" name="inicial" value="@ViewData["inicial"]" />
+        </div>
+        <div class="col-xs-1 col-xs-offset-1">
+            <label>
+                Final
+            </label>
+            <input type="date" id="final" name="final" value="@ViewData["final"]" />
+        </div>
+    </div>
+</form>
 
 <table class="table" style="padding: 15px;">
     <thead style="font-size: large">

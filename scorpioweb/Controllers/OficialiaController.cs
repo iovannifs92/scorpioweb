@@ -373,6 +373,9 @@ namespace scorpioweb.Controllers
         }
 
         public async Task<IActionResult> Seguimiento(
+            string currentFilter,
+            DateTime? inicial,
+            DateTime? final,
             int? pageNumber)
         {
             string currentUser = User.Identity.Name;
@@ -386,6 +389,17 @@ namespace scorpioweb.Controllers
                     flagMaster = true;
                 }
             }
+
+            ViewData["CurrentFilter"] = currentFilter;
+            if (inicial != null)
+            {
+                ViewData["inicial"] = Convert.ToDateTime(inicial).ToString("yyyy-MM-dd");
+            }
+            if (final != null)
+            {
+                ViewData["final"] = Convert.ToDateTime(final).ToString("yyyy-MM-dd");
+            }
+
             var oficios = from oficialia in _context.Oficialia
                           where oficialia.UsuarioTurnar == currentUser
                           select oficialia;
@@ -396,6 +410,26 @@ namespace scorpioweb.Controllers
             }
 
             oficios = oficios.OrderBy(s => s.Seguimiento);
+
+            if (inicial != null)
+            {
+                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)inicial.Value.Date, (DateTime)o.FechaRecepcion.Value.Date) <= 0);
+            }
+
+            if (final != null)
+            {
+                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
+            }
+
+            if (currentFilter != null)
+            {
+                foreach (var item in currentFilter.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    oficios = oficios.Where(o => (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
+                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()));
+                }
+            }
 
             int pageSize = 10;
             return View(await PaginatedList<Oficialia>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
