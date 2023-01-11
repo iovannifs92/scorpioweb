@@ -381,7 +381,7 @@ namespace scorpioweb.Controllers
             Boolean flagMaster = false;
             foreach (var rol in roles)
             {
-                if (rol == "Masteradmin")
+                if (rol == "Masteradmin" || rol == "Oficialia")
                 {
                     flagMaster = true;
                 }

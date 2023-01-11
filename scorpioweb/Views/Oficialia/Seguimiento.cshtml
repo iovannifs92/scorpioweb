@@ -81,8 +81,8 @@
     }
 </script>
 
-<table class="table">
-    <thead>
+<table class="table" style="padding: 15px;">
+    <thead style="font-size: large">
         <tr>
             <th>
                 ID
@@ -95,6 +95,9 @@
             </th>
             <th>
                 Asunto del Oficio
+            </th>
+            <th>
+                Nombre
             </th>
             <th>
                 Seguimiento
@@ -115,6 +118,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AsuntoOficio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
             </td>
             <td>
                 <label class="switch">
