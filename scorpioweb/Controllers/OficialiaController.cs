@@ -41,7 +41,7 @@ namespace scorpioweb.Controllers
         {
             new SelectListItem{ Text="", Value="0"},
             new SelectListItem{ Text="karla.zapico@dgepms.com", Value="1"},
-            new SelectListItem{ Text="yoena@dgepms.com", Value="2"}
+            new SelectListItem{ Text="renata.martinez@dgepms.com", Value="2"}
         };
         public static List<SelectListItem> ListaCoordinadores = new List<SelectListItem>()
         {
