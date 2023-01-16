@@ -225,7 +225,6 @@ namespace scorpioweb.Controllers
                 oficialia.FechaTermino = fechaTermino;
                 oficialia.IdCausaPenal = idCausaPenal;
                 oficialia.Seguimiento = "NO";
-                oficialia.FechaSeguimiento = DateTime.Now;
                 if (usuarioTurnar == "Selecciona")
                 {
                     oficialia.UsuarioTurnar = null;
@@ -443,6 +442,7 @@ namespace scorpioweb.Controllers
             if (oficio.Seguimiento == "NO")
             {
                 oficio.Seguimiento = "SI";
+                oficio.FechaSeguimiento = DateTime.Now;
             }
             else
             {
