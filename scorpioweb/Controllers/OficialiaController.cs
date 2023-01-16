@@ -58,6 +58,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="jazmin.flores@dgepms.com", Value="10"},
             new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
             new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
+            new SelectListItem{ Text="yoena@dgepms.com", Value="13"},
         };
         #endregion
 
@@ -679,6 +680,7 @@ namespace scorpioweb.Controllers
                 oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)inicial.Value.Date, (DateTime)o.FechaRecepcion.Value.Date) <= 0);
             }
 
+            if (final != null)
             if (final != null)
             {
                 oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
