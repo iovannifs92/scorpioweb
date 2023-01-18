@@ -56,7 +56,9 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="uriel.ortega@dgepms.com", Value="8"},
             new SelectListItem{ Text="juan.castillo@dgepms.com", Value="9"},
             new SelectListItem{ Text="jazmin.flores@dgepms.com", Value="10"},
-            new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"}
+            new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
+            new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
+            new SelectListItem{ Text="yoena@dgepms.com", Value="13"},
         };
         #endregion
 
@@ -368,6 +370,8 @@ namespace scorpioweb.Controllers
                 }
             }
 
+            oficios = oficios.OrderByDescending(x => x.IdOficialia);
+
             int pageSize = 10;
             return View(await PaginatedList<Oficialia>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -678,6 +682,7 @@ namespace scorpioweb.Controllers
             }
 
             if (final != null)
+            if (final != null)
             {
                 oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
             }
@@ -703,6 +708,8 @@ namespace scorpioweb.Controllers
                                              (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)));
                 }
             }
+            oficios = oficios.OrderByDescending(x => x.IdOficialia);
+
             var ids = from o in oficios
                       select o.IdOficialia;
             ViewBag.ids = ids.ToList();
