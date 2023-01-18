@@ -363,7 +363,8 @@ namespace scorpioweb.Controllers
                     oficios = oficios.Where(o => (o.UsuarioTurnar != null && o.UsuarioTurnar.Contains(currentFilter.ToLower())) ||
                                              (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
                                              (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
-                                             (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)));
+                                             (o.CausaPenal != null && o.CausaPenal.Contains(currentFilter)) ||
+                                             o.Observaciones.Contains(currentFilter));
                 }
             }
 
