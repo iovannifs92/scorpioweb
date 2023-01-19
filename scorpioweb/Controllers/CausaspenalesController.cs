@@ -271,7 +271,7 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-        //        [ValidateAntiForgeryToken] Para poder llamar el metodo desde Oficialia
+        //[ValidateAntiForgeryToken] Para poder llamar el metodo desde Oficialia
         public async Task<IActionResult> Create(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp)
         {
             var usuario = await userManager.FindByNameAsync(User.Identity.Name);

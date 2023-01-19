@@ -161,6 +161,11 @@
                         <i class="fa fa-copy"></i>
                         Clonar
                     </a>
+                    <form onsubmit="return confirm('¿Deseas borrar este registro?');" style="margin-top: 10px" asp-action="Delete" asp-route-id="@item.IdOficialia">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    </form>
                 </td>
             }
         </tr>

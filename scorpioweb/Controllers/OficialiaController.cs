@@ -861,6 +861,35 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        // GET: Oficialia/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var oficialia = await _context.Oficialia
+                .SingleOrDefaultAsync(m => m.IdOficialia == id);
+            if (oficialia == null)
+            {
+                return NotFound();
+            }
+
+            return View(oficialia);
+        }
+
+        // POST: Oficialia/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var oficialia = await _context.Oficialia.SingleOrDefaultAsync(m => m.IdOficialia == id);
+            _context.Oficialia.Remove(oficialia);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("EditRegistros", "Oficialia");
+        }
+
         #region -OficialiaExists-
         private bool OficialiaExists(int id)
         {
