@@ -54,7 +54,7 @@
     </div>
     <div class="col-xs-3 col-xs-offset-1">
         <label>
-            Supervisor
+            Usuario a quien se turno
         </label>
         <select class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
                 asp-items="@(new SelectList(ViewBag.supervisores, "Text", "Text", @ViewBag.UsuarioTurnar))">
@@ -92,7 +92,7 @@
                 Nombre del Imputado
             </th>
             <th>
-                Carpeta de Ejecución 
+                No. Oficio
             </th>
             <th>
                 Causa Penal
@@ -108,7 +108,7 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody style="font-size:small">
         @foreach (var item in Model)
         {
         <tr>
@@ -131,7 +131,7 @@
                 @Html.DisplayFor(modelItem => item.NombrePaternoMaterno)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
+                @Html.DisplayFor(modelItem => item.NumOficio)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CausaPenal)
