@@ -2285,7 +2285,7 @@ namespace scorpioweb.Controllers
         {
             string currentUser = User.Identity.Name;
             int idbitacora = ((from table in _context.Bitacora
-                               select table.IdBitacora).Max());
+                               select table.IdBitacora).Max())+1;
             var path = "";
             foreach (var formFile in files)
             {
@@ -2314,7 +2314,7 @@ namespace scorpioweb.Controllers
                         bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                         bitacora.FechaRegistro = DateTime.Now;
                         bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
-                        bitacora.IdBitacora = ++idbitacora;
+                        //bitacora.IdBitacora = ++idbitacora;
                         bitacora.RutaEvidencia = bitacora.RutaEvidencia;
 
                         var supervision = _context.Supervision
