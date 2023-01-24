@@ -1,0 +1,82 @@
+﻿@model scorpioweb.Models.Archivo
+
+@{
+    Layout = null;
+}
+
+
+<script>    
+    function Create() {
+         var id = document.getElementById("IdArchivo").value;
+         var nombre = document.getElementById("Nombre").value;
+         var ap = document.getElementById("Paterno").value;
+         var am = document.getElementById("Materno").value;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/Createadd",
+            traditional: true,
+            data: {
+                id: id,
+                nombre: nombre,
+                ap: ap,
+                am: am,
+            },
+            success: function (response) {
+                 if (response.create == false) {
+                     alert("El id ya esta registrado!")
+                 }else{
+                     alert("Datos guardados con Exito!")
+                     location.reload();
+                 }
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                location.reload();
+            }
+        });
+    };
+
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <form>
+            <div class="form-group col-md-12">
+                <label asp-for="IdArchivo" class="control-label"></label>
+                <input required asp-for="IdArchivo" class="form-control" name="IdArchivo" id="IdArchivo" />
+                <span asp-validation-for="IdArchivo" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12">
+                <label  class="control-label">Apellido Paterno</label>
+                <input asp-for="Paterno" class="form-control" name="Paterno" id="Paterno" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Apellido Materno</label>
+                <input asp-for="Materno" class="form-control" name="Materno" id="Materno" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" name="Nombre", id="Nombre"/>
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+                <label asp-for="Urldocumento" class="control-label"></label>
+                <input asp-for="Urldocumento" class="form-control" />
+                <span asp-validation-for="Urldocumento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpedienteUnicoIdExpedienteUnico" class="control-label"></label>
+                <input asp-for="ExpedienteUnicoIdExpedienteUnico" class="form-control" />
+                <span asp-validation-for="ExpedienteUnicoIdExpedienteUnico" class="text-danger"></span>
+            </div>*@
+             <a type="button" class="btn btn-primary" id="Guardar" title="Guardar" onclick="Create()">
+                <i class="fa fa-save"></i> Guardar 
+             </a>
+            
+        </form>
+    </div>
+</div>
+

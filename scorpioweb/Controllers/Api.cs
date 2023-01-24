@@ -130,7 +130,7 @@ namespace scorpioweb.Controllers
                 salario = ((tableAdolescente[0].adolescentesVM.Salario == "") ? " " : (tableAdolescente[0].adolescentesVM.Salario == null) ? " " : tableAdolescente[0].adolescentesVM.Salario),
                 tiempotrabajando = tableAdolescente[0].adolescentesVM.TiempoTrab,
                 //tipoocupacion = tableAdolescente[0].adolescentesVM.TiempoTrab,
-                #endregion
+                #endregion 
                 #region -ActividadaSocial-
                 tipoactividad = tableAdolescente[0].adolescentesVM.GrupoPert,
                 tiempoactividad = tableAdolescente[0].adolescentesVM.TiempoGrupo,
@@ -141,7 +141,7 @@ namespace scorpioweb.Controllers
                 tiempoviajes = tableAdolescente[0].adolescentesVM.Tiempoviajes,
                 documentacion = tableAdolescente[0].adolescentesVM.Documentacion,
                 visa = tableAdolescente[0].adolescentesVM.Visa,
-                lugaresviaje = ((tableAdolescente[0].adolescentesVM.Viajahabitualmente == "") ? " " : (tableAdolescente[0].adolescentesVM.Viajahabitualmente == null) ? " " : tableAdolescente[0].adolescentesVM.Viajahabitualmente),
+                lugaresviaje = ((tableAdolescente[0].adolescentesVM.Lugaresviaje == "") ? " " : (tableAdolescente[0].adolescentesVM.Lugaresviaje == null) ? " " : tableAdolescente[0].adolescentesVM.Lugaresviaje),
                 motivoviajes = ((tableAdolescente[0].adolescentesVM.Motivoviajes == "") ? " " : (tableAdolescente[0].adolescentesVM.Motivoviajes == null) ? " " : tableAdolescente[0].adolescentesVM.Motivoviajes),
                 pasaporte = tableAdolescente[0].adolescentesVM.Pasaporte,
                 familiaresestado = tableAdolescente[0].adolescentesVM.FamEst,
@@ -152,7 +152,7 @@ namespace scorpioweb.Controllers
                 #region -Salud-
                 enfermedadfisca = ((tableAdolescente[0].adolescentesVM.Enfermedad == "") ? " " : (tableAdolescente[0].adolescentesVM.Enfermedad == null) ? " " : tableAdolescente[0].adolescentesVM.Enfermedad),
                 enfermedadmental = ((tableAdolescente[0].adolescentesVM.TipoEnfermedad == "") ? " " : (tableAdolescente[0].adolescentesVM.TipoEnfermedad == null) ? " " : tableAdolescente[0].adolescentesVM.TipoEnfermedad),
-                nombreenfermedad = tableAdolescente[0].adolescentesVM.NombreEnfermedad,
+                nombreenfermedad = ((tableAdolescente[0].adolescentesVM.NombreEnfermedad == "") ? " " : (tableAdolescente[0].adolescentesVM.NombreEnfermedad == null) ? " " : tableAdolescente[0].adolescentesVM.NombreEnfermedad),
                 consumosustancias = tableAdolescente[0].adolescentesVM.ConsumeDrog,
                 tratamiento = tableAdolescente[0].adolescentesVM.Tratamiento,
                 tipodroga = tableAdolescente[0].adolescentesVM.DrogasCon,
@@ -173,7 +173,7 @@ namespace scorpioweb.Controllers
                 #region -testigos-
                 testigos = tableAdolescente[0].adolescentesVM.Testigos,
                 //domiciliotestigo = tableAdolescente[0].adolescentesVM.AmenazasTca,
-                relaciontestigo = tableAdolescente[0].adolescentesVM.TutorRelacion,
+                relaciontestigo = tableAdolescente[0].adolescentesVM.RelacionTest,
                 amenazatestigo = tableAdolescente[0].adolescentesVM.Amenazatestigo,
                 #endregion
                 #region -Co-detenidos-

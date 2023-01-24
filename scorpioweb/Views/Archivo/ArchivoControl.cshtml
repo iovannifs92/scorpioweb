@@ -1,0 +1,234 @@
+﻿@model PaginatedList<scorpioweb.Models.ArchivoControlPrestamo>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@{
+    ViewBag.Title = "Control de Prestamos";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    showModal = (url, title, id) => { 
+        $.ajax({
+            type: "GET",
+            url: url + "?id="+id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+    function Entregar(id) {
+        var idArchivo = id;
+        var cambiar = confirm("¿Desea entregar el Archivo?");
+        if (cambiar == true) {
+            $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/Entrega",
+            traditional: true,
+            data: {
+                id,
+            },
+            success: function (response) {
+                if (response.entrega == true) {
+                    alert("El Archivo esta Entragado");
+                    location.reload();
+                } else {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+
+            }
+        });
+        }
+        return innerFunc;
+    };
+
+
+     function Borrar(id) {
+        var idArchivo = id;
+        var cambiar = confirm("¿Desea borrar el Prestamo?");
+        if (cambiar == true) {
+            $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/BorrarPrestado",
+            traditional: true,
+            data: {
+                id,
+            },
+            success: function (response) {
+                if (response.borrar == true) {
+                    alert("El prestamo ha sido borrado");
+                    location.reload();
+                } else {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+
+            }
+        });
+        }
+        return innerFunc;
+    };
+
+
+
+
+
+</script>
+<br />
+<br />
+<h1>Control de Archivos en Prestamos </h1>
+
+<form asp-action="ArchivoControl" method="get">
+    <div>
+        <div class="col-md-12">
+            <label>
+                Búsqueda por nombre o idarchivo
+                <input type="text" name="SearchString" value="@ViewData["currentFilter"]" /> 
+            </label>
+            <button type="submit" class="btn btn-default" style="margin-left:60px">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="ArchivoControl">Regresar al listado completo</a>
+        </div>
+    </div>        
+</form>
+
+<table class="table" style="font-size:10px">
+    <thead>
+        <tr>
+            <th>
+                <a>IdArchivo</a>
+             </th>
+            <th>
+                <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+            </th>
+            <th>
+                <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["fecha_desc"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fceha de Prestamo</a>
+            </th>
+            <th>
+                <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["ubicacion_ase"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha de Entrega</a>
+            </th>
+            <th>
+                <a>Entrega</a>
+            </th>
+            <th>
+                <a>Recibe</a>
+            </th>
+            <th>
+                <a>Area</a>
+            </th>
+            <th>
+                <a>Renovaciones</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoVM.IdArchivo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoVM.Paterno) @Html.DisplayFor(modelItem => item.archivoVM.Materno) @Html.DisplayFor(modelItem => item.archivoVM.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.FechaInicial)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.FechaRenovacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Entrega)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Recibe)
+                </td>    
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Renovaciones)
+                </td> 
+                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus == "PRESTADO") )
+                {
+                     <td style="color:red">
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
+                    </td>
+                     <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
+                    </td>
+
+                    
+                }
+                else
+                {
+                   <td style="color:black">
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
+                    </td>
+                    <td></td>
+                }
+                
+               
+                <td>
+                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus == "PRESTADO") )
+                {     
+                    <a onclick="showModal('@Url.Action("EditPrestamo", "Archivo", new {id=@item.archivoprestamoVM.IdArchivoPrestamo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-success fa fa-pencil" style="margin:2px" title="Editar"> Editar</a>              
+                }
+                <a type="button" id="Entrega" title="Entregar" class="btn btn-warning" onclick="Entregar(@item.archivoprestamoVM.IdArchivoPrestamo)">
+                    <i class="fa fa-file"> Entregar</i> 
+                </a>
+                @*<a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoprestamoVM.IdArchivoPrestamo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-warning fa fa-file" style="margin:2px"> Entregar</a>*@ 
+               @* <a class="btn btn-danger fa fa-trash" asp-action="Delete" asp-route-id="@item.archivoVM.IdArchivo" style="margin:2px"></a>*@
+                <a type="button" id="borrar" title="borrar" class="btn btn-danger" onclick="Borrar(@item.archivoprestamoVM.IdArchivoPrestamo)">
+                    <i class="fa fa-trash"></i> 
+                </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> 
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p>
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="ArchivoControl"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-figuraJudicial="@ViewData["FiguraJ"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="ArchivoControl"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-figuraJudicial="@ViewData["FiguraJ"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+ <br />
+    <div style="margin-top:20px">
+        <a asp-action="ArchivoMenu">Regresar al Menu</a>
+    </div>

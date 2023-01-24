@@ -1,0 +1,85 @@
+﻿@model scorpioweb.Models.Archivoprestamo
+
+@{
+    Layout = null;
+}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#Recibe').change(function() {
+            var url = '@Url.Content("~/")' + "Archivo/GetAreaUser";
+            var ddlsource = '#Recibe';
+            $.getJSON(url, { AreaId: $(ddlsource).val() }, function(data) {
+                $.each(data, function(i, area) {
+                    var areavalue = document.getElementById('Area');
+                    areavalue.value = area.text;
+                });
+            });
+        });
+    });
+
+    function addMonths(date, months) {
+      date.setMonth(date.getMonth() + months);
+      return date;
+    }
+
+    function addDate(){
+        const date = new Date($('#FechaInicial').val());
+        const newDate = addMonths(date, 1);
+        document.getElementById("FechaRenovacion").valueAsNumber = newDate.getTime();
+    }
+
+
+
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreatePrestamo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group" style="display:none" >
+                <label asp-for="IdArchivoPrestamo" class="control-label"></label>
+                <input readonly asp-for="IdArchivoPrestamo" class="form-control" />
+                <span asp-validation-for="IdArchivoPrestamo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Entrega</label>
+                <select class="form-control" name="Entrega" id="Entrega"
+                        asp-items="@(new SelectList(ViewBag.ListaUsuarios, "IdArea", "UserName"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Recibe</label>
+                <select class="form-control" name="Recibe" id="Recibe"
+                        asp-items="@(new SelectList(ViewBag.ListaGeneral, "IdArea", "UserName"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Area</label>
+                <input readonly asp-for="Area" class="form-control" name="Area" id="Area" />
+                <span asp-validation-for="Area" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Fecha Inicial </label>
+                <input required asp-for="FechaInicial" class="form-control" onchange="addDate(value)" />
+                <span asp-validation-for="FechaInicial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label  class="control-label">Fecha de Renovacion</label>
+                <input asp-for="FechaRenovacion" class="form-control" />
+                <span asp-validation-for="FechaRenovacion" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="display:none">
+                <label asp-for="ArcchivoIdArchivo" class="control-label"></label>
+                <input readonly asp-for="ArcchivoIdArchivo" class="form-control" value="@ViewBag.idArchivo"/>
+                <span asp-validation-for="ArcchivoIdArchivo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                 <button type="submit" name="btnGuardarCausaPenal" class="btn btn-primary" asp-action="CreatePrestamo" asp-route-archivoIdArchivo="@ViewBag.idArchivo">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+

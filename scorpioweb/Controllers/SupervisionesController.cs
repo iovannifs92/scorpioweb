@@ -2283,9 +2283,11 @@ namespace scorpioweb.Controllers
     public async Task<IActionResult> AgregarBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
             string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidFraccion)
         {
-            string currentUser = User.Identity.Name;
             int idbitacora = ((from table in _context.Bitacora
-                               select table.IdBitacora).Max());
+                               select table.IdBitacora).Max()+1);
+   
+            string currentUser = User.Identity.Name;
+                
             var path = "";
             foreach (var formFile in files)
             {
@@ -2300,6 +2302,7 @@ namespace scorpioweb.Controllers
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
             }
+            
 
             if (ModelState.ErrorCount <= 1)
             {
@@ -2314,7 +2317,6 @@ namespace scorpioweb.Controllers
                         bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                         bitacora.FechaRegistro = DateTime.Now;
                         bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
-                        bitacora.IdBitacora = ++idbitacora;
                         bitacora.RutaEvidencia = bitacora.RutaEvidencia;
 
                         var supervision = _context.Supervision

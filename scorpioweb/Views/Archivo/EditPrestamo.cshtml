@@ -1,0 +1,81 @@
+﻿@model scorpioweb.Models.Archivoprestamo
+
+@{
+    Layout = null;
+}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#Recibe').change(function() {
+            var url = '@Url.Content("~/")' + "Archivo/GetAreaUser";
+            var ddlsource = '#Recibe';
+            $.getJSON(url, { AreaId: $(ddlsource).val() }, function(data) {
+                $.each(data, function(i, area) {
+                    var areavalue = document.getElementById('Area');
+                    areavalue.value = area.text;
+                });
+            });
+        });
+    });   
+</script>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditPrestamo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input readonly type="hidden" asp-for="IdArchivoPrestamo" />
+            <input readonly style="display:none" asp-for="IdArchivoPrestamo" class="form-control" />
+             <div class="form-group">
+                <label class="control-label">Entrega</label>
+                <select class="form-control" name="Entrega" id="Entrega"
+                        asp-items="@(new SelectList(ViewBag.ListaUsuarios, "IdArea", "UserName",@ViewBag.userEntrega))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Recibe</label>
+                <select class="form-control" name="Recibe" id="Recibe"
+                        asp-items="@(new SelectList(ViewBag.listaGeneral, "IdArea", "UserName",@ViewBag.userGeneral))">     
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Area" class="control-label"></label>
+                <input readonly asp-for="Area" class="form-control" />
+                <span asp-validation-for="Area" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaInicial" class="control-label"></label>
+                <input asp-for="FechaInicial" class="form-control" />
+                <span asp-validation-for="FechaInicial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaRenovacion" class="control-label"></label>
+                <input asp-for="FechaRenovacion" class="form-control" />
+                <span asp-validation-for="FechaRenovacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Estatus</label>
+                <select class="form-control" name="Estatus" id="Estatus"
+                        asp-items="@(new SelectList(ViewBag.ListaEstatus, "Value", "Text", @ViewBag.idEstatus))">
+                </select>    
+            </div>
+            <div class="form-group">
+                <label asp-for="Renovaciones" class="control-label"></label>
+                <input asp-for="Renovaciones" class="form-control" />
+                <span asp-validation-for="Renovaciones" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="display:none">
+                <label asp-for="Urlvale" class="control-label"></label>
+                <input readonly asp-for="Urlvale" class="form-control" />
+                <span asp-validation-for="Urlvale" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArcchivoIdArchivo" class="control-label"></label>
+                <input readonly class="form-control" asp-for="ArcchivoIdArchivo" />
+                <span asp-validation-for="ArcchivoIdArchivo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary fa fa-save"> Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+

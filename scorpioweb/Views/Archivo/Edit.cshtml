@@ -1,0 +1,42 @@
+﻿@model scorpioweb.Models.Archivo
+
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdArchivo" />
+            <div class="form-group">
+                <label class="control-label">Apellido Paterno</label>
+                <input asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Apellido Materno</label>
+                <input asp-for="Materno" class="form-control" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+                <label asp-for="Urldocumento" class="control-label"></label>
+                <input asp-for="Urldocumento" class="form-control" />
+                <span asp-validation-for="Urldocumento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpedienteUnicoIdExpedienteUnico" class="control-label"></label>
+                <input asp-for="ExpedienteUnicoIdExpedienteUnico" class="form-control" />
+                <span asp-validation-for="ExpedienteUnicoIdExpedienteUnico" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

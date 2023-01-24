@@ -63,6 +63,7 @@
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
+                        <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }
                     @if (User.IsInRole("Masteradmin"))
                     {

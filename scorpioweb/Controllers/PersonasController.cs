@@ -1616,7 +1616,7 @@ namespace scorpioweb.Controllers
                                   select Municipios).ToList();
 
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
-        }
+         }
 
         public JsonResult GetMunicipioED(int EstadoId)
         {

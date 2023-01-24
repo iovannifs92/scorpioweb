@@ -1,0 +1,205 @@
+﻿@model PaginatedList<scorpioweb.Models.ArchivoControlPrestamo>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@{
+    ViewBag.Title = "Control Archivo";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    showModal = (url, title, id) => { 
+        $.ajax({
+            type: "GET",
+            url: url + "?id="+id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+
+    function Borrar(id) {
+        var idsuper = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/antesdelete",
+            traditional: true,
+            data: {
+                id,
+            },
+            success: function (response) {
+                if (response.borrar == false) {
+                    alert("No puede borrar el registro porque tiene archivos");
+                } else {
+                    function borrarcp(id) {
+                        var usuario = '@ViewBag.user';
+                        let razon = prompt("Porque desea borrar el registro?", "");
+                        if (razon == null || razon == "") {
+                            return;
+                            text = "NA";
+                        } else {
+                            text = razon;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Archivo/deletesuper",
+                            traditional: true,
+                            data: {
+                                datosuper: [id, razon, usuario],
+                            },
+                            success: function (response) {
+                                if (response.borrar == true) {
+                                    alert("El Registro ha sido borrado");
+                                    location.reload();
+                                } else {
+                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                }
+                            },
+                            error: function (response) {
+                                alert(response.error);
+
+                            }
+                        });
+                    };
+                    borrarcp(id);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+        }
+        return innerFunc;
+    };
+
+
+
+
+</script>
+<br />
+<br />
+<h1>Control de Archivo </h1>
+
+<form asp-action="Index" method="get">
+    <div>
+        <div class="col-md-12">
+            <label>
+                Búsqueda por nombre o idarchivo
+                <input type="text" name="SearchString" value="@ViewData["currentFilter"]" /> 
+            </label>
+            <button type="submit" class="btn btn-default" style="margin-left:60px">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+            <a asp-action="Index">Regresar al listado completo</a>
+        </div>
+    </div>        
+</form>
+<table class="table" style="font-size:10px">
+    <thead>
+        <tr>
+            <th>
+                Id Archivo
+            </th>
+            <th>
+                Nombre Completo
+            </th>
+            <th>
+                Estatus
+            </th>
+            <th>
+                Area
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoVM.IdArchivo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoVM.Paterno) @Html.DisplayFor(modelItem => item.archivoVM.Materno) @Html.DisplayFor(modelItem => item.archivoVM.Nombre)
+                </td>
+                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
+                {
+                    <td style="color:black">
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
+                    </td>
+                    <td></td>
+                }
+                else
+                {
+                    <td style="color:red">
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
+                    </td>
+                     <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
+                    </td>
+                }
+                
+               
+                <td>
+                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
+                {     
+                    <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-warning fa fa-file" title="Prestar"> Prestar</a>              
+                }
+                <a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Agregar archivo</a> 
+                <a onclick="showModal('@Url.Action("Edit", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Editar Archivo',null )" class="btn btn-success fa fa-pencil" title="Editar"> Edit</a> 
+                <a type="button" id="borrar" title="borrar" class="btn btn-danger" onclick="Borrar(@item.archivoVM.IdArchivo)">
+                    <i class="fa fa-trash"></i> 
+                </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> 
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+ <a onclick="showModal('@Url.Action("Create", "Archivo", Context.Request.Scheme)','Crear Archivo',null )" ><img src="~/images/addArchivo.png" height ="60" width="60" /></a> 
+
+
+<p style="margin-top:30px">
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-figuraJudicial="@ViewData["FiguraJ"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-figuraJudicial="@ViewData["FiguraJ"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+ <br />
+    <div style="margin-top:20px">
+        <a asp-action="ArchivoMenu">Regresar al Menu</a>
+    </div>
