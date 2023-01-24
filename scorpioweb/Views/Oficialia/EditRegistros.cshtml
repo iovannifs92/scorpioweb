@@ -1,7 +1,7 @@
-﻿@model PaginatedList<scorpioweb.Models.OficialiaBitacora>
+﻿@model PaginatedList<scorpioweb.Models.Oficialia>
 
 @{
-    ViewData["Title"] = "EditRegistros";
+    ViewData["Title"] = "Registros Oficialia";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -54,7 +54,7 @@
     </div>
     <div class="col-xs-3 col-xs-offset-1">
         <label>
-            Supervisor
+            Usuario a quien se turno
         </label>
         <select class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
                 asp-items="@(new SelectList(ViewBag.supervisores, "Text", "Text", @ViewBag.UsuarioTurnar))">
@@ -92,7 +92,7 @@
                 Nombre del Imputado
             </th>
             <th>
-                Carpeta de Ejecución 
+                No. Oficio
             </th>
             <th>
                 Causa Penal
@@ -108,44 +108,44 @@
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody style="font-size:small">
         @foreach (var item in Model)
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.IdOficialia)
+                @Html.DisplayFor(modelItem => item.IdOficialia)
             </td>
             <td>
-                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.oficialiaVM.FechaRecepcion))
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaRecepcion))
             </td>
             <td>
-                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.oficialiaVM.FechaEmision))
+                @Convert.ToString(string.Format("{0:dd/ MMMM /yyyy}", @item.FechaEmision))
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.Expide)
+                @Html.DisplayFor(modelItem => item.Expide)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.AsuntoOficio)
+                @Html.DisplayFor(modelItem => item.AsuntoOficio)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.NombrePaternoMaterno)
+                @Html.DisplayFor(modelItem => item.NombrePaternoMaterno)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.CarpetaEjecucion)
+                @Html.DisplayFor(modelItem => item.NumOficio)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.CausaPenal)
+                @Html.DisplayFor(modelItem => item.CausaPenal)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.UsuarioTurnar)
+                @Html.DisplayFor(modelItem => item.UsuarioTurnar)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.oficialiaVM.Observaciones)
+                @Html.DisplayFor(modelItem => item.Observaciones)
             </td>
             <td style="text-align:center">
-                @if (item.BitacoraRutaEvidencia != null)
+                @if (item.RutaArchivo != null)
                 {
-                    <a href="~/Evidencia/@Html.DisplayFor(modelItem => item.BitacoraRutaEvidencia)" target="_blank">
+                    <a href="~/EvidenciaOficialia/@Html.DisplayFor(modelItem => item.RutaArchivo)" target="_blank">
                         <i class="fa fa-paperclip fa-6"></i>
                     </a>
                 }
@@ -153,14 +153,19 @@
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
             {
                 <td>
-                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.oficialiaVM.IdOficialia" asp-route-titulo="Editar Oficialía">
+                    <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.IdOficialia" asp-route-titulo="Editar Oficialía">
                         <i class="fa fa-pencil"></i>
                         Editar
                     </a>
-                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.oficialiaVM.IdOficialia" asp-route-titulo="Registro Copiado">
+                    <a class="btn btn-primary" style="margin-top: 10px" asp-action="Duplicate" asp-route-id="@item.IdOficialia" asp-route-titulo="Registro Copiado">
                         <i class="fa fa-copy"></i>
                         Clonar
                     </a>
+                    <form onsubmit="return confirm('¿Deseas borrar este registro?');" style="margin-top: 10px" asp-action="Delete" asp-route-id="@item.IdOficialia">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    </form>
                 </td>
             }
         </tr>

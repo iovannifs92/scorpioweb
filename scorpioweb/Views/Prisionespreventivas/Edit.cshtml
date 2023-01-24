@@ -142,12 +142,12 @@
                 <textarea asp-for="Observaciones" class="form-control"></textarea>
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
-            <div class="custom-file">
-                <label class="control-label">Archivo</label>
-                <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
-            </div>
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo"))
             {
+                <div class="custom-file">
+                    <label class="control-label">Archivo</label>
+                    <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
+                </div>
                 <div class="form-group" style="padding-top:1%">
                     <button type="submit" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
                 </div>
