@@ -1,8 +1,5 @@
 ﻿@{ ViewBag.Title = "";
     Layout = null; }
-
-@{int i = 0;}
-
 <style>
     * {
         box-sizing: border-box;
@@ -143,30 +140,60 @@
     });
 
 
+
+    $(document).ready(function () {
+        /*Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
+        https://www.py4u.net/discuss/342030 usar http en jsfiddle*/
+        $("#forma").validate({
+            ignore: false,
+            rules: {
+                name: "required",
+                email: {
+                    required: true,
+                    email: true,
+                },
+            },
+            invalidHandler: function(e,validator) {
+                for (var i=0;i<validator.errorList.length;i++){
+                    $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
+                }
+            }
+        });
+    });
+
 </script>
+
+@{
+    int i = 0;
+    string collapse = "#collapse";
+    string collapseid = "collapse";
+}
+
 
 
 @foreach (var item in ViewData["tienearchivo"] as IEnumerable<scorpioweb.Models.ArchivoControlPrestamo>)
 {
-<a onclick="showModal('@Url.Action("CreateArchivo2", "Archivo", new {id=@item.archivoregistroVM.ArchivoIdArchivo}, Context.Request.Scheme)','Crear Archivo',@item.archivoregistroVM.ArchivoIdArchivo )" class="btn btn-success fa fa-plus"> Agregar archivo</a> 
-break;
+    <a onclick="showModal('@Url.Action("CreateArchivo2", "Archivo", new {id=@item.archivoregistroVM.ArchivoIdArchivo}, Context.Request.Scheme)','Crear Archivo',@item.archivoregistroVM.ArchivoIdArchivo )" class="btn btn-success fa fa-plus"> Agregar archivo</a> 
+    break;
 }
 <br />
 <br />
 @foreach (var item in ViewData["tienearchivo"] as IEnumerable<scorpioweb.Models.ArchivoControlPrestamo>)
 {
     i++;
-    <div class="form-group col-md-12">
-        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" asp-route-archivoIdArchivo="@item.archivoregistroVM.ArchivoIdArchivo" enctype="multipart/form-data">
-             <input readonly style="display:none" name="IdArchivoRegistro" id="IdArchivoRegistro" value="@item.archivoregistroVM.IdArchivoRegistro" class="form-control" />
-            <div>
-                <label class="control-label">Accion @i</label>
-            </div>
+    <form asp-action="EditArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" asp-route-archivoIdArchivo="@item.archivoregistroVM.ArchivoIdArchivo">
+         <p>
+            <a class="btn btn-primary btn-lg btn-block" data-toggle="collapse" href="@(collapse+i)" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Causa Penal @item.archivoregistroVM.CausaPenal
+            </a>
+        </p>
+        <div class="collapse" id="@(collapseid+i)">
+            <input readonly style="display:none" name="IdArchivoRegistro" id="IdArchivoRegistro" value="@item.archivoregistroVM.IdArchivoRegistro" class="form-control" />
             <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
                 <input name="CausaPenal" id="CausaPenal" value="@item.archivoregistroVM.CausaPenal" class="form-control" />
             </div> 
-             <div class="form-group autocomplete col-md-12">
+                <div class="form-group autocomplete col-md-12">
                 <label class="control-label">Delito</label>
                 <input name="Delito" id="Delito" value="@item.archivoregistroVM.Delito" type="text" class="form-control" />
             </div>
@@ -179,7 +206,7 @@ break;
                 <label class="control-label">Sentencia</label>
                 <input name="Sentencia" id="Sentencia" value="@item.archivoregistroVM.Sentencia" class="form-control" />
             </div>
-             <div class="form-group col-md-12">
+                <div class="form-group col-md-12">
                 <label class="control-label">Fecha de Acuerdo</label>
                 <input id="FechaAcuerdo" name="FechaAcuerdo" class="form-control" asp-for="@item.archivoregistroVM.FechaAcuerdo" type="date" />
             </div>
@@ -195,24 +222,20 @@ break;
                 <label class="control-label">Envia</label>
                 <select class="form-control" name="Envia" id="Envia"
                         asp-items="@(new SelectList(ViewBag.ListaGeneral, "IdArea", "UserName", @item.archivoregistroVM.Envia))">
-                         <option value="">@item.archivoregistroVM.Envia</option>  
+                        <option value="@item.areasVM.IdArea" >@item.archivoregistroVM.Envia</option>  
                 </select>
             </div>
-            <div class="form-group col-lg-3">
-                <button type="submit" class="btn btn-primary">
+            <div class="card card-body">
+                <button type="submit" class="btn btn-primary" >
                     <i class="fa fa-save"></i>
                     Guardar
                 </button>
-            </div>
-            <div class="form-group col-lg-9">
-                <button asp-action="DeleteArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" class="btn btn-danger" type="submit">
+            
+                <button asp-action="DeleteArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" class="btn btn-danger" type="submit" style="margin-top:8px">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
-
-
+                             
             </div>
-        </form>
-    </div>
+        </div>  
+    </form>
 }
-
-  
