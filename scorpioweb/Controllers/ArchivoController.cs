@@ -764,12 +764,15 @@ namespace scorpioweb.Models
             ViewBag.ListaGeneral = listaGeneral;
 
             ViewData["tienearchivo"] = from a in _context.Archivo
-                                        join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
-                                        where a.IdArchivo == id
-                                        select new ArchivoControlPrestamo 
-                                        {
-                                            archivoregistroVM = ar,
-                                            archivoVM = a
+                                       join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
+                                       join area in _context.Areas on ar.Envia equals area.UserName
+                                       where a.IdArchivo == id
+                                       select new ArchivoControlPrestamo
+                                       {
+                                           archivoregistroVM = ar,
+                                           archivoVM = a,
+                                           areasVM = area,
+                                           
                                         };
 
             return View();  
@@ -794,8 +797,7 @@ namespace scorpioweb.Models
                 var sacarnomEntrega = (from a in _context.Areas
                                        where a.IdArea == int.Parse(archivoregistro.Envia)
                                        select a.UserName).First();
-
-
+                
                 archivoregistro.Envia = sacarnomEntrega.ToString();
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
                 try
@@ -814,7 +816,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(ArchivoControl));
+                return RedirectToAction(nameof(Index));
             }
             return View(archivoregistro);
         }
