@@ -144,16 +144,21 @@
                         juez, Cambio, distrito, cp,
                     },
                     success: function (response) {
-                        var msg = confirm("¿Desea seguir con la asignación?");
-                        if (msg == true) {
-                            if (response.success) {
-                                window.location.href = response.responseText;
-                            } else {
-                                alert(response.responseText);
+                            if (response.registrar == false) {
+                                alert("Campo de Causa penal Vacio");
+                                return;
+                            }else{
+                                var msg = confirm("¿Desea seguir con la asignación?");
+                                if (msg == true) {
+                                    if (response.success) {
+                                        window.location.href = response.responseText;
+                                    } else {
+                                        alert(response.responseText);
+                                    }
+                                } else {
+                                    window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
+                                }
                             }
-                        } else {
-                            window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
-                        }
                     },
                     error: function (response) {
                         alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
@@ -258,7 +263,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form >
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <input type="hidden" name="cnpp" id="cnpp" value="Si" class="form-control" readonly />
@@ -307,7 +312,7 @@
                 </button>
             </div>
             <div class="form-group">
-                <button type="submit" id="btnGuardarCausaPenal" name="btnGuardarCausaPenal" class="btn btn-primary">
+                <button id="btnGuardarCausaPenal" name="btnGuardarCausaPenal" class="btn btn-primary">
                     <i class="fa fa-save"></i> Guardar
                 </button>
             </div>
@@ -318,7 +323,6 @@
 <div>
     <a asp-action="Index">Regresar a lista</a>
 </div>
-
 
 <!-- Modal Delito -->
 <div class="modal fade" id="modalDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

@@ -267,7 +267,15 @@ namespace scorpioweb.Controllers
             await Create(causapenal, delitoDB, null, juez, distrito, cambio, cp);
             int idCausaPenal = ((from table in _context.Causapenal
                                  select table.IdCausaPenal).Max());
-            return Json(new { success = true, responseText = idCausaPenal });
+            if (cp == null)
+            {
+                return Json(new { success = true, registrar = false});
+            }
+            else
+            {
+                return Json(new { success = true, responseText = idCausaPenal });
+            }
+            
         }
 
         [HttpPost]
@@ -276,8 +284,9 @@ namespace scorpioweb.Controllers
         {
             var usuario = await userManager.FindByNameAsync(User.Identity.Name);
             String users = usuario.ToString();
-            
-            
+   
+
+
             string currentUser = User.Identity.Name;
 
             causapenal.Cnpp = cnpp;
@@ -290,12 +299,12 @@ namespace scorpioweb.Controllers
 
             if (cp == null)
             {
-                return Json(new { success = false, responseText = "Causa penal vacia,\nColoque datos en el campo" });
+                return Json(new { success = true, registrar = false });
             }
             else
             {
                 if (ModelState.IsValid)
-                {
+                {         
                     int idCausaPenal = ((from table in _context.Causapenal
                                          select table.IdCausaPenal).Max()) + 1;
                     causapenal.IdCausaPenal = idCausaPenal;
@@ -326,7 +335,7 @@ namespace scorpioweb.Controllers
 
                     _context.Add(causapenal);
                     await _context.SaveChangesAsync(null, 1);
-                    return Json(new { success = true,  responseText = Url.Action("Asignacion", "Causaspenales", new { @id = idCausaPenal, @cp = cp }) });
+                    return Json(new { success = true, registrar = true,  responseText = Url.Action("Asignacion", "Causaspenales", new { @id = idCausaPenal, @cp = cp }) });
                 }
                 return View(causapenal);
             }

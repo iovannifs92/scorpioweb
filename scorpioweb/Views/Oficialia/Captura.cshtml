@@ -72,7 +72,6 @@
                 var Cambio = document.getElementById("Cambio").value;
                 var distrito = document.getElementById("distrito").value;
                 var cp = document.getElementById("cp").value;
-
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -82,16 +81,22 @@
                         juez, Cambio, distrito, cp,
                     },
                     success: function (response) {
-                        if (response.success) {
-                            $("#btnCausaPenal").css("display", "none");
-                            $("#modalCausaPenal").modal('hide');
-                            var idCausaPenal = document.getElementById("idCausaPenal");
-                            idCausaPenal.value = response.responseText;
-                            var cpInput = document.getElementById("CausaPenal");
-                            cpInput.value = cp;
-                        } else {
-                            alert(response.responseText);
-                        }
+                            if (response.registrar == false) {
+                                alert("Campo de Causa penal Vacio");
+                                return;
+                            }else{
+                                if (response.success) {
+                                    $("#btnCausaPenal").css("display", "none");
+                                    $("#modalCausaPenal").modal('hide');
+                                    var idCausaPenal = document.getElementById("idCausaPenal");
+                                    idCausaPenal.value = response.responseText;
+                                    var cpInput = document.getElementById("CausaPenal");
+                                    cpInput.value = cp;
+                                } else {
+                                    alert(response.responseText);
+                                }
+
+                            }
                     },
                     error: function (response) {
                         alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");

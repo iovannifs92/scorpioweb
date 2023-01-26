@@ -257,34 +257,6 @@ namespace scorpioweb.Models
             return Json(new { success = false });
         }
 
-        //[HttpPost] 
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("IdArchivo,Paterno,Materno,Nombre,Urldocumento,ExpedienteUnicoIdExpedienteUnico")] Archivo archivo, string Paterno)
-        //{
-        //    var idExiste = (from a in _context.Archivo
-        //                    where a.IdArchivo == archivo.IdArchivo
-        //                    select a.IdArchivo).First();
-
-        //    if (idExiste == archivo.IdArchivo)
-        //    {
-        //        return RedirectToAction("Index");
-
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        archivo.Paterno = removeSpaces(normaliza(archivo.Paterno));
-        //        archivo.Materno = removeSpaces(normaliza(archivo.Materno));
-        //        archivo.Nombre = removeSpaces(normaliza(archivo.Nombre));
-
-
-        //        _context.Add(archivo);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(archivo);
-        //}
-
         // GET: Archivo/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -418,9 +390,7 @@ namespace scorpioweb.Models
                 _context.SaveChanges();
 
                 _context.Database.ExecuteSqlCommand("CALL spBorrarRegistroArchivo(" + id + ")");
-
                 return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
-
             }
             catch (Exception ex)
             {
@@ -596,7 +566,7 @@ namespace scorpioweb.Models
                 archivoprestamo.Area = normaliza(sacarnomArea.ToString());
                 archivoprestamo.FechaInicial = archivoprestamo.FechaInicial;
                 archivoprestamo.FechaRenovacion = archivoprestamo.FechaRenovacion;
-                archivoprestamo.Estatus = archivoprestamo.Estatus;
+                archivoprestamo.Estatus = normaliza(archivoprestamo.Estatus);
                 archivoprestamo.Renovaciones = archivoprestamo.Renovaciones;
                 archivoprestamo.ArcchivoIdArchivo = archivoprestamo.ArcchivoIdArchivo;
                 try

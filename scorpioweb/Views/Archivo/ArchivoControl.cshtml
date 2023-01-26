@@ -131,6 +131,9 @@
                 <a>Recibe</a>
             </th>
             <th>
+                <a>Estatus</a>
+            </th>
+            <th>
                 <a>Area</a>
             </th>
             <th>
@@ -160,9 +163,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.archivoprestamoVM.Recibe)
                 </td>    
-                <td>
-                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Renovaciones)
-                </td> 
+                
                 @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus == "PRESTADO") )
                 {
                      <td style="color:red">
@@ -171,8 +172,6 @@
                      <td>
                     @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
                     </td>
-
-                    
                 }
                 else
                 {
@@ -181,7 +180,9 @@
                     </td>
                     <td></td>
                 }
-                
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Renovaciones)
+                </td> 
                
                 <td>
                 @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus == "PRESTADO") )
@@ -193,7 +194,7 @@
                 </a>
                 @*<a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoprestamoVM.IdArchivoPrestamo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-warning fa fa-file" style="margin:2px"> Entregar</a>*@ 
                @* <a class="btn btn-danger fa fa-trash" asp-action="Delete" asp-route-id="@item.archivoVM.IdArchivo" style="margin:2px"></a>*@
-                <a type="button" id="borrar" title="borrar" class="btn btn-danger" onclick="Borrar(@item.archivoprestamoVM.IdArchivoPrestamo)">
+                <a type="button" id="borrar" title="Borrar" class="btn btn-danger" onclick="Borrar(@item.archivoprestamoVM.IdArchivoPrestamo)">
                     <i class="fa fa-trash"></i> 
                 </a>
                 </td>
