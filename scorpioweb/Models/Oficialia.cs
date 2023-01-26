@@ -28,11 +28,13 @@ namespace scorpioweb.Models
         public string TieneTermino { get; set; }
         public DateTime? FechaTermino { get; set; }
         public string UsuarioTurnar { get; set; }
-        public sbyte? Entregado { get; set; }
+        public string Entregado { get; set; }
         public string Observaciones { get; set; }
         public string RutaArchivo { get; set; }
         public string Seguimiento { get; set; }
         public DateTime? FechaSeguimiento { get; set; }
+        public string DelitoTipo { get; set; }
+        public string AutoVinculacion { get; set; }
 
         public string PaternoMaternoNombre
         {
