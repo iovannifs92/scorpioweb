@@ -197,6 +197,7 @@
 
             var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
             autocomplete(document.getElementById("tipoD"), catalogo);
+            autocomplete(document.getElementById("DelitoTipo"), catalogo);
             var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
             autocomplete(document.getElementById("juez"), jueces);
             var expide = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.expide))');
@@ -348,7 +349,7 @@
                         Causa Penal/Causa Minoril, Distrito, Juez
                     </label>
                     <div class="col-sm-4">
-                        <input asp-for="CausaPenal" class="form-control" id="CausaPenal" name="CausaPenal"/>
+                        <input asp-for="CausaPenal" class="form-control" id="CausaPenal" name="CausaPenal" />
                     </div>
                     <button class="btn btn-default" id="btnBuscarCP" name="btnBuscarCP">
                         <i class="fa fa-search"></i>
@@ -361,6 +362,13 @@
                     <span asp-validation-for="IdCausaPenal" class="text-danger"></span>
                     <span class="col-xs-12" style="color:#808080;padding-bottom:1em">Busque la causa penal o cree una nueva causa penal si no se encuentra</span>
                     <br />
+                    <div class="form-group col-md-12 col-sm-12">
+                        <label asp-for="DelitoTipo" class="control-label">
+                            Delito
+                        </label>
+                        <input asp-for="DelitoTipo" class="form-control" />
+                        <span asp-validation-for="DelitoTipo" class="text-danger"></span>
+                    </div>
                     <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="ExisteVictima" class="control-label">
                             Existe una víctima de por medio
@@ -389,6 +397,17 @@
                     </div>
                 </div>
                 @* col-xs-12 hace que no se mueva la pregunta al espacio vacio del boton de CP *@
+                <div class="form-group col-xs-12 autocomplete" style="padding-left:0%;padding-right:0%;">
+                    <label asp-for="AutoVinculacion" class="control-label">
+                        ¿Cuenta con auto de vinculación?
+                    </label>
+                    <select asp-for="AutoVinculacion" class="form-control">
+                        <option value="NA">N/A</option>
+                        <option value="NO">No</option>
+                        <option value="SI">Sí</option>
+                    </select>
+                    <span asp-validation-for="AutoVinculacion" class="text-danger"></span>
+                </div>
                 <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="AsuntoOficio" class="control-label">
                         ¿Cuál es el asunto del oficio?

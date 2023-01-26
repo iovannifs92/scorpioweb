@@ -188,7 +188,7 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Captura(Oficialia oficialia, string recibe, string metodoNotificacion, string numOficio, string expide,
             string referenteImputado, string sexo, string paterno, string materno, string nombre, string carpetaEjecucion, string existeVictima,
             string nombreVictima, string direccionVictima, string asuntoOficio, string tieneTermino, string usuarioTurnar, string observaciones,
-            int? idCausaPenal, sbyte? Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, IFormFile archivo)
+            int? idCausaPenal, string Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, string delitoTipo, string autoVinculacion, IFormFile archivo)
         {
             if (ModelState.IsValid)
             {
@@ -226,6 +226,8 @@ namespace scorpioweb.Controllers
                 oficialia.FechaRecepcion = fechaRecepcion;
                 oficialia.FechaEmision = fechaEmision;
                 oficialia.FechaTermino = fechaTermino;
+                oficialia.DelitoTipo = normaliza(delitoTipo);
+                oficialia.AutoVinculacion = autoVinculacion;
                 oficialia.IdCausaPenal = idCausaPenal;
                 oficialia.Seguimiento = "NO";
                 if (usuarioTurnar == "Selecciona")
@@ -495,7 +497,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile archivo, [Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,CarpetaEjecucion,IdCausaPenal,CausaPenal,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,Observaciones")] Oficialia oficialia)
+        public async Task<IActionResult> Edit(int id, IFormFile archivo, [Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,CarpetaEjecucion,IdCausaPenal,CausaPenal,DelitoTipo,AutoVinculacion,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,Observaciones")] Oficialia oficialia)
         {
             if (id != oficialia.IdOficialia)
             {
@@ -512,6 +514,8 @@ namespace scorpioweb.Controllers
             oficialia.DireccionVictima = normaliza(oficialia.DireccionVictima);
             oficialia.AsuntoOficio = normaliza(oficialia.AsuntoOficio);
             oficialia.Observaciones = normaliza(oficialia.Observaciones);
+            oficialia.DelitoTipo = normaliza(oficialia.DelitoTipo);
+            oficialia.AutoVinculacion = normaliza(oficialia.AutoVinculacion);
             var oldOficialia = await _context.Oficialia.FindAsync(oficialia.IdOficialia);
             if (oficialia.Recibe == "Selecciona")
             {
