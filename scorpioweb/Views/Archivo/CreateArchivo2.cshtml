@@ -51,7 +51,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        function autocomplete(inp, arr) {
+displayunction autocomplete(inp, arr) {
                 var currentFocus;
                 inp.addEventListener("input", function (e) {
                     var a, b, i, val = this.value;
@@ -133,7 +133,7 @@
 </script>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" enctype="multipart/form-data">
         <form asp-action="CreateArchivo">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" style="display:none;">
@@ -181,7 +181,10 @@
                         asp-items="@(new SelectList(@ViewBag.ListaGeneral, "IdArea", "UserName"))">
                 </select>
             </div>
-            <div class="form-group col-md-12">
+            <div class="custom-file" style="margin-bottom:10px">
+                <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" lang="es">
+            </div>
+            <div style="display:none" class="form-group col-md-12">
                 <label asp-for="ArchivoIdArchivo" class="control-label"></label>
                 <input readonly asp-for="ArchivoIdArchivo" class="form-control" value="@ViewBag.idArchivo"/>
                 <span asp-validation-for="ArchivoIdArchivo" class="text-danger"></span>

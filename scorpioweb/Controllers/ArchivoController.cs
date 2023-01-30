@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
-
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Security.Claims;
 
 namespace scorpioweb.Models
 {
@@ -692,24 +694,53 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivo")] Archivoregistro archivoregistro, int archivoIdArchivo)
+        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivo")] Archivoregistro archivoregistro,Archivo archivo,  int archivoIdArchivo, IFormFile archivoFile)
         {
+
             if (ModelState.IsValid)
             {
-                var sacarnomEnvia = (from a in _context.Areas
-                                       where a.IdArea == int.Parse(archivoregistro.Envia)
-                                       select a.UserName).First();
 
-                
+                int idArchivo = ((from table in _context.Archivoregistro
+                                   select table.IdArchivoRegistro).Max() + 1);
+
+                var sacarnomEnvia = (from a in _context.Areas
+                                     where a.IdArea == int.Parse(archivoregistro.Envia)
+                                     select a.UserName).First();
+
                 archivoregistro.CausaPenal = normaliza(archivoregistro.CausaPenal.ToString());
                 archivoregistro.Delito = normaliza(archivoregistro.Delito.ToString());
                 archivoregistro.Situacion = normaliza(archivoregistro.Situacion.ToString());
-                archivoregistro.Sentencia = archivoregistro.Sentencia;
+                archivoregistro.Sentencia = normaliza(archivoregistro.Sentencia);
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
-                archivoregistro.Observaciones = archivoregistro.Observaciones;
-                archivoregistro.CarpetaEjecucion = archivoregistro.CarpetaEjecucion;
-                archivoregistro.Envia = sacarnomEnvia.ToString();
+                archivoregistro.Observaciones = normaliza(archivoregistro.Observaciones);
+                archivoregistro.CarpetaEjecucion = normaliza(archivoregistro.CarpetaEjecucion);
+                archivoregistro.Envia = normaliza(sacarnomEnvia.ToString());
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
+                archivoregistro.IdArchivoRegistro = idArchivo;
+
+                if (archivoFile == null)
+                {
+
+                }
+                else
+                {
+                    var nombre = (from a in _context.Archivo
+                                 where a.IdArchivo == archivoIdArchivo
+                                 select a).ToString();
+
+                    string file_name = archivoregistro.ArchivoIdArchivo + "_" + idArchivo + Path.GetExtension(archivoFile.FileName); ;
+                    archivoregistro.Urldocumento = file_name;
+                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
+
+                    if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                    {
+                        System.IO.File.Delete(Path.Combine(uploads, file_name));
+                    }
+
+                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                    await archivoFile.CopyToAsync(stream);
+                    stream.Close();
+                }
 
                 _context.Add(archivoregistro);
                 await _context.SaveChangesAsync();
@@ -753,7 +784,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo)
+        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
         {
 
             if (id != archivoregistro.IdArchivoRegistro)
@@ -764,16 +795,48 @@ namespace scorpioweb.Models
             if (ModelState.IsValid)
             {
 
+                var oldArchivo = await _context.Archivoregistro.FindAsync(archivoregistro.IdArchivoRegistro);
+
                 var sacarnomEntrega = (from a in _context.Areas
                                        where a.IdArea == int.Parse(archivoregistro.Envia)
                                        select a.UserName).First();
                 
-                archivoregistro.Envia = sacarnomEntrega.ToString();
+                archivoregistro.Envia = normaliza(sacarnomEntrega.ToString());
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
+                archivoregistro.CausaPenal = normaliza(archivoregistro.CausaPenal.ToString());
+                archivoregistro.Delito = normaliza(archivoregistro.Delito.ToString());
+                archivoregistro.Situacion = normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.Sentencia = normaliza(archivoregistro.Sentencia);
+                archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
+                archivoregistro.Observaciones = normaliza(archivoregistro.Observaciones);
+                archivoregistro.CarpetaEjecucion = normaliza(archivoregistro.CarpetaEjecucion);
+
+
+                if (archivoFile == null)
+                {
+                    archivoregistro.Urldocumento = oldArchivo.Urldocumento;
+                }
+                else
+                {
+              
+                    string file_name = oldArchivo.ArchivoIdArchivo + "_" + oldArchivo.IdArchivoRegistro + Path.GetExtension(archivoFile.FileName); ;
+                    archivoregistro.Urldocumento = file_name;
+                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
+
+                    if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                    {
+                        System.IO.File.Delete(Path.Combine(uploads, file_name));
+                    }
+                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                    await archivoFile.CopyToAsync(stream);
+                    stream.Close();
+                }
+
                 try
                 {
-                    _context.Update(archivoregistro);
-                    await _context.SaveChangesAsync();
+                    _context.Entry(oldArchivo).CurrentValues.SetValues(archivoregistro);
+
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
