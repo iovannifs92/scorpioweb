@@ -14,6 +14,7 @@ namespace scorpioweb.Models
         public string CarpetaEjecucion { get; set; }
         public string Observaciones { get; set; }
         public string Envia { get; set; }
+        public string Urldocumento { get; set; }
         public int? ArchivoIdArchivo { get; set; }
     }
 }

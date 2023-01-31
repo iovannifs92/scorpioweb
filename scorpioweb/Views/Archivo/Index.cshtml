@@ -124,6 +124,9 @@
             <th>
                 Area
             </th>
+            <th>
+                Expediente
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -152,8 +155,14 @@
                     @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
                     </td>
                 }
-                
-               
+                 <td>
+                    @if (item.archivoVM.Urldocumento != null)
+                    {
+                        <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
+                            <i class="fa fa-paperclip fa-9x"></i>
+                        </a>
+                    }
+                </td>
                 <td>
                 @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
                 {     

@@ -181,7 +181,7 @@
 @foreach (var item in ViewData["tienearchivo"] as IEnumerable<scorpioweb.Models.ArchivoControlPrestamo>)
 {
     i++;
-    <form asp-action="EditArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" asp-route-archivoIdArchivo="@item.archivoregistroVM.ArchivoIdArchivo">
+    <form asp-action="EditArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" asp-route-archivoIdArchivo="@item.archivoregistroVM.ArchivoIdArchivo" enctype="multipart/form-data">
          <p>
             <a class="btn btn-primary btn-lg btn-block" data-toggle="collapse" href="@(collapse+i)" role="button" aria-expanded="false" aria-controls="collapseExample">
             Causa Penal @item.archivoregistroVM.CausaPenal
@@ -222,9 +222,27 @@
                 <label class="control-label">Envia</label>
                 <select class="form-control" name="Envia" id="Envia"
                         asp-items="@(new SelectList(ViewBag.ListaGeneral, "IdArea", "UserName", @item.archivoregistroVM.Envia))">
-                        <option value="@item.areasVM.IdArea" >@item.archivoregistroVM.Envia</option>  
+                        <option value="@item.areasVM.IdArea" >@item.archivoregistroVM.Envia.ToLower()</option>  
                 </select>
             </div>
+            @if (item.archivoregistroVM.Urldocumento != null)
+                {
+                <div class="form-group col-md-12">
+                    <label class="control-label">Expediente</label>
+                    <a id="btnEditar" style="font-size:20px" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoregistroVM.Urldocumento)" target="_blank">
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Cambiar Expediente</label>
+                    <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" lang="es">
+                </div>
+            }else
+            {
+                <div class="form-group col-md-12">
+                    <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" lang="es">
+                </div>
+            }
             <div class="card card-body">
                 <button type="submit" class="btn btn-primary" >
                     <i class="fa fa-save"></i>
