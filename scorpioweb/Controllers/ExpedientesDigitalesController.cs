@@ -38,8 +38,9 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public IActionResult Index()
+        public IActionResult Index(string idArchivo)
         {
+            ViewBag.Nombre = idArchivo+".pdf";
             return View();
         }
 
