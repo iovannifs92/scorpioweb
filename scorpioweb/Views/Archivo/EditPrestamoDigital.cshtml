@@ -1,0 +1,56 @@
+﻿@model scorpioweb.Models.Archivoprestamodigital
+
+@{
+    ViewData["Title"] = "EditPrestamoDigital";
+}
+
+<h2>EditPrestamoDigital</h2>
+
+<h4>Archivoprestamodigital</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditPrestamoDigital">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdArchivoPrestamoDigital" />
+            <div class="form-group">
+                <label asp-for="Usuario" class="control-label"></label>
+                <input asp-for="Usuario" class="form-control" />
+                <span asp-validation-for="Usuario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaPrestamo" class="control-label"></label>
+                <input asp-for="FechaPrestamo" class="form-control" />
+                <span asp-validation-for="FechaPrestamo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaCierre" class="control-label"></label>
+                <input asp-for="FechaCierre" class="form-control" />
+                <span asp-validation-for="FechaCierre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TiempoConsulta" class="control-label"></label>
+                <input asp-for="TiempoConsulta" class="form-control" />
+                <span asp-validation-for="TiempoConsulta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UsuarioOtorgaPermiso" class="control-label"></label>
+                <input asp-for="UsuarioOtorgaPermiso" class="form-control" />
+                <span asp-validation-for="UsuarioOtorgaPermiso" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArchivoIdArchivo" class="control-label"></label>
+                <input asp-for="ArchivoIdArchivo" class="form-control" />
+                <span asp-validation-for="ArchivoIdArchivo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

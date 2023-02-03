@@ -163,17 +163,20 @@
                         </a>
                     }
                 </td>
-                <td>
-                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
-                {     
-                    <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-warning fa fa-file" title="Prestar"> Prestar</a>              
+                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                {
+                    <td>
+                        @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
+                        {     
+                            <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-warning fa fa-file" title="Prestar"> Prestar</a>              
+                        }
+                        <a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Agregar archivo</a> 
+                        <a onclick="showModal('@Url.Action("Edit", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Editar Archivo',null )" class="btn btn-success fa fa-pencil" title="Editar"> Edit</a> 
+                        <a type="button" id="borrar" title="borrar" class="btn btn-danger" onclick="Borrar(@item.archivoVM.IdArchivo)">
+                            <i class="fa fa-trash"></i> 
+                        </a>
+                    </td> 
                 }
-                <a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Agregar archivo</a> 
-                <a onclick="showModal('@Url.Action("Edit", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Editar Archivo',null )" class="btn btn-success fa fa-pencil" title="Editar"> Edit</a> 
-                <a type="button" id="borrar" title="borrar" class="btn btn-danger" onclick="Borrar(@item.archivoVM.IdArchivo)">
-                    <i class="fa fa-trash"></i> 
-                </a>
-                </td>
             </tr>
         }
     </tbody>
@@ -183,9 +186,10 @@
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
-
- <a onclick="showModal('@Url.Action("Create", "Archivo", Context.Request.Scheme)','Crear Archivo',null )" ><img src="~/images/addArchivo.png" height ="60" width="60" /></a> 
-
+ @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+    {
+         <a onclick="showModal('@Url.Action("Create", "Archivo", Context.Request.Scheme)','Crear Archivo',null )" ><img src="~/images/addArchivo.png" height ="60" width="60" /></a> 
+    }
 
 <p style="margin-top:30px">
     Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
