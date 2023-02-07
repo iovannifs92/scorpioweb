@@ -39,17 +39,17 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Estado de Supervisión</label>
-                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
-                {
+                @*@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+                {*@
                     <select class="form-control" name="EstadoSupervision"
                             asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Value", "Text", @ViewBag.idEstadoSupervision))">
                     </select>
-                }
-                else
+                @*}*@
+                @*else
                 {
                     <input asp-for="EstadoSupervision" class="form-control" readonly/>
                     <span asp-validation-for="EstadoSupervision" class="text-danger"></span>
-                }             
+                }  *@           
             </div>
             <div class="form-group" style="display:none " readonly>
                 <label asp-for="PersonaIdPersona" class="control-label"></label>

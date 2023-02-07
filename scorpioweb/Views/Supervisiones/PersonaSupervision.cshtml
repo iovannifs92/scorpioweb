@@ -211,8 +211,8 @@
                     @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
                 </td>
 
-                @if (@ViewBag.Admin == true|| @ViewBag.Masteradmin == true)
-                {
+                @*@if (@ViewBag.Admin == true|| @ViewBag.Masteradmin == true)
+                {*@
                     <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
                     <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
                    <td>
@@ -232,8 +232,8 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
                     </td>
-                }
-                else
+                @*}*@
+                @*else
                 {
                     <td style="font-size:9px">
                         @(item.supervisionVM.Inicio != null ? item.supervisionVM.Inicio.Value.ToString("dd-MMMM-yyyy") : String.Empty)
@@ -257,7 +257,7 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
                     </td>
-                }
+                }*@
                 <td>
                     <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarsuper(@item.supervisionVM.IdSupervision)">
                         <i class="fa fa-trash"></i> 
