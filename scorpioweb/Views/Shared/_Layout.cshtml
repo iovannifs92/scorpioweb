@@ -63,7 +63,6 @@
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
-                        @*<li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>*@
                     }
                     @if (User.IsInRole("Masteradmin"))
                     {
@@ -73,7 +72,9 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
-                    }                    
+                        <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
+                    }
+                        
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>

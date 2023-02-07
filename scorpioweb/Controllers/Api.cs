@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using QRCoder;
 using SautinSoft.Document;
 
@@ -12,6 +13,7 @@ using SautinSoft.Document.MailMerging;
 using scorpioweb.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -210,6 +212,13 @@ namespace scorpioweb.Controllers
             //Response.Redirect("https://localhost:44359/Documentos/fichatecnica.docx");
             Response.Redirect("http://10.6.60.190/Documentos/fichatecnica.docx");
             #endregion
+
+        }
+
+
+
+        public void queryPrueba(string[] datosQuery)
+        {
 
         }
     }

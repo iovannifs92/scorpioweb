@@ -59,7 +59,53 @@
             document.documentElement.scrollTop = 0;
         }
 
+    //    var arr = [];
+    //    function myFunction(id) {
+    //        alert (id)
+    //        var encontro = false;
+    //        var doble;
+    //        for (var i = 0; i < arr.length; i++) {
+    //            if (arr[i] === id) {
+    //                encontro = true;
+    //                doble = i;
+    //                break;
+    //            }
+    //        }
+    //        if (encontro == false) {
+    //            arr.push(id);
+    //        } else {
+    //            arr.splice(doble,1);
+    //        }      
+    //    };
+    //    $(document).ready(function () {
+    //    $('#btnQuery').on("click", function (e) {
+    //        e.preventDefault();
+    //        $.ajax({
+    //            type: "POST",
+    //            dataType: "json",
+    //            url:  "/Api/queryprueba",
+    //            traditional: true,
+    //            data: {
+    //                datosQuery: arr,
+    //            },
+    //            success: function (response) {
+    //                if (response.success) {
+    //                    location.reload();
+    //                } else {
+    //                    alert(response.responseText);
+    //                }
+    //            },
+    //            error: function (response) {
+    //                //alert("Informe Generado");
+    //                ////window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
+    //                //window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
+    //                ////window.location.href = "http://10.6.60.190:432/Documentos/reporteSupervision.docx"
+    //            }
+    //        });
 
+    //    });
+    //});
+      
     </script>
 }
 
@@ -200,10 +246,19 @@
                 </div>
             </div>
             <!-- end service item -->
-
         </div>
     </div>
 </section>
+
+
+@*<a id="btnQuery" name="btnQuery" class="btn btn-info"><i class="fa fa-send"></i> Query Dinamica</a>
+<div class="checkbox">
+  <label><input type="checkbox" onclick="myFunction('nombre')">nombre</label>
+</div>
+<div class="checkbox">
+  <label><input type="checkbox" onclick="myFunction('idPersona')">id</label>
+</div>*@
+
 
 <section id="facts" class="facts">
     <div class="parallax-overlay">

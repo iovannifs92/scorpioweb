@@ -174,13 +174,13 @@ namespace scorpioweb.Models
             switch (sortOrder)
             {
                 case "name_desc":
-                    filter = filter.OrderByDescending(spcp => spcp.archivoVM.Paterno);
+                    filter = filter.OrderByDescending(acp => acp.archivoVM.Paterno);
                     break;
                 case "causa_penal_desc":
-                    filter = filter.OrderByDescending(spcp => spcp.archivoVM.Materno);
+                    filter = filter.OrderByDescending(acp => acp.archivoVM.Materno);
                     break;
                 case "estado_cumplimiento_desc":
-                    filter = filter.OrderByDescending(spcp => spcp.archivoVM.Nombre);
+                    filter = filter.OrderByDescending(acp => acp.archivoVM.Nombre);
                     break;
                 
             }
@@ -430,6 +430,10 @@ namespace scorpioweb.Models
                 return NotFound();
             }
 
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+
             List<Archivo> archivos = _context.Archivo.ToList();
             List<Archivoprestamo> archivoprestamos = _context.Archivoprestamo.ToList();
 
@@ -454,34 +458,69 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePrestamo([Bind("Entrega,Recibe,Area,FechaInicial,FechaRenovacion,Estatus,Renovaciones,Urlvale,ArcchivoIdArchivo")] Archivoprestamo archivoprestamo, int archivoIdArchivo)
+        public async Task<IActionResult> CreatePrestamo([Bind("Entrega,Recibe,Area,FechaInicial,FechaRenovacion,Estatus,Renovaciones,Urlvale,ArcchivoIdArchivo")] Archivoprestamo archivoprestamo, int archivoIdArchivo, int optradio, Archivoprestamodigital archivoprestamodigital)
         {
             if (ModelState.IsValid)
             {
-                var sacarnomEntrega = (from a in _context.Areas
-                                   where a.IdArea == int.Parse(archivoprestamo.Entrega)
-                                   select a.UserName).First(); 
-
-                var sacarnomRecibe= (from a in _context.Areas
-                                   where a.IdArea == int.Parse(archivoprestamo.Recibe)
-                                   select a.UserName).First();   
                 
-                var sacarnomArea = (from a in _context.Areas
-                                   where a.IdArea == int.Parse(archivoprestamo.Recibe)
-                                   select a.Area).First(); 
+                if(optradio == 1)
+                {
+                    try
+                    {
+                        var sacarnomRecibe = (from a in _context.Areas
+                                              where a.IdArea == int.Parse(archivoprestamo.Recibe)
+                                              select a.UserName).First();
 
-                archivoprestamo.Entrega = normaliza(sacarnomEntrega.ToString());
-                archivoprestamo.Recibe = normaliza(sacarnomRecibe.ToString());
-                archivoprestamo.Area = normaliza(sacarnomArea.ToString());
-                archivoprestamo.FechaInicial = archivoprestamo.FechaInicial;
-                archivoprestamo.FechaRenovacion = archivoprestamo.FechaRenovacion;
-                archivoprestamo.Estatus = "PRESTADO";
-                archivoprestamo.Renovaciones = archivoprestamo.Renovaciones;
-                archivoprestamo.Urlvale = archivoprestamo.Urlvale;
-                archivoprestamo.ArcchivoIdArchivo = archivoIdArchivo;
+                        var sacarnomArea = (from a in _context.Areas
+                                            where a.IdArea == int.Parse(archivoprestamo.Recibe)
+                                            select a.Area).First();
 
-                _context.Add(archivoprestamo);
-                await _context.SaveChangesAsync();
+                        archivoprestamo.Entrega = normaliza(archivoprestamo.Entrega);
+                        archivoprestamo.Recibe = normaliza(sacarnomRecibe.ToString());
+                        archivoprestamo.Area = normaliza(sacarnomArea.ToString());
+                        archivoprestamo.FechaInicial = DateTime.Now;
+                        archivoprestamo.FechaRenovacion = DateTime.Now.AddMonths(1);
+                        archivoprestamo.Estatus = "PRESTADO";
+                        archivoprestamo.Renovaciones = archivoprestamo.Renovaciones;
+                        archivoprestamo.Urlvale = archivoprestamo.Urlvale;
+                        archivoprestamo.ArcchivoIdArchivo = archivoIdArchivo;
+
+                        _context.Add(archivoprestamo);
+                        await _context.SaveChangesAsync();
+                    }catch(Exception ex)
+                    {
+                        return Json(new { success = false, responseText = "Error al guardar " + ex });
+                    }
+
+                }
+                else
+                {
+
+                    try
+                    {
+                        var sacarnomRecibe = (from a in _context.Areas
+                                              where a.IdArea == int.Parse(archivoprestamo.Recibe)
+                                              select a.UserName).First();
+
+                        var sacarnomArea = (from a in _context.Areas
+                                            where a.IdArea == int.Parse(archivoprestamo.Recibe)
+                                            select a.Area).First();
+
+                        archivoprestamodigital.ArchivoIdArchivo = archivoIdArchivo;
+                        archivoprestamodigital.Usuario = normaliza(sacarnomRecibe.ToString());
+                        archivoprestamodigital.UsuarioOtorgaPermiso = normaliza(archivoprestamo.Entrega);
+                        archivoprestamodigital.FechaPrestamo = DateTime.Now;
+                        archivoprestamodigital.FechaCierre = DateTime.Now.AddDays(7);
+                        _context.Add(archivoprestamodigital);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch(Exception ex)
+                    {
+                        return Json(new { success = false, responseText = "Error al guardar " + ex });
+                    }
+
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View(archivoprestamo);
@@ -716,7 +755,7 @@ namespace scorpioweb.Models
                 archivoregistro.CarpetaEjecucion = normaliza(archivoregistro.CarpetaEjecucion);
                 archivoregistro.Envia = normaliza(sacarnomEnvia.ToString());
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-                archivoregistro.IdArchivoRegistro = idArchivo;
+           
 
                 if (archivoFile == null)
                 {
@@ -751,6 +790,14 @@ namespace scorpioweb.Models
 
         public async Task<IActionResult> EditArchivo(int id)
         {
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+
 
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
@@ -1007,7 +1054,7 @@ namespace scorpioweb.Models
                     filter = filter.OrderByDescending(a => a.archivoVM.Paterno);
                     break;
                 default:
-                    filter = filter.OrderByDescending(spcp => spcp.archivoVM.Nombre);
+                    filter = filter.OrderByDescending(a => a.archivoVM.Nombre);
                     break;
             }
             int pageSize = 100;
@@ -1016,5 +1063,140 @@ namespace scorpioweb.Models
             return View(await PaginatedList<ArchivoControlPrestamo>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
+
+        #region -PRESTAMO DIGITAL-
+        public async Task<IActionResult> ArchivoPrestamoDigital(
+           string sortOrder,
+           string currentFilter,
+           string SearchString,
+           string estadoSuper,
+           int? pageNumber
+           )
+        {
+
+            ViewData["CurrentSort"] = sortOrder; 
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            if (SearchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                SearchString = currentFilter;
+            }
+
+            IQueryable<ArchivoControlPrestamo> filter;
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+
+            DateTime date = DateTime.Now;
+
+
+            if(roles.ToString() == "Masteradmin" || roles.ToString() == "Archivo"){
+                filter = from a in _context.Archivo
+                             join ap in _context.Archivoprestamodigital on a.IdArchivo equals ap.ArchivoIdArchivo
+                             select new ArchivoControlPrestamo
+                             {
+                                 archivoVM = a,
+                                 archivoprestamodigitalVM = ap
+                             };
+            }
+            else
+            {
+                filter = from a in _context.Archivo
+                         join ap in _context.Archivoprestamodigital on a.IdArchivo equals ap.ArchivoIdArchivo
+                         where date < ap.FechaCierre
+                         select new ArchivoControlPrestamo
+                         {
+                             archivoVM = a,
+                             archivoprestamodigitalVM = ap
+                         };
+            }
+
+            
+
+            ViewData["CurrentFilter"] = SearchString;
+            ViewData["EstadoS"] = estadoSuper;
+
+            if (!String.IsNullOrEmpty(SearchString))
+            {
+                filter = filter.Where(a => (a.archivoVM.Paterno + " " + a.archivoVM.Materno + " " + a.archivoVM.Nombre).Contains(SearchString) ||
+                                              (a.archivoVM.Nombre + " " + a.archivoVM.Paterno + " " + a.archivoVM.Materno).Contains(SearchString) ||
+                                              (a.archivoVM.IdArchivo.ToString()).Contains(SearchString)
+                                              );
+
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(a => a.archivoVM.Nombre);
+                    break;
+                case "ap_ase":
+                    filter = filter.OrderBy(a => a.archivoVM.Paterno);
+                    break;
+                case "am_ase":
+                    filter = filter.OrderByDescending(a => a.archivoVM.Paterno);
+                    break;
+                default:
+                    filter = filter.OrderByDescending(a => a.archivoVM.Nombre);
+                    break;
+            }
+            int pageSize = 100;
+
+            //var queryable = query2.AsQueryable();
+            return View(await PaginatedList<ArchivoControlPrestamo>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+        }
+
+        public async Task<IActionResult> ArchivoCausas(int id)
+        {
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+
+
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
+            List<Areas> listaGeneral = new List<Areas>();
+            listaGeneral = (from table in _context.Areas
+                            where !table.Area.EndsWith("\u0040nortedgepms.com")
+                            select new Areas
+                            {
+                                IdArea = table.IdArea,
+                                UserName = table.UserName
+                            }).ToList();
+
+            ViewBag.ListaGeneral = listaGeneral;
+
+            ViewData["tienearchivo"] = from a in _context.Archivo
+                                       join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
+                                       join area in _context.Areas on ar.Envia equals area.UserName
+                                       where a.IdArchivo == id
+                                       select new ArchivoControlPrestamo
+                                       {
+                                           archivoregistroVM = ar,
+                                           archivoVM = a,
+                                           areasVM = area,
+
+                                       };
+
+            return View();
+        }
+
+        #endregion
+
     }
 }
