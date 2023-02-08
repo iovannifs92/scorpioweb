@@ -60,6 +60,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
             new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
             new SelectListItem{ Text="yoena@dgepms.com", Value="13"},
+            new SelectListItem{ Text="enrique.martinez@dgepms.com", Value="14"}
         };
         #endregion
 
