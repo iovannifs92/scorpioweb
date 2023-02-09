@@ -36,6 +36,7 @@ using DocumentFormat.OpenXml.Office.Word;
 using System.Data.SqlClient;
 using scorpioweb.Data;
 using DocumentFormat.OpenXml.EMMA;
+using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
@@ -145,59 +146,8 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Metodos Generales-
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
+        MetodosGenerales mg = new MetodosGenerales();
 
-        public string removeSpaces(string str)
-        {
-            if (str == null)
-            {
-                return "";
-            }
-            while (str.Length > 0 && str[0] == ' ')
-            {
-                str = str.Substring(1);
-            }
-            while (str.Length > 0 && str[str.Length - 1] == ' ')
-            {
-                str = str.Substring(0, str.Length - 1);
-            }
-            return str;
-        }
-
-        public static DateTime validateDatetime(string value)
-        {
-            try
-            {
-                return DateTime.Parse(value, new System.Globalization.CultureInfo("pt-BR"));
-            }
-            catch
-            {
-                return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
-            }
-        }
-
-        String replaceSlashes(string path)
-        {
-            String cleaned = "";
-
-            for (int i = 0; i < path.Length; i++)
-                if (path[i] == '/')
-                    cleaned += '-';
-                else
-                    cleaned += path[i];
-            return cleaned;
-        }
         #endregion
 
         public void contarFalsos()
@@ -334,7 +284,7 @@ namespace scorpioweb.Controllers
         public JsonResult testSimilitud(string nombre, string paterno, string materno)
         {
             bool simi = false;
-            var nombreCompleto = normaliza(paterno) + " " + normaliza(materno) + " " + normaliza(nombre);
+            var nombreCompleto = mg.normaliza(paterno) + " " + mg.normaliza(materno) + " " + mg.normaliza(nombre);
 
             var query = from p in _context.Persona
                         select new
@@ -1747,40 +1697,40 @@ namespace scorpioweb.Controllers
             if (ModelState.ErrorCount <= 1)
             {
                 #region -Persona-
-                persona.TieneResolucion = normaliza(resolucion);
-                persona.Nombre = removeSpaces(normaliza(nombre));
-                persona.Paterno = removeSpaces(normaliza(paterno));
-                persona.Materno = removeSpaces(normaliza(materno));
-                persona.NombrePadre = normaliza(nombrePadre);
-                persona.NombreMadre = normaliza(nombreMadre);
-                persona.Alias = normaliza(alias);
-                persona.Genero = normaliza(sexo);
+                persona.TieneResolucion = mg.normaliza(resolucion);
+                persona.Nombre = mg.removeSpaces(mg.normaliza(nombre));
+                persona.Paterno = mg.removeSpaces(mg.normaliza(paterno));
+                persona.Materno = mg.removeSpaces(mg.normaliza(materno));
+                persona.NombrePadre = mg.normaliza(nombrePadre);
+                persona.NombreMadre = mg.normaliza(nombreMadre);
+                persona.Alias = mg.normaliza(alias);
+                persona.Genero = mg.normaliza(sexo);
                 persona.Edad = edad;
                 persona.Fnacimiento = fNacimiento;
                 persona.Lnpais = lnPais;
                 persona.Lnestado = lnEstado;
                 persona.Lnmunicipio = lnMunicipio;
-                persona.Lnlocalidad = normaliza(lnLocalidad);
+                persona.Lnlocalidad = mg.normaliza(lnLocalidad);
                 persona.EstadoCivil = estadoCivil;
                 persona.Duracion = duracion;
-                persona.OtroIdioma = normaliza(otroIdioma);
-                persona.ComIndigena = normaliza(comIndigena);
-                persona.ComLgbtttiq = normaliza(comLGBTTTIQ);
-                persona.EspecifiqueIdioma = normaliza(especifiqueIdioma);
-                persona.LeerEscribir = normaliza(leerEscribir);
-                persona.Traductor = normaliza(traductor);
-                persona.EspecifiqueTraductor = normaliza(especifiqueTraductor);
+                persona.OtroIdioma = mg.normaliza(otroIdioma);
+                persona.ComIndigena = mg.normaliza(comIndigena);
+                persona.ComLgbtttiq = mg.normaliza(comLGBTTTIQ);
+                persona.EspecifiqueIdioma = mg.normaliza(especifiqueIdioma);
+                persona.LeerEscribir = mg.normaliza(leerEscribir);
+                persona.Traductor = mg.normaliza(traductor);
+                persona.EspecifiqueTraductor = mg.normaliza(especifiqueTraductor);
                 persona.TelefonoFijo = telefonoFijo;
                 persona.Celular = celular;
-                persona.Hijos = normaliza(hijos);
+                persona.Hijos = mg.normaliza(hijos);
                 persona.Nhijos = nHijos;
                 persona.NpersonasVive = nPersonasVive;
-                persona.Propiedades = normaliza(propiedades);
-                persona.Curp = normaliza(CURP);
-                persona.ConsumoSustancias = normaliza(consumoSustancias);
-                persona.Familiares = normaliza(familiares);
-                persona.ReferenciasPersonales = normaliza(referenciasPersonales);
-                persona.UbicacionExpediente = normaliza(ubicacionExpediente);
+                persona.Propiedades = mg.normaliza(propiedades);
+                persona.Curp = mg.normaliza(CURP);
+                persona.ConsumoSustancias = mg.normaliza(consumoSustancias);
+                persona.Familiares = mg.normaliza(familiares);
+                persona.ReferenciasPersonales = mg.normaliza(referenciasPersonales);
+                persona.UbicacionExpediente = mg.normaliza(ubicacionExpediente);
                 persona.UltimaActualización = DateTime.Now;
                 persona.Capturista = currentUser;
                 persona.Candado = 0;
@@ -1807,22 +1757,22 @@ namespace scorpioweb.Controllers
 
                 #region -Domicilio-
                 domicilio.TipoDomicilio = tipoDomicilio;
-                domicilio.Calle = normaliza(calle);
+                domicilio.Calle = mg.normaliza(calle);
                 domicilio.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
                 domicilio.Pais = paisD;
                 domicilio.Estado = estadoD;
                 domicilio.Municipio = municipioD;
                 domicilio.Temporalidad = temporalidad;
-                domicilio.ResidenciaHabitual = normaliza(residenciaHabitual);
+                domicilio.ResidenciaHabitual = mg.normaliza(residenciaHabitual);
                 domicilio.Cp = cp;
-                domicilio.Referencias = normaliza(referencias);
+                domicilio.Referencias = mg.normaliza(referencias);
                 domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
-                domicilio.Horario = normaliza(horario);
-                domicilio.Observaciones = normaliza(observaciones);
+                domicilio.Horario = mg.normaliza(horario);
+                domicilio.Observaciones = mg.normaliza(observaciones);
                 domicilio.Lat = lat;
                 domicilio.Lng = lng;
 
-                domicilio.NombreCf = normaliza(inputAutocomplete);
+                domicilio.NombreCf = mg.normaliza(inputAutocomplete);
 
                 List<Zonas> zonasList = new List<Zonas>();
                 zonasList = (from Zonas in _context.Zonas
@@ -1849,64 +1799,64 @@ namespace scorpioweb.Controllers
                 #region -Domicilio Secundario-   
                 /*domiciliosecundario.Motivo = motivoDS;
                 domiciliosecundario.TipoDomicilio = tipoDomicilioDS;
-                domiciliosecundario.Calle = normaliza(calleDS);
-                domiciliosecundario.No = normaliza(noDS);
-                domiciliosecundario.NombreCf = normaliza(nombreCFDS);
+                domiciliosecundario.Calle = mg.normaliza(calleDS);
+                domiciliosecundario.No = mg.normaliza(noDS);
+                domiciliosecundario.NombreCf = mg.normaliza(nombreCFDS);
                 domiciliosecundario.Pais = paisDDS;
                 domiciliosecundario.Estado = estadoDDS;
                 domiciliosecundario.Municipio = municipioDDS;
                 domiciliosecundario.Temporalidad = temporalidadDS;
-                domiciliosecundario.ResidenciaHabitual = normaliza(residenciaHabitualDS);
-                domiciliosecundario.Cp = normaliza(cpDS);
-                domiciliosecundario.Referencias = normaliza(referenciasDS);
-                domiciliosecundario.Horario = normaliza(horarioDS);
-                domiciliosecundario.Observaciones = normaliza(observacionesDS);*/
+                domiciliosecundario.ResidenciaHabitual = mg.normaliza(residenciaHabitualDS);
+                domiciliosecundario.Cp = mg.normaliza(cpDS);
+                domiciliosecundario.Referencias = mg.normaliza(referenciasDS);
+                domiciliosecundario.Horario = mg.normaliza(horarioDS);
+                domiciliosecundario.Observaciones = mg.normaliza(observacionesDS);*/
                 #endregion
 
                 #region -Estudios-
                 estudios.Estudia = estudia;
                 estudios.GradoEstudios = gradoEstudios;
-                estudios.InstitucionE = normaliza(institucionE);
-                estudios.Horario = normaliza(horarioE);
-                estudios.Direccion = normaliza(direccionE);
+                estudios.InstitucionE = mg.normaliza(institucionE);
+                estudios.Horario = mg.normaliza(horarioE);
+                estudios.Direccion = mg.normaliza(direccionE);
                 estudios.Telefono = telefonoE;
-                estudios.Observaciones = normaliza(observacionesE);
+                estudios.Observaciones = mg.normaliza(observacionesE);
                 #endregion
 
                 #region -Trabajo-
                 trabajo.Trabaja = trabaja;
                 trabajo.TipoOcupacion = tipoOcupacion;
-                trabajo.Puesto = normaliza(puesto);
-                trabajo.EmpledorJefe = normaliza(empleadorJefe);
+                trabajo.Puesto = mg.normaliza(puesto);
+                trabajo.EmpledorJefe = mg.normaliza(empleadorJefe);
                 trabajo.EnteradoProceso = enteradoProceso;
                 trabajo.SePuedeEnterar = sePuedeEnterar;
                 trabajo.TiempoTrabajano = tiempoTrabajando;
-                trabajo.Salario = normaliza(salario);
-                trabajo.Direccion = normaliza(direccionT);
-                trabajo.Horario = normaliza(horarioT);
+                trabajo.Salario = mg.normaliza(salario);
+                trabajo.Direccion = mg.normaliza(direccionT);
+                trabajo.Horario = mg.normaliza(horarioT);
                 trabajo.Telefono = telefonoT;
-                trabajo.Observaciones = normaliza(observacionesT);
+                trabajo.Observaciones = mg.normaliza(observacionesT);
                 #endregion
 
                 #region -ActividadSocial-
-                actividadsocial.TipoActividad = normaliza(tipoActividad);
-                actividadsocial.Horario = normaliza(horarioAS);
-                actividadsocial.Lugar = normaliza(lugarAS);
+                actividadsocial.TipoActividad = mg.normaliza(tipoActividad);
+                actividadsocial.Horario = mg.normaliza(horarioAS);
+                actividadsocial.Lugar = mg.normaliza(lugarAS);
                 actividadsocial.Telefono = telefonoAS;
                 actividadsocial.SePuedeEnterar = sePuedeEnterarAS;
-                actividadsocial.Referencia = normaliza(referenciaAS);
-                actividadsocial.Observaciones = normaliza(observacionesAS);
+                actividadsocial.Referencia = mg.normaliza(referenciaAS);
+                actividadsocial.Observaciones = mg.normaliza(observacionesAS);
                 #endregion
 
                 #region -AbandonoEstado-
                 abandonoEstado.VividoFuera = vividoFuera;
-                abandonoEstado.LugaresVivido = normaliza(lugaresVivido);
-                abandonoEstado.TiempoVivido = normaliza(tiempoVivido);
-                abandonoEstado.MotivoVivido = normaliza(motivoVivido);
+                abandonoEstado.LugaresVivido = mg.normaliza(lugaresVivido);
+                abandonoEstado.TiempoVivido = mg.normaliza(tiempoVivido);
+                abandonoEstado.MotivoVivido = mg.normaliza(motivoVivido);
                 abandonoEstado.ViajaHabitual = viajaHabitual;
-                abandonoEstado.LugaresViaje = normaliza(lugaresViaje);
-                abandonoEstado.TiempoViaje = normaliza(tiempoViaje);
-                abandonoEstado.MotivoViaje = normaliza(motivoViaje);
+                abandonoEstado.LugaresViaje = mg.normaliza(lugaresViaje);
+                abandonoEstado.TiempoViaje = mg.normaliza(tiempoViaje);
+                abandonoEstado.MotivoViaje = mg.normaliza(motivoViaje);
                 abandonoEstado.DocumentacionSalirPais = documentaciónSalirPais;
                 abandonoEstado.Pasaporte = pasaporte;
                 abandonoEstado.Visa = visa;
@@ -1916,16 +1866,16 @@ namespace scorpioweb.Controllers
 
                 #region -Salud-
                 saludfisica.Enfermedad = enfermedad;
-                saludfisica.EspecifiqueEnfermedad = normaliza(especifiqueEnfermedad);
+                saludfisica.EspecifiqueEnfermedad = mg.normaliza(especifiqueEnfermedad);
                 saludfisica.EmbarazoLactancia = embarazoLactancia;
-                saludfisica.Tiempo = normaliza(tiempoEmbarazo);
-                saludfisica.Tratamiento = normaliza(tratamiento);
+                saludfisica.Tiempo = mg.normaliza(tiempoEmbarazo);
+                saludfisica.Tratamiento = mg.normaliza(tratamiento);
                 saludfisica.Discapacidad = discapacidad;
-                saludfisica.EspecifiqueDiscapacidad = normaliza(especifiqueDiscapacidad);
+                saludfisica.EspecifiqueDiscapacidad = mg.normaliza(especifiqueDiscapacidad);
                 saludfisica.ServicioMedico = servicioMedico;
                 saludfisica.EspecifiqueServicioMedico = especifiqueServicioMedico;
                 saludfisica.InstitucionServicioMedico = institucionServicioMedico;
-                saludfisica.Observaciones = normaliza(observacionesSalud);
+                saludfisica.Observaciones = mg.normaliza(observacionesSalud);
                 #endregion
 
                 #region -IdDomicilio-  
@@ -1959,9 +1909,9 @@ namespace scorpioweb.Controllers
                     {
                         consumosustanciasBD.Sustancia = sustancias[i].ToString();
                         consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
-                        consumosustanciasBD.Cantidad = normaliza(sustancias[i + 2].ToString());
-                        consumosustanciasBD.UltimoConsumo = validateDatetime(sustancias[i + 3].ToString());
-                        consumosustanciasBD.Observaciones = normaliza(sustancias[i + 4].ToString());
+                        consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                        consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                        consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
                         consumosustanciasBD.PersonaIdPersona = idPersona;
                         _context.Add(consumosustanciasBD);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
@@ -1983,7 +1933,7 @@ namespace scorpioweb.Controllers
                     JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
                     for (int i = 0; i < familiarReferencia.Count; i = i + 14)
                     {
-                        asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                        asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
                         asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                         try
                         {
@@ -1995,14 +1945,14 @@ namespace scorpioweb.Controllers
                         }
                         asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
                         asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                        asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                        asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
                         asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                        asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                        asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
                         asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                        asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                        asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
                         asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
                         asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                        asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                        asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                         asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
                         asientoFamiliar.PersonaIdPersona = idPersona;
                         _context.Add(asientoFamiliar);
@@ -2026,20 +1976,20 @@ namespace scorpioweb.Controllers
                     JArray domSec = JArray.Parse(arrayDomSec);
                     for (int i = 0; i < domSec.Count; i = i + 14)
                     {
-                        domiciliosecundario.Motivo = normaliza(domSec[i].ToString());
+                        domiciliosecundario.Motivo = mg.normaliza(domSec[i].ToString());
                         domiciliosecundario.TipoDomicilio = domSec[i + 1].ToString();
-                        domiciliosecundario.Calle = normaliza(domSec[i + 2].ToString());
-                        domiciliosecundario.No = normaliza(domSec[i + 3].ToString());
-                        domiciliosecundario.NombreCf = normaliza(domSec[i + 4].ToString());
+                        domiciliosecundario.Calle = mg.normaliza(domSec[i + 2].ToString());
+                        domiciliosecundario.No = mg.normaliza(domSec[i + 3].ToString());
+                        domiciliosecundario.NombreCf = mg.normaliza(domSec[i + 4].ToString());
                         domiciliosecundario.Pais = domSec[i + 5].ToString();
-                        domiciliosecundario.Estado = normaliza(domSec[i + 6].ToString());
+                        domiciliosecundario.Estado = mg.normaliza(domSec[i + 6].ToString());
                         domiciliosecundario.Municipio = domSec[i + 7].ToString();
                         domiciliosecundario.Temporalidad = domSec[i + 8].ToString();
                         domiciliosecundario.ResidenciaHabitual = domSec[i + 9].ToString();
                         domiciliosecundario.Cp = domSec[i + 10].ToString();
-                        domiciliosecundario.Referencias = normaliza(domSec[i + 11].ToString());
-                        domiciliosecundario.Horario = normaliza(domSec[i + 12].ToString());
-                        domiciliosecundario.Observaciones = normaliza(domSec[i + 13].ToString());
+                        domiciliosecundario.Referencias = mg.normaliza(domSec[i + 11].ToString());
+                        domiciliosecundario.Horario = mg.normaliza(domSec[i + 12].ToString());
+                        domiciliosecundario.Observaciones = mg.normaliza(domSec[i + 13].ToString());
                         domiciliosecundario.IdDomicilio = idDomicilio;
                         _context.Add(domiciliosecundario);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
@@ -2063,7 +2013,7 @@ namespace scorpioweb.Controllers
                     JArray famExtranjero = JArray.Parse(arrayFamExtranjero);
                     for (int i = 0; i < famExtranjero.Count; i = i + 12)
                     {
-                        familiaresForaneos.Nombre = normaliza(famExtranjero[i].ToString());
+                        familiaresForaneos.Nombre = mg.normaliza(famExtranjero[i].ToString());
                         familiaresForaneos.Relacion = famExtranjero[i + 1].ToString();
                         try
                         {
@@ -2076,12 +2026,12 @@ namespace scorpioweb.Controllers
                         familiaresForaneos.Sexo = famExtranjero[i + 3].ToString();
                         familiaresForaneos.TiempoConocerlo = famExtranjero[i + 4].ToString();
                         familiaresForaneos.Pais = famExtranjero[i + 5].ToString();
-                        familiaresForaneos.Estado = normaliza(famExtranjero[i + 6].ToString());
+                        familiaresForaneos.Estado = mg.normaliza(famExtranjero[i + 6].ToString());
                         familiaresForaneos.Telefono = famExtranjero[i + 7].ToString();
                         familiaresForaneos.FrecuenciaContacto = famExtranjero[i + 8].ToString();
                         familiaresForaneos.EnteradoProceso = famExtranjero[i + 9].ToString();
                         familiaresForaneos.PuedeEnterarse = famExtranjero[i + 10].ToString();
-                        familiaresForaneos.Observaciones = normaliza(famExtranjero[i + 11].ToString());
+                        familiaresForaneos.Observaciones = mg.normaliza(famExtranjero[i + 11].ToString());
                         familiaresForaneos.PersonaIdPersona = idPersona;
                         _context.Add(familiaresForaneos);
                         await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
@@ -2101,7 +2051,7 @@ namespace scorpioweb.Controllers
                 if (fotografia != null)
                 {
                     string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
-                    file_name = replaceSlashes(file_name);
+                    file_name = mg.replaceSlashes(file_name);
                     persona.rutaFoto = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
@@ -2196,25 +2146,7 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-        public string normalizaDinero(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                try
-                {
-                    normalizar = ((Convert.ToInt32(normalizar) / 100)).ToString("C", CultureInfo.CurrentCulture);
-                }
-                catch (System.FormatException e)
-                {
-                    return normalizar;
-                }
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
+        
 
         #region -Crea QR-
         public void creaQR(int? id)
@@ -2372,7 +2304,7 @@ namespace scorpioweb.Controllers
                 enteradoprocesotrabajo=vistaPersona[0].trabajoVM.EnteradoProceso,
                 sepuedeenterartrabajo=vistaPersona[0].trabajoVM.SePuedeEnterar,
                 tiempotrabajando=vistaPersona[0].trabajoVM.TiempoTrabajano,
-                salario= normalizaDinero(vistaPersona[0].trabajoVM.Salario),
+                salario= mg.Dinero(vistaPersona[0].trabajoVM.Salario),
                 temporalidadpago=vistaPersona[0].trabajoVM.TemporalidadSalario,
                 direcciontrabajo=vistaPersona[0].trabajoVM.Direccion,
                 horariotrabajo=vistaPersona[0].trabajoVM.Horario,
@@ -2681,7 +2613,7 @@ namespace scorpioweb.Controllers
         {
             foreach (var item in lista)
             {
-                if (normaliza(item.Value) == normaliza(texto))
+                if (mg.normaliza(item.Value) == mg.normaliza(texto))
                 {
                     return item.Value;
                 }
@@ -3070,30 +3002,30 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
-                persona.TieneResolucion = removeSpaces(normaliza(persona.TieneResolucion));
-                persona.Paterno = removeSpaces(normaliza(persona.Paterno));
-                persona.Materno = removeSpaces(normaliza(persona.Materno));
-                persona.Nombre = removeSpaces(normaliza(persona.Nombre));
-                persona.NombrePadre = normaliza(persona.NombrePadre);
-                persona.NombreMadre = normaliza(persona.NombreMadre);
-                persona.Alias = normaliza(persona.Alias);
-                persona.Lnlocalidad = normaliza(persona.Lnlocalidad);
-                persona.Duracion = normaliza(persona.Duracion);
-                persona.DatosGeneralescol = normaliza(persona.DatosGeneralescol);
-                persona.EspecifiqueIdioma = normaliza(persona.EspecifiqueIdioma);
-                persona.EspecifiqueTraductor = normaliza(persona.EspecifiqueTraductor);
-                persona.ComIndigena = normaliza(persona.ComIndigena);
-                persona.ComLgbtttiq = normaliza(persona.ComLgbtttiq);
-                persona.Curp = normaliza(persona.Curp);
-                persona.ConsumoSustancias = normaliza(persona.ConsumoSustancias);
-                persona.Familiares = normaliza(persona.Familiares);
-                persona.ReferenciasPersonales = normaliza(persona.ReferenciasPersonales);
-                persona.rutaFoto = normaliza(persona.rutaFoto);
+                persona.TieneResolucion = mg.removeSpaces(mg.normaliza(persona.TieneResolucion));
+                persona.Paterno = mg.removeSpaces(mg.normaliza(persona.Paterno));
+                persona.Materno = mg.removeSpaces(mg.normaliza(persona.Materno));
+                persona.Nombre = mg.removeSpaces(mg.normaliza(persona.Nombre));
+                persona.NombrePadre = mg.normaliza(persona.NombrePadre);
+                persona.NombreMadre = mg.normaliza(persona.NombreMadre);
+                persona.Alias = mg.normaliza(persona.Alias);
+                persona.Lnlocalidad = mg.normaliza(persona.Lnlocalidad);
+                persona.Duracion = mg.normaliza(persona.Duracion);
+                persona.DatosGeneralescol = mg.normaliza(persona.DatosGeneralescol);
+                persona.EspecifiqueIdioma = mg.normaliza(persona.EspecifiqueIdioma);
+                persona.EspecifiqueTraductor = mg.normaliza(persona.EspecifiqueTraductor);
+                persona.ComIndigena = mg.normaliza(persona.ComIndigena);
+                persona.ComLgbtttiq = mg.normaliza(persona.ComLgbtttiq);
+                persona.Curp = mg.normaliza(persona.Curp);
+                persona.ConsumoSustancias = mg.normaliza(persona.ConsumoSustancias);
+                persona.Familiares = mg.normaliza(persona.Familiares);
+                persona.ReferenciasPersonales = mg.normaliza(persona.ReferenciasPersonales);
+                persona.rutaFoto = mg.normaliza(persona.rutaFoto);
                 persona.Capturista = persona.Capturista;
-                persona.UbicacionExpediente = normaliza(persona.UbicacionExpediente);
+                persona.UbicacionExpediente = mg.normaliza(persona.UbicacionExpediente);
                 if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
-                persona.MotivoCandado = normaliza(persona.MotivoCandado);
+                persona.MotivoCandado = mg.normaliza(persona.MotivoCandado);
                 #region -ConsumoSustancias-
                 //Sustancias editadas
                 if (arraySustanciasEditadas != null)
@@ -3116,9 +3048,9 @@ namespace scorpioweb.Controllers
 
                             consumosustanciasBD.Sustancia = sustancias[i].ToString();
                             consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
-                            consumosustanciasBD.Cantidad = normaliza(sustancias[i + 2].ToString());
-                            consumosustanciasBD.UltimoConsumo = validateDatetime(sustancias[i + 3].ToString());
-                            consumosustanciasBD.Observaciones = normaliza(sustancias[i + 4].ToString());
+                            consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                            consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                            consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
                             consumosustanciasBD.IdConsumoSustancias = idConsumo;
                             consumosustanciasBD.PersonaIdPersona = id;
 
@@ -3156,9 +3088,9 @@ namespace scorpioweb.Controllers
 
                         consumosustanciasBD.Sustancia = sustancias[i].ToString();
                         consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
-                        consumosustanciasBD.Cantidad = normaliza(sustancias[i + 2].ToString());
-                        consumosustanciasBD.UltimoConsumo = validateDatetime(sustancias[i + 3].ToString());
-                        consumosustanciasBD.Observaciones = normaliza(sustancias[i + 4].ToString());
+                        consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                        consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                        consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
                         consumosustanciasBD.PersonaIdPersona = id;
                         consumosustanciasBD.IdConsumoSustancias = ++idConsumoSustancias;
                         _context.Add(consumosustanciasBD);
@@ -3186,7 +3118,7 @@ namespace scorpioweb.Controllers
                         {
                             Asientofamiliar asientoFamiliar = new Asientofamiliar();
 
-                            asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
                             asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                             try
                             {
@@ -3198,14 +3130,14 @@ namespace scorpioweb.Controllers
                             }
                             asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
                             asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                            asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
                             asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                            asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
                             asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                            asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
                             asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
                             asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                            asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                             asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
                             asientoFamiliar.Tipo = "FAMILIAR";
                             asientoFamiliar.PersonaIdPersona = id;
@@ -3252,7 +3184,7 @@ namespace scorpioweb.Controllers
                         {
                             Asientofamiliar asientoFamiliar = new Asientofamiliar();
 
-                            asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
                             asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                             try
                             {
@@ -3264,14 +3196,14 @@ namespace scorpioweb.Controllers
                             }
                             asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
                             asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                            asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
                             asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                            asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
                             asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                            asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
                             asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
                             asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                            asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                             asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
                             asientoFamiliar.Tipo = "REFERENCIA";
                             asientoFamiliar.PersonaIdPersona = id;
@@ -3308,7 +3240,7 @@ namespace scorpioweb.Controllers
                     {
                         Asientofamiliar asientoFamiliar = new Asientofamiliar();
 
-                        asientoFamiliar.Nombre = normaliza(familiarReferencia[i].ToString());
+                        asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
                         asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                         try
                         {
@@ -3320,14 +3252,14 @@ namespace scorpioweb.Controllers
                         }
                         asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
                         asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                        asientoFamiliar.DependenciaExplica = normaliza(familiarReferencia[i + 5].ToString());
+                        asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
                         asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                        asientoFamiliar.Domicilio = normaliza(familiarReferencia[i + 7].ToString());
+                        asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
                         asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                        asientoFamiliar.HorarioLocalizacion = normaliza(familiarReferencia[i + 9].ToString());
+                        asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
                         asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
                         asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                        asientoFamiliar.Observaciones = normaliza(familiarReferencia[i + 12].ToString());
+                        asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                         asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
                         asientoFamiliar.PersonaIdPersona = id;
                         asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
@@ -3553,16 +3485,16 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            domicilio.Calle = normaliza(domicilio.Calle);
+            domicilio.Calle = mg.normaliza(domicilio.Calle);
             domicilio.No = String.IsNullOrEmpty(domicilio.No) ? domicilio.No : domicilio.No.ToUpper();
             //domicilio.Cp = domicilio.Cp;
-            domicilio.Referencias = normaliza(domicilio.Referencias);
-            domicilio.Horario = normaliza(domicilio.Horario);
-            domicilio.Observaciones = normaliza(domicilio.Observaciones);
+            domicilio.Referencias = mg.normaliza(domicilio.Referencias);
+            domicilio.Horario = mg.normaliza(domicilio.Horario);
+            domicilio.Observaciones = mg.normaliza(domicilio.Observaciones);
             //domicilio.Lat = domicilio.Lat;
             //domicilio.Lng = domicilio.Lng;
 
-            domicilio.NombreCf = normaliza(inputAutocomplete);
+            domicilio.NombreCf = mg.normaliza(inputAutocomplete);
 
             List<Zonas> zonasList = new List<Zonas>();
             zonasList = (from Zonas in _context.Zonas
@@ -3763,15 +3695,15 @@ namespace scorpioweb.Controllers
                 try
                 {
 
-                    domiciliosecundario.TipoUbicacion = normaliza(domiciliosecundario.TipoUbicacion);
-                    domiciliosecundario.Calle = normaliza(domiciliosecundario.Calle);
-                    domiciliosecundario.No = normaliza(domiciliosecundario.No);
-                    domiciliosecundario.NombreCf = normaliza(domiciliosecundario.NombreCf);
-                    domiciliosecundario.Cp = normaliza(domiciliosecundario.Cp);
-                    domiciliosecundario.Referencias = normaliza(domiciliosecundario.Referencias);
-                    domiciliosecundario.Horario = normaliza(domiciliosecundario.Horario);
-                    domiciliosecundario.Motivo = normaliza(domiciliosecundario.Motivo);
-                    domiciliosecundario.Observaciones = normaliza(domiciliosecundario.Observaciones);
+                    domiciliosecundario.TipoUbicacion = mg.normaliza(domiciliosecundario.TipoUbicacion);
+                    domiciliosecundario.Calle = mg.normaliza(domiciliosecundario.Calle);
+                    domiciliosecundario.No = mg.normaliza(domiciliosecundario.No);
+                    domiciliosecundario.NombreCf = mg.normaliza(domiciliosecundario.NombreCf);
+                    domiciliosecundario.Cp = mg.normaliza(domiciliosecundario.Cp);
+                    domiciliosecundario.Referencias = mg.normaliza(domiciliosecundario.Referencias);
+                    domiciliosecundario.Horario = mg.normaliza(domiciliosecundario.Horario);
+                    domiciliosecundario.Motivo = mg.normaliza(domiciliosecundario.Motivo);
+                    domiciliosecundario.Observaciones = mg.normaliza(domiciliosecundario.Observaciones);
 
 
                     var oldDomicilio = await _context.Domiciliosecundario.FindAsync(domiciliosecundario.IdDomicilioSecundario);
@@ -3821,21 +3753,21 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> CrearDomicilioSecundario(Domiciliosecundario domiciliosecundario, string[] datosDomicilio)
         {
             domiciliosecundario.IdDomicilio = Int32.Parse(datosDomicilio[0]);
-            domiciliosecundario.TipoDomicilio = normaliza(datosDomicilio[1]);
-            domiciliosecundario.Calle = normaliza(datosDomicilio[2]);
-            domiciliosecundario.No = normaliza(datosDomicilio[3]);
-            domiciliosecundario.TipoUbicacion = normaliza(datosDomicilio[4]);
-            domiciliosecundario.NombreCf = normaliza(datosDomicilio[5]);
+            domiciliosecundario.TipoDomicilio = mg.normaliza(datosDomicilio[1]);
+            domiciliosecundario.Calle = mg.normaliza(datosDomicilio[2]);
+            domiciliosecundario.No = mg.normaliza(datosDomicilio[3]);
+            domiciliosecundario.TipoUbicacion = mg.normaliza(datosDomicilio[4]);
+            domiciliosecundario.NombreCf = mg.normaliza(datosDomicilio[5]);
             domiciliosecundario.Pais = datosDomicilio[6];
             domiciliosecundario.Estado = datosDomicilio[7];
             domiciliosecundario.Municipio = datosDomicilio[8];
-            domiciliosecundario.Temporalidad = normaliza(datosDomicilio[9]);
-            domiciliosecundario.ResidenciaHabitual = normaliza(datosDomicilio[10]);
-            domiciliosecundario.Cp = normaliza(datosDomicilio[11]);
-            domiciliosecundario.Referencias = normaliza(datosDomicilio[12]);
-            domiciliosecundario.Motivo = normaliza(datosDomicilio[13]);
-            domiciliosecundario.Horario = normaliza(datosDomicilio[14]);
-            domiciliosecundario.Observaciones = normaliza(datosDomicilio[15]);
+            domiciliosecundario.Temporalidad = mg.normaliza(datosDomicilio[9]);
+            domiciliosecundario.ResidenciaHabitual = mg.normaliza(datosDomicilio[10]);
+            domiciliosecundario.Cp = mg.normaliza(datosDomicilio[11]);
+            domiciliosecundario.Referencias = mg.normaliza(datosDomicilio[12]);
+            domiciliosecundario.Motivo = mg.normaliza(datosDomicilio[13]);
+            domiciliosecundario.Horario = mg.normaliza(datosDomicilio[14]);
+            domiciliosecundario.Observaciones = mg.normaliza(datosDomicilio[15]);
 
 
             var query = (from a in _context.Domicilio
@@ -3933,10 +3865,10 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            estudios.InstitucionE = normaliza(estudios.InstitucionE);
-            estudios.Horario = normaliza(estudios.Horario);
-            estudios.Direccion = normaliza(estudios.Direccion);
-            estudios.Observaciones = normaliza(estudios.Observaciones);
+            estudios.InstitucionE = mg.normaliza(estudios.InstitucionE);
+            estudios.Horario = mg.normaliza(estudios.Horario);
+            estudios.Direccion = mg.normaliza(estudios.Direccion);
+            estudios.Observaciones = mg.normaliza(estudios.Observaciones);
 
 
 
@@ -4059,13 +3991,13 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            trabajo.Puesto = normaliza(trabajo.Puesto);
-            trabajo.EmpledorJefe = normaliza(trabajo.EmpledorJefe);
-            trabajo.Salario = normaliza(trabajo.Salario);
-            trabajo.TemporalidadSalario = normaliza(trabajo.TemporalidadSalario);
-            trabajo.Direccion = normaliza(trabajo.Direccion);
-            trabajo.Horario = normaliza(trabajo.Horario);
-            trabajo.Observaciones = normaliza(trabajo.Observaciones);
+            trabajo.Puesto = mg.normaliza(trabajo.Puesto);
+            trabajo.EmpledorJefe = mg.normaliza(trabajo.EmpledorJefe);
+            trabajo.Salario = mg.normaliza(trabajo.Salario);
+            trabajo.TemporalidadSalario = mg.normaliza(trabajo.TemporalidadSalario);
+            trabajo.Direccion = mg.normaliza(trabajo.Direccion);
+            trabajo.Horario = mg.normaliza(trabajo.Horario);
+            trabajo.Observaciones = mg.normaliza(trabajo.Observaciones);
 
             if (ModelState.IsValid)
             {
@@ -4123,11 +4055,11 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            actividadsocial.TipoActividad = normaliza(actividadsocial.TipoActividad);
-            actividadsocial.Horario = normaliza(actividadsocial.Horario);
-            actividadsocial.Lugar = normaliza(actividadsocial.Lugar);
-            actividadsocial.Referencia = normaliza(actividadsocial.Referencia);
-            actividadsocial.Observaciones = normaliza(actividadsocial.Observaciones);
+            actividadsocial.TipoActividad = mg.normaliza(actividadsocial.TipoActividad);
+            actividadsocial.Horario = mg.normaliza(actividadsocial.Horario);
+            actividadsocial.Lugar = mg.normaliza(actividadsocial.Lugar);
+            actividadsocial.Referencia = mg.normaliza(actividadsocial.Referencia);
+            actividadsocial.Observaciones = mg.normaliza(actividadsocial.Observaciones);
 
 
 
@@ -4209,12 +4141,12 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            abandonoestado.LugaresVivido = normaliza(abandonoestado.LugaresVivido);
-            abandonoestado.TiempoVivido = normaliza(abandonoestado.TiempoVivido);
-            abandonoestado.MotivoVivido = normaliza(abandonoestado.MotivoVivido);
-            abandonoestado.LugaresViaje = normaliza(abandonoestado.LugaresViaje);
-            abandonoestado.TiempoViaje = normaliza(abandonoestado.TiempoViaje);
-            abandonoestado.MotivoViaje = normaliza(abandonoestado.MotivoViaje);
+            abandonoestado.LugaresVivido = mg.normaliza(abandonoestado.LugaresVivido);
+            abandonoestado.TiempoVivido = mg.normaliza(abandonoestado.TiempoVivido);
+            abandonoestado.MotivoVivido = mg.normaliza(abandonoestado.MotivoVivido);
+            abandonoestado.LugaresViaje = mg.normaliza(abandonoestado.LugaresViaje);
+            abandonoestado.TiempoViaje = mg.normaliza(abandonoestado.TiempoViaje);
+            abandonoestado.MotivoViaje = mg.normaliza(abandonoestado.MotivoViaje);
 
 
 
@@ -4503,9 +4435,9 @@ namespace scorpioweb.Controllers
                 try
                 {
 
-                    familiaresforaneos.Nombre = normaliza(familiaresforaneos.Nombre);
-                    familiaresforaneos.Estado = normaliza(familiaresforaneos.Estado);
-                    familiaresforaneos.Observaciones = normaliza(familiaresforaneos.Observaciones);
+                    familiaresforaneos.Nombre = mg.normaliza(familiaresforaneos.Nombre);
+                    familiaresforaneos.Estado = mg.normaliza(familiaresforaneos.Estado);
+                    familiaresforaneos.Observaciones = mg.normaliza(familiaresforaneos.Observaciones);
 
 
                     var oldFamiliaresforaneos = await _context.Familiaresforaneos.FindAsync(familiaresforaneos.IdFamiliaresForaneos);
@@ -4552,7 +4484,7 @@ namespace scorpioweb.Controllers
         {
 
             familiaresforaneos.PersonaIdPersona = Int32.Parse(datosFamiliarF[0]);
-            familiaresforaneos.Nombre = normaliza(datosFamiliarF[1]);
+            familiaresforaneos.Nombre = mg.normaliza(datosFamiliarF[1]);
             try
             {
                 familiaresforaneos.Edad = Int32.Parse(datosFamiliarF[2]);
@@ -4565,12 +4497,12 @@ namespace scorpioweb.Controllers
             familiaresforaneos.Relacion = datosFamiliarF[4];
             familiaresforaneos.TiempoConocerlo = datosFamiliarF[5];
             familiaresforaneos.Pais = datosFamiliarF[6];
-            familiaresforaneos.Estado = normaliza(datosFamiliarF[7]);
+            familiaresforaneos.Estado = mg.normaliza(datosFamiliarF[7]);
             familiaresforaneos.Telefono = datosFamiliarF[8];
             familiaresforaneos.FrecuenciaContacto = datosFamiliarF[9];
             familiaresforaneos.EnteradoProceso = datosFamiliarF[10];
             familiaresforaneos.PuedeEnterarse = datosFamiliarF[11];
-            familiaresforaneos.Observaciones = normaliza(datosFamiliarF[12]);
+            familiaresforaneos.Observaciones = mg.normaliza(datosFamiliarF[12]);
 
             var query = (from a in _context.Abandonoestado
                          where a.PersonaIdPersona == familiaresforaneos.PersonaIdPersona
@@ -4661,11 +4593,11 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            saludfisica.EspecifiqueEnfermedad = normaliza(saludfisica.EspecifiqueEnfermedad);
-            saludfisica.Tratamiento = normaliza(saludfisica.Tratamiento);
-            saludfisica.EspecifiqueDiscapacidad = normaliza(saludfisica.EspecifiqueDiscapacidad);
-            saludfisica.Observaciones = normaliza(saludfisica.Observaciones);
-            saludfisica.Tiempo = normaliza(saludfisica.Tiempo);
+            saludfisica.EspecifiqueEnfermedad = mg.normaliza(saludfisica.EspecifiqueEnfermedad);
+            saludfisica.Tratamiento = mg.normaliza(saludfisica.Tratamiento);
+            saludfisica.EspecifiqueDiscapacidad = mg.normaliza(saludfisica.EspecifiqueDiscapacidad);
+            saludfisica.Observaciones = mg.normaliza(saludfisica.Observaciones);
+            saludfisica.Tiempo = mg.normaliza(saludfisica.Tiempo);
 
 
 
@@ -5365,8 +5297,8 @@ namespace scorpioweb.Controllers
         {
             var borrar = false;
             var idpersona = Int32.Parse(datoPersona[0]);
-            var razon = normaliza(datoPersona[1]);
-            var user = normaliza(datoPersona[2]);
+            var razon = mg.normaliza(datoPersona[1]);
+            var user = mg.normaliza(datoPersona[2]);
 
             var query = (from p in _context.Persona
                          where p.IdPersona == idpersona
@@ -5377,10 +5309,10 @@ namespace scorpioweb.Controllers
                 historialeliminacion.Id = idpersona;
                 historialeliminacion.Descripcion = query.Paterno +" "+ query.Materno +" "+ query.Nombre ;
                 historialeliminacion.Tipo = "PERSONA";
-                historialeliminacion.Razon = normaliza(razon);
+                historialeliminacion.Razon = mg.normaliza(razon);
                 historialeliminacion.Usuario = user;
                 historialeliminacion.Fecha = DateTime.Now;
-                historialeliminacion.Supervisor = normaliza(query.Supervisor);
+                historialeliminacion.Supervisor = mg.normaliza(query.Supervisor);
                 _context.Add(historialeliminacion);
                 _context.SaveChanges();
                 _context.Database.ExecuteSqlCommand("CALL spBorrarPersona(" + idpersona + ")");
@@ -5590,7 +5522,7 @@ namespace scorpioweb.Controllers
         {
             persona.Candado = Convert.ToSByte(datoCandado[0] == "true");
             persona.IdPersona = Int32.Parse(datoCandado[1]);
-            persona.MotivoCandado = normaliza(datoCandado[2]);
+            persona.MotivoCandado = mg.normaliza(datoCandado[2]);
 
             var empty = (from p in _context.Persona
                          where p.IdPersona == persona.IdPersona
@@ -6052,8 +5984,8 @@ namespace scorpioweb.Controllers
             {
                 archivointernomcscp.IdarchivoInternoMcscp = Int32.Parse(archivoid);
                 persona.IdPersona = Int32.Parse(idpersona);
-                persona.UbicacionExpediente = normaliza(cambioUE);
-                archivointernomcscp.Usuario = normaliza(usuario);
+                persona.UbicacionExpediente = mg.normaliza(cambioUE);
+                archivointernomcscp.Usuario = mg.normaliza(usuario);
             }
             #endregion
 
@@ -6347,7 +6279,7 @@ namespace scorpioweb.Controllers
                 }
 
 
-                //victima.NombreV = normaliza(NombreV);
+                //victima.NombreV = mg.normaliza(NombreV);
                
                 contactos.Dependencia = Dependencia.ToUpper();
                 contactos.Titular = Titular.ToUpper();

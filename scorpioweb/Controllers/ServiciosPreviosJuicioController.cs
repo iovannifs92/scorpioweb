@@ -16,6 +16,7 @@ using System.Drawing;
 using System.IO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
@@ -123,58 +124,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Metodos Generales-
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
-        String BuscaId(List<SelectListItem> lista, String texto)
-        {
-            foreach (var item in lista)
-            {
-                if (normaliza(item.Value) == normaliza(texto))
-                {
-                    return item.Value;
-                }
-            }
-            return "";
-        }
-
-        String replaceSlashes(string path)
-        {
-            String cleaned = "";
-
-            for (int i = 0; i < path.Length; i++)
-                if (path[i] == '/')
-                    cleaned += '-';
-                else
-                    cleaned += path[i];
-            return cleaned;
-        }
-
-        public string removeSpaces(string str)
-        {
-            if(str == null)
-            {
-                return "";
-            }
-            while (str.Length > 0 && str[0] == ' ')
-            {
-                str = str.Substring(1);
-            }
-            while (str.Length > 0 && str[str.Length - 1] == ' ')
-            {
-                str = str.Substring(0, str.Length - 1);
-            }
-            return str;
-        }
+        MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
 
@@ -210,8 +160,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(normaliza(searchString)) ||
-                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(normaliza(searchString)));
+                    personas = personas.Where(p => (mg.removeSpaces(p.Paterno) + " " + mg.removeSpaces(p.Materno) + " " + mg.removeSpaces(p.Nombre)).Contains(mg.normaliza(searchString)) ||
+                                                   (mg.removeSpaces(p.Nombre) + " " + mg.removeSpaces(p.Paterno) + " " + mg.removeSpaces(p.Materno)).Contains(mg.normaliza(searchString)));
                 }
             }
 
@@ -291,15 +241,15 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones")] Serviciospreviosjuicio serviciospreviosjuicio)
         {
             int idAER = 0;
-            serviciospreviosjuicio.Nombre = normaliza(serviciospreviosjuicio.Nombre);
-            serviciospreviosjuicio.Paterno = normaliza(serviciospreviosjuicio.Paterno);
-            serviciospreviosjuicio.Materno = normaliza(serviciospreviosjuicio.Materno);
-            serviciospreviosjuicio.Calle = normaliza(serviciospreviosjuicio.Calle);
-            serviciospreviosjuicio.Colonia = normaliza(serviciospreviosjuicio.Colonia);
-            serviciospreviosjuicio.Papa = normaliza(serviciospreviosjuicio.Papa);
-            serviciospreviosjuicio.Mama = normaliza(serviciospreviosjuicio.Mama);
-            serviciospreviosjuicio.AntecedentesDatos = normaliza(serviciospreviosjuicio.AntecedentesDatos);
-            serviciospreviosjuicio.Observaciones = normaliza(serviciospreviosjuicio.Observaciones);
+            serviciospreviosjuicio.Nombre = mg.normaliza(serviciospreviosjuicio.Nombre);
+            serviciospreviosjuicio.Paterno = mg.normaliza(serviciospreviosjuicio.Paterno);
+            serviciospreviosjuicio.Materno = mg.normaliza(serviciospreviosjuicio.Materno);
+            serviciospreviosjuicio.Calle = mg.normaliza(serviciospreviosjuicio.Calle);
+            serviciospreviosjuicio.Colonia = mg.normaliza(serviciospreviosjuicio.Colonia);
+            serviciospreviosjuicio.Papa = mg.normaliza(serviciospreviosjuicio.Papa);
+            serviciospreviosjuicio.Mama = mg.normaliza(serviciospreviosjuicio.Mama);
+            serviciospreviosjuicio.AntecedentesDatos = mg.normaliza(serviciospreviosjuicio.AntecedentesDatos);
+            serviciospreviosjuicio.Observaciones = mg.normaliza(serviciospreviosjuicio.Observaciones);
 
             int cont = (from table in _context.Serviciospreviosjuicio
                         select table.IdserviciosPreviosJuicio).Count();
@@ -320,7 +270,7 @@ namespace scorpioweb.Controllers
             if (evidencia != null)
             {
                 string file_name = idAER +"_"+ serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
-                file_name = replaceSlashes(file_name);
+                file_name = mg.replaceSlashes(file_name);
                 serviciospreviosjuicio.RutaAer = file_name;
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
                 var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
@@ -347,46 +297,46 @@ namespace scorpioweb.Controllers
 
             #region -Listas-
             ViewBag.listaSexo = listaSexo;
-            ViewBag.idGenero = BuscaId(listaSexo, persona.Sexo);
+            ViewBag.idGenero = mg.BuscaId(listaSexo, persona.Sexo);
 
             ViewBag.listaDomicilio = listaDomicilio;
-            ViewBag.idDomicilio = BuscaId(listaDomicilio, persona.Domicilio);
+            ViewBag.idDomicilio = mg.BuscaId(listaDomicilio, persona.Domicilio);
 
             ViewBag.listaUbicacion = listaUbicacion;
-            ViewBag.idUbicacion = BuscaId(listaUbicacion, persona.Ubicacion);
+            ViewBag.idUbicacion = mg.BuscaId(listaUbicacion, persona.Ubicacion);
 
             ViewBag.listaUnidadI = ListaUnidadInvestigación;
-            ViewBag.idUnidad= BuscaId(ListaUnidadInvestigación, persona.UnidadInvestigacion);
+            ViewBag.idUnidad= mg.BuscaId(ListaUnidadInvestigación, persona.UnidadInvestigacion);
 
             ViewBag.listaSituacionJuridica = listaSituacionJuridica;
-            ViewBag.idSituacionJuridica = BuscaId(listaSituacionJuridica, persona.Situacion);
+            ViewBag.idSituacionJuridica = mg.BuscaId(listaSituacionJuridica, persona.Situacion);
 
             ViewBag.listaRealizoE = listaRealizoEntrevista;
-            ViewBag.idRealizoE = BuscaId(listaRealizoEntrevista, persona.RealizoEntrevista);
+            ViewBag.idRealizoE = mg.BuscaId(listaRealizoEntrevista, persona.RealizoEntrevista);
 
             ViewBag.listaTipoDetenido = listaTipoDetenido;
-            ViewBag.idlTipoDetenido = BuscaId(listaTipoDetenido, persona.TipoDetenido);
+            ViewBag.idlTipoDetenido = mg.BuscaId(listaTipoDetenido, persona.TipoDetenido);
 
             ViewBag.listaAER = listaAER;
-            ViewBag.idAER = BuscaId(listaAER, persona.Aer);
+            ViewBag.idAER = mg.BuscaId(listaAER, persona.Aer);
 
             ViewBag.listaTamizaje = listaNaSiNo;
-            ViewBag.idTamizaje = BuscaId(listaNaSiNo, persona.Tamizaje);
+            ViewBag.idTamizaje = mg.BuscaId(listaNaSiNo, persona.Tamizaje);
 
             ViewBag.listaComparesencia = listaRiesgo;
-            ViewBag.idComparesencia = BuscaId(listaRiesgo, persona.Rcomparesencia);
+            ViewBag.idComparesencia = mg.BuscaId(listaRiesgo, persona.Rcomparesencia);
 
             ViewBag.listaVictima = listaRiesgo;
-            ViewBag.idVictima = BuscaId(listaRiesgo, persona.Rvictima);
+            ViewBag.idVictima = mg.BuscaId(listaRiesgo, persona.Rvictima);
 
             ViewBag.listaObstaculizar = listaRiesgo;
-            ViewBag.idObstaculizar = BuscaId(listaRiesgo, persona.Robstaculizacion);
+            ViewBag.idObstaculizar = mg.BuscaId(listaRiesgo, persona.Robstaculizacion);
 
             ViewBag.listaRecomendacion = listaRecomendación;
-            ViewBag.idRecomendacion = BuscaId(listaRecomendación, persona.Recomendacion);
+            ViewBag.idRecomendacion = mg.BuscaId(listaRecomendación, persona.Recomendacion);
 
             ViewBag.listaAntecedentes = listaNaSiNo;
-            ViewBag.idAntecedentes = BuscaId(listaNaSiNo, persona.Antecedentes);
+            ViewBag.idAntecedentes = mg.BuscaId(listaNaSiNo, persona.Antecedentes);
             #endregion
 
             ViewBag.TipoDetenido = persona.TipoDetenido;
@@ -410,15 +360,15 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    serviciospreviosjuicio.Nombre = normaliza(serviciospreviosjuicio.Nombre);
-                    serviciospreviosjuicio.Paterno = normaliza(serviciospreviosjuicio.Paterno);
-                    serviciospreviosjuicio.Materno = normaliza(serviciospreviosjuicio.Materno);
-                    serviciospreviosjuicio.Calle = normaliza(serviciospreviosjuicio.Calle);
-                    serviciospreviosjuicio.Colonia = normaliza(serviciospreviosjuicio.Colonia);
-                    serviciospreviosjuicio.Papa = normaliza(serviciospreviosjuicio.Papa);
-                    serviciospreviosjuicio.Mama = normaliza(serviciospreviosjuicio.Mama);
-                    serviciospreviosjuicio.AntecedentesDatos = normaliza(serviciospreviosjuicio.AntecedentesDatos);
-                    serviciospreviosjuicio.Observaciones = normaliza(serviciospreviosjuicio.Observaciones);
+                    serviciospreviosjuicio.Nombre = mg.normaliza(serviciospreviosjuicio.Nombre);
+                    serviciospreviosjuicio.Paterno = mg.normaliza(serviciospreviosjuicio.Paterno);
+                    serviciospreviosjuicio.Materno = mg.normaliza(serviciospreviosjuicio.Materno);
+                    serviciospreviosjuicio.Calle = mg.normaliza(serviciospreviosjuicio.Calle);
+                    serviciospreviosjuicio.Colonia = mg.normaliza(serviciospreviosjuicio.Colonia);
+                    serviciospreviosjuicio.Papa = mg.normaliza(serviciospreviosjuicio.Papa);
+                    serviciospreviosjuicio.Mama = mg.normaliza(serviciospreviosjuicio.Mama);
+                    serviciospreviosjuicio.AntecedentesDatos = mg.normaliza(serviciospreviosjuicio.AntecedentesDatos);
+                    serviciospreviosjuicio.Observaciones = mg.normaliza(serviciospreviosjuicio.Observaciones);
                     var oldServiciospreviosjuicio = await _context.Serviciospreviosjuicio.FindAsync(serviciospreviosjuicio.IdserviciosPreviosJuicio);
                     #region -EditarArchivo-
                     if (evidencia == null)
@@ -428,7 +378,7 @@ namespace scorpioweb.Controllers
                     else
                     {
                         string file_name = serviciospreviosjuicio.IdserviciosPreviosJuicio + "_" + serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
-                        file_name = replaceSlashes(file_name);
+                        file_name = mg.replaceSlashes(file_name);
                         serviciospreviosjuicio.RutaAer = file_name;
                         var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
 

@@ -13,13 +13,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Security.Claims;
-
+using scorpioweb.Class;
 namespace scorpioweb.Models
 {
     [Authorize]
     public class ArchivoController : Controller
     {
-        
 
         #region -Variables Globales-
         private readonly penas2Context _context;
@@ -28,63 +27,8 @@ namespace scorpioweb.Models
         private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _hostingEnvironment;
         #endregion
 
-       
-
         #region -Metodos Generales-
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
-
-        public string removeSpaces(string str)
-        {
-            if (str == null)
-            {
-                return "";
-            }
-            while (str.Length > 0 && str[0] == ' ')
-            {
-                str = str.Substring(1);
-            }
-            while (str.Length > 0 && str[str.Length - 1] == ' ')
-            {
-                str = str.Substring(0, str.Length - 1);
-            }
-            return str;
-        }
-
-        public static DateTime validateDatetime(string value)
-        {
-            try
-            {
-                return DateTime.Parse(value, new System.Globalization.CultureInfo("pt-BR"));
-            }
-            catch
-            {
-                return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
-            }
-        }
-
-        String BuscaId(List<SelectListItem> lista, String texto)
-        {
-            foreach (var item in lista)
-            {
-                if (normaliza(item.Value) == normaliza(texto))
-                {
-                    return item.Value;
-                }
-            }
-            return "";
-        }
-
+        MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
 
@@ -227,16 +171,17 @@ namespace scorpioweb.Models
             var idExiste = (from a in _context.Archivo
                             where a.IdArchivo == id
                             select a.IdArchivo);
+            
 
-            if(!idExiste.Any())
+            if (!idExiste.Any())
             {
                 try
                 {
                     create = true;
                     archivo.IdArchivo = id;
-                    archivo.Paterno = removeSpaces(normaliza(ap));
-                    archivo.Materno = removeSpaces(normaliza(am));
-                    archivo.Nombre = removeSpaces(normaliza(nombre));
+                    archivo.Paterno = mg.removeSpaces(mg.normaliza(ap));
+                    archivo.Materno = mg.removeSpaces(mg.normaliza(am));
+                    archivo.Nombre = mg.removeSpaces(mg.normaliza(nombre));
 
                     _context.Add(archivo);
                     _context.SaveChanges();
@@ -289,9 +234,9 @@ namespace scorpioweb.Models
 
             if (ModelState.IsValid)
             {
-                archivo.Paterno = removeSpaces(normaliza(archivo.Paterno));
-                archivo.Materno = removeSpaces(normaliza(archivo.Materno));
-                archivo.Nombre = removeSpaces(normaliza(archivo.Nombre));
+                archivo.Paterno = mg.removeSpaces(mg.normaliza(archivo.Paterno));
+                archivo.Materno = mg.removeSpaces(mg.normaliza(archivo.Materno));
+                archivo.Nombre = mg.removeSpaces(mg.normaliza(archivo.Nombre));
                 try
                 {
                     _context.Update(archivo);
@@ -371,8 +316,8 @@ namespace scorpioweb.Models
         {
             var borrar = false;
             var id = Int32.Parse(datosuper[0]);
-            var razon = normaliza(datosuper[1]);
-            var user = normaliza(datosuper[2]);
+            var razon = mg.normaliza(datosuper[1]);
+            var user = mg.normaliza(datosuper[2]);
 
             var query = (from a in _context.Archivo
                          where a.IdArchivo == id
@@ -384,8 +329,8 @@ namespace scorpioweb.Models
                 historialeliminacion.Id = id;
                 historialeliminacion.Descripcion = "IDARCHIVO= " + query.IdArchivo + "NOMBREL= " + query.Paterno + " " + query.Materno + " " + query.Materno;
                 historialeliminacion.Tipo = "HISTORIALARCHIVO";
-                historialeliminacion.Razon = normaliza(razon);
-                historialeliminacion.Usuario = normaliza(user);
+                historialeliminacion.Razon = mg.normaliza(razon);
+                historialeliminacion.Usuario = mg.normaliza(user);
                 historialeliminacion.Fecha = DateTime.Now;
                 historialeliminacion.Supervisor = "NA";
                 _context.Add(historialeliminacion);
@@ -475,9 +420,9 @@ namespace scorpioweb.Models
                                             where a.IdArea == int.Parse(archivoprestamo.Recibe)
                                             select a.Area).First();
 
-                        archivoprestamo.Entrega = normaliza(archivoprestamo.Entrega);
-                        archivoprestamo.Recibe = normaliza(sacarnomRecibe.ToString());
-                        archivoprestamo.Area = normaliza(sacarnomArea.ToString());
+                        archivoprestamo.Entrega = mg.normaliza(archivoprestamo.Entrega);
+                        archivoprestamo.Recibe = mg.normaliza(sacarnomRecibe.ToString());
+                        archivoprestamo.Area = mg.normaliza(sacarnomArea.ToString());
                         archivoprestamo.FechaInicial = DateTime.Now;
                         archivoprestamo.FechaRenovacion = DateTime.Now.AddMonths(1);
                         archivoprestamo.Estatus = "PRESTADO";
@@ -507,8 +452,8 @@ namespace scorpioweb.Models
                                             select a.Area).First();
 
                         archivoprestamodigital.ArchivoIdArchivo = archivoIdArchivo;
-                        archivoprestamodigital.Usuario = normaliza(sacarnomRecibe.ToString());
-                        archivoprestamodigital.UsuarioOtorgaPermiso = normaliza(archivoprestamo.Entrega);
+                        archivoprestamodigital.Usuario = mg.normaliza(sacarnomRecibe.ToString());
+                        archivoprestamodigital.UsuarioOtorgaPermiso = mg.normaliza(archivoprestamo.Entrega);
                         archivoprestamodigital.FechaPrestamo = DateTime.Now;
                         archivoprestamodigital.FechaCierre = DateTime.Now.AddDays(7);
                         _context.Add(archivoprestamodigital);
@@ -566,7 +511,7 @@ namespace scorpioweb.Models
                 new SelectListItem{ Text = "Entregado", Value = "ENTREGADO" },
             };
             ViewBag.ListaEstatus = ListaEstatus;
-            ViewBag.idEstatus = BuscaId(ListaEstatus, archivoprestamo.Estatus);
+            ViewBag.idEstatus = mg.BuscaId(ListaEstatus, archivoprestamo.Estatus);
 
             if (archivoprestamo == null)
             {
@@ -602,12 +547,12 @@ namespace scorpioweb.Models
                                     where a.IdArea == int.Parse(archivoprestamo.Recibe)
                                     select a.Area).First();
 
-                archivoprestamo.Entrega = normaliza(sacarnomEntrega.ToString());
-                archivoprestamo.Recibe = normaliza(sacarnomRecibe.ToString());
-                archivoprestamo.Area = normaliza(sacarnomArea.ToString());
+                archivoprestamo.Entrega = mg.normaliza(sacarnomEntrega.ToString());
+                archivoprestamo.Recibe = mg.normaliza(sacarnomRecibe.ToString());
+                archivoprestamo.Area = mg.normaliza(sacarnomArea.ToString());
                 archivoprestamo.FechaInicial = archivoprestamo.FechaInicial;
                 archivoprestamo.FechaRenovacion = archivoprestamo.FechaRenovacion;
-                archivoprestamo.Estatus = normaliza(archivoprestamo.Estatus);
+                archivoprestamo.Estatus = mg.normaliza(archivoprestamo.Estatus);
                 archivoprestamo.Renovaciones = archivoprestamo.Renovaciones;
                 archivoprestamo.ArcchivoIdArchivo = archivoprestamo.ArcchivoIdArchivo;
                 try
@@ -656,12 +601,9 @@ namespace scorpioweb.Models
                
                 return Json(new { success = true, responseText = Convert.ToString(empty), idPersonas = Convert.ToString(id), entrega });
             }
-            
-
 
             return Json(new { success = true, responseText = Convert.ToString(empty), idPersonas = Convert.ToString(id), entrega });
         }
-
 
         public JsonResult BorrarPrestado(int id)
         {
@@ -746,14 +688,14 @@ namespace scorpioweb.Models
                                      where a.IdArea == int.Parse(archivoregistro.Envia)
                                      select a.UserName).First();
 
-                archivoregistro.CausaPenal = normaliza(archivoregistro.CausaPenal.ToString());
-                archivoregistro.Delito = normaliza(archivoregistro.Delito.ToString());
-                archivoregistro.Situacion = normaliza(archivoregistro.Situacion.ToString());
-                archivoregistro.Sentencia = normaliza(archivoregistro.Sentencia);
+                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
+                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
+                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
-                archivoregistro.Observaciones = normaliza(archivoregistro.Observaciones);
-                archivoregistro.CarpetaEjecucion = normaliza(archivoregistro.CarpetaEjecucion);
-                archivoregistro.Envia = normaliza(sacarnomEnvia.ToString());
+                archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
+                archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
+                archivoregistro.Envia = mg.normaliza(sacarnomEnvia.ToString());
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
            
 
@@ -848,15 +790,15 @@ namespace scorpioweb.Models
                                        where a.IdArea == int.Parse(archivoregistro.Envia)
                                        select a.UserName).First();
                 
-                archivoregistro.Envia = normaliza(sacarnomEntrega.ToString());
+                archivoregistro.Envia = mg.normaliza(sacarnomEntrega.ToString());
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-                archivoregistro.CausaPenal = normaliza(archivoregistro.CausaPenal.ToString());
-                archivoregistro.Delito = normaliza(archivoregistro.Delito.ToString());
-                archivoregistro.Situacion = normaliza(archivoregistro.Situacion.ToString());
-                archivoregistro.Sentencia = normaliza(archivoregistro.Sentencia);
+                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
+                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
+                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
-                archivoregistro.Observaciones = normaliza(archivoregistro.Observaciones);
-                archivoregistro.CarpetaEjecucion = normaliza(archivoregistro.CarpetaEjecucion);
+                archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
+                archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
 
 
                 if (archivoFile == null)
