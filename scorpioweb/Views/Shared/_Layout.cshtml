@@ -69,7 +69,7 @@
                         <li><a asp-area="" asp-controller="Account" asp-action="Register">Nuevo Usuario</a></li>
                         <li><a asp-area="" asp-controller="Administration" asp-action="ListRoles">Administracion</a></li>
                     }
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Asistentes"))
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                         @*<li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>*@

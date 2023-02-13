@@ -417,7 +417,7 @@ namespace scorpioweb.Controllers
                           select oficialia;
             }
 
-            oficios = oficios.OrderBy(s => s.Seguimiento);
+            oficios = oficios.OrderBy(s => s.Seguimiento).ThenByDescending(s => s.IdOficialia);
 
             if (inicial != null)
             {
