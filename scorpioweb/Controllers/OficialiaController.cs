@@ -409,7 +409,7 @@ namespace scorpioweb.Controllers
             }
 
             var oficios = from oficialia in _context.Oficialia
-                          where oficialia.UsuarioTurnar == currentUser
+                          where oficialia.UsuarioTurnar == currentUser && oficialia.FechaRecepcion > DateTime.Parse("2023-02-13 00:00:00")
                           select oficialia;
             if(flagMaster)
             {
