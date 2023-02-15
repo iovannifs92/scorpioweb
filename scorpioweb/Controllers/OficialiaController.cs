@@ -25,6 +25,7 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using DocumentFormat.OpenXml.Spreadsheet;
+using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
@@ -62,6 +63,13 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="yoena@dgepms.com", Value="13"},
             new SelectListItem{ Text="enrique.martinez@dgepms.com", Value="14"}
         };
+
+        public static List<SelectListItem> ListaTipoRegistro = new List<SelectListItem>()
+        {
+            new SelectListItem{ Text="TODOS", Value="0"},
+            new SelectListItem{ Text="PENDIENTES", Value="1"},
+            new SelectListItem{ Text="CON SEGUIMIENTO", Value="2"}
+        };
         #endregion
 
         #region -Constructor-
@@ -76,31 +84,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Metodos Generales-
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
-
-        public string removeSpaces(string str)
-        {
-            while (str.Length > 0 && str[0] == ' ')
-            {
-                str = str.Substring(1);
-            }
-            while (str.Length > 0 && str[str.Length - 1] == ' ')
-            {
-                str = str.Substring(0, str.Length - 1);
-            }
-            return str;
-        }
+        MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
         #region -Index-
@@ -140,8 +124,8 @@ namespace scorpioweb.Controllers
                 {
                     if (datosDelitos[i][1] == currentUser)
                     {
-                        delitoDB.Tipo = normaliza(datosDelitos[i][0]);
-                        delitoDB.Modalidad = normaliza(datosDelitos[i + 1][0]);
+                        delitoDB.Tipo = mg.normaliza(datosDelitos[i][0]);
+                        delitoDB.Modalidad = mg.normaliza(datosDelitos[i + 1][0]);
                         delitoDB.EspecificarDelito = datosDelitos[i + 2][0];
                         delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
 
@@ -161,10 +145,10 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 causapenal.Cnpp = cnpp;
-                causapenal.Juez = normaliza(juez);
+                causapenal.Juez = mg.normaliza(juez);
                 causapenal.Distrito = distrito;
                 causapenal.Cambio = cambio;
-                causapenal.CausaPenal = normaliza(cp);
+                causapenal.CausaPenal = mg.normaliza(cp);
                 _context.Add(causapenal);
                 await _context.SaveChangesAsync(null, 1);
                 return RedirectToAction(nameof(Index));
@@ -217,25 +201,25 @@ namespace scorpioweb.Controllers
 
                 oficialia.Capturista = User.Identity.Name;
                 oficialia.MetodoNotificacion = metodoNotificacion;
-                oficialia.NumOficio = normaliza(numOficio);
-                oficialia.Expide = normaliza(expide);
+                oficialia.NumOficio = mg.normaliza(numOficio);
+                oficialia.Expide = mg.normaliza(expide);
                 oficialia.ReferenteImputado = referenteImputado;
                 oficialia.Sexo = sexo;
-                oficialia.Paterno = removeSpaces(normaliza(paterno));
-                oficialia.Materno = removeSpaces(normaliza(materno));
-                oficialia.Nombre = removeSpaces(normaliza(nombre));
-                oficialia.CarpetaEjecucion = normaliza(carpetaEjecucion);
+                oficialia.Paterno = mg.removeSpaces(mg.normaliza(paterno));
+                oficialia.Materno = mg.removeSpaces(mg.normaliza(materno));
+                oficialia.Nombre = mg.removeSpaces(mg.normaliza(nombre));
+                oficialia.CarpetaEjecucion = mg.normaliza(carpetaEjecucion);
                 oficialia.ExisteVictima = existeVictima;
-                oficialia.NombreVictima = normaliza(nombreVictima);
-                oficialia.DireccionVictima = normaliza(direccionVictima);
-                oficialia.AsuntoOficio = normaliza(asuntoOficio);
+                oficialia.NombreVictima = mg.normaliza(nombreVictima);
+                oficialia.DireccionVictima = mg.normaliza(direccionVictima);
+                oficialia.AsuntoOficio = mg.normaliza(asuntoOficio);
                 oficialia.TieneTermino = tieneTermino;
-                oficialia.Observaciones = normaliza(observaciones);
+                oficialia.Observaciones = mg.normaliza(observaciones);
                 oficialia.Entregado = Entregado;
                 oficialia.FechaRecepcion = fechaRecepcion;
                 oficialia.FechaEmision = fechaEmision;
                 oficialia.FechaTermino = fechaTermino;
-                oficialia.DelitoTipo = normaliza(delitoTipo);
+                oficialia.DelitoTipo = mg.normaliza(delitoTipo);
                 oficialia.AutoVinculacion = autoVinculacion;
                 oficialia.IdCausaPenal = idCausaPenal;
                 oficialia.Seguimiento = "NO";
@@ -309,7 +293,7 @@ namespace scorpioweb.Controllers
                     i++;
                 }
             }
-            ViewBag.usuariosOficialia = ListaUsuariosOficialia;
+            ViewBag.usuariosOficialia = ListaUsuariosOficialia;            
 
             var supervisores = from o in _context.Oficialia
                                where o.UsuarioTurnar != null
@@ -396,12 +380,17 @@ namespace scorpioweb.Controllers
             string currentFilter,
             DateTime? inicial,
             DateTime? final,
+            string tipoRegistro,
             int? pageNumber)
         {
             string currentUser = User.Identity.Name;
             var user = await userManager.FindByNameAsync(currentUser);
             var roles = await userManager.GetRolesAsync(user);
             Boolean flagMaster = false;
+
+            ViewBag.ListaTipoRegitro = ListaTipoRegistro;
+            ViewBag.Registro = tipoRegistro;
+            
             foreach (var rol in roles)
             {
                 if (rol == "Masteradmin" || rol == "Oficialia")
@@ -441,6 +430,19 @@ namespace scorpioweb.Controllers
                 oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
             }
 
+            if (tipoRegistro != null)
+            {
+                switch (tipoRegistro)
+                {
+                    case "PENDIENTES":
+                        oficios = oficios.Where(o => o.Seguimiento == "NO" || o.Seguimiento == null);
+                        break;
+                    case "CON SEGUIMIENTO":
+                        oficios = oficios.Where(o => o.Seguimiento == "SI");
+                        break;
+                }
+            }
+
             if (currentFilter != null)
             {
                 foreach (var item in currentFilter.Split(new char[] { ' ' },
@@ -450,6 +452,9 @@ namespace scorpioweb.Controllers
                                              (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()));
                 }
             }
+
+            ViewBag.Registros = oficios.Count();
+            ViewBag.Pendientes = oficios.Where(o => o.Seguimiento == "NO" || o.Seguimiento == null).Count();
 
             int pageSize = 10;
             return View(await PaginatedList<Oficialia>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
@@ -521,18 +526,18 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            oficialia.NumOficio = normaliza(oficialia.NumOficio);
-            oficialia.Expide = normaliza(oficialia.Expide);
-            oficialia.Paterno = removeSpaces(normaliza(oficialia.Paterno));
-            oficialia.Materno = removeSpaces(normaliza(oficialia.Materno));
-            oficialia.Nombre = removeSpaces(normaliza(oficialia.Nombre));
-            oficialia.CarpetaEjecucion = normaliza(oficialia.CarpetaEjecucion);
-            oficialia.NombreVictima = normaliza(oficialia.NombreVictima);
-            oficialia.DireccionVictima = normaliza(oficialia.DireccionVictima);
-            oficialia.AsuntoOficio = normaliza(oficialia.AsuntoOficio);
-            oficialia.Observaciones = normaliza(oficialia.Observaciones);
-            oficialia.DelitoTipo = normaliza(oficialia.DelitoTipo);
-            oficialia.AutoVinculacion = normaliza(oficialia.AutoVinculacion);
+            oficialia.NumOficio = mg.normaliza(oficialia.NumOficio);
+            oficialia.Expide = mg.normaliza(oficialia.Expide);
+            oficialia.Paterno = mg.removeSpaces(mg.normaliza(oficialia.Paterno));
+            oficialia.Materno = mg.removeSpaces(mg.normaliza(oficialia.Materno));
+            oficialia.Nombre = mg.removeSpaces(mg.normaliza(oficialia.Nombre));
+            oficialia.CarpetaEjecucion = mg.normaliza(oficialia.CarpetaEjecucion);
+            oficialia.NombreVictima = mg.normaliza(oficialia.NombreVictima);
+            oficialia.DireccionVictima = mg.normaliza(oficialia.DireccionVictima);
+            oficialia.AsuntoOficio = mg.normaliza(oficialia.AsuntoOficio);
+            oficialia.Observaciones = mg.normaliza(oficialia.Observaciones);
+            oficialia.DelitoTipo = mg.normaliza(oficialia.DelitoTipo);
+            oficialia.AutoVinculacion = mg.normaliza(oficialia.AutoVinculacion);
             var oldOficialia = await _context.Oficialia.FindAsync(oficialia.IdOficialia);
             if (oficialia.Recibe == "Selecciona")
             {
@@ -830,7 +835,7 @@ namespace scorpioweb.Controllers
         #region -CPList-
         public IActionResult CPList(string cp)
         {
-            cp = normaliza(cp);
+            cp = mg.normaliza(cp);
 
             var query = from c in _context.Causapenal
                         select c;

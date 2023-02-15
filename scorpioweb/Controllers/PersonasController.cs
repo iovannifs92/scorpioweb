@@ -500,7 +500,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-          #region -ListadoSupervisor-
+        #region -ListadoSupervisor-
         public async Task<IActionResult> ListadoSupervisor(
             string sortOrder,
             string currentFilter,

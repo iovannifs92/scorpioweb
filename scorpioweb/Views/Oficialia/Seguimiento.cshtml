@@ -85,7 +85,10 @@
             $("#buscar").click();
         });
         $("#final").change(function () {
-                $("#buscar").click();
+            $("#buscar").click();
+        });
+        $("#tipoRegistro").change(function () {
+            $("#buscar").click();
         });
     });
 </script>
@@ -105,21 +108,41 @@
                     </label>
                     <input type="date" id="final" name="final" value="@ViewData["final"]" />
                     </td>
+                    <td colspan="1" style="border-top:none">
+                    <div class="form-group row">
+                        <label for="tipoRegistro" class="col-sm-2 col-form-label">Tipo Registros</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="tipoRegistro" id="tipoRegistro"
+                                    asp-items="@(new SelectList(ViewBag.ListaTipoRegitro, "Text", "Text", @ViewBag.Registro))">
+                            </select>
+                        </div>                        
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                
             </tr>
             <tr>
                 <td colspan="6" style="border-top:none">
-                    <input type="text" class="col-xs-4 col-xs-offset-0" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
-                    <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
-                        <i class="fa fa-search"></i>
-                        Buscar
-                    </button>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <input type="text" class="col-xs-4 col-xs-offset-0" name="currentFilter" id="currentFilter" value="@ViewData["currentFilter"]" />
+                            <button type="submit" class="btn btn-info col-xs-1 p-1" id="buscar" name="buscar">
+                                <i class="fa fa-search"></i>
+                                Buscar
+                            </button>
+                        </div>                        
+                    </div>
+                    <div>
+                        <label>@ViewBag.Pendientes registros pendientes de @ViewBag.Registros</label>
+                    </div>                  
                 </td>
-            </tr>
+            </tr>            
         </tbody>
     </table>
 </form>
 
-<table class="table" style="padding: 15px;">
+<table class="table">
     <thead style="font-size: large">
         <tr>
             <th>
@@ -175,11 +198,37 @@
 }
     </tbody>
 </table>
+
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
+
+<p>
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
 <a asp-action="Seguimiento"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-inicial="@ViewData["inicial"]"
+   asp-route-final="@ViewData["final"]"
+   asp-route-tipoRegistro="@ViewBag.Registro"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Seguimiento"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-inicial="@ViewData["inicial"]"
+   asp-route-final="@ViewData["final"]"
+   asp-route-tipoRegistro="@ViewBag.Registro"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+
+@*<a asp-action="Seguimiento"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    class="btn btn-default col-xs-offset-6 col-sm-offset-7 col-lg-offset-9 @prevDisabled">
     Anterior
@@ -189,3 +238,4 @@
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
+*@
