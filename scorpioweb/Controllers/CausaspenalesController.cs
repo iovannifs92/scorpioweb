@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using scorpioweb.Models;
 using F23.StringSimilarity;
 using Newtonsoft.Json.Linq;
+using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
@@ -31,24 +32,12 @@ namespace scorpioweb.Controllers
         };
 
         #endregion
+        #region -Metodos Generales-
+        MetodosGenerales mg = new MetodosGenerales();
+        #endregion
+       
 
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
-
-
-
-
-        public CausaspenalesController(penas2Context context, UserManager<ApplicationUser> userManager)
+        public CausaspenalesController(penas2Context context,RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             this.userManager = userManager;
@@ -290,10 +279,10 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
 
             causapenal.Cnpp = cnpp;
-            causapenal.Juez = normaliza(juez);
+            causapenal.Juez = mg.normaliza(juez);
             causapenal.Distrito = distrito;
             causapenal.Cambio = cambio;
-            causapenal.CausaPenal = normaliza(cp);
+            causapenal.CausaPenal = mg.normaliza(cp);
             causapenal.Fechacreacion = DateTime.Now;
             causapenal.Usuario = users;
 
@@ -313,10 +302,10 @@ namespace scorpioweb.Controllers
                     {
                         if (datosDelitos[i][1] == currentUser)
                         {
-                            delitoDB.Tipo = normaliza(datosDelitos[i][0]);
-                            delitoDB.Modalidad = normaliza(datosDelitos[i + 1][0]);
+                            delitoDB.Tipo = mg.normaliza(datosDelitos[i][0]);
+                            delitoDB.Modalidad = mg.normaliza(datosDelitos[i + 1][0]);
                             delitoDB.CausaPenalIdCausaPenal = idCausaPenal;
-                            delitoDB.EspecificarDelito = normaliza(delitoDB.EspecificarDelito);
+                            delitoDB.EspecificarDelito = mg.normaliza(delitoDB.EspecificarDelito);
 
                             _context.Add(delitoDB);
                             await _context.SaveChangesAsync(null, 1);
@@ -345,7 +334,7 @@ namespace scorpioweb.Controllers
         {
             foreach (var item in lista)
             {
-                if (normaliza(item.Value) == normaliza(texto))
+                if (mg.normaliza(item.Value) == mg.normaliza(texto))
                 {
                     return item.Value;
                 }
@@ -388,8 +377,8 @@ namespace scorpioweb.Controllers
         {
             var borrar = false;
             var id = Int32.Parse(datocp[0]);
-            var razon = normaliza(datocp[1]);
-            var user = normaliza(datocp[2]);
+            var razon = mg.normaliza(datocp[1]);
+            var user = mg.normaliza(datocp[2]);
 
             var query = (from c in _context.Causapenal
                          where c.IdCausaPenal == id
@@ -401,7 +390,7 @@ namespace scorpioweb.Controllers
                 historialeliminacion.Id = id;
                 historialeliminacion.Descripcion = query.CausaPenal;
                 historialeliminacion.Tipo = "CAUSA PENAL";
-                historialeliminacion.Razon = normaliza(razon);
+                historialeliminacion.Razon = mg.normaliza(razon);
                 historialeliminacion.Usuario = user;
                 historialeliminacion.Fecha = DateTime.Now;
                 historialeliminacion.Supervisor = "NA";
@@ -712,9 +701,9 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.IsValid)
             {
-                delitoDB.Tipo = normaliza(Tipo);
-                delitoDB.Modalidad = normaliza(Modalidad);
-                delitoDB.EspecificarDelito = normaliza(delitoDB.EspecificarDelito);
+                delitoDB.Tipo = mg.normaliza(Tipo);
+                delitoDB.Modalidad = mg.normaliza(Modalidad);
+                delitoDB.EspecificarDelito = mg.normaliza(delitoDB.EspecificarDelito);
                 delitoDB.CausaPenalIdCausaPenal = id;
 
                 int idDelito = ((from table in _context.Delito
@@ -863,7 +852,7 @@ namespace scorpioweb.Controllers
                         where g.CausapenalIdCausapenal == id
                         select g;
 
-            var queryhcpN = normaliza(cnpp) + " " + normaliza(juez) + " " + normaliza(cambio) + " " + normaliza(distrito) + " " + normaliza(cp);
+            var queryhcpN = mg.normaliza(cnpp) + " " + mg.normaliza(juez) + " " + mg.normaliza(cambio) + " " + mg.normaliza(distrito) + " " + mg.normaliza(cp);
 
             var cosine = new Cosine(2);
             double r = 0;
@@ -885,21 +874,21 @@ namespace scorpioweb.Controllers
 
                     causa.IdCausaPenal = id;
                     causa.Cnpp = cnpp;
-                    causa.Juez = normaliza(juez);
+                    causa.Juez = mg.normaliza(juez);
                     causa.Distrito = distrito;
                     causa.Cambio = cambio;
-                    causa.CausaPenal = normaliza(cp);
-                    //causa.CausaPenalCompleta = normaliza(cp) + ", Distrito " + distrito + ", " + juez;
+                    causa.CausaPenal = mg.normaliza(cp);
+                    //causa.CausaPenalCompleta = mg.normaliza(cp) + ", Distrito " + distrito + ", " + juez;
 
                     #region -Delitos-
                     for (int i = 0; i < datosDelitos.Count; i = i + 2)
                     {
                         if (datosDelitos[i][1] == currentUser)
                         {
-                            delitoDB.Tipo = normaliza(datosDelitos[i][0]);
-                            delitoDB.Modalidad = normaliza(datosDelitos[i + 1][0]);
+                            delitoDB.Tipo = mg.normaliza(datosDelitos[i][0]);
+                            delitoDB.Modalidad = mg.normaliza(datosDelitos[i + 1][0]);
                             delitoDB.CausaPenalIdCausaPenal = causa.IdCausaPenal;
-                            delitoDB.EspecificarDelito = normaliza(delitoDB.EspecificarDelito);
+                            delitoDB.EspecificarDelito = mg.normaliza(delitoDB.EspecificarDelito);
 
                             _context.Add(delitoDB);
                             await _context.SaveChangesAsync(null, 1);
@@ -921,10 +910,10 @@ namespace scorpioweb.Controllers
                         if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
                         {
                             historialcp.Cnpp = oldCausa.Cnpp;
-                            historialcp.Juez = normaliza(oldCausa.Juez);
+                            historialcp.Juez = mg.normaliza(oldCausa.Juez);
                             historialcp.Distrito = oldCausa.Distrito;
                             historialcp.Cambio = oldCausa.Cambio;
-                            historialcp.Causapenal = normaliza(oldCausa.CausaPenal);
+                            historialcp.Causapenal = mg.normaliza(oldCausa.CausaPenal);
                             historialcp.FechaModificacion = DateTime.Now;
                             historialcp.CausapenalIdCausapenal = id;
 
@@ -987,9 +976,9 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    delito.Tipo = normaliza(delito.Tipo);
-                    delito.Modalidad = normaliza(delito.Modalidad);
-                    delito.EspecificarDelito = normaliza(delito.EspecificarDelito);
+                    delito.Tipo = mg.normaliza(delito.Tipo);
+                    delito.Modalidad = mg.normaliza(delito.Modalidad);
+                    delito.EspecificarDelito = mg.normaliza(delito.EspecificarDelito);
 
 
                     var oldDelito = await _context.Delito.FindAsync(id);

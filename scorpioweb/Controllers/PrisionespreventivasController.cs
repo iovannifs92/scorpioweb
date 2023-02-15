@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
+using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
@@ -22,47 +23,7 @@ namespace scorpioweb.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
 
         #region -Metodos Generales-
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
-
-        String replaceSlashes(string path)
-        {
-            String cleaned = "";
-
-            for (int i = 0; i < path.Length; i++)
-                if (path[i] == '/')
-                    cleaned += '-';
-                else
-                    cleaned += path[i];
-            return cleaned;
-        }
-
-        public string removeSpaces(string str)
-        {
-            if (str == null)
-            {
-                return "";
-            }
-            while (str.Length > 0 && str[0] == ' ')
-            {
-                str = str.Substring(1);
-            }
-            while (str.Length > 0 && str[str.Length - 1] == ' ')
-            {
-                str = str.Substring(0, str.Length - 1);
-            }
-            return str;
-        }
+        MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
         public PrisionespreventivasController(penas2Context context, IHostingEnvironment hostingEnvironment,
@@ -106,8 +67,8 @@ namespace scorpioweb.Controllers
                 foreach (var item in searchString.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
-                    personas = personas.Where(p => (removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno) + " " + removeSpaces(p.Nombre)).Contains(normaliza(searchString)) ||
-                                                   (removeSpaces(p.Nombre) + " " + removeSpaces(p.Paterno) + " " + removeSpaces(p.Materno)).Contains(normaliza(searchString)) ||
+                    personas = personas.Where(p => (mg.replaceSlashes(p.Paterno) + " " + mg.replaceSlashes(p.Materno) + " " + mg.replaceSlashes(p.Nombre)).Contains(mg.normaliza(searchString)) ||
+                                                   (mg.replaceSlashes(p.Nombre) + " " + mg.replaceSlashes(p.Paterno) + " " + mg.replaceSlashes(p.Materno)).Contains(mg.normaliza(searchString)) ||
                                                    p.NumeroControl.ToString() == searchString);
                 }
             }
@@ -134,11 +95,11 @@ namespace scorpioweb.Controllers
         {
             string currentUser = User.Identity.Name;
 
-            prisionespreventivas.Paterno = normaliza(prisionespreventivas.Paterno);
-            prisionespreventivas.Materno = normaliza(prisionespreventivas.Materno);
-            prisionespreventivas.Nombre = normaliza(prisionespreventivas.Nombre);
-            prisionespreventivas.CausaPenal = normaliza(prisionespreventivas.CausaPenal);
-            prisionespreventivas.Observaciones = normaliza(prisionespreventivas.Observaciones);
+            prisionespreventivas.Paterno = mg.normaliza(prisionespreventivas.Paterno);
+            prisionespreventivas.Materno = mg.normaliza(prisionespreventivas.Materno);
+            prisionespreventivas.Nombre = mg.normaliza(prisionespreventivas.Nombre);
+            prisionespreventivas.CausaPenal = mg.normaliza(prisionespreventivas.CausaPenal);
+            prisionespreventivas.Observaciones = mg.normaliza(prisionespreventivas.Observaciones);
             prisionespreventivas.Capturista = currentUser;
 
             int id = 0;
@@ -159,7 +120,7 @@ namespace scorpioweb.Controllers
             if (archivo != null)
             {
                 string file_name = id + "_" + prisionespreventivas.Paterno + "_" + prisionespreventivas.Materno + "_" + prisionespreventivas.Nombre + Path.GetExtension(archivo.FileName);
-                file_name = replaceSlashes(file_name);
+                file_name = mg.replaceSlashes(file_name);
                 prisionespreventivas.RutaArchivo = file_name;
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "PP");
                 var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
@@ -232,11 +193,11 @@ namespace scorpioweb.Controllers
                     }
 
 
-                    prisionespreventivas.Paterno = normaliza(prisionespreventivas.Paterno);
-                    prisionespreventivas.Materno = normaliza(prisionespreventivas.Materno);
-                    prisionespreventivas.Nombre = normaliza(prisionespreventivas.Nombre);
-                    prisionespreventivas.CausaPenal = normaliza(prisionespreventivas.CausaPenal);
-                    prisionespreventivas.Observaciones = normaliza(prisionespreventivas.Observaciones);
+                    prisionespreventivas.Paterno = mg.normaliza(prisionespreventivas.Paterno);
+                    prisionespreventivas.Materno = mg.normaliza(prisionespreventivas.Materno);
+                    prisionespreventivas.Nombre = mg.normaliza(prisionespreventivas.Nombre);
+                    prisionespreventivas.CausaPenal = mg.normaliza(prisionespreventivas.CausaPenal);
+                    prisionespreventivas.Observaciones = mg.normaliza(prisionespreventivas.Observaciones);
                     var oldPrisionespreventivas = await _context.Prisionespreventivas.FindAsync(prisionespreventivas.Idprisionespreventivas);
 
                     if (clone)
@@ -264,7 +225,7 @@ namespace scorpioweb.Controllers
                     else
                     {
                         string file_name = prisionespreventivas.Idprisionespreventivas + "_" + prisionespreventivas.Paterno + "_" + prisionespreventivas.Materno + "_" + prisionespreventivas.Nombre + Path.GetExtension(archivo.FileName);
-                        file_name = replaceSlashes(file_name);
+                        file_name = mg.replaceSlashes(file_name);
                         prisionespreventivas.RutaArchivo = file_name;
                         var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "PP");
 

@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
@@ -119,57 +120,24 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "Cambio de SCP a MC", Value = "CAMBIO DE SCP A MC" }
         };
 
-        public string normaliza(string normalizar)
-        {
-            if (!String.IsNullOrEmpty(normalizar))
-            {
-                normalizar = normalizar.ToUpper();
-            }
-            else
-            {
-                normalizar = "NA";
-            }
-            return normalizar;
-        }
-        String BuscaId(List<SelectListItem> lista, String texto)
-        {
-            foreach (var item in lista)
-            {
-                if (normaliza(item.Value) == normaliza(texto))
-                {
-                    return item.Value;
-                }
-            }
-            return "";
-        }
+
 
 
         #endregion
 
         #region -Metodos Generales-
-
-        #region -Crea QR-
-        public void creaQR(int? id)
-        {
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
-            qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
-        }
-        #endregion
-        public static DateTime validateDatetime(string value)
-        {
-            try
+        MetodosGenerales mg = new MetodosGenerales();
+            #region -Crea QR-
+            public void creaQR(int? id)
             {
-                return DateTime.Parse(value, new System.Globalization.CultureInfo("pt-BR"));
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+                QRCode qrCode = new QRCode(qrCodeData);
+                Bitmap qrCodeImage = qrCode.GetGraphic(20);
+                System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+                qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
-            catch
-            {
-                return DateTime.ParseExact("1900/01/01", "yyyy/MM/dd", CultureInfo.InvariantCulture);
-            }
-        }
+            #endregion
         #endregion
 
         #region -CrearDocumento-
@@ -321,7 +289,7 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.listaEstadoSupervision = ListaEstadoS;
-            ViewBag.idEstadoSupervision = BuscaId(ListaEstadoS, supervision.EstadoSupervision);
+            ViewBag.idEstadoSupervision = mg.BuscaId(ListaEstadoS, supervision.EstadoSupervision);
             #endregion
 
             #region Estado Cumplimiento
@@ -335,11 +303,11 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.listaEstadoCumplimiento = ListaEstadoC;
-            ViewBag.idEstadoCumplimiento = BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
+            ViewBag.idEstadoCumplimiento = mg.BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
             #endregion
 
             ViewBag.listaTTA = listaSiNo;
-            ViewBag.idTTA = BuscaId(listaSiNo, supervision.Tta);
+            ViewBag.idTTA = mg.BuscaId(listaSiNo, supervision.Tta);
 
             return View(supervision);
         }
@@ -438,13 +406,13 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.listaFracciones = listaFracciones;
-            ViewBag.idFraccion = BuscaId(listaFracciones, fraccionesimpuestas.Tipo);
+            ViewBag.idFraccion = mg.BuscaId(listaFracciones, fraccionesimpuestas.Tipo);
 
             ViewBag.listaCumplimiento = listaCumplimiento;
-            ViewBag.idCumplimiento = BuscaId(listaCumplimiento, fraccionesimpuestas.Estado);
+            ViewBag.idCumplimiento = mg.BuscaId(listaCumplimiento, fraccionesimpuestas.Estado);
 
             ViewBag.listaFiguraJudicial = listaFiguraJudicial;
-            ViewBag.idFiguraJudicial = BuscaId(listaFiguraJudicial, fraccionesimpuestas.FiguraJudicial);
+            ViewBag.idFiguraJudicial = mg.BuscaId(listaFiguraJudicial, fraccionesimpuestas.FiguraJudicial);
 
             return View(fraccionesimpuestas);
         }
@@ -628,7 +596,7 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAddAccionSupervision([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,OficialiaIdOficialia,FechaRegistro,SupervisionIdSupervision,FracionesImpuestasIdFracionesImpuestas ")] Bitacora bitacora, IFormFile evidencia, string nombre, string cp, string idpersona, string supervisor, string idcp)
         {
-            bitacora.Texto = normaliza(bitacora.Texto);
+            bitacora.Texto = mg.normaliza(bitacora.Texto);
             bitacora.OficialiaIdOficialia = bitacora.OficialiaIdOficialia;
             bitacora.FechaRegistro = bitacora.FechaRegistro; 
 
@@ -639,7 +607,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    bitacora.Texto = normaliza(bitacora.Texto);
+                    bitacora.Texto = mg.normaliza(bitacora.Texto);
 
 
                     var oldBitacora = await _context.Bitacora.FindAsync(bitacora.IdBitacora, bitacora.SupervisionIdSupervision);
@@ -691,9 +659,9 @@ namespace scorpioweb.Controllers
         {
             bitacora.SupervisionIdSupervision = Int32.Parse(datosBitacora[0]);
             bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosBitacora[1]);
-            bitacora.Fecha = validateDatetime(datosBitacora[2]);
+            bitacora.Fecha = mg.validateDatetime(datosBitacora[2]);
             bitacora.TipoPersona = datosBitacora[3];
-            bitacora.Texto = normaliza(datosBitacora[4]);
+            bitacora.Texto = mg.normaliza(datosBitacora[4]);
             bitacora.TipoVisita = datosBitacora[5];
             bitacora.RutaEvidencia = datosBitacora[6];
 
@@ -755,8 +723,8 @@ namespace scorpioweb.Controllers
         {
             var borrar = false;
             var id = Int32.Parse(datosuper[0]);
-            var razon = normaliza(datosuper[1]);
-            var user = normaliza(datosuper[2]);
+            var razon = mg.normaliza(datosuper[1]);
+            var user = mg.normaliza(datosuper[2]);
 
             var query = (from s in _context.Supervision
                          join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
@@ -773,10 +741,10 @@ namespace scorpioweb.Controllers
                 historialeliminacion.Id = id;
                 historialeliminacion.Descripcion = "IDPERSONA= "+ query.PersonaIdPersona + " IDCAUSAPENAL= " +query.CausaPenalIdCausaPenal+" IDSUPERVISIÓN= "+query.PersonaIdPersona;
                 historialeliminacion.Tipo = "SUPERVISIÓN";
-                historialeliminacion.Razon = normaliza(razon);
-                historialeliminacion.Usuario = normaliza(user);
+                historialeliminacion.Razon = mg.normaliza(razon);
+                historialeliminacion.Usuario = mg.normaliza(user);
                 historialeliminacion.Fecha = DateTime.Now;
-                historialeliminacion.Supervisor = normaliza(queryP.Supervisor);
+                historialeliminacion.Supervisor = mg.normaliza(queryP.Supervisor);
                 _context.Add(historialeliminacion);
                 _context.SaveChanges();
 
@@ -1066,7 +1034,7 @@ namespace scorpioweb.Controllers
                 supervision.Inicio = fecha;
                 var camps = campo;
                 supervision.IdSupervision = Int32.Parse(superid);
-                supervision.EstadoSupervision = normaliza(estados);
+                supervision.EstadoSupervision = mg.normaliza(estados);
             }
 
             var empty = (from s in _context.Supervision
@@ -1261,7 +1229,7 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.listaCuentaEvaluacion = listaNaSiNo;
-            ViewBag.idCuentaEvaluacion = BuscaId(listaNaSiNo, supervision.CuentaEvaluacion);
+            ViewBag.idCuentaEvaluacion = mg.BuscaId(listaNaSiNo, supervision.CuentaEvaluacion);
             ViewBag.eveluacion = supervision.CuentaEvaluacion;
 
 
@@ -1276,16 +1244,16 @@ namespace scorpioweb.Controllers
                 };
 
             ViewBag.listaRiesgoDetectado = ListaEstadoC;
-            ViewBag.idRiesgoDetectado = BuscaId(ListaEstadoC, supervision.RiesgoDetectado);
+            ViewBag.idRiesgoDetectado = mg.BuscaId(ListaEstadoC, supervision.RiesgoDetectado);
 
             ViewBag.listaRiesgoSustraccion = ListaEstadoC;
-            ViewBag.idRiesgoSustraccion = BuscaId(ListaEstadoC, supervision.RiesgoSustraccion);
+            ViewBag.idRiesgoSustraccion = mg.BuscaId(ListaEstadoC, supervision.RiesgoSustraccion);
 
             ViewBag.listaRiesgoObstaculizacion = ListaEstadoC;
-            ViewBag.idRiesgoObstaculizacion = BuscaId(ListaEstadoC, supervision.RiesgoObstaculizacion);
+            ViewBag.idRiesgoObstaculizacion = mg.BuscaId(ListaEstadoC, supervision.RiesgoObstaculizacion);
 
             ViewBag.listaRiesgoVictima = ListaEstadoC;
-            ViewBag.idRiesgoVictima = BuscaId(ListaEstadoC, supervision.RiesgoVictima);
+            ViewBag.idRiesgoVictima = mg.BuscaId(ListaEstadoC, supervision.RiesgoVictima);
             #endregion
 
 
@@ -1306,7 +1274,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    aer.EvaluadorCaso = normaliza(aer.EvaluadorCaso);
+                    aer.EvaluadorCaso = mg.normaliza(aer.EvaluadorCaso);
 
                     var oldAer = await _context.Aer.FindAsync(aer.IdAer, aer.SupervisionIdSupervision);
                     _context.Entry(oldAer).CurrentValues.SetValues(aer);
@@ -1352,11 +1320,11 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.listaSediocambio = listaNaSiNo;
-            ViewBag.idSediocambio = BuscaId(listaNaSiNo, supervision.SeDioCambio);
+            ViewBag.idSediocambio = mg.BuscaId(listaNaSiNo, supervision.SeDioCambio);
             ViewBag.cambio = supervision.SeDioCambio;
 
             ViewBag.listaMotivoAprobacion = listaMotivoAprobacion;
-            ViewBag.idMotivoAprobacion = BuscaId(listaMotivoAprobacion, supervision.MotivoAprobacion);
+            ViewBag.idMotivoAprobacion = mg.BuscaId(listaMotivoAprobacion, supervision.MotivoAprobacion);
 
             return View(supervision);
         }
@@ -1374,7 +1342,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    cambiodeobligaciones.MotivoAprobacion = normaliza(cambiodeobligaciones.MotivoAprobacion);
+                    cambiodeobligaciones.MotivoAprobacion = mg.normaliza(cambiodeobligaciones.MotivoAprobacion);
                     var oldCambiodeobligaciones = await _context.Cambiodeobligaciones.FindAsync(cambiodeobligaciones.IdCambiodeObligaciones, cambiodeobligaciones.SupervisionIdSupervision);
                     _context.Entry(oldCambiodeobligaciones).CurrentValues.SetValues(cambiodeobligaciones);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1422,9 +1390,9 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.CierreCaso = listaCierreCaso;
-            ViewBag.idCierreCaso = BuscaId(listaCierreCaso, cierre.ComoConcluyo);
+            ViewBag.idCierreCaso = mg.BuscaId(listaCierreCaso, cierre.ComoConcluyo);
             ViewBag.listaSeCerroCaso = listaNaSiNo;
-            ViewBag.idSeCerroCaso = BuscaId(listaNaSiNo, cierre.SeCerroCaso);
+            ViewBag.idSeCerroCaso = mg.BuscaId(listaNaSiNo, cierre.SeCerroCaso);
             ViewBag.cierre = cierre.SeCerroCaso;
             #region Autorizo
             List<SelectListItem> ListaAutorizo;
@@ -1435,7 +1403,7 @@ namespace scorpioweb.Controllers
                 };
 
             ViewBag.listaAutorizo = ListaAutorizo;
-            ViewBag.idAutorizo = BuscaId(ListaAutorizo, cierre.Autorizo);
+            ViewBag.idAutorizo = mg.BuscaId(ListaAutorizo, cierre.Autorizo);
             #endregion
 
             ViewBag.Achivocierre = cierre.RutaArchivo;
@@ -1462,7 +1430,7 @@ namespace scorpioweb.Controllers
                 try
                 {
 
-                    cierredecaso.ComoConcluyo = normaliza(cierredecaso.ComoConcluyo);
+                    cierredecaso.ComoConcluyo = mg.normaliza(cierredecaso.ComoConcluyo);
                     var oldcierredecaso = await _context.Cierredecaso.FindAsync(cierredecaso.IdCierreDeCaso, cierredecaso.SupervisionIdSupervision);
 
                     if (archivo == null)
@@ -1554,7 +1522,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    fraccionesimpuestas.Autoridad = normaliza(fraccionesimpuestas.Autoridad);
+                    fraccionesimpuestas.Autoridad = mg.normaliza(fraccionesimpuestas.Autoridad);
 
                     var oldFraccionesimpuestas = await _context.Fraccionesimpuestas.FindAsync(fraccionesimpuestas.IdFracciones, fraccionesimpuestas.SupervisionIdSupervision);
                     _context.Entry(oldFraccionesimpuestas).CurrentValues.SetValues(fraccionesimpuestas);
@@ -1586,8 +1554,8 @@ namespace scorpioweb.Controllers
                 {
                     fraccionesImpuestas.SupervisionIdSupervision = Int32.Parse(datosFracciones[14]);
                     fraccionesImpuestas.FiguraJudicial = datosFracciones[15];
-                    fraccionesImpuestas.FechaInicio = validateDatetime(datosFracciones[16]);
-                    fraccionesImpuestas.FechaTermino = validateDatetime(datosFracciones[17]);
+                    fraccionesImpuestas.FechaInicio = mg.validateDatetime(datosFracciones[16]);
+                    fraccionesImpuestas.FechaTermino = mg.validateDatetime(datosFracciones[17]);
                     fraccionesImpuestas.Estado = datosFracciones[18];
                     switch (i)
                     {
@@ -1665,7 +1633,7 @@ namespace scorpioweb.Controllers
 
 
             ViewBag.listaPlanSupervision = listaNaSiNo;
-            ViewBag.idPlanSupervision = BuscaId(listaNaSiNo, supervision.PlanSupervision);
+            ViewBag.idPlanSupervision = mg.BuscaId(listaNaSiNo, supervision.PlanSupervision);
             ViewBag.plan = supervision.PlanSupervision;
 
 
@@ -1686,7 +1654,7 @@ namespace scorpioweb.Controllers
             };
 
             ViewBag.listaPeriodicidadFirma = ListaPeriodicidadFirma;
-            ViewBag.idPeriodicidadFirma = BuscaId(ListaPeriodicidadFirma, supervision.PeriodicidadFirma);
+            ViewBag.idPeriodicidadFirma = mg.BuscaId(ListaPeriodicidadFirma, supervision.PeriodicidadFirma);
             #endregion
 
 
@@ -1706,7 +1674,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    planeacionestrategica.MotivoNoPlaneacion = normaliza(planeacionestrategica.MotivoNoPlaneacion);
+                    planeacionestrategica.MotivoNoPlaneacion = mg.normaliza(planeacionestrategica.MotivoNoPlaneacion);
 
                     var oldPlaneacionestrategica = await _context.Planeacionestrategica.FindAsync(planeacionestrategica.IdPlaneacionEstrategica, planeacionestrategica.SupervisionIdSupervision);
                     _context.Entry(oldPlaneacionestrategica).CurrentValues.SetValues(planeacionestrategica);
@@ -1754,7 +1722,7 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.listaRevocado = listaNaSiNo;
-            ViewBag.idRevocado = BuscaId(listaNaSiNo, supervision.Revocado);
+            ViewBag.idRevocado = mg.BuscaId(listaNaSiNo, supervision.Revocado);
             ViewBag.revocado = supervision.Revocado;
 
 
@@ -1776,7 +1744,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    revocacion.MotivoRevocacion = normaliza(revocacion.MotivoRevocacion);
+                    revocacion.MotivoRevocacion = mg.normaliza(revocacion.MotivoRevocacion);
                     var oldRevocacion = await _context.Revocacion.FindAsync(revocacion.IdRevocacion, revocacion.SupervisionIdSupervision);
                     _context.Entry(oldRevocacion).CurrentValues.SetValues(revocacion);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1821,7 +1789,7 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.listaSuspendido = listaNaSiNo;
-            ViewBag.idSuspendido = BuscaId(listaNaSiNo, supervision.Suspendido);
+            ViewBag.idSuspendido = mg.BuscaId(listaNaSiNo, supervision.Suspendido);
             ViewBag.suspe = supervision.Suspendido;
 
             return View(supervision);
@@ -1840,7 +1808,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
-                    suspensionseguimiento.MotivoSuspension = normaliza(suspensionseguimiento.MotivoSuspension);
+                    suspensionseguimiento.MotivoSuspension = mg.normaliza(suspensionseguimiento.MotivoSuspension);
                     var oldSuspensionseguimiento = await _context.Suspensionseguimiento.FindAsync(suspensionseguimiento.IdSuspensionSeguimiento, suspensionseguimiento.SupervisionIdSupervision);
                     _context.Entry(oldSuspensionseguimiento).CurrentValues.SetValues(suspensionseguimiento);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1938,16 +1906,16 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             if (ModelState.ErrorCount <= 1)
             {
-                victima.NombreV = normaliza(NombreV);
+                victima.NombreV = mg.normaliza(NombreV);
                 victima.Edad = Edad;
                 victima.Telefono = Telefono;
-                victima.ConoceDetenido = normaliza(ConoceDetenido);
-                victima.TipoRelacion = normaliza(TipoRelacion);
-                victima.TiempoConocerlo = normaliza(TiempoConocerlo);
-                victima.ViveSupervisado = normaliza(ViveSupervisado);
-                victima.Direccion = normaliza(Direccion);
-                victima.Victimacol = normaliza(Victimacol);
-                victima.Observaciones = normaliza(Observaciones);
+                victima.ConoceDetenido = mg.normaliza(ConoceDetenido);
+                victima.TipoRelacion = mg.normaliza(TipoRelacion);
+                victima.TiempoConocerlo = mg.normaliza(TiempoConocerlo);
+                victima.ViveSupervisado = mg.normaliza(ViveSupervisado);
+                victima.Direccion = mg.normaliza(Direccion);
+                victima.Victimacol = mg.normaliza(Victimacol);
+                victima.Observaciones = mg.normaliza(Observaciones);
 
 
                 var supervision = _context.Supervision
@@ -2007,7 +1975,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="No", Value="NO"},
             };
             ViewBag.ConoceDetenido = ListaConoceDetenido;
-            ViewBag.idConoceDetenido = BuscaId(ListaConoceDetenido, Victima.ConoceDetenido);
+            ViewBag.idConoceDetenido = mg.BuscaId(ListaConoceDetenido, Victima.ConoceDetenido);
             #endregion
 
 
@@ -2027,7 +1995,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Otro", Value="OTRO"},
             };
             ViewBag.TipoRelacion = ListaRelacion;
-            ViewBag.idTipoRelacion = BuscaId(ListaRelacion, Victima.TipoRelacion);
+            ViewBag.idTipoRelacion = mg.BuscaId(ListaRelacion, Victima.TipoRelacion);
             #endregion
 
 
@@ -2041,10 +2009,10 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
             };
             ViewBag.TiempoConocerlo = ListaTiempo;
-            ViewBag.idTiempoConocerlo = BuscaId(ListaTiempo, Victima.TiempoConocerlo);
+            ViewBag.idTiempoConocerlo = mg.BuscaId(ListaTiempo, Victima.TiempoConocerlo);
 
             ViewBag.ViveSupervisado = listaNaSiNo;
-            ViewBag.idViveSupervisado = BuscaId(listaNaSiNo, Victima.ViveSupervisado);
+            ViewBag.idViveSupervisado = mg.BuscaId(listaNaSiNo, Victima.ViveSupervisado);
 
 
             return View(Victima);
@@ -2311,9 +2279,9 @@ namespace scorpioweb.Controllers
                     {
                         
                         bitacora.Fecha = Fecha;
-                        bitacora.TipoPersona = normaliza(tipoPersona);
-                        bitacora.TipoVisita = normaliza(tipoVisita);
-                        bitacora.Texto = normaliza(Texto);
+                        bitacora.TipoPersona = mg.normaliza(tipoPersona);
+                        bitacora.TipoVisita = mg.normaliza(tipoVisita);
+                        bitacora.Texto = mg.normaliza(Texto);
                         bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                         bitacora.FechaRegistro = DateTime.Now;
                         bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
@@ -2334,9 +2302,9 @@ namespace scorpioweb.Controllers
                         bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(FracionesImpuestasIdFracionesImpuestas);
                     }
                     bitacora.Fecha = Fecha;
-                    bitacora.TipoPersona = normaliza(tipoPersona);
-                    bitacora.TipoVisita = normaliza(tipoVisita);
-                    bitacora.Texto = normaliza(Texto);
+                    bitacora.TipoPersona = mg.normaliza(tipoPersona);
+                    bitacora.TipoVisita = mg.normaliza(tipoVisita);
+                    bitacora.Texto = mg.normaliza(Texto);
                     bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                     bitacora.FechaRegistro = DateTime.Now;
 
@@ -2423,7 +2391,7 @@ namespace scorpioweb.Controllers
                 
             }
             ViewBag.expoficialia = ListaOficios;
-            ViewBag.idexpoficialia = BuscaId(ListaOficios, bitacora.OficialiaIdOficialia.ToString());
+            ViewBag.idexpoficialia = mg.BuscaId(ListaOficios, bitacora.OficialiaIdOficialia.ToString());
             #endregion
 
 
@@ -2442,7 +2410,7 @@ namespace scorpioweb.Controllers
 
             };
             ViewBag.TipoPersona = ListaTipoPersona;
-            ViewBag.idTipoPersona = BuscaId(ListaTipoPersona, bitacora.TipoPersona);
+            ViewBag.idTipoPersona = mg.BuscaId(ListaTipoPersona, bitacora.TipoPersona);
             #endregion
 
             #region ListaTipoVisita
@@ -2460,7 +2428,7 @@ namespace scorpioweb.Controllers
               new SelectListItem{ Text="Notificación a Víctima", Value="NOTIFICACION A VICTIMA"},
             };
             ViewBag.TipoVisita = ListaTipoVisita;
-            ViewBag.idTipoVisita = BuscaId(ListaTipoVisita, bitacora.TipoVisita);
+            ViewBag.idTipoVisita = mg.BuscaId(ListaTipoVisita, bitacora.TipoVisita);
             #endregion
 
             ViewBag.RutaEvidencia = bitacora.RutaEvidencia;
@@ -2473,7 +2441,7 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditBitacora([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,OficialiaIdOficialia,FechaRegistro,SupervisionIdSupervision")] Bitacora bitacora, IFormFile evidencia, string nombre, string cp, string idpersona, string supervisor, string idcp)
         {
-            bitacora.Texto = normaliza(bitacora.Texto);
+            bitacora.Texto = mg.normaliza(bitacora.Texto);
             bitacora.OficialiaIdOficialia = bitacora.OficialiaIdOficialia;
 
             var supervision = _context.Supervision
@@ -3159,7 +3127,7 @@ namespace scorpioweb.Controllers
         {
             persona.Candado = Convert.ToSByte(datoCandado[0] == "true");
             persona.IdPersona = Int32.Parse(datoCandado[1]);
-            persona.MotivoCandado = normaliza(datoCandado[2]);
+            persona.MotivoCandado = mg.normaliza(datoCandado[2]);
 
             var empty = (from p in _context.Persona
                          where p.IdPersona == persona.IdPersona
