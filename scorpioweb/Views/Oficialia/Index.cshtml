@@ -3,7 +3,7 @@
     ViewData["Title"] = "Oficialía de Partes";
 }
 
-<div class="col-sm-12 col-md-12" style="padding-top:0%">
+<div class="col-sm-12 col-md-12" style="padding-bottom:5px">
     <div class="card-group">
 @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
 {
@@ -75,5 +75,6 @@ else
 
             </p>
         </div>
+    </div>
     </div>
 </div>

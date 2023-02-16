@@ -12,15 +12,19 @@ namespace scorpioweb.Controllers
     [Authorize(Roles = "Masteradmin")]
     public class AdministrationController : Controller
     {
+        #region -Variables Globales-
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
+        #endregion
 
+        #region -Constructor-
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         UserManager<ApplicationUser> userManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
-        }
+        } 
+        #endregion
 
         #region -CreateRoles-
         [HttpGet]
@@ -203,5 +207,9 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        public IActionResult MenuAdmin()
+        {
+            return View();
+        }
     }
 }
