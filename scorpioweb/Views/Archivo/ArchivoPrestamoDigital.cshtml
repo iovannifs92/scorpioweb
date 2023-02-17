@@ -119,6 +119,15 @@
             <th>
                 Nombre Completo
             </th>
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo"))
+            {
+                <th>
+                    Asignado a:
+                </th>                
+            }            
+            <th>
+                Fecha termino préstamo digital
+            </th>
             <th>
                 Expediente
             </th>
@@ -136,10 +145,19 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.archivoVM.Paterno) @Html.DisplayFor(modelItem => item.archivoVM.Materno) @Html.DisplayFor(modelItem => item.archivoVM.Nombre)
                 </td>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo"))
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.archivoprestamodigitalVM.Usuario)
+                        </td>
+                    }                
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoprestamodigitalVM.FechaCierre)
+                </td>
                  <td>
                     @if (item.archivoVM.Urldocumento != null)
                     {
-                        <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
+                            <a style="font-size: x-large;" id="btnEditar" href="~/ExpedientesDigitales?idArchivoRegistro=@item.archivoVM.IdArchivo&urlArchivo=@item.archivoVM.Urldocumento&tipo=1" target="_blank">
                             <i class="fa fa-paperclip fa-9x"></i>
                         </a>
                     }

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Expedientes Digitales";
+    ViewBag.Title = "Expediente Digital";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,7 +9,10 @@
 
 <div id="target" style="display:block;height:900px">
     @*<button onclick="onBeforeOpen();">Open PDF Viewer</button>*@
-    <ejs-dialog id="dialog"
+
+    @if (ViewBag.Permiso)
+    {
+        <ejs-dialog id="dialog"
                 height="100%"
                 created="onCreated"
                 beforeOpen="onDialogBeforeOpen"
@@ -17,16 +20,23 @@
                 width="auto"
                 isModal="true"
                 target="#target"
-                header="Hola Viewer"
+                header="@ViewBag.CP"
                 showCloseIcon="true">
-    </ejs-dialog>
-
-    <div id="dialog_content" style="display:none;border:1px solid #E0E0E0; width:100%;height:100%">
-        <div id="pdfViewer" style="height:100%"></div>
-    </div>
-
+        </ejs-dialog>
+        <div id="dialog_content" style="display:none;border:1px solid #E0E0E0; width:100%;height:100%">
+            <div id="pdfViewer" style="height:100%"></div>
+        </div>
+    }
+    else
+    {
+        <h2 style="text-align:center">
+            <div class="alert alert-danger" role="alert">
+                No cuenta con permisos para ver el expediente comuniquese con el área de archivo                
+            </div>
+        </h2>
+    }
 </div>
-    <script>
+<script>
 
         function onCreated() {
             var dialog = document.getElementById("dialog").ej2_instances[0];

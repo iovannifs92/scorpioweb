@@ -207,9 +207,11 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -MenuAdmin-
         public IActionResult MenuAdmin()
         {
             return View();
-        }
+        } 
+        #endregion
     }
 }

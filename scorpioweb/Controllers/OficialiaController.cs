@@ -60,7 +60,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="jazmin.flores@dgepms.com", Value="10"},
             new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
             new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
-            new SelectListItem{ Text="yoena@dgepms.com", Value="13"},
+            new SelectListItem{ Text="yoshman.mendez@dgepms.com", Value="13"},
             new SelectListItem{ Text="enrique.martinez@dgepms.com", Value="14"}
         };
 
@@ -449,7 +449,8 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     oficios = oficios.Where(o => (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
-                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()));
+                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
+                                             o.UsuarioTurnar.Contains(currentFilter.ToUpper()));
                 }
             }
 

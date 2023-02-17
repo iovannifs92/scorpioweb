@@ -161,6 +161,12 @@
                 Nombre
             </th>
             <th>
+                Se turno a
+            </th>
+            <th>
+                Fecha seguimiento
+            </th>
+            <th>
                 Seguimiento
             </th>
         </tr>
@@ -184,9 +190,15 @@
                 @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.UsuarioTurnar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaSeguimiento)
+            </td>
+            <td>
                 <label class="switch">
                     @if (@item.Seguimiento == "SI"){
-                        <input type="checkbox" onclick="toggle(@item.IdOficialia)" checked>
+                            <input type="checkbox" onclick="toggle(@item.IdOficialia)" checked>
                     }
                     else{
                         <input type="checkbox" onclick="toggle(@item.IdOficialia)" check=false>
