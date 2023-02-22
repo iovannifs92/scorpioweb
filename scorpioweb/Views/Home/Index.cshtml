@@ -1,9 +1,10 @@
 ﻿@{
     ViewData["Title"] = "SCORPIO";
+    Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 @section Scripts{
-    <link rel="stylesheet" href="~/js/bootstrap4-toggle.js">
+   <link rel="stylesheet" href="~/js/bootstrap4-toggle.js">
     <link rel="stylesheet" href="~/css/bootstrap4-toggle.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/font-awesome.min.css">
@@ -17,7 +18,7 @@
 
     @*Single Page Nav*@
     <script src="~/js/jquery.singlePageNav.min.js"></script>
-    @*Bootstrap*@
+    @*Bootstrap
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     @*jquery.fancybox.pack*@
     <script src="~/js/jquery.fancybox.pack.js"></script>
@@ -33,6 +34,7 @@
     <script src="~/js/jquery.easing.min.js"></script>
     @*jquery easing*@
     <script src="~/js/wow.min.js"></script>
+
     <script>
         var wow = new WOW({
             boxClass: 'wow',      // animated element css class (default is wow)
@@ -58,53 +60,7 @@
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
-visua
-    //    var arr = [];
-    //    function myFunction(id) {
-    //        alert (id)
-    //        var encontro = false;
-    //        var doble;
-    //        for (var i = 0; i < arr.length; i++) {
-    //            if (arr[i] === id) {
-    //                encontro = true;
-    //                doble = i;
-    //                break;
-    //            }
-    //        }
-    //        if (encontro == false) {
-    //            arr.push(id);
-    //        } else {
-    //            arr.splice(doble,1);
-    //        }      
-    //    };
-    //    $(document).ready(function () {
-    //    $('#btnQuery').on("click", function (e) {
-    //        e.preventDefault();
-    //        $.ajax({
-    //            type: "POST",
-    //            dataType: "json",
-    //            url:  "/Api/queryprueba",
-    //            traditional: true,
-    //            data: {
-    //                datosQuery: arr,
-    //            },
-    //            success: function (response) {
-    //                if (response.success) {
-    //                    location.reload();
-    //                } else {
-    //                    alert(response.responseText);
-    //                }
-    //            },
-    //            error: function (response) {
-    //                //alert("Informe Generado");
-    //                ////window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
-    //                //window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
-    //                ////window.location.href = "http://10.6.60.190:432/Documentos/reporteSupervision.docx"
-    //            }
-    //        });
-
-    //    });
-    //});
+    
       
     </script>
 }

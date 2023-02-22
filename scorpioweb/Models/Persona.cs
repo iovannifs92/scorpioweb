@@ -55,5 +55,10 @@ namespace scorpioweb.Models
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
+
+        public static implicit operator Persona(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

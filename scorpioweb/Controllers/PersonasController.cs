@@ -22,9 +22,7 @@ using System.Security.Claims;
 using System.Data;
 using Google.DataTable.Net.Wrapper.Extension;
 using Google.DataTable.Net.Wrapper;
-using MySql.Data.MySqlClient;
 using F23.StringSimilarity;
-using MySql.Data.MySqlClient;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
@@ -37,6 +35,7 @@ using System.Data.SqlClient;
 using scorpioweb.Data;
 using DocumentFormat.OpenXml.EMMA;
 using scorpioweb.Class;
+
 
 namespace scorpioweb.Controllers
 {
@@ -6630,6 +6629,15 @@ namespace scorpioweb.Controllers
             return Json(new { success = true });
         }
         #endregion
+
+        public JsonResult buscadorGeneral(string Buscar)
+        {
+            var listaNombres = _context.BuscadorGenerals
+                              .FromSql("CALL spBuscadorGeneralNombres('" + Buscar + "')")
+                              .ToList();
+
+            return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
+        }
 
     }
 }

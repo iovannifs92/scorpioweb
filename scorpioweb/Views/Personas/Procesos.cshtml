@@ -6,18 +6,19 @@
 }
 
 
-@foreach (var item in  ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
+@foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
 {
     <h3>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h3>
-        break;
+    break;
 }
- 
+
 <table class="table">
     <thead>
         <tr>
             <th>Causa Penal</th>
             <th>Figura Judicial</th>
             <th>Periodicidad de firma</th>
+            <th>Estado de Supervision</th>
             <th>Fecha de ultimo Contacto</th>
             <th></th>
         </tr>
@@ -29,7 +30,7 @@
                 <th>
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </th>
-                @if(item.fraccionesimpuestasVM == null)
+                @if (item.fraccionesimpuestasVM == null)
                 {
                     <td>
                         NA
@@ -37,11 +38,24 @@
                 }
                 else
                 {
-                  <td>
-                    @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial) 
-                </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
+                    </td>
                 }
-                @if(item.planeacionestrategicaVM == null)
+                @if (item.supervisionVM.EstadoSupervision == null)
+                {
+                    <td>
+                        NA
+                    </td>
+
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
+                    </td>
+                }
+                @if (item.planeacionestrategicaVM == null)
                 {
                     <td>
                         NA
@@ -52,22 +66,25 @@
                 }
                 else
                 {
-                   <td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.planeacionestrategicaVM.PeriodicidadFirma)
-                   </td>
-                   <td>
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.planeacionestrategicaVM.FechaUltimoContacto)
-                   </td> 
+                    </td>
                 }
-                
-                
-                
+
+
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
+                {
                 <td>
                     <a class="btn btn-primary" asp-controller="Supervisiones" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervision">
                         <i class="fa fa-cog"></i>
                         Supervisión
                     </a>
                 </td>
+                }
+
             </tr>
         }
 

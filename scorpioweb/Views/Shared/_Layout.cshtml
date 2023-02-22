@@ -29,6 +29,8 @@
     <script src="~/js/jquery-1.11.1.min.js"></script>
     @*Contact form validation*@
     <script src="~/js/jquerylocal332.js"></script>
+    @* Necesario para los modales en el servidor *@
+    @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
     <script src="~/js/jquerylocalvalidate.js"></script>
 </head>
 <body>
@@ -36,11 +38,13 @@
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>z
+                    <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+
+
 
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand" style="padding: 15px 15px;">SCORPIO</a>
             </div>
@@ -74,23 +78,66 @@
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }
-                        
+
                 </ul>
+
                 @await Html.PartialAsync("_LoginPartial")
+
             </div>
         </div>
-    </nav>    
-    <div class="container body-content">
-        @RenderBody()
-        
-        <hr />
-        <footer>
-            <div class="clearfix">
-                <div class="col-md-4" style="padding-left: 0px;  padding-right: 0px; width: 150px; float:left;">
-                    <img src="~/images/logoFooter.png" class="img-responsive" style="float:left;">
-                    @*<p>&copy; 2019 - SCORPIO</p>*@
+    </nav>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="text-right">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">x</button>
+                    </div>
+                    <div class="modal-header float-center">
+                        <h3 id="modal_body"></h3>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Area a la que pertenece</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBusqueda">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal">Cerrar</button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+    }
+
+    <div class="container body-content">
+        @RenderBody()
+
+        <hr />
+        <footer>
+            <div class="col-md-4" style="padding-left: 0px;  padding-right: 0px; width: 150px; float:left;">
+                <img src="~/images/logoFooter.png" class="img-responsive" style="float:left;">
+                @*<p>&copy; 2019 - SCORPIO</p>*@
+            </div>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="col-8 col-md-8" style="float:right">
+                    <input type="text" class="form-control" id="Search" name="Search" onkeypress="return soloLetras(event)" placeholder="Buscar por nombre...">
+                </div>
+            }
         </footer>
     </div>
 
@@ -112,7 +159,6 @@
                     <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Nueva Fracción</h5>
                 </div>
                 <div class="modal-body">
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i>Cerrar</button>
@@ -129,3 +175,98 @@
     <ejs-scripts></ejs-scripts>
 </body>
 </html>
+
+
+<script>
+
+    $('#Search').bind("enterKey", function(e) {
+        var buscar = document.getElementById("Search").value;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/buscadorGeneral",
+            traditional: true,
+            data: {
+                Buscar: buscar,
+            },
+            success: function(response) {
+                $('#tblBusqueda').html('');
+                var row = '';
+                if (response.busqueda.length == 0) {
+                    alert("No encontre nada")
+                    return;
+                }
+
+                for (let i = 0; i < response.busqueda.length; i++) {
+                    row = row
+                        + "<tr>"
+                        + "<td>" + response.busqueda[i].id + "</td>"
+                        + "<td>" + response.busqueda[i].nombreCompletoPersona + "</td>"
+                        + "<td>" + response.busqueda[i].tabla + "</td>"
+                    row = row + "<td>";
+                    switch (response.busqueda[i].tabla) {
+                        case 'MC Y SCP':
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                            break;
+                        case 'ARCHIVO':
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Archivo style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                            break;
+                        case 'SERVICIOS PREVIOS AL JUICIO':
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/ServiciosPreviosJuicio style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                            break;
+                        case 'PRISION PREVENTIVA':
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Prisionespreventivas style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                            break;
+                        case 'OFICIALIA':
+                            row = row
+                                + "PENDIENTE";
+                            break;
+                    }
+                    row = row + "</td>";
+                    row = row + "</tr>";
+                };
+                if (row != '') {
+                    $('#tblBusqueda').append(row);
+                }
+                $("#myModal").modal();
+                var str = "Resultados de  " + buscar;
+                $("#modal_body").html(str);
+            },
+            error: function(response) {
+                //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                //location.reload();
+            }
+        });
+    });
+    $('#Search').keyup(function(e) {
+        //alert("pres enter")
+        if (e.keyCode == 13) {
+            $(this).trigger("enterKey");
+        }
+    });
+
+
+    function soloLetras(e) {
+        var key = e.keyCode || e.which,
+            tecla = String.fromCharCode(key).toLowerCase(),
+            letras = " áéíóúabcdefghijklmnñopqrstuvwxyz",
+            especiales = [8, 37, 39, 46],
+            tecla_especial = false;
+
+        for (var i in especiales) {
+            if (key == especiales[i]) {
+                tecla_especial = true;
+                break;
+            }
+        }
+
+        if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+            return false;
+        }
+    }
+
+</script>

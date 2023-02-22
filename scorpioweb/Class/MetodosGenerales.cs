@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using scorpioweb.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Threading.Tasks;
 
@@ -99,7 +101,6 @@ namespace scorpioweb.Class
                     cleaned += path[i];
             return cleaned;
         }
-
 
     }
 }
