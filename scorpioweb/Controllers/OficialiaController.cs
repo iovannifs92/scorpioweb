@@ -60,7 +60,15 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="jazmin.flores@dgepms.com", Value="10"},
             new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
             new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
-            new SelectListItem{ Text="yoena@dgepms.com", Value="13"},
+            new SelectListItem{ Text="yoshman.mendez@dgepms.com", Value="13"},
+            new SelectListItem{ Text="enrique.martinez@dgepms.com", Value="14"}
+        };
+
+        public static List<SelectListItem> ListaTipoRegistro = new List<SelectListItem>()
+        {
+            new SelectListItem{ Text="TODOS", Value="0"},
+            new SelectListItem{ Text="PENDIENTES", Value="1"},
+            new SelectListItem{ Text="CON SEGUIMIENTO", Value="2"}
         };
         #endregion
 
@@ -74,14 +82,17 @@ namespace scorpioweb.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
         #endregion
+
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
-       
+
+        #region -Index-
         public IActionResult Index()
         {
             return View();
-        }
+        } 
+        #endregion
 
         #region -Modal Delito-
         public ActionResult GuardarDelito(string[] datosDelito)
@@ -99,6 +110,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -CreateCausaPenal-
         public async Task<IActionResult> CreateCausaPenal(Causapenal causapenal, Delito delitoDB, string cnpp, string juez, string distrito, string cambio, string cp, string delitoM)
         {
             string currentUser = User.Identity.Name;
@@ -143,7 +155,9 @@ namespace scorpioweb.Controllers
             }
             return View(causapenal);
         }
+        #endregion
 
+        #region -Captura-
         public IActionResult Captura()
         {
             List<Causapenal> listaCP = new List<Causapenal>();
@@ -161,6 +175,7 @@ namespace scorpioweb.Controllers
             ViewBag.coordinadores = ListaCoordinadores;
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Captura(Oficialia oficialia, string recibe, string metodoNotificacion, string numOficio, string expide,
@@ -246,7 +261,9 @@ namespace scorpioweb.Controllers
             }
             return View(oficialia);
         }
+        #endregion
 
+        #region -EditRegistros-
         public async Task<IActionResult> EditRegistros(
             string currentFilter,
             DateTime? inicial,
@@ -276,7 +293,7 @@ namespace scorpioweb.Controllers
                     i++;
                 }
             }
-            ViewBag.usuariosOficialia = ListaUsuariosOficialia;
+            ViewBag.usuariosOficialia = ListaUsuariosOficialia;            
 
             var supervisores = from o in _context.Oficialia
                                where o.UsuarioTurnar != null
@@ -356,17 +373,24 @@ namespace scorpioweb.Controllers
             int pageSize = 10;
             return View(await PaginatedList<Oficialia>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+        #endregion
 
+        #region -Seguimiento-
         public async Task<IActionResult> Seguimiento(
             string currentFilter,
             DateTime? inicial,
             DateTime? final,
+            string tipoRegistro,
             int? pageNumber)
         {
             string currentUser = User.Identity.Name;
             var user = await userManager.FindByNameAsync(currentUser);
             var roles = await userManager.GetRolesAsync(user);
             Boolean flagMaster = false;
+
+            ViewBag.ListaTipoRegitro = ListaTipoRegistro;
+            ViewBag.Registro = tipoRegistro;
+            
             foreach (var rol in roles)
             {
                 if (rol == "Masteradmin" || rol == "Oficialia")
@@ -386,15 +410,15 @@ namespace scorpioweb.Controllers
             }
 
             var oficios = from oficialia in _context.Oficialia
-                          where oficialia.UsuarioTurnar == currentUser
+                          where oficialia.UsuarioTurnar == currentUser && oficialia.FechaRecepcion > DateTime.Parse("2023-02-13 00:00:00")
                           select oficialia;
-            if(flagMaster)
+            if (flagMaster)
             {
                 oficios = from oficialia in _context.Oficialia
                           select oficialia;
             }
 
-            oficios = oficios.OrderBy(s => s.Seguimiento);
+            oficios = oficios.OrderByDescending(s => s.IdOficialia);
 
             if (inicial != null)
             {
@@ -406,26 +430,45 @@ namespace scorpioweb.Controllers
                 oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
             }
 
+            if (tipoRegistro != null)
+            {
+                switch (tipoRegistro)
+                {
+                    case "PENDIENTES":
+                        oficios = oficios.Where(o => o.Seguimiento == "NO" || o.Seguimiento == null);
+                        break;
+                    case "CON SEGUIMIENTO":
+                        oficios = oficios.Where(o => o.Seguimiento == "SI");
+                        break;
+                }
+            }
+
             if (currentFilter != null)
             {
                 foreach (var item in currentFilter.Split(new char[] { ' ' },
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     oficios = oficios.Where(o => (o.Paterno + " " + o.Materno + " " + o.Nombre).Contains(currentFilter.ToUpper()) ||
-                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()));
+                                             (o.Nombre + " " + o.Paterno + " " + o.Materno).Contains(currentFilter.ToUpper()) ||
+                                             o.UsuarioTurnar.Contains(currentFilter.ToUpper()));
                 }
             }
+
+            ViewBag.Registros = oficios.Count();
+            ViewBag.Pendientes = oficios.Where(o => o.Seguimiento == "NO" || o.Seguimiento == null).Count();
 
             int pageSize = 10;
             return View(await PaginatedList<Oficialia>.CreateAsync(oficios.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+        #endregion
 
+        #region -Toggle-
         public void Toggle(int id)
         {
             var oficio = (from oficialia in _context.Oficialia
                           where oficialia.IdOficialia == id
                           select oficialia).FirstOrDefault();
-            if (oficio.Seguimiento == "NO")
+            if (oficio.Seguimiento == "NO" || oficio.Seguimiento == null)
             {
                 oficio.Seguimiento = "SI";
                 oficio.FechaSeguimiento = DateTime.Now;
@@ -436,7 +479,9 @@ namespace scorpioweb.Controllers
             }
             _context.SaveChanges();
         }
+        #endregion
 
+        #region -Edit-
         public async Task<IActionResult> Edit(int? id, string titulo)
         {
             if (id == null)
@@ -552,7 +597,9 @@ namespace scorpioweb.Controllers
             }
             return View(oficialia);
         }
+        #endregion
 
+        #region -Duplicate-
         public async Task<IActionResult> Duplicate(int? id)
         {
             if (id == null)
@@ -584,11 +631,13 @@ namespace scorpioweb.Controllers
 
                 _context.Add(oficialia);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                return RedirectToAction("Edit/" + idOficialia, "Oficialia", new { @titulo = "Registro Copiado" }); 
+                return RedirectToAction("Edit/" + idOficialia, "Oficialia", new { @titulo = "Registro Copiado" });
             }
             return View(oficialia);
         }
+        #endregion
 
+        #region -Reportes-
         public async Task<IActionResult> Reportes(
             string currentFilter,
             DateTime? inicial,
@@ -624,7 +673,7 @@ namespace scorpioweb.Controllers
                                orderby o.UsuarioTurnar
                                select o.UsuarioTurnar;
             supervisores = supervisores.Distinct();
-            List <SelectListItem> ListaSupervisores = new List<SelectListItem>();
+            List<SelectListItem> ListaSupervisores = new List<SelectListItem>();
             int j = 0;
             ListaSupervisores.Add(new SelectListItem
             {
@@ -665,10 +714,10 @@ namespace scorpioweb.Controllers
             }
 
             if (final != null)
-            if (final != null)
-            {
-                oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
-            }
+                if (final != null)
+                {
+                    oficios = oficios.Where(o => o.FechaRecepcion != null && DateTime.Compare((DateTime)o.FechaRecepcion.Value.Date, (DateTime)final.Value.Date) <= 0);
+                }
 
             if (UsuarioTurnar != null && UsuarioTurnar != "todos")
             {
@@ -782,7 +831,9 @@ namespace scorpioweb.Controllers
 
             //return RedirectToAction("Reportes", "Oficialia");
         }
+        #endregion
 
+        #region -CPList-
         public IActionResult CPList(string cp)
         {
             cp = mg.normaliza(cp);
@@ -817,7 +868,8 @@ namespace scorpioweb.Controllers
             ViewData["CPList"] = CPList;
 
             return View();
-        }
+        } 
+        #endregion
 
         #region -SerializeObject-
         public static string SerializeObject<T>(T obj)
@@ -844,7 +896,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        // GET: Oficialia/Delete/5
+        #region -Delete-
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -862,7 +914,6 @@ namespace scorpioweb.Controllers
             return View(oficialia);
         }
 
-        // POST: Oficialia/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -871,7 +922,8 @@ namespace scorpioweb.Controllers
             _context.Oficialia.Remove(oficialia);
             await _context.SaveChangesAsync();
             return RedirectToAction("EditRegistros", "Oficialia");
-        }
+        } 
+        #endregion
 
         #region -OficialiaExists-
         private bool OficialiaExists(int id)

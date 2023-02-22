@@ -38,12 +38,63 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public IActionResult Index(string idArchivo)
+        #region -Index-
+        public async Task<IActionResult> Index(int idArchivoRegistro, string urlArchivo, int tipo)
         {
-            ViewBag.Nombre = idArchivo+".pdf";
-            return View();
-        }
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool flagRol = false;
+            string usuario = user.ToString().ToUpper();
+            DateTime date = DateTime.Now;
+            int permiso = 0;
+            ViewBag.Permiso = true;
+            string cp = "";
 
+
+            foreach (var rol in roles)
+            {
+                if (rol.ToString() == "Masteradmin" || rol.ToString() == "Archivo")
+                {
+                    flagRol = true;
+                }
+            }
+
+            if (flagRol != true && tipo == 1)
+            {
+                var query = (from ad in _context.Archivo
+                             join ed in _context.Archivoprestamodigital on ad.IdArchivo equals ed.ArchivoIdArchivo
+                             where ad.IdArchivo == idArchivoRegistro && ed.Usuario == usuario && date < ed.FechaCierre
+                             select ad);
+                cp = query.Select(p => p.Paterno + " " + p.Materno + " " + p.Nombre).FirstOrDefault();
+                permiso = query.Count();
+            }
+
+            if (flagRol != true && tipo == 2)
+            {
+                var query = (from ad in _context.Archivoregistro
+                             join ed in _context.Archivoprestamodigital on ad.ArchivoIdArchivo equals ed.ArchivoIdArchivo
+                             where ad.IdArchivoRegistro == idArchivoRegistro && ed.Usuario == usuario && date < ed.FechaCierre
+                             select ad);
+                cp = "C. P. " + query.Select(p => p.CausaPenal).FirstOrDefault();
+                permiso = query.Count();
+            }
+
+
+            if (permiso > 0 || flagRol)
+            {
+                ViewBag.Nombre = urlArchivo;
+            }
+            else
+            {
+                ViewBag.Permiso = false;
+            }
+
+            ViewBag.CP = cp;
+            return View();
+        } 
+        #endregion
+
+        #region -Load-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/Load")]
@@ -76,7 +127,9 @@ namespace scorpioweb.Controllers
             jsonResult = pdfviewer.Load(stream, jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
+        #endregion
 
+        #region -RenderPdfPages-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/RenderPdfPages")]
@@ -88,7 +141,9 @@ namespace scorpioweb.Controllers
 
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
+        #endregion
 
+        #region -Unload-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/Unload")]
@@ -98,7 +153,9 @@ namespace scorpioweb.Controllers
             pdfviewer.ClearCache(jsonObject);
             return this.Content("Document cache is cleared");
         }
+        #endregion
 
+        #region -RenderThumbnailImages-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/RenderThumbnailImages")]
@@ -108,7 +165,9 @@ namespace scorpioweb.Controllers
             object result = pdfviewer.GetThumbnailImages(jsonObject);
             return Content(JsonConvert.SerializeObject(result));
         }
+        #endregion
 
+        #region -Bookmarks-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/Bookmarks")]
@@ -118,7 +177,9 @@ namespace scorpioweb.Controllers
             object jsonResult = pdfviewer.GetBookmarks(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
+        #endregion
 
+        #region -PrintImages-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/Print")]
@@ -128,7 +189,9 @@ namespace scorpioweb.Controllers
             object pageImage = pdfviewer.GetPrintImage(jsonObject);
             return Content(JsonConvert.SerializeObject(pageImage));
         }
+        #endregion
 
+        #region -RenderAnnotationComments-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/RenderAnnotationComments")]
@@ -138,7 +201,9 @@ namespace scorpioweb.Controllers
             object jsonResult = pdfviewer.GetAnnotationComments(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
+        #endregion
 
+        #region -Download-
         [AcceptVerbs("Post")]
         [HttpPost]
         [Route("api/[controller]/Download")]
@@ -148,7 +213,9 @@ namespace scorpioweb.Controllers
             string documentBase = pdfviewer.GetDocumentAsBase64(jsonObject);
             return Content(documentBase);
         }
+        #endregion
 
+        #region -GetDocumentPath-
         private string GetDocumentPath(string document)
         {
             string documentPath = string.Empty;
@@ -165,7 +232,8 @@ namespace scorpioweb.Controllers
                 documentPath = document;
             }
             return documentPath;
-        }
+        } 
+        #endregion
 
     }
 }

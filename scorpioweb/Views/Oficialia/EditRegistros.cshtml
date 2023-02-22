@@ -187,6 +187,7 @@
         </a>
     </div>
 }
+    
 <a asp-action="EditRegistros"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
@@ -209,4 +210,7 @@
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
+    <p>
+        Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+    </p>
 </div>

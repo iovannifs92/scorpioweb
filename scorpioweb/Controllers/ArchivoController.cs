@@ -31,7 +31,6 @@ namespace scorpioweb.Models
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
-
         #region -Constructor-
         public ArchivoController(penas2Context context, Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
@@ -44,9 +43,7 @@ namespace scorpioweb.Models
         }
         #endregion
 
-
-        // GET: Archivo
-
+        #region -Index-
         public async Task<IActionResult> Index(
            string sortOrder,
            string currentFilter,
@@ -82,8 +79,8 @@ namespace scorpioweb.Models
 
 
             List<Archivoprestamo> queryArchivoHistorial = (from a in _context.Archivoprestamo
-                                                               group a by a.ArcchivoIdArchivo into grp
-                                                               select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
+                                                           group a by a.ArcchivoIdArchivo into grp
+                                                           select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
 
             var filter = from a in _context.Archivo
                          join ap in queryArchivoHistorial on a.IdArchivo equals ap.ArcchivoIdArchivo into tmp
@@ -126,7 +123,7 @@ namespace scorpioweb.Models
                 case "estado_cumplimiento_desc":
                     filter = filter.OrderByDescending(acp => acp.archivoVM.Nombre);
                     break;
-                
+
             }
 
             filter = filter.OrderByDescending(spcp => spcp.archivoVM.IdArchivo);
@@ -135,8 +132,9 @@ namespace scorpioweb.Models
             int pageSize = 10;
             return View(await PaginatedList<ArchivoControlPrestamo>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+        #endregion
 
-        // GET: Archivo/Details/5
+        #region -Details-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -153,25 +151,22 @@ namespace scorpioweb.Models
 
             return View(archivo);
         }
+        #endregion
 
-        // GET: Archivo/Create
+        #region -Create-
         public IActionResult Create()
         {
             return View();
         }
 
-        #region -CREATE PERSONA ARCHIVO
-        // POST: Archivo/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-
+        #region -Create Persona Archivo-
         public JsonResult Createadd(int id, string nombre, string ap, string am, Archivo archivo)
         {
             bool create = false;
             var idExiste = (from a in _context.Archivo
                             where a.IdArchivo == id
                             select a.IdArchivo);
-            
+
 
             if (!idExiste.Any())
             {
@@ -187,7 +182,8 @@ namespace scorpioweb.Models
                     _context.SaveChanges();
 
                     return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), create });
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     return Json(new { success = false, responseText = Url.Action("Index", "Archivo"), create });
                 }
@@ -291,7 +287,7 @@ namespace scorpioweb.Models
         public JsonResult antesdelete(int id)
         {
             var borrar = false;
-            
+
             var antesdel = from a in _context.Archivo
                            join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
                            where a.IdArchivo == id
@@ -310,7 +306,7 @@ namespace scorpioweb.Models
                           where a.IdArchivo == id
                           select a.IdArchivo).FirstOrDefault();
 
-            return Json(new { success = true, responseText = Convert.ToString(stadoc)});
+            return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
         public JsonResult deletesuper(Archivo archivo, Historialeliminacion historialeliminacion, string[] datosuper)
         {
@@ -354,18 +350,23 @@ namespace scorpioweb.Models
         }
 
         #endregion
+        #endregion
 
+        #region -ArchivoExists-
         private bool ArchivoExists(int id)
         {
             return _context.Archivo.Any(e => e.IdArchivo == id);
         }
+        #endregion
 
+        #region -ArchivoMenu-
         public IActionResult ArchivoMenu()
         {
             return View();
-        }
-        #region -PRESTAMO-
-        // GET: Archivo/Create
+        } 
+        #endregion
+
+        #region -Prestamo-
         public async Task<IActionResult> CreatePrestamo(int id, Archivoprestamo archivoprestamo, Archivo archivo, Areas areas )
         {
             ViewBag.idArchivo = id;
@@ -638,7 +639,7 @@ namespace scorpioweb.Models
 
         #endregion
 
-        #region -ARCHIVO FISICO-
+        #region -Create Archivo-
         public async Task<IActionResult> CreateArchivo(int id)
         {
             ViewBag.idArchivo = id;
@@ -670,9 +671,6 @@ namespace scorpioweb.Models
             return View();
         }
 
-        // POST: Archivo/CreateArchivo
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivo")] Archivoregistro archivoregistro,Archivo archivo,  int archivoIdArchivo, IFormFile archivoFile)
@@ -761,16 +759,12 @@ namespace scorpioweb.Models
                                        {
                                            archivoregistroVM = ar,
                                            archivoVM = a,
-                                           areasVM = area,
-                                           
+                                           areasVM = area
                                         };
 
             return View();  
         }
 
-        // POST: Archivo/EditArchivo
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
@@ -858,7 +852,7 @@ namespace scorpioweb.Models
 
         #endregion 
 
-        #region -ARCHIVO FISICO-
+        #region -ArchivoControl-
         public async Task<IActionResult> ArchivoControl(
            string sortOrder,
            string currentFilter,
@@ -924,20 +918,21 @@ namespace scorpioweb.Models
             return View(await PaginatedList<ArchivoControlPrestamo>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        #endregion 
+        #endregion
 
-
+        #region -GetAreaUser-
         public JsonResult GetAreaUser(int AreaId)
         {
             TempData["message"] = DateTime.Now;
             List<Areas> areas = new List<Areas>();
 
             areas = (from Areas in _context.Areas
-                              where Areas.IdArea == AreaId
+                     where Areas.IdArea == AreaId
                      select Areas).ToList();
 
             return Json(new SelectList(areas, "IdArea", "Area"));
-        }
+        } 
+        #endregion
 
         #region -Historial de Archivo-
         public async Task<IActionResult> ArchivoHistorial(
@@ -1006,7 +1001,7 @@ namespace scorpioweb.Models
         }
         #endregion
 
-        #region -PRESTAMO DIGITAL-
+        #region -Prestamo Digital-
         public async Task<IActionResult> ArchivoPrestamoDigital(
            string sortOrder,
            string currentFilter,
@@ -1132,7 +1127,6 @@ namespace scorpioweb.Models
                                            archivoregistroVM = ar,
                                            archivoVM = a,
                                            areasVM = area,
-
                                        };
 
             return View();

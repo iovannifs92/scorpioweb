@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Menu Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="col-sm-12 col-md-12" style="padding-bottom:5px">
+    <div class="card-group">
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Account" asp-action="Register">
+                        <img class="card-img-top" src="~/images/usuarios.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Crear nuevo usuario
+                    </a>
+                </h4>
+                <p class="card-text">
+
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Administration" asp-action="ListRoles">
+                        <img class="card-img-top" src="~/images/roles.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Administración de roles
+                    </a>
+                </h4>
+                <p class="card-text">
+
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

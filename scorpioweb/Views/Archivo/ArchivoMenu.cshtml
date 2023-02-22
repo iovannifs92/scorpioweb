@@ -18,10 +18,6 @@
                     Control Archivo
                 </a>
             </h4>
-            <p class="card-text">
-                Control Archivo
-            </p>
-
         </div>
     </div>
     <div class="col-sm-3 col-md-3 card text-center">
@@ -29,12 +25,9 @@
             <h4 class="card-title">
                 <a asp-controller="Archivo" asp-action="ArchivoPrestamoDigital">
                     <img class="card-img-bottom" src="~/images/pdf-file.png" alt="Card image cap" style="padding-bottom:5%;">
-                    Contro de prestamo digital
+                    Control de préstamo digital
                 </a>
             </h4>
-            <p class="card-text">
-                Control Prestamo Digital
-            </p>
         </div>
     </div>
     @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
@@ -44,12 +37,9 @@
                 <h4 class="card-title">
                     <a asp-controller="Archivo" asp-action="ArchivoControl">
                         <img class="card-img-bottom" src="~/images/documentation.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Contro de prestamo
+                        Control de préstamo
                     </a>
                 </h4>
-                <p class="card-text">
-                    Control Prestamo
-                </p>
             </div>
         </div>
 
@@ -58,12 +48,9 @@
                 <h4 class="card-title">
                     <a asp-controller="Archivo" asp-action="ArchivoHistorial">
                         <img class="card-img-bottom" src="~/images/history-folder.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Historaial de archivo 
+                        Historial de préstamo 
                     </a>
                 </h4>
-                <p class="card-text">
-                    Historial Archivo
-                </p>
             </div>
         </div>
     }
