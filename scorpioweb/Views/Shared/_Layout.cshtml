@@ -126,16 +126,27 @@
 
         <hr />
         <footer>
-            <div class="col-md-4" style="padding-left: 0px;  padding-right: 0px; width: 150px; float:left;">
+            <div class="col-md-2" style="padding-left: 0px;  padding-right: 0px; width: 150px; float:left;">
                 <img src="~/images/logoFooter.png" class="img-responsive" style="float:left;">
                 @*<p>&copy; 2019 - SCORPIO</p>*@
             </div>
 
             @if (User.Identity.IsAuthenticated)
-            {
-                <div class="col-8 col-md-8" style="float:right">
-                    <input type="text" class="form-control" id="Search" name="Search" onkeypress="return soloLetras(event)" placeholder="Buscar por nombre...">
+            {   
+                <div class="col-1 col-md-1" style="float:right">
+                    <button type="submit" id="buscar" class="form-control" name="buscar" onclick="Buscar()"><i class="fa fa-search"></i></button>
                 </div>
+                <div class="col-3 col-md-3" style="float:right">
+                    <input type="text" class="form-control" id="Nombre" name="Nombre" onkeypress="return soloLetras(event)" placeholder="Nombre...">
+                </div>
+                <div class="col-3 col-md-3" style="float:right">
+                    <input type="text" class="form-control" id="Materno" name="Materno" onkeypress="return soloLetras(event)" placeholder="Materno..." >
+                </div>
+                <div class="col-3 col-md-3" style="float:right">
+                    <input type="text" class="form-control" id="Paterno" name="Paterno" onkeypress="return soloLetras(event)" placeholder="Paterno...">
+                </div>
+
+               
             }
         </footer>
     </div>
@@ -177,16 +188,28 @@
 
 
 <script>
+    function Buscar() {
+        var paterno = document.getElementById("Paterno").value.toUpperCase();
+        var materno = document.getElementById("Materno").value.toUpperCase();
+        var nombre = document.getElementById("Nombre").value.toUpperCase();
 
-    $('#Search').bind("enterKey", function(e) {
-        var buscar = document.getElementById("Search").value;
+        if (paterno == "" || (paterno == "" && nombre == "")) {
+            alert("Para realizar cualquier búsqueda colocar el apellido paterno");
+            return false;
+        }else if(materno == "" && nombre == ""){
+            alert("Llene almenos 2 campos");
+            return false;
+        }
+
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "/Personas/buscadorGeneral",
             traditional: true,
             data: {
-                Buscar: buscar,
+                var_paterno: paterno,
+                var_materno: materno,
+                var_nombre: nombre,
             },
             success: function(response) {
                 $('#tblBusqueda').html('');
@@ -200,7 +223,7 @@
                     row = row
                         + "<tr>"
                         + "<td>" + response.busqueda[i].id + "</td>"
-                        + "<td>" + response.busqueda[i].nombreCompletoPersona + "</td>"
+                        + "<td>" + response.busqueda[i].paterno+ " " + response.busqueda[i].materno +" "+ response.busqueda[i].nombre + "</td>"
                         + "<td>" + response.busqueda[i].tabla + "</td>"
                     row = row + "<td>";
                     switch (response.busqueda[i].tabla) {
@@ -232,7 +255,7 @@
                     $('#tblBusqueda').append(row);
                 }
                 $("#myModal").modal();
-                var str = "Resultados de  " + buscar;
+                var str = "Resultados de  ";
                 $("#modal_body").html(str);
             },
             error: function(response) {
@@ -240,13 +263,7 @@
                 //location.reload();
             }
         });
-    });
-    $('#Search').keyup(function(e) {
-        //alert("pres enter")
-        if (e.keyCode == 13) {
-            $(this).trigger("enterKey");
-        }
-    });
+    };
 
 
     function soloLetras(e) {
@@ -267,5 +284,4 @@
             return false;
         }
     }
-
 </script>
