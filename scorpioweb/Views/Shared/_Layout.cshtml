@@ -197,7 +197,7 @@
             alert("Para realizar cualquier búsqueda colocar el apellido paterno");
             return false;
         }else if(materno == "" && nombre == ""){
-            alert("Llene almenos 2 campos");
+            alert("Coloque apellido materno y/o nombre para continuar con la búsqueda");
             return false;
         }
 
@@ -215,7 +215,7 @@
                 $('#tblBusqueda').html('');
                 var row = '';
                 if (response.busqueda.length == 0) {
-                    alert("No encontre nada")
+                    alert("No se encontro ningún registro que coincida")
                     return;
                 }
 
