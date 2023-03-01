@@ -127,6 +127,12 @@
             <th>
                 Expediente
             </th>
+            <th>
+                Y/O
+            </th>
+             <th>
+                Otros
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -155,14 +161,26 @@
                     @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
                     </td>
                 }
-                 <td>
-                    @if (item.archivoVM.Urldocumento != null)
-                    {
-                        <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
-                            <i class="fa fa-paperclip fa-9x"></i>
-                        </a>
-                    }
+                
+                @if (item.archivoVM.Urldocumento != null)
+                {
+                    <td>
+                    <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
+                        <i class="fa fa-paperclip fa-9x"></i>
+                    </a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoVM.Yo)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.archivoregistroVM.Otro)
+                </td>
+               
                 @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
                     <td>

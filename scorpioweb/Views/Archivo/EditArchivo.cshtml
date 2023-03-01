@@ -161,7 +161,66 @@
         });
     });
 
+
+    function Reasignar(idArchivoRegistro, i){
+        var ArchivoIdArchivo = document.getElementById("ArchivoIdArchivo").value;
+        var nuevoArchivoIdArchivo = document.getElementById("idNuevo" + i).value;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/Bucaid",
+            traditional: true,
+            data: {
+                datoidArchivo:nuevoArchivoIdArchivo,
+            },
+            success: function (response) {           
+                if (response.update == false) {
+                    alert("El id no esta aun no esta registrado");
+                    return;
+                }else{
+                let razon = confirm("Deseas cambiar a la persona " + response.nombre[0].nombre +" "+response.nombre[0].paterno+" "+response.nombre[0].materno + ", Con id " +nuevoArchivoIdArchivo );
+                    if (razon) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/Archivo/Reasignar",
+                        traditional: true,
+                        data: {
+                            datoidArchivo:nuevoArchivoIdArchivo,
+                            datoidArchivoregistro: idArchivoRegistro
+                        },
+                        success: function (response) {
+                            if (response.update == true) {
+                                alert("Rgistro Actualizado");
+                                location.reload();  
+                            } else {
+                                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema " + response.error);
+                            }
+                        },
+                        error: function (response) {
+                            alert(response.error);
+
+                        }
+                    });;
+                    } else {
+                        return;
+                    }
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+    
+
+    }
+
+    
+
 </script>
+
+
 
 @{
     int i = 0;
@@ -188,7 +247,8 @@
             </a>
         </p>
         <div class="collapse" id="@(collapseid+i)">
-            <input readonly style="display:none" name="IdArchivoRegistro" id="IdArchivoRegistro" value="@item.archivoregistroVM.IdArchivoRegistro" class="form-control" />
+            <input style="display:none" readonly name="IdArchivoRegistro" id="IdArchivoRegistro" value="@item.archivoregistroVM.IdArchivoRegistro" class="form-control" />
+            <input style="display:none" readonly name="ArchivoIdArchivo" id="ArchivoIdArchivo" value="@item.archivoregistroVM.ArchivoIdArchivo" class="form-control" />
             <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
                 <input name="CausaPenal" id="CausaPenal" value="@item.archivoregistroVM.CausaPenal" class="form-control" />
@@ -220,11 +280,9 @@
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Envia</label>
-                <select class="form-control" name="Envia" id="Envia"
-                        asp-items="@(new SelectList(ViewBag.ListaGeneral, "IdArea", "UserName", @item.archivoregistroVM.Envia))">
-                        <option value="@item.areasVM.IdArea" >@item.archivoregistroVM.Envia.ToLower()</option>  
-                </select>
+                <input name="Envia" id="Envia" value="@item.archivoregistroVM.Envia" class="form-control" />
             </div>
+
             @if (item.archivoregistroVM.Urldocumento != null)
                 {
                 <div class="form-group col-md-12">
@@ -252,8 +310,33 @@
                 <button asp-action="DeleteArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" class="btn btn-danger" type="submit" style="margin-top:8px">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
-                             
+                <button type="button" class="btn btn-success fa fa-share" data-toggle="modal" data-target="#exampleModalCenter@(i)" style="margin-top:8px">
+                   Reasignacion
+                </button>
             </div>
+          
         </div>  
     </form>
+
+    <div class="modal" id="exampleModalCenter@(i)" name="exampleModalCenter" tabindex="-1"  aria-labelledby="modalReasignar" aria-hidden="true" style="width:1000px; margin-top:300px;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Reacignacion</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label class="control-label">Id</label>
+            <input name="idNuevo@(i)" id="idNuevo@(i)"  class="form-control" placeholder="Colocar id.."/>
+          </div>
+          <div class="modal-footer">
+            <button type="button" onclick="Reasignar(@item.archivoregistroVM.IdArchivoRegistro, @(i))" class="btn btn-success fa fa-share"> Reasignar</button>
+          </div>
+        </div>
+      </div>
+    </div>
 }
+
+

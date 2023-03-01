@@ -160,13 +160,12 @@ namespace scorpioweb.Models
         }
 
         #region -Create Persona Archivo-
-        public JsonResult Createadd(int id, string nombre, string ap, string am, Archivo archivo)
+        public JsonResult Createadd(int id, string nombre, string ap, string am,string yo, Archivo archivo)
         {
             bool create = false;
             var idExiste = (from a in _context.Archivo
                             where a.IdArchivo == id
                             select a.IdArchivo);
-
 
             if (!idExiste.Any())
             {
@@ -177,6 +176,7 @@ namespace scorpioweb.Models
                     archivo.Paterno = mg.removeSpaces(mg.normaliza(ap));
                     archivo.Materno = mg.removeSpaces(mg.normaliza(am));
                     archivo.Nombre = mg.removeSpaces(mg.normaliza(nombre));
+                    archivo.Yo = mg.removeSpaces(mg.normaliza(yo));
 
                     _context.Add(archivo);
                     _context.SaveChanges();
@@ -366,8 +366,216 @@ namespace scorpioweb.Models
         } 
         #endregion
 
+        #region -Create Archivo-
+        public async Task<IActionResult> CreateArchivo(int id)
+        {
+            ViewBag.idArchivo = id;
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
+            List<Areas> listaGeneral = new List<Areas>();
+            listaGeneral = (from table in _context.Areas
+                            select table).ToList();
+            ViewBag.ListaGeneral = listaGeneral;
+
+            var snArchivos = await _context.Archivoregistro.Where(m => m.ArchivoIdArchivo == id).ToListAsync();
+            if (snArchivos.Count != 0)
+            {
+                return RedirectToAction("EditArchivo", new {id});
+            }   
+
+            return View();
+        }
+        public async Task<IActionResult> CreateArchivo2(int id)
+        {
+            ViewBag.idArchivo = id;
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
+            List<Areas> listaGeneral = new List<Areas>();
+            listaGeneral = (from table in _context.Areas
+                            select table).ToList();
+            ViewBag.ListaGeneral = listaGeneral;
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,ArcchivoIdArchivo")] Archivoregistro archivoregistro,Archivo archivo,  int archivoIdArchivo, IFormFile archivoFile)
+        {
+
+            if (ModelState.IsValid)
+            {
+
+                int idArchivo = ((from table in _context.Archivoregistro
+                                   select table.IdArchivoRegistro).Max() + 1);
+
+                var sacarnomEnvia = (from a in _context.Areas
+                                     where a.IdArea == int.Parse(archivoregistro.Envia)
+                                     select a.UserName).First();
+
+                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
+                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
+                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
+                archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
+                archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
+                archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
+                archivoregistro.Envia = mg.normaliza(sacarnomEnvia.ToString());
+                archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
+                //archivoregistro.Reasignacion = 
+           
+
+                if (archivoFile == null)
+                {
+
+                }
+                else
+                {
+                    var nombre = (from a in _context.Archivo
+                                 where a.IdArchivo == archivoIdArchivo
+                                 select a).ToString();
+
+                    string file_name = archivoregistro.ArchivoIdArchivo + "_" + idArchivo + Path.GetExtension(archivoFile.FileName); ;
+                    archivoregistro.Urldocumento = file_name;
+                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
+
+                    if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                    {
+                        System.IO.File.Delete(Path.Combine(uploads, file_name));
+                    }
+
+                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                    await archivoFile.CopyToAsync(stream);
+                    stream.Close();
+                }
+
+                _context.Add(archivoregistro);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(archivoregistro);
+        }
+
+        public async Task<IActionResult> EditArchivo(int id)
+        {
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+
+
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
+            List<Areas> listaGeneral = new List<Areas>();
+            listaGeneral = (from table in _context.Areas
+                            where !table.Area.EndsWith("\u0040nortedgepms.com")
+                            select new Areas{
+                                IdArea = table.IdArea,
+                                UserName = table.UserName
+                            }).ToList();
+
+            ViewBag.ListaGeneral = listaGeneral;
+
+            ViewData["tienearchivo"] = from a in _context.Archivo
+                                       join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
+                                       where a.IdArchivo == id
+                                       select new ArchivoControlPrestamo
+                                       {
+                                           archivoregistroVM = ar,
+                                           archivoVM = a,
+                                        };
+
+            return View();  
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
+        {
+
+            if (id != archivoregistro.IdArchivoRegistro)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+
+                var oldArchivo = await _context.Archivoregistro.FindAsync(archivoregistro.IdArchivoRegistro);
+    
+                archivoregistro.Envia = mg.normaliza(archivoregistro.Envia.ToString());
+                archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
+                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
+                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
+                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
+                archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
+                archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
+                archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
+
+
+                if (archivoFile == null)
+                {
+                    archivoregistro.Urldocumento = oldArchivo.Urldocumento;
+                }
+                else
+                {
+              
+                    string file_name = oldArchivo.ArchivoIdArchivo + "_" + oldArchivo.IdArchivoRegistro + Path.GetExtension(archivoFile.FileName); ;
+                    archivoregistro.Urldocumento = file_name;
+                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
+
+                    if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                    {
+                        System.IO.File.Delete(Path.Combine(uploads, file_name));
+                    }
+                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                    await archivoFile.CopyToAsync(stream);
+                    stream.Close();
+                }
+
+                try
+                {
+                    _context.Entry(oldArchivo).CurrentValues.SetValues(archivoregistro);
+
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ArchivoExists(archivoregistro.IdArchivoRegistro))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(archivoregistro);
+        }
+
+        public async Task<IActionResult> DeleteArchivo(int? id)
+        {
+            var Archivoregistro = await _context.Archivoregistro.SingleOrDefaultAsync(m => m.IdArchivoRegistro == id);
+            
+
+
+            _context.Archivoregistro.Remove(Archivoregistro);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index" , "Archivo");
+
+        }
+
+        #endregion 
+
         #region -Prestamo-
-        public async Task<IActionResult> CreatePrestamo(int id, Archivoprestamo archivoprestamo, Archivo archivo, Areas areas )
+        public async Task<IActionResult> CreatePrestamo(int id, Archivoprestamo archivoprestamo, Archivo archivo, Areas areas)
         {
             ViewBag.idArchivo = id;
 
@@ -388,12 +596,12 @@ namespace scorpioweb.Models
                              where table.Area == "ARCHIVO"
                              select table).ToList();
             ViewBag.ListaUsuarios = listausuarios;
-            
+
 
             List<Areas> listaGeneral = new List<Areas>();
             listaGeneral = (from table in _context.Areas
-                             where !table.Area.EndsWith("\u0040nortedgepms.com")
-                             select table).ToList();
+                            where !table.Area.EndsWith("\u0040nortedgepms.com")
+                            select table).ToList();
             ViewBag.ListaGeneral = listaGeneral;
 
             return View();
@@ -408,8 +616,8 @@ namespace scorpioweb.Models
         {
             if (ModelState.IsValid)
             {
-                
-                if(optradio == 1)
+
+                if (optradio == 1)
                 {
                     try
                     {
@@ -433,7 +641,8 @@ namespace scorpioweb.Models
 
                         _context.Add(archivoprestamo);
                         await _context.SaveChangesAsync();
-                    }catch(Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         return Json(new { success = false, responseText = "Error al guardar " + ex });
                     }
@@ -460,7 +669,7 @@ namespace scorpioweb.Models
                         _context.Add(archivoprestamodigital);
                         await _context.SaveChangesAsync();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         return Json(new { success = false, responseText = "Error al guardar " + ex });
                     }
@@ -478,13 +687,13 @@ namespace scorpioweb.Models
             {
                 return NotFound();
             }
-           
+
             var archivoprestamo = await _context.Archivoprestamo.SingleOrDefaultAsync(m => m.IdArchivoPrestamo == id);
 
             var Entrega = (from sa in _context.Areas
-                         where sa.UserName == archivoprestamo.Entrega.ToLower()
-                         select sa.IdArea).First().ToString();
-            
+                           where sa.UserName == archivoprestamo.Entrega.ToLower()
+                           select sa.IdArea).First().ToString();
+
             ViewBag.idArchivo = archivoprestamo.ArcchivoIdArchivo;
             List<Areas> listausuarios = new List<Areas>();
             listausuarios = (from table in _context.Areas
@@ -494,13 +703,13 @@ namespace scorpioweb.Models
             ViewBag.userEntrega = Entrega;
 
             var Recibe = (from sa in _context.Areas
-                       where sa.UserName == archivoprestamo.Recibe.ToLower()
-                       select sa.IdArea).First().ToString();
+                          where sa.UserName == archivoprestamo.Recibe.ToLower()
+                          select sa.IdArea).First().ToString();
 
             ViewBag.idArchivo = archivoprestamo.ArcchivoIdArchivo;
             List<Areas> listaGeneral = new List<Areas>();
             listaGeneral = (from table in _context.Areas
-                            where !table.Area.EndsWith("\u0040nortedgepms.com") 
+                            where !table.Area.EndsWith("\u0040nortedgepms.com")
                             select table).ToList();
             ViewBag.listaGeneral = listaGeneral;
             ViewBag.userGeneral = Recibe;
@@ -588,7 +797,7 @@ namespace scorpioweb.Models
             {
                 if (empty.Any())
                 {
-                    entrega =true;
+                    entrega = true;
                     var query = (from ap in _context.Archivoprestamo
                                  where ap.IdArchivoPrestamo == id
                                  select ap).FirstOrDefault();
@@ -599,7 +808,7 @@ namespace scorpioweb.Models
             }
             catch
             {
-               
+
                 return Json(new { success = true, responseText = Convert.ToString(empty), idPersonas = Convert.ToString(id), entrega });
             }
 
@@ -638,219 +847,6 @@ namespace scorpioweb.Models
 
 
         #endregion
-
-        #region -Create Archivo-
-        public async Task<IActionResult> CreateArchivo(int id)
-        {
-            ViewBag.idArchivo = id;
-            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
-
-            List<Areas> listaGeneral = new List<Areas>();
-            listaGeneral = (from table in _context.Areas
-                            select table).ToList();
-            ViewBag.ListaGeneral = listaGeneral;
-
-            var snArchivos = await _context.Archivoregistro.Where(m => m.ArchivoIdArchivo == id).ToListAsync();
-            if (snArchivos.Count != 0)
-            {
-                return RedirectToAction("EditArchivo", new {id});
-            }
-
-            return View();
-        }
-        public async Task<IActionResult> CreateArchivo2(int id)
-        {
-            ViewBag.idArchivo = id;
-            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
-
-            List<Areas> listaGeneral = new List<Areas>();
-            listaGeneral = (from table in _context.Areas
-                            select table).ToList();
-            ViewBag.ListaGeneral = listaGeneral;
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivo")] Archivoregistro archivoregistro,Archivo archivo,  int archivoIdArchivo, IFormFile archivoFile)
-        {
-
-            if (ModelState.IsValid)
-            {
-
-                int idArchivo = ((from table in _context.Archivoregistro
-                                   select table.IdArchivoRegistro).Max() + 1);
-
-                var sacarnomEnvia = (from a in _context.Areas
-                                     where a.IdArea == int.Parse(archivoregistro.Envia)
-                                     select a.UserName).First();
-
-                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
-                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
-                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
-                archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
-                archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
-                archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
-                archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
-                archivoregistro.Envia = mg.normaliza(sacarnomEnvia.ToString());
-                archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-           
-
-                if (archivoFile == null)
-                {
-
-                }
-                else
-                {
-                    var nombre = (from a in _context.Archivo
-                                 where a.IdArchivo == archivoIdArchivo
-                                 select a).ToString();
-
-                    string file_name = archivoregistro.ArchivoIdArchivo + "_" + idArchivo + Path.GetExtension(archivoFile.FileName); ;
-                    archivoregistro.Urldocumento = file_name;
-                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
-
-                    if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
-                    {
-                        System.IO.File.Delete(Path.Combine(uploads, file_name));
-                    }
-
-                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                    await archivoFile.CopyToAsync(stream);
-                    stream.Close();
-                }
-
-                _context.Add(archivoregistro);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(archivoregistro);
-        }
-
-        public async Task<IActionResult> EditArchivo(int id)
-        {
-
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            var roles = await userManager.GetRolesAsync(user);
-            ViewBag.User = user.ToString();
-            ViewBag.Admin = false;
-            ViewBag.Masteradmin = false;
-            ViewBag.Archivo = false;
-
-
-            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
-
-            List<Areas> listaGeneral = new List<Areas>();
-            listaGeneral = (from table in _context.Areas
-                            where !table.Area.EndsWith("\u0040nortedgepms.com")
-                            select new Areas{
-                                IdArea = table.IdArea,
-                                UserName = table.UserName
-                            }).ToList();
-
-            ViewBag.ListaGeneral = listaGeneral;
-
-            ViewData["tienearchivo"] = from a in _context.Archivo
-                                       join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
-                                       join area in _context.Areas on ar.Envia equals area.UserName
-                                       where a.IdArchivo == id
-                                       select new ArchivoControlPrestamo
-                                       {
-                                           archivoregistroVM = ar,
-                                           archivoVM = a,
-                                           areasVM = area
-                                        };
-
-            return View();  
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
-        {
-
-            if (id != archivoregistro.IdArchivoRegistro)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-
-                var oldArchivo = await _context.Archivoregistro.FindAsync(archivoregistro.IdArchivoRegistro);
-
-                var sacarnomEntrega = (from a in _context.Areas
-                                       where a.IdArea == int.Parse(archivoregistro.Envia)
-                                       select a.UserName).First();
-                
-                archivoregistro.Envia = mg.normaliza(sacarnomEntrega.ToString());
-                archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
-                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
-                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
-                archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
-                archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
-                archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
-                archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
-
-
-                if (archivoFile == null)
-                {
-                    archivoregistro.Urldocumento = oldArchivo.Urldocumento;
-                }
-                else
-                {
-              
-                    string file_name = oldArchivo.ArchivoIdArchivo + "_" + oldArchivo.IdArchivoRegistro + Path.GetExtension(archivoFile.FileName); ;
-                    archivoregistro.Urldocumento = file_name;
-                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
-
-                    if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
-                    {
-                        System.IO.File.Delete(Path.Combine(uploads, file_name));
-                    }
-                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                    await archivoFile.CopyToAsync(stream);
-                    stream.Close();
-                }
-
-                try
-                {
-                    _context.Entry(oldArchivo).CurrentValues.SetValues(archivoregistro);
-
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ArchivoExists(archivoregistro.IdArchivoRegistro))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(archivoregistro);
-        }
-
-        public async Task<IActionResult> DeleteArchivo(int? id)
-        {
-            var Archivoregistro = await _context.Archivoregistro.SingleOrDefaultAsync(m => m.IdArchivoRegistro == id);
-            
-
-
-            _context.Archivoregistro.Remove(Archivoregistro);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index" , "Archivo");
-
-        }
-
-        #endregion 
 
         #region -ArchivoControl-
         public async Task<IActionResult> ArchivoControl(
@@ -1132,6 +1128,98 @@ namespace scorpioweb.Models
             return View();
         }
 
+        #endregion
+
+        #region -Reacignar-
+        public JsonResult Bucaid(Archivo archivo, Archivoregistro archivoregistro, string datoidArchivo)
+        {
+            var update = false;
+            var id = Int32.Parse(datoidArchivo);
+
+            var buscaid = from a in _context.Archivo
+                           where a.IdArchivo == id
+                           select a;
+
+            if (!buscaid.Any())
+            {
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update });
+            }
+            else
+            {
+                update = true;
+
+                var nombre = (from a in _context.Archivo
+                             where a.IdArchivo == id
+                             select new Archivo
+                             {
+                                 Nombre = a.Nombre,
+                                 Paterno = a.Paterno,
+                                 Materno = a.Materno
+                             }).ToList();
+
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update, nombre = nombre }); ;
+            }
+            var stadoc = (from s in _context.Archivo
+                          where s.IdArchivo == id
+                          select s.IdArchivo).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idSupervision = Convert.ToString(id) });
+        }
+        public JsonResult Reasignar(Archivoregistro archivoregistro, string datoidArchivo, string datoidArchivoregistro)
+        {
+            var update = false;
+            int idd = Int32.Parse(datoidArchivoregistro);
+            int archivoId = Int32.Parse(datoidArchivo);
+
+            var aregistro = (from ar in _context.Archivoregistro
+                            where ar.IdArchivoRegistro == idd
+                            select new Archivoregistro
+                            {
+                                CausaPenal = ar.CausaPenal,
+                                Delito = ar.Delito,
+                                Sentencia = ar.Sentencia,
+                                Situacion = ar.Situacion,
+                                FechaAcuerdo = ar.FechaAcuerdo,
+                                CarpetaEjecucion = ar.CarpetaEjecucion,
+                                Observaciones = ar.Observaciones,
+                                Envia = ar.Envia,
+                                Urldocumento = ar.Urldocumento,
+                                Otro = ar.Otro
+                            }).ToList();
+
+            archivoregistro.IdArchivoRegistro = idd;
+            archivoregistro.ArchivoIdArchivo = archivoId;
+            archivoregistro.CausaPenal = aregistro[0].CausaPenal; 
+            archivoregistro.Delito = aregistro[0].Delito; 
+            archivoregistro.Sentencia = aregistro[0].Sentencia; 
+            archivoregistro.Situacion = aregistro[0].Situacion; 
+            archivoregistro.FechaAcuerdo = aregistro[0].FechaAcuerdo; 
+            archivoregistro.CarpetaEjecucion = aregistro[0].CarpetaEjecucion; 
+            archivoregistro.Observaciones = aregistro[0].Observaciones; 
+            archivoregistro.Envia = aregistro[0].Envia; 
+            archivoregistro.Urldocumento = aregistro[0].Urldocumento; 
+            archivoregistro.Otro = aregistro[0].Otro; 
+
+
+            try
+            {
+                update = true;
+                _context.Update(archivoregistro);
+                _context.SaveChanges();
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update, error = error });
+            }
+
+            var stadoc = (from c in _context.Archivoregistro
+                          where c.IdArchivoRegistro == idd
+                          select c.IdArchivoRegistro).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc)});
+        }
         #endregion
 
     }

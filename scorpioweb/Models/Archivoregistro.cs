@@ -15,6 +15,7 @@ namespace scorpioweb.Models
         public string Observaciones { get; set; }
         public string Envia { get; set; }
         public string Urldocumento { get; set; }
+        public string Otro { get; set; }
         public int? ArchivoIdArchivo { get; set; }
     }
 }
