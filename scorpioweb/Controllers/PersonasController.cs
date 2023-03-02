@@ -6630,10 +6630,23 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public JsonResult buscadorGeneral(string var_paterno, string var_materno, string var_nombre)
+        public async Task<JsonResult>  buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser)
         {
+
+            bool var_flag = false;
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            foreach (var rol in roles)
+            {
+                if(rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director")
+                {
+                    var_flag = true;
+                }
+            }
+
             var listaNombres = _context.BuscadorGenerals
-                              .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno +"', '"+var_materno+"', '"+var_nombre+"')")
+                              .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno +"', '"+var_materno+"', '"+var_nombre+"' )")
                               .ToList();
 
             return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });

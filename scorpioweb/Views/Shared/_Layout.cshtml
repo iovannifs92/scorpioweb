@@ -71,10 +71,10 @@
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador"))
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
-@*                        <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
-*@                    }
+                        <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
+                    }
                     @if (User.IsInRole("Masteradmin"))
-                    {
+                    { 
                         <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administracion</a></li>
                     }
 
@@ -227,6 +227,7 @@
                         + "<td>" + response.busqueda[i].tabla + "</td>"
                     row = row + "<td>";
                     switch (response.busqueda[i].tabla) {
+
                         case 'MC Y SCP':
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";

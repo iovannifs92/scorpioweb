@@ -86,6 +86,46 @@
         return innerFunc;
     };
 
+    function BuscarAR() {
+        var SearchString = document.getElementById("SearchString").value.toUpperCase();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/BuscarAR",
+            traditional: true,
+            data: {
+                var_buscar: SearchString,
+            },
+            success: function(response) {
+                $('#tblbusqueda').html('');
+                var row = '';
+                if (response.busqueda.length == 0) {
+                    alert("No se encontro ningún registro que coincida")
+                    return;
+                }
+
+                for (let i = 0; i < response.busqueda.length; i++) {
+                    row = row
+                        + "<tr>"
+                        + "<td>" + response.busqueda[i].id + "</td>"
+                        + "<td>" + response.busqueda[i].paterno+ " " + response.busqueda[i].materno +" "+ response.busqueda[i].nombre + "</td>"
+                        + "<td>" + response.busqueda[i].otro + "</td>"
+                    row = row + "</tr>";
+                };
+                if (row != '') {
+                    $('#tblBusqueda').append(row);
+                }
+                $("#myModal").modal();
+                var str = "Resultados de  " + SearchString;
+                $("#modal_body").html(str);
+            },
+            error: function(response) {
+                //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                //location.reload();
+            }
+        });
+    };
+
 
 
 
@@ -96,19 +136,27 @@
 
 <form asp-action="Index" method="get">
     <div>
-        <div class="col-md-12">
+        <div class="col-md-6">
             <label>
                 Búsqueda por nombre o idarchivo
-                <input type="text" name="SearchString" value="@ViewData["currentFilter"]" /> 
+                <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" /> 
             </label>
-            <button type="submit" class="btn btn-default" style="margin-left:60px">
+            <button type="submit" class="btn btn-default" style="margin-left:10px">
                 <i class="fa fa-search"></i>
                 Buscar
-            </button>
-            <a asp-action="Index">Regresar al listado completo</a>
+            </button>  
         </div>
     </div>        
 </form>
+<div class="col-md-6">
+    <button class="btn btn-default" onclick="BuscarAR()">
+                    <i class="fa fa-search"></i>
+                    Buscar en Archivo Registrio
+    </button>
+    <a asp-action="Index">Regresar al listado completo</a>
+</div>
+            
+      
 <table class="table" style="font-size:10px">
     <thead>
         <tr>
@@ -199,6 +247,38 @@
         }
     </tbody>
 </table> 
+
+
+<div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="text-right">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">x</button>
+            </div>
+            <div class="modal-header float-center">
+                <h3 id="modal_body"></h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id Archivo Registro</th>
+                                <th>Nombre</th>
+                                <th>Otro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblBusqueda">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
