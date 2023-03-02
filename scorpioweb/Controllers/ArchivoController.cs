@@ -92,13 +92,6 @@ namespace scorpioweb.Models
                          };
 
 
-            //var filter = from a in _context.Archivo
-            //         join ap in _context.Archivoprestamo on a.IdArchivo equals ap.ArcchivoIdArchivo into tmp
-            //         from left in tmp.DefaultIfEmpty()
-            //         select new ArchivoControlPrestamo
-            //         {
-
-            //         };
 
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
@@ -134,8 +127,22 @@ namespace scorpioweb.Models
         }
         #endregion
 
-        #region -Details-
-        public async Task<IActionResult> Details(int? id)
+        #region -BUSCAR POR ARCHIOVO REGISTRO-
+        public async Task<JsonResult> BuscarAR(string var_buscar)
+        {
+
+
+
+            var listaNombres = _context.BuscarArchivoRegistros
+                              .FromSql("CALL spBuscadorArchivoregistro('" + var_buscar + "' )")
+                              .ToList();
+
+            return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
+        }
+        #endregion
+
+    #region -Details-
+    public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {

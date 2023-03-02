@@ -71,9 +71,10 @@
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador"))
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
-@*                        <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>                    }
-*@                    @if (User.IsInRole("Masteradmin"))
-                    {
+                        <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
+                    }
+                    @if (User.IsInRole("Masteradmin"))
+                    { 
                         <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administracion</a></li>
                     }
 
@@ -132,7 +133,7 @@
 
             @if (User.Identity.IsAuthenticated)
             {   
-                @*<div class="col-1 col-md-1" style="float:right">
+                <div class="col-1 col-md-1" style="float:right">
                     <button type="submit" id="buscar" class="form-control" name="buscar" onclick="Buscar()"><i class="fa fa-search"></i></button>
                 </div>
                 <div class="col-3 col-md-3" style="float:right">
@@ -143,7 +144,9 @@
                 </div>
                 <div class="col-3 col-md-3" style="float:right">
                     <input type="text" class="form-control" id="Paterno" name="Paterno" onkeypress="return soloLetras(event)" placeholder="Paterno...">
-                </div>*@
+                </div>
+
+               
             }
         </footer>
     </div>
@@ -224,6 +227,7 @@
                         + "<td>" + response.busqueda[i].tabla + "</td>"
                     row = row + "<td>";
                     switch (response.busqueda[i].tabla) {
+
                         case 'MC Y SCP':
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
