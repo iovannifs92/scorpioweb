@@ -7,6 +7,6 @@
         public Archivoregistro archivoregistroVM { get; set; } 
         public Areas areasVM { get; set; }
         public Archivoprestamodigital archivoprestamodigitalVM { get; set; }
-        
+
     }
 }
