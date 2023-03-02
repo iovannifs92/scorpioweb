@@ -87,6 +87,7 @@
     };
 
     function BuscarAR() {
+        $("#tblBusqueda").empty();
         var SearchString = document.getElementById("SearchString").value.toUpperCase();
         $.ajax({
             type: "POST",
@@ -260,7 +261,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                    <table class="table">
+                    <table class="table" name="tblBusqueda" id="tblBusqueda">
                         <thead>
                             <tr>
                                 <th>Id Archivo Registro</th>

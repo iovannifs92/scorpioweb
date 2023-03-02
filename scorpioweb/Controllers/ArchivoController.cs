@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Security.Claims;
 using scorpioweb.Class;
+using System.Security.Policy;
+
 namespace scorpioweb.Models
 {
     [Authorize]
@@ -127,12 +129,9 @@ namespace scorpioweb.Models
         }
         #endregion
 
-        #region -BUSCAR POR ARCHIOVO REGISTRO-
+        #region -Buscar en registros-
         public async Task<JsonResult> BuscarAR(string var_buscar)
         {
-
-
-
             var listaNombres = _context.BuscarArchivoRegistros
                               .FromSql("CALL spBuscadorArchivoregistro('" + var_buscar + "' )")
                               .ToList();
@@ -141,30 +140,31 @@ namespace scorpioweb.Models
         }
         #endregion
 
-    #region -Details-
-    public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+        #region -Details-
+        public async Task<IActionResult> Details(int? id)
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var archivo = await _context.Archivo
-                .SingleOrDefaultAsync(m => m.IdArchivo == id);
-            if (archivo == null)
-            {
-                return NotFound();
-            }
+                var archivo = await _context.Archivo
+                    .SingleOrDefaultAsync(m => m.IdArchivo == id);
+                if (archivo == null)
+                {
+                    return NotFound();
+                }
 
-            return View(archivo);
-        }
-        #endregion
+                return View(archivo);
+            }
+            #endregion
 
         #region -Create-
         public IActionResult Create()
         {
             return View();
         }
+        #endregion
 
         #region -Create Persona Archivo-
         public JsonResult Createadd(int id, string nombre, string ap, string am,string yo, Archivo archivo)
@@ -206,8 +206,9 @@ namespace scorpioweb.Models
 
             return Json(new { success = false });
         }
+        #endregion
 
-        // GET: Archivo/Edit/5
+        #region -Edit-
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -223,9 +224,6 @@ namespace scorpioweb.Models
             return View(archivo);
         }
 
-        // POST: Archivo/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Urldocumento,ExpedienteUnicoIdExpedienteUnico")] Archivo archivo)
@@ -260,8 +258,9 @@ namespace scorpioweb.Models
             }
             return View(archivo);
         }
+        #endregion
 
-        // GET: Archivo/Delete/5
+        #region -Delete-
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -279,7 +278,6 @@ namespace scorpioweb.Models
             return View(archivo);
         }
 
-        // POST: Archivo/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -289,7 +287,6 @@ namespace scorpioweb.Models
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
 
         public JsonResult antesdelete(int id)
         {
@@ -315,6 +312,7 @@ namespace scorpioweb.Models
 
             return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
+
         public JsonResult deletesuper(Archivo archivo, Historialeliminacion historialeliminacion, string[] datosuper)
         {
             var borrar = false;
@@ -355,8 +353,6 @@ namespace scorpioweb.Models
 
             return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
-
-        #endregion
         #endregion
 
         #region -ArchivoExists-
@@ -500,7 +496,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
+        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia, Otro, ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
         {
 
             if (id != archivoregistro.IdArchivoRegistro)
@@ -513,7 +509,7 @@ namespace scorpioweb.Models
 
                 var oldArchivo = await _context.Archivoregistro.FindAsync(archivoregistro.IdArchivoRegistro);
     
-                archivoregistro.Envia = mg.normaliza(archivoregistro.Envia.ToString());
+                archivoregistro.Envia = archivoregistro.Envia != null ? mg.normaliza(archivoregistro.Envia.ToString()) : "";
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
                 archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
                 archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
@@ -522,6 +518,7 @@ namespace scorpioweb.Models
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
                 archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
                 archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
+                archivoregistro.Otro = mg.normaliza(archivoregistro.Otro);
 
 
                 if (archivoFile == null)
@@ -1137,7 +1134,7 @@ namespace scorpioweb.Models
 
         #endregion
 
-        #region -Reacignar-
+        #region -Reasignar-
         public JsonResult Bucaid(Archivo archivo, Archivoregistro archivoregistro, string datoidArchivo)
         {
             var update = false;
