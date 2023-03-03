@@ -1,5 +1,7 @@
-﻿@{ ViewBag.Title = "";
-    Layout = null; }
+﻿@{
+    ViewBag.Title = "";
+    Layout = null;
+}
 <style>
     * {
         box-sizing: border-box;
@@ -11,6 +13,7 @@
         position: relative;
         display: inline-block;
     }
+
     .autocomplete-items {
         position: absolute;
         border: 1px solid #d4d4d4;
@@ -22,16 +25,17 @@
         left: 0;
         right: 0;
     }
-    .autocomplete-items div {
-        padding: 10px;
-        cursor: pointer;
-        background-color: #fff;
-        border-bottom: 1px solid #d4d4d4;
-    }
-    /*when hovering an item:*/
-    .autocomplete-items div:hover {
-        background-color: #e9e9e9;
-    } 
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
     /*when navigating through the items using the arrow keys:*/
     .autocomplete-active {
         background-color: DodgerBlue !important;
@@ -40,11 +44,11 @@
 </style>
 
 <script type="text/javascript">
-     showModal = (url, title, id) => { 
+    showModal = (url, title, id) => {
         $.ajax({
             type: "GET",
-            url: url + "?id="+id,
-            success: function (res) {
+            url: url + "?id=" + id,
+            success: function(res) {
                 $("#form-modal .modal-body").html(res);
                 $("#form-modal .modal-title").html(title);
                 $("#form-modal").modal('show');
@@ -52,88 +56,88 @@
             //data: {
             //    datosBitacora: [IdFracciones],
             //},
-            error: function (res) {
+            error: function(res) {
 
             }
         })
     }
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         function autocomplete(inp, arr) {
-                var currentFocus;
-                inp.addEventListener("input", function (e) {
-                    var a, b, i, val = this.value;
-                    closeAllLists();
-                    if (!val) { return false; }
-                    currentFocus = -1;
-                    a = document.createElement("DIV");
-                    a.setAttribute("id", this.id + "autocomplete-list");
-                    a.setAttribute("class", "autocomplete-items");
-                    this.parentNode.appendChild(a);
-                    for (i = 0; i < arr.length; i++) {
-                        if (arr[i].toUpperCase().includes(val.toUpperCase())) {
-                            b = document.createElement("DIV");
-                            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                            b.innerHTML += arr[i].substr(val.length);
-                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
-                                inp.value = this.getElementsByTagName("input")[0].value;
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function(e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
 
-                                closeAllLists();
-                            });
-                            a.appendChild(b);
-                        }
-                    }
-                });
-
-                inp.addEventListener("keydown", function (e) {
-                    var x = document.getElementById(this.id + "autocomplete-list");
-                    if (x) x = x.getElementsByTagName("div");
-                    if (e.keyCode == 40) {
-
-                        currentFocus++;
-
-                        addActive(x);
-                    } else if (e.keyCode == 38) { //up
-
-                        currentFocus--;
-
-                        addActive(x);
-                    } else if (e.keyCode == 13) {
-
-                        e.preventDefault();
-                        if (currentFocus > -1) {
-
-                            if (x) x[currentFocus].click();
-                        }
-                    }
-                });
-                function addActive(x) {
-
-                    if (!x) return false;
-
-                    removeActive(x);
-                    if (currentFocus >= x.length) currentFocus = 0;
-                    if (currentFocus < 0) currentFocus = (x.length - 1);
-
-                    x[currentFocus].classList.add("autocomplete-active");
-                }
-                function removeActive(x) {
-
-                    for (var i = 0; i < x.length; i++) {
-                        x[i].classList.remove("autocomplete-active");
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
                     }
                 }
-                function closeAllLists(elmnt) {
-                    var x = document.getElementsByClassName("autocomplete-items");
-                    for (var i = 0; i < x.length; i++) {
-                        if (elmnt != x[i] && elmnt != inp) {
-                            x[i].parentNode.removeChild(x[i]);
-                        }
+            });
+
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
                     }
                 }
-                document.addEventListener("click", function (e) {
-                    closeAllLists(e.target);
-                });
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function(e) {
+                closeAllLists(e.target);
+            });
         }
         var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
         autocomplete(document.getElementById("Delito"), catalogo);
@@ -141,7 +145,7 @@
 
 
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         /*Muestra los campos escondidos required. Funciona solo en el servidor por ser http.
         https://www.py4u.net/discuss/342030 usar http en jsfiddle*/
         $("#forma").validate({
@@ -153,8 +157,8 @@
                     email: true,
                 },
             },
-            invalidHandler: function(e,validator) {
-                for (var i=0;i<validator.errorList.length;i++){
+            invalidHandler: function(e, validator) {
+                for (var i = 0; i < validator.errorList.length; i++) {
                     $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
                 }
             }
@@ -162,7 +166,7 @@
     });
 
 
-    function Reasignar(idArchivoRegistro, i){
+    function Reasignar(idArchivoRegistro, i) {
         var ArchivoIdArchivo = document.getElementById("ArchivoIdArchivo").value;
         var nuevoArchivoIdArchivo = document.getElementById("idNuevo" + i).value;
         $.ajax({
@@ -171,53 +175,78 @@
             url: "/Archivo/Bucaid",
             traditional: true,
             data: {
-                datoidArchivo:nuevoArchivoIdArchivo,
+                datoidArchivo: nuevoArchivoIdArchivo,
             },
-            success: function (response) {           
+            success: function(response) {
                 if (response.update == false) {
                     alert("El id no esta aun no esta registrado");
                     return;
-                }else{
-                let razon = confirm("Deseas cambiar a la persona " + response.nombre[0].nombre +" "+response.nombre[0].paterno+" "+response.nombre[0].materno + ", con id " +nuevoArchivoIdArchivo +"?");
+                } else {
+                    let razon = confirm("Deseas cambiar a la persona " + response.nombre[0].nombre + " " + response.nombre[0].paterno + " " + response.nombre[0].materno + ", con id " + nuevoArchivoIdArchivo + "?");
                     if (razon) {
-                    $.ajax({
-                        type: "POST",
-                        dataType: "json",
-                        url: "/Archivo/Reasignar",
-                        traditional: true,
-                        data: {
-                            datoidArchivo:nuevoArchivoIdArchivo,
-                            datoidArchivoregistro: idArchivoRegistro
-                        },
-                        success: function (response) {
-                            if (response.update == true) {
-                                alert("Registro Actualizado");
-                                location.reload();  
-                            } else {
-                                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema " + response.error);
-                            }
-                        },
-                        error: function (response) {
-                            alert(response.error);
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Archivo/Reasignar",
+                            traditional: true,
+                            data: {
+                                datoidArchivo: nuevoArchivoIdArchivo,
+                                datoidArchivoregistro: idArchivoRegistro
+                            },
+                            success: function(response) {
+                                if (response.update == true) {
+                                    alert("Registro Actualizado");
+                                    location.reload();
+                                } else {
+                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema " + response.error);
+                                }
+                            },
+                            error: function(response) {
+                                alert(response.error);
 
-                        }
-                    });;
+                            }
+                        });;
                     } else {
                         return;
                     }
                 }
             },
-            error: function (response) {
+            error: function(response) {
                 alert(response.error);
                 alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
             }
         });
-    
-
     }
 
-    
+    function DeleteArchivo(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Archivo/DeleteArchivo",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function(response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function(response) {
+                    alert(response.error);
 
+                }
+            });
+        }else{
+            return;
+        }
+        return;
+    };
 </script>
 
 
@@ -232,7 +261,7 @@
 
 @foreach (var item in ViewData["tienearchivo"] as IEnumerable<scorpioweb.Models.ArchivoControlPrestamo>)
 {
-    <a onclick="showModal('@Url.Action("CreateArchivo2", "Archivo", new {id=@item.archivoregistroVM.ArchivoIdArchivo}, Context.Request.Scheme)','Crear Archivo',@item.archivoregistroVM.ArchivoIdArchivo )" class="btn btn-success fa fa-plus"> Agregar archivo</a> 
+    <a onclick="showModal('@Url.Action("CreateArchivo2", "Archivo", new {id=@item.archivoregistroVM.ArchivoIdArchivo}, Context.Request.Scheme)','Crear Archivo',@item.archivoregistroVM.ArchivoIdArchivo )" class="btn btn-success fa fa-plus"> Agregar archivo</a>
     break;
 }
 <br />
@@ -241,9 +270,9 @@
 {
     i++;
     <form asp-action="EditArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" asp-route-archivoIdArchivo="@item.archivoregistroVM.ArchivoIdArchivo" enctype="multipart/form-data">
-         <p>
+        <p>
             <a class="btn btn-primary btn-lg btn-block" data-toggle="collapse" href="@(collapse+i)" role="button" aria-expanded="false" aria-controls="collapseExample">
-            Causa Penal @item.archivoregistroVM.CausaPenal
+                Causa Penal @item.archivoregistroVM.CausaPenal
             </a>
         </p>
         <div class="collapse" id="@(collapseid+i)">
@@ -251,9 +280,9 @@
             <input style="display:none" readonly name="ArchivoIdArchivo" id="ArchivoIdArchivo" value="@item.archivoregistroVM.ArchivoIdArchivo" class="form-control" />
             <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
-                <input name="CausaPenal" id="CausaPenal" value="@item.archivoregistroVM.CausaPenal" class="form-control" />
-            </div> 
-                <div class="form-group autocomplete col-md-12">
+                <input required name="CausaPenal" id="CausaPenal" value="@item.archivoregistroVM.CausaPenal" class="form-control" />
+            </div>
+            <div class="form-group autocomplete col-md-12">
                 <label class="control-label">Delito</label>
                 <input name="Delito" id="Delito" value="@item.archivoregistroVM.Delito" type="text" class="form-control" />
             </div>
@@ -266,14 +295,14 @@
                 <label class="control-label">Sentencia</label>
                 <input name="Sentencia" id="Sentencia" value="@item.archivoregistroVM.Sentencia" class="form-control" />
             </div>
-                <div class="form-group col-md-12">
+            <div class="form-group col-md-12">
                 <label class="control-label">Fecha de Acuerdo</label>
-                <input id="FechaAcuerdo" name="FechaAcuerdo" class="form-control" asp-for="@item.archivoregistroVM.FechaAcuerdo" type="date" />
+                <input required id="FechaAcuerdo" name="FechaAcuerdo" class="form-control" asp-for="@item.archivoregistroVM.FechaAcuerdo" type="date" />
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Observaciones</label>
                 <input name="Observaciones" id="Observaciones" value="@item.archivoregistroVM.Observaciones" class="form-control" />
-            </div>   
+            </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Carpeta de Ejecucion</label>
                 <input name="CarpetaEjecucion" id="CarpetaEjecucion" value="@item.archivoregistroVM.CarpetaEjecucion" class="form-control" />
@@ -284,7 +313,7 @@
             </div>
 
             @if (item.archivoregistroVM.Urldocumento != null)
-                {
+            {
                 <div class="form-group col-md-12">
                     <label class="control-label">Expediente</label>
                     <a id="btnEditar" style="font-size:20px" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoregistroVM.Urldocumento)" target="_blank">
@@ -295,47 +324,46 @@
                     <label class="control-label">Cambiar Expediente</label>
                     <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" lang="es">
                 </div>
-            }else
+            }
+            else
             {
                 <div class="form-group col-md-12">
                     <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" lang="es">
                 </div>
             }
             <div class="card card-body">
-                <button type="submit" class="btn btn-primary" >
+                <button type="submit" class="btn btn-primary">
                     <i class="fa fa-save"></i>
                     Guardar
                 </button>
-            
-                <button asp-action="DeleteArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" class="btn btn-danger" type="submit" style="margin-top:8px">
+                <button onclick="DeleteArchivo(@item.archivoregistroVM.IdArchivoRegistro)" class="btn btn-danger" style="margin-top:8px">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
                 <button type="button" class="btn btn-success fa fa-share" data-toggle="modal" data-target="#exampleModalCenter@(i)" style="margin-top:8px">
-                   Reasignacion
+                    Reasignacion
                 </button>
             </div>
-          
-        </div>  
+        </div>
     </form>
 
-    <div class="modal" id="exampleModalCenter@(i)" name="exampleModalCenter" tabindex="-1"  aria-labelledby="modalReasignar" aria-hidden="true" style="width:1000px; margin-top:300px;">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>Reasignación</h3>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <label class="control-label">Id</label>
-            <input name="idNuevo@(i)" id="idNuevo@(i)"  class="form-control" placeholder="Colocar id.."/>
-          </div>
-          <div class="modal-footer">
-            <button type="button" onclick="Reasignar(@item.archivoregistroVM.IdArchivoRegistro, @(i))" class="btn btn-success fa fa-share"> Reasignar</button>
-          </div>
+    <div class="modal" id="exampleModalCenter@(i)" name="exampleModalCenter" tabindex="-1" aria-labelledby="modalReasignar" aria-hidden="true" style="width:1000px; margin-top:300px;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Reasignación</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label class="control-label">Id</label>
+                    <input name="idNuevo@(i)" id="idNuevo@(i)" class="form-control" placeholder="Colocar id.." />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="Reasignar(@item.archivoregistroVM.IdArchivoRegistro, @(i))" class="btn btn-success fa fa-share"> Reasignar</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 }
 

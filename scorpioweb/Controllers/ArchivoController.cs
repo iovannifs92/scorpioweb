@@ -102,6 +102,7 @@ namespace scorpioweb.Models
                 filter = filter.Where(acp => (acp.archivoVM.Paterno + " " + acp.archivoVM.Materno + " " + acp.archivoVM.Nombre).Contains(searchString) ||
                                              (acp.archivoVM.Nombre + " " + acp.archivoVM.Materno + " " + acp.archivoVM.Paterno).Contains(searchString) ||
                                              (acp.archivoVM.Materno + " " + acp.archivoVM.Paterno + " " + acp.archivoVM.Nombre).Contains(searchString) ||
+                                             (acp.archivoVM.Yo).Contains(searchString) ||
                                              (acp.archivoVM.IdArchivo.ToString()).Contains(searchString));
             }
 
@@ -130,8 +131,6 @@ namespace scorpioweb.Models
         #region -BUSCAR POR ARCHIOVO REGISTRO-
         public async Task<JsonResult> BuscarAR(string var_buscar)
         {
-
-
 
             var listaNombres = _context.BuscarArchivoRegistros
                               .FromSql("CALL spBuscadorArchivoregistro('" + var_buscar + "' )")
@@ -174,7 +173,7 @@ namespace scorpioweb.Models
                             where a.IdArchivo == id
                             select a.IdArchivo);
 
-            if (!idExiste.Any())
+            if (id != 0 && !idExiste.Any() )
             {
                 try
                 {
@@ -228,7 +227,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Urldocumento,ExpedienteUnicoIdExpedienteUnico")] Archivo archivo)
+        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Yo,Urldocumento,ExpedienteUnicoIdExpedienteUnico")] Archivo archivo)
         {
             if (id != archivo.IdArchivo)
             {
@@ -240,6 +239,7 @@ namespace scorpioweb.Models
                 archivo.Paterno = mg.removeSpaces(mg.normaliza(archivo.Paterno));
                 archivo.Materno = mg.removeSpaces(mg.normaliza(archivo.Materno));
                 archivo.Nombre = mg.removeSpaces(mg.normaliza(archivo.Nombre));
+                archivo.Yo = mg.removeSpaces(mg.normaliza(archivo.Yo));
                 try
                 {
                     _context.Update(archivo);
@@ -420,21 +420,22 @@ namespace scorpioweb.Models
                                      where a.IdArea == int.Parse(archivoregistro.Envia)
                                      select a.UserName).First();
 
-                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
-                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
-                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal);
+                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito);
+                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion);
                 archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
                 archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
                 archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
-                archivoregistro.Envia = mg.normaliza(sacarnomEnvia.ToString());
+                archivoregistro.Envia = mg.normaliza(sacarnomEnvia).ToString();
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-                //archivoregistro.Reasignacion = 
            
 
                 if (archivoFile == null)
                 {
-
+                    _context.Add(archivoregistro);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
@@ -454,11 +455,14 @@ namespace scorpioweb.Models
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                     await archivoFile.CopyToAsync(stream);
                     stream.Close();
+
+
+                    _context.Add(archivoregistro);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
 
-                _context.Add(archivoregistro);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+               
             }
             return View(archivoregistro);
         }
@@ -566,19 +570,48 @@ namespace scorpioweb.Models
             return View(archivoregistro);
         }
 
-        public async Task<IActionResult> DeleteArchivo(int? id)
+        //public async Task<IActionResult> DeleteArchivo(int? id)
+        //{
+        //    var Archivoregistro = await _context.Archivoregistro.SingleOrDefaultAsync(m => m.IdArchivoRegistro == id);
+
+        //    _context.Archivoregistro.Remove(Archivoregistro);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction("Index" , "Archivo");
+
+        //}
+
+
+        public JsonResult DeleteArchivo(Archivoregistro archivoregistro, Historialeliminacion historialeliminacion, int dato)
         {
-            var Archivoregistro = await _context.Archivoregistro.SingleOrDefaultAsync(m => m.IdArchivoRegistro == id);
-            
+            var borrar = false;
 
+            var query = (from c in _context.Archivoregistro
+                         where c.IdArchivoRegistro == dato
+                         select c).FirstOrDefault();
+            try
+            {
+                borrar = true;
 
-            _context.Archivoregistro.Remove(Archivoregistro);
-            await _context.SaveChangesAsync();
+                var ar = _context.Archivoregistro.FirstOrDefault(m => m.IdArchivoRegistro == dato);
+                _context.Archivoregistro.Remove(ar);
+                _context.SaveChanges();
 
-            return RedirectToAction("Index" , "Archivo");
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar = borrar });
+            }
 
+            var stadoc = (from c in _context.Archivo
+                          where c.IdArchivo == dato
+                          select c.IdArchivo).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(dato) });
         }
-
         #endregion 
 
         #region -Prestamo-
@@ -809,6 +842,7 @@ namespace scorpioweb.Models
                                  where ap.IdArchivoPrestamo == id
                                  select ap).FirstOrDefault();
                     query.Estatus = "ENTREGADO";
+                    query.FechaRenovacion = DateTime.Now;
                     _context.SaveChanges();
 
                 }

@@ -6646,7 +6646,7 @@ namespace scorpioweb.Controllers
             }
 
             var listaNombres = _context.BuscadorGenerals
-                              .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno +"', '"+var_materno+"', '"+var_nombre+"' )")
+                              .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno +"', '"+ var_materno +"', '"+ var_nombre +"' )")
                               .ToList();
 
             return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });

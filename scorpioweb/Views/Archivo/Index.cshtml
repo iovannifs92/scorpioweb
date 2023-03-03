@@ -87,6 +87,7 @@
     };
 
     function BuscarAR() {
+        $('#tblBusqueda').empty();
         var SearchString = document.getElementById("SearchString").value.toUpperCase();
         $.ajax({
             type: "POST",
@@ -151,9 +152,9 @@
 <div class="col-md-6">
     <button class="btn btn-default" onclick="BuscarAR()">
                     <i class="fa fa-search"></i>
-                    Buscar en Archivo Registrio
+                    Buscar en Archivo Registro
     </button>
-    <a asp-action="Index">Regresar al listado completo</a>
+    <a style="margin-left: 20px" asp-action="Index">Regresar al listado completo</a>
 </div>
             
       
@@ -253,14 +254,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="text-right">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">x</button>
+                <button type="button" class="btn btn-secondary" hrf data-dismiss="modal">x</button>
             </div>
             <div class="modal-header float-center">
                 <h3 id="modal_body"></h3>
             </div>
             <div class="modal-body">
                 <div>
-                    <table class="table">
+                    <table class="table" name="tblBusqueda" id="tblBusqueda">
                         <thead>
                             <tr>
                                 <th>Id Archivo Registro</th>

@@ -4,7 +4,6 @@
     Layout = null;
 }
 
-
 <script>    
     function Create() {
          var id = document.getElementById("idarchivo").value;
@@ -27,7 +26,7 @@
             },
             success: function (response) {
                  if (response.create == false) {
-                     alert("El id ya esta registrado!")
+                     alert("El id ya esta registrado")
                  }else{
                      alert("Datos guardados con Exito!")
                      location.reload();
@@ -40,34 +39,37 @@
         });
     };
 
+
 </script>
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="form-group col-md-12">
-            <label asp-for="IdArchivo" class="control-label"></label>
-            <input required asp-for="IdArchivo" class="form-control" name="idarchivo" id="idarchivo" />
-            <span asp-validation-for="IdArchivo" class="text-danger"></span>
+    <form>
+        <div class="col-md-12">
+            <div class="form-group col-md-12">
+                <label asp-for="IdArchivo" class="control-label"></label>
+                <input required asp-for="IdArchivo" type="number" class="form-control" pattern="[0-9]+" name="idarchivo" id="idarchivo" />
+                <span asp-validation-for="IdArchivo" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12">
+                <label lass="control-label">Apellido Paterno</label>
+                <input class="form-control" name="paterno" id="paterno"/>
+            </div>
+            <div class="form-group col-md-12">
+                <label lass="control-label">Apellido Materno</label>
+                <input class="form-control" name="materno" id="materno"/>
+            </div>
+            <div class="form-group col-md-12">
+                <label lass="control-label">Nombre</label>
+                <input class="form-control" name="nombre" id="nombre"/>
+            </div>
+            <div class="form-group col-md-12">
+                <label lass="control-label">Y/O</label>
+                <input class="form-control" name="yo" id="yo"/>
+            </div>
+            <a type="button" class="btn btn-primary" id="Guardar" title="Guardar" onclick="Create()">
+                 <i class="fa fa-save"></i> Guardar 
+            </a>
         </div>
-        <div class="form-group col-md-12">
-            <label lass="control-label">Apellido Paterno</label>
-            <input class="form-control" name="paterno" id="paterno"/>
-        </div>
-        <div class="form-group col-md-12">
-            <label lass="control-label">Apellido Materno</label>
-            <input class="form-control" name="materno" id="materno"/>
-        </div>
-        <div class="form-group col-md-12">
-            <label lass="control-label">Nombre</label>
-            <input class="form-control" name="nombre" id="nombre"/>
-        </div>
-        <div class="form-group col-md-12">
-            <label lass="control-label">Y/O</label>
-            <input class="form-control" name="yo" id="yo"/>
-        </div>
-        <a type="button" class="btn btn-primary" id="Guardar" title="Guardar" onclick="Create()">
-             <i class="fa fa-save"></i> Guardar 
-        </a>
-    </div>
+    </form>
 </div>
 
