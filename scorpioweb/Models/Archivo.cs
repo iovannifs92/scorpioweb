@@ -12,5 +12,6 @@ namespace scorpioweb.Models
         public string Urldocumento { get; set; }
         public int? ExpedienteUnicoIdExpedienteUnico { get; set; }
         public string Yo { get; set; }
+        public string CondicionEspecial { get; set; }
     }
 }

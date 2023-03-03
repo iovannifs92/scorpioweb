@@ -6,11 +6,12 @@
 
 <script>    
     function Create() {
-         var id = document.getElementById("idarchivo").value;
-         var nombre = document.getElementById("nombre").value;
-         var ap = document.getElementById("paterno").value;
-         var am = document.getElementById("materno").value;
-         var yo = document.getElementById("yo").value;
+        var id = document.getElementById("idarchivo").value;
+        var nombre = document.getElementById("nombre").value;
+        var ap = document.getElementById("paterno").value;
+        var am = document.getElementById("materno").value;
+        var yo = document.getElementById("yo").value;
+        var condicion = document.getElementById("condicion").value;
 
         $.ajax({
             type: "POST",
@@ -23,6 +24,7 @@
                 ap: ap,
                 am: am,
                 yo: yo,
+                condicion: condicion
             },
             success: function (response) {
                  if (response.create == false) {
