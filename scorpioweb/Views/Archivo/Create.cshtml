@@ -7,11 +7,12 @@
 
 <script>    
     function Create() {
-         var id = document.getElementById("idarchivo").value;
-         var nombre = document.getElementById("nombre").value;
-         var ap = document.getElementById("paterno").value;
-         var am = document.getElementById("materno").value;
-         var yo = document.getElementById("yo").value;
+        var id = document.getElementById("idarchivo").value;
+        var nombre = document.getElementById("nombre").value;
+        var ap = document.getElementById("paterno").value;
+        var am = document.getElementById("materno").value;
+        var yo = document.getElementById("yo").value;
+        var condicion = document.getElementById("condicion").value;
 
         $.ajax({
             type: "POST",
@@ -24,6 +25,7 @@
                 ap: ap,
                 am: am,
                 yo: yo,
+                condicion: condicion
             },
             success: function (response) {
                  if (response.create == false) {
@@ -51,19 +53,23 @@
         </div>
         <div class="form-group col-md-12">
             <label lass="control-label">Apellido Paterno</label>
-            <input class="form-control" name="paterno" id="paterno"/>
+            <input class="form-control" name="paterno" id="paterno" maxlength="45"/>
         </div>
         <div class="form-group col-md-12">
             <label lass="control-label">Apellido Materno</label>
-            <input class="form-control" name="materno" id="materno"/>
+            <input class="form-control" name="materno" id="materno" maxlength="45" />
         </div>
         <div class="form-group col-md-12">
             <label lass="control-label">Nombre</label>
-            <input class="form-control" name="nombre" id="nombre"/>
+            <input class="form-control" name="nombre" id="nombre" maxlength="100" />
         </div>
         <div class="form-group col-md-12">
             <label lass="control-label">Y/O</label>
-            <input class="form-control" name="yo" id="yo"/>
+            <input class="form-control" name="yo" id="yo" maxlength="600" />
+        </div>
+        <div class="form-group col-md-12">
+            <label lass="control-label">Condición Especial</label>
+            <input class="form-control" name="condicion" id="condicion" maxlength="45" />
         </div>
         <a type="button" class="btn btn-primary" id="Guardar" title="Guardar" onclick="Create()">
              <i class="fa fa-save"></i> Guardar 

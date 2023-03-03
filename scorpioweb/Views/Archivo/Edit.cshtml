@@ -11,18 +11,28 @@
             <input type="hidden" asp-for="IdArchivo" />
             <div class="form-group">
                 <label class="control-label">Apellido Paterno</label>
-                <input asp-for="Paterno" class="form-control" />
+                <input asp-for="Paterno" class="form-control" maxlength="45"/>
                 <span asp-validation-for="Paterno" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">Apellido Materno</label>
-                <input asp-for="Materno" class="form-control" />
+                <input asp-for="Materno" class="form-control" maxlength="45"/>
                 <span asp-validation-for="Materno" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
+                <input asp-for="Nombre" class="form-control" maxlength="100" />
                 <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Yo" class="control-label">Y/O</label>
+                <input asp-for="Yo" class="form-control" maxlength="600" />
+                <span asp-validation-for="Yo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CondicionEspecial" class="control-label">Condición Especial</label>
+                <input asp-for="CondicionEspecial" class="form-control" maxlength="45" />
+                <span asp-validation-for="CondicionEspecial" class="text-danger"></span>
             </div>
             @*<div class="form-group">
                 <label asp-for="Urldocumento" class="control-label"></label>

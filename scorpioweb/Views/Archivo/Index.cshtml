@@ -180,7 +180,7 @@
                 Y/O
             </th>
              <th>
-                Otros
+                Condición Especial
             </th>
         </tr>
     </thead>
@@ -227,7 +227,7 @@
                     @Html.DisplayFor(modelItem => item.archivoVM.Yo)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.archivoregistroVM.Otro)
+                    @Html.DisplayFor(modelItem => item.archivoVM.CondicionEspecial)
                 </td>
                
                 @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))

@@ -65,7 +65,7 @@
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
                     }                    
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo"))
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>

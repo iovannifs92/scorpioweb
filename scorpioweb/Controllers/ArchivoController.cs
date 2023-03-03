@@ -167,7 +167,7 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Create Persona Archivo-
-        public JsonResult Createadd(int id, string nombre, string ap, string am,string yo, Archivo archivo)
+        public JsonResult Createadd(int id, string nombre, string ap, string am,string yo, string condicion, Archivo archivo)
         {
             bool create = false;
             var idExiste = (from a in _context.Archivo
@@ -184,6 +184,7 @@ namespace scorpioweb.Models
                     archivo.Materno = mg.removeSpaces(mg.normaliza(am));
                     archivo.Nombre = mg.removeSpaces(mg.normaliza(nombre));
                     archivo.Yo = mg.removeSpaces(mg.normaliza(yo));
+                    archivo.CondicionEspecial = mg.removeSpaces(mg.normaliza(condicion));
 
                     _context.Add(archivo);
                     _context.SaveChanges();
@@ -226,7 +227,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Urldocumento,ExpedienteUnicoIdExpedienteUnico")] Archivo archivo)
+        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre, Yo, CondicionEspecial, Urldocumento,ExpedienteUnicoIdExpedienteUnico")] Archivo archivo)
         {
             if (id != archivo.IdArchivo)
             {
@@ -238,6 +239,9 @@ namespace scorpioweb.Models
                 archivo.Paterno = mg.removeSpaces(mg.normaliza(archivo.Paterno));
                 archivo.Materno = mg.removeSpaces(mg.normaliza(archivo.Materno));
                 archivo.Nombre = mg.removeSpaces(mg.normaliza(archivo.Nombre));
+                archivo.Yo = mg.removeSpaces(mg.normaliza(archivo.Yo));
+                archivo.CondicionEspecial = mg.removeSpaces(mg.normaliza(archivo.CondicionEspecial));
+
                 try
                 {
                     _context.Update(archivo);
@@ -1120,14 +1124,22 @@ namespace scorpioweb.Models
 
             ViewData["tienearchivo"] = from a in _context.Archivo
                                        join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
-                                       join area in _context.Areas on ar.Envia equals area.UserName
                                        where a.IdArchivo == id
                                        select new ArchivoControlPrestamo
                                        {
                                            archivoregistroVM = ar,
-                                           archivoVM = a,
-                                           areasVM = area,
+                                           archivoVM = a
                                        };
+
+            var ejemplo = from a in _context.Archivo
+                    join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
+                    where a.IdArchivo == id
+                    select new ArchivoControlPrestamo
+                    {
+                        archivoregistroVM = ar,
+                        archivoVM = a
+                    };
+
 
             return View();
         }
