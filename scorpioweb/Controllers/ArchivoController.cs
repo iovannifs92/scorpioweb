@@ -517,11 +517,11 @@ namespace scorpioweb.Models
 
                 var oldArchivo = await _context.Archivoregistro.FindAsync(archivoregistro.IdArchivoRegistro);
     
-                archivoregistro.Envia = mg.normaliza(archivoregistro.Envia.ToString());
+                archivoregistro.Envia = mg.normaliza(archivoregistro.Envia);
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal.ToString());
-                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito.ToString());
-                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion.ToString());
+                archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal);
+                archivoregistro.Delito = mg.normaliza(archivoregistro.Delito);
+                archivoregistro.Situacion = mg.normaliza(archivoregistro.Situacion);
                 archivoregistro.Sentencia = mg.normaliza(archivoregistro.Sentencia);
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
                 archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
