@@ -379,10 +379,24 @@ namespace scorpioweb.Models
             ViewBag.idArchivo = id;
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
-            List<Areas> listaGeneral = new List<Areas>();
-            listaGeneral = (from table in _context.Areas
-                            select table).ToList();
-            ViewBag.ListaGeneral = listaGeneral;
+            List<string> ListaCoordinadores = new List<string>();
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Director"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Coordinador"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+            }
+
+            ViewBag.ListaGeneral = ViewBag.ListaGeneral = ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
 
             var snArchivos = await _context.Archivoregistro.Where(m => m.ArchivoIdArchivo == id).ToListAsync();
             if (snArchivos.Count != 0)
@@ -397,10 +411,27 @@ namespace scorpioweb.Models
             ViewBag.idArchivo = id;
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
-            List<Areas> listaGeneral = new List<Areas>();
-            listaGeneral = (from table in _context.Areas
-                            select table).ToList();
-            ViewBag.ListaGeneral = listaGeneral;
+            List<string> ListaCoordinadores = new List<string>();
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Director"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Coordinador"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+            }
+
+            //!table.Area.EndsWith("\u0040nortedgepms.com")
+
+
+            ViewBag.ListaGeneral = ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com"))); 
 
             return View();
         }
@@ -409,16 +440,10 @@ namespace scorpioweb.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,ArcchivoIdArchivo")] Archivoregistro archivoregistro,Archivo archivo,  int archivoIdArchivo, IFormFile archivoFile)
         {
-
             if (ModelState.IsValid)
             {
-
                 int idArchivo = ((from table in _context.Archivoregistro
                                    select table.IdArchivoRegistro).Max() + 1);
-
-                var sacarnomEnvia = (from a in _context.Areas
-                                     where a.IdArea == int.Parse(archivoregistro.Envia)
-                                     select a.UserName).First();
 
                 archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal);
                 archivoregistro.Delito = mg.normaliza(archivoregistro.Delito);
@@ -427,9 +452,8 @@ namespace scorpioweb.Models
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
                 archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
                 archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
-                archivoregistro.Envia = mg.normaliza(sacarnomEnvia).ToString();
+                archivoregistro.Envia = mg.normaliza(archivoregistro.Envia);
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
-           
 
                 if (archivoFile == null)
                 {
@@ -569,18 +593,6 @@ namespace scorpioweb.Models
             }
             return View(archivoregistro);
         }
-
-        //public async Task<IActionResult> DeleteArchivo(int? id)
-        //{
-        //    var Archivoregistro = await _context.Archivoregistro.SingleOrDefaultAsync(m => m.IdArchivoRegistro == id);
-
-        //    _context.Archivoregistro.Remove(Archivoregistro);
-        //    await _context.SaveChangesAsync();
-
-        //    return RedirectToAction("Index" , "Archivo");
-
-        //}
-
 
         public JsonResult DeleteArchivo(Archivoregistro archivoregistro, Historialeliminacion historialeliminacion, int dato)
         {

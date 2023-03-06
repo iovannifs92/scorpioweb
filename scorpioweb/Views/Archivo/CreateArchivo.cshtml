@@ -175,11 +175,11 @@
             <div class="form-group col-md-12">
                 <label class="control-label">Envia</label>
                 <select class="form-control" name="Envia" id="Envia"
-                        asp-items="@(new SelectList(@ViewBag.ListaGeneral, "IdArea", "UserName"))">
+                        asp-items="@(new SelectList(@ViewBag.ListaGeneral))">
                 </select>
             </div>
             <div class="custom-file" style="margin-bottom:10px">
-                <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" lang="es">
+                <input type="file" class="custom-file-input" id="archivoFile" name="archivoFile" >
             </div>
             <div style="display:none" class="form-group col-md-12">
                 <label asp-for="ArchivoIdArchivo" class="control-label"></label>
