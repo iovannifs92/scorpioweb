@@ -911,8 +911,9 @@ namespace scorpioweb.Models
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
-            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+            ViewData["IdSortParm"] = String.IsNullOrEmpty(sortOrder) ? "IdDesc" : "";
+            ViewData["fechaPrestamoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "fecha_prestamo" : "";
+            ViewData["fechaRenovacionSortParm"] = String.IsNullOrEmpty(sortOrder) ? "fecha_Renovacion" : "";
 
             if (SearchString != null)
             {
@@ -946,20 +947,23 @@ namespace scorpioweb.Models
 
             switch (sortOrder)
             {
+                case "IdDesc":
+                    filter = filter.OrderByDescending(a => a.archivoVM.IdArchivo);
+                    break;
                 case "name_desc":
-                    filter = filter.OrderByDescending(a => a.archivoVM.Nombre);
+                    filter = filter.OrderBy(a => a.archivoVM.Nombre);
                     break;
-                case "ap_ase":
-                    filter = filter.OrderBy(a => a.archivoVM.Paterno);
+                case "fecha_prestamo":
+                    filter = filter.OrderBy(a => a.archivoprestamoVM.FechaInicial);
                     break;
-                case "am_ase":
-                    filter = filter.OrderByDescending(a => a.archivoVM.Paterno);
+                case "fecha_Renovacion":
+                    filter = filter.OrderByDescending(a => a.archivoprestamoVM.FechaRenovacion);
                     break;
                 default:
                     filter = filter.OrderByDescending(spcp => spcp.archivoVM.Nombre);
                     break;
             }
-            int pageSize = 100;
+            int pageSize = 10;
 
             //var queryable = query2.AsQueryable();
             return View(await PaginatedList<ArchivoControlPrestamo>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));

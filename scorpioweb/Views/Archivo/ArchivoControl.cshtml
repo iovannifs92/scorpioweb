@@ -113,16 +113,16 @@
     <thead>
         <tr>
             <th>
-                <a>IdArchivo</a>
+                <a asp-action="ArchivoControl" asp-route-sortOrder="@ViewData["IdSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">IdArchivo</a>
              </th>
             <th>
-                <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
+                <a asp-action="ArchivoControl" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
             </th>
             <th>
-                <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["fecha_desc"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fceha de Prestamo</a>
+                <a asp-action="ArchivoControl" asp-route-sortOrder="@ViewData["fechaPrestamoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fceha de Prestamo</a>
             </th>
             <th>
-                <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["ubicacion_ase"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha de Entrega</a>
+                <a asp-action="ArchivoControl" asp-route-sortOrder="@ViewData["fechaRenovacionSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha de Entrega</a>
             </th>
             <th>
                 <a>Entrega</a>

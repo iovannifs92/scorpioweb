@@ -6641,7 +6641,7 @@ namespace scorpioweb.Controllers
             {
                 if(rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador")
                 {
-                    var_flag = true;
+                    var_flag = true; 
                 }
             }
 
