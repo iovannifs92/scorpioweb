@@ -6630,7 +6630,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public async Task<JsonResult>  buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser)
+        public async Task<JsonResult>  buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
         {
 
             bool var_flag = false;
@@ -6649,6 +6649,28 @@ namespace scorpioweb.Controllers
             var listaNombres = _context.BuscadorGenerals
                               .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno +"', '"+ var_materno +"', '"+ var_nombre +"', " + var_flag + " )")
                               .ToList();
+
+
+
+            try
+            {
+                if(listaNombres.Count > 0)
+                {
+                    historialbusquedageneral.Fecha = DateTime.Now;
+                    historialbusquedageneral.Paterno = mg.normaliza(var_paterno);
+                    historialbusquedageneral.Materno = mg.normaliza(var_materno);
+                    historialbusquedageneral.Nombre = mg.normaliza(var_nombre);
+                    historialbusquedageneral.Usuario = mg.normaliza(user.ToString());
+                    _context.Add(historialbusquedageneral);
+                    _context.SaveChanges();
+                }
+               
+                return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, responseText = Convert.ToString(0), busqueda = listaNombres });
+            }
 
             return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
         }
