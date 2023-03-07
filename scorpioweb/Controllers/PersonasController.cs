@@ -6639,7 +6639,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if(rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia")
+                if(rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador")
                 {
                     var_flag = true;
                 }
