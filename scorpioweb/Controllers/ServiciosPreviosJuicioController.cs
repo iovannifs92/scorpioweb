@@ -20,7 +20,7 @@ using scorpioweb.Class;
 
 namespace scorpioweb.Controllers
 {
-    [Authorize]
+
     public class ServiciosPreviosJuicioController : Controller
     {
         #region -Constructor-

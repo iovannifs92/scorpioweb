@@ -6630,7 +6630,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public async Task<JsonResult>  buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
+        public async Task<JsonResult>  buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser,bool var_esVictima, Historialbusquedageneral historialbusquedageneral)
         {
 
             bool var_flag = false;
@@ -6645,35 +6645,68 @@ namespace scorpioweb.Controllers
                 }
             }
 
-
-            var listaNombres = _context.BuscadorGenerals
-                              .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno +"', '"+ var_materno +"', '"+ var_nombre +"', " + var_flag + " )")
-                              .ToList();
+            List<BuscadorGeneral> listaNombres = new List<BuscadorGeneral>();
 
 
+            listaNombres = _context.BuscadorGenerals
+                                            .FromSql("CALL spBuscadorGeneralNombres('" + var_paterno + "', '" + var_materno + "', '" + var_nombre + "', " + var_flag + " )")
+                                            .ToList();
 
-            try
+            if (listaNombres.Count > 0)
             {
-                if(listaNombres.Count > 0)
-                {
-                    historialbusquedageneral.Fecha = DateTime.Now;
-                    historialbusquedageneral.Paterno = mg.normaliza(var_paterno);
-                    historialbusquedageneral.Materno = mg.normaliza(var_materno);
-                    historialbusquedageneral.Nombre = mg.normaliza(var_nombre);
-                    historialbusquedageneral.Usuario = mg.normaliza(user.ToString());
-                    _context.Add(historialbusquedageneral);
-                    _context.SaveChanges();
-                }
-               
-                return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
-            }
-            catch(Exception ex)
-            {
-                return Json(new { success = false, responseText = Convert.ToString(0), busqueda = listaNombres });
+                historialbusquedageneral.Fecha = DateTime.Now;
+                historialbusquedageneral.Paterno = mg.normaliza(var_paterno);
+                historialbusquedageneral.Materno = mg.normaliza(var_materno);
+                historialbusquedageneral.Nombre = mg.normaliza(var_nombre);
+                historialbusquedageneral.Usuario = mg.normaliza(user.ToString());
+                _context.Add(historialbusquedageneral);
+                _context.SaveChanges();
             }
 
             return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
         }
 
+
+        public async Task<JsonResult> buscadorGeneralConcat(string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
+        {
+
+            bool var_flag = false;
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador")
+                {
+                    var_flag = true;
+                }
+            }
+
+            List<BuscadorGeneralConcat> listaNombresConcat = new List<BuscadorGeneralConcat>();
+            
+            
+            listaNombresConcat = _context.BuscadorGeneralConcats
+                                .FromSql("CALL spBuscadorGeneralNombresConcat('" + var_nombre + "', " + var_flag + ")")
+                                .ToList();
+
+            if (listaNombresConcat.Count > 0)
+                {
+                    historialbusquedageneral.Fecha = DateTime.Now;
+                    historialbusquedageneral.Paterno = "NA";
+                    historialbusquedageneral.Materno = "NA";
+                    historialbusquedageneral.Nombre = mg.normaliza(var_nombre);
+                    historialbusquedageneral.Usuario = mg.normaliza(user.ToString());
+                    _context.Add(historialbusquedageneral);
+                    _context.SaveChanges();
+                }
+
+         return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombresConcat });
+
+        }
     }
+
+
+
+
+
 } 

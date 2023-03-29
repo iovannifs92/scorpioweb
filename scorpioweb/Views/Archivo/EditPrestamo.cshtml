@@ -6,7 +6,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('#Recibe').change(function() {
-            var url = '@Url.Content("~/")' + "Archivo/GetAreaUser";
+            var url = '@Url.Content("~/")' + "Archivo/ ";
             var ddlsource = '#Recibe';
             $.getJSON(url, { AreaId: $(ddlsource).val() }, function(data) {
                 $.each(data, function(i, area) {
