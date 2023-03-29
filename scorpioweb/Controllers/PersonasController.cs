@@ -42,10 +42,9 @@ namespace scorpioweb.Controllers
     [Authorize]
     public class PersonasController : Controller
     {
+        #region -Variables Globales-
         //To get content root path of the project
         private readonly IHostingEnvironment _hostingEnvironment;
-
-        #region -Variables Globales-
         private readonly penas2Context _context;
         public static int contadorSustancia;
         public static int contadorFamiliares;
@@ -149,6 +148,7 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -contarFalsos-
         public void contarFalsos()
         {
             var personas = from p in _context.Persona
@@ -165,7 +165,7 @@ namespace scorpioweb.Controllers
                            };
             var listaPersonas = personas.ToList();
             var personasCount = personas.Count();
-            int cut = (int)(0.8*personasCount);
+            int cut = (int)(0.8 * personasCount);
             var cosine = new Cosine(2);
             string[] CURP = new string[personasCount];
             for (int i = 0; i < personasCount; i++)
@@ -180,10 +180,10 @@ namespace scorpioweb.Controllers
                 string nombreCompleto = listaPersonas[i].nomcom;
                 double mx = 0;
                 int mxId = 0;
-                for(int j = 0;j < cut;j++) 
+                for (int j = 0; j < cut; j++)
                 {
                     double r = cosine.Similarity(listaPersonas[j].nomcom, nombreCompleto);
-                    if(r > mx)
+                    if (r > mx)
                     {
                         mx = r;
                         mxId = j;
@@ -207,7 +207,9 @@ namespace scorpioweb.Controllers
             Debug.WriteLine("falsos Positivos " + falsosPositivos);
             Debug.WriteLine("falsos Positivos Total " + falsosPositivosTotal);
         }
+        #endregion
 
+        #region -curp-
         //Curp sin contar homonimos a 17 caracteres
         public string curp(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
         {
@@ -279,7 +281,9 @@ namespace scorpioweb.Controllers
             }
             return curp.ToString();
         }
+        #endregion
 
+        #region -testSimilitud-
         public JsonResult testSimilitud(string nombre, string paterno, string materno)
         {
             bool simi = false;
@@ -312,7 +316,7 @@ namespace scorpioweb.Controllers
                     simi = true;
                 }
             }
-            if(list.Count() != 0)
+            if (list.Count() != 0)
             {
                 var tupleWithMaxItem1 = list.OrderBy(x => x.Item3).Last();
 
@@ -324,14 +328,17 @@ namespace scorpioweb.Controllers
                     return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
                 }
             }
-           
+
             return Json(new { success = false });
         }
+        #endregion
 
+        #region -Pruebas-
         public ActionResult Pruebas()
         {
             return View();
-        }
+        } 
+        #endregion
 
         #region -Index-
         public async Task<IActionResult> Index(
@@ -2446,12 +2453,18 @@ namespace scorpioweb.Controllers
                 return View();
             }
         }
-        #endregion
 
         public async Task<IActionResult> PresentacionPeriodicaConfirmation()
         {
             return View();
         }
+
+        private bool PresentacionExists(int id)
+        {
+            return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
+        }
+        #endregion
+
         #region -EditarComentario-
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -2489,10 +2502,6 @@ namespace scorpioweb.Controllers
             return RedirectToAction("PresentacionPeriodicaPersona/" + idPersona);
         }
         #endregion
-        private bool PresentacionExists(int id)
-        {
-            return _context.Presentacionperiodica.Any(e => e.IdpresentacionPeriodica == id);
-        }
 
         #region -SinSupervision-
         public ActionResult SinSupervision()
@@ -6175,11 +6184,14 @@ namespace scorpioweb.Controllers
 
         #endregion
 
-
+        #region -MenuArchivoMCySCP-
         public IActionResult MenuArchivoMCySCP()
         {
             return View();
-        }  
+        } 
+        #endregion
+
+        #region -Contactos-
         public IActionResult Contacto(string SearchString, string sortOrder)
         {
             var listaEstado = from table in _context.Estados
@@ -6202,7 +6214,7 @@ namespace scorpioweb.Controllers
             var Contactos = from c in _context.Contactos
                             select c;
 
-          
+
 
 
             if (!String.IsNullOrEmpty(SearchString))
@@ -6246,7 +6258,8 @@ namespace scorpioweb.Controllers
 
 
             return View();
-        }
+        } 
+        #endregion
 
         #region -Update Contacto-
         public JsonResult CreateContactos(Contactos contactos, string Categoria, int EstadoC, int MunicipioC, string Dependencia, string Titular, string Telefono, string Extencion, string Correo)
@@ -6548,6 +6561,7 @@ namespace scorpioweb.Controllers
 
         }
         #endregion
+
         #region -Destacados-
 
         public JsonResult Destacado(Contactos contactos, Persona persona, string[] datoContacto)
@@ -6630,7 +6644,9 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        public async Task<JsonResult>  buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser,bool var_esVictima, Historialbusquedageneral historialbusquedageneral)
+
+        #region -buscadorGeneral-
+        public async Task<JsonResult> buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
         {
 
             bool var_flag = false;
@@ -6639,9 +6655,9 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if(rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador")
+                if (rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador")
                 {
-                    var_flag = true; 
+                    var_flag = true;
                 }
             }
 
@@ -6661,10 +6677,12 @@ namespace scorpioweb.Controllers
                 historialbusquedageneral.Usuario = mg.normaliza(user.ToString());
                 _context.Add(historialbusquedageneral);
                 _context.SaveChanges();
+
             }
 
             return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
-        }
+        } 
+        #endregion
 
 
         public async Task<JsonResult> buscadorGeneralConcat(string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
