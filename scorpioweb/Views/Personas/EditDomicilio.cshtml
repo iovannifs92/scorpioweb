@@ -344,7 +344,7 @@
             <input type="hidden" asp-for="IdDomicilio" />
             <input type="hidden" asp-for="PersonaIdPersona" />
 
-            <div id="map"></div>
+            @*<div id="map"></div>
             <script id="GoogleApi"></script>
             <script src="~/js/scripts.js"></script>
             <script>
@@ -352,7 +352,7 @@
                 var api = key;
                 var url2 = "&callback=iniciarMap&v=weekly";
                 document.getElementById("GoogleApi").src = url + api + url2;
-            </script>
+            </script>*@
             @if (User.IsInRole("Masteradmin"))
             {
                 <input required id="lat" name="lat" asp-for="Lat" class="form-control" />

@@ -6644,8 +6644,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
-        #region -buscadorGeneral-
+        #region -BuscadorGeneral-
         public async Task<JsonResult> buscadorGeneral(string var_paterno, string var_materno, string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
         {
 
@@ -6682,7 +6681,7 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombres });
         } 
-        #endregion
+     
 
 
         public async Task<JsonResult> buscadorGeneralConcat(string var_nombre, string rolUser, Historialbusquedageneral historialbusquedageneral)
@@ -6722,9 +6721,5 @@ namespace scorpioweb.Controllers
 
         }
     }
-
-
-
-
-
-} 
+    #endregion
+}

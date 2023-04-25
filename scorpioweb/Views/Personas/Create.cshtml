@@ -1205,7 +1205,7 @@
                                 </h4>
                             </div>
                             <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
-                                <div id="map"></div>
+                                @*<div id="map"></div>
                                 <script id="GoogleApi"></script>
                                 <script src="~/js/scripts.js"></script>
                                 <script>
@@ -1214,8 +1214,8 @@
                                     var url2 = "&callback=iniciarMap&v=weekly";
                                     document.getElementById("GoogleApi").src = url + api + url2;
                                 </script>
-                                <input type="hidden" required id="lat" name="lat" type="text" class="form-control" />
-                                <input type="hidden" id="lng" name="lng" type="text" class="form-control" />
+                                <input  required id="lat" name="lat" type="text" class="form-control" />
+                                <input  id="lng" name="lng" type="text" class="form-control" />*@
 
                                 <label style="padding-top:30px;" class="control-label col-sm-12">La propiedad del lugar o del inmueble, es:</label>
                                 <div class="form-group col-sm-12" style="padding-left:0%;padding-right:0%;">
@@ -1229,9 +1229,9 @@
                                             <option value="IRREGULAR">Irregular</option>
                                         </select>
                                     </div>
-                                    <button class="btn btn-primary form-group col-sm-3" type="button"  id="btnGeocoding" name="btnGeocoding">
+                                   @* <button class="btn btn-primary form-group col-sm-3" type="button"  id="btnGeocoding" name="btnGeocoding">
                                         <i class="fa fa-map-marker"></i> Posicionar marcador
-                                    </button>
+                                    </button>*@
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Calle</label>
