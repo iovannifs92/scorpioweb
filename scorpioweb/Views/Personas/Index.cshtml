@@ -2132,12 +2132,15 @@
         Ver solo mis Supervisados
     </a>
 </div>
-<br />
+<br/>
 <div class="row">
     <table class="table table-striped table-responsive">
         <thead>
             <tr>
-                <th><a>ID</a></th>
+                @*<th><a>ID</a></th>*@
+                 <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ID</a>
+                </th>
                 <th><a>Nombre</a></th>
                 <th>Supervisor</th>
                 <th><a>Ultima Actualización</a></th>

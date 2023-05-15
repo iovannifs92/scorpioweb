@@ -181,6 +181,12 @@
                     + "</td>";
             break;
         }
+        if (result.query[i].personaVM.celular != null) {
+            row = row + "<td>" + result.query[i].personaVM.celular + "</td>"
+        }
+        else {
+            row = row + "<td></td>";
+        }
         row = row
             + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
             + "<td>" + result.query[i].personaVM.supervisor + "</td>";
@@ -464,6 +470,12 @@
                                         //    row = row + "</td>";
                                         //    break;
                                     }
+                                    if (result.query[i].personaVM.celular != null) {
+                                       row = row + "<td>" + result.query[i].personaVM.celular + "</td>"
+                                    }
+                                    else {
+                                        row = row + "<td></td>";
+                                    }
                                     row = row + "<td>" + result.query[i].municipiosVM.municipio + "</td>";
                                     row = row + "<td>";
                                     if (result.query[i].figuraJudicial != null) {
@@ -577,6 +589,9 @@
             </th>
             <th>
                 <a>Información de campo</a>
+            </th>
+            <th>
+                <a>Celular</a>
             </th>
             <th>
                 <a>Municipio</a>
