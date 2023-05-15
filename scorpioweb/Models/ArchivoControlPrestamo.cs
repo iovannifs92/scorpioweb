@@ -1,4 +1,6 @@
-﻿namespace scorpioweb.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace scorpioweb.Models
 {
     public class ArchivoControlPrestamo
     {
@@ -8,5 +10,5 @@
         public Areas areasVM { get; set; }
         public Archivoprestamodigital archivoprestamodigitalVM { get; set; }
 
-    }
+ }
 }

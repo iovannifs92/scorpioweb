@@ -1,119 +1,173 @@
-﻿@model PaginatedList<scorpioweb.Models.ArchivoControlPrestamo>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-@{
-    ViewData["Title"] = "Historial";
+﻿@{
+    ViewData["Title"] = "Historial Prestamo";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
+<script src="~/js/jquery-1.11.1.min.js"></script>
 
+<script>
+    function formatDate(dateString) {
+        if (dateString == null) {
+            return "";
+        }
+        var d = new Date(dateString);
+        const month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear();
+        return date;
+    };
 
-<div class="card-group" style="padding-top:2%">
-    <div class="col-md-12 col-md-12">
-        <h2>Historial de prestamo de Expedientes</h2>
-    </div>
-    <form asp-action="ArchivoHistorial" method="get">
-        <div class="form-actions no-color">
-            <p>
-                Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-                <button type="submit" class="btn btn-default">
-                    <i class="fa fa-search"></i>
-                    Buscar
-                </button>
-                <a asp-action="ArchivoHistorial">Regresar al listado completo</a>
-            </p>
-        </div>
-    </form>
-
-    <table class="table" style="font-size:10px">
-        <thead>
-            <tr>
-                <th>
-                    <a>IdArchivo</a>
-                </th>
-                <th>
-                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Nombre</a>
-                </th>
-                <th>
-                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["fecha_desc"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha de Prestamo</a>
-                </th>
-                <th>
-                    <a asp-action="ArchivoHistorial" asp-route-sortOrder="@ViewData["ubicacion_ase"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Fecha de Entrega</a>
-                </th>
-                <th>
-                    <a>Entrega</a>
-                </th>
-                <th>
-                    <a>Recibe</a>
-                </th>
-                <th>
-                    <a>Area</a>
-                </th>
-                <th>
-                    <a>Renovaciones</a>
-                </th>
-
-            </tr>
-        </thead>
-        <tbody>
-            <scorpioweb.Models.ArchivoPersona>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoVM.IdArchivo)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoVM.Paterno) @Html.DisplayFor(modelItem => item.archivoVM.Materno) @Html.DisplayFor(modelItem => item.archivoVM.Nombre)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoprestamoVM.FechaInicial)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoprestamoVM.FechaRenovacion)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoprestamoVM.Entrega)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoprestamoVM.Recibe)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
-                        </td>      
-                        <td>
-                            @Html.DisplayFor(modelItem => item.archivoprestamoVM.Renovaciones)
-                        </td> 
-                    </tr>
+    $(document).ready(function () {
+        $.ajax({
+            type: "POST", 
+            dataType: "json",
+            url: "/Archivo/HistorialPrestamo",
+            traditional: true,
+            success: function (response) {
+                $('#tblPrestamo').html('');
+                var row = '';
+                if (response.busqueda.length == 0) {
+                    alert("No se encontro ningún registro que coincida")
+                    return;
                 }
-        </tbody>
-    </table>
+
+                for (let i = 0; i < response.busqueda.length; i++) {
+                    row = row
+                        + "<tr>"
+                        + "<td>" + response.busqueda[i].idArchivo + "</td>"
+                        + "<td>" + response.busqueda[i].nombre + "</td>"
+                        + "<td>" + formatDate(response.busqueda[i].fechaprestamo) + "</td>"
+                        + "<td>" + formatDate(response.busqueda[i].fechaentrega) + "</td>"
+                        + "<td>" + response.busqueda[i].entrega + "</td>"
+                        + "<td>" + response.busqueda[i].usuario + "</td>"
+                        + "<td>" + response.busqueda[i].ubicacion + "</td>"
+                        + "<td>" + response.busqueda[i].tipoPrestamo + "</td>"
+                    row = row + "<td>";
+                    //switch (response.busqueda[i].tabla) {
+
+                    //    case 'MC Y SCP':
+                    //        row = row
+                    //            + "<div class=\"col-md-3\"><a  href=/Personas/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                    //        break;
+                    //    case 'ARCHIVO':
+                    //        row = row
+                    //            + "<div class=\"col-md-3\"><a  href=/Archivo style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                    //        break;
+                    //    case 'SERVICIOS PREVIOS AL JUICIO':
+                    //        row = row
+                    //            + "<div class=\"col-md-3\"><a  href=/ServiciosPreviosJuicio style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                    //        break;
+                    //    case 'PRISION PREVENTIVA':
+                    //        row = row
+                    //            + "<div class=\"col-md-3\"><a  href=/Prisionespreventivas style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                    //        break;
+                    //    case 'OFICIALIA':
+                    //        row = row
+                    //            + "PENDIENTE";
+                    //        break;
+                    //}
+                    row = row + "</td>";
+                    row = row + "</tr>";
+                };
+                if (row != '') {
+                    $('#tblPrestamo').append(row);
+                }
+            },
+            error: function (response) {
+                //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                //location.reload();
+            }
+        });
+    });
+
+    //$.ajax({
+            //    type: "POST",
+            //    dataType: "json",
+            //    url: "/Archivo/HistorialPrestamo",
+            //    traditional: true,
+            //    success: function (response) {
+            //        $('#tblPrestamo').html('');
+            //        var row = '';
+            //        //if (response.busqueda.length == 0) {
+            //        //    alert("No se encontro ningún registro que coincida")
+            //        //    return;
+            //        //}
+            //        alert(response.busqueda.length);
+
+            //        for (let i = 0; i < response.busqueda.length; i++) {
+            //            row = row
+            //                + "<tr>"
+            //                + "<td>" + response.busqueda[i].idArchivo + "</td>"
+            //                + "<td>" + response.busqueda[i].paterno + " " + response.busqueda[i].materno + " " + response.busqueda[i].nombre + "</td>"
+            //                //+ "<td>" + response.busqueda[i]. + "</td>"
+            //            //row = row + "<td>";
+            //            //switch (response.busqueda[i].tabla) {
+
+            //            //    case 'MC Y SCP':
+            //            //        row = row
+            //            //            + "<div class=\"col-md-3\"><a  href=/Personas/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+            //            //        break;
+            //            //    case 'ARCHIVO':
+            //            //        row = row
+            //            //            + "<div class=\"col-md-3\"><a  href=/Archivo style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+            //            //        break;
+            //            //    case 'SERVICIOS PREVIOS AL JUICIO':
+            //            //        row = row
+            //            //            + "<div class=\"col-md-3\"><a  href=/ServiciosPreviosJuicio style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+            //            //        break;
+            //            //    case 'PRISION PREVENTIVA':
+            //            //        row = row
+            //            //            + "<div class=\"col-md-3\"><a  href=/Prisionespreventivas style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+            //            //        break;
+            //            //    case 'OFICIALIA':
+            //            //        row = row
+            //            //            + "PENDIENTE";
+            //            //        break;
+            //            //}
+            //            //row = row + "</td>";
+            //            row = row + "</tr>";
+            //        };
+            //        if (row != '') {
+            //            $('#tblPrestamo').append(row);
+            //        }
+            //    },
+            //    error: function (response) {
+            //        //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            //        //location.reload();
+            //    }
+            //});
+</script>
+
+<div class="text-center" style="padding-top:1%">
+    <h4>Hstorial Prestamo</h4>
 </div>
-
-    @{
-        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-    }
-
-    <p>
-        Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
-    </p>
-    <a asp-action="ArchivoHistorial"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex - 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled">
-        Anterior
-    </a>
-    <a asp-action="ArchivoHistorial"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex + 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @nextDisabled">
-        Siguiente
-    </a>
-
-    <br />
-    <div style="margin-top:20px">
-        <a asp-action="ArchivoMenu">Regresar al Menu</a>
-    </div>
- 
+<table class="table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                <a>IdArchivo</a>
+            </th>
+            <th>
+                <a>Nombre</a>
+            </th>
+            <th>
+                <a>Frecha Prestamo</a>
+            </th>
+            <th>
+                <a>Fecha Devolucion</a>
+            </th>
+            <th>
+                <a>Entrega</a>
+            </th>
+            <th>
+                <a>Usuario</a>
+            </th>
+            <th>
+                <a>Ubicacion </a>
+            </th>
+            <th>
+                <a>Tipo de Prestamo</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody id="tblPrestamo">
+    </tbody>
+</table>

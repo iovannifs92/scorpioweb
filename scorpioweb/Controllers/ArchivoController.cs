@@ -54,8 +54,7 @@ namespace scorpioweb.Models
            )
 
         {
-            #region
-            #endregion
+
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
@@ -77,10 +76,19 @@ namespace scorpioweb.Models
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+            if (roles.ToString() == "Masteradmin" || roles.ToString() == "Archivo" || roles.ToString() == "Director")
+            {
+                ViewBag.Archivo = true;
+            }
+
 
             List<Archivoprestamo> queryArchivoHistorial = (from a in _context.Archivoprestamo
                                                            group a by a.ArcchivoIdArchivo into grp
                                                            select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
+
+            List<Archivoprestamodigital> archivoprestamodigitals = (from a in _context.Archivoprestamodigital
+                                                                    group a by a.ArchivoIdArchivo into gtp
+                                                                    select gtp.OrderByDescending(a => a.IdArchivoPrestamoDigital).FirstOrDefault()).ToList();
 
             var filter = from a in _context.Archivo
                          join ap in queryArchivoHistorial on a.IdArchivo equals ap.ArcchivoIdArchivo into tmp
@@ -142,22 +150,22 @@ namespace scorpioweb.Models
 
         #region -Details-
         public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
             {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-
-                var archivo = await _context.Archivo
-                    .SingleOrDefaultAsync(m => m.IdArchivo == id);
-                if (archivo == null)
-                {
-                    return NotFound();
-                }
-
-                return View(archivo);
+                return NotFound();
             }
-            #endregion
+
+            var archivo = await _context.Archivo
+                .SingleOrDefaultAsync(m => m.IdArchivo == id);
+            if (archivo == null)
+            {
+                return NotFound();
+            }
+
+            return View(archivo);
+        }
+        #endregion
 
         #region -Create-
         public IActionResult Create()
@@ -368,7 +376,7 @@ namespace scorpioweb.Models
         public IActionResult ArchivoMenu()
         {
             return View();
-        } 
+        }
         #endregion
 
         #region -Create Archivo-
@@ -399,8 +407,8 @@ namespace scorpioweb.Models
             var snArchivos = await _context.Archivoregistro.Where(m => m.ArchivoIdArchivo == id).ToListAsync();
             if (snArchivos.Count != 0)
             {
-                return RedirectToAction("EditArchivo", new {id});
-            }   
+                return RedirectToAction("EditArchivo", new { id });
+            }
 
             return View();
         }
@@ -429,19 +437,19 @@ namespace scorpioweb.Models
             //!table.Area.EndsWith("\u0040nortedgepms.com")
 
 
-            ViewBag.ListaGeneral = ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com"))); 
+            ViewBag.ListaGeneral = ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
 
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,ArcchivoIdArchivo")] Archivoregistro archivoregistro,Archivo archivo,  int archivoIdArchivo, IFormFile archivoFile)
+        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,ArcchivoIdArchivo")] Archivoregistro archivoregistro, Archivo archivo, int archivoIdArchivo, IFormFile archivoFile)
         {
             if (ModelState.IsValid)
             {
                 int idArchivo = ((from table in _context.Archivoregistro
-                                   select table.IdArchivoRegistro).Max() + 1);
+                                  select table.IdArchivoRegistro).Max() + 1);
 
                 archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal);
                 archivoregistro.Delito = mg.normaliza(archivoregistro.Delito);
@@ -462,8 +470,8 @@ namespace scorpioweb.Models
                 else
                 {
                     var nombre = (from a in _context.Archivo
-                                 where a.IdArchivo == archivoIdArchivo
-                                 select a).ToString();
+                                  where a.IdArchivo == archivoIdArchivo
+                                  select a).ToString();
 
                     string file_name = archivoregistro.ArchivoIdArchivo + "_" + idArchivo + Path.GetExtension(archivoFile.FileName); ;
                     archivoregistro.Urldocumento = file_name;
@@ -484,7 +492,7 @@ namespace scorpioweb.Models
                     return RedirectToAction(nameof(Index));
                 }
 
-               
+
             }
             return View(archivoregistro);
         }
@@ -505,7 +513,8 @@ namespace scorpioweb.Models
             List<Areas> listaGeneral = new List<Areas>();
             listaGeneral = (from table in _context.Areas
                             where !table.Area.EndsWith("\u0040nortedgepms.com")
-                            select new Areas{
+                            select new Areas
+                            {
                                 IdArea = table.IdArea,
                                 UserName = table.UserName
                             }).ToList();
@@ -519,9 +528,9 @@ namespace scorpioweb.Models
                                        {
                                            archivoregistroVM = ar,
                                            archivoVM = a,
-                                        };
+                                       };
 
-            return View();  
+            return View();
         }
 
         [HttpPost]
@@ -538,7 +547,7 @@ namespace scorpioweb.Models
             {
 
                 var oldArchivo = await _context.Archivoregistro.FindAsync(archivoregistro.IdArchivoRegistro);
-    
+
                 archivoregistro.Envia = mg.normaliza(archivoregistro.Envia);
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
                 archivoregistro.CausaPenal = mg.normaliza(archivoregistro.CausaPenal);
@@ -556,7 +565,7 @@ namespace scorpioweb.Models
                 }
                 else
                 {
-              
+
                     string file_name = oldArchivo.ArchivoIdArchivo + "_" + oldArchivo.IdArchivoRegistro + Path.GetExtension(archivoFile.FileName); ;
                     archivoregistro.Urldocumento = file_name;
                     var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Expedientes");
@@ -982,73 +991,39 @@ namespace scorpioweb.Models
                      select Areas).ToList();
 
             return Json(new SelectList(areas, "IdArea", "Area"));
-        } 
+        }
         #endregion
 
         #region -Historial de Archivo-
-        public async Task<IActionResult> ArchivoHistorial(
-           string sortOrder,
-           string currentFilter,
-           string SearchString,
-           string estadoSuper,
-           int? pageNumber
-           )
+
+        public async Task<IActionResult> ArchivoHistorial()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.showSupervisor = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "Masteradmin")
+                {
+                    ViewBag.showSupervisor = true;
+                }
+            }
+            ViewBag.norte = user.ToString().EndsWith("\u0040nortedgepms.com");
+
+            return View();
+        }
+        public async Task<JsonResult> HistorialPrestamo()
         {
 
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
-            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
 
-            if (SearchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                SearchString = currentFilter;
-            }
+            List<HistorialPrestamos> listaPrestamos = new List<HistorialPrestamos>();
 
-            var filter = from a in _context.Archivo
-                         join ap in _context.Archivoprestamo on a.IdArchivo equals ap.ArcchivoIdArchivo
-                         where ap.Estatus == "ENTREGADO"
-                         select new ArchivoControlPrestamo
-                         {
-                              archivoVM= a,
-                             archivoprestamoVM = ap
-                         };
+            listaPrestamos = _context.HistorialPrestamos
+                                            .FromSql("CALL spHistorialPrestamo()")
+                                            .ToList();
 
-            ViewData["CurrentFilter"] = SearchString;
-            ViewData["EstadoS"] = estadoSuper;
-
-            if (!String.IsNullOrEmpty(SearchString))
-            {
-                filter = filter.Where(a => (a.archivoVM.Paterno + " " + a.archivoVM.Materno + " " + a.archivoVM.Nombre).Contains(SearchString) ||
-                                              (a.archivoVM.Nombre + " " + a.archivoVM.Paterno + " " + a.archivoVM.Materno).Contains(SearchString) ||
-                                              (a.archivoVM.IdArchivo.ToString()).Contains(SearchString)
-                                              );
-
-            }
-
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    filter = filter.OrderByDescending(a => a.archivoVM.Nombre);
-                    break;
-                case "ap_ase":
-                    filter = filter.OrderBy(a => a.archivoVM.Paterno);
-                    break;
-                case "am_ase":
-                    filter = filter.OrderByDescending(a => a.archivoVM.Paterno);
-                    break;
-                default:
-                    filter = filter.OrderByDescending(a => a.archivoVM.Nombre);
-                    break;
-            }
-            int pageSize = 100;
-
-            //var queryable = query2.AsQueryable();
-            return View(await PaginatedList<ArchivoControlPrestamo>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaPrestamos });
         }
         #endregion
 
@@ -1062,7 +1037,7 @@ namespace scorpioweb.Models
            )
         {
 
-            ViewData["CurrentSort"] = sortOrder; 
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
             ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
@@ -1088,14 +1063,15 @@ namespace scorpioweb.Models
             DateTime date = DateTime.Now;
 
 
-            if(roles.ToString() == "Masteradmin" || roles.ToString() == "Archivo"){
+            if (roles.ToString() == "Masteradmin" || roles.ToString() == "Archivo")
+            {
                 filter = from a in _context.Archivo
-                             join ap in _context.Archivoprestamodigital on a.IdArchivo equals ap.ArchivoIdArchivo
-                             select new ArchivoControlPrestamo
-                             {
-                                 archivoVM = a,
-                                 archivoprestamodigitalVM = ap
-                             };
+                         join ap in _context.Archivoprestamodigital on a.IdArchivo equals ap.ArchivoIdArchivo
+                         select new ArchivoControlPrestamo
+                         {
+                             archivoVM = a,
+                             archivoprestamodigitalVM = ap
+                         };
             }
             else
             {
@@ -1109,7 +1085,7 @@ namespace scorpioweb.Models
                          };
             }
 
-            
+
 
             ViewData["CurrentFilter"] = SearchString;
             ViewData["EstadoS"] = estadoSuper;
@@ -1190,8 +1166,8 @@ namespace scorpioweb.Models
             var id = Int32.Parse(datoidArchivo);
 
             var buscaid = from a in _context.Archivo
-                           where a.IdArchivo == id
-                           select a;
+                          where a.IdArchivo == id
+                          select a;
 
             if (!buscaid.Any())
             {
@@ -1202,13 +1178,13 @@ namespace scorpioweb.Models
                 update = true;
 
                 var nombre = (from a in _context.Archivo
-                             where a.IdArchivo == id
-                             select new Archivo
-                             {
-                                 Nombre = a.Nombre,
-                                 Paterno = a.Paterno,
-                                 Materno = a.Materno
-                             }).ToList();
+                              where a.IdArchivo == id
+                              select new Archivo
+                              {
+                                  Nombre = a.Nombre,
+                                  Paterno = a.Paterno,
+                                  Materno = a.Materno
+                              }).ToList();
 
                 return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update, nombre = nombre }); ;
             }
@@ -1225,33 +1201,33 @@ namespace scorpioweb.Models
             int archivoId = Int32.Parse(datoidArchivo);
 
             var aregistro = (from ar in _context.Archivoregistro
-                            where ar.IdArchivoRegistro == idd
-                            select new Archivoregistro
-                            {
-                                CausaPenal = ar.CausaPenal,
-                                Delito = ar.Delito,
-                                Sentencia = ar.Sentencia,
-                                Situacion = ar.Situacion,
-                                FechaAcuerdo = ar.FechaAcuerdo,
-                                CarpetaEjecucion = ar.CarpetaEjecucion,
-                                Observaciones = ar.Observaciones,
-                                Envia = ar.Envia,
-                                Urldocumento = ar.Urldocumento,
-                                Otro = ar.Otro
-                            }).ToList();
+                             where ar.IdArchivoRegistro == idd
+                             select new Archivoregistro
+                             {
+                                 CausaPenal = ar.CausaPenal,
+                                 Delito = ar.Delito,
+                                 Sentencia = ar.Sentencia,
+                                 Situacion = ar.Situacion,
+                                 FechaAcuerdo = ar.FechaAcuerdo,
+                                 CarpetaEjecucion = ar.CarpetaEjecucion,
+                                 Observaciones = ar.Observaciones,
+                                 Envia = ar.Envia,
+                                 Urldocumento = ar.Urldocumento,
+                                 Otro = ar.Otro
+                             }).ToList();
 
             archivoregistro.IdArchivoRegistro = idd;
             archivoregistro.ArchivoIdArchivo = archivoId;
-            archivoregistro.CausaPenal = aregistro[0].CausaPenal; 
-            archivoregistro.Delito = aregistro[0].Delito; 
-            archivoregistro.Sentencia = aregistro[0].Sentencia; 
-            archivoregistro.Situacion = aregistro[0].Situacion; 
-            archivoregistro.FechaAcuerdo = aregistro[0].FechaAcuerdo; 
-            archivoregistro.CarpetaEjecucion = aregistro[0].CarpetaEjecucion; 
-            archivoregistro.Observaciones = aregistro[0].Observaciones; 
-            archivoregistro.Envia = aregistro[0].Envia; 
-            archivoregistro.Urldocumento = aregistro[0].Urldocumento; 
-            archivoregistro.Otro = aregistro[0].Otro; 
+            archivoregistro.CausaPenal = aregistro[0].CausaPenal;
+            archivoregistro.Delito = aregistro[0].Delito;
+            archivoregistro.Sentencia = aregistro[0].Sentencia;
+            archivoregistro.Situacion = aregistro[0].Situacion;
+            archivoregistro.FechaAcuerdo = aregistro[0].FechaAcuerdo;
+            archivoregistro.CarpetaEjecucion = aregistro[0].CarpetaEjecucion;
+            archivoregistro.Observaciones = aregistro[0].Observaciones;
+            archivoregistro.Envia = aregistro[0].Envia;
+            archivoregistro.Urldocumento = aregistro[0].Urldocumento;
+            archivoregistro.Otro = aregistro[0].Otro;
 
 
             try
@@ -1271,7 +1247,7 @@ namespace scorpioweb.Models
                           where c.IdArchivoRegistro == idd
                           select c.IdArchivoRegistro).FirstOrDefault();
 
-            return Json(new { success = true, responseText = Convert.ToString(stadoc)});
+            return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
         #endregion
 
