@@ -1,0 +1,69 @@
+﻿@model scorpioweb.Models.Epcrearaudiencia
+
+@{
+    ViewBag.Title = "";
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreateEpCrearAudiencia">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" readonly asp-for="IdepcrearAudiencia" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Fecha de Audiencia</label>
+                <input asp-for="FechaAudiencia" class="form-control" />
+                <span asp-validation-for="FechaAudiencia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Usuario</label>
+                <select class="form-control" name="Usuario" id="Usuario"
+                        asp-items="@(new SelectList(ViewBag.LiataTurno, "Value"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Fecha de Notificacion</label>
+                <input asp-for="FechaNotificacion" class="form-control" />
+                <span asp-validation-for="FechaNotificacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Juzgado</label>
+                <select class="form-control" name="Juzgado" id="Juzgado"
+                        asp-items="@(new SelectList(ViewBag.Liatajuzgado, "Value"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Carpeta de Ejecucion</label>
+                <input asp-for="Ce" class="form-control" />
+                <span asp-validation-for="Ce" class="text-danger"></span>
+            </div>
+            <div>
+                <label class="control-label">Datos de sentenciado</label>
+            </div>
+            <div class="form-group col-md-4">
+                <label  class="control-label">Apellido peterno</label>
+                <input asp-for="PaternoS" class="form-control" />
+                <span asp-validation-for="PaternoS" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Apellido materno</label>
+                <input asp-for="MaternoS" class="form-control" />
+                <span asp-validation-for="MaternoS" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Nombre</label>
+                <input asp-for="NombreS" class="form-control" />
+                <span asp-validation-for="NombreS" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="hidden" readonly asp-for="EjecucionIdEjecucion" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+

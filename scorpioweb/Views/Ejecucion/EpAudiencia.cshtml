@@ -1,0 +1,261 @@
+﻿@model scorpioweb.Models.EjecucionAFAA
+
+
+@{
+    ViewData["Title"] = "Informe Audiencia";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#btnGuardar').on("click", function(e) {
+            e.preventDefault();
+            //alert("tipo: " + tipo);
+            var EjecucionIdEjecucion = document.getElementById("EjecucionIdEjecucion").value;
+            var Causapenal = document.getElementById("Causapenal").value;
+            var Beneficio = document.getElementById("Beneficio").value;
+            var InicioFirma = document.getElementById("InicioFirma").value;
+            var FinFirma = document.getElementById("FinFirma").value;
+            var FechatrabajoIe = document.getElementById("FechatrabajoIe").value;
+            var GrupoAutoayuda = document.getElementById("GrupoAutoayuda").value;
+            var Observaciones = document.getElementById("Observaciones").value;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/CrearAudiencia",
+                traditional: true,
+                data: {
+                    datosAudiencia: [EjecucionIdEjecucion, Causapenal, Beneficio, InicioFirma, FinFirma, FechatrabajoIe, GrupoAutoayuda, Observaciones],
+                },
+                success: function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function(response) {
+                    alert("Datos Guardados");
+                    location.reload();
+                }
+            });
+        });
+    });
+
+    showModal = (url, title, id) => {
+        // var IdFracciones = null;
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function(res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function(res) {
+
+            }
+        })
+    }
+    function DeleteAudiencia(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/DeleteAudiencia",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+
+                }
+            });
+        } else {
+            return;
+        }
+        return;
+    };
+
+
+</script>
+
+<h2>Audiencia</h2>
+@*<div class="col-md-12">
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.idpersona</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Nombre:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.nombre</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">
+            Causa Penal
+            <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
+    </div>
+</div>
+*@
+<table class="table">
+    <thead style="text-align:center">
+        <tr>
+            <th>
+                CausaPenal
+            </th>
+            <th>
+                Beneficio
+            </th>
+            <th>
+                Inicio de Firma
+            </th>
+            <th>
+                Fin de Firma
+            </th>
+            <th>
+                Fecha Trabajo
+            </th>
+            <th>
+                Grupo Autoaytuda
+            </th>
+            <th>
+                Observaciones
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["AudienciaEP"] as IEnumerable<scorpioweb.Models.EjecucionAFAA>)
+        {
+                <tr>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.epaudienciaVM.Causapenal)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.epaudienciaVM.Beneficio)
+                    </td>
+                    <td>
+                    @(item.epaudienciaVM.InicioFirma != null ? item.epaudienciaVM.InicioFirma.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                    </td>
+                    <td>
+                    @(item.epaudienciaVM.FinFirma != null ? item.epaudienciaVM.FinFirma.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                    </td>
+                    <td>
+                    @(item.epaudienciaVM.FechatrabajoIe != null ? item.epaudienciaVM.FechatrabajoIe.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.epaudienciaVM.GrupoAutoayuda)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.epaudienciaVM.Observaciones)
+                    </td>
+                     <td>
+                        <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAudiencia","Ejecucion",new {id=@item.epaudienciaVM.Idepaudiencia}, Context.Request.Scheme)','Editar Audiencia',null)" class="btn btn-success">
+                            <i class="fa fa-pencil"></i> Editar
+                        </a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                                <button onclick="DeleteAudiencia(@item.epaudienciaVM.Idepaudiencia)" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> Borrar
+                                </button>
+                    }
+                    </td>
+
+                @*
+            @if (ViewBag.usuario)
+            {
+            <td>
+            <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp"asp-route-idpersona="@ViewBag.idpersona" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" >
+            <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",new {id=@item.bitacoraVM.IdBitacora, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Bitacora',null)" class="btn btn-success">
+            <i class="fa fa-pencil"></i> Editar
+            </a>
+            <button type="submit" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Borrar
+            </button>
+            </form>
+            </td>
+            }*@
+                    <td>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+<br />
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+     <i class="fa fa-plus"></i> Añadir Informe de audiencia
+</button>
+
+
+<!-- Modal Creacion de nueva fraccion -->
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Nueva Audiencia</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" hidden>
+                    <label class="control-label">EjecucionIdEjecucion</label>
+                    <input readonly name="EjecucionIdEjecucion" id="EjecucionIdEjecucion" value="@ViewBag.EjecucionIdEjecucion" class="form-control" />
+                </div>
+                <div class="form-group" style="padding-top:1%;">
+                   <label class="control-label">Causa Penal</label>
+                    <select class="form-control" name="Causapenal" id="Causapenal"
+                            asp-items="@(new SelectList(ViewBag.listaepcp, "Value"))">
+                            <option value="NA">NA</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Beneficio</label>
+                    <input name="Beneficio" id="Beneficio" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Inicio de Firma</label>
+                    <input name="InicioFirma" id="InicioFirma" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Fin de Firma</label>
+                    <input name="FinFirma" id="FinFirma" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Fecha de Trabajo</label>
+                    <input name="FechatrabajoIe" id="FechatrabajoIe" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Grupo de Autoayuda</label>
+                    <input name="GrupoAutoayuda" id="GrupoAutoayuda" class="form-control" />
+                </div>
+                <div>
+                    <label class="control-label">Observaciones</label>
+                     <input name="Observaciones" id="Observaciones" class="form-control" maxlength="450" />
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal"> Cerrar</button>
+                <button type="button" id="btnGuardar" name="btnGuardar" class="btn btn-primary fa fa-save"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

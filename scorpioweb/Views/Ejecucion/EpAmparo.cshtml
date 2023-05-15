@@ -1,0 +1,195 @@
+﻿@model scorpioweb.Models.EjecucionAFAA
+
+
+@{
+    ViewData["Title"] = "Amparo";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#btnGuardar').on("click", function (e) {
+            e.preventDefault();
+            //alert("tipo: " + tipo);
+            var EjecucionIdEjecucion = document.getElementById("EjecucionIdEjecucion").value;
+            var Fecha = document.getElementById("Fecha").value;
+            var Toca = document.getElementById("Toca").value;
+            var Observaciones = document.getElementById("Observaciones").value;
+
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/CrearEpAmparo",
+                traditional: true,
+                data: {
+                    datosAmparo: [EjecucionIdEjecucion, Fecha, Toca, Observaciones],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Datos Guardados");
+                    location.reload();
+                }
+            });
+        });
+    });
+
+    showModal = (url, title, id) => {
+        // var IdFracciones = null;
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+
+    function DeleteAmparo(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/DeleteAmparo",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+
+                }
+            });
+        } else {
+            return;
+        }
+        return;
+    };
+
+</script>
+<h2>Amparo</h2>
+<table class="table">
+    <thead style="text-align:center">
+        <tr>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Toca
+            </th>
+            <th>
+                Observaciones
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["AmparoEP"] as IEnumerable<scorpioweb.Models.EjecucionAFAA>)
+        {
+            <tr>
+                <td>
+                    @(item.epamparoVM.Fecha != null ? item.epamparoVM.Fecha.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epamparoVM.Toca)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epamparoVM.Observaciones)
+                </td>
+                <td>
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAmparo","Ejecucion",new {id=@item.epamparoVM.Idepamparo}, Context.Request.Scheme)','Editar Amparo',null)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                        <button onclick="DeleteAmparo(@item.epamparoVM.Idepamparo)" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    }
+                </td>
+
+
+                @*
+            @if (ViewBag.usuario)
+            {
+            <td>
+            <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp">
+            <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",new {id=@item.bitacoraVM.IdBitacora, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Bitacora',null)" class="btn btn-success">
+            <i class="fa fa-pencil"></i> Editar
+            </a>
+            <button type="submit" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Borrar
+            </button>
+            </form>
+            </td>
+            *@
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    <i class="fa fa-plus"></i> Añadir Amparo
+</button>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Nuevo Amparo</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" hidden>
+                    <label class="control-label">EjecucionIdEjecucion</label>
+                    <input readonly name="EjecucionIdEjecucion" id="EjecucionIdEjecucion" value="@ViewBag.EjecucionIdEjecucion" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Fecha</label>
+                    <input name="Fecha" id="Fecha" class="form-control" type="date" />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Toca</label>
+                    <input name="Toca" id="Toca" class="form-control" />
+                </div>
+                <div>
+                    <label class="control-label">Observaciones</label>
+                    <input name="Observaciones" id="Observaciones" class="form-control" maxlength="450" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal"> Cerrar</button>
+                <button type="button" id="btnGuardar" name="btnGuardar" class="btn btn-primary fa fa-save"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+

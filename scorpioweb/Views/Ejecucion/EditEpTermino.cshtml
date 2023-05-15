@@ -1,0 +1,53 @@
+﻿@model scorpioweb.Models.Eptermino
+
+@{
+     Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditEpTermino" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Ideptermino" />
+            <div class="form-group">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input asp-for="Fecha" class="form-control" />
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Forma de conclución</label>
+                <input asp-for="Formaconclucion" class="form-control" />
+                <span asp-validation-for="Formaconclucion" class="text-danger"></span>
+            </div>
+
+            @if (Model.Urldocumento != null)
+            {
+                <div>
+                    <a id="btnEditar" href="~/EvidenciaTermino/@Model.Urldocumento" target="_blank" style="padding-bottom:20px">
+                        Ver archivo
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                </div>
+                <div class="custom-file" style="padding-bottom:20px">
+                    <label class="control-label">Editar Archivo de Termino</label>
+                    <input type="file" class="custom-file-input" id="arTermino" name="arTermino" lang="es">
+                </div>
+            }
+            else
+            {
+                <div class="custom-file" style="padding-bottom:20px" id="DivArchivo">
+                    <label class="control-label">Agregar Archivo de Termino</label>
+                    <input type="file" class="custom-file-input" id="arTermino" name="archivo" lang="es">
+                </div>
+            }
+
+            <div class="form-group">
+                <input readonly type="hidden" asp-for="EpcausapenalIdepcausapenal" class="form-control" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+

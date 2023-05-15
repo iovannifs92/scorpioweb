@@ -1,0 +1,58 @@
+﻿@model scorpioweb.Models.Epinstancia
+
+@{
+     Layout = null;
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditEpInstancia">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" readonly asp-for="Idepinstancia" />
+            <div class="form-group">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input asp-for="Fecha" class="form-control" />
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Multa" class="control-label"></label>
+                <input asp-for="Multa" class="form-control" />
+                <span asp-validation-for="Multa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reparacion" class="control-label"></label>
+                <input asp-for="Reparacion" class="form-control" />
+                <span asp-validation-for="Reparacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Firmeza" class="control-label"></label>
+                <input asp-for="Firmeza" class="form-control" />
+                <span asp-validation-for="Firmeza" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Pena en años</label>
+                <input asp-for="Penaanos" class="form-control" />
+                <span asp-validation-for="Penaanos" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Pena en meses </label>
+                <input asp-for="Penameses" class="form-control" />
+                <span asp-validation-for="Penameses" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Pena en dias</label>
+                <input asp-for="Penadias" class="form-control" />
+                <span asp-validation-for="Penadias" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="hidden" readonly asp-for="EpcausapenalIdepcausapenal" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary fa fa-save" />
+            </div>
+        </form>
+    </div>
+</div>
+
+

@@ -1,0 +1,208 @@
+﻿@model PaginatedList<scorpioweb.Models.EjecucionCP>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@{
+    ViewData["Title"] = "Carpeta de Ejecución";
+}
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function(res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function(res) {
+
+            }
+        })
+    }
+
+    function borrarEjecucion(id) {
+        var idep = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/antesdeleteCE",
+                traditional: true,
+                data: {
+                    id: idep,
+                },
+                success: function(response) {
+                    if (response.borrar == false) {
+                        alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
+                    } else {
+                        function borrarEjecucion(id) {
+                            var usuario = '@ViewBag.user';
+                            let razon = prompt("Porque desea borrar el registro?", "");
+                            if (razon == null || razon == "") {
+                                return;
+                                text = "NA";
+                            } else {
+                                text = razon;
+                            }
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/Ejecucion/deleteEjecucion",
+                                traditional: true,
+                                data: {
+                                    datoEjecucion: [id, razon, usuario],
+                                },
+                                success: function(response) {
+                                    if (response.borrar == true) {
+                                        alert("El Registro ha sido borrado");
+                                        location.reload();
+                                    } else {
+                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                    }
+                                },
+                                error: function(response) {
+                                    alert(response.error);
+                                }
+                            });
+                        };
+                        borrarEjecucion(id);
+                    }
+                },
+                error: function(response) {
+                    alert(response.error);
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        }
+        return innerFunc;
+    };
+</script>
+
+<h2>Ejecución de penas</h2>
+
+<form asp-action="Index" method="get">
+    <div>
+        <div class="col-md-6">
+            <label>
+                Búsqueda por nombre o Carpeta de Ejecucion
+                <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" />
+            </label>
+            <button type="submit" class="btn btn-default" style="margin-left:10px">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+        </div>
+        <a style="margin-left:20px, " asp-action="Index">Regresar al listado completo</a>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Paterno
+            </th>
+            <th>
+                Materno
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Yo
+            </th>
+            <th>
+                Carpeta de Ejecución
+            </th>
+            <th>
+                Usuario
+            </th>
+            <th>
+                Lugar de Internamiento
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+                <tr>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.IdEjecucion)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Paterno)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Materno)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Nombre)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Yo)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Ce)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Usuario)
+                    </td>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.LugarInternamiento)
+                    </td>
+                    <td>
+                        <a onclick="showModal('@Url.Action("EpCausaPenal", "Ejecucion", new {id=@item.ejecucionVM.IdEjecucion}, Context.Request.Scheme)','Causa Penal',null )" class="btn btn-primary fa fa-folder" title="Agregar Causapenal" style="margin-bottom:10px;"> Causa Penal</a>
+                        <a type="button" class="btn btn-info" id="edicion" title="Menu Procesos" href="/Ejecucion/MenuProcesos/@item.ejecucionVM.IdEjecucion" style="margin-bottom:10px;">
+                            <i class="fa fa-cogs"></i> Procesos
+                        </a>
+                        <a onclick="showModal('@Url.Action("Edit", "Ejecucion", new {id=@item.ejecucionVM.IdEjecucion}, Context.Request.Scheme)','Editar',null )" class="btn btn-success fa fa-pencil" title="Editar" style="margin-bottom:10px;"> Editar</a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                                <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarEjecucion(@item.ejecucionVM.IdEjecucion)" style="margin-bottom:10px;">
+                                    <i class="fa fa-trash"></i>
+                            </a>
+                    }
+
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+
+@if (User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Masteradmin") || User.IsInRole("Ejecucion"))
+{
+        <a onclick="showModal('@Url.Action("Create", "Ejecucion", Context.Request.Scheme)','Carpeta de Ejecución',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
+}
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p style="margin-top:30px">
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>

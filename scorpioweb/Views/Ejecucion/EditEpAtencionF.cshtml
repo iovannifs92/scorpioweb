@@ -1,0 +1,71 @@
+﻿@model scorpioweb.Models.Epatencionf
+
+@{
+     Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditEpAtencionF">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdepAtencionF" />
+           @* <div class="form-group">
+                <label asp-for="Turno" class="control-label"></label>
+                <input asp-for="Turno" class="form-control" />
+                <span asp-validation-for="Turno" class="text-danger"></span>
+            </div>*@
+          @*  <div class="form-group">
+                <label asp-for="QuienAtiende" class="control-label"></label>
+                <input asp-for="QuienAtiende" class="form-control" />
+                <span asp-validation-for="QuienAtiende" class="text-danger"></span>
+            </div>*@
+@*            <div class="form-group" style="padding-top:1%;">
+                <label class="control-label">Turno</label>
+                <select class="form-control" name="Turno" id="Turno">
+                    <option value="NA">NA </option>
+                    <option value="JUZGADO 1">Juzgado 1 </option>
+                    <option value="JUZGADO 2">Juzgado 2 </option>
+                    <option value="JUZGADO 3">Juzgado 3 </option>
+                    <option value="TURNO">Turno </option>
+                </select>
+            </div>*@
+            <div class="form-group" style="padding-top:1%;">
+                <label class="control-label">Turno</label>
+                <select class="form-control" name="Turno" id="Turno"
+                        asp-items="@(new SelectList(ViewBag.LiataTurno, ViewBag.Selectturno))">
+                </select>
+            </div>
+            <div class="form-group" style="padding-top:1%;">
+                <label class="control-label">Quien Atiende</label>
+                <select class="form-control" name="QuienAtiende" id="QuienAtiende"
+                        asp-items="@(new SelectList(ViewBag.QuienAtiende, ViewBag.QuienAtiendeEdit))">
+                    <option value="NA">NA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inicio" class="control-label"></label>
+                <input asp-for="Inicio" class="form-control" />
+                <span asp-validation-for="Inicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Termino" class="control-label"></label>
+                <input asp-for="Termino" class="form-control" />
+                <span asp-validation-for="Termino" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <input asp-for="Observaciones" class="form-control" />
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input readonly type="hidden" asp-for="EjecucionIdEjecucion" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

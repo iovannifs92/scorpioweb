@@ -1,0 +1,205 @@
+﻿@model scorpioweb.Models.EjecucionAFAA
+
+
+@{
+    ViewData["Title"] = "Atencion a Familiar";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#btnGuardar').on("click", function (e) {
+            e.preventDefault();
+
+            var EjecucionIdEjecucion = document.getElementById("EjecucionIdEjecucion").value;
+            var Turno = document.getElementById("Turno").value;
+            var QuienAtiende = document.getElementById("QuienAtiende").value;
+            var Inicio = document.getElementById("Inicio").value;
+            var Termino = document.getElementById("Termino").value;
+            var Observaciones = document.getElementById("Observaciones").value;
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/CrearEpAtencionF",
+                traditional: true,
+                data: {
+                    datosAtencionF: [EjecucionIdEjecucion, Turno, QuienAtiende, Inicio, Termino, Observaciones],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Datos Guardados");
+                    location.reload();
+                }
+            });
+        });
+    });
+
+    showModal = (url, title, id) => {
+        // var IdFracciones = null;
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+    function DeleteAtencionF(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/DeleteAtencionF",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+
+                }
+            });
+        } else {
+            return;
+        }
+        return;
+    };
+
+</script>
+
+<h2>Atencion a Familiar</h2>
+<table class="table">
+    <thead style="text-align:center">
+        <tr>
+            <th>
+                Turno
+            </th>
+            <th>
+                Quien Atiende
+            </th>
+            <th>
+                Inicio
+            </th>
+            <th>
+                Termino
+            </th>
+            <th>
+                Observaciones
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["AtencionFEP"] as IEnumerable<scorpioweb.Models.EjecucionAFAA>)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epatencionfVM.Turno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epatencionfVM.QuienAtiende)
+                </td>
+                <td>
+                    @(item.epatencionfVM.Inicio != null ? item.epatencionfVM.Inicio.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                </td>
+                <td>
+                    @(item.epatencionfVM.Termino != null ? item.epatencionfVM.Termino.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epatencionfVM.Observaciones)
+                </td>
+                <td>
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAtencionF","Ejecucion",new {id=@item.epatencionfVM.IdepAtencionF}, Context.Request.Scheme)','Editar Atencion a Familiar',null)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                        <button onclick="DeleteAtencionF(@item.epatencionfVM.IdepAtencionF)" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    <i class="fa fa-plus"></i> Añadir Atención a Familiar
+</button>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Atención a Familiar</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" hidden>
+                    <label class="control-label">EjecucionIdEjecucion</label>
+                    <input readonly name="EjecucionIdEjecucion" id="EjecucionIdEjecucion" value="@ViewBag.EjecucionIdEjecucion" class="form-control" />
+                </div>
+                <div class="form-group" style="padding-top:1%;">
+                    <label class="control-label">Turno</label>
+                    <select class="form-control" name="Turno" id="Turno">
+                        <option value="NA">NA </option>
+                        <option value="JUZGADO 1">Juzgado 1 </option>
+                        <option value="JUZGADO 2">Juzgado 2 </option>
+                        <option value="JUZGADO 3">Juzgado 3 </option>
+                        <option value="TURNO">Turno </option>
+                    </select>
+                </div>
+                <div class="form-group" style="padding-top:1%;">
+                    <label class="control-label">Quien Atiende</label>
+                    <select class="form-control" name="QuienAtiende" id="QuienAtiende"
+                            asp-items="@(new SelectList(ViewBag.QuienAtiende, "Value"))">
+                        <option value="NA">NA</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Inicio</label>
+                    <input name="Inicio" id="Inicio" class="form-control" type="date" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Termino</label>
+                    <input name="Termino" id="Termino" class="form-control" type="date" />
+                </div>
+                <div>
+                    <label class="control-label">Observaciones</label>
+                    <input name="Observaciones" id="Observaciones" class="form-control" maxlength="450" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal"> Cerrar</button>
+                <button type="button" id="btnGuardar" name="btnGuardar" class="btn btn-primary fa fa-save"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

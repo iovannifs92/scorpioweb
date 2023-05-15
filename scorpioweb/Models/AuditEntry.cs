@@ -30,8 +30,8 @@ namespace scorpioweb.Models
             audit.TableName = TableName;
             audit.DateTime = DateTime.Now;
             audit.PrimaryKey = JsonConvert.SerializeObject(KeyValues);
-            audit.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);
-            audit.NewValues = NewValues.Count == 0 ? null  : JsonConvert.SerializeObject(NewValues);
+            audit.OldValues = (OldValues == null || OldValues.Count == 0 || OldValues.Count > 500) ? "No disponible" : JsonConvert.SerializeObject(OldValues);
+            audit.NewValues = (NewValues == null || NewValues.Count == 0 || NewValues.Count > 500) ? "No disponible" : JsonConvert.SerializeObject(NewValues);
             if (audit.NewValues == null || audit.NewValues.Count() > 500) {
                 audit.NewValues = "Nuevo Registro";
             }

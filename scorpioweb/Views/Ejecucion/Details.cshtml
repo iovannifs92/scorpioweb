@@ -1,0 +1,60 @@
+﻿@model scorpioweb.Models.Ejecucion
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Ejecucion</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Paterno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Paterno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Materno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Materno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Yo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Yo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Ce)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Ce)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Usuario)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LugarInternamiento)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LugarInternamiento)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdEjecucion">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,224 @@
+﻿@model PaginatedList<scorpioweb.Models.Epcrearaudiencia>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+@{
+    ViewData["Title"] = "Carpeta de Ejecución";
+}
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+    function DeleteCrearAudiencia(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/DeleteCrearAudiencia",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+
+                }
+            });
+        } else {
+            return;
+        }
+        return;
+    };
+
+    var arr = [];
+    function myFunction(id) {
+        var encontro = false;
+        var doble;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+        if (encontro == false) {
+            arr.push(id);
+        } else {
+            arr.splice(doble, 1);
+        }
+    }
+
+
+    $(document).ready(function () {
+        $('#btnImprimirR').on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/ImprimirAudiencias",
+                traditional: true,
+                data: {
+                    datosidAudiencia: arr,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Informe Generado");
+                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
+                    window.location.href = "/Documentos/AudienciasEP.docx"
+                    //window.location.href = "http://10.6.60.190:432/Documentos/reporteSupervision.docx"
+                }
+            });
+
+        });
+    });
+</script>
+
+<h2>Audiencias</h2>
+
+<form asp-action="listaEpCrearAudiencia" method="get">
+    <div>
+        <div class="col-md-6">
+            <label>
+                Búsqueda Carpeta de Ejecución
+                <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" />
+            </label>
+            <button type="submit" class="btn btn-default">
+                <i class="fa fa-search"></i>
+                Buscar
+            </button>
+        </div>
+        <a asp-action="listaEpCrearAudiencia">Listado completo</a>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Imprimir
+            </th>
+            <th>
+                No
+            </th>
+            <th>
+                Fecha de Audiencia
+            </th>
+            <th>
+                Usuario
+            </th>
+            <th>
+                Fecha de Notificacion
+            </th>
+            <th>
+                Juzgado
+            </th>
+            <th>
+                Carpeta de Ejecución
+            </th>
+            <th>
+                Sentenciado
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdepcrearAudiencia)">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdepcrearAudiencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaAudiencia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Usuario)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaNotificacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Juzgado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ce)
+                </td>
+                <td>
+                    @item.PaternoS  @item.MaternoS @item.NombreS
+                </td>
+                <td>
+                    <a onclick="showModal('@Url.Action("EditEpCreateAudiencia", "Ejecucion", new {id=@item.IdepcrearAudiencia}, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                        <button onclick="DeleteCrearAudiencia(@item.IdepcrearAudiencia)" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    }                        
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*@if (ViewBag.usuario)
+{*@
+    <a onclick="showModal('@Url.Action("CreateEpCrearAudiencia", "Ejecucion", Context.Request.Scheme)','Crear audiencia',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
+    <a id="btnImprimirR" name="btnImprimirR"  class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
+
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p style="margin-top:30px">
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="listaEpCrearAudiencia"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="listaEpCrearAudiencia"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>

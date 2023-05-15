@@ -1,0 +1,139 @@
+﻿@model scorpioweb.Models.Ejecucion
+
+@{
+     Layout = null;
+}
+
+<script>
+    $(document).ready(function () {
+        function autocomplete(inp, arr) {
+                var currentFocus;
+                inp.addEventListener("input", function (e) {
+                    var a, b, i, val = this.value;
+                    closeAllLists();
+                    if (!val) { return false; }
+                    currentFocus = -1;
+                    a = document.createElement("DIV");
+                    a.setAttribute("id", this.id + "autocomplete-list");
+                    a.setAttribute("class", "autocomplete-items");
+                    this.parentNode.appendChild(a);
+                    for (i = 0; i < arr.length; i++) {
+                        if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                            b = document.createElement("DIV");
+                            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                            b.innerHTML += arr[i].substr(val.length);
+                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                                inp.value = this.getElementsByTagName("input")[0].value;
+
+                                closeAllLists();
+                            });
+                            a.appendChild(b);
+                        }
+                    }
+                });
+
+                inp.addEventListener("keydown", function (e) {
+                    var x = document.getElementById(this.id + "autocomplete-list");
+                    if (x) x = x.getElementsByTagName("div");
+                    if (e.keyCode == 40) {
+
+                        currentFocus++;
+
+                        addActive(x);
+                    } else if (e.keyCode == 38) { //up
+
+                        currentFocus--;
+
+                        addActive(x);
+                    } else if (e.keyCode == 13) {
+
+                        e.preventDefault();
+                        if (currentFocus > -1) {
+
+                            if (x) x[currentFocus].click();
+                        }
+                    }
+                });
+                function addActive(x) {
+
+                    if (!x) return false;
+
+                    removeActive(x);
+                    if (currentFocus >= x.length) currentFocus = 0;
+                    if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                    x[currentFocus].classList.add("autocomplete-active");
+                }
+                function removeActive(x) {
+
+                    for (var i = 0; i < x.length; i++) {
+                        x[i].classList.remove("autocomplete-active");
+                    }
+                }
+                function closeAllLists(elmnt) {
+                    var x = document.getElementsByClassName("autocomplete-items");
+                    for (var i = 0; i < x.length; i++) {
+                        if (elmnt != x[i] && elmnt != inp) {
+                            x[i].parentNode.removeChild(x[i]);
+                        }
+                    }
+                }
+                document.addEventListener("click", function (e) {
+                    closeAllLists(e.target);
+                });
+        }
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.centrosPenitenciarios))');
+        autocomplete(document.getElementById("LugarInternamiento"), catalogo);
+    });
+</script>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdEjecucion" />
+            <div class="form-group">
+                <label asp-for="Paterno" class="control-label"></label>
+                <input asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Materno" class="control-label"></label>
+                <input asp-for="Materno" class="form-control" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Yo" class="control-label"></label>
+                <input asp-for="Yo" class="form-control" />
+                <span asp-validation-for="Yo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ce" class="control-label"></label>
+                <input asp-for="Ce" class="form-control" />
+                <span asp-validation-for="Ce" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Usuario" class="control-label"></label>
+                <select class="form-control" name="Usuario" id="Usuario"
+                        asp-items="@(new SelectList(@ViewBag.ListaEjecucion))">
+                </select>
+            </div>
+
+            <div class="form-group autocomplete">
+                <label asp-for="LugarInternamiento" class="control-label"></label>
+                <input asp-for="LugarInternamiento" class="form-control" />
+                <span asp-validation-for="LugarInternamiento" class="text-danger"></span>
+            </div>
+           <div class="form-group">
+                <button type="submit" class="btn btn-primary fa fa-save"> Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+

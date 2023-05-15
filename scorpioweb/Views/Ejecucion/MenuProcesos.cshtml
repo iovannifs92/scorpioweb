@@ -1,0 +1,367 @@
+﻿@model IEnumerable<scorpioweb.Models.EjecucionAFAA>
+
+@{
+    ViewData["Title"] = "Menu Procesos";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/css/tabla.css">
+<style>
+    #vinculacion {
+        background-color: #EC7DAF;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #vinculacion:hover {
+            background-color: #FF3B93;
+        }
+
+    #cambio {
+        background-color: #BF7FEC;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #cambio:hover {
+            background-color: #AE3DFF;
+        }
+
+    #inicio {
+        background-color: #95ECDD;
+        color: #fff;
+        border-color: #fff;
+    }
+
+    #victima:hover {
+        background-color: #55FFE2;
+    }
+
+    #suspension {
+        background-color: #ECD099;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #suspension:hover {
+            background-color: #FEC859;
+        }
+
+    #termino {
+        background-color: #B0DF69;
+        color: #fff;
+        border-color: #fff;
+    }
+</style>
+
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+    function DeleteInstancia(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/DeleteEpInstancia",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+
+                }
+            });
+        } else {
+            return;
+        }
+        return;
+    };
+
+    function DeleteInstancia(id) {
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/DeleteInstancia",
+                traditional: true,
+                data: {
+                    dato: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        alert("El Registro ha sido borrado");
+                        location.reload();
+                    } else {
+                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+
+                }
+            });
+        } else {
+            return;
+        }
+        return;
+    };
+    function DeleteTermino(id) {
+        var usuario = '@ViewBag.user';
+        let razon = prompt("Porque desea borrar el registro?", "");
+        if (razon == null || razon == "") {
+            return;
+            text = "NA";
+        } else {
+            text = razon;
+        }
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Ejecucion/DeleteEpTermino",
+            traditional: true,
+            data: {
+                datoTermino: [id, razon, usuario],
+            },
+            success: function (response) {
+                if (response.borrar == true) {
+                    alert("El Registro ha sido borrado");
+                    location.reload();
+                } else {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+            }
+        });
+    };
+
+
+</script>
+<h1>Menu Procesos</h1>
+@foreach (var item in ViewData["joinTablesEjecucion"] as IEnumerable<scorpioweb.Models.EjecucionAFAA>)
+{
+    //El color de el boton se define con el Id
+    <div class="container col-md-12" style="margin-bottom:30px">
+        <br>
+        <div class="row">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EpAtencionF" asp-route-id="@item.ejecucionVM.IdEjecucion" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Atención a Familiar</a>
+            </div>
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EpAmparo" asp-route-id="@item.ejecucionVM.IdEjecucion" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Amparo</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EpAudiencia" asp-route-id="@item.ejecucionVM.IdEjecucion" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Informe de Audiencia</a>
+            </div>
+        </div>
+    </div>
+    break;
+}
+
+
+<h1 style="text-align:center" id="">Instancia  de Causa Penal</h1>
+<table class="table">
+    <thead style="text-align:center">
+        <tr class="table-secondary">
+            <th>
+                Causa Penal
+            </th>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Multa
+            </th>
+            <th>
+                Reparacion
+            </th>
+            <th>
+                Firmeza
+            </th>
+            <th>
+                Pena en Años
+            </th>
+            <th>
+                Pena en Meses
+            </th>
+            <th>
+                Pena en Dias
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["joinTableEpInstancia"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epcausapenalVM.Causapenal)
+                </td>
+                <td>
+                    @(item.epinstanciaVM.Fecha != null ? item.epinstanciaVM.Fecha.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Multa)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Reparacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Firmeza)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Penaanos)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Penameses)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Penadias)
+                </td>
+                <td>
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpInstancia","Ejecucion",new {id=@item.epinstanciaVM.Idepinstancia}, Context.Request.Scheme)','Editar Instancia',null)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                        <button onclick="DeleteInstancia(@item.epinstanciaVM.Idepinstancia)" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    }
+                </td>
+
+                @*
+            @if (ViewBag.usuario)
+            {
+            <td>
+            <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp"asp-route-idpersona="@ViewBag.idpersona" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" >
+
+            <button type="submit" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Borrar
+            </button>
+            </form>
+            </td>
+            }*@
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<h1 style="text-align:center">Termino de Causa Penal</h1>
+<table class="table">
+    <thead style="text-align:center">
+        <tr class="table-primary">
+            <th>
+                Causa Penal
+            </th>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Forma de Conclucion
+            </th>
+            <th>
+                Documento
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["joinTablesTemino"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epcausapenalVM.Causapenal)
+                </td>
+                <td>
+                    @(item.epterminoVM.Fecha != null ? item.epterminoVM.Fecha.Value.ToString("dd-MMMM-yyyy") : String.Empty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epterminoVM.Formaconclucion)
+                </td>
+                @if (item.epterminoVM.Urldocumento != null)
+                {
+                    <td>
+                        <a style="font-size: x-large;" id="btnEditar" href="~/EvidenciaTermino/@Html.DisplayFor(modelItem => item.epterminoVM.Urldocumento)" target="_blank">
+                            <i class="fa fa-paperclip fa-9x"></i>
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td>
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpTermino","Ejecucion",new {id=@item.epterminoVM.Ideptermino}, Context.Request.Scheme)','Editar Termino',null)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                    {
+                        <button onclick="DeleteTermino(@item.epterminoVM.Ideptermino)" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </button>
+                    }
+                </td>
+
+                @*
+            @if (ViewBag.usuario)
+            {
+            <td>
+            <form onsubmit="return confirm('¿Deseas borrar Registro?');" asp-action="DeleteRegistro" asp-route-id="@item.bitacoraVM.IdBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp"asp-route-idpersona="@ViewBag.idpersona" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" >
+            <a id="btnEditar" onclick="showModal('@Url.Action("EditBitacora","Supervisiones",new {id=@item.bitacoraVM.IdBitacora, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Bitacora',null)" class="btn btn-success">
+            <i class="fa fa-pencil"></i> Editar
+            </a>
+            <button type="submit" class="btn btn-danger">
+            <i class="fa fa-trash"></i> Borrar
+            </button>
+            </form>
+            </td>
+            }*@
+                <td>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+<br />
+<div class=col-md-12 style="margin-top: 20px">
+    <a style="" href='javascript:history.go(-1)'>Regresar</a>
+</div>

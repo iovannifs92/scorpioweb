@@ -65,7 +65,7 @@
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") || User.IsInRole("CoordinadorEjecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos"))
                     {
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }
@@ -76,6 +76,10 @@
                     @if (User.IsInRole("Masteradmin"))
                     {
                         <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administracion</a></li>
+                    }
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Oficialia"))
+                    {
+                        <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
                     }
 
                 </ul>
@@ -164,11 +168,11 @@
                 @*<p>&copy; 2019 - SCORPIO</p>*@
             </div>
 
-            @if (User.Identity.IsAuthenticated)
+          @if (User.IsInRole("Masteradmin") @*|| User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Coordinador")*@)
             {
                 <div class="col-1 col-md-1" style="float:right">
-                    <label for="victima">Otro</label>
-                    <input id="victima" name="victima" type="checkbox" onclick="validate()"></input>
+                    <label for="victima" title="Buscar Nombre en victimas">Otro</label>
+                    <input id="victima" name="victima" type="checkbox" onclick="validate()" title="Buscar Nombre en victimas"></input>
                     <button type="submit" id="buscar" class="form-control" name="buscar" onclick="Buscar()"><i class="fa fa-search"></i></button>
                     <button type="submit" id="buscarConcat" class="form-control" name="buscarConcat" onclick="BuscarConcat()" style="display:none"><i class="fa fa-search"></i></button>
                 </div>

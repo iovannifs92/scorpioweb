@@ -1,0 +1,58 @@
+﻿@model scorpioweb.Models.Epaudiencia
+@{
+     Layout = null;
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="EditEpAudiencia">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Idepaudiencia" />
+            <div class="form-group" style="padding-top:1%;">
+                <label class="control-label">Causa penal</label>
+                <select class="form-control" name="Causapenal" id="Causapenal"
+                        asp-items="@(new SelectList(ViewBag.listaepcp, ViewBag.Selectcp))">
+                    <option value="NA">NA</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Beneficio" class="control-label"></label>
+                <input asp-for="Beneficio" class="form-control" />
+                <span asp-validation-for="Beneficio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InicioFirma" class="control-label"></label>
+                <input asp-for="InicioFirma" class="form-control" />
+                <span asp-validation-for="InicioFirma" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FinFirma" class="control-label"></label>
+                <input asp-for="FinFirma" class="form-control" />
+                <span asp-validation-for="FinFirma" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechatrabajoIe" class="control-label"></label>
+                <input asp-for="FechatrabajoIe" class="form-control" />
+                <span asp-validation-for="FechatrabajoIe" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GrupoAutoayuda" class="control-label"></label>
+                <input asp-for="GrupoAutoayuda" class="form-control" />
+                <span asp-validation-for="GrupoAutoayuda" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <input asp-for="Observaciones" class="form-control" />
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+            <div class="form-group" >
+                <input type="hidden" readonly asp-for="EjecucionIdEjecucion" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+

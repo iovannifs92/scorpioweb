@@ -20,12 +20,9 @@
             //    datosBitacora: [IdFracciones],
             //},
             error: function (res) {
-
             }
         })
     }
-
-
     function Borrar(id) {
         var idsuper = id;
         var usuario = '@ViewBag.user';
@@ -70,7 +67,6 @@
                             },
                             error: function (response) {
                                 alert(response.error);
-
                             }
                         });
                     };
@@ -85,7 +81,6 @@
         }
         return innerFunc;
     };
-
     function BuscarAR() {
         var SearchString = document.getElementById("SearchString").value.toUpperCase();
         $.ajax({
@@ -103,7 +98,6 @@
                     alert("No se encontro ningún registro que coincida")
                     return;
                 }
-
                 for (let i = 0; i < response.busqueda.length; i++) {
                     row = row
                         + "<tr>"
@@ -125,10 +119,6 @@
             }
         });
     };
-
-
-
-
 </script>
 <br />
 <br />

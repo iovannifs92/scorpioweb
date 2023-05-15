@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Ejecucion de Penas";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+</script>
+
+
+
+<div class="card-group" style="padding-top:2%">
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion"))
+    {
+        <div class="col-md-12 col-md-12">
+            <h2>Ejecución de Penas  </h2>
+        </div>
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Ejecucion" asp-action="Index">
+                        <img class="card-img-top" src="~/images/folder.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Gestión de caso
+                    </a>
+                </h4>
+            </div>
+        </div>
+    }
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Oficialia"))
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Ejecucion" asp-action="listaEpCrearAudiencia">
+                        <img class="card-img-bottom" src="~/images/ley.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Crear Audiencia
+                    </a>
+                </h4>
+            </div>
+        </div>
+    }
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion"))
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Ejecucion" asp-action="Alertas">
+                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Alertas
+                    </a>
+                </h4>
+            </div>
+        </div>
+    }
+    @*@if (User.IsInRole("Ejecucion") || User.IsInRole("Masteradmin"))
+    {
+    <div class="col-sm-3 col-md-3 card text-center">
+    <div class="card-body">
+    <h4 class="card-title">
+    <a asp-controller="Archivo" asp-action="ArchivoControl">
+    <img class="card-img-bottom" src="~/images/documentation.png" alt="Card image cap" style="padding-bottom:5%;">
+    Control de préstamo
+    </a>
+    </h4>
+    </div>
+    </div>
+
+    <div class="col-sm-3 col-md-3 card text-center">
+    <div class="card-body">
+    <h4 class="card-title">
+    <a asp-controller="Archivo" asp-action="ArchivoHistorial">
+    <img class="card-img-bottom" src="~/images/history-folder.png" alt="Card image cap" style="padding-bottom:5%;">
+    Historial de préstamo
+    </a>
+    </h4>
+    </div>
+    </div>
+    }*@
+</div>
+
+
+

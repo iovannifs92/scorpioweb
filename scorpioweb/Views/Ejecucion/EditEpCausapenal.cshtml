@@ -1,0 +1,375 @@
+﻿@{
+    ViewBag.Title = "";
+    Layout = null;
+}
+
+@{
+    int i = 0;
+    string collapse = "#collapse";
+    string collapseid = "collapse";
+}
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+
+    /*the container must be positioned relative:*/
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #f2f2f2;
+    }
+</style>
+
+
+<script>
+    function borrarEPCP(id) {
+        var idep = id;
+        var usuario = '@ViewBag.user';
+        var cambiar = confirm("¿Desea borrar el registro?");
+        if (cambiar == true) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/antesdeleteCP",
+                traditional: true,
+                data: {
+                    id: idep,
+                },
+                success: function(response) {
+                    if (response.borrar == false) {
+                        alert("No se ha borrado porque la Causa Penal tiene procesos Asignados");
+                    } else {
+                        function borrarEjecucion(id) {
+                            var usuario = '@ViewBag.user';
+                            let razon = prompt("Porque desea borrar el registro?", "");
+                            if (razon == null || razon == "") {
+                                return;
+                                text = "NA";
+                            } else {
+                                text = razon;
+                            }
+                            alert(razon)
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/Ejecucion/deleteEjecucion",
+                                traditional: true,
+                                data: {
+                                    datoEjecucion: [id, razon, usuario],
+                                },
+                                success: function(response) {
+                                    if (response.borrar == true) {
+                                        alert("El Registro ha sido borrado");
+                                        location.reload();
+                                    } else {
+                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                    }
+                                },
+                                error: function(response) {
+                                    alert(response.error);
+                                }
+                            });
+                        };
+                        borrarEjecucion(id);
+                    }
+                },
+                error: function(response) {
+                    alert(response.error);
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        }
+        return innerFunc;
+    };
+
+
+
+
+    function CrearInstancia(id, i) {
+        var idCausapenal = document.getElementById("Causapenal" + i).value;
+        var Fecha = document.getElementById("Fecha" + i).value;
+        var Multa = document.getElementById("Multa" + i).value;
+        var Reparacion = document.getElementById("Reparacion" + i).value;
+        var Firmeza = document.getElementById("Firmeza" + i).value;
+        var Penaanos = document.getElementById("Penaanos" + i).value;
+        var Penameses = document.getElementById("Penameses" + i).value;
+        var Penadias = document.getElementById("Penadias" + i).value;
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Ejecucion/CrearEpCpInstancia",
+            traditional: true,
+            data: {
+                datosInstancia: [idCausapenal, Fecha, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias],
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.responseText);
+                }
+            },
+            error: function(response) {
+                alert("Datos Guardados");
+                location.reload();
+            }
+        });
+    };
+
+    function CrearTemino(inputId, i) {
+        var input = document.getElementById(inputId); //get file input id
+        var files = input.files; //get files
+        var formData = new FormData(); //create form
+        var idCausapenal = document.getElementById("Causapenal" + i).value;
+        var Fecha = document.getElementById("FechaTermino" + i).value;
+        var Formaconclucion = document.getElementById("Formaconclucion" + i).value;
+        formData.append('idCausapenal', idCausapenal);
+        formData.append('Fecha', Fecha);
+        formData.append('Formaconclucion', Formaconclucion);
+        for (var i = 0; i != files.length; i++) {
+            formData.append("files", files[i]); //loop through all files and append
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Ejecucion/CrearEpCpTermino",
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function(data) {
+                alert('Datos guardados con exito!!');
+                location.reload();
+            }
+        });
+    };
+
+
+    function cambioTitle(i) {
+        var title = "Instancia"
+        $("#form-modal .modal-title").html(title);
+    };
+
+      function cambioTitle2(i) {
+        var title = "Termino"
+        $("#form-modal .modal-title").html(title);
+    };
+
+</script>
+
+
+@foreach (var item in ViewData["tieneEPCP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
+{
+    <a onclick="showModal('@Url.Action("CreateEpCausapenal2", "Ejecucion", new {id=@item.epcausapenalVM.EjecucionIdEjecucion}, Context.Request.Scheme)','Causa penal',@item.epcausapenalVM.EjecucionIdEjecucion )" class="btn btn-success fa fa-plus"> Agregar Causa Penal</a>
+    break;
+}
+<br />
+<br />
+@foreach (var item in ViewData["tieneEPCP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
+{
+    i++;
+    <form asp-action="EditEPCausaPenal" asp-route-id="@item.epcausapenalVM.Idepcausapenal" asp-route-archivoIdArchivo="@item.epcausapenalVM.Idepcausapenal" enctype="multipart/form-data">
+        @if (@item.epcausapenalVM.EstadodeCausa == 1)
+        {
+            <p>
+
+                <a class="btn btn-warning btn-lg btn-block" data-toggle="collapse" href="@(collapse+i)" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Causa Penal @item.epcausapenalVM.Causapenal
+                </a>
+            </p>
+
+        }
+        else
+        {
+            <p>
+                <a class="btn btn-primary btn-lg btn-block" data-toggle="collapse" href="@(collapse+i)" role="button" aria-expanded="false" aria-controls="collapseExample">
+                    Causa Penal @item.epcausapenalVM.Causapenal
+                </a>
+            </p>
+
+        }
+        <div class="collapse" id="@(collapseid+i)">
+            <input style="display:none" readonly name="Idepcausapenal" id="Idepcausapenal" value="@item.epcausapenalVM.Idepcausapenal" class="form-control" />
+            <input style="display:none" readonly name="EjecucionIdEjecucion" id="EjecucionIdEjecucion" value="@item.epcausapenalVM.EjecucionIdEjecucion" class="form-control" />
+
+            <div class="form-group col-md-12">
+                <label class="control-label">Causa Penal</label>
+                <input name="Causapenal" id="Causapenal" value="@item.epcausapenalVM.Causapenal" class="form-control" />
+            </div>
+            <div class="form-group autocomplete col-md-12">
+                <label class="control-label">Delito</label>
+                <input name="Delito" id="Delito" value="@item.epcausapenalVM.Delito" type="text" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Clasificacion del delito</label>
+                <input name="Clasificaciondelito" id="Clasificaciondelito" value="@item.epcausapenalVM.Clasificaciondelito" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Juzgado de Origen</label>
+                <input name="JuzgadoOrigen" id="JuzgadoOrigen" value="@item.epcausapenalVM.JuzgadoOrigen" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Fecha de Sentencia</label>
+                <input required id="FechaSentencia" name="FechaSentencia" class="form-control" asp-for="@item.epcausapenalVM.FechaSentencia" type="date" />
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Multa</label>
+                <input name="Multa" id="Multa" value="@item.epcausapenalVM.Multa" class="form-control"/>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Reparacion</label>
+                <input name="Reparacion" id="Reparacion" value="@item.epcausapenalVM.Reparacion" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Firmeza</label>
+                <input name="Firmeza" id="Firmeza" value="@item.epcausapenalVM.Firmeza" class="form-control" />
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Pena en Años</label>
+                <input name="Penaanos" id="Penaanos" value="@item.epcausapenalVM.Penaanos" class="form-control" />
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Pena en Meses</label>
+                <input name="Penameses" id="Penameses" value="@item.epcausapenalVM.Penameses" class="form-control" />
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label">Pena en Dias</label>
+                <input name="Penadias" id="Penadias" value="@item.epcausapenalVM.Penadias" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Apartir</label>
+                <input required id="Apartir" name="Apartir" class="form-control" asp-for="@item.epcausapenalVM.Apartir" type="date" />
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary btn-block" style="margin-bottom:10px">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
+            </div>
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+            {
+                <div class="col-md-6">
+                    <button onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal)" class="btn btn-danger btn-block" style="margin-bottom:10px">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
+            </div>
+            }
+            <div class="card card-body">
+                <button type="button" class="btn btn-success fa fa-bank btn-block" data-toggle="modal" style="margin-bottom:10px" data-target="#exampleModalCenter@(i)" onclick="cambioTitle(@(i))">
+                    Instancia
+                </button>
+                <button type="button" class="btn btn-warning fa fa-share btn-calender-date" data-toggle="modal" data-target="#exampleModalCenter2@(i)" onclick="cambioTitle2(@(i))">
+                    Terminio
+                </button>
+
+            </div>
+        </div>
+    </form>
+    @*----MODAL DE INSTANCIA----*@
+    <div class="modal" id="exampleModalCenter@(i)" name="exampleModalCenter" tabindex="-1" aria-labelledby="modalReasignar" aria-hidden="true" style="width:1000px; margin-top:300px;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#0078A7;">
+                    <h5 class="modal-title" style="font-size: 30px; color:#fff;"></h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="display:none">
+                        <input readonly name="Causapenal@(i)" id="Causapenal@(i)" class="form-control" value="@item.epcausapenalVM.Idepcausapenal" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Fecha</label>
+                        <input name="Fecha@(i)" id="Fecha@(i)" class="form-control" type="date" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Multa</label>
+                        <input name="Multa@(i)" id="Multa@(i)" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Reparacion</label>
+                        <input name="Reparacion@(i)" id="Reparacion@(i)" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Firmeza</label>
+                        <input name="Firmeza@(i)" id="Firmeza@(i)" class="form-control" type="date"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Pena en años</label>
+                        <input name="Penaanos@(i)" id="Penaanos@(i)" class="form-control" type="number"/>
+                    </div>  
+                    <div class="form-group">
+                        <label class="control-label">Pena en meses</label>
+                        <input name="Penameses@(i)" id="Penameses@(i)" class="form-control" type="number"/>
+                    </div>  
+                    <div class="form-group">
+                        <label class="control-label">Pena en dias</label>
+                        <input name="Penadias@(i)" id="Penadias@(i)" class="form-control" type="number"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="CrearInstancia(@item.epcausapenalVM.Idepcausapenal, @(i))" class="btn btn-primary fa fa-save"> Guardar</button>
+                    <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal"> Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*----MODAL DE TERMINO----*@
+    <div class="modal" id="exampleModalCenter2@(i)" name="exampleModalCenter" tabindex="-1" aria-labelledby="modalReasignar" aria-hidden="true" style="width:1000px; margin-top:300px;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#0078A7;">
+                    <h5 class="modal-title" style="font-size: 30px; color:#fff;" value="Añadir Instancia{@i}"></h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="display:none">
+                        <input required name="Causapenal@(i)" id="Causapenal@(i)" class="form-control" value="@item.epcausapenalVM.Idepcausapenal" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Fecha</label>
+                        <input name="FechaTermino@(i)" id="FechaTermino@(i)" class="form-control" type="date" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Forma de Conclución</label>
+                        <input name="Formaconclucion@(i)" id="Formaconclucion@(i)" class="form-control" />
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="evidencia@(i)" name="evidencia@(i)" lang="es">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="CrearTemino('evidencia@(i)', @(i))" class="btn btn-primary fa fa-save"> Guardar</button>
+                    <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal"> Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
