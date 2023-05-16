@@ -9,26 +9,26 @@
         <form asp-action="EditEpAtencionF">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdepAtencionF" />
-           @* <div class="form-group">
-                <label asp-for="Turno" class="control-label"></label>
-                <input asp-for="Turno" class="form-control" />
-                <span asp-validation-for="Turno" class="text-danger"></span>
-            </div>*@
-          @*  <div class="form-group">
-                <label asp-for="QuienAtiende" class="control-label"></label>
-                <input asp-for="QuienAtiende" class="form-control" />
-                <span asp-validation-for="QuienAtiende" class="text-danger"></span>
-            </div>*@
-@*            <div class="form-group" style="padding-top:1%;">
-                <label class="control-label">Turno</label>
-                <select class="form-control" name="Turno" id="Turno">
-                    <option value="NA">NA </option>
-                    <option value="JUZGADO 1">Juzgado 1 </option>
-                    <option value="JUZGADO 2">Juzgado 2 </option>
-                    <option value="JUZGADO 3">Juzgado 3 </option>
-                    <option value="TURNO">Turno </option>
-                </select>
-            </div>*@
+            @* <div class="form-group">
+            <label asp-for="Turno" class="control-label"></label>
+            <input asp-for="Turno" class="form-control" />
+            <span asp-validation-for="Turno" class="text-danger"></span>
+        </div>*@
+            @*  <div class="form-group">
+            <label asp-for="QuienAtiende" class="control-label"></label>
+            <input asp-for="QuienAtiende" class="form-control" />
+            <span asp-validation-for="QuienAtiende" class="text-danger"></span>
+        </div>*@
+            @*            <div class="form-group" style="padding-top:1%;">
+            <label class="control-label">Turno</label>
+            <select class="form-control" name="Turno" id="Turno">
+                <option value="NA">NA </option>
+                <option value="JUZGADO 1">Juzgado 1 </option>
+                <option value="JUZGADO 2">Juzgado 2 </option>
+                <option value="JUZGADO 3">Juzgado 3 </option>
+                <option value="TURNO">Turno </option>
+            </select>
+        </div>*@
             <div class="form-group" style="padding-top:1%;">
                 <label class="control-label">Turno</label>
                 <select class="form-control" name="Turno" id="Turno"
@@ -60,8 +60,8 @@
             <div class="form-group">
                 <input readonly type="hidden" asp-for="EjecucionIdEjecucion" class="form-control" />
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+            <div class="modal-footer">
+                <button type="button" id="btnguardar" name="btnguardar" class="btn btn-primary fa fa-save"> Guardar</button>
             </div>
         </form>
     </div>
