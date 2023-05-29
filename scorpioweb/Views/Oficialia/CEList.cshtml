@@ -1,0 +1,86 @@
+﻿@{
+    Layout = null;
+}
+
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnElegir').on("click", function (e) {
+            e.preventDefault();
+            var selectedRadioButton = $('input[name="radioGroup"]:checked');
+
+            if (selectedRadioButton.length > 0) {
+                var groupContainer = selectedRadioButton.closest('.group-container');
+                var paterno = groupContainer.find('.label-paterno').text().trim();
+                var nombre = groupContainer.find('.label-nombre').text().trim();
+                var apellido = groupContainer.find('.label-apellido').text().trim();
+                var carpetaEjecucion = selectedRadioButton.val();
+
+                // Realizar acciones con los valores obtenidos
+                alert("Apellido: " + apellido);
+                alert("Nombre: " + nombre);
+                alert("Carpeta de Ejecución: " + carpetaEjecucion);
+
+                $("#form-modal").modal('hide');
+            }
+        });
+    });
+</script>*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnElegir').on("click", function (e) {
+            e.preventDefault();
+            const radioButtons = document.querySelectorAll('input[name="radioGroup"]');
+            let selectedSize;
+            let checked = false;
+            for (const radioButton of radioButtons) {
+                if (radioButton.checked) {
+                    checked = true;
+                    break;
+                }
+            }
+            if (checked) {
+                var cp = document.getElementById("CarpetaEjecucion");
+                //https://stackoverflow.com/questions/15839169/how-to-get-value-of-selected-radio-button
+                cp.value = $("input[type='radio'][name='radioGroup']:checked").val();
+                var IdCarpetaEjecucion = document.getElementById("IdCarpetaEjecucion");
+                IdCarpetaEjecucion.value = $("input[type='radio'][name='radioGroup']:checked").attr('placeholder');
+                $("#form-modal").modal('hide');
+
+            }
+        });
+    });
+</script>
+
+
+<table class="table">
+    <tr>
+        <th></th>
+        <th style="text-align:center">Nombre</th>
+        <th style="text-align:center">Carpeta de Ejecución</th>
+    </tr>
+    @{
+        int i = 0;
+    }
+    @foreach (var item in ViewData["CEList"] as IEnumerable<scorpioweb.Models.Ejecucion>)
+    {
+        i++;
+        <tr>
+            <td>
+                <input type="radio" id=@i name="radioGroup" placeholder=@Html.DisplayFor(modelItem => item.IdEjecucion) value=@Html.DisplayFor(modelItem => item.Ce)>
+            </td>
+            <td>
+                <div class="group-container">
+                    <label class="label-apellido">@Html.DisplayFor(modelItem => item.Paterno)</label>
+                    <label class="label-apellido">@Html.DisplayFor(modelItem => item.Materno)</label>
+                    <label class="label-nombre">@Html.DisplayFor(modelItem => item.Nombre)</label>
+                </div>
+            </td>
+            <td>
+                <label class="label-carpeta">@Html.DisplayFor(modelItem => item.Ce)</label>
+            </td>
+        </tr>
+    }
+</table>
+
+<button class="btn btn-primary" id="btnElegir" name="btnElegir">Elegir</button>
