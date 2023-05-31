@@ -1,0 +1,438 @@
+﻿@{
+    ViewData["Title"] = "Alertas";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript">
+    function formatDate(dateString) {
+        if (dateString == null) {
+            return "";
+        }
+        var d = new Date(dateString);
+        const month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear();
+        return date;
+    };
+
+
+    //function populateAdmin(result, i, date) {
+    //    alert("Populate admin");
+    //    var row = '';
+    //    row = row
+    //        + "<tr>"
+    //        + "<td>" + result.query[i].personaVM.idPersona + "</td>"
+    //        + "<td>" + result.query[i].personaVM.nombreCompleto + "</td>";
+    //    if (result.query[i].causapenalVM != null) {
+    //        row = row + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+    //    }
+    //    else {
+    //        row = row + "<td></td>";
+    //    }
+
+    //    switch (result.query[i].tipoAdvertencia) {
+    //        case "Sin Resolución":
+    //            row = row
+    //                + "<td style=\"color:red\">"
+    //                + "    " + result.query[i].tipoAdvertencia
+    //                + "</td>";
+    //            row = row
+    //                + "<td>"
+    //                + "    " + formatDate(result.query[i].personaVM.ultimaActualización)
+    //                + "</td>";
+    //            break;
+    //        case "Informe fuera de tiempo":
+    //            if (result.query[i].figuraJudicial == "MC") {
+    //                row = row
+    //                    + "<td>"
+    //                    + "Control de supervisión"
+    //                    + "</td>";
+    //            }
+    //            else {
+    //                var date60 = Date.now();
+    //                date60 += 1000 * 60 * 60 * 24 * 60;
+    //                var date5 = Date.now();
+    //                date5 += 1000 * 60 * 60 * 24 * 5;
+    //                if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date60 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
+    //                    row = row
+    //                        + "<td>"
+    //                        + "    Informe en próximos 60 días"
+    //                        + "</td>";
+    //                }
+    //                else {
+    //                    if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now()) {
+    //                        row = row
+    //                            + "<td style=\"color:red\">"
+    //                            + "    Informe fuera de tiempo"
+    //                            + "</td>";
+    //                    }
+    //                    else {
+    //                        row = row
+    //                            + "<td style=\"color:#F0AD00\">"
+    //                            + "    Informe en menos de 5 días"
+    //                            + "</td>";
+    //                    }
+    //                }
+    //            }
+    //            row = row
+    //                + "<td>"
+    //                + "    " + date
+    //                + "</td>";
+    //            break;
+    //        case "Control de supervisión a 3 días o menos":
+    //            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now()) {
+    //                row = row
+    //                    + "<td style=\"color:red\">"
+    //                    + "    Control de supervisión fuera de tiempo"
+    //                    + "</td>";
+    //            }
+    //            else {
+    //                row = row
+    //                    + "<td>"
+    //                    + "    " + result.query[i].tipoAdvertencia
+    //                    + "</td>";
+    //            }
+    //            row = row
+    //                + "<td>"
+    //                + "    " + date
+    //                + "</td>";
+    //            break;
+    //        case "Sin fecha de informe":
+    //            if (result.query[i].figuraJudicial != "MC") {
+    //                row = row
+    //                    + "<td>"
+    //                    + "    " + result.query[i].tipoAdvertencia
+    //                    + "</td>";
+    //            }
+    //            else {
+    //                row = row
+    //                    + "<td>"
+    //                    + "    Sin control de supervisión"
+    //                    + "</td>";
+    //            }
+    //            row = row
+    //                + "<td>"
+    //                + "    " + date
+    //                + "</td>";
+    //            break;
+    //        case "Sin periodicidad de firma":
+    //            row = row
+    //                + "<td>"
+    //                + "    " + result.query[i].tipoAdvertencia
+    //                + "</td>";
+    //            row = row + "<td></td>";
+    //            break;
+    //        case "Expediente físico en resguardo":
+    //            row = row
+    //                + "<td>"
+    //                + "    " + result.query[i].tipoAdvertencia
+    //                + "</td>";
+    //            var fecha = formatDate(result.query[i].archivointernomcscpVM.fecha);
+    //            var tolerance = Date.now();
+    //            tolerance -= 1000 * 60 * 60 * 24 * 5;
+    //            if (Date.parse(fecha) < tolerance) {
+    //                row = row
+    //                    + "<td style=\"color:red\">"
+    //                    + "    " + fecha
+    //                    + "</td>";
+    //            }
+    //            else {
+    //                row = row
+    //                    + "<td>"
+    //                    + "    " + fecha
+    //                    + "</td>";
+    //            }
+    //            break;
+    //        case "Sin supervisión":
+    //            row = row
+    //                + "<td>"
+    //                + "    " + result.query[i].tipoAdvertencia
+    //                + "</td>";
+    //            row = row
+    //                + "<td>"
+    //                + "    " + formatDate(result.query[i].personaVM.ultimaActualización)
+    //                + "</td>";
+    //            break;
+    //        case "Sin figura judicial":
+    //            row = row
+    //                + "<td>"
+    //                + "    " + result.query[i].tipoAdvertencia
+    //                + "</td>";
+    //            row = row + "<td></td>";
+    //            break;
+    //        case "Pendiente de asignación - colaboración":
+    //            row = row
+    //                + "<td>"
+    //                + "    " + result.query[i].tipoAdvertencia
+    //                + "</td>";
+    //            row = row + "<td></td>";
+    //            break;
+    //        case "Se paso el tiempo de la firma":
+    //            var date3 = Date.now();
+    //            date3 += 1000 * 60 * 60 * 24 * 3;
+    //            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaProximoContacto) < Date.now()) {
+    //                row = row
+    //                    + "<td style=\"color:red\">"
+    //                    + "    " + result.query[i].tipoAdvertencia
+    //                    + "</td>";
+    //            }
+    //            var dateString = result.query[i].planeacionestrategicaVM.fechaProximoContacto;
+    //            var datepc = formatDate(dateString);
+    //            row = row
+    //                + "<td>"
+    //                + "    " + datepc
+    //                + "</td>";
+    //            break;
+    //    }
+    //    if (result.query[i].personaVM.celular != null) {
+    //        row = row + "<td>" + result.query[i].personaVM.celular + "</td>"
+    //    }
+    //    else {
+    //        row = row + "<td></td>";
+    //    }
+    //    row = row
+    //        + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
+    //        + "<td>" + result.query[i].personaVM.supervisor + "</td>";
+    //    row = row + "<td>";
+    //    if (result.query[i].figuraJudicial != null) {
+    //        row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+    //    }
+    //    else {
+    //        row = row + "<td></td>";
+    //    }
+    //    row = row + "</td>";
+
+    //    if (result.query[i].tipoAdvertencia == "Sin supervisión") {
+    //        row = row
+    //            + "<td>"
+    //            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Causaspenales/ListadeCausas/" + "\">"
+    //            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+    //            + "    </a >"
+    //            + "</td>";
+    //        row = row + "<td></td>";
+    //    }
+    //    else if (result.query[i].tipoAdvertencia == "Sin figura judicial") {
+    //        row = row
+    //            + "<td>"
+    //            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditFraccionesimpuestas/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "&amp;idpersona=" + result.query[i].personaVM.idPersona + "\">"
+    //            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+    //            + "    </a >"
+    //            + "</td>";
+    //        row = row + "<td></td>";
+    //    }
+    //    else if (result.query[i].tipoAdvertencia == "Sin Resolución") {
+    //        row = row
+    //            + "<td>"
+    //            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/Edit/" + result.query[i].personaVM.idPersona + "\">"
+    //            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+    //            + "    </a >"
+    //            + "</td>";
+    //        row = row + "<td></td>";
+    //    }
+    //    else if (result.query[i].supervisionVM != null || result.query[i].causapenalVM != null) {
+    //        row = row
+    //            + "<td>"
+    //            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditPlaneacionestrategica/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "&amp;idpersona=" + result.query[i].personaVM.idPersona + "\">"
+    //            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+    //            + "    </a >"
+    //            + "</td>";
+    //    }
+
+    //    row = row + "</tr>";
+    //    return row;
+    //};
+
+
+    $(document).ready(function () {
+        $('#currentFilter').change(function () {
+            var s = document.getElementById("currentFilter");
+            var filtro = s.options[s.selectedIndex].value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Ejecucion/filtra",
+                traditional: true,
+                data: {
+                    currentFilter: filtro,
+                },
+                success: function (result) {
+                    if (result.success) {
+                        $('#tblAlertas').html('');
+                        var row = '';
+                        for (let i = 0; i < result.query.length; i++) {
+                            if (result.query[i].oficialiaVM.usuarioTurnar == result.user || result.admin == true) {
+                                //alert(result.query[i].oficialiaVM.idOficialia)
+                                //alert(result.query[i].oficialiaVM.nombreCompleto)
+                                //alert(result.query[i].oficialiaVM.carpetaEjecucion)
+
+                                row = row
+                                    + "<tr>"
+                                    + "<td>" + result.query[i].oficialiaVM.idOficialia + "</td>"
+                                    + "<td>" + result.query[i].nombreCompleto + "</td>"
+                                    + "<td>" + result.query[i].oficialiaVM.carpetaEjecucion + "</td>";
+                                   
+
+                                //if (result.query[i].causapenalVM != null) {
+                                //    row = row + "<td>" + result.query[i].causapenalVM.causaPenal + "</td>";
+                                //}
+                                //else {
+                                //    row = row + "<td></td>";
+                                //}
+
+                                switch (result.query[i].tipoAdvertencia) {
+                                    case "Audiencia":
+                                        row = row
+                                            + "<td style=\"color:red\">"
+                                            + "    " + result.query[i].tipoAdvertencia
+                                            + "</td>";
+                                        row = row
+                                            + "<td>"
+                                            + "    " + formatDate(result.query[i].oficialiaVM.fechaTermino)
+                                            + "</td>"
+                                        + "<td>" + result.query[i].oficialiaVM.quienAsistira + "</td>";
+                                        break;
+                                    //case "Informe fuera de tiempo":
+                                    //    if (result.query[i].figuraJudicial == "MC") {
+                                    //        row = row
+                                    //            + "<td>"
+                                    //            + "Control de supervisión"
+                                    //            + "</td>";
+                                    //    }
+                                    //    else {
+                                    //        var date60 = Date.now();
+                                    //        date60 += 1000 * 60 * 60 * 24 * 60;
+                                    //        var date5 = Date.now();
+                                    //        date5 += 1000 * 60 * 60 * 24 * 5;
+                                    //        if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < date60 && Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) > date5) {
+                                    //            row = row
+                                    //                + "<td>"
+                                    //                + "    Informe en próximos 60 días"
+                                    //                + "</td>";
+                                    //        }
+                                    //        else {
+                                    //            if (Date.parse(result.query[i].planeacionestrategicaVM.fechaInforme) < Date.now()) {
+                                    //                row = row
+                                    //                    + "<td style=\"color:red\">"
+                                    //                    + "    Informe fuera de tiempo"
+                                    //                    + "</td>";
+                                    //            }
+                                    //            else {
+                                    //                row = row
+                                    //                    + "<td style=\"color:#F0AD00\">"
+                                    //                    + "    Informe en menos de 5 días"
+                                    //                    + "</td>";
+                                    //            }
+                                    //        }
+                                    //    }
+                                    //    row = row
+                                    //        + "<td>"
+                                    //        + "    " + date
+                                    //        + "</td>";
+                                    //    break;
+                                }
+                                //if (result.query[i].personaVM.celular != null) {
+                                //    row = row + "<td>" + result.query[i].personaVM.celular + "</td>"
+                                //}
+                                //else {
+                                //    row = row + "<td></td>";
+                                //}
+                                //row = row + "<td>" + result.query[i].municipiosVM.municipio + "</td>";
+                                //row = row + "<td>";
+                                //if (result.query[i].figuraJudicial != null) {
+                                //    row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                                //}
+                                //else {
+                                //    row = row + "<td></td>";
+                                //}
+                                //row = row + "</td>";
+
+                                if (result.query[i].tipoAdvertencia == "Audiencia") {
+                                    row = row
+                                        + "<td>"
+                                        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Ejecucion/listaEpCrearAudiencia/" + "\">"
+                                        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                        + "    </a >"
+                                        + "</td>";
+                                    row = row + "<td></td>";
+                                }
+                                //else if (result.query[i].tipoAdvertencia == "Sin figura judicial") {
+                                //    row = row
+                                //        + "<td>"
+                                //        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisiones/EditFraccionesimpuestas/" + result.query[i].supervisionVM.idSupervision + "?nombre=" + result.query[i].personaVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalVM.causaPenal + "&amp;idpersona=" + result.query[i].personaVM.idPersona + "\">"
+                                //        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                //        + "    </a >"
+                                //        + "</td>";
+                                //    row = row + "<td></td>";
+                                //}
+                                //else if (result.query[i].tipoAdvertencia == "Sin Resolución") {
+                                //    row = row
+                                //        + "<td>"
+                                //        + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personas/Edit/" + result.query[i].personaVM.idPersona + "\">"
+                                //        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                //        + "    </a >"
+                                //        + "</td>";
+                                //    row = row + "<td></td>";
+                                //}
+
+                                row = row + "</tr>";
+                            }
+                        }
+                        if (row != '') {
+                            $('#tblAlertas').append(row);
+                        }
+                    } else {
+                        alert(result.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+        $("#currentFilter").change();
+    });
+</script>
+
+<div class="text-center" style="padding-top:1%">
+    <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+    <br />
+    <h4>Alertas</h4>
+</div>
+
+<form asp-action="WarningSupervisor" method="get">
+    <div class="form-group col-xs-4">
+        <label class="control-label">Tipo</label>
+        <select class="form-control" name="currentFilter" id="currentFilter">
+            <option value="TODOS">Todos</option>
+            <option value="AUDIENCIAS">Audiencia</option>
+
+        </select>
+    </div>
+</form>
+
+<table class="table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                <a>ID</a>
+            </th>
+            <th>
+                <a>Nombre</a>
+            </th>
+            <th>
+                <a>Carpeta de Ejecución</a>
+            </th>
+            <th>
+                <a>Tipo de Alerta</a>
+            </th>
+            <th>
+                <a>Informacion del Campo </a>
+            </th>
+            <th>
+                <a>Usuario </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody id="tblAlertas">
+    </tbody>
+</table>

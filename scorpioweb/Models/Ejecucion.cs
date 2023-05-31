@@ -13,5 +13,8 @@ namespace scorpioweb.Models
         public string Ce { get; set; }
         public string Usuario { get; set; }
         public string LugarInternamiento { get; set; }
+        public string Juzgado { get; set; }
+        public string CeAcumuladas { get; set; }
+        public string TieneceAcumuladas { get; set; }
     }
 }

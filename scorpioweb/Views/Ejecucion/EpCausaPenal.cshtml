@@ -106,12 +106,18 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Clasificación del delito</label>
-                <input required asp-for="Clasificaciondelito" class="form-control" />
+                <input asp-for="Clasificaciondelito" class="form-control" />
                 <span asp-validation-for="Clasificaciondelito" class="text-danger"></span>
             </div>
+           @* <div class="form-group">
+                <label class="control-label">Juzgado de Origen</label>
+                <select class="form-control" name="JuzgadoOrigen" id="JuzgadoOrigen"
+                        asp-items="@(new SelectList(ViewBag.Liatajuzgado, "Value"))">
+                </select>
+            </div>*@
             <div class="form-group">
                 <label class="control-label">Juzgado de Origen</label>
-                <input required asp-for="JuzgadoOrigen" class="form-control" />
+                <input asp-for="JuzgadoOrigen" class="form-control" />
                 <span asp-validation-for="JuzgadoOrigen" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -8,6 +8,8 @@
 
 <script>
     function cambiofechas(ids, campo, value) {
+        var e = document.getElementById("EstadoSupervision");
+        var estados = e.value;
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -17,6 +19,7 @@
                 superid: ids,
                 campo: campo,
                 fecha: value,
+                estados: estados,
             },
             success: function (response) {
             },

@@ -69,7 +69,8 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="TODOS", Value="0"},
             new SelectListItem{ Text="PENDIENTES", Value="1"},
             new SelectListItem{ Text="CON SEGUIMIENTO", Value="2"}
-        };
+        }; 
+
         #endregion
 
         #region -Constructor-
@@ -167,12 +168,29 @@ namespace scorpioweb.Controllers
                 select CPTable
                 ).ToList();
             ViewBag.cp = listaCP;
+
+            List<Ejecucion> listaCE = new List<Ejecucion>();
+            List<Ejecucion> CEVM = _context.Ejecucion.ToList();
+            listaCE = (
+                from CETable in CEVM
+                select CETable
+                ).ToList();
+            ViewBag.ce = listaCE;
+
             ViewBag.directorio = _context.Directoriojueces.Select(Directoriojueces => Directoriojueces.Area).ToList();
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
             ViewBag.recibe = ListaRecibe;
             ViewBag.coordinadores = ListaCoordinadores;
+
+            List<string> Liatajuzgado = new List<string>();
+            Liatajuzgado.Add("NA");
+            Liatajuzgado.Add("JUZGADO 1");
+            Liatajuzgado.Add("JUZGADO 2");
+            Liatajuzgado.Add("JUZGADO 3");
+            ViewBag.Liatajuzgado = Liatajuzgado;
+
             return View();
         }
 
@@ -181,7 +199,7 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Captura(Oficialia oficialia, string recibe, string metodoNotificacion, string numOficio, string expide,
             string referenteImputado, string sexo, string paterno, string materno, string nombre, string carpetaEjecucion, string existeVictima,
             string nombreVictima, string direccionVictima, string asuntoOficio, string tieneTermino, string usuarioTurnar, string observaciones,
-            int? idCausaPenal, string Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, string delitoTipo, string autoVinculacion, IFormFile archivo)
+            int? idCausaPenal,int IdCarpetaEjecucion, string Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, string delitoTipo, string autoVinculacion,string Juzgado, string QuienAsistira, IFormFile archivo)
         {
             if (ModelState.IsValid)
             {
@@ -198,6 +216,7 @@ namespace scorpioweb.Controllers
                                     select table.IdOficialia).Max()) + 1;
                 }
                 oficialia.IdOficialia = idOficialia;
+                oficialia.IdCarpetaEjecucion = IdCarpetaEjecucion;
 
                 oficialia.Capturista = User.Identity.Name;
                 oficialia.MetodoNotificacion = metodoNotificacion;
@@ -213,6 +232,8 @@ namespace scorpioweb.Controllers
                 oficialia.NombreVictima = mg.normaliza(nombreVictima);
                 oficialia.DireccionVictima = mg.normaliza(direccionVictima);
                 oficialia.AsuntoOficio = mg.normaliza(asuntoOficio);
+                oficialia.Juzgado = mg.normaliza(Juzgado);
+                oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
                 oficialia.TieneTermino = tieneTermino;
                 oficialia.Observaciones = mg.normaliza(observaciones);
                 oficialia.Entregado = Entregado;
@@ -868,7 +889,45 @@ namespace scorpioweb.Controllers
             ViewData["CPList"] = CPList;
 
             return View();
-        } 
+        }
+        #endregion
+
+        #region -CEList-
+        public IActionResult CEList(string ce)
+        {
+            ce = mg.normaliza(ce);
+
+            var query = from c in _context.Ejecucion
+                        select c;
+
+            int idCE = 0;
+            string trialCE = "";
+            var cosine = new Cosine(2);
+            double r = 0;
+            var list = new List<Tuple<double, Ejecucion>>();
+
+            foreach (var q in query)
+            {
+                r = cosine.Similarity(q.Ce, ce);
+                if (r >= 0.75)
+                {
+                    list.Add(new Tuple<double, Ejecucion>(r, q));
+                }
+            }
+
+            list = list.OrderByDescending(x => x.Item1).ToList();
+
+            List<Ejecucion> CEquery = _context.Ejecucion.ToList();
+
+            List<Ejecucion> CEList = new List<Ejecucion>();
+            foreach (var c in list)
+            {
+                CEList.Add(c.Item2);
+            }
+           ViewData["CEList"] = CEList;
+
+            return View();
+        }
         #endregion
 
         #region -SerializeObject-

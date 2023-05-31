@@ -52,8 +52,50 @@
 
 
 <script>
-    function borrarEPCP(id) {
-        var idep = id;
+    //function borrarEPCP(id) {
+    //    var idep = id;
+    //    var usuario = '@ViewBag.user';
+    //    var cambiar = confirm("¿Desea borrar el registro?");
+    //    if (cambiar == true) {
+    //        $.ajax({
+    //            type: "POST",
+    //            dataType: "json",
+    //            url: "/Ejecucion/antesdeleteCP",
+    //            traditional: true,
+    //            data: {
+    //                id: idep,
+    //            },
+    //            success: function(response) {
+    //                if (response.borrar == false) {
+    //                    alert("No se ha borrado porque la Causa Penal tiene procesos Asignados");
+    //                } else {
+    //                    function borrarEjecucion(id) {
+    //                        alert(id)
+    //                        var usuario = '@ViewBag.user';
+    //                        let razon = prompt("Porque desea borrar el registro?", "");
+    //                        if (razon == null || razon == "") {
+    //                            return;
+    //                            text = "NA";
+    //                        } else {
+    //                            text = razon;
+    //                        }
+    //                        alert(usuario)
+
+    //                    };
+    //                    alert("Borrar ejecucion ")
+    //                    borrarEjecucion(id);
+    //                }
+    //            },
+    //            error: function(response) {
+    //                alert(response.error);
+    //                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+    //            }
+    //        });
+    //    }
+    //    return innerFunc;
+    //};
+
+    function borrarEPCP(id,idep) {
         var usuario = '@ViewBag.user';
         var cambiar = confirm("¿Desea borrar el registro?");
         if (cambiar == true) {
@@ -65,9 +107,9 @@
                 data: {
                     id: idep,
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.borrar == false) {
-                        alert("No se ha borrado porque la Causa Penal tiene procesos Asignados");
+                        alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
                     } else {
                         function borrarEjecucion(id) {
                             var usuario = '@ViewBag.user';
@@ -78,16 +120,15 @@
                             } else {
                                 text = razon;
                             }
-                            alert(razon)
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
-                                url: "/Ejecucion/deleteEjecucion",
+                                url: "/Ejecucion/deleteEpCp",
                                 traditional: true,
                                 data: {
-                                    datoEjecucion: [id, razon, usuario],
+                                    datoEjecucion: [id,idep, razon, usuario],
                                 },
-                                success: function(response) {
+                                success: function (response) {
                                     if (response.borrar == true) {
                                         alert("El Registro ha sido borrado");
                                         location.reload();
@@ -95,15 +136,16 @@
                                         alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                                     }
                                 },
-                                error: function(response) {
+                                error: function (response) {
                                     alert(response.error);
                                 }
                             });
+                            alert(2)
                         };
                         borrarEjecucion(id);
                     }
                 },
-                error: function(response) {
+                error: function (response) {
                     alert(response.error);
                     alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 }
@@ -111,8 +153,6 @@
         }
         return innerFunc;
     };
-
-
 
 
     function CrearInstancia(id, i) {
@@ -233,9 +273,15 @@
                 <label class="control-label">Clasificacion del delito</label>
                 <input name="Clasificaciondelito" id="Clasificaciondelito" value="@item.epcausapenalVM.Clasificaciondelito" class="form-control" />
             </div>
+           @* <div class="form-group">
+                <label class="control-label">Juzgado de Origen</label>
+                <select class="form-control" name="JuzgadoOrigen" id="JuzgadoOrigen"
+                        asp-items="@(new SelectList(ViewBag.Liatajuzgado,item.epcausapenalVM.JuzgadoOrigen))">
+                </select>
+            </div>*@
             <div class="form-group col-md-12">
                 <label class="control-label">Juzgado de Origen</label>
-                <input name="JuzgadoOrigen" id="JuzgadoOrigen" value="@item.epcausapenalVM.JuzgadoOrigen" class="form-control" />
+                <input id="JuzgadoOrigen" name="JuzgadoOrigen" class="form-control" asp-for="@item.epcausapenalVM.JuzgadoOrigen"/>
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Fecha de Sentencia</label>
@@ -251,7 +297,7 @@
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Firmeza</label>
-                <input name="Firmeza" id="Firmeza" value="@item.epcausapenalVM.Firmeza" class="form-control" />
+                <input name="Firmeza" id="Firmeza" value="@item.epcausapenalVM.Firmeza" class="form-control" type="date"/>
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Pena en Años</label>
@@ -278,7 +324,7 @@
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
             {
                 <div class="col-md-6">
-                    <button onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal)" class="btn btn-danger btn-block" style="margin-bottom:10px">
+                    <button onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal, @item.epcausapenalVM.EjecucionIdEjecucion)" class="btn btn-danger btn-block" style="margin-bottom:10px">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
             </div>

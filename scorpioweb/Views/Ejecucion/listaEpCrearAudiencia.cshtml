@@ -1,4 +1,4 @@
-﻿@model PaginatedList<scorpioweb.Models.Epcrearaudiencia>
+﻿@model PaginatedList<scorpioweb.Models.Oficialia>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 @{
@@ -156,34 +156,34 @@
         {
             <tr>
                 <td>
-                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdepcrearAudiencia)">
+                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdOficialia)">
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdepcrearAudiencia)
+                    @Html.DisplayFor(modelItem => item.IdOficialia)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.FechaAudiencia)
+                    @Html.DisplayFor(modelItem => item.FechaTermino)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Usuario)
+                    @Html.DisplayFor(modelItem => item.QuienAsistira)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.FechaNotificacion)
+                    @Html.DisplayFor(modelItem => item.FechaRecepcion)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Juzgado)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Ce)
+                    @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
                 </td>
                 <td>
-                    @item.PaternoS  @item.MaternoS @item.NombreS
+                    @item.Paterno  @item.Materno @item.Nombre
                 </td>
                 <td>
-                    <a onclick="showModal('@Url.Action("EditEpCreateAudiencia", "Ejecucion", new {id=@item.IdepcrearAudiencia}, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
+                    <a onclick="showModal('@Url.Action("EditEpCreateAudiencia", "Ejecucion", new {id=@item.IdOficialia}, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
                     {
-                        <button onclick="DeleteCrearAudiencia(@item.IdepcrearAudiencia)" class="btn btn-danger">
+                        <button onclick="DeleteCrearAudiencia(@item.IdOficialia)" class="btn btn-danger">
                             <i class="fa fa-trash"></i> Borrar
                         </button>
                     }                        
@@ -195,8 +195,9 @@
 </table>
 
 @*@if (ViewBag.usuario)
-{*@
+{
     <a onclick="showModal('@Url.Action("CreateEpCrearAudiencia", "Ejecucion", Context.Request.Scheme)','Crear audiencia',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
+*@
     <a id="btnImprimirR" name="btnImprimirR"  class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
 
 

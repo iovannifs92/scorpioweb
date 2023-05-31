@@ -18,6 +18,7 @@ namespace scorpioweb.Models
         public string Paterno { get; set; }
         public string Materno { get; set; }
         public string Nombre { get; set; }
+        public int? IdCarpetaEjecucion { get; set; }
         public string CarpetaEjecucion { get; set; }
         public int? IdCausaPenal { get; set; }
         public string CausaPenal { get; set; }
@@ -25,6 +26,8 @@ namespace scorpioweb.Models
         public string NombreVictima { get; set; }
         public string DireccionVictima { get; set; }
         public string AsuntoOficio { get; set; }
+        public string Juzgado { get; set; }
+        public string QuienAsistira { get; set; }
         public string TieneTermino { get; set; }
         public DateTime? FechaTermino { get; set; }
         public string UsuarioTurnar { get; set; }
@@ -35,7 +38,6 @@ namespace scorpioweb.Models
         public DateTime? FechaSeguimiento { get; set; }
         public string DelitoTipo { get; set; }
         public string AutoVinculacion { get; set; }
-
         public string PaternoMaternoNombre
         {
             get

@@ -84,6 +84,22 @@
         }
         var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.centrosPenitenciarios))');
         autocomplete(document.getElementById("LugarInternamiento"), catalogo);
+
+        if ('@ViewBag.acumuladas' == "SI") {
+            $("#DivCeAcumuladas").css("display", "block");
+        }
+    });
+
+    $('#TieneceAcumuladas').change(function () {
+        var dat = $(this).children("option:selected").val();
+        if (dat == "SI") {
+            $("#DivCeAcumuladas").css("display", "block");
+        }
+        else {
+            $('#CeAcumuladas').val('');
+            $("#DivCeAcumuladas").css("display", "none");
+
+        }
     });
 </script>
 
@@ -118,13 +134,33 @@
                 <input asp-for="Ce" class="form-control" />
                 <span asp-validation-for="Ce" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Usuario" class="control-label"></label>
-                <select class="form-control" name="Usuario" id="Usuario"
-                        asp-items="@(new SelectList(@ViewBag.ListaEjecucion))">
+            <div class="form-group col-md-12">
+                <label class="control-label">Juzgado de Origen</label>
+                <select class="form-control" name="Juzgado" id="Juzgado" 
+                        asp-items="@(new SelectList(ViewBag.LiataJuzgado, @ViewBag.LiataJuzgadoEdit))">
                 </select>
             </div>
-
+            <div class="form-group col-md-12">
+                <label class="control-label">
+                    ¿Cuanta con Carpeta de Ejecucion acumuladas?
+                </label>
+                <select asp-for="TieneceAcumuladas" class="form-control" id="TieneceAcumuladas" value="@ViewBag.acumuladas">
+                    <option value="NO">No</option>
+                    <option value="SI">Si</option>
+                </select>
+                <span asp-validation-for="TieneceAcumuladas" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="DivCeAcumuladas" name="DivCeAcumuladas" style="display:none">
+                <label class="control-label">Carpeta de Ejecucion Acumuladas</label>
+                <input required asp-for="CeAcumuladas" class="form-control" id="CeAcumuladas" name="CeAcumuladas" />
+                <span asp-validation-for="CeAcumuladas" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Usuario" class="control-label"></label>
+                <select class="form-control" name="Usuario" id="Usuario" 
+                        asp-items="@(new SelectList(@ViewBag.ListaEjecucion, ViewBag.ListaEjecucionEdit))">
+                </select>
+            </div>
             <div class="form-group autocomplete">
                 <label asp-for="LugarInternamiento" class="control-label"></label>
                 <input asp-for="LugarInternamiento" class="form-control" />
