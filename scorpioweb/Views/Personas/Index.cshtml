@@ -265,6 +265,7 @@
                     if (dateString == null) {
                         date = "";
                     }
+                     
                     if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
                             row = row
@@ -275,6 +276,11 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                           if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
+                           
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -321,6 +327,7 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -353,6 +360,7 @@
                                 row = row + "</select></div>";
                                 }
                             }
+                           
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                                 + "</tr>";
@@ -361,6 +369,7 @@
                         }
                     } else {
                         if (result.page[i].candado == 0) {
+                          
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
@@ -369,6 +378,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                            if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true) {
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                            }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -401,9 +414,10 @@
                                 row = row + "</select></div>";
                                 }
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                                + "</tr>";
+                           if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>";
+                            }
                             row = row + "</td>";
                             row = row + "</div>";
                         } else {
@@ -415,6 +429,8 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Bitacora</a ></div>";
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -445,9 +461,11 @@
                                 row = row + "</select></div>";
                                 }
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                + "</tr>";
+
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                    + "</tr>";
+                            }
                             row = row + "</td>";
                             row = row + "</div>";
                         }
@@ -503,6 +521,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                               if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -597,6 +619,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 } 
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -627,9 +653,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             } else {
@@ -671,9 +698,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             }
@@ -729,6 +757,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -814,6 +846,7 @@
                                 row = row + "</div>";
                             }
                         } else {
+                            
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -823,6 +856,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -853,9 +890,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                               if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             } else {
@@ -897,9 +935,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                              if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             }
@@ -958,6 +997,7 @@
                     if (dateString == null) {
                         date = "";
                     }
+                    
                     @*alert(@ViewBag.RolesUsuarios);*@
                     @*alert(@Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)));*@
                     if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
@@ -971,6 +1011,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                           if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1048,7 +1092,7 @@
                                         row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                         row = row + "</select></div>";
                                     }
-                            }
+                            }                          
                             row = row
                                 + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                                 + "</tr>";
@@ -1056,7 +1100,7 @@
                             row = row + "</div>";
                         }
                     } else {
-                        if (result.page[i].candado == 0) {
+                       if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
@@ -1065,6 +1109,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                       if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1095,9 +1143,10 @@
                                         row = row + "</select></div>";
                                     }
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                                + "</tr>";
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>";
+                            }
                             row = row + "</td>";
                             row = row + "</div>";
                         } else {
@@ -1139,9 +1188,11 @@
                                         row = row + "</select></div>";
                                     }
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                + "</tr>";
+                            if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                    + "</tr>";
+                            }
+
                             row = row + "</td>";
                             row = row + "</div>";
                         }
@@ -1207,6 +1258,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                          if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1292,6 +1347,7 @@
                             row = row + "</div>";
                         }
                     } else {
+                      
                         if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
@@ -1301,6 +1357,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1331,9 +1391,10 @@
                                         row = row + "</select></div>";
                                     }
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                                + "</tr>";
+                           if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>";
+                            }
                             row = row + "</td>";
                             row = row + "</div>";
                         } else {
@@ -1374,10 +1435,11 @@
                                         row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                         row = row + "</select></div>";
                                     }
+                            } 
+                            if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                    + "</tr>";
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                + "</tr>";
                             row = row + "</td>";
                             row = row + "</div>";
                         }
@@ -1445,6 +1507,11 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                        if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
+                            
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1477,8 +1544,10 @@
                                         row = row + "</select></div>";
                                     }
                             }
+                          if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false){
                             row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                            }
                                 + "</tr>";
                             row = row + "</td>";
                             row = row + "</div>";
@@ -1528,7 +1597,9 @@
                                 + "</tr>";
                             row = row + "</td>";
                             row = row + "</div>";
+                        
                         }
+                        
                     } else {
                         if (result.page[i].candado == 0) {
                             row = row
@@ -1539,6 +1610,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                     if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1569,9 +1644,10 @@
                                         row = row + "</select></div>";
                                     }
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                                + "</tr>";
+                            if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                    + "</tr>";
+                            }
                             row = row + "</td>";
                             row = row + "</div>";
                         } else {
@@ -1612,10 +1688,11 @@
                                         row = row + populate(@Html.Raw(Json.Serialize(ViewBag.ListadoUsuarios)), result.page[i].ubicacionExpediente);
                                         row = row + "</select></div>";
                                     }
+                            }                        
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                    + "</tr>";
                             }
-                            row = row
-                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                + "</tr>";
                             row = row + "</td>";
                             row = row + "</div>";
                         }
@@ -1676,6 +1753,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -1760,7 +1841,7 @@
                                 row = row + "</td>";
                                 row = row + "</div>";
                             }
-                        } else {
+                        } else {                         
                             if (result.page[i].candado == 0) {
                                 row = row
                                     + "<tr valign='middle'>"
@@ -1770,6 +1851,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -1800,9 +1885,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             } else {
@@ -1844,9 +1930,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             }
@@ -1903,6 +1990,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                               if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -1997,6 +2088,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                              if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                        + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -2027,9 +2122,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
                                     + "</tr>";
+                            }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             } else {
@@ -2071,9 +2167,10 @@
                                         row = row + "</select></div>";
                                     }
                                 }
-                                row = row
-                                    + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                    + "</tr>";
+                                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false) {
+                                    row = row + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                        + "</tr>";
+                                }
                                 row = row + "</td>";
                                 row = row + "</div>";
                             }

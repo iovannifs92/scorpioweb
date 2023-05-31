@@ -1,0 +1,119 @@
+﻿@model scorpioweb.Models.PersonaBitacora
+
+
+@{
+    ViewData["Title"] = "Bitácora";
+}
+
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    showModal = (url, title, id) => {
+        // var IdFracciones = null;
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+</script>
+<h2>Bitacora</h2>
+<div class="col-md-12">
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.idpersona</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Nombre:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.nombre</h4>
+    </div>
+   @* <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">
+            Causa Penal
+            <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
+    </div>*@
+</div>
+
+<table class="table">
+    <thead style="text-align:center">
+        <tr>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Tipo de Persona
+            </th>
+            <th>
+                Tipo de Visita
+            </th>
+            <th>
+                Observación
+            </th>
+            <th>
+                Fracción Impuesta
+            </th>
+            <th style="text-align:center">
+                Causa penal
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["Bitacora"] as IEnumerable<scorpioweb.Models.PersonaBitacora>)
+        {
+            <tr>
+                <td>
+                    @if (item.bitacoraVM.Fecha != null)
+                    {
+                        @(item.bitacoraVM.Fecha.Value.ToString("dd MMMM yyyy"))
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.bitacoraVM.TipoPersona)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.bitacoraVM.TipoVisita)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.bitacoraVM.Texto)
+                </td>
+           
+                <td style="text-align:center">
+                    @if (item.bitacoraVM.RutaEvidencia != null)
+                    {
+                        <a href="~/Evidencia/@Html.DisplayFor(modelItem => item.bitacoraVM.RutaEvidencia)" target="_blank">
+                            <i class="fa fa-paperclip fa-6"></i>
+                        </a>
+                    }
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+@*@if (ViewBag.usuario)
+{
+    <a onclick="showModal('@Url.Action("CreateBitacora", "Supervisiones", new {id=@ViewBag.IdSupervisionGuardar, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona,supervisor=@ViewBag.supervisor,idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Agregar Registro',null )" class="btn btn-primary">
+        <i class="fa fa-plus"></i>  Agregar Registro
+    </a>
+}*@
+
+<br />
+
+<div>
+    <a asp-action="Supervision" asp-route-id="@ViewBag.IdSupervisionGuardar" class="btn btn-link">Regresar</a>
+</div>

@@ -371,6 +371,7 @@ namespace scorpioweb.Controllers
             ViewBag.Admin = false;
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
+            ViewBag.Serviciosprevios = false;
 
             foreach (var rol in roles)
             {
@@ -393,6 +394,15 @@ namespace scorpioweb.Controllers
                     ViewBag.Archivo = true;
                 }
             }
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Servicios previos")
+                {
+                    ViewBag.Serviciosprevios = true;
+                }
+            }
+
 
             List<string> rolUsuario = new List<string>();
 
@@ -6720,6 +6730,30 @@ namespace scorpioweb.Controllers
          return Json(new { success = true, responseText = Convert.ToString(0), busqueda = listaNombresConcat });
 
         }
+        #endregion
+
+
+      #region-VistaBitacora-
+        public IActionResult VistaBitacora(int id)
+        {
+            ViewData["Bitacora"] = 
+                                from p in _context.Persona
+                                join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                                join b in _context.Bitacora on s.IdSupervision equals b.SupervisionIdSupervision
+                                join c in _context.Causapenal on s.CausaPenalIdCausaPenal equals c.IdCausaPenal
+                                where p.IdPersona == id
+                                select new PersonaBitacora
+                                {
+
+                                    personaVM = p,
+                                    supervisionVM = s,
+                                    bitacoraVM = b,
+                                    causapenalVM =c
+                                   
+                                };
+            return View();
+        }
+        #endregion
     }
-    #endregion
+
 }
