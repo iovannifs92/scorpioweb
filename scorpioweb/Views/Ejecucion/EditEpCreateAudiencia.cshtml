@@ -1,4 +1,4 @@
-﻿@model scorpioweb.Models.Epcrearaudiencia
+﻿@model scorpioweb.Models.Oficialia
 
 @{
     ViewBag.Title = "";
@@ -8,52 +8,75 @@
     <div class="col-md-12">
         <form asp-action="EditEpCreateAudiencia">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdepcrearAudiencia" />
+            <input type="hidden" readonly asp-for="IdOficialia" />
+            <input type="hidden" readonly asp-for="Capturista" />
+            <input type="hidden" readonly asp-for="Recibe" />
+            <input type="hidden" readonly asp-for="MetodoNotificacion" />
+            <input type="hidden" readonly asp-for="NumOficio" />
+            <input type="hidden" readonly asp-for="FechaEmision" />
+            <input type="hidden" readonly asp-for="Expide" />
+            <input type="hidden" readonly asp-for="ReferenteImputado" />
+            <input type="hidden" readonly asp-for="Sexo" />
+            <input type="hidden" readonly asp-for="CausaPenal" />
+            <input type="hidden" readonly asp-for="IdCausaPenal" />
+            <input type="hidden" readonly asp-for="DelitoTipo" />
+            <input type="hidden" readonly asp-for="ExisteVictima" />
+            <input type="hidden" readonly asp-for="AsuntoOficio" />
+            <input type="hidden" readonly asp-for="NombreVictima" />
+            <input type="hidden" readonly asp-for="DireccionVictima" />
+            <input type="hidden" readonly asp-for="AutoVinculacion" />
+            <input type="hidden" readonly asp-for="TieneTermino" />
+            <input type="hidden" readonly asp-for="UsuarioTurnar" />
+            <input type="hidden" readonly asp-for="Observaciones" />
+            <input type="hidden" readonly asp-for="FechaSeguimiento" />
+            <input type="hidden" readonly asp-for="RutaArchivo" />
+            <input type="hidden" readonly asp-for="Seguimiento" />
+            <input type="hidden" readonly asp-for="Entregado" />
             <div class="form-group">
                 <label class="control-label">Fecha de Audiencia</label>
-                <input asp-for="FechaAudiencia" class="form-control" />
-                <span asp-validation-for="FechaAudiencia" class="text-danger"></span>
+                <input asp-for="FechaTermino" class="form-control" />
+                <span asp-validation-for="FechaTermino" class="text-danger"></span>
             </div>
             <div class="form-group" style="padding-top:1%;">
-                <label class="control-label">Usuario</label>
-                <select class="form-control" name="Usuario" id="Usuario"
+                <label class="control-label">Quien Asistira</label>
+                <select class="form-control" name="QuienAsistira" id="QuienAsistira"
                         asp-items="@(new SelectList(ViewBag.ListaUser, ViewBag.UserEdit))">
                     <option value="NA">NA</option>
                 </select>
             </div>
             <div class="form-group">
                 <label class="control-label">Fecha de Notificacion</label>
-                <input asp-for="FechaNotificacion" class="form-control" />
-                <span asp-validation-for="FechaNotificacion" class="text-danger"></span>
+                <input asp-for="FechaRecepcion" class="form-control" />
+                <span asp-validation-for="FechaRecepcion" class="text-danger"></span>
             </div>
             <div class="form-group" style="padding-top:1%;">
                 <label class="control-label">Juzgado</label>
-                <select class="form-control" name="Juzgado" id="Juzgado"
+                <select class="form-control" name="JuzgadoOrigen" id="JuzgadoOrigen"
                         asp-items="@(new SelectList(ViewBag.Liatajuzgado,ViewBag.Selectturno))">
                 </select>
             </div>
             <div class="form-group">
-                <label  class="control-label">Carpeta de Investigacin</label>
-                <input asp-for="Ce" class="form-control" />
-                <span asp-validation-for="Ce" class="text-danger"></span>
+                <label  class="control-label">Carpeta de Ejecucion</label>
+                <input asp-for="CarpetaEjecucion" class="form-control" />
+                <span asp-validation-for="CarpetaEjecucion" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label"> Apellido Paterno </label>
-                <input asp-for="PaternoS" class="form-control" />
-                <span asp-validation-for="PaternoS" class="text-danger"></span>
+                <input asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">Apellido Materno</label>
-                <input asp-for="MaternoS" class="form-control" />
-                <span asp-validation-for="MaternoS" class="text-danger"></span>
+                <input asp-for="Materno" class="form-control" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label">Nombre</label>
-                <input asp-for="NombreS" class="form-control" />
-                <span asp-validation-for="NombreS" class="text-danger"></span>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="hidden" readonly asp-for="EjecucionIdEjecucion" class="form-control" />
+                <input type="hidden" readonly asp-for="IdCarpetaEjecucion" class="form-control" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

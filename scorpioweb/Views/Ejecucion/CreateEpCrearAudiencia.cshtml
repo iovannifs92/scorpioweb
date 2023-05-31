@@ -1,4 +1,4 @@
-﻿@model scorpioweb.Models.Epcrearaudiencia
+﻿@*@model scorpioweb.Models.Oficialia
 
 @{
     ViewBag.Title = "";
@@ -9,6 +9,30 @@
     <div class="col-md-12">
         <form asp-action="CreateEpCrearAudiencia">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" readonly asp-for="IdOficialia" />
+            <input type="hidden" readonly asp-for="Capturista" value="" />
+            <input type="hidden" readonly asp-for="Recibe" />
+            <input type="hidden" readonly asp-for="MetodoNotificacion" />
+            <input type="hidden" readonly asp-for="NumOficio" />
+            <input type="hidden" readonly asp-for="FechaEmision" />
+            <input type="hidden" readonly asp-for="Expide" />
+            <input type="hidden" readonly asp-for="ReferenteImputado" />
+            <input type="hidden" readonly asp-for="Sexo" />
+            <input type="hidden" readonly asp-for="CausaPenal" />
+            <input type="hidden" readonly asp-for="IdCausaPenal" />
+            <input type="hidden" readonly asp-for="DelitoTipo" />
+            <input type="hidden" readonly asp-for="ExisteVictima" />
+            <input type="hidden" readonly asp-for="AsuntoOficio" />
+            <input type="hidden" readonly asp-for="NombreVictima" />
+            <input type="hidden" readonly asp-for="DireccionVictima" />
+            <input type="hidden" readonly asp-for="AutoVinculacion" />
+            <input type="hidden" readonly asp-for="TieneTermino" />
+            <input type="hidden" readonly asp-for="UsuarioTurnar" />
+            <input type="hidden" readonly asp-for="Observaciones" />
+            <input type="hidden" readonly asp-for="FechaSeguimiento" />
+            <input type="hidden" readonly asp-for="RutaArchivo" />
+            <input type="hidden" readonly asp-for="Seguimiento" />
+            <input type="hidden" readonly asp-for="Entregado" />
             <div class="form-group">
                 <input type="hidden" readonly asp-for="IdepcrearAudiencia" class="form-control" />
             </div>
@@ -44,18 +68,18 @@
             </div>
             <div class="form-group col-md-4">
                 <label  class="control-label">Apellido peterno</label>
-                <input asp-for="PaternoS" class="form-control" />
-                <span asp-validation-for="PaternoS" class="text-danger"></span>
+                <input asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Apellido materno</label>
                 <input asp-for="MaternoS" class="form-control" />
-                <span asp-validation-for="MaternoS" class="text-danger"></span>
+                <span asp-validation-for="Materno" class="text-danger"></span>
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Nombre</label>
-                <input asp-for="NombreS" class="form-control" />
-                <span asp-validation-for="NombreS" class="text-danger"></span>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="hidden" readonly asp-for="EjecucionIdEjecucion" class="form-control" />
@@ -67,3 +91,4 @@
     </div>
 </div>
 
+*@

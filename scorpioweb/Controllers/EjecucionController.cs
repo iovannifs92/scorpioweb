@@ -22,6 +22,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using Org.BouncyCastle.Crypto;
 using System.Globalization;
 using Microsoft.AspNetCore.Rewrite.Internal;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace scorpioweb.Controllers
 {
@@ -159,6 +160,15 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             ViewBag.User = user.ToString();
 
+            List<string> Liatajuzgado = new List<string>();
+            Liatajuzgado.Add("NA");
+            Liatajuzgado.Add("JUZGADO 1");
+            Liatajuzgado.Add("JUZGADO 2");
+            Liatajuzgado.Add("JUZGADO 3");
+            Liatajuzgado.Add("JUZGADO 4");
+
+            ViewBag.Liatajuzgado = Liatajuzgado;
+
             return View();
         }
 
@@ -167,7 +177,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Usuario,LugarInternamiento")] Ejecucion ejecucion)
+        public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Juzgado,TieneceAcumuladas,CeAcumuladas,Usuario,LugarInternamiento")] Ejecucion ejecucion)
         {
             if (ModelState.IsValid)
             {
@@ -176,6 +186,9 @@ namespace scorpioweb.Controllers
                 ejecucion.Nombre = mg.removeSpaces(mg.normaliza(ejecucion.Nombre));
                 ejecucion.Yo = mg.removeSpaces(mg.normaliza(ejecucion.Yo));
                 ejecucion.Ce = mg.removeSpaces(mg.normaliza(ejecucion.Ce));
+                ejecucion.Juzgado = mg.removeSpaces(mg.normaliza(ejecucion.Juzgado));
+                ejecucion.TieneceAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.TieneceAcumuladas));
+                ejecucion.CeAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.CeAcumuladas));
                 ejecucion.Usuario = mg.removeSpaces(mg.normaliza(ejecucion.Usuario));
                 ejecucion.LugarInternamiento = mg.removeSpaces(mg.normaliza(ejecucion.LugarInternamiento));
 
@@ -191,9 +204,11 @@ namespace scorpioweb.Controllers
         // GET: Ejecucion/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var ejecucion = await _context.Ejecucion.SingleOrDefaultAsync(m => m.IdEjecucion == id);
 
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
 
+            #region -Sacar Usuario-
             List<string> ListaUserEjecucion = new List<string>();
             foreach (var u in userManager.Users)
             {
@@ -207,18 +222,46 @@ namespace scorpioweb.Controllers
                 }
             }
 
-            ViewBag.ListaEjecucion = ViewBag.ListaGeneral = ListaUserEjecucion.Where(r => ListaUserEjecucion.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
+          
+            var tagged = ListaUserEjecucion.Select((item, i) => new { Item = item, Index = (int?)i });
+            var index = (from pair in tagged
+                         where pair.Item == ejecucion.Usuario.ToLower()
+                         select pair.Item).FirstOrDefault();
+
+            ViewBag.ListaEjecucion = ListaUserEjecucion.Where(r => ListaUserEjecucion.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
+            ViewBag.ListaEjecucionEdit = index;
+            #endregion
+            #region juzgado          
+            List<string> LiataJzgado = new List<string>();
+            LiataJzgado.Add("NA");
+            LiataJzgado.Add("JUZGADO 1");
+            LiataJzgado.Add("JUZGADO 2");
+            LiataJzgado.Add("JUZGADO 3");
+
+
+            ViewBag.LiataJuzgado = LiataJzgado;
+
+            var turno = LiataJzgado.Select((item, i) => new { Item = item, Index = (int?)i });
+            var selectturno = (from pair in turno
+                               where pair.Item == ejecucion.Juzgado
+                               select pair.Item).FirstOrDefault();
+
+            ViewBag.LiataJuzgadoEdit = selectturno;
+
+            #endregion
 
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ejecucion = await _context.Ejecucion.SingleOrDefaultAsync(m => m.IdEjecucion == id);
+           
             if (ejecucion == null)
             {
                 return NotFound();
             }
+
+            ViewBag.acumuladas = ejecucion.TieneceAcumuladas;
             return View(ejecucion);
         }
 
@@ -227,7 +270,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Usuario,LugarInternamiento")] Ejecucion ejecucion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,TieneceAcumuladas,CeAcumuladas,Usuario,Juzgado,LugarInternamiento")] Ejecucion ejecucion)
         {
             if (id != ejecucion.IdEjecucion)
             {
@@ -243,6 +286,9 @@ namespace scorpioweb.Controllers
                     ejecucion.Nombre = mg.removeSpaces(mg.normaliza(ejecucion.Nombre));
                     ejecucion.Yo = mg.removeSpaces(mg.normaliza(ejecucion.Yo));
                     ejecucion.Ce = mg.removeSpaces(mg.normaliza(ejecucion.Ce));
+                    ejecucion.TieneceAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.TieneceAcumuladas));
+                    ejecucion.CeAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.CeAcumuladas));
+                    ejecucion.Juzgado = mg.removeSpaces(mg.normaliza(ejecucion.Juzgado));
                     ejecucion.Usuario = mg.removeSpaces(mg.normaliza(ejecucion.Usuario));
                     ejecucion.LugarInternamiento = mg.removeSpaces(mg.normaliza(ejecucion.LugarInternamiento));
 
@@ -367,6 +413,14 @@ namespace scorpioweb.Controllers
                 return RedirectToAction("EditEpCausapenal", new { id });
             }
 
+
+            List<string> Liatajuzgado = new List<string>();
+            Liatajuzgado.Add("NA");
+            Liatajuzgado.Add("JUZGADO 1");
+            Liatajuzgado.Add("JUZGADO 2");
+            Liatajuzgado.Add("JUZGADO 3");
+
+            ViewBag.Liatajuzgado = Liatajuzgado;
             return View();
         }
         public async Task<IActionResult> CreateEpCausapenal2(int id)
@@ -374,6 +428,13 @@ namespace scorpioweb.Controllers
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
             ViewBag.idEjecucion = id;
+            List<string> Liatajuzgado = new List<string>();
+            Liatajuzgado.Add("NA");
+            Liatajuzgado.Add("JUZGADO 1");
+            Liatajuzgado.Add("JUZGADO 2");
+            Liatajuzgado.Add("JUZGADO 3");
+
+            ViewBag.Liatajuzgado = Liatajuzgado;
 
             return View();
         }
@@ -412,6 +473,11 @@ namespace scorpioweb.Controllers
         #region -Editar EP Causa Penal-
         public async Task<IActionResult> EditEPCausaPenal(int id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
 
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -433,6 +499,19 @@ namespace scorpioweb.Controllers
                                         ejecucionVM = e,
                                         epcausapenalVM = epcp,
                                     };
+
+            #region -JUZGADO-
+
+            List<string> Liatajuzgado = new List<string>();
+            Liatajuzgado.Add("NA");
+            Liatajuzgado.Add("JUZGADO 1");
+            Liatajuzgado.Add("JUZGADO 2");
+            Liatajuzgado.Add("JUZGADO 3");
+
+            ViewBag.Liatajuzgado = Liatajuzgado;
+
+            #endregion
+
 
             return View();
         }
@@ -521,22 +600,19 @@ namespace scorpioweb.Controllers
             }
 
         }
-        public async Task<JsonResult> deleteEpCp(Ejecucion ejecucion, Historialeliminacion historialeliminacion, string[] datoEjecucion)
+        public async Task<JsonResult> deleteEpCp(Epcausapenal epcausapenal, Historialeliminacion historialeliminacion, string[] datoEjecucion)
         {
             var borrar = false;
             var id = Int32.Parse(datoEjecucion[0]);
-            var razon = mg.normaliza(datoEjecucion[1]);
-            var user = mg.normaliza(datoEjecucion[2]);
+            var idep = Int32.Parse(datoEjecucion[1]);
+            var razon = mg.normaliza(datoEjecucion[2]);
+            var user = mg.normaliza(datoEjecucion[3]);
 
             var query = (from s in _context.Ejecucion
-                         where s.IdEjecucion == id
+                         where s.IdEjecucion == idep
                          select s).FirstOrDefault();
 
-            var queryP = (from s in _context.Supervision
-                          join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                          where s.IdSupervision == id
-                          select p).FirstOrDefault();
-
+           
             try
             {
                 borrar = true;
@@ -551,8 +627,8 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
 
 
-                var ejecuciondel = _context.Ejecucion.SingleOrDefault(m => m.IdEjecucion == id);
-                _context.Ejecucion.Remove(ejecuciondel);
+                var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
+                _context.Epcausapenal.Remove(epcausapenalDel);
                 _context.SaveChanges();
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
@@ -1461,8 +1537,9 @@ namespace scorpioweb.Controllers
             //                                               group a by a.ArcchivoIdArchivo into grp
             //                                               select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
 
-            var filter = from e in _context.Epcrearaudiencia
-                         select e;
+            var filter = from o in _context.Oficialia
+                         where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar == "uriel.ortega@dgepms.com"
+                         select o;
 
 
 
@@ -1472,12 +1549,15 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(acp => (acp.PaternoS + " " + acp.MaternoS + " " + acp.NombreS).Contains(searchString) ||
-                                             (acp.NombreS + " " + acp.MaternoS + " " + acp.PaternoS).Contains(searchString) ||
-                                             (acp.MaternoS + " " + acp.PaternoS + " " + acp.NombreS).Contains(searchString) ||
-                                             (acp.Ce).Contains(searchString) ||
-                                             (acp.IdepcrearAudiencia.ToString()).Contains(searchString));
+                filter = filter.Where(acp => (acp.Paterno + " " + acp.Materno + " " + acp.Nombre).Contains(searchString.ToUpper()) ||
+                                             (acp.Nombre + " " + acp.Paterno + " " + acp.Materno).Contains(searchString.ToUpper()) ||
+                                             (acp.CarpetaEjecucion).Contains(searchString.ToUpper()) ||
+                                             (acp.IdCarpetaEjecucion.ToString()).Contains(searchString));
             }
+
+            //a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString.ToUpper()) ||
+            //                                  (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString.ToUpper()) ||
+
 
             //switch (sortOrder)
             //{
@@ -1493,11 +1573,11 @@ namespace scorpioweb.Controllers
 
             //}
 
-            filter = filter.OrderByDescending(spcp => spcp.IdepcrearAudiencia);
+            filter = filter.OrderByDescending(x => x.IdOficialia);
 
-
+    
             int pageSize = 10;
-            return View(await PaginatedList<Epcrearaudiencia>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<Oficialia>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         public async Task<IActionResult> CreateEpCrearAudiencia()
@@ -1551,27 +1631,52 @@ namespace scorpioweb.Controllers
         // POST: Ejecucion/CreateEpCrearAudiencia
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateEpCrearAudiencia([Bind("IdepcrearAudiencia,FechaAudiencia,Usuario,FechaNotificacion,Juzgado,Ce,PaternoS,MaternoS,NombreS,EjecucionIdEjecucion")] Epcrearaudiencia epcrearaudiencia)
-        {
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> CreateEpCrearAudiencia([Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,IdCarpetaEjecucion,CarpetaEjecucion,Juzgado,QuienAsistira,IdCausaPenal,CausaPenal,DelitoTipo,AutoVinculacion,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,FechaSeguimiento,RutaArchivo,Seguimiento,Observaciones")] Oficialia oficialiaAudiencia)
+        //{
 
-            epcrearaudiencia.FechaAudiencia = epcrearaudiencia.FechaAudiencia;
-            epcrearaudiencia.Usuario = mg.removeSpaces(mg.normaliza(epcrearaudiencia.Usuario));
-            epcrearaudiencia.FechaNotificacion = epcrearaudiencia.FechaNotificacion;
-            epcrearaudiencia.Juzgado = mg.removeSpaces(mg.normaliza(epcrearaudiencia.Juzgado));
-            epcrearaudiencia.Ce = mg.removeSpaces(mg.normaliza(epcrearaudiencia.Ce));
-            epcrearaudiencia.PaternoS = mg.removeSpaces(mg.normaliza(epcrearaudiencia.PaternoS));
-            epcrearaudiencia.MaternoS = mg.removeSpaces(mg.normaliza(epcrearaudiencia.MaternoS));
-            epcrearaudiencia.NombreS = mg.removeSpaces(mg.normaliza(epcrearaudiencia.NombreS));
-            epcrearaudiencia.EjecucionIdEjecucion = epcrearaudiencia.EjecucionIdEjecucion;
+        //    oficialiaAudiencia.Capturista = oficialiaAudiencia.Capturista;
+        //    oficialiaAudiencia.Recibe = oficialiaAudiencia.Recibe;
+        //    oficialiaAudiencia.MetodoNotificacion = oficialiaAudiencia.MetodoNotificacion;
+        //    oficialiaAudiencia.NumOficio = oficialiaAudiencia.NumOficio;
+        //    oficialiaAudiencia.FechaEmision = oficialiaAudiencia.FechaEmision;
+        //    oficialiaAudiencia.Expide = oficialiaAudiencia.Expide;
+        //    oficialiaAudiencia.ReferenteImputado = oficialiaAudiencia.ReferenteImputado;
+        //    oficialiaAudiencia.Sexo = oficialiaAudiencia.Sexo;
+        //    oficialiaAudiencia.IdCausaPenal = oficialiaAudiencia.IdCausaPenal;
+        //    oficialiaAudiencia.CausaPenal = oficialiaAudiencia.CausaPenal;
+        //    oficialiaAudiencia.DelitoTipo = oficialiaAudiencia.DelitoTipo;
+        //    oficialiaAudiencia.AutoVinculacion = oficialiaAudiencia.AutoVinculacion;
+        //    oficialiaAudiencia.ExisteVictima = oficialiaAudiencia.ExisteVictima;
+        //    oficialiaAudiencia.DireccionVictima = oficialiaAudiencia.DireccionVictima;
+        //    oficialiaAudiencia.AsuntoOficio = oficialiaAudiencia.AsuntoOficio;
+        //    oficialiaAudiencia.TieneTermino = oficialiaAudiencia.TieneTermino;
+        //    oficialiaAudiencia.UsuarioTurnar = oficialiaAudiencia.UsuarioTurnar;
+        //    oficialiaAudiencia.Entregado = oficialiaAudiencia.Entregado;
+        //    oficialiaAudiencia.Observaciones = oficialiaAudiencia.Observaciones;
+        //    oficialiaAudiencia.FechaSeguimiento = oficialiaAudiencia.FechaSeguimiento;
+        //    oficialiaAudiencia.RutaArchivo = oficialiaAudiencia.RutaArchivo;
+        //    oficialiaAudiencia.Seguimiento = oficialiaAudiencia.Seguimiento;
 
-            _context.Add(epcrearaudiencia);
-            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return RedirectToAction(nameof(listaEpCrearAudiencia));
 
-            return View(epcrearaudiencia);
-        }
+        //    oficialiaAudiencia.FechaTermino = oficialiaAudiencia.FechaTermino;
+        //    oficialiaAudiencia.FechaRecepcion = oficialiaAudiencia.FechaRecepcion;
+        //    oficialiaAudiencia.Juzgado = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Juzgado));
+        //    oficialiaAudiencia.QuienAsistira = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.QuienAsistira));
+        //    oficialiaAudiencia.CarpetaEjecucion = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.CarpetaEjecucion));
+        //    oficialiaAudiencia.Paterno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Paterno));
+        //    oficialiaAudiencia.Materno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Materno));
+        //    oficialiaAudiencia.Nombre = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Nombre));
+        //    oficialiaAudiencia.IdOficialia = id;
+        //    oficialiaAudiencia.IdCarpetaEjecucion = oficialiaAudiencia.IdCarpetaEjecucion;
+
+        //    _context.Add(epcrearaudiencia);
+        //    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+        //    return RedirectToAction(nameof(listaEpCrearAudiencia));
+
+        //    return View(epcrearaudiencia);
+        //}
 
         public async Task<IActionResult> EditEpCreateAudiencia(int? id)
         {
@@ -1581,7 +1686,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var epcrearaudiencia = await _context.Epcrearaudiencia.SingleOrDefaultAsync(m => m.IdepcrearAudiencia == id);
+            var audienciaOficailia = await _context.Oficialia.SingleOrDefaultAsync(m => m.IdOficialia == id);
 
 
             #region -Lista Quien atiende-
@@ -1599,9 +1704,13 @@ namespace scorpioweb.Controllers
             }
 
             var tagged = ListaUser.Select((item, i) => new { Item = item, Index = (int?)i });
-            var index = (from pair in tagged
-                         where pair.Item == epcrearaudiencia.Usuario
-                         select pair.Item).FirstOrDefault();
+            //var index = (from pair in tagged
+                         //where pair.Item == audienciaOficailia.QuienAsistira.ToUpper()
+                         //select pair.Item).FirstOrDefault();
+            var index = tagged.FirstOrDefault(pair => pair.Item == audienciaOficailia.QuienAsistira?.ToUpper())?.Item;
+            //var index = tagged.FirstOrDefault(pair => pair.Item == audienciaOficailia.QuienAsistira.ToUpper())?.Item ?;
+
+            //_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Juzgado ?? string.Empty,
 
             ViewBag.ListaUser = ListaUser.Where(r => ListaUser.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
             ViewBag.UserEdit = index;
@@ -1616,59 +1725,80 @@ namespace scorpioweb.Controllers
             Liatajuzgado.Add("JUZGADO 1");
             Liatajuzgado.Add("JUZGADO 2");
             Liatajuzgado.Add("JUZGADO 3");
-            Liatajuzgado.Add("TURNO");
 
             ViewBag.Liatajuzgado = Liatajuzgado;
 
             var turno = Liatajuzgado.Select((item, i) => new { Item = item, Index = (int?)i });
             var selectturno = (from pair in turno
-                               where pair.Item == epcrearaudiencia.Juzgado
+                               where pair.Item == audienciaOficailia.Juzgado
                                select pair.Item).FirstOrDefault();
 
             ViewBag.Selectturno = selectturno;
 
             #endregion
 
-            if (epcrearaudiencia == null)
+            if (audienciaOficailia == null)
             {
                 return NotFound();
             }
-            return View(epcrearaudiencia);
+            return View(audienciaOficailia);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpCreateAudiencia(int id, [Bind("IdepcrearAudiencia, FechaAudiencia, FechaNotificacion, Usuario, Juzgado, Ce, PaternoS, MaternoS, NombreS,,EjecucionIdEjecucion")] Epcrearaudiencia epcrearaudiencia)
+        public async Task<IActionResult> EditEpCreateAudiencia(int id, [Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,IdCarpetaEjecucion,CarpetaEjecucion,Juzgado,QuienAsistira,IdCausaPenal,CausaPenal,DelitoTipo,AutoVinculacion,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,FechaSeguimiento,RutaArchivo,Seguimiento,Observaciones")] Oficialia oficialiaAudiencia)
         {
 
-            if (id != epcrearaudiencia.IdepcrearAudiencia)
+            if (id != oficialiaAudiencia.IdOficialia)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                try 
                 {
-                    epcrearaudiencia.FechaAudiencia = epcrearaudiencia.FechaAudiencia;
-                    epcrearaudiencia.FechaNotificacion = epcrearaudiencia.FechaNotificacion;
-                    epcrearaudiencia.Juzgado = mg.removeSpaces(mg.normaliza(epcrearaudiencia.Juzgado));
-                    epcrearaudiencia.Usuario = mg.removeSpaces(mg.normaliza(epcrearaudiencia.Usuario));
-                    epcrearaudiencia.Ce = mg.removeSpaces(mg.normaliza(epcrearaudiencia.Ce));
-                    epcrearaudiencia.PaternoS = mg.removeSpaces(mg.normaliza(epcrearaudiencia.PaternoS));
-                    epcrearaudiencia.MaternoS = mg.removeSpaces(mg.normaliza(epcrearaudiencia.MaternoS));
-                    epcrearaudiencia.NombreS = mg.removeSpaces(mg.normaliza(epcrearaudiencia.NombreS));
-                    epcrearaudiencia.IdepcrearAudiencia = id;
-                    epcrearaudiencia.EjecucionIdEjecucion = epcrearaudiencia.EjecucionIdEjecucion;
+                    oficialiaAudiencia.Capturista = oficialiaAudiencia.Capturista;
+                    oficialiaAudiencia.Recibe = oficialiaAudiencia.Recibe;
+                    oficialiaAudiencia.MetodoNotificacion = oficialiaAudiencia.MetodoNotificacion;
+                    oficialiaAudiencia.NumOficio = oficialiaAudiencia.NumOficio;
+                    oficialiaAudiencia.FechaEmision = oficialiaAudiencia.FechaEmision;
+                    oficialiaAudiencia.Expide = oficialiaAudiencia.Expide;
+                    oficialiaAudiencia.ReferenteImputado = oficialiaAudiencia.ReferenteImputado;
+                    oficialiaAudiencia.Sexo = oficialiaAudiencia.Sexo;
+                    oficialiaAudiencia.IdCausaPenal = oficialiaAudiencia.IdCausaPenal;
+                    oficialiaAudiencia.CausaPenal = oficialiaAudiencia.CausaPenal;
+                    oficialiaAudiencia.DelitoTipo = oficialiaAudiencia.DelitoTipo;
+                    oficialiaAudiencia.AutoVinculacion = oficialiaAudiencia.AutoVinculacion;
+                    oficialiaAudiencia.ExisteVictima = oficialiaAudiencia.ExisteVictima;
+                    oficialiaAudiencia.DireccionVictima = oficialiaAudiencia.DireccionVictima;
+                    oficialiaAudiencia.AsuntoOficio = oficialiaAudiencia.AsuntoOficio;
+                    oficialiaAudiencia.TieneTermino = oficialiaAudiencia.TieneTermino;
+                    oficialiaAudiencia.UsuarioTurnar = oficialiaAudiencia.UsuarioTurnar;
+                    oficialiaAudiencia.Entregado = oficialiaAudiencia.Entregado;  
+                    oficialiaAudiencia.Observaciones = oficialiaAudiencia.Observaciones;  
+                    oficialiaAudiencia.FechaSeguimiento = oficialiaAudiencia.FechaSeguimiento;  
+                    oficialiaAudiencia.RutaArchivo = oficialiaAudiencia.RutaArchivo;  
+                    oficialiaAudiencia.Seguimiento = oficialiaAudiencia.Seguimiento;  
+                    oficialiaAudiencia.FechaTermino = oficialiaAudiencia.FechaTermino;
+                    oficialiaAudiencia.FechaRecepcion = oficialiaAudiencia.FechaRecepcion;
+                    oficialiaAudiencia.Juzgado = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Juzgado));
+                    oficialiaAudiencia.QuienAsistira = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.QuienAsistira));
+                    oficialiaAudiencia.CarpetaEjecucion = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.CarpetaEjecucion));
+                    oficialiaAudiencia.Paterno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Paterno));
+                    oficialiaAudiencia.Materno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Materno));
+                    oficialiaAudiencia.Nombre = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Nombre));
+                    oficialiaAudiencia.IdOficialia = id;
+                    oficialiaAudiencia.IdCarpetaEjecucion = oficialiaAudiencia.IdCarpetaEjecucion;
 
-                    _context.Update(epcrearaudiencia);
+                    _context.Update(oficialiaAudiencia);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EpcrearaudienciaExists(epcrearaudiencia.IdepcrearAudiencia))
+                    if (!oficialiaAudienciaExists(oficialiaAudiencia.IdOficialia))
                     {
                         return NotFound();
                     }
@@ -1679,23 +1809,19 @@ namespace scorpioweb.Controllers
                 }
                 return RedirectToAction(nameof(listaEpCrearAudiencia));
             }
-            return View(epcrearaudiencia);
+            return View(oficialiaAudiencia);
         }
 
 
-        public async Task<JsonResult> DeleteCrearAudiencia(Epcrearaudiencia epcrearaudiencia, Historialeliminacion historialeliminacion, int dato)
+        public async Task<JsonResult> DeleteCrearAudiencia(Oficialia epcrearaudiencia, Historialeliminacion historialeliminacion, int dato)
         {
             var borrar = false;
-
-            var query = (from epa in _context.Epatencionf
-                         where epa.IdepAtencionF == dato
-                         select epa).FirstOrDefault();
             try
             {
                 borrar = true;
 
-                var epa = _context.Epcrearaudiencia.FirstOrDefault(m => m.IdepcrearAudiencia == dato);
-                _context.Epcrearaudiencia.Remove(epa);
+                var epa = _context.Oficialia.FirstOrDefault(m => m.IdOficialia == dato);
+                _context.Oficialia.Remove(epa);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 return Json(new { success = true, responseText = Url.Action("listaEpCrearAudiencia", "Ejecucion"), borrar = borrar });
@@ -1740,27 +1866,21 @@ namespace scorpioweb.Controllers
                 dataSource.Audiencia[i] = new
                 {
                     IdepcrearAudiencia = datosidAudiencia[i],
-                    FechaAudiencia = (from table in _context.Epcrearaudiencia
-                                      where table.IdepcrearAudiencia == (Convert.ToInt32(datosidAudiencia[i]))
-                                      select table.FechaAudiencia).FirstOrDefault().ToString(),
-                    FechaNotificacion = (from table in _context.Epcrearaudiencia
-                                         where table.IdepcrearAudiencia == (Convert.ToInt32(datosidAudiencia[i]))
-                                         select table.FechaNotificacion).FirstOrDefault().ToString(),
-                    Juzgado = (from table in _context.Epcrearaudiencia
-                               where table.IdepcrearAudiencia == (Convert.ToInt32(datosidAudiencia[i]))
-                               select table.Juzgado).FirstOrDefault().ToString(),
-                    Usuario = (from table in _context.Epcrearaudiencia
-                               where table.IdepcrearAudiencia == (Convert.ToInt32(datosidAudiencia[i]))
-                               select table.Usuario).FirstOrDefault().ToString(),
-                    Ce = (from table in _context.Epcrearaudiencia
-                          where table.IdepcrearAudiencia == (Convert.ToInt32(datosidAudiencia[i]))
-                          select table.Ce).FirstOrDefault().ToString(),
+                    FechaAudiencia = (_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.FechaTermino ?? DateTime.MinValue).ToString(),
 
-                    Sentenciado = (from table in _context.Epcrearaudiencia
-                                    where table.IdepcrearAudiencia == (Convert.ToInt32(datosidAudiencia[i]))
-                                    select table.PaternoS + " " + table.MaternoS + " " + table.NombreS).FirstOrDefault().ToString()
+                    FechaNotificacion = (_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.FechaRecepcion ?? DateTime.MinValue).ToString(),
 
-                };
+                    Juzgado = _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Juzgado ?? string.Empty,
+
+                    Usuario = _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.QuienAsistira ?? string.Empty,
+
+                    Ce = _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.CarpetaEjecucion ?? string.Empty,
+
+                    Sentenciado = (_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Paterno + " " +
+                                   _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Materno + " " +
+                                   _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Nombre) ?? string.Empty
+
+            };
             }
 
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
@@ -1769,6 +1889,121 @@ namespace scorpioweb.Controllers
 
         }
         #endregion
+
+        public async Task<IActionResult> WarningEjecucion()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.showSupervisor = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "Masteradmin")
+                {
+                    ViewBag.showSupervisor = true;
+                }
+            }
+            ViewBag.norte = user.ToString().EndsWith("\u0040nortedgepms.com");
+
+            return View();
+
+        }
+
+        public async Task<IActionResult> filtra(string currentFilter)
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            Boolean flagCoordinador = false, flagMaster = false, flagOperativo = false, flagDirector = false;
+            string usuario = user.ToString();
+            DateTime fechaAudiencia = (DateTime.Today).AddDays(7);
+            DateTime terminoAlerta = (DateTime.Today).AddDays(-1);
+            DateTime fechaControl = (DateTime.Today).AddDays(3);
+            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
+            DateTime fechaHoy = DateTime.Today;
+
+            if (User.Identity.Name == "jazmin.flores@dgepms.com") {
+                flagDirector = true;
+            }
+            if (currentFilter == null)
+            {
+                ViewBag.Filtro = "TODOS";
+            }
+            else
+            {
+                ViewBag.Filtro = currentFilter;
+            }
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Coordinador Ejecucion")
+                {
+                    flagCoordinador = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "Masteradmin")
+                {
+                    flagMaster = true;
+                }
+            }
+            
+            foreach (var rol in roles)
+            {
+                if (rol == "Operativo")
+                {
+                    flagOperativo = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "Director")
+                {
+                    flagDirector = true;
+                }
+            }
+
+            List<Ejecucion> ejecucionVM = _context.Ejecucion.ToList();
+            List <Oficialia>  oficialiaVM  = _context.Oficialia.ToList();
+
+
+            var ViewDataAlertasVari = Enumerable.Empty<EjecucionWarningViewModel>();
+            switch (currentFilter)
+            {
+                case "TODOS":
+                    ViewDataAlertasVari = from o in oficialiaVM
+                                          where  o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "uriel.ortega@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                          orderby o.FechaTermino
+                                          select new EjecucionWarningViewModel
+                                          {
+                                              oficialiaVM = o,
+                                              tipoAdvertencia = "Audiencia"
+                                          };
+                    break;
+                case "AUDIENCIAS":
+                    ViewDataAlertasVari = from o in oficialiaVM
+                                          where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "uriel.ortega@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                          orderby o.FechaTermino
+                                          select new EjecucionWarningViewModel
+                                          {
+                                              oficialiaVM = o,
+                                              tipoAdvertencia = "Audiencia"
+                                          };
+                    break;
+            }
+            var warnings = Enumerable.Empty<EjecucionWarningViewModel>();
+
+            ViewData["alertas"] = ViewDataAlertasVari;
+
+            return Json(new
+            {
+                success = true,
+                user = usuario,
+                admin = flagCoordinador || flagMaster || flagDirector || flagOperativo,
+                //ViewData["alertas"] se usa como variable de esta funcion y no sirve como ViewData
+                query = ViewData["alertas"]
+            });
+        }
 
         private bool EjecucionExists(int id)
         {
@@ -1798,16 +2033,30 @@ namespace scorpioweb.Controllers
         {
             return _context.Epatencionf.Any(e => e.IdepAtencionF == id);
         }
-        private bool EpcrearaudienciaExists(int id)
+        private bool oficialiaAudienciaExists(int id)
         {
-            return _context.Epcrearaudiencia.Any(e => e.IdepcrearAudiencia == id);
+            return _context.Oficialia.Any(e => e.IdOficialia == id);
         }
 
 
         #region -MenuEjecucion-
         public IActionResult MenuEjecucion()
         {
-            return View();
+            DateTime fechaAudiencia = (DateTime.Today).AddDays(7);
+            DateTime terminoAlerta = (DateTime.Today).AddDays(-1);
+            List<Oficialia> oficialiaVM = _context.Oficialia.ToList();
+
+            var warningPlaneacion = from o in oficialiaVM
+                                    where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "uriel.ortega@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                    select new EjecucionWarningViewModel
+                                    {
+                                        oficialiaVM = o,
+                                        tipoAdvertencia = "Audiencia"
+                                    };
+
+            ViewBag.Warnings = warningPlaneacion.Count();
+
+            return View(); 
         }
         #endregion
     }
