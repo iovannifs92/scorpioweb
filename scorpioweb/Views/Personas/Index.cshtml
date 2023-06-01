@@ -276,11 +276,6 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
-                           if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
-                           
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -429,6 +424,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Bitacora</a ></div>";
                             row = row
@@ -521,10 +520,6 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
-                               if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -668,6 +663,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -757,10 +756,6 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
-                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -905,6 +900,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -1003,6 +1002,7 @@
                     if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         /*alert("Fecha " + result.page[i].ultimaActualización);*/
                         if (result.page[i].candado == 0) {
+                           
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
@@ -1011,10 +1011,6 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
-                           if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1100,6 +1096,7 @@
                             row = row + "</div>";
                         }
                     } else {
+                        
                        if (result.page[i].candado == 0) {
                             row = row
                                 + "<tr valign='middle'>"
@@ -1158,6 +1155,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                            if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true) {
+                                row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                            }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1258,10 +1259,6 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
-                          if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1406,6 +1403,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1499,6 +1500,7 @@
                     }
                     if ((@Html.Raw(Json.Serialize(ViewBag.Masteradmin)) == true) || result.page[i].supervisor == @Html.Raw(Json.Serialize(ViewBag.RolesUsuarios)) || (@Html.Raw(Json.Serialize(ViewBag.Admin)) == true)) {
                         if (result.page[i].candado == 0) {
+                           
                             row = row
                                 + "<tr valign='middle'>"
                                 + "<td>" + result.page[i].idPersona + "</td>"
@@ -1507,11 +1509,6 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
-                        if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
-                            
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1544,10 +1541,9 @@
                                         row = row + "</select></div>";
                                     }
                             }
-                          if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == false){
+                         
                             row = row
-                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                            }
+                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"                       
                                 + "</tr>";
                             row = row + "</td>";
                             row = row + "</div>";
@@ -1659,6 +1655,10 @@
                                 + "<th>" + date + "</th>";
                             row = row + "<div class=\"col-xs-12\">";
                             row = row + "<td>";
+                             if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
@@ -1753,10 +1753,6 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
-                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -1900,6 +1896,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                 if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
+                                 row = row
+                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -1990,10 +1990,6 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
-                               if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true){
-                                 row = row
-                                    + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-address-book-o'></i> Bitacora</a ></div>";
-                                 }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -2137,6 +2133,10 @@
                                     + "<th>" + date + "</th>";
                                 row = row + "<div class=\"col-xs-12\">";
                                 row = row + "<td>";
+                                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true) {
+                                    row = row
+                                        + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                                }
                                 row = row
                                     + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                                 row = row
@@ -2211,9 +2211,11 @@
     <a onclick="get()" class="btn btn-link">
         Regresar al listado completo
     </a> |
-    <a onclick="getSPersona()" class="btn btn-link">
-        Ver solo mis Supervisados
-    </a>
+    @if (ViewBag.Serviciosprevios == false)
+    {
+        <a onclick="getSPersona()" class="btn btn-link">
+            Ver solo mis Supervisados
+    </a>}
 </div>
 <div class="form-group col-md-12" id="divSbuscar" style="display:none">
     Búsqueda:
@@ -2225,9 +2227,12 @@
     <a onclick="getPersona()" class="btn btn-link">
         Regresar al listado completo
     </a> |
-    <a onclick="getS()" class="btn btn-link">
-        Ver solo mis Supervisados
-    </a>
+    @if (ViewBag.Serviciosprevios == false)
+    {
+        <a onclick="getS()" class="btn btn-link">
+            Ver solo mis Supervisados
+        </a>
+    }
 </div>
 <br/>
 <div class="row">
