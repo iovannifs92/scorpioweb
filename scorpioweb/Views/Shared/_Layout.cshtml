@@ -73,7 +73,7 @@
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Oficialia") || User.IsInRole("Operativo"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Operativo"))
                     {
                         <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
                     } 
