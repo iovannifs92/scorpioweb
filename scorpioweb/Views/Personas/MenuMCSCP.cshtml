@@ -183,8 +183,9 @@
         {
             @if(ViewBag.MensajesAdmin>0){
                 <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesAdmin</a>
-            }            
-        }
+            }
+            <a asp-action="libronegro" class="fa fa-address-book float-right" id="libronegro" title="Libro negro"></a>
+        } 
         else
         {
             @if(ViewBag.MensajesUsuario>0){
@@ -215,18 +216,26 @@
 
     #agenda {
         background: #314652;
+        margin-left: 20px;
     }
 
     #calendario {
         background: #00B812;
+        margin-left: 20px;
     }
 
     #mensajeSistema {
         background: #0078A7;
+        margin-left: 20px;
+    } 
+    #libronegro {
+        background: #000;
+        margin-left: 20px;
     }
 
     #seccionBotones{
         padding-top: 1em;
+        
     }
 
 

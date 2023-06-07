@@ -1,0 +1,116 @@
+﻿@model IEnumerable<scorpioweb.Models.Libronegro>
+
+@{
+    ViewBag.Title = "Libro negro";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+</script>
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>libronegro</title>
+</head>
+<body>
+<p>
+    <a class="btn btn-primary fa fa-plus" asp-action="libronegrocreate"> Crear</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Paterno)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Materno)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    Causda penal
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Telefono)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Direccion)
+                </th>
+               <th>
+                    @Html.DisplayNameFor(model => model.F1)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.F2)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.F3)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.F4)
+                </th*
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Paterno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Materno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telefono)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Direccion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.F1)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.F2)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.F3)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.F4)
+            </td>
+            <td>
+                 <a onclick="showModal('@Url.Action("libronegroedit", "Personas", new {id=@item.Idlibronegro}, Context.Request.Scheme)','Editar Libro negro',null )" class="btn btn-primary fa fa-save" style="margin-bottom:10px;"> Editar Usuario</a>
+                 <a asp-action="Deletelibro" class="btn btn-success fa fa-trash" asp-route-id="@item.Idlibronegro">Borrar</a>
+        </tr>
+}
+    </tbody>
+</table>
+</body>
+</html>
