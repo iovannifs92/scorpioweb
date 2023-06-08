@@ -346,7 +346,7 @@
                                 //}
                                 //row = row + "</td>";
 
-                                if (result.query[i].tipoAdvertencia == "Audiencia") {
+                                if (result.query[i].tipoAdvertencia == "Audiencia" && result.ejecucion == true) {
                                     row = row
                                         + "<td>"
                                         + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Ejecucion/listaEpCrearAudiencia/" + "\">"

@@ -178,21 +178,25 @@
     <section class="buttons" style="padding-right: 1em;">
         <a onclick="myFunction()" class="fa fa-address-book float-right" id="agenda"></a>        
     </section>
+   
     <section class="buttons" style="padding-right: 1em;">
-        @if(User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") )
         {
             @if(ViewBag.MensajesAdmin>0){
                 <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesAdmin</a>
             }
-            <a asp-action="libronegro" class="fa fa-address-book float-right" id="libronegro" title="Libro negro"></a>
+             
         } 
         else
         {
             @if(ViewBag.MensajesUsuario>0){
                 <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesUsuario</a>
-            }            
+            }
         }
-
+        @if (User.Identity.Name.EndsWith("@dgepms.com"))
+        {
+            <a asp-action="libronegro" class="fa fa-book float-right" style="color:black" id="libronegro" title="Libro negro"></a>
+        }
     </section>
 </div>
 
@@ -229,7 +233,7 @@
         margin-left: 20px;
     } 
     #libronegro {
-        background: #000;
+        background: #fff;
         margin-left: 20px;
     }
 
@@ -237,8 +241,6 @@
         padding-top: 1em;
         
     }
-
-
 
 </style>
 

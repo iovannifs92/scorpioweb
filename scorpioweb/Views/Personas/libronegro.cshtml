@@ -28,11 +28,8 @@
 <!DOCTYPE html>
 
 <html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>libronegro</title>
-</head>
 <body>
+    <h1>Libro negro</h1>
 <p>
     <a class="btn btn-primary fa fa-plus" asp-action="libronegrocreate"> Crear</a>
 </p>
@@ -106,8 +103,8 @@
                 @Html.DisplayFor(modelItem => item.F4)
             </td>
             <td>
-                 <a onclick="showModal('@Url.Action("libronegroedit", "Personas", new {id=@item.Idlibronegro}, Context.Request.Scheme)','Editar Libro negro',null )" class="btn btn-primary fa fa-save" style="margin-bottom:10px;"> Editar Usuario</a>
-                 <a asp-action="Deletelibro" class="btn btn-success fa fa-trash" asp-route-id="@item.Idlibronegro">Borrar</a>
+                 <a onclick="showModal('@Url.Action("libronegroedit", "Personas", new {id=@item.Idlibronegro}, Context.Request.Scheme)','Editar Libro negro',null )" class="btn btn-success fa fa-pencil"> Editar Usuario</a>
+                 <a asp-action="Deletelibro" class="btn btn-danger fa fa-trash" asp-route-id="@item.Idlibronegro"> Borrar</a>
         </tr>
 }
     </tbody>

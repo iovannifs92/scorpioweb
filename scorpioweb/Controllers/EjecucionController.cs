@@ -1926,7 +1926,7 @@ namespace scorpioweb.Controllers
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
-            Boolean flagCoordinador = false, flagMaster = false, flagOperativo = false, flagDirector = false;
+            Boolean flagCoordinador = false, flagMaster = false, flagOperativo = false, flagDirector = false, flagEjecucion = false;
             string usuario = user.ToString();
             DateTime fechaAudiencia = (DateTime.Today).AddDays(7);
             DateTime terminoAlerta = (DateTime.Today).AddDays(-1);
@@ -1951,6 +1951,7 @@ namespace scorpioweb.Controllers
                 if (rol == "Coordinador Ejecucion")
                 {
                     flagCoordinador = true;
+                    flagEjecucion = true;
                 }
             }
             foreach (var rol in roles)
@@ -1958,6 +1959,7 @@ namespace scorpioweb.Controllers
                 if (rol == "Masteradmin")
                 {
                     flagMaster = true;
+                    flagEjecucion = true;
                 }
             }
             
@@ -1973,6 +1975,7 @@ namespace scorpioweb.Controllers
                 if (rol == "Director")
                 {
                     flagDirector = true;
+                    flagEjecucion = true;
                 }
             }
 
@@ -2013,6 +2016,7 @@ namespace scorpioweb.Controllers
                 success = true,
                 user = usuario,
                 admin = flagCoordinador || flagMaster || flagDirector || flagOperativo,
+                ejecucion = flagEjecucion,
                 //ViewData["alertas"] se usa como variable de esta funcion y no sirve como ViewData
                 query = ViewData["alertas"]
             });

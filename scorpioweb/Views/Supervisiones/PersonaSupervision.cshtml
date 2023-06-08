@@ -276,6 +276,15 @@
                         <i class="fa fa-calendar"></i> Presentaciónes
                     </a>
                 </td>
+                @if (item.fraccionesimpuestasVM.FiguraJudicial.Count() != 0 && (User.IsInRole("ArchivoMCSCP") || User.IsInRole("Masteradmin")))
+                {
+                 <td>
+                        <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervision&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersona&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenal">
+                            <i class="fa fa-check-square"></i> Fracciones
+                    </a>
+                </td>
+                }
+                
                 
                 <td>
                     @if (item.cierredecasoVM.RutaArchivo != null)
