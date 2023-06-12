@@ -1,4 +1,5 @@
-﻿@{
+﻿@model scorpioweb.Models.Ejecucion
+@{
     ViewBag.Title = "";
     Layout = null;
 }
@@ -52,50 +53,94 @@
 
 
 <script>
-    //function borrarEPCP(id) {
-    //    var idep = id;
-    //    var usuario = '@ViewBag.user';
-    //    var cambiar = confirm("¿Desea borrar el registro?");
-    //    if (cambiar == true) {
-    //        $.ajax({
-    //            type: "POST",
-    //            dataType: "json",
-    //            url: "/Ejecucion/antesdeleteCP",
-    //            traditional: true,
-    //            data: {
-    //                id: idep,
-    //            },
-    //            success: function(response) {
-    //                if (response.borrar == false) {
-    //                    alert("No se ha borrado porque la Causa Penal tiene procesos Asignados");
-    //                } else {
-    //                    function borrarEjecucion(id) {
-    //                        alert(id)
-    //                        var usuario = '@ViewBag.user';
-    //                        let razon = prompt("Porque desea borrar el registro?", "");
-    //                        if (razon == null || razon == "") {
-    //                            return;
-    //                            text = "NA";
-    //                        } else {
-    //                            text = razon;
-    //                        }
-    //                        alert(usuario)
 
-    //                    };
-    //                    alert("Borrar ejecucion ")
-    //                    borrarEjecucion(id);
-    //                }
-    //            },
-    //            error: function(response) {
-    //                alert(response.error);
-    //                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-    //            }
-    //        });
-    //    }
-    //    return innerFunc;
-    //};
+    $(document).ready(function () {
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
 
-    function borrarEPCP(id,idep) {
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+        autocomplete(document.getElementById("Delito"), catalogo);
+
+
+        var catalogojuez = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
+        autocomplete(document.getElementById("JuzgadoOrigen"), catalogojuez);
+    });
+
+
+    function borrarEPCP(id, idep) {
         var usuario = '@ViewBag.user';
         var cambiar = confirm("¿Desea borrar el registro?");
         if (cambiar == true) {
@@ -105,44 +150,14 @@
                 url: "/Ejecucion/antesdeleteCP",
                 traditional: true,
                 data: {
-                    id: idep,
+                    id: id,
+                    idep: idep,
                 },
                 success: function (response) {
                     if (response.borrar == false) {
                         alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
                     } else {
-                        function borrarEjecucion(id) {
-                            var usuario = '@ViewBag.user';
-                            let razon = prompt("Porque desea borrar el registro?", "");
-                            if (razon == null || razon == "") {
-                                return;
-                                text = "NA";
-                            } else {
-                                text = razon;
-                            }
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/Ejecucion/deleteEpCp",
-                                traditional: true,
-                                data: {
-                                    datoEjecucion: [id,idep, razon, usuario],
-                                },
-                                success: function (response) {
-                                    if (response.borrar == true) {
-                                        alert("El Registro ha sido borrado");
-                                        location.reload();
-                                    } else {
-                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                                    }
-                                },
-                                error: function (response) {
-                                    alert(response.error);
-                                }
-                            });
-                            alert(2)
-                        };
-                        borrarEjecucion(id);
+                        alert("Datos Borrados con exito");
                     }
                 },
                 error: function (response) {
@@ -153,7 +168,6 @@
         }
         return innerFunc;
     };
-
 
     function CrearInstancia(id, i) {
         var idCausapenal = document.getElementById("Causapenal" + i).value;
@@ -273,13 +287,13 @@
                 <label class="control-label">Clasificacion del delito</label>
                 <input name="Clasificaciondelito" id="Clasificaciondelito" value="@item.epcausapenalVM.Clasificaciondelito" class="form-control" />
             </div>
-           @* <div class="form-group">
+     @*       <div class="form-group col-md-12">
                 <label class="control-label">Juzgado de Origen</label>
                 <select class="form-control" name="JuzgadoOrigen" id="JuzgadoOrigen"
                         asp-items="@(new SelectList(ViewBag.Liatajuzgado,item.epcausapenalVM.JuzgadoOrigen))">
                 </select>
             </div>*@
-            <div class="form-group col-md-12">
+            <div class="form-group col-md-12 autocomplete">
                 <label class="control-label">Juzgado de Origen</label>
                 <input id="JuzgadoOrigen" name="JuzgadoOrigen" class="form-control" asp-for="@item.epcausapenalVM.JuzgadoOrigen"/>
             </div>

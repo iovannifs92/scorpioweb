@@ -1,0 +1,67 @@
+﻿@model scorpioweb.Models.Libronegro
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="libronegroedit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Idlibronegro" />
+            <div class="form-group">
+                <label asp-for="Paterno" class="control-label"></label>
+                <input asp-for="Paterno" class="form-control" />
+                <span asp-validation-for="Paterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Materno" class="control-label"></label>
+                <input asp-for="Materno" class="form-control" />
+                <span asp-validation-for="Materno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" type="number" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Causa penal</label>
+                <input asp-for="Cp" class="form-control" />
+                <span asp-validation-for="Cp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Telefono" class="control-label"></label>
+                <input asp-for="Telefono" class="form-control" />
+                <span asp-validation-for="Telefono" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Direccion" class="control-label"></label>
+                <input asp-for="Direccion" class="form-control" />
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="F1" class="control-label"></label>
+                <input asp-for="F1" class="form-control" type="date"/>
+                <span asp-validation-for="F1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="F2" class="control-label"></label>
+                <input asp-for="F2" class="form-control" type="date"/>
+                <span asp-validation-for="F2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="F3" class="control-label"></label>
+                <input asp-for="F3" class="form-control" type="date"/>
+                <span asp-validation-for="F3" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="F4" class="control-label"></label>
+                <input asp-for="F4" class="form-control" type="date"/>
+                <span asp-validation-for="F4" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+

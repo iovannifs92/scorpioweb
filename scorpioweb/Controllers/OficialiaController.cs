@@ -181,7 +181,7 @@ namespace scorpioweb.Controllers
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
-            ViewBag.recibe = ListaRecibe;
+            ViewBag.Recibe = ListaRecibe;
             ViewBag.coordinadores = ListaCoordinadores;
 
             List<string> Liatajuzgado = new List<string>();
@@ -196,13 +196,13 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Captura(Oficialia oficialia, string recibe, string metodoNotificacion, string numOficio, string expide,
+        public async Task<IActionResult> Captura(Oficialia oficialia, string Recibe, string metodoNotificacion, string numOficio, string expide,
             string referenteImputado, string sexo, string paterno, string materno, string nombre, string carpetaEjecucion, string existeVictima,
             string nombreVictima, string direccionVictima, string asuntoOficio, string tieneTermino, string usuarioTurnar, string observaciones,
             int? idCausaPenal,int IdCarpetaEjecucion, string Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, string delitoTipo, string autoVinculacion,string Juzgado, string QuienAsistira, IFormFile archivo)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 int count = (from table in _context.Oficialia
                              select table.IdOficialia).Count();
                 int idOficialia;
@@ -252,13 +252,13 @@ namespace scorpioweb.Controllers
                 {
                     oficialia.UsuarioTurnar = usuarioTurnar;
                 }
-                if (recibe == "Selecciona")
+                if (Recibe == "Selecciona")
                 {
                     oficialia.Recibe = null;
                 }
                 else
                 {
-                    oficialia.Recibe = recibe;
+                    oficialia.Recibe = Recibe;
                 }
                 var cp = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == idCausaPenal);
                 if (cp != null)
@@ -279,7 +279,7 @@ namespace scorpioweb.Controllers
                 _context.Add(oficialia);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 return RedirectToAction("EditRegistros", "Oficialia");
-            }
+           
             return View(oficialia);
         }
         #endregion

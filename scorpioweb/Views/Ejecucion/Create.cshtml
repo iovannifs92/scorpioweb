@@ -7,161 +7,166 @@
 <script>
     $(document).ready(function () {
         function autocomplete(inp, arr) {
-                var currentFocus;
-                inp.addEventListener("input", function (e) {
-                    var a, b, i, val = this.value;
-                    closeAllLists();
-                    if (!val) { return false; }
-                    currentFocus = -1;
-                    a = document.createElement("DIV");
-                    a.setAttribute("id", this.id + "autocomplete-list");
-                    a.setAttribute("class", "autocomplete-items");
-                    this.parentNode.appendChild(a);
-                    for (i = 0; i < arr.length; i++) {
-                        if (arr[i].toUpperCase().includes(val.toUpperCase())) {
-                            b = document.createElement("DIV");
-                            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                            b.innerHTML += arr[i].substr(val.length);
-                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
-                                inp.value = this.getElementsByTagName("input")[0].value;
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
 
-                                closeAllLists();
-                            });
-                            a.appendChild(b);
-                        }
-                    }
-                });
-
-                inp.addEventListener("keydown", function (e) {
-                    var x = document.getElementById(this.id + "autocomplete-list");
-                    if (x) x = x.getElementsByTagName("div");
-                    if (e.keyCode == 40) {
-
-                        currentFocus++;
-
-                        addActive(x);
-                    } else if (e.keyCode == 38) { //up
-
-                        currentFocus--;
-
-                        addActive(x);
-                    } else if (e.keyCode == 13) {
-
-                        e.preventDefault();
-                        if (currentFocus > -1) {
-
-                            if (x) x[currentFocus].click();
-                        }
-                    }
-                });
-                function addActive(x) {
-
-                    if (!x) return false;
-
-                    removeActive(x);
-                    if (currentFocus >= x.length) currentFocus = 0;
-                    if (currentFocus < 0) currentFocus = (x.length - 1);
-
-                    x[currentFocus].classList.add("autocomplete-active");
-                }
-                function removeActive(x) {
-
-                    for (var i = 0; i < x.length; i++) {
-                        x[i].classList.remove("autocomplete-active");
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
                     }
                 }
-                function closeAllLists(elmnt) {
-                    var x = document.getElementsByClassName("autocomplete-items");
-                    for (var i = 0; i < x.length; i++) {
-                        if (elmnt != x[i] && elmnt != inp) {
-                            x[i].parentNode.removeChild(x[i]);
-                        }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
                     }
                 }
-                document.addEventListener("click", function (e) {
-                    closeAllLists(e.target);
-                });
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
 
             $('#TieneceAcumuladas').change(function () {
-                    var dat = $(this).children("option:selected").val();
-                    if (dat == "SI") {
+                var dat = $(this).children("option:selected").val();
+                if (dat == "SI") {
                     $("#CeAcumuladas").css("display", "block");
-                    }
-                    else {
+                }
+                else {
                     $("#CeAcumuladas").css("display", "none");
-                    }
+                }
             });
         }
         var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.centrosPenitenciarios))');
+        var catalogojuez = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("LugarInternamiento"), catalogo);
+        autocomplete(document.getElementById("Juzgado"), catalogojuez);
     });
 
 </script>
 
 <div class="row">
     <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Apellido Paterno</label>
-                <input required asp-for="Paterno" class="form-control" />
-                <span asp-validation-for="Paterno" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Apellido Materno</label>
-                <input required asp-for="Materno" class="form-control" />
-                <span asp-validation-for="Materno" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input required asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Y/O</label>
-                <input asp-for="Yo" class="form-control" />
-                <span asp-validation-for="Yo" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Carpeta de Ejecucion</label>
-                <input required asp-for="Ce" class="form-control" />
-                <span asp-validation-for="Ce"  class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Juzgado de Origen</label>
-            <select class="form-control" name="Juzgado" id="Juzgado"
-                        asp-items="@(new SelectList(ViewBag.Liatajuzgado, "Value"))">
-                </select>
-            </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group col-md-12">
-                <label  class="control-label">
-                    ¿Cuanta con Carpeta de Ejecucion acumuladas? 
-                </label>
+            <label class="control-label">Apellido Paterno</label>
+            <input required asp-for="Paterno" class="form-control" />
+            <span asp-validation-for="Paterno" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-12">
+            <label class="control-label">Apellido Materno</label>
+            <input required asp-for="Materno" class="form-control" />
+            <span asp-validation-for="Materno" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-12">
+            <label asp-for="Nombre" class="control-label"></label>
+            <input required asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-12">
+            <label class="control-label">Y/O</label>
+            <input asp-for="Yo" class="form-control" />
+            <span asp-validation-for="Yo" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-12">
+            <label class="control-label">Carpeta de Ejecucion</label>
+            <input required asp-for="Ce" class="form-control" />
+            <span asp-validation-for="Ce" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-12">
+            <label class="control-label">Juzgado de Origen</label>
+            <select class="form-control" name="Juzgado" id="Juzgado"
+                    asp-items="@(new SelectList(ViewBag.Liatajuzgado, "Value"))">
+            </select>
+        </div>
+        @*<div class="form-group autocomplete col-md-12">
+            <label class="control-label">Juzgado</label>
+            <input asp-for="Juzgado" class="form-control" />
+            <span asp-validation-for="Juzgado" class="text-danger"></span>
+        </div>*@
+        <div class="form-group col-md-12">
+            <label class="control-label">
+                ¿Cuanta con Carpeta de Ejecucion acumuladas?
+            </label>
             <select asp-for="TieneceAcumuladas" class="form-control" id="TieneceAcumuladas">
-                    <option value="NO">No</option>
-                    <option value="SI">Si</option>
-                </select>
+                <option value="NO">No</option>
+                <option value="SI">Si</option>
+            </select>
             <span asp-validation-for="TieneceAcumuladas" class="text-danger"></span>
-            </div>
+        </div>
         <div class="form-group col-md-12" id="CeAcumuladas" name="CeAcumuladas" style="display:none">
-                <label class="control-label">Carpeta de Ejecucion Acumuladas</label>
-            <input required asp-for="CeAcumuladas" class="form-control" />
+            <label class="control-label">Carpeta de Ejecucion Acumuladas</label>
+            <input asp-for="CeAcumuladas" class="form-control" />
             <span asp-validation-for="CeAcumuladas" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12" style="display:none;" >
-                <label class="control-label">Usuario</label>
-                <input readonly asp-for="Usuario" value="@ViewBag.User" class="form-control" />
-                <span asp-validation-for="Usuario"  class="text-danger"></span>
-            </div>
-            <div class="form-group autocomplete col-md-12">
-                <label lass="control-label">Lugar de Internamiento</label>
-                <input class="form-control" name="LugarInternamiento" id="LugarInternamiento" maxlength="45"/>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" type="submit">
-                        <i class="fa fa-save"></i> Guardar
-                </button>                
-            </div>
+        </div>
+        <div class="form-group col-md-12" style="display:none;">
+            <label class="control-label">Usuario</label>
+            <input readonly asp-for="Usuario" value="@ViewBag.User" class="form-control" />
+            <span asp-validation-for="Usuario" class="text-danger"></span>
+        </div>
+        <div class="form-group autocomplete col-md-12">
+            <label lass="control-label">Lugar de Internamiento</label>
+            <input class="form-control" name="LugarInternamiento" id="LugarInternamiento" maxlength="45" />
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">
+                <i class="fa fa-save"></i> Guardar
+            </button>
+        </div>
     </form>
 </div>
-
-
