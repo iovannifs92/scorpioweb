@@ -4,11 +4,16 @@
      Layout = null;
 }
 
+
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="EditEpAtencionF">
+        <form asp-action="EditEpAtencionF"> 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdepAtencionF" />
+            <input id="Nombre" name="Nombre" type="hidden" value="@ViewBag.Nombre" />
+            <input id="Ce" name="Ce" type="hidden" value="@ViewBag.Ce" />
+            @* <input type="hidden" asp-for="Ce" value="@ViewBag.Ce" />*@
+          
             @* <div class="form-group">
             <label asp-for="Turno" class="control-label"></label>
             <input asp-for="Turno" class="form-control" />
@@ -61,7 +66,8 @@
                 <input readonly type="hidden" asp-for="EjecucionIdEjecucion" class="form-control" />
             </div>
             <div class="modal-footer">
-                <button type="button" id="btnguardar" name="btnguardar" class="btn btn-primary fa fa-save"> Guardar</button>
+                @*<input type="submit" value="Guardar" class="btn btn-primary fa fa-save" />*@
+                <button type="submit" id="btnguardar" name="btnguardar" class="btn btn-primary fa fa-save"> Guardar</button>
             </div>
         </form>
     </div>

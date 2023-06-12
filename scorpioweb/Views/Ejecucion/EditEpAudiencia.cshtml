@@ -9,6 +9,8 @@
         <form asp-action="EditEpAudiencia">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Idepaudiencia" />
+            <input id="Nombre" name="Nombre" type="hidden" value="@ViewBag.Nombre" />
+            <input id="Ce" name="Ce" type="hidden" value="@ViewBag.Ce" />
             <div class="form-group" style="padding-top:1%;">
                 <label class="control-label">Causa penal</label>
                 <select class="form-control" name="Causapenal" id="Causapenal"
@@ -49,8 +51,9 @@
             <div class="form-group" >
                 <input type="hidden" readonly asp-for="EjecucionIdEjecucion" class="form-control" />
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+            <div class="modal-footer">
+                <button type="submit" id="btnguardar" name="btnguardar" class="btn btn-primary fa fa-save"> Guardar</button>
+               @* <input type="submit" value="Save" class="btn btn-default" />*@
             </div>
         </form>
     </div>
