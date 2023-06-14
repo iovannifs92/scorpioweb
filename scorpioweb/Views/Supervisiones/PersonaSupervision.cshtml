@@ -216,25 +216,25 @@
 
                 @*@if (@ViewBag.Admin == true|| @ViewBag.Masteradmin == true)
                 {*@
-                    <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
-                    <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
-                   <td>
-                        <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Inicio" id="Inicio" class="form-control" asp-for="@item.supervisionVM.Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-                    </td>
-                    <td>
-                        <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-                    </td>
-                    <td>
-                        <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategica, value)" name="FechaInforme" id="FechaInforme" class="form-control" asp-for="@item.planeacionestrategicaVM.FechaInforme" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-                    </td>
-                    <td>
-                        <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision, value)"
-                                asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
-                        </select>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
-                    </td>
+                <input name="IdSupervision" id="IdSupervision" readonly style="display:none" value="@item.supervisionVM.IdSupervision" />
+                <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />
+                <td>
+                    <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Inicio" id="Inicio" class="form-control" asp-for="@item.supervisionVM.Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                </td>
+                <td>
+                    <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                </td>
+                <td>
+                    <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategica, value)" name="FechaInforme" id="FechaInforme" class="form-control" asp-for="@item.planeacionestrategicaVM.FechaInforme" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                </td>
+                <td>
+                    <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision, value)"
+                    asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
+                    </select>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
+                </td>
                 @*}*@
                 @*else
                 {
@@ -276,7 +276,7 @@
                         <i class="fa fa-calendar"></i> Presentaciónes
                     </a>
                 </td>
-                @if (item.fraccionesimpuestasVM.FiguraJudicial.Count() != 0 && (User.IsInRole("ArchivoMCSCP") || User.IsInRole("Masteradmin")))
+                @if ( (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin")))
                 {
                  <td>
                         <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervision&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersona&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenal">

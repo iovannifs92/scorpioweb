@@ -2536,20 +2536,29 @@ namespace scorpioweb.Controllers
                 case "carmen.gonzalez@dgepms.com":
                     nombre = "OF. MARÍA DEL CARMEN GONZALEZ";
                     break;
-                case "LIC. MAYRA YUDITH GONZÁLEZ MARTÍNEZ":
-                    nombre = "";
+                case "mayra.gonzalez@dgepms.com":
+                    nombre = "LIC. MAYRA YUDITH GONZÁLEZ MARTÍNEZ";
                     break;
-                case "yoshman.mendez@dgepms.com":
-                    nombre = "LIC. YOSHMAN MENDEZ HERNANDEZ";
+                case "stephany.garcia@dgepms.com":
+                    nombre = "LIC. STEPHANY GARCIA";
                     break;
-                case "isabel.almora@dgepms.com":
-                    nombre = "LIC. ISABEL ALMORA DE LA CRUZ";
+                case "victor.hernandez@dgepms.com":
+                    nombre = "LIC. VICTOR HERNANDEZ";
                     break;
-                case "alejandra.jimenez@dgepms.com":
-                    nombre = "LIC. ALEJANDRA JIMÉNEZ GALLEGOS";
+                case "enrique.martinez@dgepms.com":
+                    nombre = "LIC. ENRIQUE MARTINEZ";
                     break;
-                case "amor.davalos@dgepms.com":
-                    nombre = "LIC. AMOR DÁVALOS NÁJERA";
+                case "diana.ontiveros@dgepms.com":
+                    nombre = "LIC. DIANA ONTIVEROS";
+                    break;
+                case "esmeralda.vargas@dgepms.com":
+                    nombre = "LIC. ESMERALDA VARGAS";
+                    break;
+                case "jesumartinez@dgepms.com":
+                    nombre = "LIC. JESU MARTINEZ";
+                    break;
+                case "diana.renteria@dgepms.com":
+                    nombre = "LIC. DIANA RENTERIA";
                     break;
                 case "iovannifs92@gmail.com":
                     nombre = "IOVANNI FERNÁNDEZ SÁNCHEZ";
@@ -3098,7 +3107,7 @@ namespace scorpioweb.Controllers
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
             dc.MailMerge.Execute(dataSource);
             dc.Save(resultPath);
-            //Response.Redirect("https://localhost:44359/Documentos/reporteSupervisionSCP.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/reporteSupervision.docx");
         }
         #endregion
 

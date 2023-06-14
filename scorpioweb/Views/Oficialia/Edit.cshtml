@@ -124,6 +124,13 @@
                 url = url.replace(-1, cp);
                 showModal(url, 'Eliga una causa penal', null);
             });
+            $('#btnBuscarCE').on("click", function (e) {
+                e.preventDefault();
+                var ce = document.getElementById("CarpetaEjecucion").value;
+                var url = '@Url.Action("CEList", "Oficialia", new {ce = -1, tmp = -2}, Context.Request.Scheme)';
+                url = url.replace(-1, ce);
+                showModal(url, 'Eliga una Carpeta de Ejecucion', null);
+            }); 
             function autocomplete(inp, arr) {
                 var currentFocus;
                 inp.addEventListener("input", function (e) {
@@ -142,7 +149,7 @@
                             b.innerHTML += arr[i].substr(val.length);
                             b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
                                 inp.value = this.getElementsByTagName("input")[0].value;
-
+                                verificar()
                                 closeAllLists();
                             });
                             a.appendChild(b);
@@ -261,7 +268,28 @@
                     $("#FechaTermino").css("display", "none");
                 }
             });
+
+            var AsuntoInput = document.getElementById("AsuntoOficio").value.toUpperCase();
+            var otroInput = document.getElementById("otroInput");
+            if (AsuntoInput == "AUDIENCIA") {
+                $("#otroInput").css("display", "block");
+            }
+            else {
+                $("#otroInput").css("display", "none");
+            }
         });
+
+        function verificar() {
+            var AsuntoInput = document.getElementById("AsuntoOficio").value.toUpperCase();
+            var otroInput = document.getElementById("otroInput");
+            if (AsuntoInput == "AUDIENCIA") {
+                $("#otroInput").css("display", "block");
+            }
+            else {
+                $("#otroInput").css("display", "none");
+            }
+        };
+       
     </script>
 </head>
 <body>
@@ -369,13 +397,26 @@
                         <input asp-for="Materno" class="form-control" />
                         <span asp-validation-for="Materno" class="text-danger"></span>
                     </div>
-                    <div class="form-group col-md-12 col-sm-12">
+@*                    <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="CarpetaEjecucion" class="control-label">
                             Carpeta de Ejecución
                         </label>
                         <input asp-for="CarpetaEjecucion" class="form-control" />
                         <span asp-validation-for="CarpetaEjecucion" class="text-danger"></span>
+                    </div>*@
+
+                    <label class="col-md-12 col-sm-12" class="control-label">
+                        Carpeta de Ejecución
+                    </label>
+                    <div class="form-group col-md-8">
+                        <input asp-for="CarpetaEjecucion" id="CarpetaEjecucion" name="CarpetaEjecucion" class="form-control" />
                     </div>
+                    <input asp-for="IdCarpetaEjecucion" class="form-control col-md-6" id="IdCarpetaEjecucion" name="IdCarpetaEjecucion" type="hidden" readonly />
+                    <span asp-validation-for="IdCarpetaEjecucion" class="text-danger" type="hidden" readonly></span>
+                    <button class="btn btn-default col-md-4" id="btnBuscarCE" name="btnBuscarCE" title="Buscar Carpete de Ejecucion">
+                        <i class="fa fa-search"></i>
+                        Buscar
+                    </button>
                     <label class="control-label col-md-12 col-sm-12">
                         Causa Penal/Causa Minoril, Distrito, Juez
                     </label>
@@ -386,13 +427,9 @@
                         <i class="fa fa-search"></i>
                         Buscar
                     </button>
-                    <button type="button" class="btn btn-success" id="btnCausaPenal" name="btnCausaPenal" data-toggle="modal" data-target="#modalCausaPenal">
+                    <button type="button" class="btn btn-success col-sm-offset-1" id="btnCausaPenal" name="btnCausaPenal" data-toggle="modal" data-target="#modalCausaPenal">
                         <i class="fa fa-plus"></i> Crea nueva causa penal
                     </button>
-                    <button type="button" class="btn btn-danger" id="btnDelete" name="btnDelete">
-                        <i class="fa fa-trash"></i> Quitar
-                    </button>
-
                     <input asp-for="IdCausaPenal" class="form-control" style="display:none" id="idCausaPenal" name="idCausaPenal" />
                     <span asp-validation-for="IdCausaPenal" class="text-danger"></span>
                     <span class="col-xs-12" style="color:#808080;padding-bottom:1em">Busque la causa penal o cree una nueva causa penal si no se encuentra</span>
@@ -444,12 +481,30 @@
                     <span asp-validation-for="AutoVinculacion" class="text-danger"></span>
                 </div>
                 <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
+                    <label class="control-label">
+                        ¿Cuál es el asunto del oficio?
+                    </label>
+                    <input required asp-for="AsuntoOficio" id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" onkeyup="verificar()" />
+                </div>
+                <div id="otroInput" style="display:none" >
+                    <label class="control-label">Juzgado</label>
+                    <select class="form-control" name="Juzgado" id="Juzgado"
+                            asp-items="@(new SelectList(ViewBag.Liatajuzgado,ViewBag.LiataJuzgadoEdit))">
+                    </select>
+                </div>
+               @* <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="AsuntoOficio" class="control-label">
                         ¿Cuál es el asunto del oficio?
                     </label>
-                    <input required asp-for="AsuntoOficio" id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" />
+                    <input required id="AsuntoOficio" id="AsuntoOficio" name="AsuntoOficio" type="text" maxlength="150" class="form-control" onkeyup="verificar()" />
                     <span asp-validation-for="AsuntoOficio" class="text-danger"></span>
                 </div>
+                <div id="otroInput" style="display: none;">
+                    <label class="control-label">Juzgado</label>
+                    <select class="form-control" name="Juzgado" id="Juzgado"
+                            asp-items="@(new SelectList(ViewBag.Liatajuzgado,"Text"))">
+                    </select>
+                </div>*@
                 <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
                     <label asp-for="TieneTermino" class="control-label">
                         ¿Cuenta con termino?
@@ -464,7 +519,7 @@
                     <label asp-for="FechaTermino" class="control-label">
                         ¿Cuál es la fecha de termino?
                     </label>
-                    <input asp-for="FechaTermino" class="form-control" type="date" />
+                    <input asp-for="FechaTermino" class="form-control" type="datetime-local" />
                     <span asp-validation-for="FechaTermino" class="text-danger"></span>
                 </div>
                 <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">

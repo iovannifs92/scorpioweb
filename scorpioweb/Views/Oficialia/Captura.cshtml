@@ -148,7 +148,7 @@
                             b.innerHTML += arr[i].substr(val.length);
                             b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
                                 inp.value = this.getElementsByTagName("input")[0].value;
-
+                                verificar()
                                 closeAllLists();
                             });
                             a.appendChild(b);
@@ -179,7 +179,6 @@
                     }
                 });
                 function addActive(x) {
-
                     if (!x) return false;
 
                     removeActive(x);
@@ -189,7 +188,6 @@
                     x[currentFocus].classList.add("autocomplete-active");
                 }
                 function removeActive(x) {
-
                     for (var i = 0; i < x.length; i++) {
                         x[i].classList.remove("autocomplete-active");
                     }
@@ -203,7 +201,9 @@
                     }
                 }
                 document.addEventListener("click", function (e) {
+
                     closeAllLists(e.target);
+
                 });
             }
 
@@ -244,12 +244,22 @@
                     $("#FechaTermino").css("display", "none");
                 }
             });
+     
+            var AsuntoInput = document.getElementById("AsuntoOficio").value.toUpperCase();
+            var otroInput = document.getElementById("otroInput");
+            if (AsuntoInput == "AUDIENCIA") {
+                $("#otroInput").css("display", "block");
+            }
+            else {
+                $("#otroInput").css("display", "none");
+            }
+
         });
 
         function verificar() {
-            var AsuntoInput = document.getElementById("AsuntoOficio").value;
+            var AsuntoInput = document.getElementById("AsuntoOficio").value.toUpperCase();
             var otroInput = document.getElementById("otroInput");
-            if (AsuntoInput == "Audiencia" || AsuntoInput == "audiencia") {
+            if (AsuntoInput == "AUDIENCIA") {
                 $("#otroInput").css("display", "block");
             }
             else {
@@ -361,14 +371,20 @@
                         <input asp-for="Materno" class="form-control" />
                         <span asp-validation-for="Materno" class="text-danger"></span>
                     </div>
+
                     <label class="col-md-12 col-sm-12" class="control-label">
                         Carpeta de Ejecución
                     </label>
                     <div class="form-group col-md-8">
                         <input asp-for="CarpetaEjecucion" id="CarpetaEjecucion" name="CarpetaEjecucion" class="form-control" />
                     </div>
-                    <input asp-for="IdCarpetaEjecucion" class="form-control col-md-6" id="IdCarpetaEjecucion" name="IdCarpetaEjecucion" type="hidden" readonly />
+                    <input asp-for="IdCarpetaEjecucion" class="form-control" id="IdCarpetaEjecucion" name="IdCarpetaEjecucion" type="hidden" readonly />
                     <span asp-validation-for="IdCarpetaEjecucion" class="text-danger" type="hidden" readonly></span>
+                     <button class="btn btn-default col-md-4" id="btnBuscarCE" name="btnBuscarCE" title="Buscar Carpete de Ejecucion">
+                        <i class="fa fa-search"></i>
+                        Buscar
+                    </button>
+
                     <label class="control-label col-md-12 col-sm-12">
                         Causa Penal/Causa Minoril, Distrito, Juez
                     </label>
@@ -386,6 +402,7 @@
                     <span asp-validation-for="IdCausaPenal" class="text-danger"></span>
                     <span class="col-xs-12" style="color:#808080;padding-bottom:1em">Busque la causa penal o cree una nueva causa penal si no se encuentra</span>
                     <br />
+
                     <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="DelitoTipo" class="control-label">
                             Delito
@@ -459,7 +476,7 @@
                     <label asp-for="FechaTermino" class="control-label">
                         ¿Cuál es la fecha de termino?
                     </label>
-                    <input asp-for="FechaTermino" class="form-control" type="date" />
+                    <input asp-for="FechaTermino" class="form-control" type="datetime-local" />
                     <span asp-validation-for="FechaTermino" class="text-danger"></span>
                 </div>
                 <div class="form-group col-xs-12" style="padding-left:0%;padding-right:0%;">
