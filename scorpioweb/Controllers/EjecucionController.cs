@@ -104,12 +104,12 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(acp => (acp.ejecucionVM.Paterno + " " + acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Nombre).Contains(searchString) ||
-                                             (acp.ejecucionVM.Nombre + " " + acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Paterno).Contains(searchString) ||
-                                             (acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Paterno + " " + acp.ejecucionVM.Nombre).Contains(searchString) ||
-                                             (acp.ejecucionVM.Yo).Contains(searchString) ||
-                                             (acp.ejecucionVM.IdEjecucion.ToString()).Contains(searchString) ||
-                                             (acp.ejecucionVM.Ce.ToString()).Contains(searchString));
+                filter = filter.Where(acp => (acp.ejecucionVM.Paterno + " " + acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Nombre).Contains(searchString.ToUpper()) ||
+                                             (acp.ejecucionVM.Nombre + " " + acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Paterno).Contains(searchString.ToUpper()) ||
+                                             (acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Paterno + " " + acp.ejecucionVM.Nombre).Contains(searchString.ToUpper()) ||
+                                             (acp.ejecucionVM.Yo).Contains(searchString.ToUpper()) ||
+                                             (acp.ejecucionVM.IdEjecucion.ToString()).Contains(searchString.ToUpper()) ||
+                                             (acp.ejecucionVM.Ce.ToString()).Contains(searchString.ToUpper()));
             }
 
             switch (sortOrder)
@@ -224,7 +224,7 @@ namespace scorpioweb.Controllers
                 }
             }
 
-          
+
             var tagged = ListaUserEjecucion.Select((item, i) => new { Item = item, Index = (int?)i });
             var index = (from pair in tagged
                          where pair.Item == ejecucion.Usuario.ToLower()
@@ -258,7 +258,7 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-           
+
             if (ejecucion == null)
             {
                 return NotFound();
@@ -628,7 +628,7 @@ namespace scorpioweb.Controllers
                          where s.IdEjecucion == idep
                          select s).FirstOrDefault();
 
-           
+
             try
             {
                 borrar = true;
@@ -720,14 +720,18 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EpAtencionF-
-        public async Task<IActionResult> EpAtencionF(int? id)
+        public async Task<IActionResult> EpAtencionF(int? id, string Nombre, string Materno, string Paterno, string Ce, string nombree)
         {
+            string NombreCompleto = $"{Paterno} {Materno} {Nombre}";
+            NombreCompleto = (NombreCompleto == null || NombreCompleto.Trim() == "") ? nombree : NombreCompleto;                     
             // ViewBag.nombre = nombre;
             // ViewBag.cp = cp;
             // ViewBag.idpersona = idpersona;
             // ViewBag.supervisor = supervisor;
             ViewBag.EjecucionIdEjecucion = id;
-
+            ViewBag.Nombre = NombreCompleto;
+            ViewBag.Ce = Ce;
+          
             List<Ejecucion> ejecucions = _context.Ejecucion.ToList();
             List<Epcausapenal> epcausapenals = _context.Epcausapenal.ToList();
             List<Epatencionf> epatencionfs = _context.Epatencionf.ToList();
@@ -777,15 +781,20 @@ namespace scorpioweb.Controllers
         }
 
 
-        public async Task<IActionResult> EditEpAtencionF(int? id)
+        public async Task<IActionResult> EditEpAtencionF(int? id,string Nombre,string Ce)
         {
+            string charsToRemove = "?id=null";
+            Ce = Ce.Replace(charsToRemove,"");                           
+            ViewBag.Nombre = Nombre;
+            ViewBag.Ce = Ce;
+           
 
             if (id == null)
             {
                 return NotFound();
             }
             var epatencionf = await _context.Epatencionf.SingleOrDefaultAsync(m => m.IdepAtencionF == id);
-
+           
             #region Turno          
             List<string> LiataTurno = new List<string>();
             LiataTurno.Add("NA");
@@ -838,9 +847,9 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpAtencionF(int id, [Bind("IdepAtencionF, Turno ,QuienAtiende, Inicio, Termino, Observaciones, GrupoAutoayuda, Observaciones, EjecucionIdEjecucion")] Epatencionf epatencionf)
+        public async Task<IActionResult> EditEpAtencionF(int id, [Bind("IdepAtencionF, Turno ,QuienAtiende, Inicio, Termino, Observaciones, GrupoAutoayuda, Observaciones, EjecucionIdEjecucion")] Epatencionf epatencionf, string Nombre, string Ce)
         {
-
+    
             if (id != epatencionf.IdepAtencionF)
             {
                 return NotFound();
@@ -880,7 +889,7 @@ namespace scorpioweb.Controllers
                                    select e.IdEjecucion).FirstOrDefault();
 
 
-                return RedirectToAction("EpAtencionF", new { id = idejecucion });
+                return RedirectToAction("EpAtencionF", new { id = idejecucion, nombree = Nombre,ce=Ce});
             }
             return View(epatencionf);
         }
@@ -916,13 +925,17 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EpAudiencia-
-        public async Task<IActionResult> EpAudiencia(int? id)
+        public async Task<IActionResult> EpAudiencia(int? id, string Nombre, string Materno, string Paterno, string Ce,string nombree)
         {
+            string NombreCompleto = $"{Paterno} {Materno} {Nombre}";
+            NombreCompleto = (NombreCompleto == null || NombreCompleto.Trim() == "") ? nombree : NombreCompleto;
             // ViewBag.nombre = nombre;
             // ViewBag.cp = cp;
             // ViewBag.idpersona = idpersona;
             // ViewBag.supervisor = supervisor;
             ViewBag.EjecucionIdEjecucion = id;
+            ViewBag.Nombre = NombreCompleto;
+            ViewBag.Ce = Ce;
 
             List<Ejecucion> ejecucions = _context.Ejecucion.ToList();
             List<Epcausapenal> epcausapenals = _context.Epcausapenal.ToList();
@@ -965,8 +978,12 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditEpAudiencia(int? id)
+        public async Task<IActionResult> EditEpAudiencia(int? id, string Nombre, string Ce)
         {
+            string charsToRemove = "?id=null";
+            Ce = Ce.Replace(charsToRemove, "");
+            ViewBag.Nombre = Nombre;
+            ViewBag.Ce = Ce;
 
             if (id == null)
             {
@@ -998,7 +1015,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpAudiencia(int id, [Bind("Idepaudiencia, Causapenal ,Beneficio, InicioFirma, FinFirma, FechatrabajoIe, GrupoAutoayuda, Observaciones, EjecucionIdEjecucion")] Epaudiencia epaudiencia)
+        public async Task<IActionResult> EditEpAudiencia(int id, [Bind("Idepaudiencia, Causapenal ,Beneficio, InicioFirma, FinFirma, FechatrabajoIe, GrupoAutoayuda, Observaciones, EjecucionIdEjecucion")] Epaudiencia epaudiencia,string Nombre, string Ce)
         {
 
             if (id != epaudiencia.Idepaudiencia)
@@ -1042,7 +1059,7 @@ namespace scorpioweb.Controllers
                                    select e.IdEjecucion).FirstOrDefault();
 
 
-                return RedirectToAction("EpAudiencia", new { id = idejecucion });
+                return RedirectToAction("EpAudiencia", new { id = idejecucion, nombree = Nombre, ce = Ce });
             }
             return View(epaudiencia);
         }
@@ -1076,14 +1093,17 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -EpAmparo-
-        public async Task<IActionResult> EpAmparo(int? id)
+        public async Task<IActionResult> EpAmparo(int? id, string Nombre, string Materno, string Paterno, string Ce,string nombree)
         {
+            string NombreCompleto = $"{Paterno} {Materno} {Nombre}";
+            NombreCompleto = (NombreCompleto == null || NombreCompleto.Trim() == "") ? nombree : NombreCompleto;
             // ViewBag.nombre = nombre;
             // ViewBag.cp = cp;
             // ViewBag.idpersona = idpersona;
             // ViewBag.supervisor = supervisor;
             ViewBag.EjecucionIdEjecucion = id;
-
+            ViewBag.Nombre = NombreCompleto;
+            ViewBag.Ce = Ce;
             List<Ejecucion> ejecucions = _context.Ejecucion.ToList();
             List<Epcausapenal> epcausapenals = _context.Epcausapenal.ToList();
             List<Epamparo> epamparos = _context.Epamparo.ToList();
@@ -1113,8 +1133,12 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditEpAmparo(int? id)
+        public async Task<IActionResult> EditEpAmparo(int? id, string Nombre, string Ce)
         {
+            string charsToRemove = "?id=null";
+            Ce = Ce.Replace(charsToRemove, "");
+            ViewBag.Nombre = Nombre;
+            ViewBag.Ce = Ce;
 
             if (id == null)
             {
@@ -1131,7 +1155,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpAmparo(int id, [Bind("Idepamparo,Fecha ,Toca, Observaciones, EjecucionIdEjecucion")] Epamparo epamparo)
+        public async Task<IActionResult> EditEpAmparo(int id, [Bind("Idepamparo,Fecha ,Toca, Observaciones, EjecucionIdEjecucion")] Epamparo epamparo, string Nombre, string Ce)
         {
 
             if (id != epamparo.Idepamparo)
@@ -1170,7 +1194,7 @@ namespace scorpioweb.Controllers
                                    select e.IdEjecucion).FirstOrDefault();
 
 
-                return RedirectToAction("EpAmparo", new { id = idejecucion });
+                return RedirectToAction("EpAmparo", new { id = idejecucion , nombree = Nombre, ce = Ce });
             }
             return View(epamparo);
         }

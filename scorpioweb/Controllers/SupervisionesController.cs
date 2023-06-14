@@ -117,7 +117,11 @@ namespace scorpioweb.Controllers
         {
             new SelectListItem{ Text = "NA", Value = "NA" },
             new SelectListItem{ Text = "Cambio de MC a SCP", Value = "CAMBIO DE MC A SCP" },
-            new SelectListItem{ Text = "Cambio de SCP a MC", Value = "CAMBIO DE SCP A MC" }
+            new SelectListItem{ Text = "Cambio de SCP a MC", Value = "CAMBIO DE SCP A MC" },
+            new SelectListItem{ Text = "Cambio de MCPP a MC", Value = "CAMBIO DE MCPP A MC" },
+            new SelectListItem{ Text = "Cambio de MC a MCPP", Value = "CAMBIO DE MC A MCPP" },
+            new SelectListItem{ Text = "Cambio de SCP a MCPP", Value = "CAMBIO DE SCP A MCPP" }
+
         };
 
 

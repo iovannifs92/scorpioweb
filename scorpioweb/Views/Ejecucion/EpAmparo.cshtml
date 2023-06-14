@@ -8,6 +8,7 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 <script>
+    
     $(document).ready(function () {
         $('#btnGuardar').on("click", function (e) {
             e.preventDefault();
@@ -93,6 +94,21 @@
 
 </script>
 <h2>Amparo</h2>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6" style="text-align: center;">
+            <h2>Nombre</h2>
+            <p style="font-size:19px;text-align: center;">@ViewBag.Nombre</p>
+        </div>
+        <div class="col-lg-6" style="text-align: center;">
+            <h2>Carpeta de Ejecucion</h2>
+            <p style="font-size:19px; text-align: center;">@ViewBag.Ce </p>
+        </div>
+    </div>
+</div>
+
+
 <table class="table">
     <thead style="text-align:center">
         <tr>
@@ -121,7 +137,7 @@
                     @Html.DisplayFor(modelItem => item.epamparoVM.Observaciones)
                 </td>
                 <td>
-                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAmparo","Ejecucion",new {id=@item.epamparoVM.Idepamparo}, Context.Request.Scheme)','Editar Amparo',null)" class="btn btn-success">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAmparo","Ejecucion",new {id=@item.epamparoVM.Idepamparo, Nombre = ViewBag.Nombre, Ce = ViewBag.Ce}, Context.Request.Scheme)','Editar Amparo',null)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))

@@ -97,6 +97,19 @@
 </script>
 
 <h2>Audiencia</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6" style="text-align: center;">
+            <h2>Nombre</h2>
+            <p style="font-size:19px;text-align: center;">@ViewBag.Nombre</p>
+        </div>
+        <div class="col-lg-6" style="text-align: center;">
+            <h2>Carpeta de Ejecucion</h2>
+            <p style="font-size:19px; text-align: center;">@ViewBag.Ce </p>
+        </div>
+    </div>
+</div>
+
 @*<div class="col-md-12">
     <div class=col-md-4>
         <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
@@ -165,7 +178,7 @@
                     @Html.DisplayFor(modelItem => item.epaudienciaVM.Observaciones)
                     </td>
                      <td>
-                        <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAudiencia","Ejecucion",new {id=@item.epaudienciaVM.Idepaudiencia}, Context.Request.Scheme)','Editar Audiencia',null)" class="btn btn-success">
+                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAudiencia","Ejecucion",new {id=@item.epaudienciaVM.Idepaudiencia, Nombre = ViewBag.Nombre, Ce = ViewBag.Ce}, Context.Request.Scheme)','Editar Audiencia',null)" class="btn btn-success">
                             <i class="fa fa-pencil"></i> Editar
                         </a>
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))

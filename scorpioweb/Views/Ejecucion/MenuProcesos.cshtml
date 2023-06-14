@@ -167,23 +167,37 @@
 
 
 </script>
+
 <h1>Menu Procesos</h1>
 @foreach (var item in ViewData["joinTablesEjecucion"] as IEnumerable<scorpioweb.Models.EjecucionAFAA>)
 {
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6" style="text-align: center;">
+                <h2>Nombre</h2>
+                <p style="font-size:19px;text-align: center;">@Html.DisplayFor(modelItem => item.ejecucionVM.Paterno) @Html.DisplayFor(modelItem => item.ejecucionVM.Materno) @Html.DisplayFor(modelItem => item.ejecucionVM.Nombre)</p>
+            </div>
+            <div class="col-lg-6" style="text-align: center;">
+                <h2>Carpeta de Ejecucion</h2>
+                <p style="font-size:19px; text-align: center;">@Html.DisplayFor(modelItem => item.ejecucionVM.Ce) </p>
+            </div>
+        </div>
+    </div>
+
     //El color de el boton se define con el Id
     <div class="container col-md-12" style="margin-bottom:30px">
         <br>
         <div class="row">
             <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EpAtencionF" asp-route-id="@item.ejecucionVM.IdEjecucion" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Atención a Familiar</a>
+                <a asp-action="EpAtencionF" asp-route-id="@item.ejecucionVM.IdEjecucion" asp-route-Nombre="@item.ejecucionVM.Nombre" asp-route-Materno="@item.ejecucionVM.Materno" asp-route-Paterno="@item.ejecucionVM.Paterno" asp-route-Ce="@item.ejecucionVM.Ce" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Atención a Familiar</a>
             </div>
             <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EpAmparo" asp-route-id="@item.ejecucionVM.IdEjecucion" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Amparo</a>
+                <a asp-action="EpAmparo" asp-route-id="@item.ejecucionVM.IdEjecucion" asp-route-Nombre="@item.ejecucionVM.Nombre" asp-route-Materno="@item.ejecucionVM.Materno" asp-route-Paterno="@item.ejecucionVM.Paterno" asp-route-Ce="@item.ejecucionVM.Ce" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Amparo</a>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EpAudiencia" asp-route-id="@item.ejecucionVM.IdEjecucion" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Informe de Audiencia</a>
+                <a asp-action="EpAudiencia" asp-route-id="@item.ejecucionVM.IdEjecucion" asp-route-Nombre="@item.ejecucionVM.Nombre" asp-route-Materno="@item.ejecucionVM.Materno" asp-route-Paterno="@item.ejecucionVM.Paterno" asp-route-Ce="@item.ejecucionVM.Ce" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Informe de Audiencia</a>
             </div>
         </div>
     </div>

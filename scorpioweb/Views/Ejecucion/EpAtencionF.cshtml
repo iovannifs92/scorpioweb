@@ -10,23 +10,21 @@
 
 <script>
     $(document).ready(function () {
-        $('#btnGuardar').on("click", function (e) {
+        $("#btnGuardar").on("click", function (e) {
             e.preventDefault();
-
             var EjecucionIdEjecucion = document.getElementById("EjecucionIdEjecucion").value;
             var Turno = document.getElementById("Turno").value;
             var QuienAtiende = document.getElementById("QuienAtiende").value;
             var Inicio = document.getElementById("Inicio").value;
             var Termino = document.getElementById("Termino").value;
-            var Observaciones = document.getElementById("Observaciones").value;
-
+            var Observaciones = document.getElementById("Observaciones").value;        
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 url: "/Ejecucion/CrearEpAtencionF",
                 traditional: true,
                 data: {
-                    datosAtencionF: [EjecucionIdEjecucion, Turno, QuienAtiende, Inicio, Termino, Observaciones],
+                    datosAtencionF: [EjecucionIdEjecucion,Turno,QuienAtiende,Inicio,Termino,Observaciones],
                 },
                 success: function (response) {
                     if (response.success) {
@@ -95,6 +93,22 @@
 </script>
 
 <h2>Atencion a Familiar</h2>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6" style="text-align: center;">
+                    <h2>Nombre</h2>
+            <p style="font-size:19px;text-align: center;">@ViewBag.Nombre</p>
+                </div>
+                <div class="col-lg-6" style="text-align: center;">
+                    <h2>Carpeta de Ejecucion</h2>
+                    <p style="font-size:19px; text-align: center;">@ViewBag.Ce </p>
+                </div>
+            </div>
+        </div>
+   
+
+
 <table class="table">
     <thead style="text-align:center">
         <tr>
@@ -135,9 +149,31 @@
                     @Html.DisplayFor(modelItem => item.epatencionfVM.Observaciones)
                 </td>
                 <td>
-                    <a id="btnEditar" onclick="showModal('@Url.Action("EditEpAtencionF","Ejecucion",new {id=@item.epatencionfVM.IdepAtencionF}, Context.Request.Scheme)','Editar Atencion a Familiar',null)" class="btn btn-success">
+                  @{
+                        var editUrl = Url.Action(
+                    "EditEpAtencionF",
+                    "Ejecucion",
+                    new
+                    {
+                        id = item.epatencionfVM.IdepAtencionF,
+                        Nombre = ViewBag.Nombre,
+                        Ce = ViewBag.Ce
+                        
+
+                        },                        
+                        Context.Request.Scheme
+                        );
+                    }
+                <a id="btnEditar" onclick="showModal('@editUrl','Editar Atencion a Familiar',null)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
+                <td>
+                        @*   <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervision&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersona&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenal">
+                <i class="fa fa-check-square"></i> Fracciones
+                </a>
+                </td>*@
+
+                   @* <a id="btnEditar" onclick="showModal(@Url.Action("EditEpAtencionF","Ejecucion",new {?id=@item.epatencionfVM.IdepAtencionF,Nombre=ViewBag.Nombre,Ce=ViewBag.Ce}, Context.Request.Scheme)','Editar Atencion a Familiar',null)" class="btn btn-success">*@
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
                     {
                         <button onclick="DeleteAtencionF(@item.epatencionfVM.IdepAtencionF)" class="btn btn-danger">
@@ -198,7 +234,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger fa fa-close" data-dismiss="modal"> cerrar</button>
-                <button type="button" id="btnguardar" name="btnguardar" class="btn btn-primary fa fa-save"> Guardar</button>
+                <button type="button" id="btnGuardar" name="btnGuardar" class="btn btn-primary fa fa-save"> Guardar</button>
             </div>
         </div>
     </div>

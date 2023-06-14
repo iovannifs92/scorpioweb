@@ -10,6 +10,8 @@
         <form asp-action="EditEpAmparo">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Idepamparo" />
+            <input id="Nombre" name="Nombre" type="hidden" value="@ViewBag.Nombre" />
+            <input id="Ce" name="Ce" type="hidden" value="@ViewBag.Ce" />
             <div class="form-group">
                 <label asp-for="Fecha" class="control-label"></label>
                 <input asp-for="Fecha" class="form-control" />
@@ -30,8 +32,9 @@
                 <input type="hidden" readonly asp-for="EjecucionIdEjecucion" class="form-control" />
                
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+            <div class="modal-footer">
+                <button type="submit" id="btnguardar" name="btnguardar" class="btn btn-primary fa fa-save"> Guardar</button>
+                @*<input type="submit" value="Save" class="btn btn-default" />*@
             </div>
         </form>
     </div>
