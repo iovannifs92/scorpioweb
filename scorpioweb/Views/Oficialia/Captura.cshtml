@@ -280,6 +280,12 @@
         <div class="col-sm-offset-3 col-sm-6 col-xs-12">
             <form asp-action="Captura" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (User.Identity.Name.EndsWith("@nortedgepms.com"))
+                {
+                    <input readonly type="hidden" asp-for="Recibe" value="@User.Identity.Name" class="form-control" />
+                }
+                else
+                {
                 <div class="form-group">
                     <label  class="control-label">
                         ¿Quién recibe?
@@ -289,6 +295,7 @@
                     </select>
                     <span asp-validation-for="Recibe" class="text-danger"></span>
                 </div>
+                }
                 <div class="form-group">
                     <label asp-for="MetodoNotificacion" class="control-label">
                         Método de notificación
@@ -484,7 +491,7 @@
                         Usuario a turnar
                     </label>
                     <select required asp-for="UsuarioTurnar" class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
-                            asp-items="@(new SelectList(ViewBag.coordinadores, "Text","Text"))">
+                            asp-items="@(new SelectList(ViewBag.coordinadores, "Value"))">
                     </select>
                     <span asp-validation-for="UsuarioTurnar" class="text-danger"></span>
                 </div>

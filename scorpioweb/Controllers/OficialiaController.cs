@@ -46,44 +46,46 @@ namespace scorpioweb.Controllers
             new SelectListItem { Text = "yoena@dgepms.com", Value = "3" },
             new SelectListItem { Text = "raquel@nortedgepms.com", Value = "4" }
         };
-        public static List<SelectListItem> ListaCoordinadores = new List<SelectListItem>()
+        public async Task<List<string>> ObtenerListaCoordinadores()
         {
-            new SelectListItem{ Text="", Value="0"},
-            new SelectListItem{ Text="alma.gaxiola@dgepms.com", Value="1"},
-            new SelectListItem{ Text="esmeralda.vargas@dgepms.com", Value="2"},
-            new SelectListItem{ Text="andrea.valdez@dgepms.com", Value="3"},
-            new SelectListItem{ Text="iovannifs92@gmail.com", Value="4"},
-            new SelectListItem{ Text="yuridia.quinones@dgepms.com", Value="5"},
-            new SelectListItem{ Text="guadalupe.barcenas@dgepms.com", Value="6"},
-            new SelectListItem{ Text="liliana.vargas@dgepms.com", Value="7"},
-            new SelectListItem{ Text="uriel.ortega@dgepms.com", Value="8"},
-            new SelectListItem{ Text="juan.castillo@dgepms.com", Value="9"},
-            new SelectListItem{ Text="jazmin.flores@dgepms.com", Value="10"},
-            new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
-            new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
-            new SelectListItem{ Text="yoshman.mendez@dgepms.com", Value="13"},
-            new SelectListItem{ Text="enrique.martinez@dgepms.com", Value="14"}
-        };
+            List<string> ListaCoordinadores = new List<string>();
 
-        public static List<SelectListItem> ListaCoordinadoresRN = new List<SelectListItem>()
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Coordinador"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+            }
+
+            return ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com"))).ToList();
+        }
+        public async Task<List<string>> ObtenerListaCoordinadoresRN()
         {
-            new SelectListItem{ Text="", Value="0"},
-            new SelectListItem{ Text="janeth@nortedgepms.com", Value="1"},
-            new SelectListItem{ Text="esmeralda.vargas@dgepms.com", Value="2"},
-            new SelectListItem{ Text="andrea.valdez@dgepms.com", Value="3"},
-            new SelectListItem{ Text="iovannifs92@gmail.com", Value="4"},
-            new SelectListItem{ Text="yuridia.quinones@dgepms.com", Value="5"},
-            new SelectListItem{ Text="guadalupe.barcenas@dgepms.com", Value="6"},
-            new SelectListItem{ Text="liliana.vargas@dgepms.com", Value="7"},
-            new SelectListItem{ Text="uriel.ortega@dgepms.com", Value="8"},
-            new SelectListItem{ Text="juan.castillo@dgepms.com", Value="9"},
-            new SelectListItem{ Text="jazmin.flores@dgepms.com", Value="10"},
-            new SelectListItem{ Text="janeth@nortedgepms.com", Value="11"},
-            new SelectListItem{ Text="carmen.trujillo@dgepms.com", Value="12"},
-            new SelectListItem{ Text="yoshman.mendez@dgepms.com", Value="13"},
-            new SelectListItem{ Text="enrique.martinez@dgepms.com", Value="14"}
-        };
+            List<string> ListaCoordinadores = new List<string>();
 
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Director"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "Coordinador"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
+            }
+
+            return ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => r.EndsWith("\u0040nortedgepms.com"))).ToList();
+        }
 
         public static List<SelectListItem> ListaTipoRegistro = new List<SelectListItem>()
         {
@@ -180,7 +182,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Captura-
-        public IActionResult Captura()
+        public async Task<IActionResult> Captura()
         {
             List<Causapenal> listaCP = new List<Causapenal>();
             List<Causapenal> CPVM = _context.Causapenal.ToList();
@@ -203,7 +205,15 @@ namespace scorpioweb.Controllers
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
             ViewBag.Recibe = ListaRecibe;
-            ViewBag.coordinadores = ListaCoordinadores;
+
+            List<string> coordinadores = await ObtenerListaCoordinadores();
+            List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
+
+            ViewBag.coordinadores = coordinadores;
+            if(User.Identity.Name.EndsWith("@nortedgepms.com"))
+            {
+                ViewBag.coordinadores = coordinadoresrn;
+            }
 
             List<string> Liatajuzgado = new List<string>();
             Liatajuzgado.Add("NA");
@@ -215,6 +225,7 @@ namespace scorpioweb.Controllers
 
             return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -239,7 +250,6 @@ namespace scorpioweb.Controllers
             }
             oficialia.IdOficialia = idOficialia;
             oficialia.IdCarpetaEjecucion = IdCarpetaEjecucion;
-
             oficialia.Capturista = User.Identity.Name;
             oficialia.MetodoNotificacion = metodoNotificacion;
             oficialia.NumOficio = mg.normaliza(numOficio);
@@ -255,7 +265,10 @@ namespace scorpioweb.Controllers
             oficialia.DireccionVictima = mg.normaliza(direccionVictima);
             oficialia.AsuntoOficio = mg.normaliza(asuntoOficio);
             oficialia.Juzgado = mg.normaliza(Juzgado);
-            oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
+            if (oficialia.AsuntoOficio == "AUDIENCIA")
+            {
+                oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
+            }
             oficialia.TieneTermino = tieneTermino;
             oficialia.Observaciones = mg.normaliza(observaciones);
             oficialia.Entregado = Entregado;
@@ -339,29 +352,42 @@ namespace scorpioweb.Controllers
             }
             ViewBag.usuariosOficialia = ListaUsuariosOficialia;
 
-            var supervisores = from o in _context.Oficialia
-                               where o.UsuarioTurnar != null
-                               orderby o.UsuarioTurnar
-                               select o.UsuarioTurnar;
-            supervisores = supervisores.Distinct();
-            List<SelectListItem> ListaSupervisores = new List<SelectListItem>();
-            int j = 0;
-            ListaSupervisores.Add(new SelectListItem
+            //var supervisores = from o in _context.Oficialia
+            //                   where o.UsuarioTurnar != null
+            //                   orderby o.UsuarioTurnar
+            //                   select o.UsuarioTurnar;
+            //supervisores = supervisores.Distinct();
+            //List<SelectListItem> ListaSupervisores = new List<SelectListItem>();
+            //int j = 0;
+            //ListaSupervisores.Add(new SelectListItem
+            //{
+            //    Text = "todos",
+            //    Value = j.ToString()
+            //});
+            //j++;
+            //foreach (var supervisor in supervisores)
+            //{
+            //    ListaSupervisores.Add(new SelectListItem
+            //    {
+            //        Text = supervisor.ToString(),
+            //        Value = j.ToString()
+            //    });
+            //    j++;
+            //}
+            //ViewBag.supervisores = ListaSupervisores;
+
+            List<string> coordinadores = await ObtenerListaCoordinadores();
+
+            List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
+
+            coordinadores.Add("todos");
+            ViewBag.supervisores = coordinadores.OrderBy(c => c != "todos").ToList();
+            
+            if (User.Identity.Name.EndsWith("@nortedgepms.com"))
             {
-                Text = "todos",
-                Value = j.ToString()
-            });
-            j++;
-            foreach (var supervisor in supervisores)
-            {
-                ListaSupervisores.Add(new SelectListItem
-                {
-                    Text = supervisor.ToString(),
-                    Value = j.ToString()
-                });
-                j++;
+                coordinadoresrn.Add("todos");
+                ViewBag.supervisores = coordinadoresrn.OrderBy(c => c != "todos").ToList();
             }
-            ViewBag.supervisores = ListaSupervisores;
 
             ViewBag.UsuarioTurnar = UsuarioTurnar;
             ViewBag.Capturista = Capturista;
@@ -376,8 +402,21 @@ namespace scorpioweb.Controllers
                 ViewData["final"] = Convert.ToDateTime(final).ToString("yyyy-MM-dd");
             }
 
-            var oficios = from oficialia in _context.Oficialia
+            IQueryable<Oficialia> oficios;
+
+            if (User.Identity.Name.EndsWith("@nortedgepms.com"))
+            {
+                oficios = from oficialia in _context.Oficialia
+                          where oficialia.Capturista.EndsWith("@nortedgepms.com")
                           select oficialia;
+            }
+            else
+            {
+                oficios = from oficialia in _context.Oficialia
+                          where !oficialia.Capturista.EndsWith("@nortedgepms.com")
+                          select oficialia;
+            }
+
 
             if (inicial != null)
             {
@@ -455,13 +494,36 @@ namespace scorpioweb.Controllers
                 ViewData["final"] = Convert.ToDateTime(final).ToString("yyyy-MM-dd");
             }
 
-            var oficios = from oficialia in _context.Oficialia
-                          where oficialia.UsuarioTurnar == currentUser && oficialia.FechaRecepcion > DateTime.Parse("2023-02-13 00:00:00")
-                          select oficialia;
-            if (flagMaster)
+            IQueryable<Oficialia> oficios;
+
+            if (User.Identity.Name.EndsWith("@nortedgepms.com"))
             {
                 oficios = from oficialia in _context.Oficialia
+                          where oficialia.UsuarioTurnar == currentUser && oficialia.FechaRecepcion > DateTime.Parse("2023-02-13 00:00:00")
                           select oficialia;
+            }
+            else
+            {
+                oficios = from oficialia in _context.Oficialia
+                          where oficialia.UsuarioTurnar == currentUser && oficialia.FechaRecepcion > DateTime.Parse("2023-02-13 00:00:00") 
+                          select oficialia;
+            }
+
+
+            if (flagMaster)
+            {
+                if (User.Identity.Name.EndsWith("@nortedgepms.com"))
+                {
+                    oficios = from oficialia in _context.Oficialia
+                              where oficialia.Capturista.EndsWith("@nortedgepms.com")
+                              select oficialia;
+                }
+                else
+                {
+                    oficios = from oficialia in _context.Oficialia
+                              where !oficialia.Capturista.EndsWith("@nortedgepms.com")
+                              select oficialia;
+                }
             }
 
             oficios = oficios.OrderByDescending(s => s.IdOficialia);
@@ -553,7 +615,14 @@ namespace scorpioweb.Controllers
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
             ViewBag.recibe = ListaRecibe;
-            ViewBag.coordinadores = ListaCoordinadores;
+            List<string> coordinadores = await ObtenerListaCoordinadores();
+            List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
+
+            ViewBag.coordinadores = coordinadores;
+            if(User.Identity.Name.EndsWith("@nortedgepms.com"))
+            {
+                ViewBag.coordinadores = coordinadoresrn;
+            }
 
             List<string> Liatajuzgado = new List<string>();
             Liatajuzgado.Add("NA");
@@ -600,7 +669,10 @@ namespace scorpioweb.Controllers
             oficialia.NombreVictima = mg.normaliza(oficialia.NombreVictima);
             oficialia.DireccionVictima = mg.normaliza(oficialia.DireccionVictima);
             oficialia.AsuntoOficio = mg.normaliza(oficialia.AsuntoOficio);
-            oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
+            if (oficialia.AsuntoOficio == "AUDIENCIA")
+            {
+                oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
+            }
             oficialia.Juzgado = mg.normaliza(oficialia.Juzgado);
             oficialia.FechaTermino = oficialia.FechaTermino;
             oficialia.Observaciones = mg.normaliza(oficialia.Observaciones);
@@ -631,7 +703,7 @@ namespace scorpioweb.Controllers
             {
                 string file_name = "o_" + id + Path.GetExtension(archivo.FileName);
                 oficialia.RutaArchivo = file_name;
-                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "EvidenciaOficialia");
+                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "EvidenciaOficialia"); 
                 if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
                 {
                     System.IO.File.Delete(Path.Combine(uploads, file_name));
@@ -646,8 +718,13 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+
+                    oldOficialia = await _context.Oficialia.FindAsync(id);
                     _context.Entry(oldOficialia).CurrentValues.SetValues(oficialia);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                    //_context.Entry(oldOficialia).CurrentValues.SetValues(oficialia);
+                    //await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -735,29 +812,41 @@ namespace scorpioweb.Controllers
             }
             ViewBag.usuariosOficialia = ListaUsuariosOficialia;
 
-            var supervisores = from o in _context.Oficialia
-                               where o.UsuarioTurnar != null
-                               orderby o.UsuarioTurnar
-                               select o.UsuarioTurnar;
-            supervisores = supervisores.Distinct();
-            List<SelectListItem> ListaSupervisores = new List<SelectListItem>();
-            int j = 0;
-            ListaSupervisores.Add(new SelectListItem
+            //var supervisores = from o in _context.Oficialia
+            //                   where o.UsuarioTurnar != null
+            //                   orderby o.UsuarioTurnar
+            //                   select o.UsuarioTurnar;
+            //supervisores = supervisores.Distinct();
+            //List<SelectListItem> ListaSupervisores = new List<SelectListItem>();
+            //int j = 0;
+            //ListaSupervisores.Add(new SelectListItem
+            //{
+            //    Text = "todos",
+            //    Value = j.ToString()
+            //});
+            //j++;
+            //foreach (var supervisor in supervisores)
+            //{
+            //    ListaSupervisores.Add(new SelectListItem
+            //    {
+            //        Text = supervisor.ToString(),
+            //        Value = j.ToString()
+            //    });
+            //    j++;
+            //}
+
+            List<string> coordinadores = await ObtenerListaCoordinadores();
+            
+            List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
+
+            coordinadores.Add("todos");
+            ViewBag.supervisores = coordinadores.OrderBy(c => c != "todos").ToList(); ;
+           
+            if (User.Identity.Name.EndsWith("@nortedgepms.com"))
             {
-                Text = "todos",
-                Value = j.ToString()
-            });
-            j++;
-            foreach (var supervisor in supervisores)
-            {
-                ListaSupervisores.Add(new SelectListItem
-                {
-                    Text = supervisor.ToString(),
-                    Value = j.ToString()
-                });
-                j++;
+                coordinadoresrn.Add("todos");
+                ViewBag.supervisores = coordinadoresrn.OrderBy(c => c != "todos").ToList(); ; 
             }
-            ViewBag.supervisores = ListaSupervisores;
 
             ViewBag.UsuarioTurnar = UsuarioTurnar;
             ViewBag.Capturista = Capturista;
@@ -772,8 +861,20 @@ namespace scorpioweb.Controllers
                 ViewData["final"] = Convert.ToDateTime(final).ToString("yyyy-MM-dd");
             }
 
-            var oficios = from o in _context.Oficialia
-                          select o;
+            IQueryable<Oficialia> oficios;
+
+            if (User.Identity.Name.EndsWith("@nortedgepms.com"))
+            {
+                oficios = from oficialia in _context.Oficialia
+                          where oficialia.Capturista.EndsWith("@nortedgepms.com")
+                          select oficialia;
+            }
+            else
+            {
+                oficios = from oficialia in _context.Oficialia
+                          where !oficialia.Capturista.EndsWith("@nortedgepms.com")
+                          select oficialia;
+            }
 
             if (inicial != null)
             {
