@@ -1268,6 +1268,7 @@ namespace scorpioweb.Controllers
 
             var domicilioEM = await _context.Domicilio.SingleOrDefaultAsync(d => d.PersonaIdPersona == id);
 
+
             #region -To List databases-
 
             List<Persona> personaVM = _context.Persona.ToList();
@@ -1442,9 +1443,12 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
-
+            
             return View();
         }
+
+
+
         #endregion
 
         #region -Entrevista de encuadre insertar-
@@ -1660,6 +1664,8 @@ namespace scorpioweb.Controllers
         [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
         public IActionResult Create(Estados Estados)
         {
+
+            ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
                             select table).ToList();
@@ -1688,7 +1694,7 @@ namespace scorpioweb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
-            string resolucion, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string resolucion,string centropenitenciario,string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
@@ -1713,6 +1719,9 @@ namespace scorpioweb.Controllers
             if (ModelState.ErrorCount <= 1)
             {
                 #region -Persona-
+                persona.Centropenitenciario= mg.removeSpaces(mg.normaliza(centropenitenciario));
+                persona.Centropenitenciario = sinocentropenitenciario;
+
                 persona.TieneResolucion = mg.normaliza(resolucion);
                 persona.Nombre = mg.removeSpaces(mg.normaliza(nombre));
                 persona.Paterno = mg.removeSpaces(mg.normaliza(paterno));
@@ -2108,6 +2117,7 @@ namespace scorpioweb.Controllers
             }
             return View();
         }
+
         #endregion       
 
         #endregion
