@@ -57,7 +57,7 @@
             Usuario a quien se turno
         </label>
         <select class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
-                asp-items="@(new SelectList(ViewBag.supervisores, "Text", "Text", @ViewBag.UsuarioTurnar))">
+                asp-items="@(new SelectList(ViewBag.supervisores, "Value"))">
         </select>
     </div>
     <div class="col-xs-3">

@@ -1,6 +1,8 @@
 ﻿@model scorpioweb.Models.Fraccionesimpuestas
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-@{ ViewData["Title"] = "Fracciones Impuestas"; }
+@{
+    ViewData["Title"] = "Fracciones Impuestas";
+}
 
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
@@ -87,8 +89,8 @@
         if (encontro == false) {
             arr.push(id);
         } else {
-            arr.splice(doble,1);
-        }      
+            arr.splice(doble, 1);
+        }
     }
     $(document).ready(function () {
         $('#btnImprimirR').on("click", function (e) {
@@ -111,13 +113,31 @@
                 error: function (response) {
                     alert("Informe Generado");
                     //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
+                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
                     window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
-                    //window.location.href = "http://10.6.60.190:432/Documentos/reporteSupervision.docx"
                 }
             });
 
         });
     });
+
+    function cambioestado(idf, value) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisiones/UpdateEstado",
+            traditional: true,
+            data: {
+                id: idf,
+                estados: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
 </script>
 <h2>Fracciónes Impuestas</h2>
 <div class="col-md-12">
@@ -142,7 +162,7 @@
         <tr>
             <th>
                 Reporte
-            </th> 
+            </th>
             <th>
                 Figura Judicial
             </th>
@@ -167,62 +187,69 @@
     <tbody>
         @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Fraccionesimpuestas>)
         {
-        <tr>
-        <td>
-            <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdFracciones)">
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FiguraJudicial)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Tipo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Autoridad)
-        </td>
-        <td>
-            @if (item.FechaInicio != null)
-            {@(item.FechaInicio.Value.ToString("dd MMMM yyyy"))}
-        </td>
-        <td>
-            @if (item.FechaTermino != null)
-            {
-                @if (DateTime.Now < item.FechaTermino){
-                    @item.FechaTermino.Value.ToString("dd MMMM yyyy")
-                }else{
-                   @if (item.FiguraJudicial == "SCP")
+            <tr>
+                <td>
+                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdFracciones)">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FiguraJudicial)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tipo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Autoridad)
+                </td>
+                <td>
+                    @if (item.FechaInicio != null)
                     {
-                    <span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>
+                        @(item.FechaInicio.Value.ToString("dd MMMM yyyy"))
                     }
+                </td>
+                <td>
+                    @if (item.FechaTermino != null)
+                    {
+                        @if (DateTime.Now < item.FechaTermino)
+                        {
+                            @item.FechaTermino.Value.ToString("dd MMMM yyyy")
+                        }
+                        else
+                        {
+                            @if (item.FiguraJudicial == "SCP")
+                            {
+                                <span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>
+                            }
+                        }
+                    }
+                </td>
+                <td>
+                    <select class="form-control" name="Estado" id="Estado" style="font-size:9px" onchange="cambioestado(@item.IdFracciones, value)"
+                            asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Text", "Text", item.Estado))">
+                    </select>
+                </td>
+                @if (ViewBag.usuario)
+                {
+                    <td>
+                        <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" asp-route-idpersona="@ViewBag.idpersona">
+                            <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Fracción', null)" class="btn btn-success">
+                                <i class="fa fa-pencil"></i> Editar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Borrar
+                            </button>
+                            <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
+                                <i class="fa fa-plus"></i> Acciones de Supervisión
+                            </a>
+                        </form>
+                    </td>
                 }
-            }
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Estado)
-        </td>
-        @if (ViewBag.usuario)
-        {
-        <td>
-            <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" asp-route-idpersona="@ViewBag.idpersona">
-                <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Fracción', null)" class="btn btn-success">
-                    <i class="fa fa-pencil"></i> Editar
-                </a>
-                <button type="submit" class="btn btn-danger">
-                    <i class="fa fa-trash"></i> Borrar
-                </button>
-                <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
-                    <i class="fa fa-plus"></i> Acciones de Supervisión
-                </a>
-            </form>
-        </td>                
-        }
-        </tr>
+            </tr>
         }
     </tbody>
 </table>
 
-    @if (ViewBag.usuario)
-    {
+@if (ViewBag.usuario)
+{
     <div>
         @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
 
@@ -231,9 +258,9 @@
         </button>
 
         <a id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
-    </div>            
+    </div>
     <br />
-    }
+}
 
 <div>
     <a asp-action="Supervision" asp-route-id="@ViewBag.IdSupervisionGuardar" class="btn btn-link">Regresar</a>
@@ -349,5 +376,7 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

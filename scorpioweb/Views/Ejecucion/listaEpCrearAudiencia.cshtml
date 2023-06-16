@@ -181,6 +181,7 @@
                 </td>
                 <td>
                     <a onclick="showModal('@Url.Action("EditEpCreateAudiencia", "Ejecucion", new {id=@item.IdOficialia}, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
                     {
                         <button onclick="DeleteCrearAudiencia(@item.IdOficialia)" class="btn btn-danger">

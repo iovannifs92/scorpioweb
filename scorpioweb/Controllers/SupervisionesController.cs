@@ -62,7 +62,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
-    private List<SelectListItem> listaFracciones = new List<SelectListItem>
+        private List<SelectListItem> listaFracciones = new List<SelectListItem>
         {
             new SelectListItem{ Text="I", Value="I"},
             new SelectListItem{ Text="II", Value="II"},
@@ -131,17 +131,17 @@ namespace scorpioweb.Controllers
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
-            #region -Crea QR-
-            public void creaQR(int? id)
-            {
-                QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
-                QRCode qrCode = new QRCode(qrCodeData);
-                Bitmap qrCodeImage = qrCode.GetGraphic(20);
-                System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
-                qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
-            }
-            #endregion
+        #region -Crea QR-
+        public void creaQR(int? id)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://localhost:44359/Personas/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+            qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+        }
+        #endregion
         #endregion
 
         #region -CrearDocumento-
@@ -498,7 +498,7 @@ namespace scorpioweb.Controllers
             var snbitacora = await _context.Bitacora.Where(m => m.FracionesImpuestasIdFracionesImpuestas == id).ToListAsync();
             if (snbitacora.Count == 0)
             {
-                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp=idcp });
+                return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
 
 
@@ -540,7 +540,7 @@ namespace scorpioweb.Controllers
 
             }
             ViewBag.expoficialia = ListaOficios;
-           
+
             #endregion
 
             ViewData["tablaBiatacora"] = from Bitacora in bitacora
@@ -602,7 +602,7 @@ namespace scorpioweb.Controllers
         {
             bitacora.Texto = mg.normaliza(bitacora.Texto);
             bitacora.OficialiaIdOficialia = bitacora.OficialiaIdOficialia;
-            bitacora.FechaRegistro = bitacora.FechaRegistro; 
+            bitacora.FechaRegistro = bitacora.FechaRegistro;
 
             var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
@@ -678,7 +678,7 @@ namespace scorpioweb.Controllers
 
             return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones");
         }
-        public async Task<IActionResult> DeleteRegistro2(int? id, string nombre, string cp, string idpersona,string supervisor, string idcp)
+        public async Task<IActionResult> DeleteRegistro2(int? id, string nombre, string cp, string idpersona, string supervisor, string idcp)
         {
             var Bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
             var oldBitacora = await _context.Bitacora.FindAsync(Bitacora.IdBitacora, Bitacora.SupervisionIdSupervision);
@@ -735,15 +735,15 @@ namespace scorpioweb.Controllers
                          where s.IdSupervision == id
                          select s).FirstOrDefault();
             var queryP = (from s in _context.Supervision
-                         join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
-                         where s.IdSupervision == id
-                         select p).FirstOrDefault();
+                          join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                          where s.IdSupervision == id
+                          select p).FirstOrDefault();
 
             try
             {
                 borrar = true;
                 historialeliminacion.Id = id;
-                historialeliminacion.Descripcion = "IDPERSONA= "+ query.PersonaIdPersona + " IDCAUSAPENAL= " +query.CausaPenalIdCausaPenal+" IDSUPERVISIÓN= "+query.PersonaIdPersona;
+                historialeliminacion.Descripcion = "IDPERSONA= " + query.PersonaIdPersona + " IDCAUSAPENAL= " + query.CausaPenalIdCausaPenal + " IDSUPERVISIÓN= " + query.PersonaIdPersona;
                 historialeliminacion.Tipo = "SUPERVISIÓN";
                 historialeliminacion.Razon = mg.normaliza(razon);
                 historialeliminacion.Usuario = mg.normaliza(user);
@@ -954,7 +954,7 @@ namespace scorpioweb.Controllers
                          select new SupervisionPyCP
                          {
                              cierredecasoVM = c,
-                             personaVM = p, 
+                             personaVM = p,
                              supervisionVM = s,
                              causapenalVM = cp,
                              planeacionestrategicaVM = pe,
@@ -1508,6 +1508,10 @@ namespace scorpioweb.Controllers
 
             ViewBag.IdSupervisionGuardar = id;
 
+            ViewBag.listaFracciones = listaFracciones;
+            ViewBag.listaFiguraJudicial = listaFiguraJudicial;
+            ViewBag.listaCumplimiento = listaCumplimiento;
+
 
             return View();
         }
@@ -1839,7 +1843,7 @@ namespace scorpioweb.Controllers
         #region -EditVictima-
 
         #region -Lista Victima-
-        public async Task<IActionResult> ListaVictima(int? id, string cp, string nombre, string idpersona )
+        public async Task<IActionResult> ListaVictima(int? id, string cp, string nombre, string idpersona)
         {
 
             ViewBag.nombre = nombre;
@@ -1855,7 +1859,7 @@ namespace scorpioweb.Controllers
             var cpp = _context.Causapenal
            .SingleOrDefault(m => m.IdCausaPenal == supervision.CausaPenalIdCausaPenal);
 
-      
+
 
             await PermisosEdicion(id);
 
@@ -1887,7 +1891,7 @@ namespace scorpioweb.Controllers
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
             ViewBag.idpersona = idpersona;
-        
+
             ViewBag.IdSupervisionGuardar = id;
             return View();
         }
@@ -2124,7 +2128,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #region -Create Bitacora-
-        public IActionResult CreateBitacora(string nombre, string cp, int id,string supervisor, int idcp, int idpersona,int idfraccionesimpuestas)
+        public IActionResult CreateBitacora(string nombre, string cp, int id, string supervisor, int idcp, int idpersona, int idfraccionesimpuestas)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
@@ -2148,17 +2152,17 @@ namespace scorpioweb.Controllers
                            select new ListaOficialiaBitacoraViewModel
                            {
                                oficialiavm = o,
-                               supervisionvm = s,                      
+                               supervisionvm = s,
                                personavm = p,
                                bitacoravm = bo
                            };
             var wheres = (from bn in leftjoin
-                        where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
-                        group bn by bn.oficialiavm.IdOficialia into grp
-                        select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
+                          where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
+                          group bn by bn.oficialiavm.IdOficialia into grp
+                          select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
 
             var select = (from wh in wheres
-                         select wh.oficialiavm.IdOficialia).ToList();
+                          select wh.oficialiavm.IdOficialia).ToList();
 
             var fracionesImpuestas = (from s in _context.Supervision
                                       join fi in _context.Fraccionesimpuestas on s.IdSupervision equals fi.SupervisionIdSupervision
@@ -2177,7 +2181,7 @@ namespace scorpioweb.Controllers
                 ViewBag.countFrac = fracionesImpuestas.Count();
                 ViewData["FraccionesImpuestasBitaccora"] = fracionesImpuestas;
             }
-            
+
 
             ViewBag.expoficialia = select;
             #endregion
@@ -2240,7 +2244,7 @@ namespace scorpioweb.Controllers
 
             try
             {
-                id=int.Parse(numero);
+                id = int.Parse(numero);
             }
             catch (Exception e)
             {
@@ -2252,14 +2256,14 @@ namespace scorpioweb.Controllers
         #endregion
 
 
-    public async Task<IActionResult> AgregarBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
-            string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidFraccion)
+        public async Task<IActionResult> AgregarBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
+                string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidFraccion)
         {
             int idbitacora = ((from table in _context.Bitacora
-                               select table.IdBitacora).Max()+1);
-   
+                               select table.IdBitacora).Max() + 1);
+
             string currentUser = User.Identity.Name;
-                
+
             var path = "";
             foreach (var formFile in files)
             {
@@ -2274,28 +2278,28 @@ namespace scorpioweb.Controllers
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                 }
             }
-            
+
 
             if (ModelState.ErrorCount <= 1)
             {
-                
-                    for (int i = 0; i < datosidFraccion.Length; i++)
-                    {
-                        
-                        bitacora.Fecha = Fecha;
-                        bitacora.TipoPersona = mg.normaliza(tipoPersona);
-                        bitacora.TipoVisita = mg.normaliza(tipoVisita);
-                        bitacora.Texto = mg.normaliza(Texto);
-                        bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
-                        bitacora.FechaRegistro = DateTime.Now;
-                        bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
-                        bitacora.RutaEvidencia = bitacora.RutaEvidencia;
 
-                        var supervision = _context.Supervision
-                        .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+                for (int i = 0; i < datosidFraccion.Length; i++)
+                {
 
-                        _context.Add(bitacora);
-                        _context.SaveChanges();
+                    bitacora.Fecha = Fecha;
+                    bitacora.TipoPersona = mg.normaliza(tipoPersona);
+                    bitacora.TipoVisita = mg.normaliza(tipoVisita);
+                    bitacora.Texto = mg.normaliza(Texto);
+                    bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
+                    bitacora.FechaRegistro = DateTime.Now;
+                    bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
+                    bitacora.RutaEvidencia = bitacora.RutaEvidencia;
+
+                    var supervision = _context.Supervision
+                    .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
+                    _context.Add(bitacora);
+                    _context.SaveChanges();
 
                 }
 
@@ -2375,12 +2379,12 @@ namespace scorpioweb.Controllers
                                bitacoravm = bo
                            };
             var wheres = (from bn in leftjoin
-                          where bn.oficialiavm.UsuarioTurnar == supervisor 
+                          where bn.oficialiavm.UsuarioTurnar == supervisor
                           group bn by bn.oficialiavm.IdOficialia into grp
                           select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
 
             var selects = (from wh in wheres
-                          select wh.oficialiavm.IdOficialia).ToList();
+                           select wh.oficialiavm.IdOficialia).ToList();
 
             List<SelectListItem> ListaOficios = new List<SelectListItem>();
             ListaOficios = new List<SelectListItem>
@@ -2390,9 +2394,9 @@ namespace scorpioweb.Controllers
             foreach (var select in selects)
             {
                 ListaOficios.Add(
-                 new SelectListItem{Text = select.ToString(),Value = select.ToString()}
+                 new SelectListItem { Text = select.ToString(), Value = select.ToString() }
                 );
-                
+
             }
             ViewBag.expoficialia = ListaOficios;
             ViewBag.idexpoficialia = mg.BuscaId(ListaOficios, bitacora.OficialiaIdOficialia.ToString());
@@ -2496,7 +2500,7 @@ namespace scorpioweb.Controllers
                     }
                 }
                 return RedirectToAction("ListaBitacora/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @idcp = idcp, @supervisor = supervisor });
-                
+
             }
             return View(bitacora);
         }
@@ -2509,8 +2513,8 @@ namespace scorpioweb.Controllers
             _context.Bitacora.Remove(Bitacora);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona= idpersona, @idcp=idcp, @supervisor = supervisor });
-        } 
+            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @idcp = idcp, @supervisor = supervisor });
+        }
         private bool BitacoraExists(int id)
         {
             return _context.Bitacora.Any(e => e.IdBitacora == id);
@@ -2536,20 +2540,29 @@ namespace scorpioweb.Controllers
                 case "carmen.gonzalez@dgepms.com":
                     nombre = "OF. MARÍA DEL CARMEN GONZALEZ";
                     break;
-                case "LIC. MAYRA YUDITH GONZÁLEZ MARTÍNEZ":
-                    nombre = "";
+                case "mayra.gonzalez@dgepms.com":
+                    nombre = "LIC. MAYRA YUDITH GONZÁLEZ MARTÍNEZ";
                     break;
-                case "yoshman.mendez@dgepms.com":
-                    nombre = "LIC. YOSHMAN MENDEZ HERNANDEZ";
+                case "stephany.garcia@dgepms.com":
+                    nombre = "LIC. STEPHANY GARCIA";
                     break;
-                case "isabel.almora@dgepms.com":
-                    nombre = "LIC. ISABEL ALMORA DE LA CRUZ";
+                case "victor.hernandez@dgepms.com":
+                    nombre = "LIC. VICTOR HERNANDEZ";
                     break;
-                case "alejandra.jimenez@dgepms.com":
-                    nombre = "LIC. ALEJANDRA JIMÉNEZ GALLEGOS";
+                case "enrique.martinez@dgepms.com":
+                    nombre = "LIC. ENRIQUE MARTINEZ";
                     break;
-                case "amor.davalos@dgepms.com":
-                    nombre = "LIC. AMOR DÁVALOS NÁJERA";
+                case "diana.ontiveros@dgepms.com":
+                    nombre = "LIC. DIANA ONTIVEROS";
+                    break;
+                case "esmeralda.vargas@dgepms.com":
+                    nombre = "LIC. ESMERALDA VARGAS";
+                    break;
+                case "jesumartinez@dgepms.com":
+                    nombre = "LIC. JESU MARTINEZ";
+                    break;
+                case "diana.renteria@dgepms.com":
+                    nombre = "LIC. DIANA RENTERIA";
                     break;
                 case "iovannifs92@gmail.com":
                     nombre = "IOVANNI FERNÁNDEZ SÁNCHEZ";
@@ -2655,15 +2668,15 @@ namespace scorpioweb.Controllers
 
             #region -Consultas y llenado de variables temporales-
             int idSupervision = (from table in _context.Fraccionesimpuestas
-                                where table.IdFracciones == (Convert.ToInt32(datosidFraccion[datosidFraccion.Length - 1]))
-                                select table.SupervisionIdSupervision).FirstOrDefault(); //Obtener IdSupervision
+                                 where table.IdFracciones == (Convert.ToInt32(datosidFraccion[datosidFraccion.Length - 1]))
+                                 select table.SupervisionIdSupervision).FirstOrDefault(); //Obtener IdSupervision
 
             var tipo = from table in _context.Fraccionesimpuestas
                        where table.IdFracciones == (Convert.ToInt32(datosidFraccion[datosidFraccion.Length - 1]))
                        select new
                        {
-                           FechaImposicion=table.FechaInicio,
-                           FiguraJudicial=table.FiguraJudicial
+                           FechaImposicion = table.FechaInicio,
+                           FiguraJudicial = table.FiguraJudicial
                        };
 
             int idCP = (from table in _context.Supervision
@@ -2671,27 +2684,27 @@ namespace scorpioweb.Controllers
                         select table.CausaPenalIdCausaPenal).FirstOrDefault();
 
             int idPersona = (from table in _context.Supervision
-                            where table.IdSupervision == idSupervision
-                            select table.PersonaIdPersona).FirstOrDefault();
+                             where table.IdSupervision == idSupervision
+                             select table.PersonaIdPersona).FirstOrDefault();
 
             var persona = from table in _context.Persona
-                         where table.IdPersona == idPersona
-                         select new
-                         {
-                             Paterno=table.Paterno,
-                             Materno=table.Materno,
-                             Nombre=table.Nombre,
-                             Supervisor=table.Supervisor
-                         };
+                          where table.IdPersona == idPersona
+                          select new
+                          {
+                              Paterno = table.Paterno,
+                              Materno = table.Materno,
+                              Nombre = table.Nombre,
+                              Supervisor = table.Supervisor
+                          };
 
             var causapenal = from table in _context.Causapenal
-                              where table.IdCausaPenal == idCP
-                              select new
-                              {
-                                  CausaPenal= table.CausaPenal,
-                                  Juez=table.Juez,
-                                  Distrito=table.Distrito
-                              };
+                             where table.IdCausaPenal == idCP
+                             select new
+                             {
+                                 CausaPenal = table.CausaPenal,
+                                 Juez = table.Juez,
+                                 Distrito = table.Distrito
+                             };
 
             var delitos = from table in _context.Delito
                           where table.CausaPenalIdCausaPenal == idCP
@@ -2701,12 +2714,12 @@ namespace scorpioweb.Controllers
                           };
 
             var presentacion = from registro in _context.Registrohuella
-                                 join p in _context.Presentacionperiodica on registro.IdregistroHuella equals p.RegistroidHuella
-                                 where registro.PersonaIdPersona == idPersona
-                                 select new
-                                 {
-                                     fechaFirma = p.FechaFirma
-                                 };
+                               join p in _context.Presentacionperiodica on registro.IdregistroHuella equals p.RegistroidHuella
+                               where registro.PersonaIdPersona == idPersona
+                               select new
+                               {
+                                   fechaFirma = p.FechaFirma
+                               };
 
 
             string inicio = "";
@@ -2717,11 +2730,11 @@ namespace scorpioweb.Controllers
                            where table.IdSupervision == idSupervision
                            select table.Inicio).FirstOrDefault()).Value.ToString("dd MMMM yyyy");
             }
-            catch(System.InvalidOperationException e)
+            catch (System.InvalidOperationException e)
             {
                 inicio = "xxxxxxxxxxxxxxxx-Sin fecha de inicio en Supervisión-xxxxxxxxxxxxxxxxxx";
             }
-            
+
             string cp = "";
             string juez = "";
             string fechaImposicion = "";
@@ -2739,7 +2752,7 @@ namespace scorpioweb.Controllers
                 supervisor = nombreSupervisor(p.Supervisor);
             }
 
-            foreach(var c in causapenal)
+            foreach (var c in causapenal)
             {
                 cp = c.CausaPenal;
                 juez = c.Juez;
@@ -2781,15 +2794,15 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -Define contenido de variables-
-            for (int i=0; i< datosidFraccion.Length; i++)
+            for (int i = 0; i < datosidFraccion.Length; i++)
             {
                 string tipoF = (from table in _context.Fraccionesimpuestas
-                            where table.IdFracciones == (Convert.ToInt32(datosidFraccion[i]))
-                            select table.Tipo).FirstOrDefault();
+                                where table.IdFracciones == (Convert.ToInt32(datosidFraccion[i]))
+                                select table.Tipo).FirstOrDefault();
 
-                string estatusF= (from table in _context.Fraccionesimpuestas
-                                  where table.IdFracciones == (Convert.ToInt32(datosidFraccion[i]))
-                                  select table.Estado).FirstOrDefault();
+                string estatusF = (from table in _context.Fraccionesimpuestas
+                                   where table.IdFracciones == (Convert.ToInt32(datosidFraccion[i]))
+                                   select table.Estado).FirstOrDefault();
 
                 if (estatusF == "INCUMPLIMIENTO")
                 {
@@ -2801,8 +2814,8 @@ namespace scorpioweb.Controllers
                                   where fracc.IdFracciones == (Convert.ToInt32(datosidFraccion[i]))
                                   select new
                                   {
-                                      actividades=bitacora.Texto,
-                                      fecha=bitacora.Fecha
+                                      actividades = bitacora.Texto,
+                                      fecha = bitacora.Fecha
                                   };
 
                 switch (tipoF)
@@ -2811,7 +2824,7 @@ namespace scorpioweb.Controllers
                         No1 = "I";
                         TextoFraccion1 = tipo1;
                         Estatus1 = estatusF;
-                        if(figuraJudicial== "MEDIDAS CAUTELARES")
+                        if (figuraJudicial == "MEDIDAS CAUTELARES")
                         {
                             if (presentaciones != "")
                             {
@@ -2832,7 +2845,7 @@ namespace scorpioweb.Controllers
                             {
                                 Actividades1 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
                             }
-                        }                        
+                        }
                         break;
                     case "II":
                         No2 = "II";
@@ -2921,7 +2934,7 @@ namespace scorpioweb.Controllers
                             {
                                 Actividades9 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
                             }
-                        }                        
+                        }
                         break;
                     case "X":
                         No10 = "X";
@@ -2982,14 +2995,14 @@ namespace scorpioweb.Controllers
             var dataSource = new
             {
                 Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
-                CP = cp,                
+                CP = cp,
                 idPer = idPersona,
                 CI = tipoInforme,
                 Juez = juez,
                 FechaImposicion = fechaImposicion,
                 FiguraJudicial = figuraJudicial,
                 Nombre = nombre,
-                Delito=delito,
+                Delito = delito,
                 Supervisor = supervisor,
                 Distrito = distrito,
                 Fraccion = new object[]
@@ -3098,7 +3111,7 @@ namespace scorpioweb.Controllers
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
             dc.MailMerge.Execute(dataSource);
             dc.Save(resultPath);
-            //Response.Redirect("https://localhost:44359/Documentos/reporteSupervisionSCP.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/reporteSupervision.docx");
         }
         #endregion
 
@@ -3226,13 +3239,48 @@ namespace scorpioweb.Controllers
             ViewBag.idSupervision = id;
 
             ViewData["eventos"] = from c in _context.Calendario
-                          where c.SupervisionIdSupervision == id
-                          orderby c.FechaEvento descending
-                          select c;
+                                  where c.SupervisionIdSupervision == id
+                                  orderby c.FechaEvento descending
+                                  select c;
 
             return View();
         }
 
+        #endregion
+
+        #region -updateEstado-
+        public JsonResult UpdateEstado(Fraccionesimpuestas fraccionesimpuestas, int id, string estados)
+        {
+
+            #region -Actualizar fechas en supervision-
+            if (id != null)
+            {
+                fraccionesimpuestas.IdFracciones = id;
+                fraccionesimpuestas.Estado = mg.normaliza(estados);
+            }
+
+            var empty = (from s in _context.Fraccionesimpuestas
+                         where s.IdFracciones == fraccionesimpuestas.IdFracciones
+                         select s);
+
+            if (empty.Any())
+            {
+                var query = (from s in _context.Fraccionesimpuestas
+                                where s.IdFracciones == fraccionesimpuestas.IdFracciones
+                                select s).FirstOrDefault();
+                query.Estado = fraccionesimpuestas.Estado;
+                _context.SaveChanges();
+               
+            }
+            #endregion
+
+            var fi = (from s in _context.Fraccionesimpuestas
+                      where s.IdFracciones == fraccionesimpuestas.IdFracciones
+                      select s.SupervisionIdSupervision).FirstOrDefault();
+
+
+            return Json(new { success = true, responseText = Convert.ToString(fi), idPersonas = Convert.ToString(fraccionesimpuestas.IdFracciones) });
+        }
         #endregion
     }
 }

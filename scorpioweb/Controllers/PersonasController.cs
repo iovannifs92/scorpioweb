@@ -843,7 +843,7 @@ namespace scorpioweb.Controllers
                                               tipoAdvertencia = "Sin periodicidad de firma"
                                           }).Union
                                          (from t in table
-                                          where t.personaVM.Supervisor != null && t.personaVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaVM.FechaProximoContacto != null && t.planeacionestrategicaVM.FechaProximoContacto < fechahoy && t.supervisionVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaVM.PeriodicidadFirma != "NO APLICA"
+                                          where t.personaVM.Supervisor != null && t.personaVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaVM.FechaProximoContacto != null && t.planeacionestrategicaVM.FechaProximoContacto < fechahoy && t.supervisionVM.EstadoSupervision == "VIGENTE" &&  t.planeacionestrategicaVM.PeriodicidadFirma != "NO APLICA"
                                           select new PlaneacionWarningViewModel
                                           {
                                               personaVM = t.personaVM,
