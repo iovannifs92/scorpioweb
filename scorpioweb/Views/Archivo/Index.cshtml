@@ -7,10 +7,10 @@
 }
 
 <script>
-    showModal = (url, title, id) => { 
+    showModal = (url, title, id) => {
         $.ajax({
             type: "GET",
-            url: url + "?id="+id,
+            url: url + "?id=" + id,
             success: function (res) {
                 $("#form-modal .modal-body").html(res);
                 $("#form-modal .modal-title").html(title);
@@ -28,56 +28,56 @@
         var usuario = '@ViewBag.user';
         var cambiar = confirm("¿Desea borrar el registro?");
         if (cambiar == true) {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Archivo/antesdelete",
-            traditional: true,
-            data: {
-                id,
-            },
-            success: function (response) {
-                if (response.borrar == false) {
-                    alert("No puede borrar el registro porque tiene archivos");
-                } else {
-                    function borrarcp(id) {
-                        var usuario = '@ViewBag.user';
-                        let razon = prompt("Porque desea borrar el registro?", "");
-                        if (razon == null || razon == "") {
-                            return;
-                            text = "NA";
-                        } else {
-                            text = razon;
-                        }
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "/Archivo/deletesuper",
-                            traditional: true,
-                            data: {
-                                datosuper: [id, razon, usuario],
-                            },
-                            success: function (response) {
-                                if (response.borrar == true) {
-                                    alert("El Registro ha sido borrado");
-                                    location.reload();
-                                } else {
-                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                                }
-                            },
-                            error: function (response) {
-                                alert(response.error);
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Archivo/antesdelete",
+                traditional: true,
+                data: {
+                    id,
+                },
+                success: function (response) {
+                    if (response.borrar == false) {
+                        alert("No puede borrar el registro porque tiene archivos");
+                    } else {
+                        function borrarcp(id) {
+                            var usuario = '@ViewBag.user';
+                            let razon = prompt("Porque desea borrar el registro?", "");
+                            if (razon == null || razon == "") {
+                                return;
+                                text = "NA";
+                            } else {
+                                text = razon;
                             }
-                        });
-                    };
-                    borrarcp(id);
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "/Archivo/deletesuper",
+                                traditional: true,
+                                data: {
+                                    datosuper: [id, razon, usuario],
+                                },
+                                success: function (response) {
+                                    if (response.borrar == true) {
+                                        alert("El Registro ha sido borrado");
+                                        location.reload();
+                                    } else {
+                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                                    }
+                                },
+                                error: function (response) {
+                                    alert(response.error);
+                                }
+                            });
+                        };
+                        borrarcp(id);
+                    }
+                },
+                error: function (response) {
+                    alert(response.error);
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 }
-            },
-            error: function (response) {
-                alert(response.error);
-                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-            }
-        });
+            });
         }
         return innerFunc;
     };
@@ -91,7 +91,7 @@
             data: {
                 var_buscar: SearchString,
             },
-            success: function(response) {
+            success: function (response) {
                 $('#tblbusqueda').html('');
                 var row = '';
                 if (response.busqueda.length == 0) {
@@ -102,7 +102,7 @@
                     row = row
                         + "<tr>"
                         + "<td>" + response.busqueda[i].id + "</td>"
-                        + "<td>" + response.busqueda[i].paterno+ " " + response.busqueda[i].materno +" "+ response.busqueda[i].nombre + "</td>"
+                        + "<td>" + response.busqueda[i].paterno + " " + response.busqueda[i].materno + " " + response.busqueda[i].nombre + "</td>"
                         + "<td>" + response.busqueda[i].otro + "</td>"
                     row = row + "</tr>";
                 };
@@ -113,12 +113,40 @@
                 var str = "Resultados de  " + SearchString;
                 $("#modal_body").html(str);
             },
-            error: function(response) {
+            error: function (response) {
                 //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
                 //location.reload();
             }
         });
     };
+
+    function solicitud(id, estado, user) {
+        var idArchivo = id;
+        let text;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/solicitud",
+            traditional: true,
+            data: {
+                datosoli: [estado, idArchivo, user],
+            },
+            success: function (response) {
+                if(estado == true){
+                    alert("Solicitud hecha con exito, Espere a que sea atienda");
+                }else{
+                    alert("Solicitud Cancelada!");
+                }
+                
+                location.reload();
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+
+
 </script>
 <br />
 <br />
@@ -129,24 +157,24 @@
         <div class="col-md-6">
             <label>
                 Búsqueda por nombre o idarchivo
-                <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" /> 
+                <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" />
             </label>
             <button type="submit" class="btn btn-default" style="margin-left:10px">
                 <i class="fa fa-search"></i>
                 Buscar
-            </button>  
+            </button>
         </div>
-    </div>        
+    </div>
 </form>
 <div class="col-md-6">
     <button class="btn btn-default" onclick="BuscarAR()">
-                    <i class="fa fa-search"></i>
-                    Buscar en Archivo Registro
+        <i class="fa fa-search"></i>
+        Buscar en Archivo Registro
     </button>
     <a style="margin-left: 20px" asp-action="Index">Regresar al listado completo</a>
 </div>
-            
-      
+
+
 <table class="table" style="font-size:10px">
     <thead>
         <tr>
@@ -168,7 +196,7 @@
             <th>
                 Y/O
             </th>
-             <th>
+            <th>
                 Condición Especial
             </th>
         </tr>
@@ -183,29 +211,29 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.archivoVM.Paterno) @Html.DisplayFor(modelItem => item.archivoVM.Materno) @Html.DisplayFor(modelItem => item.archivoVM.Nombre)
                 </td>
-                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
+                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO"))
                 {
                     <td style="color:black">
-                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
+                        @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
                     </td>
                     <td></td>
                 }
                 else
                 {
                     <td style="color:red">
-                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
+                        @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
                     </td>
-                     <td>
-                    @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
+                    <td>
+                        @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
                     </td>
                 }
-                
+
                 @if (item.archivoVM.Urldocumento != null)
                 {
                     <td>
-                    <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
-                        <i class="fa fa-paperclip fa-9x"></i>
-                    </a>
+                        <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
+                            <i class="fa fa-paperclip fa-9x"></i>
+                        </a>
                     </td>
                 }
                 else
@@ -218,25 +246,42 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.archivoVM.CondicionEspecial)
                 </td>
-               
+
                 @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
                     <td>
-                        @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO") )
-                        {     
-                            <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-warning fa fa-file" title="Prestar"> Prestar</a>              
+                        @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO"))
+                        {
+                            <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-warning fa fa-file" title="Prestar"> Prestar</a>
                         }
-                        <a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Agregar archivo</a> 
-                        <a onclick="showModal('@Url.Action("Edit", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Editar Archivo',null )" class="btn btn-success fa fa-pencil" title="Editar"> Edit</a> 
+                        <a onclick="showModal('@Url.Action("CreateArchivo", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Crear Archivo',null )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Agregar archivo</a>
+                        <a onclick="showModal('@Url.Action("Edit", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Editar Archivo',null )" class="btn btn-success fa fa-pencil" title="Editar"> Edit</a>
                         <a type="button" id="borrar" title="borrar" class="btn btn-danger" onclick="Borrar(@item.archivoVM.IdArchivo)">
-                            <i class="fa fa-trash"></i> 
+                            <i class="fa fa-trash"></i>
                         </a>
-                    </td> 
+                    </td>
+                }
+                @if (!User.IsInRole("Archivo"))
+                {
+                    <td>
+                        @if (item.archivoVM.Solucitud == 0)
+                        {
+                            <a onclick="solicitud(@item.archivoVM.IdArchivo, true, '@ViewBag.User')" class="btn btn-danger fa fa-file-pdf-o"> Solicitar </a>
+                        }
+                        else
+                        {
+                            <a onclick="solicitud(@item.archivoVM.IdArchivo, true,  '@ViewBag.User')" class="btn btn-primary fa fa-file-pdf-o" title="Solicitado Por @item.archivoVM.QuienSolicita">  En Solicitud </a>
+                            <a onclick="solicitud(@item.archivoVM.IdArchivo, false,'')" class="btn btn-warning fa fa-close" style="margin-left:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
+                        }
+
+
+                    </td>
+
                 }
             </tr>
         }
     </tbody>
-</table> 
+</table>
 
 
 <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -274,10 +319,10 @@
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
- @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
-    {
-         <a onclick="showModal('@Url.Action("Create", "Archivo", Context.Request.Scheme)','Crear Archivo',null )" ><img src="~/images/addArchivo.png" height ="60" width="60" /></a> 
-    }
+@if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+{
+    <a onclick="showModal('@Url.Action("Create", "Archivo", Context.Request.Scheme)','Crear Archivo',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
+}
 
 <p style="margin-top:30px">
     Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
@@ -300,7 +345,7 @@
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
- <br />
-    <div style="margin-top:20px">
-        <a asp-action="ArchivoMenu">Regresar al Menu</a>
-    </div>
+<br />
+<div style="margin-top:20px">
+    <a asp-action="ArchivoMenu">Regresar al Menu</a>
+</div>
