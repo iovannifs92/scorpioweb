@@ -208,9 +208,11 @@ namespace scorpioweb.Controllers
 
             List<string> coordinadores = await ObtenerListaCoordinadores();
             List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
-
+ 
+            coordinadores.Add("janeth@nortedgepms.com");
             ViewBag.coordinadores = coordinadores;
-            if(User.Identity.Name.EndsWith("@nortedgepms.com"))
+            
+            if (User.Identity.Name.EndsWith("@nortedgepms.com"))
             {
                 ViewBag.coordinadores = coordinadoresrn;
             }
@@ -381,6 +383,7 @@ namespace scorpioweb.Controllers
             List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
 
             coordinadores.Add("todos");
+            coordinadores.Add("janeth@nortedgepms.com");
             ViewBag.supervisores = coordinadores.OrderBy(c => c != "todos").ToList();
             
             if (User.Identity.Name.EndsWith("@nortedgepms.com"))
@@ -618,6 +621,7 @@ namespace scorpioweb.Controllers
             List<string> coordinadores = await ObtenerListaCoordinadores();
             List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
 
+            coordinadores.Add("janeth@nortedgepms.com");
             ViewBag.coordinadores = coordinadores;
             if(User.Identity.Name.EndsWith("@nortedgepms.com"))
             {
@@ -840,6 +844,7 @@ namespace scorpioweb.Controllers
             List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
 
             coordinadores.Add("todos");
+            coordinadores.Add("janeth@nortedgepms.com");
             ViewBag.supervisores = coordinadores.OrderBy(c => c != "todos").ToList(); ;
            
             if (User.Identity.Name.EndsWith("@nortedgepms.com"))

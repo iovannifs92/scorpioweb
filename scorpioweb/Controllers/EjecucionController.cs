@@ -1762,6 +1762,7 @@ namespace scorpioweb.Controllers
             Liatajuzgado.Add("JUZGADO 1");
             Liatajuzgado.Add("JUZGADO 2");
             Liatajuzgado.Add("JUZGADO 3");
+            Liatajuzgado.Add("JUZGADO 4");
 
             ViewBag.Liatajuzgado = Liatajuzgado;
 
@@ -1820,8 +1821,8 @@ namespace scorpioweb.Controllers
                     oficialiaAudiencia.Seguimiento = oficialiaAudiencia.Seguimiento;  
                     oficialiaAudiencia.FechaTermino = oficialiaAudiencia.FechaTermino;
                     oficialiaAudiencia.FechaRecepcion = oficialiaAudiencia.FechaRecepcion;
-                    oficialiaAudiencia.Juzgado = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Juzgado));
-                    oficialiaAudiencia.QuienAsistira = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.QuienAsistira));
+                    oficialiaAudiencia.Juzgado = oficialiaAudiencia.Juzgado;
+                    oficialiaAudiencia.QuienAsistira = "uriel.ortega@dgepms.com";
                     oficialiaAudiencia.CarpetaEjecucion = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.CarpetaEjecucion));
                     oficialiaAudiencia.Paterno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Paterno));
                     oficialiaAudiencia.Materno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Materno));

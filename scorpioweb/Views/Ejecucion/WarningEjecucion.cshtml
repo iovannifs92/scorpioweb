@@ -11,7 +11,7 @@
         }
         var d = new Date(dateString);
         const month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear();
+        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear() + ', A las  ' + d.getHours() + ':' + d.getMinutes()
         return date;
     };
 

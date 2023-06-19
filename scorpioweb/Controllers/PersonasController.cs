@@ -6808,7 +6808,7 @@ namespace scorpioweb.Controllers
                     libronegro = libronegro.OrderByDescending(p => p.Idlibronegro);
                     break;
             }
-            int pageSize = 10;
+            int pageSize = 1000;
             return View(await PaginatedList<Libronegro>.CreateAsync(libronegro.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         public IActionResult libronegrocreate()
