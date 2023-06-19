@@ -22,11 +22,10 @@
 @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
 
 
-<script>
-    function myFunction() {
+<script>   
+    function myFunction() {       
         window.open("/Personas/Contacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,left=3000,width=1100, height=2000");
         //window.open("/Personas/Contacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=1100,height=700");
-
     }
 </script>
 
@@ -137,7 +136,7 @@
     }
 
 
-    @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
+    @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin") || @ViewBag.Usuario == "ana.valles@dgepms.com")
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
@@ -147,9 +146,18 @@
                         Casos Especiales
                     </a>
                 </h4>
-                <p class="card-text">
-                    Resguardo Domiciliario, TTA, Colaboraciones
-                </p>
+                @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
+                {
+                    <p class="card-text">
+                        Resguardo Domiciliario, TTA, Colaboraciones
+                    </p>
+                }
+                else
+                {
+                    <p class="card-text">
+                        Resguardo Domiciliario
+                    </p>
+                }                             
             </div>
         </div>
     }

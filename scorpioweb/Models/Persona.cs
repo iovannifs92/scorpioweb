@@ -43,11 +43,13 @@ namespace scorpioweb.Models
         public string Capturista { get; set; }
         public sbyte? Candado { get; set; }
         public string MotivoCandado { get; set; }
-        public string UbicacionExpediente { get; set; }
         public string Colaboracion { get; set; }
+        public string UbicacionExpediente { get; set; }
         public string ComLgbtttiq { get; set; }
         public string ComIndigena { get; set; }
         public string TieneResolucion { get; set; }
+        public string Centropenitenciario { get; set; }
+        public string Sinocentropenitenciario { get; set; }
         public string NombreCompleto
         {
             get
@@ -60,5 +62,7 @@ namespace scorpioweb.Models
         {
             throw new NotImplementedException();
         }
+
     }
+
 }

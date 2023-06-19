@@ -31,31 +31,63 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.municipiosVMDomicilio.Municipio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CasoEspecial)
-            </td>
-            <td>
-                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
-                    <i class='fa fa-eye'></i> Detalles
-                </a>
-            </td>
-            <td>
-                <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.personaVM.IdPersona">
-                    <i class='fa fa-cogs'></i> Procesos
-                </a>
-            </td>
-        </tr>
-}
+        @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
+        {   @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.municipiosVMDomicilio.Municipio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CasoEspecial)
+                    </td>
+                    <td>
+                        <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
+                            <i class='fa fa-eye'></i> Detalles
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.personaVM.IdPersona">
+                            <i class='fa fa-cogs'></i> Procesos
+                        </a>
+                    </td>
+                </tr>
+            }
+        }else
+        {
+            @foreach (var item in Model.Where(x => x.CasoEspecial == "Resguardo Domiciliario"))
+            {
+                <tr>
+                    <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.IdPersona)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.municipiosVMDomicilio.Municipio)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.CasoEspecial)
+                </td>
+                <td>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaVM.IdPersona">
+                        <i class='fa fa-eye'></i> Detalles
+                    </a>
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.personaVM.IdPersona">
+                        <i class='fa fa-cogs'></i> Procesos
+                    </a>
+                </td>
+            </tr>
+            }
+        }
     </tbody>
 </table>
