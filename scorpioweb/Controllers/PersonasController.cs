@@ -615,7 +615,7 @@ namespace scorpioweb.Controllers
                                       municipiosVMDomicilio = municipio,
                                       CasoEspecial = "Colaboración"
                                   });
-
+            
             return View(colaboraciones);
         }
         #endregion
