@@ -57,7 +57,7 @@
             Usuario a quien se turno
         </label>
         <select class="form-control" name="UsuarioTurnar" id="UsuarioTurnar"
-                asp-items="@(new SelectList(ViewBag.supervisores, "Value"))">
+                asp-items="@(new SelectList(ViewBag.supervisores, ViewBag.UsuarioTurnar))">
         </select>
     </div>
     <div class="col-xs-3">
@@ -65,7 +65,7 @@
             ¿Quién captura?
         </label>
         <select class="form-control" name="Capturista" id="Capturista"
-                asp-items="@(new SelectList(ViewBag.usuariosOficialia, "Text", "Text", @ViewBag.Capturista))">
+                asp-items="@(new SelectList(ViewBag.usuariosOficialia, "Text","Text", ViewBag.Capturista ))">
         </select>
     </div>
 </form>

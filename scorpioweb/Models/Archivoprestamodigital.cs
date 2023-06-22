@@ -12,5 +12,6 @@ namespace scorpioweb.Models
         public string TiempoConsulta { get; set; }
         public string UsuarioOtorgaPermiso { get; set; }
         public int? ArchivoIdArchivo { get; set; }
+        public sbyte? EstadoPrestamo { get; set; }
     }
 }
