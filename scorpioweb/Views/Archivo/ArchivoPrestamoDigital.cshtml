@@ -95,6 +95,15 @@
 <br />
 <h1>Control de Archivo Prestamo Digital </h1>
 
+@if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+{
+    if (@ViewBag.Warnings > 0)
+    {
+        <a href="@Url.Action("SolicitudesPrestamo")" class="link-archivo">
+            <h4 style="text-align:right; color:red">Total de Solicitudes: @ViewBag.Warnings</h4>
+        </a>
+    }
+}
 <form asp-action="ArchivoPrestamoDigital" method="get">
     <div>
         <div class="col-md-12">

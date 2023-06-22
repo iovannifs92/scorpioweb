@@ -132,12 +132,12 @@
                 datosoli: [estado, idArchivo, user],
             },
             success: function (response) {
-                if(estado == true){
+                if (estado == true) {
                     alert("Solicitud hecha con exito, Espere a que sea atienda");
-                }else{
+                } else {
                     alert("Solicitud Cancelada!");
                 }
-                
+
                 location.reload();
             },
             error: function (response) {
@@ -150,7 +150,18 @@
 </script>
 <br />
 <br />
-<h1>Control de Archivo </h1>
+<h1>Control de Archivo  </h1>
+@if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+{
+    if (@ViewBag.Warnings > 0)
+    {
+        <a href="@Url.Action("SolicitudesPrestamo")" class="link-archivo">
+            <h4 style="text-align:right; color:red">Total de Solicitudes: @ViewBag.Warnings</h4>
+        </a>
+    }
+}
+
+
 
 <form asp-action="Index" method="get">
     <div>
@@ -273,10 +284,7 @@
                             <a onclick="solicitud(@item.archivoVM.IdArchivo, true,  '@ViewBag.User')" class="btn btn-primary fa fa-file-pdf-o" title="Solicitado Por @item.archivoVM.QuienSolicita">  En Solicitud </a>
                             <a onclick="solicitud(@item.archivoVM.IdArchivo, false,'')" class="btn btn-warning fa fa-close" style="margin-left:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
                         }
-
-
                     </td>
-
                 }
             </tr>
         }

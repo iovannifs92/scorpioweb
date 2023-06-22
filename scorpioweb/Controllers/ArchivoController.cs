@@ -15,6 +15,7 @@ using System.IO;
 using System.Security.Claims;
 using scorpioweb.Class;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace scorpioweb.Models
 {
@@ -56,6 +57,13 @@ namespace scorpioweb.Models
            )
 
         {
+
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -379,13 +387,17 @@ namespace scorpioweb.Models
         #region -ArchivoMenu-
         public IActionResult ArchivoMenu()
         {
-
+            var user = User.Identity.Name;
             var warningSolicitud = from a in _context.Archivo
                                     where a.Solucitud == 1
                                     select a;
 
             ViewBag.Warnings = warningSolicitud.Count();
 
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
 
             return View();
         }
@@ -737,6 +749,7 @@ namespace scorpioweb.Models
                         archivoprestamodigital.UsuarioOtorgaPermiso = mg.normaliza(archivoprestamo.Entrega);
                         archivoprestamodigital.FechaPrestamo = DateTime.Now;
                         archivoprestamodigital.FechaCierre = DateTime.Now.AddDays(7);
+                        archivoprestamodigital.EstadoPrestamo = 1;
                         var query = (from a in _context.Archivo
                                      where a.IdArchivo == archivoIdArchivo
                                      select a).FirstOrDefault();
@@ -937,6 +950,12 @@ namespace scorpioweb.Models
            int? pageNumber
            )
         {
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -1022,6 +1041,12 @@ namespace scorpioweb.Models
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.showSupervisor = false;
 
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "Masteradmin")
@@ -1056,6 +1081,13 @@ namespace scorpioweb.Models
            int? pageNumber
            )
         {
+
+
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
