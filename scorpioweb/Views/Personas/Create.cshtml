@@ -6,27 +6,6 @@
     ViewBag.Title = "Crear Entrevista";
 }
 
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            $("#sinocentropenitenciario").change(function () {
-                if ($(this).val() === "SI") {
-                    $("#lugarInternamientoDiv").show();
-                } else {
-                    $("#lugarInternamientoDiv").hide();
-                }
-            });
-        });
-        $(document).ready(function () {
-            var centrosPenitenciarios = @Html.Raw(Json.Serialize(ViewBag.centrosPenitenciarios));
-
-            $("#centropenitenciario").autocomplete({
-                source: centrosPenitenciarios
-            });
-        });
-    </script>
-}
-
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="/resources/demos/style.css">
 <link rel="stylesheet" type="text/css" href="~/css/style.css">
@@ -38,7 +17,22 @@
     var listFamiliarReferencia = new Array;
     var listDomSec = new Array;
     var listFamExtranjero = new Array;
-    var key = keys.GOOGLE_API_KEY;   
+      
+    $(document).ready(function () {
+        //#region centro penitenciario
+        $("#sinocentropenitenciario").change(function () {
+                if ($(this).val() === "SI") {
+                    $("#lugarInternamientoDiv").show();
+                } else {
+                    $("#lugarInternamientoDiv").hide();
+                    $("#centropenitenciario").val("NA");
+                }
+            });
+             var centrosPenitenciarios = @Html.Raw(Json.Serialize(ViewBag.centrosPenitenciarios));
+            $("#centropenitenciario").autocomplete({
+                source: centrosPenitenciarios
+            });
+        //#endregion
         //#region -Municipios-
         var items = "<option value='0'>Sin municipio</option>";
         $('#lnMunicipio').html(items);
@@ -988,9 +982,7 @@
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
-                                </div>
-                                
-
+                                </div>                              
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Usted ha estado en algún centro penitenciario?</label>
                                     @Html.DropDownList("sinocentropenitenciario", new SelectList(new[] { "NO", "SI" }), new { @class = "form-control" })
@@ -1000,8 +992,6 @@
                                     <label class="control-label">Lugar de Internamiento</label>
                                     @Html.TextBox("centropenitenciario", null, new { @class = "form-control", maxlength = "45" })
                                 </div>
-                                 
-
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Nombre (s)</label>
                                     <input required name="nombre" id="nombre" type="text" class="form-control" />

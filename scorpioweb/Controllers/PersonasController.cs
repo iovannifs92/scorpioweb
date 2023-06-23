@@ -1666,6 +1666,7 @@ namespace scorpioweb.Controllers
         {
 
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
+
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
                             select table).ToList();
@@ -1719,8 +1720,8 @@ namespace scorpioweb.Controllers
             if (ModelState.ErrorCount <= 1)
             {
                 #region -Persona-
-                persona.Centropenitenciario= mg.removeSpaces(mg.normaliza(centropenitenciario));
-                persona.Centropenitenciario = sinocentropenitenciario;
+                persona.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
+                persona.Sinocentropenitenciario = sinocentropenitenciario;
 
                 persona.TieneResolucion = mg.normaliza(resolucion);
                 persona.Nombre = mg.removeSpaces(mg.normaliza(nombre));
@@ -2653,6 +2654,9 @@ namespace scorpioweb.Controllers
         // GET: Personas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
+            ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
+
             if (id == null)
             {
                 return NotFound();
@@ -2823,13 +2827,19 @@ namespace scorpioweb.Controllers
             ViewBag.listaComlgbtttiq = listaNoSi;
             ViewBag.idComlgbtttiq = BuscaId(listaNoSi, persona.ComLgbtttiq);
 
+            ViewBag.listaSinoCentroPenitenciario = listaNoSi;
+            ViewBag.idSinoCentroPenitenciario = BuscaId(listaNoSi, persona.Sinocentropenitenciario);
+
             //ViewBag.listaUbicacionExp = listaUbicacionExpediente;
             //ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
-
+             
+            ViewBag.idCentroPenitenciario = persona.Centropenitenciario;          
             ViewBag.pais = persona.Lnpais;
             ViewBag.idioma = persona.OtroIdioma;
             ViewBag.traductor = persona.Traductor;
             ViewBag.Hijos = persona.Hijos;
+
+            
 
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
@@ -3016,8 +3026,9 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas,string centropenitenciario,string sinocentropenitenciario)
         {
+           
             Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
             Familiaresforaneos familiaresForaneos = new Familiaresforaneos();
 
@@ -3030,6 +3041,11 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
+
+                persona.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
+                persona.Sinocentropenitenciario = sinocentropenitenciario;
+
+
                 persona.TieneResolucion = mg.removeSpaces(mg.normaliza(persona.TieneResolucion));
                 persona.Paterno = mg.removeSpaces(mg.normaliza(persona.Paterno));
                 persona.Materno = mg.removeSpaces(mg.normaliza(persona.Materno));
