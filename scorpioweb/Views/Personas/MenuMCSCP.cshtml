@@ -31,8 +31,14 @@
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+@if (ViewBag.WarningsUser > 0)
+{
+    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+    </a>
+}  
 <div class="card-group" style="padding-top:2%">
-
+  
     @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
@@ -50,6 +56,7 @@
             </div>
         </div>
     }
+
     <div class="col-sm-3 col-md-3 card text-center">
         <div class="card-body">
             <h4 class="card-title">

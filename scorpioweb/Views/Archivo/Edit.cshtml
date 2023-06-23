@@ -9,6 +9,8 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdArchivo" />
+            <input type="hidden" readonly asp-for="QuienSolicita" />
+            <input type="hidden" readonly asp-for="Solucitud" />
             <div class="form-group">
                 <label class="control-label">Apellido Paterno</label>
                 <input asp-for="Paterno" class="form-control" maxlength="45"/>

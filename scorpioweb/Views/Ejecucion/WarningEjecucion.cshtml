@@ -11,7 +11,7 @@
         }
         var d = new Date(dateString);
         const month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear();
+        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear() + ', A las  ' + d.getHours() + ':' + d.getMinutes()
         return date;
     };
 
@@ -398,6 +398,12 @@
     <br />
     <h4>Alertas</h4>
 </div>
+@if (ViewBag.WarningsUser > 0)
+{
+    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+    </a>
+}
 
 <form asp-action="WarningSupervisor" method="get">
     <div class="form-group col-xs-4">

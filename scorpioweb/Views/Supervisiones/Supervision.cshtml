@@ -108,7 +108,12 @@
 </script>
 
 
-
+@if (ViewBag.WarningsUser > 0)
+{
+    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+    </a>
+}
 @foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCP>)
 {
     <h2 class="blockquote text-center"><a href="@("http://10.6.60.190/Personas/Details/"+item.personaVM.IdPersona)" target="_blank">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</a></h2>

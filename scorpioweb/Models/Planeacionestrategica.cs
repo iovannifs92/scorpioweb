@@ -13,8 +13,10 @@ namespace scorpioweb.Models
         public DateTime? FechaInforme { get; set; }
         public DateTime? FechaUltimoContacto { get; set; }
         public DateTime? FechaProximoContacto { get; set; }
+        public DateTime? FechaAudienciaRs { get; set; }
         public string DiaFirma { get; set; }
         public string PeriodicidadFirma { get; set; }
         public int SupervisionIdSupervision { get; set; }
+        public string Planeacionestrategicacol { get; set; }
     }
 }

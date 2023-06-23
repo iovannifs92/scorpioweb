@@ -20,6 +20,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using scorpioweb.Class;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace scorpioweb.Controllers
 {
@@ -853,6 +854,15 @@ namespace scorpioweb.Controllers
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP")
@@ -1118,6 +1128,16 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
 
             var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
             if (supervision == null)
@@ -1671,7 +1691,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPlaneacionestrategica(int id, [Bind("IdPlaneacionEstrategica,PlanSupervision,MotivoNoPlaneacion,FechaAprobacion,UltimoInforme,FechaInforme,FechaUltimoContacto,FechaProximoContacto,DiaFirma,PeriodicidadFirma,SupervisionIdSupervision")] Planeacionestrategica planeacionestrategica)
+        public async Task<IActionResult> EditPlaneacionestrategica(int id, [Bind("IdPlaneacionEstrategica,PlanSupervision,MotivoNoPlaneacion,FechaAprobacion,UltimoInforme,FechaInforme,FechaUltimoContacto,FechaProximoContacto,FechaAudienciaRs,DiaFirma,PeriodicidadFirma,SupervisionIdSupervision")] Planeacionestrategica planeacionestrategica)
         {
             if (id != planeacionestrategica.SupervisionIdSupervision)
             {
@@ -2679,6 +2699,8 @@ namespace scorpioweb.Controllers
                            FiguraJudicial = table.FiguraJudicial
                        };
 
+           
+
             int idCP = (from table in _context.Supervision
                         where table.IdSupervision == idSupervision
                         select table.CausaPenalIdCausaPenal).FirstOrDefault();
@@ -2735,16 +2757,48 @@ namespace scorpioweb.Controllers
                 inicio = "xxxxxxxxxxxxxxxx-Sin fecha de inicio en Supervisión-xxxxxxxxxxxxxxxxxx";
             }
 
+
+            string final = "";
+
+            try
+            {
+                final = ((from table in _context.Supervision
+                          where table.IdSupervision == idSupervision
+                          select table.Termino).FirstOrDefault()).Value.ToString("dd MMMM yyyy");
+            }
+            catch (System.InvalidOperationException e)
+            {
+                final = "-Sin fecha de termino en Supervisión-";
+            }
+
+
+
+            string fechaAudiencia = "";
+
+            try
+            {
+                fechaAudiencia = ((from tabla in _context.Planeacionestrategica
+                                     where tabla.SupervisionIdSupervision == idSupervision
+                                     select tabla.FechaAudienciaRs).FirstOrDefault()).Value.ToString("dd MMMM yyyy");
+
+            }
+            catch (System.InvalidOperationException e)
+            {
+                fechaAudiencia = "Sin fecha de audiencia";
+            }
+
             string cp = "";
             string juez = "";
             string fechaImposicion = "";
             string figuraJudicial = "";
+            string fechaFinal = "";
             string nombre = "";
             string delito = "";
             string supervisor = "";
             string distrito = "";
             string presentaciones = "";
             string tipoInforme = "C";
+            string fechaAudienciars = "C";
 
             foreach (var p in persona)
             {
@@ -2995,6 +3049,8 @@ namespace scorpioweb.Controllers
             var dataSource = new
             {
                 Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
+                fechaFinal = final,
+                fechaAudienciars = fechaAudiencia, 
                 CP = cp,
                 idPer = idPersona,
                 CI = tipoInforme,

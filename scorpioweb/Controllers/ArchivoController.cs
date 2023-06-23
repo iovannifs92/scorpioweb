@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Security.Claims;
 using scorpioweb.Class;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+
 namespace scorpioweb.Models
 {
     [Authorize]
@@ -54,6 +57,13 @@ namespace scorpioweb.Models
            )
 
         {
+
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -235,7 +245,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Yo,Urldocumento, CondicionEspecial, ExpedienteUnicoIdExpedienteUnico")] Archivo archivo)
+        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Yo,Urldocumento, CondicionEspecial, ExpedienteUnicoIdExpedienteUnico, Solucitud, QuienSolicita")] Archivo archivo)
         {
             if (id != archivo.IdArchivo)
             {
@@ -249,6 +259,8 @@ namespace scorpioweb.Models
                 archivo.Nombre = mg.removeSpaces(mg.normaliza(archivo.Nombre));
                 archivo.Yo = mg.removeSpaces(mg.normaliza(archivo.Yo));
                 archivo.CondicionEspecial = mg.removeSpaces(mg.normaliza(archivo.CondicionEspecial));
+                archivo.Solucitud = archivo.Solucitud;
+                archivo.QuienSolicita = archivo.QuienSolicita;
                 try
                 {
                     _context.Update(archivo);
@@ -375,6 +387,19 @@ namespace scorpioweb.Models
         #region -ArchivoMenu-
         public IActionResult ArchivoMenu()
         {
+            var user = User.Identity.Name;
+            var warningSolicitud = from a in _context.Archivo
+                                    where a.Solucitud == 1
+                                    select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
             return View();
         }
         #endregion
@@ -725,6 +750,14 @@ namespace scorpioweb.Models
                         archivoprestamodigital.UsuarioOtorgaPermiso = mg.normaliza(archivoprestamo.Entrega);
                         archivoprestamodigital.FechaPrestamo = DateTime.Now;
                         archivoprestamodigital.FechaCierre = DateTime.Now.AddDays(7);
+                        archivoprestamodigital.EstadoPrestamo = 1;
+                        var query = (from a in _context.Archivo
+                                     where a.IdArchivo == archivoIdArchivo
+                                     select a).FirstOrDefault();
+                        query.Solucitud = 0;
+                        query.QuienSolicita = "";
+                        _context.SaveChanges();
+
                         _context.Add(archivoprestamodigital);
                         await _context.SaveChangesAsync();
                     }
@@ -824,6 +857,7 @@ namespace scorpioweb.Models
                 archivoprestamo.Estatus = mg.normaliza(archivoprestamo.Estatus);
                 archivoprestamo.Renovaciones = archivoprestamo.Renovaciones;
                 archivoprestamo.ArcchivoIdArchivo = archivoprestamo.ArcchivoIdArchivo;
+               
                 try
                 {
                     _context.Update(archivoprestamo);
@@ -917,6 +951,12 @@ namespace scorpioweb.Models
            int? pageNumber
            )
         {
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -1002,6 +1042,12 @@ namespace scorpioweb.Models
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.showSupervisor = false;
 
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "Masteradmin")
@@ -1036,6 +1082,13 @@ namespace scorpioweb.Models
            int? pageNumber
            )
         {
+
+
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+
+            ViewBag.Warnings = warningSolicitud.Count();
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -1250,6 +1303,121 @@ namespace scorpioweb.Models
             return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
         #endregion
+        #region -Solicitud de prestamo-
+        public async Task<IActionResult> SolicitudesPrestamo(
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            String users = user.ToString();
+            ViewBag.RolesUsuario = users;
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var paraPrestamo = from p in _context.Archivo
+                               where p.Solucitud == 1
+                             select p;
+
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    foreach (var item in searchString.Split(new char[] { ' ' },
+            //        StringSplitOptions.RemoveEmptyEntries))
+            //    {
+            //        paraPrestamo = paraPrestamo.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+            //                                       (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
+            //                                       (p.Idlibronegro.ToString()).Contains(searchString)
+            //                                       );
+            //    }
+            //}
+
+
+            //switch (sortOrder)
+            //{
+            //    case "name_desc":
+            //        libronegro = libronegro.OrderByDescending(p => p.Idlibronegro);
+            //        break;
+            //    default:
+            //        libronegro = libronegro.OrderByDescending(p => p.Idlibronegro);
+            //        break;
+            //}
+            int pageSize = 100;
+            return View(await PaginatedList<Archivo>.CreateAsync(paraPrestamo.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+        public JsonResult solicitud(Archivo archivo, string[] datosoli)
+        {
+            archivo.Solucitud = Convert.ToSByte(datosoli[0] == "true");
+            archivo.IdArchivo = Int32.Parse(datosoli[1]);
+            archivo.QuienSolicita = mg.normaliza(datosoli[2]);
+
+            var empty = (from a in _context.Archivo
+                         where archivo.IdArchivo == archivo.IdArchivo
+                         select a); 
+
+            if (empty.Any())
+            {
+                var query = (from a in _context.Archivo
+                             where a.IdArchivo == archivo.IdArchivo
+                             select a).FirstOrDefault();
+                query.Solucitud = archivo.Solucitud;
+                query.QuienSolicita = archivo.QuienSolicita;
+                _context.SaveChanges();
+            }
+            var stadoc = (from p in _context.Archivo
+                          where p.IdArchivo == archivo.IdArchivo
+                          select p.Solucitud).FirstOrDefault();
+            //return View();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idarchivo = Convert.ToString(archivo.IdArchivo) });
+        }
+
+
+        public JsonResult verDocumento(int datoarchivo)
+        {
+            bool borrar = false;
+
+            var user = User.Identity.Name;
+
+            try
+            {
+                borrar = true;
+                var query = (from a in _context.Archivoprestamodigital
+                                where a.IdArchivoPrestamoDigital == datoarchivo && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                             select a).FirstOrDefault();
+                query.EstadoPrestamo = 0;
+                _context.SaveChanges();
+               
+                return Json(new { success = true, responseText = Url.Action("ArchivoPrestamoDigital", "Archivo"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                return Json(new { success = true, responseText = Url.Action("ArchivoPrestamoDigital", "Archivo"), borrar = borrar });
+            }
+
+        }
+
+
+
+        #endregion 
+
+
 
     }
 }

@@ -1,0 +1,106 @@
+﻿@model IEnumerable<scorpioweb.Models.Archivo>
+
+@{
+    ViewBag.Title = "Solicitud de Prestamo";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            //data: {
+            //    datosBitacora: [IdFracciones],
+            //},
+            error: function (res) {
+
+            }
+        })
+    }
+
+
+
+    function solicitud(id, estado) {
+        var idArchivo = id;
+        var user = ''
+        let text;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/solicitud",
+            traditional: true,
+            data: {
+                datosoli: [estado, idArchivo, user],
+            },
+            success: function (response) {
+                location.reload();
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+</script>
+
+
+<!DOCTYPE html>
+
+<html>
+<body>
+    <h1>Solicitudes de Prestamo Digital</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Nombre Completo
+                </th>
+                <th>
+                    Y/O
+                </th>
+                <th>
+                    Condicion Especial 
+                </th> 
+                <th>
+                    Quien solicita  
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdArchivo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Yo)
+                    </td> 
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CondicionEspecial)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.QuienSolicita)
+                    </td>
+                    <td>
+                        <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-success  fa fa-file-pdf-o" style="margin-top:10px" title="Prestar"> Prestar</a>
+                        <a onclick="solicitud(@item.IdArchivo, false,'')" class="btn btn-warning fa fa-file-pdf-o" style="margin-top:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+ 

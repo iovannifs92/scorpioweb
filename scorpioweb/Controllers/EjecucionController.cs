@@ -85,6 +85,13 @@ namespace scorpioweb.Controllers
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
 
             //List<Archivoprestamo> queryArchivoHistorial = (from a in _context.Archivoprestamo
             //                                               group a by a.ArcchivoIdArchivo into grp
@@ -673,6 +680,15 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             ViewBag.User = user.ToString();
 
+
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
             var ejecucion = await _context.Ejecucion.SingleOrDefaultAsync(m => m.IdEjecucion == id);
             if (ejecucion == null)
             {
@@ -735,6 +751,15 @@ namespace scorpioweb.Controllers
             List<Ejecucion> ejecucions = _context.Ejecucion.ToList();
             List<Epcausapenal> epcausapenals = _context.Epcausapenal.ToList();
             List<Epatencionf> epatencionfs = _context.Epatencionf.ToList();
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
 
             List<string> ListaUserEjecucion = new List<string>();
             foreach (var u in userManager.Users)
@@ -937,6 +962,14 @@ namespace scorpioweb.Controllers
             ViewBag.Nombre = NombreCompleto;
             ViewBag.Ce = Ce;
 
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
             List<Ejecucion> ejecucions = _context.Ejecucion.ToList();
             List<Epcausapenal> epcausapenals = _context.Epcausapenal.ToList();
             List<Epaudiencia> epaudiencias = _context.Epaudiencia.ToList();
@@ -1107,6 +1140,15 @@ namespace scorpioweb.Controllers
             List<Ejecucion> ejecucions = _context.Ejecucion.ToList();
             List<Epcausapenal> epcausapenals = _context.Epcausapenal.ToList();
             List<Epamparo> epamparos = _context.Epamparo.ToList();
+
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
 
 
             ViewData["AmparoEP"] = from ep in ejecucions
@@ -1572,6 +1614,13 @@ namespace scorpioweb.Controllers
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
 
             //List<Archivoprestamo> queryArchivoHistorial = (from a in _context.Archivoprestamo
             //                                               group a by a.ArcchivoIdArchivo into grp
@@ -1725,6 +1774,13 @@ namespace scorpioweb.Controllers
 
             var audienciaOficailia = await _context.Oficialia.SingleOrDefaultAsync(m => m.IdOficialia == id);
 
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
 
             #region -Lista Quien atiende-
             List<string> ListaUser = new List<string>();
@@ -1762,6 +1818,7 @@ namespace scorpioweb.Controllers
             Liatajuzgado.Add("JUZGADO 1");
             Liatajuzgado.Add("JUZGADO 2");
             Liatajuzgado.Add("JUZGADO 3");
+            Liatajuzgado.Add("JUZGADO 4");
 
             ViewBag.Liatajuzgado = Liatajuzgado;
 
@@ -1820,8 +1877,8 @@ namespace scorpioweb.Controllers
                     oficialiaAudiencia.Seguimiento = oficialiaAudiencia.Seguimiento;  
                     oficialiaAudiencia.FechaTermino = oficialiaAudiencia.FechaTermino;
                     oficialiaAudiencia.FechaRecepcion = oficialiaAudiencia.FechaRecepcion;
-                    oficialiaAudiencia.Juzgado = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Juzgado));
-                    oficialiaAudiencia.QuienAsistira = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.QuienAsistira));
+                    oficialiaAudiencia.Juzgado = oficialiaAudiencia.Juzgado;
+                    oficialiaAudiencia.QuienAsistira = "uriel.ortega@dgepms.com";
                     oficialiaAudiencia.CarpetaEjecucion = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.CarpetaEjecucion));
                     oficialiaAudiencia.Paterno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Paterno));
                     oficialiaAudiencia.Materno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Materno));
@@ -1933,6 +1990,15 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.showSupervisor = false;
 
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "Masteradmin")
@@ -1957,6 +2023,13 @@ namespace scorpioweb.Controllers
             DateTime fechaControl = (DateTime.Today).AddDays(3);
             DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
             DateTime fechaHoy = DateTime.Today;
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
 
             if (User.Identity.Name == "jazmin.flores@dgepms.com") {
                 flagDirector = true;
@@ -2096,6 +2169,16 @@ namespace scorpioweb.Controllers
                                     };
 
             ViewBag.Warnings = warningPlaneacion.Count();
+
+
+
+            var user = User.Identity.Name;
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count(); 
+            #endregion
 
             return View(); 
         }

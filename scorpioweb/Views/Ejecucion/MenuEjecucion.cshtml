@@ -29,12 +29,20 @@
 
 
 
+
 <div class="card-group" style="padding-top:2%">
     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.Identity.Name == "jazmin.flores@dgepms.com")
     {
         <div class="col-md-12 col-md-12">
             <h2>Ejecución de Penas  </h2>
+            @if (ViewBag.WarningsUser > 0)
+            {
+                <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+                    <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+                </a>
+            }
         </div>
+        
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -65,10 +73,10 @@
             <div class="card-body">
                 <h4 class="card-title">
                     <a asp-controller="Ejecucion" asp-action="WarningEjecucion">
-                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" >
+                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap">
                         Alertas <span class="badge" style="background-color:red">@ViewBag.Warnings</span>
                     </a>
-                </h4> 
+                </h4>
             </div>
         </div>
     }

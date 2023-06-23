@@ -26,6 +26,10 @@
                 <a asp-controller="Archivo" asp-action="ArchivoPrestamoDigital">
                     <img class="card-img-bottom" src="~/images/pdf-file.png" alt="Card image cap" style="padding-bottom:5%;">
                     Control de préstamo digital
+                    @if (ViewBag.WarningsUser > 0)
+                    {
+                        <span class="badge" style="background-color:blue">@ViewBag.WarningsUser</span>
+                    }
                 </a>
             </h4>
         </div>
@@ -52,6 +56,22 @@
                     </a>
                 </h4>
             </div>
+        </div> 
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Archivo" asp-action="SolicitudesPrestamo">
+                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap">
+                        Solicitudes Prestamo Digital  
+                        @if (ViewBag.Warnings > 0)
+                        {
+                            <span class="badge" style="background-color:red">@ViewBag.Warnings</span>
+                        }
+                    </a>
+                </h4>
+            </div>
         </div>
     }
 </div>
+
+
