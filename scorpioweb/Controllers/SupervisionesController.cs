@@ -20,6 +20,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using scorpioweb.Class;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace scorpioweb.Controllers
 {
@@ -853,6 +854,15 @@ namespace scorpioweb.Controllers
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP")
@@ -1118,6 +1128,16 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
 
             var supervision = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == id);
             if (supervision == null)

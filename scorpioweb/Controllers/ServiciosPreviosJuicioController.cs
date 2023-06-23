@@ -139,6 +139,15 @@ namespace scorpioweb.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
 
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
 
             if (searchString != null)
             {

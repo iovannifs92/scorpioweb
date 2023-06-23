@@ -7,23 +7,43 @@
 }
 
 <script>
-
-    showModal = (url, title, id) => { 
+    showModal = (url, title, id) => {
         $.ajax({
-            type: "GET",
-            url: url + "?id="+id,
-            success: function (res) {
-                $("#form-modal .modal-body").html(res);
-                $("#form-modal .modal-title").html(title);
-                $("#form-modal").modal('show');
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/verDocumento",
+            traditional: true,
+            data: {
+                datoarchivo: id,
             },
-            //data: {
-            //    datosBitacora: [IdFracciones],
-            //},
-            error: function (res) {
+            success: function (response) {
+                if (response.borrar == true) {
+                    $.ajax({
+                        type: "GET",
+                        url: url + "?id=" + id,
+                        success: function (res) {
+                            $("#form-modal .modal-body").html(res);
+                            $("#form-modal .modal-title").html(title);
+                            $("#form-modal").modal('show');
+                        },
+                        //data: {
+                        //    datosBitacora: [IdFracciones],
+                        //},
+                        error: function (res) {
+
+                        }
+                    });
+
+                } else {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            },
+            error: function (response) {
+                alert(response.error);
 
             }
-        })
+        });
+       
     }
 
 
@@ -172,8 +192,8 @@
                     }
                 </td>
                 <td>
-                    <a onclick="showModal('@Url.Action("ArchivoCausas", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Expediente digital',null )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Ver archivos </a> 
-                </td>   
+                        <a onclick="showModal('@Url.Action("ArchivoCausas", "Archivo", new {id=@item.archivoVM.IdArchivo}, Context.Request.Scheme)','Expediente digital',@item.archivoprestamodigitalVM.IdArchivoPrestamoDigital )" class="btn btn-primary fa fa-folder" title="Agregar archivo"> Ver archivos </a>
+                    </td>   
             </tr>
             }
         }

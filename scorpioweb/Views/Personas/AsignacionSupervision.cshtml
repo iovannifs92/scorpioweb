@@ -46,6 +46,12 @@
 else
 {
     <h2>Asignación de Supervisión</h2>
+    @if (ViewBag.WarningsUser > 0)
+    {
+        <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+            <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+        </a>
+    }
     <p>
         <a asp-action="Reasignacion">
             Resignación

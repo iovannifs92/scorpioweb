@@ -463,6 +463,16 @@ namespace scorpioweb.Controllers
                 searchString = currentFilter;
             }
 
+            var usu = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && usu.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
 
             ViewData["CurrentFilter"] = searchString;
 
@@ -582,6 +592,15 @@ namespace scorpioweb.Controllers
         #region -Colaboraciones-
         public IActionResult Colaboraciones()
         {
+            var user = User.Identity.Name;
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
             var colaboraciones = (from persona in _context.Persona
                                   join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
                                   join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
@@ -632,6 +651,13 @@ namespace scorpioweb.Controllers
             DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
             DateTime fechahoy = DateTime.Today;
             Boolean flagMaster = false;
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
 
             ViewBag.Warnings = 0;
 
@@ -995,6 +1021,16 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> AsignacionSupervision()
         {
+            var usu = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && usu.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
             foreach (var user in userManager.Users)
@@ -1046,6 +1082,9 @@ namespace scorpioweb.Controllers
             string recomendacion = (recomendar[0].Supervisor).ToString();
 
             ViewBag.Recomendacion = recomendacion;
+
+
+
             return View(await _context.Persona.ToListAsync());
         }
 
@@ -2557,6 +2596,16 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
 
             var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
             if (persona == null)
@@ -4663,6 +4712,15 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.showSupervisor = false;
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
 
             foreach (var rol in roles)
             {

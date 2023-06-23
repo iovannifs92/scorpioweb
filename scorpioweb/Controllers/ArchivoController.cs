@@ -393,11 +393,12 @@ namespace scorpioweb.Models
                                     select a;
 
             ViewBag.Warnings = warningSolicitud.Count();
-
+            #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
                                    where a.EstadoPrestamo == 1 && user.ToUpper() == a.Usuario.ToUpper()
                                    select a;
             ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
 
             return View();
         }
@@ -1367,7 +1368,7 @@ namespace scorpioweb.Models
 
             var empty = (from a in _context.Archivo
                          where archivo.IdArchivo == archivo.IdArchivo
-                         select a);
+                         select a); 
 
             if (empty.Any())
             {
@@ -1385,7 +1386,37 @@ namespace scorpioweb.Models
 
             return Json(new { success = true, responseText = Convert.ToString(stadoc), idarchivo = Convert.ToString(archivo.IdArchivo) });
         }
+
+
+        public JsonResult verDocumento(int datoarchivo)
+        {
+            bool borrar = false;
+
+            var user = User.Identity.Name;
+
+            try
+            {
+                borrar = true;
+                var query = (from a in _context.Archivoprestamodigital
+                                where a.IdArchivoPrestamoDigital == datoarchivo && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                             select a).FirstOrDefault();
+                query.EstadoPrestamo = 0;
+                _context.SaveChanges();
+               
+                return Json(new { success = true, responseText = Url.Action("ArchivoPrestamoDigital", "Archivo"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                return Json(new { success = true, responseText = Url.Action("ArchivoPrestamoDigital", "Archivo"), borrar = borrar });
+            }
+
+        }
+
+
+
         #endregion 
+
 
 
     }
