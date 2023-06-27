@@ -16,6 +16,7 @@ using System.Security.Claims;
 using scorpioweb.Class;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using scorpioweb.Migrations.ApplicationDb;
 
 namespace scorpioweb.Models
 {
@@ -972,8 +973,18 @@ namespace scorpioweb.Models
             {
                 SearchString = currentFilter;
             }
-
-            var filter = from a in _context.Archivo
+          
+            IQueryable<ArchivoControlPrestamo> filter;
+           
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+            if (roles.Contains("Masteradmin") || roles.Contains("Archivo"))
+            {
+                filter = from a in _context.Archivo
                          join ap in _context.Archivoprestamo on a.IdArchivo equals ap.ArcchivoIdArchivo
                          where ap.Estatus == "PRESTADO"
                          select new ArchivoControlPrestamo
@@ -981,6 +992,21 @@ namespace scorpioweb.Models
                              archivoVM = a,
                              archivoprestamoVM = ap
                          };
+
+            }
+            else
+            {
+                
+                filter = from a in _context.Archivo
+                         join ap in _context.Archivoprestamo on a.IdArchivo equals ap.ArcchivoIdArchivo
+                         where ap.Recibe == user.ToString()
+                         select new ArchivoControlPrestamo
+                         {
+                             archivoVM = a,
+                             archivoprestamoVM = ap
+                         };
+
+            }
 
             ViewData["CurrentFilter"] = SearchString;
             ViewData["EstadoS"] = estadoSuper;
@@ -993,6 +1019,8 @@ namespace scorpioweb.Models
                                               );
 
             }
+
+
 
             switch (sortOrder)
             {
@@ -1116,7 +1144,7 @@ namespace scorpioweb.Models
             DateTime date = DateTime.Now;
 
 
-            if (roles.ToString() == "Masteradmin" || roles.ToString() == "Archivo")
+            if (roles.Contains("Masteradmin") || roles.Contains("Archivo"))
             {
                 filter = from a in _context.Archivo
                          join ap in _context.Archivoprestamodigital on a.IdArchivo equals ap.ArchivoIdArchivo
