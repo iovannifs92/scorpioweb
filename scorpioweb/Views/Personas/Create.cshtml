@@ -17,9 +17,22 @@
     var listFamiliarReferencia = new Array;
     var listDomSec = new Array;
     var listFamExtranjero = new Array;
-    var key = keys.GOOGLE_API_KEY;
-
+      
     $(document).ready(function () {
+        //#region centro penitenciario
+        $("#sinocentropenitenciario").change(function () {
+                if ($(this).val() === "SI") {
+                    $("#lugarInternamientoDiv").show();
+                } else {
+                    $("#lugarInternamientoDiv").hide();
+                    $("#centropenitenciario").val("NA");
+                }
+            });
+             var centrosPenitenciarios = @Html.Raw(Json.Serialize(ViewBag.centrosPenitenciarios));
+            $("#centropenitenciario").autocomplete({
+                source: centrosPenitenciarios
+            });
+        //#endregion
         //#region -Municipios-
         var items = "<option value='0'>Sin municipio</option>";
         $('#lnMunicipio').html(items);
@@ -62,7 +75,7 @@
                 async: false
             });
 
-            localStorage.setItem('municipioAnterior', $('#municipioD').val());
+            localStorage.setItem('municipioAnterior',$('#municipioD').val());
             var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
             var ddlsource = '#estadoD';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
@@ -70,7 +83,7 @@
                 var items = "<option value=''>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
-                    if (municipio.text == document.getElementById("municipioD").text) {
+                    if(municipio.text == document.getElementById("municipioD").text) {
                         items += "<option value='" + municipio.value + "' selected>" + municipio.text + "</option>";
                     }
                     else {
@@ -79,7 +92,7 @@
                 });
                 $('#municipioD').html(items);
             });
-            localStorage.setItem('municipioD', $('#municipioD').val());
+            localStorage.setItem('municipioD',$('#municipioD').val());
 
             $.ajaxSetup({
                 async: true
@@ -483,7 +496,7 @@
                 alert("Coloque los datos correspondientes");
             } else {
                 $("#modalFamiliaresExtranjero").modal('hide');
-            }
+                        }
         });
         //#endregion
 
@@ -694,11 +707,11 @@
             e.preventDefault();
             if (tipo == 1) {
                 var Familiares = document.getElementById('Familiares');
-                Familiares.value = 'NO';
+              Familiares.value = 'NO';
             }
             else if (tipo == 2) {
-                var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
-                ReferenciasPersonales.value = 'NO';
+              var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
+              ReferenciasPersonales.value = 'NO';
             }
         });
         $('#btnGeocoding').on("click", function (e) {
@@ -724,8 +737,8 @@
                     return;
                 }
             }
-            else {
-                if (confirm('¿Deseas guardar los datos de toda la entrevista?') == false) {
+            else{
+                if(confirm('¿Deseas guardar los datos de toda la entrevista?') == false){
                     return;
                 }
             }
@@ -832,7 +845,7 @@
 
                     for (i = 0; i < res.length; i++) {
                         if (!this.value || (request.term && !matcher[i].test(text)))
-                            return;
+                        return;
                     }
                     resultset.push({
                         label: text,
@@ -901,8 +914,8 @@
                     email: true,
                 },
             },
-            invalidHandler: function (e, validator) {
-                for (var i = 0; i < validator.errorList.length; i++) {
+            invalidHandler: function(e,validator) {
+                for (var i=0;i<validator.errorList.length;i++){
                     $(validator.errorList[i].element).parents('.panel-collapse.collapse').collapse('show');
                 }
             }
@@ -921,7 +934,7 @@
             url: "/Personas/testSimilitud",
             traditional: true,
             data: {
-                nombre, paterno, materno,
+                    nombre, paterno, materno,
             },
             success: function (response) {
                 if (response.success == true) {
@@ -969,6 +982,15 @@
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
+                                </div>                              
+                                <div class="form-group col-md-12">
+                                    <label class="control-label">¿Usted ha estado en algún centro penitenciario?</label>
+                                    @Html.DropDownList("sinocentropenitenciario", new SelectList(new[] { "NO", "SI" }), new { @class = "form-control" })
+                                </div>
+
+                                <div class="form-group autocomplete col-md-12" id="lugarInternamientoDiv" style="display: none;">
+                                    <label class="control-label">Lugar de Internamiento</label>
+                                    @Html.TextBox("centropenitenciario", null, new { @class = "form-control", maxlength = "45" })
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Nombre (s)</label>
@@ -984,7 +1006,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Apellido materno</label>
-                                    <input name="materno" type="text" class="form-control" onblur="myFunction(value)" />
+                                    <input name="materno"  type="text" class="form-control" onblur="myFunction(value)" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Nombre del padre</label>
@@ -998,7 +1020,7 @@
                                     <label class="control-label">Alias</label>
                                     <input name="alias" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-6">   
                                     <label class="control-label">Sexo</label>
                                     <select required class="form-control" name="sexo" id="sexo">
                                         <option value="M">Masculino</option>
@@ -1153,7 +1175,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12">
-                                    <label class="control-label">Añadir Referencias</label>
+                                    <label class="control-label" >Añadir Referencias</label>
                                     <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
@@ -1193,8 +1215,9 @@
                                         <option value="MCSCP7-4">MCSCP7-4</option>
                                     </select>
                                 </div>
-                                <div class="col-md-12">
-                                </div>
+                                    
+
+                             
                             </div>
                         </div>
                         <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1208,10 +1231,10 @@
                                 <script id="GoogleApi"></script>
                                 <script src="~/js/scripts.js"></script>
                                 <script>
-                                var url = "https://maps.googleapis.com/maps/api/js?key=";
-                                var api = key;
-                                var url2 = "&callback=iniciarMap&v=weekly";
-                                document.getElementById("GoogleApi").src = url + api + url2;
+                                    var url = "https://maps.googleapis.com/maps/api/js?key=";
+                                    var api = key;
+                                    var url2 = "&callback=iniciarMap&v=weekly";
+                                    document.getElementById("GoogleApi").src = url + api + url2;
                                 </script>
                                 <input  required id="lat" name="lat" type="text" class="form-control" />
                                 <input  id="lng" name="lng" type="text" class="form-control" />*@
@@ -1228,8 +1251,8 @@
                                             <option value="IRREGULAR">Irregular</option>
                                         </select>
                                     </div>
-                                    @* <button class="btn btn-primary form-group col-sm-3" type="button"  id="btnGeocoding" name="btnGeocoding">
-                                    <i class="fa fa-map-marker"></i> Posicionar marcador
+                                   @* <button class="btn btn-primary form-group col-sm-3" type="button"  id="btnGeocoding" name="btnGeocoding">
+                                        <i class="fa fa-map-marker"></i> Posicionar marcador
                                     </button>*@
                                 </div>
                                 <div class="form-group col-md-5">
@@ -1266,13 +1289,13 @@
                                 <div class="form-group col-md-4" id="EstadoD">
                                     <label class="control-label">Estado</label>
                                     <select class="form-control" name="estadoD" id="estadoD"
-                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id", "Estado", 10))" runat="server">
+                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado", 10))" runat="server">
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4" id="MunicipioD">
                                     <label class="control-label">Municipio</label>
                                     <select required class="form-control" name="municipioD" id="municipioD"
-                                            asp-items="@(new SelectList(ViewBag.ListaMunicipios, "Id", "Municipio", 282))">
+                                            asp-items="@(new SelectList(ViewBag.ListaMunicipios,"Id","Municipio", 282))">
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">
@@ -1384,13 +1407,13 @@
                                             <div class="form-group col-md-4" id="EstadoDDS">
                                                 <label class="control-label">Estado</label>
                                                 <select class="form-control" name="estadoDDS" id="estadoDDS"
-                                                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id", "Estado"))">
+                                                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))">
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-4" id="MunicipioDDS">
                                                 <label class="control-label">Municipio</label>
                                                 <select class="form-control" name="municipioDDS" id="municipioDDS"
-                                                        asp-items="@(new SelectList(string.Empty, "Id", "Municipio"))">
+                                                        asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-6">
@@ -1484,7 +1507,7 @@
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
-
+                                
                                 <div class="form-group" style="padding-left:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
@@ -1708,10 +1731,10 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                    @*<div class="form-group" style="display:none" id="cuantosFamiliares">
-                                <label class="control-label">¿Cuántos familiares?</label>
-                                <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
-                                </div>*@
+                                @*<div class="form-group" style="display:none" id="cuantosFamiliares">
+                                        <label class="control-label">¿Cuántos familiares?</label>
+                                        <input name="cuantosFamiliares" type="number" class="form-control" value="0" id="cuantosFamiliaresDentro" />
+                                    </div>*@
                             </div>
                         </div>
                         <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">

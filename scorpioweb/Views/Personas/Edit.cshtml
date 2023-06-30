@@ -4,14 +4,15 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 @* Necesario para los modales en el servidor *@
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="~/js/jquery-1.11.1.min.js"></script>
-
+<script src="~/js/jquery-ui.js"></script>
 <script type="text/javascript">
         var ASIENTO_SIZE = 14;
         var tipo = 0;
         var listaConsumo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaConsumo))');
         var listaFamiliares = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaAsientoFamiliares))');
-        var listaReferencias = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaAsientoReferencias))');
+        var listaReferencias = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.ListaAsientoReferencias))');    
         var contadorSustancia = 1;
         var contadorFamiliares = 1;
         var contadorReferencias = 1;
@@ -26,8 +27,31 @@
         var listDomSecEditados = new Array;
         var listFamExtranjero = new Array;
         var listFamExtranjerosEditados = new Array;
-
-        $(document).ready(function () {
+        
+    
+    $(document).ready(function () {
+        //#region centro penitenciario
+        var sinocentropenitenciario = @Html.Raw(Json.Serialize(ViewBag.idSinoCentroPenitenciario));
+            if(sinocentropenitenciario == "SI"){
+                $("#lugarInternamientoDiv").show();
+            } else{
+                $("#lugarInternamientoDiv").hide();
+            }     
+         $("#sinocentropenitenciario").change(function () {            
+            if ($(this).val() === "SI") {
+                var x = @Html.Raw(Json.Serialize(ViewBag.idCentroPenitenciario));
+                $("#lugarInternamientoDiv").show();
+                $("#centropenitenciario").val(x);
+            } else {
+                $("#lugarInternamientoDiv").hide();
+                $("#centropenitenciario").val("NA");
+            }
+        });
+        var centrosPenitenciarios = @Html.Raw(Json.Serialize(ViewBag.centrosPenitenciarios));
+        $("#centropenitenciario").autocomplete({
+            source: centrosPenitenciarios
+        });
+        //#endregion
         //#region inicializar
         //#region Editar Sustancias
         var consumoSustancias = document.getElementById("consumoSustancias")
@@ -765,6 +789,16 @@
                 <select class="form-control" name="TieneResolucion" id="TieneResolucion"
                         asp-items="@(new SelectList(ViewBag.listaResolucion, "Value", "Text", @ViewBag.idResolucion))">
                 </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">¿Usted ha estado en algún centro penitenciario?</label>
+                <select class="form-control" name="sinocentropenitenciario" id="sinocentropenitenciario"
+                    asp-items="@(new SelectList(ViewBag.listaSinoCentroPenitenciario, "Value", "Text",@ViewBag.idSinoCentroPenitenciario))">
+                </select>
+            </div>         
+            <div class="form-group autocomplete col-md-12" id="lugarInternamientoDiv">
+                 <label class="control-label">Lugar de Internamiento</label>
+                  @Html.TextBox("centropenitenciario",(object)ViewBag.idCentroPenitenciario,new { @class = "form-control", maxlength = "45"})
             </div>
             <input hidden name="arraySustancias" id="arraySustancias" type="text" />
             <input hidden name="arraySustanciasEditadas" id="arraySustanciasEditadas" type="text" />
