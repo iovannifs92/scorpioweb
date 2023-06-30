@@ -437,9 +437,8 @@ namespace scorpioweb.Controllers
         }
         public async Task<IActionResult> CreateEpCausapenal2(int id)
         {
-            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
-            ViewBag.directorio = _context.Directoriojueces.Select(Directoriojueces => Directoriojueces.Area).ToList();
-
+            ViewBag.catalogo = await _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToListAsync();
+            ViewBag.directorio = await _context.Directoriojueces.Select(Directoriojueces => Directoriojueces.Area).ToListAsync();
 
             ViewBag.idEjecucion = id;
             List<string> Liatajuzgado = new List<string>();
@@ -485,7 +484,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Editar EP Causa Penal-
-        public async Task<IActionResult> EditEPCausaPenal(int id)
+        public async Task<IActionResult> EditEPCausaPenal(int? id)
         {
             if (id == null)
             {
@@ -664,8 +663,6 @@ namespace scorpioweb.Controllers
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("Index", "Ejecucion"), borrar = borrar });
             }
-
-            return Json(new { success = true, idPersonas = Convert.ToString(id) });
         }
 
         #endregion

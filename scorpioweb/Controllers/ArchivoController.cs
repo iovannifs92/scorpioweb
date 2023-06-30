@@ -218,12 +218,6 @@ namespace scorpioweb.Models
             {
                 return Json(new { success = false, responseText = Url.Action("Index", "Archivo"), create });
             }
-
-            var stadoc = (from a in _context.Archivo
-                          where a.IdArchivo == id
-                          select a.IdArchivo).FirstOrDefault();
-
-            return Json(new { success = false });
         }
         #endregion
 
@@ -329,11 +323,6 @@ namespace scorpioweb.Models
                 borrar = true;
                 return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar = borrar });
             }
-            var stadoc = (from a in _context.Archivo
-                          where a.IdArchivo == id
-                          select a.IdArchivo).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
         public JsonResult deletesuper(Archivo archivo, Historialeliminacion historialeliminacion, string[] datosuper)
         {
@@ -368,12 +357,6 @@ namespace scorpioweb.Models
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("index", "Archivo"), borrar = borrar });
             }
-
-            var stadoc = (from a in _context.Archivo
-                          where a.IdArchivo == id
-                          select a.IdArchivo).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
         #endregion
 
@@ -649,17 +632,11 @@ namespace scorpioweb.Models
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar = borrar });
             }
-
-            var stadoc = (from c in _context.Archivo
-                          where c.IdArchivo == dato
-                          select c.IdArchivo).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(dato) });
         }
         #endregion 
 
         #region -Prestamo-
-        public async Task<IActionResult> CreatePrestamo(int id, Archivoprestamo archivoprestamo, Archivo archivo, Areas areas)
+        public async Task<IActionResult> CreatePrestamo(int? id, Archivoprestamo archivoprestamo, Archivo archivo, Areas areas)
         {
             ViewBag.idArchivo = id;
 
@@ -773,7 +750,7 @@ namespace scorpioweb.Models
             return View(archivoprestamo);
         }
 
-        public async Task<IActionResult> EditPrestamo(int id, int IdPrestamo)
+        public async Task<IActionResult> EditPrestamo(int? id, int IdPrestamo)
         {
             if (id == null)
             {
@@ -1240,12 +1217,7 @@ namespace scorpioweb.Models
                               }).ToList();
 
                 return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update, nombre = nombre }); ;
-            }
-            var stadoc = (from s in _context.Archivo
-                          where s.IdArchivo == id
-                          select s.IdArchivo).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idSupervision = Convert.ToString(id) });
+            }  
         }
         public JsonResult Reasignar(Archivoregistro archivoregistro, string datoidArchivo, string datoidArchivoregistro)
         {
@@ -1295,12 +1267,6 @@ namespace scorpioweb.Models
                 var error = ex;
                 return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update, error = error });
             }
-
-            var stadoc = (from c in _context.Archivoregistro
-                          where c.IdArchivoRegistro == idd
-                          select c.IdArchivoRegistro).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc) });
         }
         #endregion
         #region -Solicitud de prestamo-

@@ -23,7 +23,12 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
                     },
                     eventClick:  function(info, jsEvent, view) {
+                    if (tipoCalendario == 1) {
                         showModal('@Url.Action("Edit","Calendarios",null,Context.Request.Scheme)', 'Editar Evento', info.event.id);
+                    }
+                    else {
+                        showModal('@Url.Action("EditOficialia","Calendarios",null,Context.Request.Scheme)', 'Evento', info.event.id);
+                    }
                     },
                     eventDidMount: function(arg) {
                       let val = selector.value;
@@ -39,8 +44,7 @@
                     dayMaxEvents: true,
                     events: events
                 });
-
-                calendar.render();
+            calendar.render();
         });
     });
 
@@ -66,7 +70,7 @@
 
     function getEventosCalendario(){
         $.get('/Calendarios/getCalendarTasks?origen='+'@ViewBag.origen')
-            .done(function (data){                
+            .done(function (data){     
                 const date = new Date();
                 var calendarEl = document.getElementById('calendar');  
                 let selector = document.querySelector("#filtro");
@@ -82,7 +86,18 @@
                     if(data[i].Idcalendario == 0){
                         if (tipoCalendario == 1) {
                             url=new URL('http://10.6.60.190/Supervisiones/Supervision/'+data[i].IdSupervision);
-                        }                        
+                        }  else{
+                            //alert(data[i].Usuario)
+                            switch (data[i].Usuario) {
+                                case "uriel.ortega@dgepms.com":
+                                    url = new URL('http://10.6.60.190/Ejecucion/listaEpCrearAudiencia');
+                                break;
+                                default:
+                                    url = new URL('http://10.6.60.190/Oficialia/Seguimiento');
+                                break;
+                            };
+                            
+                        }                      
                     }
                     events.push({
                         'id': idcalendario,
@@ -170,8 +185,14 @@
         }
         else
         {
-            <select class="form-control" id="filtro" style="display:none">
+            <select class="form-control" id="filtro">
               <option value="all">Todos</option>
+                <option value="1">Audiencia</option>
+                <option value="2">Solicitud de Información</option>
+                <option value="3">Solicitud de  Informe</option>
+                <option value="4">Evaluacion de Riesgo</option>
+                <option value="5">Adolecesntes-Acuerdo</option>
+                <option value="6">Otro</option>
             </select>
         }
     </div>

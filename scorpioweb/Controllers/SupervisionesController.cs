@@ -44,7 +44,7 @@ namespace scorpioweb.Controllers
         private readonly penas2Context _context;
         public static List<string> datosSupervision = new List<string>();
 
-        private List<SelectListItem> listaNaSiNo = new List<SelectListItem>
+        private readonly List<SelectListItem> listaNaSiNo = new List<SelectListItem>
 
         {
             new SelectListItem{ Text="NA", Value="NA"},
@@ -467,7 +467,7 @@ namespace scorpioweb.Controllers
 
 
         #region -Acciones de supervision-
-        public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int id, string idpersona, string[] datosBitacora, string supervisor, int idcp)
+        public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int? id, string idpersona, string[] datosBitacora, string supervisor, int idcp)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)
@@ -718,11 +718,6 @@ namespace scorpioweb.Controllers
                 borrar = true;
                 return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar });
             }
-            var stadoc = (from s in _context.Supervision
-                          where s.IdSupervision == id
-                          select s.IdSupervision).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idSupervision = Convert.ToString(id) });
         }
         public JsonResult deletesuper(Supervision supervision, Historialeliminacion historialeliminacion, string[] datosuper)
         {
@@ -763,12 +758,6 @@ namespace scorpioweb.Controllers
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
             }
-
-            var stadoc = (from c in _context.Causapenal
-                          where c.IdCausaPenal == id
-                          select c.IdCausaPenal).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(id) });
         }
 
 
@@ -2363,7 +2352,7 @@ namespace scorpioweb.Controllers
 
 
         #endregion
-        public async Task<IActionResult> EditBitacora(int id, string nombre, string cp, int idpersona, string supervisor, int idcp)
+        public async Task<IActionResult> EditBitacora(int? id, string nombre, string cp, int idpersona, string supervisor, int idcp)
         {
             int index = cp.IndexOf("?");
             if (index >= 0)

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Newtonsoft.Json.Serialization;
-
+using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
 
 namespace scorpioweb.Controllers
 {
@@ -205,40 +205,161 @@ namespace scorpioweb.Controllers
             return tasks;
         }
         #endregion
+        #region -ASIGNACION DE COLORES A CALENDARIO-
+        private string GetColorByAsuntoOficio(string asuntoOficio)
+        {
+            switch (asuntoOficio)
+            {
+                case "AUDIENCIA":
+                    return "#FF0000"; // Rojo
+                case "SOLICITUD DE INFORMACION":
+                    return "#00FF00"; // Verde
+                case "SOLICITUD DE INFORME":
+                    return "#0000FF"; // Azul
+                case "EVALUACIÓN DE RIESGO":
+                    return "#FFFF00"; // Amarillo
+                case "ADOLESCENTES-ACUERDO":
+                    return "#FF00FF"; // Magenta
+                default:
+                    return "#CA9B26"; // Color predeterminado
+            }
+        }
+        #endregion
 
         #region -getEventosOficialia-
         public async Task<object> getEventosOficialia()
         {
             #region -Variables de usuario-
-            /*var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             bool flagCoordinador = false;
             string usuario = user.ToString();
 
             foreach (var rol in roles)
             {
-                if (rol == "AdminMCSCP")
+                if (rol == "Masteradmin" || rol == "Oficialia")
                 {
                     flagCoordinador = true;
                 }
-            }*/
+            }
             #endregion
 
             #region -Query para terminos-
+
             var terminos = from o in _context.Oficialia
-                                where o.TieneTermino =="SI"
-                                select new
-                                {
-                                    Idcalendario = o.IdOficialia,
-                                    FechaEvento = o.FechaTermino,
-                                    Mensaje = o.PaternoMaternoNombre + " ---- " +o.AsuntoOficio,
-                                    Color = "#E00101",
-                                    IdSupervision = 0,
-                                    Tipo = 1,
-                                    Supervisor = o.Recibe
-                                };
+                            where o.TieneTermino == "SI" 
+                            select new
+                            {
+                                Idcalendario = 0,
+                                FechaEvento = o.FechaTermino,
+                                Mensaje = $"{o.Paterno} {o.Materno} {o.Nombre} ---- {o.AsuntoOficio}",
+                                Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                                idOficialia = o.IdOficialia,
+                                Tipo = 0,
+                                Usuario = o.Recibe
+                            };
+
+
+            var audiencia = from o in _context.Oficialia
+                            where o.TieneTermino == "SI" && o.AsuntoOficio == "AUDIENCIA"
+                            select new
+                            {
+                                Idcalendario = 0,
+                                FechaEvento = o.FechaTermino,
+                                Mensaje = o.Paterno + " " + o.Materno + " " + o.Nombre + " --- AUDIENCIA",
+                                Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                                idOficialia = o.IdOficialia,
+                                Tipo = 1,
+                                Usuario = o.UsuarioTurnar
+                            };
+
+
+            var solicitudAudiencia = from o in _context.Oficialia
+                                     where o.TieneTermino == "SI" && o.AsuntoOficio == "SOLICITUD DE INFORMACION"
+                                     select new
+                                     {
+                                         Idcalendario = 0,
+                                         FechaEvento = o.FechaTermino,
+                                         Mensaje = o.Paterno + " " + o.Materno + " " + o.Nombre + " --- SOLICITUD DE INFORMACION",
+                                         Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                                         idOficialia = o.IdOficialia,
+                                         Tipo = 2,
+                                         Usuario = o.UsuarioTurnar
+                                     };
+
+
+            var solicitudInforme = from o in _context.Oficialia
+                                   where o.TieneTermino == "SI" && o.AsuntoOficio == "SOLICITUD DE INFORME"
+                                   select new
+                                   {
+                                       Idcalendario = 0,
+                                       FechaEvento = o.FechaTermino,
+                                       Mensaje = o.Paterno + " " + o.Materno + " " + o.Nombre + " --- SOLICITUD DE INFORME",
+                                       Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                                       idOficialia = o.IdOficialia,
+                                       Tipo = 3,
+                                       Usuario = o.UsuarioTurnar
+                                   };
+
+            var evaluacionRiesgo = from o in _context.Oficialia
+                                   where o.TieneTermino == "SI" && o.AsuntoOficio == "EVALUACIÓN DE RIESGO"
+                                   select new
+                                   {
+                                       Idcalendario = 0,
+                                       FechaEvento = o.FechaTermino,
+                                       Mensaje = o.Paterno + " " + o.Materno + " " + o.Nombre + " --- EVALUACIÓN DE RIESGO",
+                                       Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                                       idOficialia = o.IdOficialia,
+                                       Tipo = 4,
+                                       Usuario = o.UsuarioTurnar
+                                   };
+
+            var adolecentesAcuerdo = from o in _context.Oficialia
+                                   where o.TieneTermino == "SI" && o.AsuntoOficio == "ADOLESCENTES ACUERDO"
+                                   select new
+                                   {
+                                       Idcalendario = 0,
+                                       FechaEvento = o.FechaTermino,
+                                       Mensaje = o.Paterno + " " + o.Materno + " " + o.Nombre + " --- EVALUACIÓN DE RIESGO",
+                                       Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                                       idOficialia = o.IdOficialia,
+                                       Tipo = 5,
+                                       Usuario = o.UsuarioTurnar
+                                   };
+
+            
+            var otro = from o in _context.Oficialia
+                       where o.TieneTermino == "SI" && !new[] { "AUDIENCIA", "SOLICITUD DE INFORMACION", "SOLICITUD DE INFORME", "EVALUACIÓN DE RIESGO", "ADOLESCENTES-ACUERDO" }.Contains(o.AsuntoOficio)
+                       select new
+                       {
+                           Idcalendario = 0,
+                           FechaEvento = o.FechaTermino,
+                           Mensaje = o.Paterno + " " + o.Materno + " " + o.Nombre + " --- ADOLESCENTES-ACUERDO",
+                           Color = GetColorByAsuntoOficio(o.AsuntoOficio),
+                           idOficialia = o.IdOficialia,
+                           Tipo = 6,
+                           Usuario = o.UsuarioTurnar
+                       };
+
+
             #endregion
-            return terminos;
+
+
+            if (!flagCoordinador)
+            {
+                audiencia = audiencia.Where(p => p.Usuario == usuario);
+                solicitudAudiencia = solicitudAudiencia.Where(p => p.Usuario == usuario);
+                solicitudInforme = solicitudInforme.Where(p => p.Usuario == usuario);
+                evaluacionRiesgo = evaluacionRiesgo.Where(p => p.Usuario == usuario);
+                adolecentesAcuerdo = adolecentesAcuerdo.Where(p => p.Usuario == usuario);
+                otro = otro.Where(p => p.Usuario == usuario);
+                terminos = terminos.Where(p => p.Usuario == usuario);
+            }
+
+
+            var tasks = terminos.Union(audiencia).Union(solicitudInforme).Union(solicitudAudiencia).Union(adolecentesAcuerdo).Union(otro).Union(evaluacionRiesgo);
+            return tasks;
+
         }
         #endregion
 
