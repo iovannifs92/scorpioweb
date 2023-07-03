@@ -35,7 +35,8 @@ namespace scorpioweb.Models
         public string Observaciones { get; set; }
         public int? PersonaIdPersona { get; set; }
         public string RutaAer { get; set; }
-
+        public string Usuario { get; set; }
+        public DateTime? FechaCaptura { get; set; }
         public string NombreCompleto
         {
             get
@@ -43,5 +44,7 @@ namespace scorpioweb.Models
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
+
+
     }
 }

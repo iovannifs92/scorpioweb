@@ -208,6 +208,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+
         #region -Create-
         public IActionResult Create()
         {
@@ -259,6 +260,8 @@ namespace scorpioweb.Controllers
             serviciospreviosjuicio.Mama = mg.normaliza(serviciospreviosjuicio.Mama);
             serviciospreviosjuicio.AntecedentesDatos = mg.normaliza(serviciospreviosjuicio.AntecedentesDatos);
             serviciospreviosjuicio.Observaciones = mg.normaliza(serviciospreviosjuicio.Observaciones);
+            serviciospreviosjuicio.Usuario = User.Identity.Name.ToUpper();
+            serviciospreviosjuicio.FechaCaptura = DateTime.Now;
 
             int cont = (from table in _context.Serviciospreviosjuicio
                         select table.IdserviciosPreviosJuicio).Count();
@@ -378,6 +381,8 @@ namespace scorpioweb.Controllers
                     serviciospreviosjuicio.Mama = mg.normaliza(serviciospreviosjuicio.Mama);
                     serviciospreviosjuicio.AntecedentesDatos = mg.normaliza(serviciospreviosjuicio.AntecedentesDatos);
                     serviciospreviosjuicio.Observaciones = mg.normaliza(serviciospreviosjuicio.Observaciones);
+                    serviciospreviosjuicio.Usuario = User.Identity.Name.ToUpper();
+                    serviciospreviosjuicio.FechaCaptura = DateTime.Now;
                     var oldServiciospreviosjuicio = await _context.Serviciospreviosjuicio.FindAsync(serviciospreviosjuicio.IdserviciosPreviosJuicio);
                     #region -EditarArchivo-
                     if (evidencia == null)

@@ -51,11 +51,13 @@
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Create">Entrevista</a></li>
+                    }
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia"))
+                    {                        
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
-
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Asistentes"))
                     {
