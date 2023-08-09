@@ -23,9 +23,17 @@
 
 
 <script>   
-    function myFunction() {       
-        window.open("/Personas/Contacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,left=3000,width=1100, height=2000");
-        //window.open("/Personas/Contacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=1100,height=700");
+    //function myFunction() {       
+    //    window.open("/Personas/Contacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,left=3000,width=1100, height=2000");
+    //    //window.open("/Personas/Contacto", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=1100,height=700");
+    //}
+   
+
+    function openFullScreenWindow() {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+
+        const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
     }
 </script>
 
@@ -191,7 +199,7 @@
         <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>        
     </section>
     <section class="buttons" style="padding-right: 1em;">
-        <a onclick="myFunction()" class="fa fa-address-book float-right" id="agenda"></a>        
+        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda"></a>
     </section>
    
     <section class="buttons" style="padding-right: 1em;">
