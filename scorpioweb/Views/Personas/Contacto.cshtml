@@ -1,228 +1,169 @@
-﻿@{
+﻿@model scorpioweb.Models.Contactos
+@{
     ViewData["Title"] = "Contactos";
-    Layout = "";
+    Layout = null;
 }
-    <link rel="icon" type="image/png" href="~/images/scorpio_mini.png" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/font-awesome.min.css">
-    <link rel="stylesheet" href="~/css/bootstrap.min.css">
-    <link rel="stylesheet" href="~/css/main.css">
-    <script src="~/js/jquery-1.11.1.min.js"></script>
-    <link rel="stylesheet" href="~/css/bootstraplocal.css"
-          asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-          asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Encode+Sans+Condensed:400,600">
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="~/css/font-awesome.min.css">
+<link rel="stylesheet" href="~/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/css/bootstraplocal.css"
+      asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+      asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<style>
 
-    <style>
-        body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      font-family: 'Open Sans', sans-serif;
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    background: rgb(209,208,224);
+    background: radial-gradient(circle, rgba(209,208,224,1) 5%, rgba(218,223,235,1) 30%);
+}
+ 
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background: rgb(2,0,36,0.2);
+    background: linear-gradient(90deg, rgb(2,0,36,0.6) 0%, rgb(6,6,90,0.6) 29%, rgb(9,9,121,0.6) 53%, rgb(7,48,147,0.6) 77%);
+    backdrop-filter: blur(17px);
+    --webkit-backdrop-filter: blur(17px);
+    border-right: 1px solid rgba(255, 255, 255, 0.6);
+    transition: width 0.3s ease;
+}
+.sidebar:hover {
+    width: 180px;
+}
+.sidebar .logo {
+    display: flex;
+    align-items: center;
+    padding: 25px 10px 15px;
+}
+.logo img {
+    width: 43px;
+    border-radius: 50%; 
+}
+.logo h1 {
+    color: white;
+    font-weight: 600;
+    font-size: 2.15rem;
+    margin-left: 15px;
+    display: none;
+}
+.sidebar:hover .logo h1 {
+    display: block;
+}
+.sidebar .links {
+    height: calc(100% - 140px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    list-style: none;
+    margin-top: 20px;
+}
+.sidebar .links::-webkit-scrollbar {
+    display: none;
+}
+.sidebar .links h3 {
+    font-size: 17px;
+    color: white;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: block;
+}
+.sidebar .links h4 {
+    font-size: 20px;
+    color: white;
+    font-weight: 450;
+    margin-bottom: 10px;
+    display: block;
+}
+.links li {
+    display: flex;
+    align-items: center;
+}
+.links li:hover {
+    border-radius: 4px;
+    cursor: pointer;
+    background: black;
+}
+.sidebar:hover .links hr {
+    border-color: white;
+}
+
+.links li a {
+        font-size: 1 rem;
+    color: white;
+    padding: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    display: none;
+}
+.sidebar:hover .links a {
+    display: block;
+}
+
+section {
+    margin-left: 120px;
+}
+
+ .titulo {
+       
     }
 
-    main {
-      height: 100%;
-      width: 100%;
-    }
+.logo-contacto img {
+    width: 100px;
+    border-radius: 10%;
+}
+/* Aumentar el tamaño del icono de cierre (la "X") */
+.modal-header .close {
+    font-size: 2em; /* Puedes ajustar este valor según tus preferencias */
+}
 
-    aside {
-      background-color: #233460;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 20%;
-      z-index: 1;
-    }
-
-    section {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background-color: #fff;
-      overflow: hidden;
-    }
-
-    label {
-      display: inline-block;
-      padding: 7px 10px;
-      background-color: transparent;
-      cursor: pointer;
-      margin: 10px;
-      z-index: 3;
-      position: fixed;
-    }
-
-    .bar {
-      display: block;
-      background-color: #233460
-;
-      width: 30px;
-      height: 3px;
-      border-radius: 5px;
-      margin: 5px auto;
-      transition: background-color .5s ease-in, transform .5s ease-in, width .5s ease-in;
-    }
-
-    .content {
-      top: 0;
-      bottom: 0;
-      position: absolute;
-      right: 0;
-      left: 0;
-      background-color: #fff;
-      z-index: 2;
-      transition: transform .5s ease-in-out;
-    }
-
-    h1 {
-      margin: 0;
-      position: relative;
-      top: 50%;
-      left: 0;
-      right: 0;
-      transform: translateY(-50%);
-      text-align: center;
-      font-size: 40px;
-    }
-
-    .asideList {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      margin-top: 100px;
-      margin-right:10px;
-      text-align: right;
-      border-top: 2px solid rgba(255, 255, 255, .7);
-    }
-
-    .asideAnchor {
-      border-bottom: 2px solid rgba(255, 255, 255, .7);
-      padding: 20px 0;
-      display: block;
-      color: #fff;
-      text-decoration: none;
-      font-size: 20px;
-      font-weight: 500;
-      position: relative;
-      transition: color .3s .15s ease-in;
-    }
-
-    .asideAnchor::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      height: 100%;
-      background-color: #fff;
-      width: 0;
-      transition: width .3s ease-in;
-      z-index: -1;
-    }
-
-    .asideAnchor:hover {
-      color: #233460
-;
-    }
-
-    .asideAnchor:hover::after {
-      width: 100%;
-    }
-
-  
-
-    input[type="checkbox"]:checked ~ .content {
-      transform: translateX(20%);
-    }
-
-    input[type="checkbox"]:checked ~ label .bar {
-      background-color: #fff;
-    }
-
-    input[type="checkbox"]:checked ~ label .top {
-      -webkit-transform: translateY(0px) rotateZ(45deg);
-      -moz-transform: translateY(0px) rotateZ(45deg);
-      -ms-transform: translateY(0px) rotateZ(45deg);
-      -o-transform: translateY(0px) rotateZ(45deg);
-      transform: translateY(0px) rotateZ(45deg);
-    }
-
-    input[type="checkbox"]:checked ~ label .bottom {
-      -webkit-transform: translateY(-15px) rotateZ(-45deg);
-      -moz-transform: translateY(-15px) rotateZ(-45deg);
-      -ms-transform: translateY(-15px) rotateZ(-45deg);
-      -o-transform: translateY(-15px) rotateZ(-45deg);
-      transform: translateY(-15px) rotateZ(-45deg);
-    }
-
-    input[type="checkbox"]:checked ~ label .middle {
-      width: 0;
-    }
-
-    .middle {
-      margin: 0 auto;
-    }
-
-    .ua {
-      position: absolute;
-      right: 20px;
-      bottom: 20px;
-      color: #233460;
-      font-size: 2em;
-      z-index: 2;
-    }
-    
-    #div1 {
-     overflow:scroll;
-     height:900px;
-     width:1200px;
-    }  
-    #div1 table {
-    width:1200px;
-    height:600px;
-    background-color:lightgray;
-    }
-
+/* Aumentar el área clickeable del icono de cierre */
+.modal-header .close {
+    padding: 10px; /* Puedes ajustar este valor según tus preferencias */
+}
 </style>
 
-<script type="text/javascript">
+<script>
     $(document).ready(function () {
-      $('#dtDynamicVerticalScrollExample').DataTable({
-        "scrollY": "50vh",
-        "scrollCollapse": true,
-      });
-      $('.dataTables_length').addClass('bs-select');
+        $('#dtDynamicVerticalScrollExample').DataTable({
+            "scrollY": "50vh",
+            "scrollCollapse": true,
+        });
+        $('.dataTables_length').addClass('bs-select');
     });
-    function myFunction() {
-    window.open("/Personas/AddContacto/", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=400,height=400");
-    }
-    function EditContacto(id) {
-    window.open("/Personas/EditContacto/" + id, "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=600,left=3000,width=400,height=400");
-    }
-
     function Imprimir() {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personas/imprimirContactos",
-                traditional: true,
-                success: function (response) {
-                    if (response.success) {
-                         window.location.href = "/Documentos/ContactosDGEPMS.docx"
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Ha ocurrido un error contacte con el Administrador");
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/imprimirContactos",
+            traditional: true,
+            success: function (response) {
+                if (response.success) {
+                    window.location.href = "/Documentos/ContactosDGEPMS.docx"
+                } else {
+                    alert(response.responseText);
                 }
-            });         
+            },
+            error: function (response) {
+                alert("Ha ocurrido un error contacte con el Administrador");
+            }
+        });
     }
 
-     function Destacados(id, destacado) {
+    function Destacados(id, destacado) {
         var idContacto = id;
         let text;
         $.ajax({
@@ -235,7 +176,7 @@
             },
             success: function (response) {
                 if (response.success) {
-                   location.reload();
+                    location.reload();
                 } else {
                     alert(response.responseText);
                 }
@@ -246,122 +187,234 @@
         });
     };
 
+    function Guardar() {    
+
+        var Lugar = document.getElementById("Lugar").value
+        var Dependencia = document.getElementById("Dependencia").value;
+        var Titular = document.getElementById("Titular").value;
+        var Correo = document.getElementById("Correo").value;
+        var Telefono = document.getElementById("Telefono").value;
+        var Extencion = document.getElementById("Extencion").value;
+        alert(Extencion);
+
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/CreateContactos",
+            traditional: true,
+            data: {
+                   Lugar, Dependencia, Titular, Correo, Telefono, Extencion,
+            },
+            success: function (response) {
+                alert("Contacto Guardado con Exito!!!");
+               
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+            }
+        });
+        $("#añadirModal").modal("hide");
+        
+    };
+
+   EditContacto = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#editarModal .modal-body").html(res);
+                $("#editarModal .modal-title").html(title);
+                $("#editarModal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+
 </script>
 
-<main>
-  <aside>
-    <ul class="asideList">
-      <li><a onclick="myFunction()" class="asideAnchor fa fa-plus">  Contacto</a></li>
-      <li><a asp-action="Contacto" asp-route-sortOrder="@ViewData["destacados"]" asp-route-currentFilter="@ViewData["CurrentFilter"]" class="asideAnchor fa fa-star">  Destacados</a></li>
-      <li><a onclick="Imprimir()" class="asideAnchor fa fa-upload"> Exportar</a></li>
- 
-    </ul>
-  </aside>
-  <section>
-    <input type="checkbox" id="myInput">
-    <label for="myInput">
-      <span class="bar top"></span>
-      <span class="bar middle"></span>
-      <span class="bar bottom"></span>
-    </label>
-
-    <div class="content col-md-12">
-        <div style="margin-top:50px;">
-            <h1>Contactos</h1>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="~/images/scorpio_mini.png" alt="logo">
+            <h1>SCORPIO</h1>
         </div>
-        <div style="margin-left:100px;">
-            <form asp-action="Contacto" method="get">
+        <ul class="links">
+            <h4>Menu</h4>
+            <hr>
+            <li>             
+                <a data-toggle="modal" data-target="#añadirModal"><h3 class ="asideAnchor fa fa-plus">Añadir a contacto</h3></a>                
+            </li>
+            <li>
+                <a asp-action="Contacto" asp-route-sortOrder="@ViewData["destacados"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> <h3 class="fa fa-star">Destacados</h3> </a>
+            </li>
+            <li>
+                <a onclick="Imprimir()"> <h3 class="asideAnchor fa fa-upload">  Exportar</h3> </a>
+            </li>
+        </ul>
+    </aside>
+
+    <section>
+        <div style="display: flex; align-items: center;">            
+            <div class="logo-contacto">
+                <img src="~/images/contacto.png" alt="logo">                
+            </div>      
+            <h1 style="margin-top:25px; font-size: 40px;">Contactos</h1>                                         
+            <form asp-action="Contacto" method="get" style="margin-left: 50px;margin-top: 30px;">
                 <div class="form-actions no-color">
-                    <p> Búsqueda: <input type="text" name="SearchString" />
-                        <button type="submit" class="btn btn-default">
+                    <h4 style="margin-rigth:15px; font-size:17px;">
+                        Búsqueda: <input type="text" name="SearchString" />
+                        <button type="submit" class="btn btn-lg">
                             <i class="fa fa-search"></i>
                             Buscar
-                        </button>
+                        </button>         |
                         <a asp-action="Contacto">Regresar al listado completo</a>
-                    </p>
+                    </h4>
                 </div>
-            </form>
-        </div>
-        <div id="div1" style="overflow:auto;">
-            <table class="table table-striped table-bordered table-sm" cellspacing="0"
-              width="100%">
-                <thead>
+            </form>       
+        </div>                
+        <table style="margin-top:40px" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+            <thead>
+                <tr>                     
+                    <th>
+                        Lugar
+                    </th>
+                    <th>
+                        Dependencia
+                    </th>
+                    <th>
+                        Titular
+                    </th>
+                    <th>
+                        Correo
+                    </th>
+                    <th>
+                        Telefono
+                    </th>
+                    <th>
+                        Extensión
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewData["ListaContactos"] as IEnumerable<scorpioweb.Models.Contactos>)
+                {
                     <tr>
-                        @*<th>
-                            Marcar
-                        </th>*@
                         <th>
-                            Lugar
+                            @Html.DisplayFor(modelItem => item.Lugar)
                         </th>
-                        <th>
-                            Dependencia
-                        </th>
-                        <th>
-                            Titular
-                        </th>
-                        <th>
-                            Correo
-                        </th>
-                        <th>
-                            Telefono
-                        </th>
-                        <th>
-                            Extensión
-                        </th>                        
-                        <th>
-                            
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in ViewData["ListaContactos"] as IEnumerable<scorpioweb.Models.Contactos>)
-                    {
-                        <tr>
-                           @* <td>
-                               <input type="checkbox" id="myCheck" onclick="maracar(@item.Idcontactos)">                 
-                            </td>*@
-                            <th>
-                                @Html.DisplayFor(modelItem => item.Lugar)
-                            </th>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Dependencia)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Titular)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Correo)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Telefono)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Extencion)
-                            </td>
-                            <td>
-                                <a type="button" class="btn btn-success" id="Editar" title="Editar" onclick="EditContacto(@item.Idcontactos)">
-                                    <i class="fa fa-pencil"></i> 
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Dependencia)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Titular)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Correo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Telefono)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Extencion)
+                        </td>
+                        <td>
+                            <a type="button" class="btn btn-success" id="Editar" title="Editar" onclick="EditContacto('@Url.Action("EditContacto","Personas",null,Context.Request.Scheme)','Editar Registro',@item.Idcontactos)">
+                                <i class="fa fa-pencil fa-2x"
+                                ></i>
+                            </a>
+                            <a type="button" class="btn btn-danger" id="borrar" title="Borrar" asp-action="DeleteContacto" asp-route-id="@item.Idcontactos">
+                                <i class="fa fa-trash fa-2x"></i>
+                            </a>
+                            @if (item.Destacado == 0)
+                            {
+                                <a type="button" class="btn btn-default" id="borrar" title="Destacado" onclick="Destacados(@item.Idcontactos,true)">
+                                    <i class="fa fa-star fa-2x"></i>
                                 </a>
-                                <a type="button" class="btn btn-danger" id="borrar" title="Borrar" asp-action="DeleteContacto" asp-route-id="@item.Idcontactos">
-                                    <i class="fa fa-trash"></i> 
+                            }
+                            else
+                            {
+                                <a type="button" class="btn btn-warning" id="borrar" title="Destacado" onclick="Destacados(@item.Idcontactos,false)">
+                                    <i class="fa fa-star fa-2x"></i>
                                 </a>
-                                @if(item.Destacado == 0){
-                                     <a type="button" class="btn btn-default" id="borrar" title="Destacado"  onclick="Destacados(@item.Idcontactos,true)">
-                                    <i class="fa fa-star"></i> 
-                                    </a>
-                                }else{
-                                    <a type="button" class="btn btn-warning" id="borrar" title="Destacado"  onclick="Destacados(@item.Idcontactos,false)">
-                                    <i class="fa fa-star"></i> 
-                                    </a>
-                                }
-                                
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-  </section>
-</main>
+                            }
 
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+      
+        <!-- Modal añadir contacto -->
+        <div class="modal fade" id="añadirModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(90deg, rgb(2,0,36,0.6) 0%, rgb(6,6,90,0.6) 29%, rgb(9,9,121,0.6) 53%, rgb(7,48,147,0.6) 77%);">
+                        <h2 class="modal-title" id="exampleModalLabel" style="color:white">Agregar Contacto</h2>
+                        <button type="button" class="btn btn-danger btn-lg close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style=" background:rgb(209,208,224);">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="control-label" style="font-size: 15px;">Lugar</label>
+                                        <input class="form-control" name="Lugar" id="Lugar" style="font-size: 15px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" style="font-size: 15px;">Dependencia</label>
+                                        <input required class="form-control" name="Dependencia" id="Dependencia" style="font-size: 15px;"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" style="font-size: 15px;">Titular</label>
+                                        <input class="form-control" name="Titular" id="Titular" style="font-size: 15px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" style="font-size: 15px;">Correo</label>
+                                        <input type="email" class="form-control" name="Correo" id="Correo" style="font-size: 15px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" style="font-size: 15px;">Telefono</label>
+                                        <input type="tel" pattern="[0-9]{10}" maxlength="10" asp-for="Telefono" class="form-control" style="font-size: 15px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" style="font-size: 15px;">Extencion</label>
+                                        <input class="form-control" name="Extencion" id="Extencion" style="font-size: 15px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <input onclick="Guardar()" value="Guardar" class="btn btn-primary fa fa-save" style="font-size: 15px;" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal  editar -->
+        <div class="modal fade" id="editarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background: linear-gradient(90deg, rgb(2,0,36,0.6) 0%, rgb(6,6,90,0.6) 29%, rgb(9,9,121,0.6) 53%, rgb(7,48,147,0.6) 77%);">
+                        <h2 class="modal-title" id="exampleModalLabel" style="color:white">Editar Contacto</h2>
+                        <button type="button" class="btn btn-danger btn-lg close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style=" background:rgb(209,208,224);">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> 
+</body>
+
+                      

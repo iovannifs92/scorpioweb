@@ -6524,6 +6524,7 @@ namespace scorpioweb.Controllers
         #region -Contactos-
         public IActionResult Contacto(string SearchString, string sortOrder)
         {
+            ViewBag.PageLoaded = true;
             var listaEstado = from table in _context.Estados
                               orderby table.Estado
                               where table.Id != 0
@@ -6539,6 +6540,8 @@ namespace scorpioweb.Controllers
             ViewData["CurrentSort"] = sortOrder;
             ViewData["destacados"] = String.IsNullOrEmpty(sortOrder) ? "destacados" : "";
             ViewData["dependencia"] = sortOrder == "dependencia" ? "date_desc" : "dependencia";
+
+          
 
 
             var Contactos = from c in _context.Contactos
@@ -6578,6 +6581,9 @@ namespace scorpioweb.Controllers
 
             return View();
         }
+        #endregion
+     
+        #region -AddContacto-
         public IActionResult AddContacto()
         {
             List<Estados> listaEstadosD = new List<Estados>();
@@ -6589,40 +6595,13 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-        #endregion
 
-        #region -Update Contacto-
-        public JsonResult CreateContactos(Contactos contactos, string Categoria, int EstadoC, int MunicipioC, string Dependencia, string Titular, string Telefono, string Extencion, string Correo)
+        public JsonResult CreateContactos(Contactos contactos, string Lugar, string Dependencia, string Titular, string Telefono, string Extencion, string Correo, string[] datosAtencionF)
         {
             try
             {
-                if (MunicipioC == null || MunicipioC == 0)
-                {
-                    string Estado = (from table in _context.Estados
-                                     where table.Id == EstadoC
-                                     select table.Estado).First().ToString();
-                    contactos.Lugar = Estado.ToUpper();
-                    contactos.Categoria = "ESTADO";
-                }
-                else
-                {
-                    string Estado = (from table in _context.Estados
-                                     where table.Id == EstadoC
-                                     select table.Estado).First().ToString();
-
-                    string Municipio = (from table in _context.Municipios
-                                        where table.Id == MunicipioC
-                                        select table.Municipio).First().ToString();
-
-                    var munestado = Estado + ", " + Municipio;
-
-                    contactos.Lugar = munestado.ToUpper();
-                    contactos.Categoria = "MUNICIPIO";
-                }
-
-
-                //victima.NombreV = mg.normaliza(NombreV);
-
+         
+                contactos.Lugar = Lugar.ToUpper();
                 contactos.Dependencia = Dependencia.ToUpper();
                 contactos.Titular = Titular.ToUpper();
                 contactos.Correo = Correo.ToUpper();
@@ -6645,6 +6624,7 @@ namespace scorpioweb.Controllers
 
         #region -EditContacto-
         public async Task<IActionResult> EditContacto(int? id)
+        
         {
             if (id == null)
             {
@@ -6662,188 +6642,72 @@ namespace scorpioweb.Controllers
             ViewBag.idContacto = contacto.Idcontactos;
 
 
-            #region Categoria
-            List<SelectListItem> listaCategoria;
-            listaCategoria = new List<SelectListItem>
-            {
-              new SelectListItem{ Text="Estado", Value="ESTADO"},
-              new SelectListItem{ Text="Municipio", Value="MUNICIPIO"},
-            };
-
-            ViewBag.listaCategoria = listaCategoria;
-            ViewBag.idCategoria = BuscaId(listaCategoria, contacto.Categoria);
-            #endregion
-
-            #region -Listado Estados-
-            List<Estados> listaEstados = new List<Estados>();
-            listaEstados = (from table in _context.Estados
-                            select table).ToList();
-
-
-            #endregion
-
-            #region Municipios 
-            var Lugar = new List<string>();
-            var estado = "";
-            var muni = "";
-            if (contacto.Categoria == "MUNICIPIO")
-            {
-                String str = contacto.Lugar;
-
-                char[] spearator = { ',' };
-                Int32 count = 2;
-
-                // Using the Method
-                String[] strlist = str.Split(spearator,
-                       count, StringSplitOptions.None);
-
-                foreach (String s in strlist)
-                {
-                    Lugar.Add(s);
-                }
-
-                char[] charsToTrim = { ' ' };
-                estado = Lugar[0];
-                muni = Lugar[1].Trim(charsToTrim);
-
-                var sacarEsatado = (from table in _context.Estados
-                                    where table.Estado == estado
-                                    select table.Id).First();
-
-
-                var sacarMunicipio = (from table in _context.Municipios
-                                      where table.EstadosId == sacarEsatado && table.Municipio == muni
-                                      select table.Id).First().ToString();
-
-                #region Lnmunicipio
-
-                List<Municipios> listaMunicipios = new List<Municipios>();
-
-                listaMunicipios = (from table in _context.Municipios
-                                   where table.EstadosId == sacarEsatado
-                                   select table).ToList();
-
-                listaMunicipios.Insert(0, new Municipios { Id = null, Municipio = "Selecciona" });
-
-                ViewBag.ListadoEstados = listaEstados;
-                ViewBag.idEstado = sacarEsatado;
-
-                ViewBag.ListadoMunicipios = listaMunicipios;
-                ViewBag.idMunicipio = sacarMunicipio;
-                #endregion
-            }
-            else
-            {
-
-
-
-                #region -Sacar estado-
-                var sacarEsatado = (from table in _context.Estados
-                                    where table.Estado == contacto.Lugar
-                                    select table.Id).First();
-
-
-                List<Municipios> listaMunicipios = new List<Municipios>();
-
-                listaMunicipios = (from table in _context.Municipios
-                                   where table.EstadosId == sacarEsatado
-                                   select table).ToList();
-
-                listaMunicipios.Insert(0, new Municipios { Id = null, Municipio = "Selecciona" });
-
-
-                ViewBag.ListadoEstados = listaEstados;
-                ViewBag.idEstado = sacarEsatado;
-
-                ViewBag.ListadoMunicipios = listaMunicipios;
-
-                #endregion
-            }
-            #endregion
-
             return View(contacto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditContacto(int id, [Bind("Idcontactos,Categoria,Lugar,Dependencia,Titular,Correo,Telefono,Extencion,Destacado")] Contactos contactos, int Estado, int Municipio)
+        public async Task<IActionResult> EditContacto(/*int id,*/ [Bind("Idcontactos,Categoria,Lugar,Dependencia,Titular,Correo,Telefono,Extencion,Destacado")] Contactos contactos, int Estado, int Municipio)
         {
 
-            var contacto = _context.Contactos
-               .SingleOrDefault(m => m.Idcontactos == id);
+            //var contacto = _context.Contactos
+            //   .SingleOrDefault(m => m.Idcontactos == id);
 
-            if (id != contacto.Idcontactos)
+            if (ModelState.IsValid)
             {
-                return NotFound();
-            }
-
-            try
-            {
-                if (contactos.Categoria == "ESTADO" || Municipio == 0)
+                try
                 {
-                    string EditEstado = (from table in _context.Estados
-                                         where table.Id == Estado
-                                         select table.Estado).First().ToString();
-                    contacto.Lugar = EditEstado.ToUpper();
-                    contacto.Categoria = "ESTADO";
+
+
+                    contactos.Lugar = contactos.Lugar == null ? "NA" : contactos.Lugar.ToUpper();
+                    contactos.Dependencia = contactos.Dependencia == null ? "NA" : contactos.Dependencia.ToUpper();
+                    contactos.Titular = contactos.Titular == null ? "NA" : contactos.Titular.ToUpper();
+                    contactos.Correo = contactos.Correo == null ? "NA" : contactos.Correo.ToUpper();
+                    contactos.Telefono = contactos.Telefono == null ? "NA" : contactos.Telefono.ToUpper();
+                    contactos.Extencion = contactos.Extencion /*== null ? "NA" : contacto.Extencion.ToUpper()*/;
+                    contactos.Destacado = contactos.Destacado;
+
+                    _context.Update(contactos);
+                    await _context.SaveChangesAsync();
+
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-
-                    string EditEstado = (from table in _context.Estados
-                                         where table.Id == Estado
-                                         select table.Estado).First().ToString();
-
-                    string EditMunicipio = (from table in _context.Municipios
-                                            where table.Id == Municipio
-                                            select table.Municipio).First().ToString();
-                    var munestado = EditEstado + ", " + EditMunicipio;
-
-                    contactos.Lugar = munestado.ToUpper();
-
-                    contacto.Categoria = "MUNICIPIO";
-                }
-
-
-
-                contacto.Dependencia = contactos.Dependencia == null ? "NA" : contactos.Dependencia.ToUpper();
-                contacto.Titular = contactos.Titular == null ? "NA" : contactos.Titular.ToUpper();
-                contacto.Correo = contactos.Correo == null ? "NA" : contactos.Correo.ToUpper();
-                contacto.Telefono = contactos.Telefono == null ? "NA" : contactos.Telefono.ToUpper();
-                contacto.Extencion = contactos.Extencion == null ? "NA" : contacto.Extencion.ToUpper();
-                contacto.Destacado = contactos.Destacado;
-
-                _context.Update(contacto);
-                await _context.SaveChangesAsync();
-
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ContactoExists(contacto.Idcontactos))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    if (!ContactoExists(contactos.Idcontactos))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
-
-            return RedirectToAction("EditContacto/" + contacto.Idcontactos, "Personas");
+            //return RedirectToAction("EditContacto/" + contactos.Idcontactos, "Personas");
+            return RedirectToAction("Contacto/");
         }
         #endregion
 
         #region -Delete Contacto-
+      
         public async Task<IActionResult> DeleteContacto(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
             var contacto = await _context.Contactos.SingleOrDefaultAsync(m => m.Idcontactos == id);
-
+            if (contacto == null)
+            {
+                return NotFound();
+            }
             _context.Contactos.Remove(contacto);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Contacto", "Personas");
         }
         #endregion
+
 
         #region -Imprimir Reporte Supervision-
         public JsonResult imprimirContactos(Contactos contactos)

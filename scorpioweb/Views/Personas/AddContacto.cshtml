@@ -2,169 +2,45 @@
 
 @{
     ViewData["Title"] = "AddContacto";
-    Layout = "";
+    Layout = null;
 }
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/font-awesome.min.css">
-    <link rel="stylesheet" href="~/css/bootstrap.min.css">
-    <link rel="stylesheet" href="~/css/main.css">
-    <script src="~/js/jquery-1.11.1.min.js"></script>
-    <link rel="stylesheet" href="~/css/bootstraplocal.css"
-          asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-          asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-
-
-<script type="text/javascript">
-    var tipo = 0;
-     $(document).ready(function () {         
-        var items = "<option value='0'>Sin municipio</option>";
-        $('#MunicipioC').html(items);
-        $('#EstadoC').change(function () {
-            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
-            var ddlsource = '#EstadoC';
-            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
-            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
-                //alert("entrando en JSON");
-                var items = "<option value='0'>Sin municipio</option>";
-                $("#MunicipioC").empty();
-                $.each(data, function (i, municipio) {
-                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
-                });
-                $('#MunicipioC').html(items);
-            });
-        });
-
-        
-        $('#Categoria').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "ESTADO" || dat == "MUNICIPIO") {
-                $("#DivEstado").css("display", "block");
-            }
-            else {
-                $("#DivEstado").css("display", "none");
-            }
-
-            if (dat == "MUNICIPIO" ) {
-                $("#DivMunicipio").css("display", "block");
-            }
-            else {
- 
-                $("#DivMunicipio").css("display", "none");
-            }
-              
-            //if (dat == "JUZGADO" ) {
-            //    $("#DivJuzgado").css("display", "block");
-            //}
-            //else {
- 
-            //    $("#DivJuzgado").css("display", "none");
-            //}
-        }); 
-    });
-
-
-    function Guardar() {
-        var Categoria = document.getElementById("Categoria").value;
-        var EstadoC = document.getElementById("EstadoC").value;
-        var MunicipioC = document.getElementById("MunicipioC").value;
-        var Dependencia = document.getElementById("Dependencia").value;
-        var Titular = document.getElementById("Titular").value;
-        var Correo = document.getElementById("Correo").value;
-        var Telefono = document.getElementById("Telefono").value;
-        var Extencion = document.getElementById("Extencion").value;
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Personas/CreateContactos",
-            traditional: true,
-            data: {
-                    Categoria, EstadoC, MunicipioC, Dependencia,Titular,Correo, Telefono, Extencion,
-            },
-            success: function (response) {
-                alert("Contacto Guardado con Exito!!!");
-                window.close(); 
-            },
-            error: function (response) {
-                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-            }
-        });
-    }
-
-
-</script>
-
-
-<div class="col-md-12">
-<h2>Agregar Contacto</h2>
-<hr />
-</div>
-
-<div class="row col-md-12">
-    <div class="col-md-4">
-        <form>
-            <div class="form-group col-md-12">
-                <label class="control-label">Categoria</label>
-                <select required class="form-control" name="Categoria" id="Categoria">
-                    <option value=""></option>
-                    <option value="ESTADO">Estado</option>
-                    <option value="MUNICIPIO">Municipio</option>
-                </select>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddContacto">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Lugar" class="control-label">Estado-Municipio</label>
+                <input required asp-for="Lugar" class="form-control" />
+                <span asp-validation-for="Lugar" class="text-danger"></span>
             </div>
-            @*#Region LUGAR*@
-            <div class="form-group col-md-12" id="DivEstado" style="display:none">
-                <label class="control-label">Estado</label>
-                <select class="form-control" name="EstadoC" id="EstadoC"
-                        asp-items="@(new SelectList(ViewBag.ListaEstadoD,"Id","Estado"))">
-                </select>
+            <div class="form-group">
+                <label asp-for="Dependencia" class="control-label">Dependencia</label>
+                <input required asp-for="Dependencia" class="form-control" />
+                <span asp-validation-for="Dependencia" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-3" id="DivMunicipio" style="display:none">
-                <label class="control-label">Municipio</label>
-                <select class="form-control" name="MunicipioC" id="MunicipioC"
-                        asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
-                </select>
-            </div> 
-             @*#EndRegion LUGAR*@
-
-   @*         <div class="form-group col-md-3" id="DivJuzgado" style="display:none">
-                <label class="control-label">Juzgado</label>
-                <select class="form-control" name="Juzgado" id="Juzgado"
-                        <option value="UNIDAD0">Unidad 0</option>
-                        <option value="UNIDAD1">Unidad 1</option>
-                        <option value="UNIDAD2">Unidad 2</option>
-                        <option value="UNIDAD3">Unidad 3</option>
-                        <option value="UNIDAD4">Unidad 4</option>
-                        <option value="UNIDAD5">Unidad 5</option>
-                        <option value="UNIDAD6">Unidad 6</option>
-                        <option value="UNIDAD7">Unidad 7</option>
-                        <option value="UNIDAD8">Unidad 8</option>
-                        <option value="UNIDAD9">Unidad 9</option>
-                </select>
-            </div>*@
-            <div class="form-group col-md-12">
-                <label class="control-label">Dependencia</label>
-                <input class="form-control" name="Dependencia" id="Dependencia" />
+            <div class="form-group">
+                <label asp-for="Titular" class="control-label">Titular</label>
+                <input asp-for="Titular" class="form-control" />
+                <span asp-validation-for="Titular" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Titular</label>
-                <input class="form-control" name="Titular" id="Titular" />          
+            <div class="form-group">
+                <label asp-for="Correo" class="control-label">Correo</label>
+                <input required type="email" asp-for="Correo" class="form-control" />
+                <span asp-validation-for="Correo" class="text-danger"></span>
+            </div>          
+            <div class="form-group">
+                <label asp-for="Telefono" class="control-label">Telefono</label>
+                <input required type="tel" pattern="[0-9]{10}" maxlength="10" asp-for="Telefono" class="form-control"/>
+                <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Correo</label>
-                <input type="email" class="form-control" name="Correo" id="Correo" />
+            <div class="form-group">
+                <label asp-for="Extencion" class="control-label">Extencion</label>
+                <input asp-for="Extencion" class="form-control" />
+                <span asp-validation-for="Extencion" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Telefono</label>
-                <input type="tel" pattern="[0-9]{10}" maxlength="10"  asp-for="Telefono" class="form-control" />
-            </div>
-            <div class="form-group col-md-12">
-                <label class="control-label">Extencion</label>
-                <input class="form-control" name="Extencion" id="Extencion" />
-            </div>
-            <div class="form-group col-md-12">
-                <input onclick="Guardar()" value="Create" class="btn btn-default" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

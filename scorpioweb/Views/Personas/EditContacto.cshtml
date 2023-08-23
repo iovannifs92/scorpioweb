@@ -1,187 +1,48 @@
 ﻿@model scorpioweb.Models.Contactos
 
 @{
-    ViewData["Title"] = "EditContacto";
-    Layout = "";
+    Layout = null;
 }
 
-<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-<link rel="stylesheet" href="~/css/site.css" />
-<link rel="stylesheet" href="~/css/font-awesome.min.css">
-<link rel="stylesheet" href="~/css/bootstrap.min.css">
-<link rel="stylesheet" href="~/css/main.css">
-<script src="~/js/jquery-1.11.1.min.js"></script>
-<link rel="stylesheet" href="~/css/bootstraplocal.css"
-        asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-        asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-
-
-<script>
-    $(document).ready(function () {        
-        $('#Estado').change(function () {
-            $.ajaxSetup({
-                async: false
-            });
-            localStorage.setItem('municipioAnterior',$('#Municipio').val());
-            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
-            var ddlsource = '#Estado';
-            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
-                var items = "<option value=''>Sin municipio</option>";
-                $("#Municipio").empty();
-                $.each(data, function (i, municipio) {
-                    if(municipio.text == document.getElementById("Municipio").text) {
-                        items += "<option value='" + municipio.value + "' selected>" + municipio.text + "</option>";
-                    }
-                    else {
-                        items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
-                    }
-                });
-                $('#Municipio').html(items);
-            });
-            localStorage.setItem('Municipio',$('#Municipio').val());
-            $.ajaxSetup({
-                async: true
-            });
-        });
-
-        $('#Categoria').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "ESTADO" || dat == "MUNICIPIO") {
-                $("#DivEstado").css("display", "block");
-            }
-            else {
-                $("#DivEstado").css("display", "none");
-            }
-
-            if (dat == "MUNICIPIO" ) {
-                $("#DivMunicipio").css("display", "block");
-            }
-            else {
- 
-                $("#DivMunicipio").css("display", "none");
-            }
-        }); 
-    });
-
-
-    function Destacados(id, destacado) {
-        var idContacto = id;
-        let text;
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Personas/Destacado",
-            traditional: true,
-            data: {
-                datoContacto: [destacado, idContacto],
-            },
-            success: function (response) {
-                if (response.success) {
-                   location.reload();
-                } else {
-                    alert(response.responseText);
-                }
-            },
-            error: function (response) {
-                location.reload();
-            }
-        });
-    };
-
-</script>
-
-
-
-<div style="text-align: center;" class="col-md-4" asp-for="Idcontactos">
-    <h2>EditContacto </h2>
-    @if(ViewBag.Destacado == 0){
-            <a type="button" class="btn btn-default" id="borrar" title="Destacado"  onclick="Destacados(@ViewBag.idContacto,true)">
-        <i class="fa fa-star"></i> 
-        </a>
-    }else{
-        <a type="button" class="btn btn-warning" id="borrar" title="Destacado"  onclick="Destacados(@ViewBag.idContacto,false)">
-        <i class="fa fa-star"></i> 
-        </a>
-    }
-</div>
-
-
-<hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
         <form asp-action="EditContacto">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Idcontactos" />
-           @*  <div class="form-group col-md-4" id="Categoria">
-                    <label class="control-label">Categoria</label>
-                    <select class="form-control" name="Categoria" id="Categoria"
-                            asp-items="@(new SelectList(@ViewBag.listaCategoria, "Value", "Text", @ViewBag.idCategoria))">
-                    </select>
-             </div>*@
-             <div class="form-group col-md-4">
-                    <label class="control-label">Categoria</label>
-                    <select class="form-control" name="Categoria" id="Categoria"
-                            asp-items="@(new SelectList(@ViewBag.listaCategoria, "Value", "Text", @ViewBag.idCategoria))">
-                    </select>
-             </div>
 
-   @*        <div class="form-group" id="DivEstado" style="display:none">
-                <label asp-for="Lugar" class="control-label"></label>
-                <input asp-for="Lugar" class="form-control" />
+            <input type="hidden" asp-for="Destacado" class="form-control" value="0" />
+            <div class="form-group col-md-12">
+                <label asp-for="Lugar" class="control-label" style="font-size: 15px;"></label>
+                <input asp-for="Lugar" class="form-control" style="font-size: 15px;" />
                 <span asp-validation-for="Lugar" class="text-danger"></span>
-            </div>*@
-             <div class="form-group col-md-4" id="DivEstado" @*style="display:none"*@>
-                    <label class="control-label">Estado</label>
-                    <select class="form-control" name="Estado" id="Estado"
-                            asp-items="@(new SelectList(@ViewBag.ListadoEstados, "Id", "Estado", @ViewBag.idEstado))">
-                    </select>
-             </div>
-            @if(ViewBag.Categoria == "ESTADO")
-            {
-            <div class="form-group col-md-3" id="DivMunicipio" style="display:none">
-                <label class="control-label">Municipio</label>
-                <select class="form-control" name="Municipio" id="Municipio"
-                        asp-items="@(new SelectList(@ViewBag.ListadoMunicipios,"Id","Municipio", @ViewBag.idMunicipio))">
-                </select>
             </div>
-            }
-            else
-            {
-            <div class="form-group col-md-3" id="DivMunicipio">
-                <label class="control-label">Municipio</label>
-                <select class="form-control" name="Municipio" id="Municipio"
-                        asp-items="@(new SelectList(@ViewBag.ListadoMunicipios,"Id","Municipio", @ViewBag.idMunicipio))">
-                </select>
-            </div>  
-            }
-           
-            <div class="form-group col-md-4">
-                <label asp-for="Dependencia" class="control-label"></label>
-                <input asp-for="Dependencia" class="form-control" />
+            <div class="form-group col-md-12">
+                <label asp-for="Dependencia" class="control-label" style="font-size: 15px;"></label>
+                <input asp-for="Dependencia" class="form-control" style="font-size: 15px;" />
                 <span asp-validation-for="Dependencia" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-4">
-                <label asp-for="Titular" class="control-label"></label>
-                <input asp-for="Titular" class="form-control" />
+            <div class="form-group col-md-12">
+                <label asp-for="Titular" class="control-label" style="font-size: 15px;"></label>
+                <input asp-for="Titular" class="form-control" style="font-size: 15px;" />
                 <span asp-validation-for="Titular" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-4">
-                <label asp-for="Correo" class="control-label"></label>
-                <input asp-for="Correo" class="form-control" />
+            <div class="form-group col-md-12">
+                <label asp-for="Correo" class="control-label" style="font-size: 15px;"></label>
+                <input asp-for="Correo" class="form-control" style="font-size: 15px;" />
                 <span asp-validation-for="Correo" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-4">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+            <div class="form-group col-md-12">
+                <label asp-for="Telefono" class="control-label" style="font-size: 15px;"></label>
+                <input asp-for="Telefono" class="form-control" style="font-size: 15px;" />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-4">
-                <label asp-for="Extencion" class="control-label"></label>
-                <input asp-for="Extencion" class="form-control" />
+            <div class="form-group col-md-12">
+                <label asp-for="Extencion" class="control-label" style="font-size: 15px;"></label>
+                <input asp-for="Extencion" class="form-control" style="font-size: 15px;" />
                 <span asp-validation-for="Extencion" class="text-danger"></span>
             </div>
-           <div class="form-group col-md-4">
-                <button type="submit" class="btn btn-primary">
+            <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary" style="font-size: 15px;">
                     <i class="fa fa-save"></i> Guardar
                 </button>
            </div>
