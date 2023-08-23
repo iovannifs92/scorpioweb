@@ -1,0 +1,273 @@
+﻿@model scorpioweb.Models.Personacl
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Personacl</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Paterno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Paterno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Materno)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Materno)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NombrePadre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NombrePadre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NombreMadre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NombreMadre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Alias)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Alias)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Genero)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Genero)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Edad)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Edad)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Fnacimiento)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Fnacimiento)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lnpais)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lnpais)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lnestado)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lnestado)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lnmunicipio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lnmunicipio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lnlocalidad)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lnlocalidad)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EstadoCivil)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EstadoCivil)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Duracion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Duracion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.OtroIdioma)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.OtroIdioma)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EspecifiqueIdioma)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EspecifiqueIdioma)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DatosGeneralescol)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DatosGeneralescol)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LeerEscribir)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LeerEscribir)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Traductor)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Traductor)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EspecifiqueTraductor)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EspecifiqueTraductor)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TelefonoFijo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TelefonoFijo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Celular)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Celular)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Hijos)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Hijos)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Nhijos)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nhijos)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NpersonasVive)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NpersonasVive)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Propiedades)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Propiedades)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Curp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Curp)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ConsumoSustancias)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ConsumoSustancias)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UltimaActualización)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UltimaActualización)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Supervisor)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Supervisor)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RutaFoto)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RutaFoto)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Familiares)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Familiares)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ReferenciasPersonales)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ReferenciasPersonales)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Capturista)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Capturista)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Candado)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Candado)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.MotivoCandado)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MotivoCandado)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Colaboracion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Colaboracion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UbicacionExpediente)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UbicacionExpediente)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ComLgbtttiq)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ComLgbtttiq)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ComIndigena)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ComIndigena)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TieneResolucion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TieneResolucion)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="IdPersonaCl" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

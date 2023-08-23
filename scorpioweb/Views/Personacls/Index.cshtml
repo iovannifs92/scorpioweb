@@ -1,0 +1,281 @@
+﻿@model IEnumerable<scorpioweb.Models.Personacl>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Paterno)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Materno)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NombrePadre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NombreMadre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Alias)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Genero)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Edad)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fnacimiento)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Lnpais)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Lnestado)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Lnmunicipio)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Lnlocalidad)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EstadoCivil)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Duracion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OtroIdioma)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EspecifiqueIdioma)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DatosGeneralescol)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LeerEscribir)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Traductor)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EspecifiqueTraductor)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TelefonoFijo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Celular)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Hijos)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nhijos)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NpersonasVive)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Propiedades)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Curp)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ConsumoSustancias)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UltimaActualización)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Supervisor)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RutaFoto)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Familiares)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReferenciasPersonales)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Capturista)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Candado)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MotivoCandado)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Colaboracion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UbicacionExpediente)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ComLgbtttiq)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ComIndigena)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TieneResolucion)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Paterno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Materno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombrePadre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreMadre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Alias)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genero)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Edad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fnacimiento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lnpais)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lnestado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lnmunicipio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lnlocalidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstadoCivil)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duracion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OtroIdioma)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EspecifiqueIdioma)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatosGeneralescol)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LeerEscribir)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Traductor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EspecifiqueTraductor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefonoFijo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Celular)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hijos)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nhijos)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NpersonasVive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Propiedades)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Curp)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ConsumoSustancias)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UltimaActualización)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supervisor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RutaFoto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Familiares)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReferenciasPersonales)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capturista)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Candado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MotivoCandado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Colaboracion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UbicacionExpediente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ComLgbtttiq)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ComIndigena)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TieneResolucion)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdPersonaCl">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdPersonaCl">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdPersonaCl">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
