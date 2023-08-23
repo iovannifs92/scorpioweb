@@ -976,7 +976,7 @@ namespace scorpioweb.Models
                 
                 filter = from a in _context.Archivo
                          join ap in _context.Archivoprestamo on a.IdArchivo equals ap.ArcchivoIdArchivo
-                         where ap.Recibe == user.ToString()
+                         where ap.Recibe == user.ToString() && ap.Estatus == "PRESTADO"
                          select new ArchivoControlPrestamo
                          {
                              archivoVM = a,

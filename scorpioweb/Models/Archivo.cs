@@ -15,5 +15,6 @@ namespace scorpioweb.Models
         public string CondicionEspecial { get; set; }
         public sbyte? Solucitud { get; set; }
         public string QuienSolicita { get; set; }
+        public string ClaveUnicaScorpio { get; set; }
     }
 }

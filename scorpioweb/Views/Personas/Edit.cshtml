@@ -867,13 +867,13 @@
                 </div>
                 <div class="form-group col-lg-3" id="Estado">
                     <label class="control-label">Estado</label>
-                    <select class="form-control" name="lnEstado" id="lnEstado"
+                    <select class="form-control" name="LnEstado" id="lnEstado"
                             asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id", "Estado", @ViewBag.idEstado))">
                     </select>
                 </div>
                 <div class="form-group col-lg-3" id="Municipio">
                     <label class="control-label">Municipio</label>
-                    <select class="form-control" name="lnMunicipio" id="lnMunicipio"
+                    <select class="form-control" name="LnMunicipio" id="lnMunicipio"
                             asp-items="@(new SelectList(ViewBag.ListadoMunicipios, "Id", "Municipio",  @ViewBag.idMunicipio))">
                     </select>
                 </div>
@@ -909,7 +909,7 @@
                     <span asp-validation-for="Lnlocalidad" class="text-danger"></span>
                 </div>
             }
-
+            <input asp-for="ClaveUnicaScorpio" readonly type="hidden" class="form-control" />
             <div class="form-group col-lg-6">
                 <label class="control-label">Estado Civil</label>
                 <select class="form-control" name="estadoCivil" id="estadoCivil"

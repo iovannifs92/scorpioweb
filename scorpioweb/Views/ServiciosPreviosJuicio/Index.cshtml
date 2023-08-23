@@ -68,6 +68,8 @@
 </style>
 
 <script>
+    // Variable para almacenar el valor seleccionado en modal2
+    var valorSeleccionado;
 
     showModal = (url, title, id) => {
         $.ajax({
@@ -83,8 +85,17 @@
             }
         })
     }
+    function miFuncionEnPaginaPrincipal(nombre) {
+        // ACCIONES LLEGAN DESDE LA VISTA PARCIAL, LLEGA UN VALOR "nombre" SE COLOCA EN EL BUSCADOR Y SE SIMULA UN CLICK
+        //alert("Función activada desde la vista parcial" + nombre);
+        document.getElementById("SearchString").value = nombre;
+        var boton = document.getElementById("buscarJS");
+        boton.click();
+        document.getElementById("SearchString").value = "";
+    }
 </script>
 
+    
 <h2>Control de Análisis de Evaluación de Riesgos</h2>
 @if (ViewBag.WarningsUser > 0)
 {
@@ -95,8 +106,8 @@
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
         <p>
-            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <button type="submit" class="btn btn-default">
+            Búsqueda por nombre: <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" />
+            <button id="buscarJS" name="buscarJS" type="submit" class="btn btn-default">
                 <i class="fa fa-search"></i>
                 Buscar
             </button>

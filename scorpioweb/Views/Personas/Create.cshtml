@@ -923,18 +923,121 @@
     });
     //#endregion
 
+    //function myFunction(materno) {
+    //    var nombre = document.getElementById("nombre").value;
+    //    var paterno = document.getElementById("paterno").value;
+    //    var materno = materno;
+
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        url: "/Personas/testSimilitud",
+    //        traditional: true,
+    //        data: {
+    //                nombre, paterno, materno,
+    //        },
+    //        success: function (response) {
+    //            $('#tblSimilitud').html('');
+    //            var row = '';
+    //            if (response.lista.length == 0) {
+    //                //alert("No se encontro ningún registro que coincida")
+    //                return;
+    //            }
+    //            for (let i = 0; i < response.lista.length; i++) {
+    //                row = row
+    //                    + "<tr>"
+    //                    + "<td>" + response.lista[i].id + "</td>"
+    //                    + "<td>" + response.lista[i].nombre + "</td>"
+    //                    + "<td>" + response.lista[i].tabla + "</td>"
+    //                    + "<td>" + response.lista[i].dato + "</td>"
+    //                row = row + "<td>";
+    //                if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true && response.lista[i].tabla == "MCYSCP") {
+    //                row = row
+    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personas/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+    //                }
+    //                else{
+    //                    row = row
+    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='mostrarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+    //                }
+    //                row = row + "</td>";       
+    //                row = row + "</tr>";
+    //            };
+    //            if (row != '') {
+    //                $('#tblSimilitud').append(row);
+    //            }
+    //            $("#similitudModal").modal();
+    //        },
+    //        error: function (response) {
+    //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+    //            console.log(response);
+    //        }
+    //    });
+    //}
+    //PARA SACAR VALORES DE UNA LISTA EN C#
+
+    //function mostrarDatos(id,tabla) {
+    //    var nombre = document.getElementById("nombre").value;
+    //    var paterno = document.getElementById("paterno").value;
+    //    var materno = materno;
+    //    $.ajax({
+    //        url: "/Personas/Savcardatos",
+    //        type: "POST",
+    //        dataType: "json",
+    //        cache: false,
+    //        traditional: true,
+    //        data: {
+    //            id, tabla,
+    //        },
+    //        success: function(response){
+    //            document.getElementById("nombre").value = response.lista[0].nombre;
+    //            document.getElementById("paterno").value = response.lista[0].paterno;
+    //            document.getElementById("materno").value = response.lista[0].materno;
+    //            document.getElementById("edad").value = response.lista[0].edad;
+    //            document.getElementById("tabla").value = tabla;
+    //            document.getElementById("idselecionado").value = id;
+
+    //        }
+    //    });
+    //    $("#similitudModal").modal("hide");
+    //};
+
+    function SacaCURS() {
+        var nombre = document.getElementById("nombre").value;
+        var paterno = document.getElementById("paterno").value;
+        var materno = document.getElementById("materno").value;
+        var genero = document.getElementById("sexo").value;
+        var lnestado = document.getElementById("lnEstado").value;
+        var Fnacimiento = document.getElementById("fNacimiento").value;
+        $.ajax({
+            url: "/Personas/cursJson",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                paterno, materno, Fnacimiento, genero, lnestado, nombre,
+            },
+            success: function(response){
+                document.getElementById("CURS").value = response.curs;
+                document.getElementById("CURP").value = response.curs + "*";
+            }
+        }); 
+    };
+
+
     function myFunction(materno) {
+
         var nombre = document.getElementById("nombre").value;
         var paterno = document.getElementById("paterno").value;
         var materno = materno;
-
+        alert(1)
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "/Personas/testSimilitud",
             traditional: true,
             data: {
-                    nombre, paterno, materno,
+                nombre, paterno, materno,
             },
             success: function (response) {
                 if (response.success == true) {
@@ -953,6 +1056,9 @@
             }
         });
     }
+
+
+
 </script>
 
 @{
@@ -962,6 +1068,7 @@
 @ViewBag.Javascript
 <h2>Entrevista de encuadre</h2>
 <br />
+<label id="datosLabel"></label>
 
 <div class="row">
     <div class="col-md-4">
@@ -1006,7 +1113,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Apellido materno</label>
-                                    <input name="materno"  type="text" class="form-control" onblur="myFunction(value)" />
+                                    <input name="materno" id="materno" type="text" class="form-control" onblur="myFunction(value)" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Nombre del padre</label>
@@ -1030,11 +1137,11 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Edad</label>
-                                    <input required name="edad" type="number" value="0" class="form-control" />
+                                    <input required id="edad" name="edad" type="number" value="0" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Fecha de nacimiento</label>
-                                    <input required name="fNacimiento" type="date" class="form-control" />
+                                    <input required id="fNacimiento" name="fNacimiento" type="date" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-3" id="Pais">
                                     <label class="control-label">País</label>
@@ -1056,9 +1163,12 @@
                                 <div class="form-group col-md-3" id="Estado">
                                     <label class="control-label">Estado</label>
                                     <select class="form-control" name="lnEstado" id="lnEstado"
-                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))">
+                                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" onblur="SacaCURS()">
                                     </select>
                                 </div>
+                                <input readonly type="hidden" id="CURS" name="CURS" type="text" maxlength="18" class="form-control" />
+                                <input readonly type="hidden" id="tabla" name="tabla" type="text" maxlength="18" class="form-control" />
+                                <input readonly type="hidden" id="idselecionado" name="idselecionado" type="text" maxlength="18" class="form-control" />
                                 <div class="form-group col-md-3" id="Municipio">
                                     <label class="control-label">Municipio</label>
                                     <select class="form-control" name="lnMunicipio" id="lnMunicipio"
@@ -1067,7 +1177,7 @@
                                 </div>
                                 <div class="form-group col-md-3" id="Localidad">
                                     <label class="control-label">Localidad</label>
-                                    <input name="lnLocalidad" type="text" class="form-control" />
+                                    <input name="lnLocalidad" type="text" class="form-control"/>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Estado Civil</label>
@@ -1158,7 +1268,7 @@
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">CURP</label>
-                                    <input name="CURP" type="text" maxlength="18" class="form-control" />
+                                    <input id="CURP" name="CURP" type="text" maxlength="18" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Consume alguna sustancia o droga?</label>
@@ -2118,6 +2228,41 @@
                     <i class="fa fa-save"></i>
                     Guardar
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="similitudModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+@*            <div class="text-right"  style="background-color:#0078a7">
+                <button type="button" hrf data-dismiss="modal">x</button>
+            </div>*@
+            <div class="modal-header float-center" style="background-color:#0078a7">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+                <h3 id="modal_body" style="text-align:center; color:#000">Similitud </h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table class="table" name="" id="">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Tabla</th>
+                                <th>Dato Extra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSimilitud">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

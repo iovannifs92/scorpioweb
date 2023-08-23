@@ -1,9 +1,10 @@
-﻿@model IEnumerable<scorpioweb.Models.Libronegro>
-
+﻿@model PaginatedList<scorpioweb.Models.Libronegro>
 @{
     ViewBag.Title = "Libro negro";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
+
+
 <script>
     showModal = (url, title, id) => {
         $.ajax({
@@ -22,6 +23,10 @@
             }
         })
     }
+
+    function confirmarBorrado() {
+        return confirm("¿Estás seguro de que deseas borrar el elemento?");
+    }
 </script>
 
 
@@ -30,84 +35,116 @@
 <html>
 <body>
     <h1>Libro negro</h1>
-<p>
-    <a class="btn btn-primary fa fa-plus" asp-action="libronegrocreate"> Crear</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
+    <form asp-action="libronegro" method="get">
+        <div>
+            <div class="col-md-11">
+                <label>
+                    Búsqueda por nombre o Causa Penal 
+                    <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" />
+                </label>
+                <button type="submit" class="btn btn-default" style="margin-left:10px">
+                    <i class="fa fa-search"></i>
+                    Buscar
+                </button>
+                <a style="text-align:left" asp-action="libronegro">Regresar al Listado Completo </a>
+            </div>
+        </div>
+       <div class="col-md-1">
+            <p style="text-align:right">
+                <a class="btn btn-primary fa fa-plus" asp-action="libronegrocreate"> Crear</a>
+            </p>
+       </div>
+    </form>
+   
+    <table class="table">
+        <thead>
+            <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Paterno)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Materno)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Nombre)
+                    Nombre Completo
                 </th>
                 <th>
                     Causda penal
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Telefono)
+                    Telefono
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Direccion)
-                </th>
-               <th>
-                    @Html.DisplayNameFor(model => model.F1)
+                    Direccion
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.F2)
+                   Primera Firma
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.F3)
+                   Segunda Firma
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.F4)
+                   Tercera Firma
+                </th>
+                <th>
+                   Cuerta Firma
                 </th*
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Paterno)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Materno)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.F1)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.F2)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.F3)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.F4)
-            </td>
-            <td>
-                 <a onclick="showModal('@Url.Action("libronegroedit", "Personas", new {id=@item.Idlibronegro}, Context.Request.Scheme)','Editar Libro negro',null )" class="btn btn-success fa fa-pencil"> Editar Usuario</a>
-                 <a asp-action="Deletelibro" class="btn btn-danger fa fa-trash" asp-route-id="@item.Idlibronegro"> Borrar</a>
-        </tr>
-}
-    </tbody>
-</table>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cp)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Telefono)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Direccion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.F1)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.F2)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.F3)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.F4)
+                    </td>
+                    <td>
+                        <a onclick="showModal('@Url.Action("libronegroedit", "Personas", new {id=@item.Idlibronegro}, Context.Request.Scheme)','Editar Libro negro',null )" class="btn btn-success fa fa-pencil" style="margin:2px"> Editar Usuario</a>
+                        <a asp-action="Deletelibro" class="btn btn-danger fa fa-trash" asp-route-id="@item.Idlibronegro" onclick="return confirmarBorrado()" style="margin:2px"> Borrar</a>
+                </tr>
+            }
+        </tbody>
+    </table>
 </body>
 </html>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<p style="margin-top:30px">
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="libronegro"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="libronegro"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+<br />
+@*<div style="margin-top:20px">
+    <a asp-action="ArchivoMenu">Regresar al Menu</a>
+</div>*@

@@ -37,6 +37,10 @@ namespace scorpioweb.Models
         public string RutaAer { get; set; }
         public string Usuario { get; set; }
         public DateTime? FechaCaptura { get; set; }
+        public string LnEstado { get; set; }
+        public string LnMunicipio { get; set; }
+        public DateTime? FechaNacimiento { get; set; }
+        public string ClaveUnicaScorpio { get; set; }
         public string NombreCompleto
         {
             get
@@ -44,7 +48,5 @@ namespace scorpioweb.Models
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
-
-
     }
 }

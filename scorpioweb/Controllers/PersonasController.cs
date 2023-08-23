@@ -36,6 +36,10 @@ using scorpioweb.Data;
 using DocumentFormat.OpenXml.EMMA;
 using scorpioweb.Class;
 using Microsoft.WindowsAzure.Storage.Blob.Protocol;
+using Microsoft.AspNetCore.Rewrite.Internal;
+using ZXing.OneD;
+using System.ComponentModel.DataAnnotations;
+using Syncfusion.EJ2.Navigations;
 
 namespace scorpioweb.Controllers
 {
@@ -281,6 +285,12 @@ namespace scorpioweb.Controllers
             }
             return curp.ToString();
         }
+
+        public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
+        {
+            var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);
+            return Json(new { success = true, responseText = Convert.ToString(0), curs = curs}); ;
+        }
         #endregion
 
         #region -testSimilitud-
@@ -331,6 +341,196 @@ namespace scorpioweb.Controllers
 
             return Json(new { success = false });
         }
+        #endregion
+        #region -testSimilitud-
+        //public JsonResult testSimilitud(string nombre, string paterno, string materno) 
+        //{
+        //    bool simi = false;
+        //    var nombreCompleto = mg.normaliza(paterno) + " " + mg.normaliza(materno) + " " + mg.normaliza(nombre);
+        //    var inicuialnomnbre = paterno.Substring(0, 1).ToUpper();
+
+        //    var query = (from p in _context.Persona
+        //                 join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
+        //                 from d in domicilioJoin.DefaultIfEmpty()
+        //                 join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into supervisionJoin
+        //                 from s in supervisionJoin.DefaultIfEmpty()
+        //                 join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
+        //                 from cp in causapenalJoin.DefaultIfEmpty()
+
+        //                 group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio } into g
+        //                 select new
+        //                 {
+        //                     id = g.Key.IdPersona,
+        //                     nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
+        //                     NomTabla = "MCYSCP",
+        //                     datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g)};\n"
+        //                 }).Union
+        //                 (from a in _context.Archivo
+        //                  join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
+
+        //                  group new { ar.CausaPenal, ar.CarpetaEjecucion } by new { a.IdArchivo, a.Paterno, a.Materno, a.Nombre,a.ClaveUnicaScorpio  } into g
+        //                  select new
+        //                  {
+        //                      id = g.Key.IdArchivo,
+        //                      nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
+        //                      NomTabla = "Archivo",
+        //                      datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n"
+        //                  }).Union
+        //                    (from e in _context.Ejecucion
+        //                     join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcausapenalJoin
+        //                     from epcp in epcausapenalJoin.DefaultIfEmpty()
+
+        //                     group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce,e.ClaveUnicaScorpio } into g
+        //                     select new
+        //                     {
+        //                         id = g.Key.IdEjecucion,
+        //                         nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
+        //                         NomTabla = "Ejecucion",
+        //                         datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g)};\n"
+        //                     }).Union
+        //                            (from sp in _context.Serviciospreviosjuicio
+        //                             where sp.Paterno.Contains(paterno) && sp.Materno.Contains(materno)
+        //                             select new
+        //                             {
+        //                                 id = sp.IdserviciosPreviosJuicio,
+        //                                 nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
+        //                                 NomTabla = "Servicios Previos",
+        //                                 datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n"
+        //                             }).Union
+        //                            (from pp in _context.Prisionespreventivas
+
+        //                             select new
+        //                             {
+        //                                 id = pp.Idprisionespreventivas,
+        //                                 nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
+        //                                 NomTabla = "Prision Preventiva",
+        //                                 datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n"
+        //                             }).Union
+        //                            (from pp in _context.Oficialia
+
+        //                             select new
+        //                             {
+        //                                 id = pp.IdOficialia,
+        //                                 nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
+        //                                 NomTabla = "Oficialia",
+        //                                 datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n"
+        //                             });
+
+        //    var result = query.ToList();
+
+        //    int idpersona = 0;
+        //    string nomCom = "";
+        //    string tabla = "";
+        //    string datoextra = "";
+        //    var cosine = new Cosine(2);
+        //    double r = 0;
+        //    var list = new List<Tuple<string, string,  int, string, double>>();
+
+        //    List<string> listaNombre = new List<string>();
+
+
+        //    foreach (var q in query)
+        //    {
+        //        r = cosine.Similarity(q.nomcom, nombreCompleto);
+        //        if (r >= 0.87)
+        //        {
+        //            nomCom = q.nomcom;
+        //            idpersona = q.id;
+        //            tabla = q.NomTabla;
+        //            datoextra = q.datoExtra;
+        //            list.Add(new Tuple<string, string, int,string , double>(nomCom, tabla, idpersona, datoextra,  r));
+        //            simi = true;
+        //        }
+        //    }
+        //    List<object> elementos = new List<object>();
+        //    if (list.Count() != 0)
+        //    {
+        //        for (int i = 0; i < list.Count; i++)
+        //        {
+        //            var item = list[i];
+        //            double porcentaje = item.Item5 * 100;
+        //            int porcentajeFloor = (int)Math.Floor(porcentaje);
+        //            string nombreP = item.Item1;
+        //            string tablaP = item.Item2;
+        //            int idPersona = item.Item3;
+        //            string datoextraP = item.Item4;
+
+        //            elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP });
+        //        }
+        //        return Json(new { success = true, lista = elementos });
+        //    }
+        //    return Json(new { success = false, lista = elementos });
+        //}
+
+        public JsonResult Savcardatos(int id, string tabla)
+        {
+            List<object> listaDatos = new List<object>();
+
+            switch (tabla)
+            {
+                case "MCYSCP":
+                    var query = (from p in _context.Persona
+                                join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
+                                from d in domicilioJoin.DefaultIfEmpty()
+                                join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona into estudiosJoin
+                                from e in estudiosJoin.DefaultIfEmpty()
+                                join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona  into trabajoJoin
+                                from t in trabajoJoin.DefaultIfEmpty()
+                                join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona into actividadessocialesJoin
+                                from a in actividadessocialesJoin.DefaultIfEmpty()
+                                join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
+                                from s in saludfisicaJoin.DefaultIfEmpty()
+                                where p.IdPersona == id select new
+                                {
+                                    p,d,e,t,a,s
+                                }).ToList();
+                    listaDatos.AddRange(query);
+                    break;
+                case "Archivo":
+                    listaDatos.AddRange(_context.Archivo.Where(table => table.IdArchivo == id).ToList());
+                    break; 
+                case "Ejecucion":
+                    listaDatos.AddRange(_context.Ejecucion.Where(table => table.IdEjecucion == id).ToList());
+                    break; 
+                case "Servicios Previos":
+                    listaDatos.AddRange(_context.Serviciospreviosjuicio.Where(table => table.IdserviciosPreviosJuicio == id).ToList());
+                    break; 
+                case "Prision Preventiva":
+                    listaDatos.AddRange(_context.Prisionespreventivas.Where(table => table.Idprisionespreventivas == id).ToList());
+                    break; 
+                case "Oficialia":
+                    listaDatos.AddRange(_context.Oficialia.Where(table => table.IdCausaPenal == id).ToList());
+                    break;
+                //case "CL":
+                //    var queryCL = (from p in _context.Persona
+                //                 join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
+                //                 from d in domicilioJoin.DefaultIfEmpty()
+                //                 join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona into estudiosJoin
+                //                 from e in estudiosJoin.DefaultIfEmpty()
+                //                 join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona into trabajoJoin
+                //                 from t in trabajoJoin.DefaultIfEmpty()
+                //                 join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona into actividadessocialesJoin
+                //                 from a in actividadessocialesJoin.DefaultIfEmpty()
+                //                 join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
+                //                 from s in saludfisicaJoin.DefaultIfEmpty()
+                //                 where p.IdPersona == id
+                //                 select new
+                //                 {
+                //                     p = p,
+                //                     d = d,
+                //                     e = e,
+                //                     t = t,
+                //                     a = a,
+                //                     s = s
+                //                 }).ToList();
+                //    listaDatos.AddRange(queryCL);
+                //    break;
+            }
+            return Json(new { success = false, lista = listaDatos });
+        }
+
+
+
         #endregion
 
         #region -Pruebas-
@@ -634,7 +834,7 @@ namespace scorpioweb.Controllers
                                       municipiosVMDomicilio = municipio,
                                       CasoEspecial = "Colaboración"
                                   });
-            
+
             return View(colaboraciones);
         }
         #endregion
@@ -1373,7 +1573,8 @@ namespace scorpioweb.Controllers
             var LNM = (from p in _context.Persona
                        join m in _context.Municipios on p.Lnmunicipio equals m.Id.ToString()
                        where p.IdPersona == id
-                       select new {
+                       select new
+                       {
                            m.Municipio
                        });
 
@@ -1483,7 +1684,7 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
-            
+
             return View();
         }
 
@@ -1702,10 +1903,23 @@ namespace scorpioweb.Controllers
         #region -CREATE-
         // GET: Personas/Create
         [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
-        public IActionResult Create(Estados Estados)
+        public async Task<IActionResult> Create(Estados Estados)
         {
-
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            ViewBag.UserMCYSCP = false;
+            ViewBag.user = user;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP")
+                {
+                    ViewBag.UserMCYSCP = true;
+                }
+            }
 
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
@@ -1734,9 +1948,9 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
-            string resolucion,string centropenitenciario,string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
-            string lnEstado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
+        public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos, Expedienteunico expedienteunico,
+            string resolucion, string centropenitenciario, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string lnEstado,string CURS,string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
@@ -1759,6 +1973,7 @@ namespace scorpioweb.Controllers
 
             if (ModelState.ErrorCount <= 1)
             {
+
                 #region -Persona-
                 persona.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
                 persona.Sinocentropenitenciario = sinocentropenitenciario;
@@ -1801,6 +2016,7 @@ namespace scorpioweb.Controllers
                 persona.Capturista = currentUser;
                 persona.Candado = 0;
                 persona.MotivoCandado = "NA";
+                persona.ClaveUnicaScorpio = CURS;
 
                 var estado = (from e in _context.Estados
                               where e.Id.ToString() == estadoD
@@ -2124,6 +2340,22 @@ namespace scorpioweb.Controllers
                     await fotografia.CopyToAsync(stream);
                     stream.Close();
                 }
+                #endregion
+
+                #region -Expediente Unico-
+               // _context.Database.ExecuteSqlCommand("CALL spInsertEU(" + idPersona + tabla + idselecionado + CURS + ")");
+
+                //if(idselecionado != null && tabla != null)
+                //{
+                //    var var_idnuevo = idPersona;
+                //    var var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
+                //    var var_idSelect = idselecionado;
+                //    var var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                //    var var_tablaCurs = "ClaveUnicaScorpio";
+                //    var var_curs = 1;
+
+                //    _context.Database.ExecuteSqlCommand("CALL spInsertExpedienteUnico('" + var_idnuevo + "', '" + var_tablanueva + "', '" + var_idSelect + "', '" + var_tablaSelect + "', '" + var_tablaCurs + "', '" + var_curs + "')");
+                //}
                 #endregion
 
                 #region -Añadir a contexto-
@@ -2882,14 +3114,14 @@ namespace scorpioweb.Controllers
 
             //ViewBag.listaUbicacionExp = listaUbicacionExpediente;
             //ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
-             
-            ViewBag.idCentroPenitenciario = persona.Centropenitenciario;          
+
+            ViewBag.idCentroPenitenciario = persona.Centropenitenciario;
             ViewBag.pais = persona.Lnpais;
             ViewBag.idioma = persona.OtroIdioma;
             ViewBag.traductor = persona.Traductor;
             ViewBag.Hijos = persona.Hijos;
 
-            
+
 
             #region Consume sustancias
             ViewBag.listaConsumoSustancias = listaNoSi;
@@ -3076,9 +3308,9 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas,string centropenitenciario,string sinocentropenitenciario)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
         {
-           
+
             Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
             Familiaresforaneos familiaresForaneos = new Familiaresforaneos();
 
@@ -3094,8 +3326,6 @@ namespace scorpioweb.Controllers
 
                 persona.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
                 persona.Sinocentropenitenciario = sinocentropenitenciario;
-
-
                 persona.TieneResolucion = mg.removeSpaces(mg.normaliza(persona.TieneResolucion));
                 persona.Paterno = mg.removeSpaces(mg.normaliza(persona.Paterno));
                 persona.Materno = mg.removeSpaces(mg.normaliza(persona.Materno));
@@ -3110,7 +3340,11 @@ namespace scorpioweb.Controllers
                 persona.EspecifiqueTraductor = mg.normaliza(persona.EspecifiqueTraductor);
                 persona.ComIndigena = mg.normaliza(persona.ComIndigena);
                 persona.ComLgbtttiq = mg.normaliza(persona.ComLgbtttiq);
-                persona.Curp = mg.normaliza(persona.Curp);
+                if (!(persona.Paterno == null && persona.Materno == null && persona.Nombre == null && persona.Genero == null && persona.Fnacimiento == null && persona.Lnestado == null)) {
+                    var curs = mg.sacaCurs(persona.Paterno, persona.Materno, persona.Fnacimiento, persona.Genero, persona.Lnestado, persona.Nombre);
+                    persona.ClaveUnicaScorpio = curs;
+                    persona.Curp = curs + "*";
+                }
                 persona.ConsumoSustancias = mg.normaliza(persona.ConsumoSustancias);
                 persona.Familiares = mg.normaliza(persona.Familiares);
                 persona.ReferenciasPersonales = mg.normaliza(persona.ReferenciasPersonales);
@@ -6045,7 +6279,8 @@ namespace scorpioweb.Controllers
                         });
                     }
                 }
-            } else if (users == "claudia.armendariz@dgepms.com")
+            }
+            else if (users == "claudia.armendariz@dgepms.com")
             {
                 ListaUbicacion.Add(new SelectListItem { Text = "Seleccione", Value = "Seleccione" });
                 ListaUbicacion.Add(new SelectListItem { Text = "Archivo General", Value = "Archivo General" });
@@ -6878,11 +7113,11 @@ namespace scorpioweb.Controllers
                 {
                     libronegro = libronegro.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
                                                    (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
-                                                   (p.Idlibronegro.ToString()).Contains(searchString)
+                                                   (p.Cp).Contains(searchString) ||
+                                                   (p.Direccion).Contains(searchString)
                                                    );
                 }
             }
-
 
             switch (sortOrder)
             {
@@ -6893,7 +7128,7 @@ namespace scorpioweb.Controllers
                     libronegro = libronegro.OrderByDescending(p => p.Idlibronegro);
                     break;
             }
-            int pageSize = 1000;
+            int pageSize = 10;
             return View(await PaginatedList<Libronegro>.CreateAsync(libronegro.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         public IActionResult libronegrocreate()
