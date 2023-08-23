@@ -188,15 +188,12 @@ section {
     };
 
     function Guardar() {    
-
         var Lugar = document.getElementById("Lugar").value
         var Dependencia = document.getElementById("Dependencia").value;
         var Titular = document.getElementById("Titular").value;
         var Correo = document.getElementById("Correo").value;
         var Telefono = document.getElementById("Telefono").value;
         var Extencion = document.getElementById("Extencion").value;
-        alert(Extencion);
-
 
         $.ajax({
             type: "POST",

@@ -39,5 +39,12 @@ namespace scorpioweb.Models
         public string DelitoTipo { get; set; }
         public string AutoVinculacion { get; set; }
         public string ClaveUnicaScorpio { get; set; }
+        public string NombrePaternoMaterno
+        {
+            get
+            {
+                return this.Paterno + " " + this.Materno + " " + this.Nombre;
+            }
+        }
     }
 }
