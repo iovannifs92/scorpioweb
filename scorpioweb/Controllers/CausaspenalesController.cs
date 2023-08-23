@@ -365,11 +365,6 @@ namespace scorpioweb.Controllers
                 borrar = true;
                 return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar });
             }
-            var stadoc = (from c in _context.Causapenal
-                          where c.IdCausaPenal == id
-                          select c.IdCausaPenal).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(id) });
         }
 
 
@@ -409,12 +404,6 @@ namespace scorpioweb.Controllers
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar});
             }
-
-            var stadoc = (from c in _context.Causapenal
-                          where c.IdCausaPenal == id
-                          select c.IdCausaPenal).FirstOrDefault();
-
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(id) });
         }
 
 
@@ -918,7 +907,7 @@ namespace scorpioweb.Controllers
                             historialcp.CausapenalIdCausapenal = id;
 
                             _context.Add(historialcp);
-                            await _context.SaveChangesAsync(null, 1);
+                            await _context.SaveChangesAsync();
                         }
                     }
                     
@@ -1021,5 +1010,29 @@ namespace scorpioweb.Controllers
             return flagCoordinador;
         }
         #endregion
+
+        public JsonResult Borrar(int id)
+        {
+            var borrar = false;
+  
+            var query = (from c in _context.Historialcp
+                         where c.IdHistorialcp == id
+                         select c).FirstOrDefault();
+            try
+            {
+                borrar = true;
+                var causapenals = _context.Historialcp.FirstOrDefault(m => m.IdHistorialcp == id);
+                _context.Historialcp.Remove(causapenals);
+                _context.SaveChanges();
+
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+        }
     }
 }

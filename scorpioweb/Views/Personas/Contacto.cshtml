@@ -188,15 +188,12 @@ section {
     };
 
     function Guardar() {    
-
         var Lugar = document.getElementById("Lugar").value
         var Dependencia = document.getElementById("Dependencia").value;
         var Titular = document.getElementById("Titular").value;
         var Correo = document.getElementById("Correo").value;
         var Telefono = document.getElementById("Telefono").value;
         var Extencion = document.getElementById("Extencion").value;
-        alert(Extencion);
-
 
         $.ajax({
             type: "POST",
@@ -361,34 +358,34 @@ section {
                     </div>
                     <div class="modal-body" style=" background:rgb(209,208,224);">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <form>
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group">
                                         <label class="control-label" style="font-size: 15px;">Lugar</label>
                                         <input class="form-control" name="Lugar" id="Lugar" style="font-size: 15px;" />
                                     </div>
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group">
                                         <label class="control-label" style="font-size: 15px;">Dependencia</label>
-                                        <input class="form-control" name="Dependencia" id="Dependencia" style="font-size: 15px;"/>
+                                        <input required class="form-control" name="Dependencia" id="Dependencia" style="font-size: 15px;"/>
                                     </div>
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group">
                                         <label class="control-label" style="font-size: 15px;">Titular</label>
                                         <input class="form-control" name="Titular" id="Titular" style="font-size: 15px;" />
                                     </div>
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group">
                                         <label class="control-label" style="font-size: 15px;">Correo</label>
                                         <input type="email" class="form-control" name="Correo" id="Correo" style="font-size: 15px;" />
                                     </div>
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group">
                                         <label class="control-label" style="font-size: 15px;">Telefono</label>
                                         <input type="tel" pattern="[0-9]{10}" maxlength="10" asp-for="Telefono" class="form-control" style="font-size: 15px;" />
                                     </div>
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group">
                                         <label class="control-label" style="font-size: 15px;">Extencion</label>
                                         <input class="form-control" name="Extencion" id="Extencion" style="font-size: 15px;" />
                                     </div>
-                                    <div class="form-group col-md-12">
-                                        <input onclick="Guardar()" value="Añadir contacto" class="btn btn-primary" style="font-size: 15px;" />
+                                    <div class="form-group">
+                                        <input onclick="Guardar()" value="Guardar" class="btn btn-primary fa fa-save" style="font-size: 15px;" />
                                     </div>
                                 </form>
                             </div>

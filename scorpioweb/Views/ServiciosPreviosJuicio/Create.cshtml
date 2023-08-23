@@ -7,6 +7,43 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        var items = "<option value='0'>Sin municipio</option>";
+        $('#lnMunicipio').html(items);
+        $('#lnEstado').change(function () {
+            var url = '@Url.Content("~/")' + "ServiciosPreviosJuicio/GetMunicipio";
+            var ddlsource = '#lnEstado';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = "<option value='0'>Sin municipio</option>";
+                $("#lnMunicipio").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#lnMunicipio').html(items);
+            });
+        });
+        $('#lnPais').change(function () {
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                $("#lnEstado").val(0);
+                var items = "<option value='0'>Sin municipio</option>";
+                $('#lnMunicipio').html(items);
+                $("#lnMunicipio").val(0);
+                $("#Estado").css("display", "none");
+                $("#Municipio").css("display", "none");
+                $("#Pais, #Localidad").removeClass("col-md-3");
+                $("#Pais, #Localidad").addClass("col-md-6");
+            }
+            else {
+                $("#Estado").css("display", "block");
+                $("#Municipio").css("display", "block");
+                $("#Pais, #Localidad").removeClass("col-md-6");
+                $("#Pais, #Localidad").addClass("col-md-3");
+            }
+        });
+
+
         $('#RealizoEntrevista').change(function () {
             console.log("Hola");
             var opcion = $(this).children("option:selected").val();
@@ -117,6 +154,119 @@
         autocomplete(document.getElementById("CompletaDelito"), catalogo);
         });
     });
+
+    function SacaCURS() {
+        var nombre = document.getElementById("nombreee").value;
+        var paterno = document.getElementById("paternoee").value;
+        var materno = document.getElementById("maternoee").value;
+        var genero = document.getElementById("Sexo").value;
+        var lnestado = document.getElementById("lnEstado").value;
+        var Fnacimiento = document.getElementById("fNacimiento").value;
+        $.ajax({
+            url: "/ServiciosPreviosJuicio/cursJson",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                paterno, materno, Fnacimiento, genero, lnestado, nombre,
+            },
+            success: function (response) {
+                document.getElementById("CURS").value = response.curs;
+                //document.getElementById("CURP").value = response.curs + "*";
+            }
+        });
+    };
+
+    //function myFunction(materno) {
+    //    var nombre = document.getElementById("nombreee").value;
+    //    var paterno = document.getElementById("paternoee").value;
+    //    var materno = materno;
+
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        url: "/ServiciosPreviosJuicio/testSimilitud",
+    //        traditional: true,
+    //        data: {
+    //            nombre, paterno, materno,
+    //        },
+    //        success: function (response) {
+    //            $('#tblSimilitud').html('');
+    //            var row = '';
+    //            if (response.lista.length == 0) {
+    //                //alert("No se encontro ningún registro que coincida")
+    //                return;
+    //            }
+    //            for (let i = 0; i < response.lista.length; i++) {
+    //                row = row
+    //                    + "<tr>"
+    //                    + "<td>" + response.lista[i].id + "</td>"
+    //                    + "<td>" + response.lista[i].nombre + "</td>"
+    //                    + "<td>" + response.lista[i].tabla + "</td>"
+    //                    + "<td>" + response.lista[i].dato + "</td>"
+    //                row = row + "<td>";
+    //                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true && response.lista[i].tabla == "Servicios Previos") {
+    //                    row = row
+    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='pasarvalor(\"" + response.lista[i].nombre + "\")' class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+    //                }
+    //                else {
+    //                    row = row
+    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='mostrarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+    //                }
+    //                row = row + "</td>";
+    //                row = row + "</tr>";
+    //            };
+    //            if (row != '') {
+    //                $('#tblSimilitud').append(row);
+    //            }
+    //            $("#similitudModal").modal();
+
+    //        },
+    //        error: function (response) {
+    //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+    //            console.log(response);
+    //        }
+    //    });
+    //};
+
+    function myFunction(materno) {
+        var nombre = document.getElementById("nombre").value;
+        var paterno = document.getElementById("paterno").value;
+        var materno = materno;
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/testSimilitud",
+            traditional: true,
+            data: {
+                nombre, paterno, materno,
+            },
+            success: function (response) {
+                if (response.success == true) {
+                    var msg = confirm("Se encontro una persona " + response.porcentaje + "% parecido, ¿Desea ir a la entrevista?");
+                    if (msg == true) {
+                        window.location.href = response.responseText;
+                    } else {
+                    }
+                } else {
+                }
+
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                console.log(response);
+            }
+        });
+    }
+
+    function pasarvalor(nombre) {
+        //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor", 
+        //ESTE USA  window.parent.miFuncionEnPaginaPrincipal(nombre) PARA MANDARLO A LA PAGUINA PRINCIPAL;
+        window.parent.miFuncionEnPaginaPrincipal(nombre);
+    };
+
 </script>
 
     <div class="row">
@@ -125,19 +275,16 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
                 <div class="form-group">
-                    <label asp-for="Nombre" class="control-label"></label>
-                    <input required maxlength="100" asp-for="Nombre" class="form-control" />
-                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                    <label class="control-label">Nombre</label>
+                    <input required asp-for="Nombre" id="nombreee" name="Nombre" class="form-control" />
+                </div>
+                 <div class="form-group">
+                    <label class="control-label">Apellido Paterno</label>
+                    <input required asp-for="Paterno" id="paternoee" name="Paterno" class="form-control" />
                 </div>
                 <div class="form-group">
-                    <label asp-for="Paterno" class="control-label"></label>
-                    <input required maxlength="45" asp-for="Paterno" class="form-control" />
-                    <span asp-validation-for="Paterno" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Materno" class="control-label"></label>
-                    <input maxlength="45" asp-for="Materno" class="form-control" />
-                    <span asp-validation-for="Materno" class="text-danger"></span>
+                    <label class="control-label">Apellido Materno</label>
+                    <input required asp-for="Materno" id="maternoee" name="Materno" class="form-control" @*onblur="myFunction(value)"*@ />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Sexo</label>
@@ -145,10 +292,27 @@
                             asp-items="@(new SelectList(ViewBag.listaSexo, "Value", "Text"))">
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label asp-for="Edad" class="control-label"></label>
                     <input type="number" asp-for="Edad" class="form-control" />
                     <span asp-validation-for="Edad" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Fecha de nacimiento</label>
+                    <input required id="fNacimiento" name="FechaNacimiento" type="date" class="form-control" />
+                </div>
+                <div class="form-group col-md-6" id="Estado">
+                    <label class="control-label">Estado</label>
+                    <select class="form-control" name="LnEstado" id="lnEstado"
+                            asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" onblur="SacaCURS()">
+                    </select>
+                </div>
+                <input asp-for="ClaveUnicaScorpio" id="CURS" name="ClaveUnicaScorpio" class="form-control" readonly type="hidden" />
+                <div class="form-group col-md-6" id="Municipio">
+                    <label class="control-label">Municipio</label>
+                    <select class="form-control" name="LnMunicipio" id="lnMunicipio"
+                            asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">
+                    </select>
                 </div>
                 <div class="form-group">
                     <label asp-for="Calle" class="control-label">Calle y Número</label>
@@ -178,7 +342,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Mama" class="control-label">Nombre de la madre</label>
-                    <input asp-for="Mama" maxlength="300" class="form-control" />
+                <input asp-for="Mama" id="Mama" name="Mama" maxlength="300" class="form-control" />
                     <span asp-validation-for="Mama" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -289,3 +453,42 @@
             </form>
         </div>
     </div>
+
+<div id="similitudModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @*            <div class="text-right"  style="background-color:#0078a7">
+            <button type="button" hrf data-dismiss="modal">x</button>
+            </div>*@
+            <div class="modal-header float-center" style="background-color:#0078a7">
+                <div style="text-align:right; margin-right:30px">
+                    <button class="btn btn-default" data-toggle="modal" data-target="#similitudModal">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+                <h3 id="modal_body" style="text-align:center; color:#000">Similitud </h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table class="table" name="" id="">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Tabla</th>
+                                <th>Dato Extra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSimilitud">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div style="text-align:right; margin-block:30px">
+                <button class="btn btn-default" data-toggle="modal" data-target="#similitudModal">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

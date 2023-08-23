@@ -16,5 +16,6 @@ namespace scorpioweb.Models
         public string Juzgado { get; set; }
         public string CeAcumuladas { get; set; }
         public string TieneceAcumuladas { get; set; }
+        public string ClaveUnicaScorpio { get; set; }
     }
 }

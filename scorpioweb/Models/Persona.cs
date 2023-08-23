@@ -50,6 +50,7 @@ namespace scorpioweb.Models
         public string TieneResolucion { get; set; }
         public string Centropenitenciario { get; set; }
         public string Sinocentropenitenciario { get; set; }
+        public string ClaveUnicaScorpio { get; set; }
         public string NombreCompleto
         {
             get
@@ -62,7 +63,5 @@ namespace scorpioweb.Models
         {
             throw new NotImplementedException();
         }
-
     }
-
 }

@@ -2268,8 +2268,8 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> AgregarBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
                 string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidFraccion)
         {
-            int idbitacora = ((from table in _context.Bitacora
-                               select table.IdBitacora).Max() + 1);
+            
+            int idbitacora = _context.Bitacora.Max(table => table.IdBitacora) + 1;
 
             string currentUser = User.Identity.Name;
 
@@ -2284,10 +2284,10 @@ namespace scorpioweb.Controllers
                     var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                     await formFile.CopyToAsync(stream);
                     stream.Close();
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                   
                 }
             }
-
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
 
             if (ModelState.ErrorCount <= 1)
             {

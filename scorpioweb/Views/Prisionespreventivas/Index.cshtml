@@ -39,6 +39,14 @@
         </p>
     </div>
 </form>
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo"))
+{
+    <div style="padding-top:1%">
+        <a id="btnNuevaPrision" name="btnNuevaPrision" onclick="showModal('@Url.Action("Create","PrisionesPreventivas",null,Context.Request.Scheme)','Crear Nueva Prisión')" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Nueva Prisión
+        </a>
+    </div>
+}
 
 <table class="table">
     <thead>

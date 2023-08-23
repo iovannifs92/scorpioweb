@@ -35,6 +35,14 @@
             Buscar
         </button>
     </div>
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia"))
+    {
+        <div>
+            <a asp-action="Captura" id="btnNuevoRegistro" name="btnNuevoRegistro" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Nuevo Registro
+            </a>
+        </div>
+    }
     <div class="col-xs-2">
         <h4>
             Fecha de Recepción:

@@ -38,68 +38,12 @@ namespace scorpioweb.Models
         public DateTime? FechaSeguimiento { get; set; }
         public string DelitoTipo { get; set; }
         public string AutoVinculacion { get; set; }
-        public string PaternoMaternoNombre
-        {
-            get
-            {
-                string nombreCompleto = "";
-                if (this.Paterno != "NA")
-                {
-                    if (nombreCompleto != "")
-                    {
-                        nombreCompleto += " ";
-                    }
-                    nombreCompleto += this.Paterno;
-                }
-                if (this.Materno != "NA")
-                {
-                    if (nombreCompleto != "")
-                    {
-                        nombreCompleto += " ";
-                    }
-                    nombreCompleto += this.Materno;
-                }
-                if (this.Nombre != "NA")
-                {
-                    if (nombreCompleto != "")
-                    {
-                        nombreCompleto += " ";
-                    }
-                    nombreCompleto += this.Nombre;
-                }
-                return nombreCompleto;
-            }
-        }
+        public string ClaveUnicaScorpio { get; set; }
         public string NombrePaternoMaterno
         {
             get
             {
-                string nombreCompleto = "";
-                if (this.Nombre != "NA")
-                {
-                    if (nombreCompleto != "")
-                    {
-                        nombreCompleto += " ";
-                    }
-                    nombreCompleto += this.Nombre;
-                }
-                if (this.Paterno != "NA")
-                {
-                    if (nombreCompleto != "")
-                    {
-                        nombreCompleto += " ";
-                    }
-                    nombreCompleto += this.Paterno;
-                }
-                if (this.Materno != "NA")
-                {
-                    if (nombreCompleto != "")
-                    {
-                        nombreCompleto += " ";
-                    }
-                    nombreCompleto += this.Materno;
-                }
-                return nombreCompleto;
+                return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
     }

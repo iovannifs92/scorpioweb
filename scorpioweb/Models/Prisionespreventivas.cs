@@ -17,7 +17,7 @@ namespace scorpioweb.Models
         public string Capturista { get; set; }
         public string Observaciones { get; set; }
         public string RutaArchivo { get; set; }
-
+        public string ClaveUnicaScorpio { get; set; }
         public string NombreCompleto
         {
             get

@@ -7,6 +7,24 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+
+        var items = "<option value='0'>Selecciona</option>";
+        $('#municipioD').html(items);
+        $('#lnEstado').change(function () {
+            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            var ddlsource = '#lnEstado';
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                var items = "<option value='0'>Sin municipio</option>";
+                $("#lnMunicipio").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#lnMunicipio').html(items);
+            });
+        });
+
+
+
         $('#RealizoEntrevista').change(function () {
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
@@ -124,6 +142,8 @@
         <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
+            <input type="hidden" asp-for="Usuario" />
+            <input type="hidden" asp-for="FechaCaptura" />
             <div class="form-group">
                 <label asp-for="Nombre" class="control-label"></label>
                 <input required maxlength="100" asp-for="Nombre" class="form-control" />
@@ -145,11 +165,28 @@
                         asp-items="@(new SelectList(ViewBag.listaSexo, "Value", "Text", @ViewBag.idGenero))">
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-6">
                 <label asp-for="Edad" class="control-label"></label>
                 <input type="number" asp-for="Edad" class="form-control" />
                 <span asp-validation-for="Edad" class="text-danger"></span>
             </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Fecha de nacimiento</label>
+                <input required id="fNacimiento" asp-for="FechaNacimiento" name="FechaNacimiento" type="date" class="form-control" />
+            </div>
+            <div class="form-group" id="Estado">
+                <label class="control-label">Estado</label>
+                <select class="form-control" name="LnEstado" id="lnEstado"
+                        asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado", ViewBag.idEstado))" onblur="SacaCURS()">
+                </select>
+            </div>
+            <input asp-for="ClaveUnicaScorpio" id="CURS" name="ClaveUnicaScorpio" class="form-control" readonly type="hidden" />
+            @*<div class="form-group col-md-6" id="Municipio">
+                <label class="control-label">Municipio</label>
+                <select class="form-control" name="LnMunicipio" id="lnMunicipio"
+                        asp-items="@(new SelectList(ViewBag.ListadoMunicipios, "Id", "Municipio", ViewBag.idMunicipio))">
+                </select>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Calle" class="control-label">Calle y Número</label>
                 <input maxlength="200" asp-for="Calle" class="form-control" />
@@ -277,7 +314,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Observaciones" class="control-label"></label>
-                <textarea maxlength="500" class="form-control" rows="5" name="Observaciones" id="Observaciones"></textarea>
+                <textarea maxlength="500" class="form-control" rows="5" asp-for="Observaciones" name="Observaciones" id="Observaciones"></textarea>
             </div>
             <div class="form-group" hidden>
                 <label asp-for="PersonaIdPersona" class="control-label"></label>
