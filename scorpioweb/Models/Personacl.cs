@@ -48,5 +48,22 @@ namespace scorpioweb.Models
         public string ComLgbtttiq { get; set; }
         public string ComIndigena { get; set; }
         public string TieneResolucion { get; set; }
+        public string ClaveUnicaScorpio { get; set; }
+        public string Centropenitenciario { get; set; }
+        public sbyte? Ruta { get; set; }
+        public string Sinocentropenitenciario { get; set; }
+        public string Ce { get; set; }
+        public string NombreCompleto
+        {
+            get
+            {
+                return this.Paterno + " " + this.Materno + " " + this.Nombre;
+            }
+        }
+
+        public static implicit operator Personacl(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

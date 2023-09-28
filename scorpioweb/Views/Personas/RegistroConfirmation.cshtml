@@ -22,7 +22,16 @@ else
         </div>
     </h2>
 }
+@if (ViewBag.esmcyscp == true)
+{
+    <a asp-controller="Personas" asp-action="Index" class="btn btn-link">
+        Regresar al listado completo
+    </a>
+}
+@if (ViewBag.escl == true)
+{
+    <a asp-controller="Personacls" asp-action="Index" class="btn btn-link">
+        Regresar al listado completo
+    </a>
+}
 
-<a asp-action="Index" class="btn btn-link">
-    Regresar al listado completo
-</a>

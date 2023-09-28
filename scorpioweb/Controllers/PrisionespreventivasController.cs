@@ -267,7 +267,7 @@ namespace scorpioweb.Controllers
             return View(prisionespreventivas);
         }
 
-        public async Task<IActionResult> Duplicate(int? id)
+        public IActionResult Duplicate(int? id)
         {
             if (id == null)
             {

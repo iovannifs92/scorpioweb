@@ -850,6 +850,7 @@ namespace scorpioweb.Controllers
             DateTime fechaControl = (DateTime.Today).AddDays(3);
             DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
             DateTime fechahoy = DateTime.Today;
+            var fechaProcesal = DateTime.Now.AddMonths(-6);
             Boolean flagMaster = false;
 
             #region -Solicitud Atendida Archivo prestamo Digital-
@@ -881,6 +882,7 @@ namespace scorpioweb.Controllers
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
             List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
             List<Personacausapenal> personacausapenalsVM = _context.Personacausapenal.ToList();
+ 
 
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
@@ -889,6 +891,13 @@ namespace scorpioweb.Controllers
             List<Archivointernomcscp> queryHistorialArchivoadmin = (from a in _context.Archivointernomcscp
                                                                     group a by a.PersonaIdPersona into grp
                                                                     select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
+
+            var listaaudit = (from a in _context.Audit
+                              join s in _context.Supervision on int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) equals s.IdSupervision
+                              where a.TableName == "Supervision" && a.NewValues.Contains("en espera de respuesta")
+                              group a by int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) into grp
+                              select grp.OrderByDescending(a => a.Id).FirstOrDefault());
+  
             #endregion
 
             #region -Jointables-
@@ -1001,6 +1010,24 @@ namespace scorpioweb.Controllers
                             municipiosVM = municipio
                         };
 
+            var tableAudiot = from persona in personaVM
+                        join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                        join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                        join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                        join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                        join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                        join audit in listaaudit on supervision.IdSupervision equals int.Parse(Regex.Replace(audit.PrimaryKey, @"[^0-9]", ""))
+                        select new PlaneacionWarningViewModel
+                        {
+                            personaVM = persona,
+                            supervisionVM = supervision,
+                            causapenalVM = causapenal,
+                            planeacionestrategicaVM = planeacion,
+                            auditVM = audit,
+                            fechaCmbio = audit.DateTime,
+                            municipiosVM = municipio
+                        };
+
             if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
                 var warningPlaneacion = (where).Union
@@ -1078,6 +1105,17 @@ namespace scorpioweb.Controllers
                                              fraccionesimpuestasVM = t.fraccionesimpuestasVM,
                                              figuraJudicial = t.figuraJudicial,
                                              tipoAdvertencia = "Se paso el tiempo de la firma"
+                                         }).Union
+                                        (from t in tableAudiot
+                                         where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                         select new PlaneacionWarningViewModel
+                                         {
+                                             personaVM = t.personaVM,
+                                             supervisionVM = t.supervisionVM,
+                                             causapenalVM = t.causapenalVM,
+                                             planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                             fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                             tipoAdvertencia = "Estado Procesal"
                                          });
                 var warnings = Enumerable.Empty<PlaneacionWarningViewModel>();
                 if (usuario == "janeth@nortedgepms.com" || flagMaster == true)
@@ -1188,8 +1226,18 @@ namespace scorpioweb.Controllers
                                          planeacionestrategicaVM = t.planeacionestrategicaVM,
                                          fraccionesimpuestasVM = t.fraccionesimpuestasVM,
                                          tipoAdvertencia = "Se paso el tiempo de la firma"
-                                     })
-                                     ;
+                                     }).Union
+                                    (from t in tableAudiot
+                                     where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                     select new PlaneacionWarningViewModel
+                                     {
+                                         personaVM = t.personaVM,
+                                         supervisionVM = t.supervisionVM,
+                                         causapenalVM = t.causapenalVM,
+                                         planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                         fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                         tipoAdvertencia = "Estado Procesal"
+                                     });
                 ViewBag.Warnings = warningPlaneacion.Count();
             }
             #endregion
@@ -1327,6 +1375,7 @@ namespace scorpioweb.Controllers
            string searchString,
            int? pageNumber)
         {
+
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
             foreach (var usuario in userManager.Users)
@@ -1902,7 +1951,7 @@ namespace scorpioweb.Controllers
 
         #region -CREATE-
         // GET: Personas/Create
-        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP ")]
+        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP, AdminLC, SupervisiorLC")]
         public async Task<IActionResult> Create(Estados Estados)
         {
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
@@ -1911,6 +1960,7 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
 
             ViewBag.UserMCYSCP = false;
+            ViewBag.UserCL = false;
             ViewBag.user = user;
 
             foreach (var rol in roles)
@@ -1918,6 +1968,10 @@ namespace scorpioweb.Controllers
                 if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP")
                 {
                     ViewBag.UserMCYSCP = true;
+                }
+                if (rol == "AdminLC" || rol == "SupervisiorLC")
+                {
+                    ViewBag.UserCL = true;
                 }
             }
 
@@ -1948,13 +2002,14 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos, Expedienteunico expedienteunico,
-            string resolucion, string centropenitenciario, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
-            string lnEstado,string CURS,string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
+        public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos, 
+                                                Personacl personacl, Domiciliocl domiciliocl, Estudioscl estudioscl, Trabajocl trabajocl, Actividadsocialcl actividadsocialcl, Abandonoestadocl abandonoEstadocl, Saludfisicacl saludfisicacl, Domiciliosecundariocl domiciliosecundariocl, Consumosustanciascl consumosustanciascl, Asientofamiliarcl asientoFamiliarcl, Familiaresforaneoscl familiaresForaneoscl, Expedienteunico expedienteunico,
+            string resolucion, string centropenitenciario, string ce, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string lnEstado, string CURS, string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
-            string residenciaHabitual, int? cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
+            string residenciaHabitual, int cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
             /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
             string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
             string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE,
@@ -1969,424 +2024,916 @@ namespace scorpioweb.Controllers
         {
 
             string currentUser = User.Identity.Name;
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool esMCSCP = false;
+            bool esCL = false;
 
+            foreach (var rol in roles)
+            { 
+                if(rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+                {
+                    esMCSCP = true;
+                }
+                if (rol == "AdminLC" || rol == "SupervisiorLC")
+                {
+                    esCL = true;
+                }
+            }
 
             if (ModelState.ErrorCount <= 1)
             {
-
-                #region -Persona-
-                persona.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
-                persona.Sinocentropenitenciario = sinocentropenitenciario;
-
-                persona.TieneResolucion = mg.normaliza(resolucion);
-                persona.Nombre = mg.removeSpaces(mg.normaliza(nombre));
-                persona.Paterno = mg.removeSpaces(mg.normaliza(paterno));
-                persona.Materno = mg.removeSpaces(mg.normaliza(materno));
-                persona.NombrePadre = mg.normaliza(nombrePadre);
-                persona.NombreMadre = mg.normaliza(nombreMadre);
-                persona.Alias = mg.normaliza(alias);
-                persona.Genero = mg.normaliza(sexo);
-                persona.Edad = edad;
-                persona.Fnacimiento = fNacimiento;
-                persona.Lnpais = lnPais;
-                persona.Lnestado = lnEstado;
-                persona.Lnmunicipio = lnMunicipio;
-                persona.Lnlocalidad = mg.normaliza(lnLocalidad);
-                persona.EstadoCivil = estadoCivil;
-                persona.Duracion = duracion;
-                persona.OtroIdioma = mg.normaliza(otroIdioma);
-                persona.ComIndigena = mg.normaliza(comIndigena);
-                persona.ComLgbtttiq = mg.normaliza(comLGBTTTIQ);
-                persona.EspecifiqueIdioma = mg.normaliza(especifiqueIdioma);
-                persona.LeerEscribir = mg.normaliza(leerEscribir);
-                persona.Traductor = mg.normaliza(traductor);
-                persona.EspecifiqueTraductor = mg.normaliza(especifiqueTraductor);
-                persona.TelefonoFijo = telefonoFijo;
-                persona.Celular = celular;
-                persona.Hijos = mg.normaliza(hijos);
-                persona.Nhijos = nHijos;
-                persona.NpersonasVive = nPersonasVive;
-                persona.Propiedades = mg.normaliza(propiedades);
-                persona.Curp = mg.normaliza(CURP);
-                persona.ConsumoSustancias = mg.normaliza(consumoSustancias);
-                persona.Familiares = mg.normaliza(familiares);
-                persona.ReferenciasPersonales = mg.normaliza(referenciasPersonales);
-                persona.UbicacionExpediente = mg.normaliza(ubicacionExpediente);
-                persona.UltimaActualización = DateTime.Now;
-                persona.Capturista = currentUser;
-                persona.Candado = 0;
-                persona.MotivoCandado = "NA";
-                persona.ClaveUnicaScorpio = CURS;
-
-                var estado = (from e in _context.Estados
-                              where e.Id.ToString() == estadoD
-                              select e.Estado).FirstOrDefault().ToString();
-                var municipio = (from m in _context.Municipios
-                                 where m.Id.ToString() == municipioD
-                                 select m.Municipio).FirstOrDefault().ToString();
-                persona.Colaboracion = "NO";
-                if (persona.Capturista.EndsWith("\u0040dgepms.com") && estado == "Durango" && (municipio == "Gómez Palacio" || municipio == "Lerdo"))
+                if (esMCSCP)
                 {
-                    persona.Colaboracion = "SI";
-                    persona.Supervisor = "janeth@nortedgepms.com";
-                }
-                if (persona.Capturista.EndsWith("\u0040nortedgepms.com") && estado == "Durango" && municipio == "Durango")
-                {
-                    persona.Colaboracion = "SI";
-                    persona.Supervisor = "esmeralda.vargas@dgepms.com";
-                }
-                #endregion
+                    #region -Persona-
+                    persona.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
+                    persona.Sinocentropenitenciario = sinocentropenitenciario;
 
-                #region -Domicilio-
-                domicilio.TipoDomicilio = tipoDomicilio;
-                domicilio.Calle = mg.normaliza(calle);
-                domicilio.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
-                domicilio.Pais = paisD;
-                domicilio.Estado = estadoD;
-                domicilio.Municipio = municipioD;
-                domicilio.Temporalidad = temporalidad;
-                domicilio.ResidenciaHabitual = mg.normaliza(residenciaHabitual);
-                domicilio.Cp = cp;
-                domicilio.Referencias = mg.normaliza(referencias);
-                domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
-                domicilio.Horario = mg.normaliza(horario);
-                domicilio.Observaciones = mg.normaliza(observaciones);
-                domicilio.Lat = lat;
-                domicilio.Lng = lng;
+                    persona.TieneResolucion = mg.normaliza(resolucion);
+                    persona.Nombre = mg.removeSpaces(mg.normaliza(nombre));
+                    persona.Paterno = mg.removeSpaces(mg.normaliza(paterno));
+                    persona.Materno = mg.removeSpaces(mg.normaliza(materno));
+                    persona.NombrePadre = mg.normaliza(nombrePadre);
+                    persona.NombreMadre = mg.normaliza(nombreMadre);
+                    persona.Alias = mg.normaliza(alias);
+                    persona.Genero = mg.normaliza(sexo);
+                    persona.Edad = edad;
+                    persona.Fnacimiento = fNacimiento;
+                    persona.Lnpais = lnPais;
+                    persona.Lnestado = lnEstado;
+                    persona.Lnmunicipio = lnMunicipio;
+                    persona.Lnlocalidad = mg.normaliza(lnLocalidad);
+                    persona.EstadoCivil = estadoCivil;
+                    persona.Duracion = duracion;
+                    persona.OtroIdioma = mg.normaliza(otroIdioma);
+                    persona.ComIndigena = mg.normaliza(comIndigena);
+                    persona.ComLgbtttiq = mg.normaliza(comLGBTTTIQ);
+                    persona.EspecifiqueIdioma = mg.normaliza(especifiqueIdioma);
+                    persona.LeerEscribir = mg.normaliza(leerEscribir);
+                    persona.Traductor = mg.normaliza(traductor);
+                    persona.EspecifiqueTraductor = mg.normaliza(especifiqueTraductor);
+                    persona.TelefonoFijo = telefonoFijo;
+                    persona.Celular = celular;
+                    persona.Hijos = mg.normaliza(hijos);
+                    persona.Nhijos = nHijos;
+                    persona.NpersonasVive = nPersonasVive;
+                    persona.Propiedades = mg.normaliza(propiedades);
+                    persona.Curp = mg.normaliza(CURP);
+                    persona.ConsumoSustancias = mg.normaliza(consumoSustancias);
+                    persona.Familiares = mg.normaliza(familiares);
+                    persona.ReferenciasPersonales = mg.normaliza(referenciasPersonales);
+                    persona.UbicacionExpediente = mg.normaliza(ubicacionExpediente);
+                    persona.UltimaActualización = DateTime.Now;
+                    persona.Capturista = currentUser;
+                    persona.Candado = 0;
+                    persona.MotivoCandado = "NA";
+                    persona.ClaveUnicaScorpio = CURS;
 
-                domicilio.NombreCf = mg.normaliza(inputAutocomplete);
-
-                List<Zonas> zonasList = new List<Zonas>();
-                zonasList = (from Zonas in _context.Zonas
-                             select Zonas).ToList();
-
-                domicilio.Zona = "SIN ZONA ASIGNADA";
-                int matches = 0;
-                for (int i = 0; i < zonasList.Count; i++)
-                {
-                    if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf)
+                    var estado = (from e in _context.Estados
+                                    where e.Id.ToString() == estadoD
+                                    select e.Estado).FirstOrDefault().ToString();
+                    var municipio = (from m in _context.Municipios
+                                        where m.Id.ToString() == municipioD
+                                        select m.Municipio).FirstOrDefault().ToString();
+                    persona.Colaboracion = "NO";
+                    if (persona.Capturista.EndsWith("\u0040dgepms.com") && estado == "Durango" && (municipio == "Gómez Palacio" || municipio == "Lerdo"))
                     {
-                        matches++;
+                        persona.Colaboracion = "SI";
+                        persona.Supervisor = "janeth@nortedgepms.com";
                     }
-                }
-                for (int i = 0; i < zonasList.Count; i++)
-                {
-                    if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
+                    if (persona.Capturista.EndsWith("\u0040nortedgepms.com") && estado == "Durango" && municipio == "Durango")
                     {
-                        domicilio.Zona = zonasList[i].Zona.ToUpper();
+                        persona.Colaboracion = "SI";
+                        persona.Supervisor = "esmeralda.vargas@dgepms.com";
                     }
-                }
-                #endregion
+                    #endregion
 
-                #region -Domicilio Secundario-   
-                /*domiciliosecundario.Motivo = motivoDS;
-                domiciliosecundario.TipoDomicilio = tipoDomicilioDS;
-                domiciliosecundario.Calle = mg.normaliza(calleDS);
-                domiciliosecundario.No = mg.normaliza(noDS);
-                domiciliosecundario.NombreCf = mg.normaliza(nombreCFDS);
-                domiciliosecundario.Pais = paisDDS;
-                domiciliosecundario.Estado = estadoDDS;
-                domiciliosecundario.Municipio = municipioDDS;
-                domiciliosecundario.Temporalidad = temporalidadDS;
-                domiciliosecundario.ResidenciaHabitual = mg.normaliza(residenciaHabitualDS);
-                domiciliosecundario.Cp = mg.normaliza(cpDS);
-                domiciliosecundario.Referencias = mg.normaliza(referenciasDS);
-                domiciliosecundario.Horario = mg.normaliza(horarioDS);
-                domiciliosecundario.Observaciones = mg.normaliza(observacionesDS);*/
-                #endregion
+                    #region -Domicilio-
+                    domicilio.TipoDomicilio = tipoDomicilio;
+                    domicilio.Calle = mg.normaliza(calle);
+                    domicilio.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
+                    domicilio.Pais = paisD;
+                    domicilio.Estado = estadoD;
+                    domicilio.Municipio = municipioD;
+                    domicilio.Temporalidad = temporalidad;
+                    domicilio.ResidenciaHabitual = mg.normaliza(residenciaHabitual);
+                    domicilio.Cp = cp;
+                    domicilio.Referencias = mg.normaliza(referencias);
+                    domicilio.DomcilioSecundario = cuentaDomicilioSecundario;
+                    domicilio.Horario = mg.normaliza(horario);
+                    domicilio.Observaciones = mg.normaliza(observaciones);
+                    domicilio.Lat = lat;
+                    domicilio.Lng = lng;
 
-                #region -Estudios-
-                estudios.Estudia = estudia;
-                estudios.GradoEstudios = gradoEstudios;
-                estudios.InstitucionE = mg.normaliza(institucionE);
-                estudios.Horario = mg.normaliza(horarioE);
-                estudios.Direccion = mg.normaliza(direccionE);
-                estudios.Telefono = telefonoE;
-                estudios.Observaciones = mg.normaliza(observacionesE);
-                #endregion
+                    domicilio.NombreCf = mg.normaliza(inputAutocomplete);
 
-                #region -Trabajo-
-                trabajo.Trabaja = trabaja;
-                trabajo.TipoOcupacion = tipoOcupacion;
-                trabajo.Puesto = mg.normaliza(puesto);
-                trabajo.EmpledorJefe = mg.normaliza(empleadorJefe);
-                trabajo.EnteradoProceso = enteradoProceso;
-                trabajo.SePuedeEnterar = sePuedeEnterar;
-                trabajo.TiempoTrabajano = tiempoTrabajando;
-                trabajo.Salario = mg.normaliza(salario);
-                trabajo.Direccion = mg.normaliza(direccionT);
-                trabajo.Horario = mg.normaliza(horarioT);
-                trabajo.Telefono = telefonoT;
-                trabajo.Observaciones = mg.normaliza(observacionesT);
-                #endregion
+                    List<Zonas> zonasList = new List<Zonas>();
+                    zonasList = (from Zonas in _context.Zonas
+                                    select Zonas).ToList();
 
-                #region -ActividadSocial-
-                actividadsocial.TipoActividad = mg.normaliza(tipoActividad);
-                actividadsocial.Horario = mg.normaliza(horarioAS);
-                actividadsocial.Lugar = mg.normaliza(lugarAS);
-                actividadsocial.Telefono = telefonoAS;
-                actividadsocial.SePuedeEnterar = sePuedeEnterarAS;
-                actividadsocial.Referencia = mg.normaliza(referenciaAS);
-                actividadsocial.Observaciones = mg.normaliza(observacionesAS);
-                #endregion
-
-                #region -AbandonoEstado-
-                abandonoEstado.VividoFuera = vividoFuera;
-                abandonoEstado.LugaresVivido = mg.normaliza(lugaresVivido);
-                abandonoEstado.TiempoVivido = mg.normaliza(tiempoVivido);
-                abandonoEstado.MotivoVivido = mg.normaliza(motivoVivido);
-                abandonoEstado.ViajaHabitual = viajaHabitual;
-                abandonoEstado.LugaresViaje = mg.normaliza(lugaresViaje);
-                abandonoEstado.TiempoViaje = mg.normaliza(tiempoViaje);
-                abandonoEstado.MotivoViaje = mg.normaliza(motivoViaje);
-                abandonoEstado.DocumentacionSalirPais = documentaciónSalirPais;
-                abandonoEstado.Pasaporte = pasaporte;
-                abandonoEstado.Visa = visa;
-                abandonoEstado.FamiliaresFuera = familiaresFuera;
-                //abandonoEstado.Cuantos = cuantosFamiliares;
-                #endregion
-
-                #region -Salud-
-                saludfisica.Enfermedad = enfermedad;
-                saludfisica.EspecifiqueEnfermedad = mg.normaliza(especifiqueEnfermedad);
-                saludfisica.EmbarazoLactancia = embarazoLactancia;
-                saludfisica.Tiempo = mg.normaliza(tiempoEmbarazo);
-                saludfisica.Tratamiento = mg.normaliza(tratamiento);
-                saludfisica.Discapacidad = discapacidad;
-                saludfisica.EspecifiqueDiscapacidad = mg.normaliza(especifiqueDiscapacidad);
-                saludfisica.ServicioMedico = servicioMedico;
-                saludfisica.EspecifiqueServicioMedico = especifiqueServicioMedico;
-                saludfisica.InstitucionServicioMedico = institucionServicioMedico;
-                saludfisica.Observaciones = mg.normaliza(observacionesSalud);
-                #endregion
-
-                #region -IdDomicilio-  
-                int idDomicilio = ((from table in _context.Domicilio
-                                    select table.IdDomicilio).Max()) + 1;
-                domicilio.IdDomicilio = idDomicilio;
-                //domiciliosecundario.IdDomicilio = idDomicilio;
-                #endregion
-
-                #region -IdPersona-
-                int idPersona = ((from table in _context.Persona
-                                  select table.IdPersona).Max()) + 1;
-
-
-                persona.IdPersona = idPersona;
-                domicilio.PersonaIdPersona = idPersona;
-                estudios.PersonaIdPersona = idPersona;
-                trabajo.PersonaIdPersona = idPersona;
-                actividadsocial.PersonaIdPersona = idPersona;
-                abandonoEstado.PersonaIdPersona = idPersona;
-                saludfisica.PersonaIdPersona = idPersona;
-
-                #endregion
-
-                #region -ConsumoSustancias-
-                if (arraySustancias != null)
-                {
-                    JArray sustancias = JArray.Parse(arraySustancias);
-
-                    for (int i = 0; i < sustancias.Count; i = i + 5)
+                    domicilio.Zona = "SIN ZONA ASIGNADA";
+                    int matches = 0;
+                    for (int i = 0; i < zonasList.Count; i++)
                     {
-                        consumosustanciasBD.Sustancia = sustancias[i].ToString();
-                        consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
-                        consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
-                        consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
-                        consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
-                        consumosustanciasBD.PersonaIdPersona = idPersona;
-                        _context.Add(consumosustanciasBD);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                    }
-                }
-                /*for (int i = 0; i < datosSustancias.Count; i++)
-                {
-                    if (datosSustancias[i][1] == currentUser)
-                    {
-                        datosSustancias.RemoveAt(i);
-                        i--;
-                    }
-                }*/
-                #endregion
-
-                #region -FamiliarReferencia-
-                if (arrayFamiliarReferencia != null)
-                {
-                    JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
-                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
-                    {
-                        asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
-                        asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
-                        try
+                        if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf)
                         {
-                            asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                            matches++;
                         }
-                        catch
+                    }
+                    for (int i = 0; i < zonasList.Count; i++)
+                    {
+                        if (zonasList[i].Colonia.ToUpper() == domicilio.NombreCf && (matches <= 1 || zonasList[i].Cp == domicilio.Cp))
                         {
-                            asientoFamiliar.Edad = 0;
+                            domicilio.Zona = zonasList[i].Zona.ToUpper();
                         }
-                        asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
-                        asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                        asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
-                        asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                        asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
-                        asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                        asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
-                        asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
-                        asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                        asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
-                        asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
-                        asientoFamiliar.PersonaIdPersona = idPersona;
-                        _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-
                     }
-                }
-                /*for (int i = 0; i < datosFamiliares.Count; i++)
-                {
-                    if (datosFamiliares[i][1] == currentUser)
-                    {
-                        datosFamiliares.RemoveAt(i);
-                        i--;
-                    }
-                }*/
-                #endregion
+                    #endregion
 
-                #region -Domicilio Secundario-
-                if (arrayDomSec != null)
-                {
-                    JArray domSec = JArray.Parse(arrayDomSec);
-                    for (int i = 0; i < domSec.Count; i = i + 14)
-                    {
-                        domiciliosecundario.Motivo = mg.normaliza(domSec[i].ToString());
-                        domiciliosecundario.TipoDomicilio = domSec[i + 1].ToString();
-                        domiciliosecundario.Calle = mg.normaliza(domSec[i + 2].ToString());
-                        domiciliosecundario.No = mg.normaliza(domSec[i + 3].ToString());
-                        domiciliosecundario.NombreCf = mg.normaliza(domSec[i + 4].ToString());
-                        domiciliosecundario.Pais = domSec[i + 5].ToString();
-                        domiciliosecundario.Estado = mg.normaliza(domSec[i + 6].ToString());
-                        domiciliosecundario.Municipio = domSec[i + 7].ToString();
-                        domiciliosecundario.Temporalidad = domSec[i + 8].ToString();
-                        domiciliosecundario.ResidenciaHabitual = domSec[i + 9].ToString();
-                        domiciliosecundario.Cp = domSec[i + 10].ToString();
-                        domiciliosecundario.Referencias = mg.normaliza(domSec[i + 11].ToString());
-                        domiciliosecundario.Horario = mg.normaliza(domSec[i + 12].ToString());
-                        domiciliosecundario.Observaciones = mg.normaliza(domSec[i + 13].ToString());
-                        domiciliosecundario.IdDomicilio = idDomicilio;
-                        _context.Add(domiciliosecundario);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                    }
-                }
+                    #region -Domicilio Secundario-   
+                    /*domiciliosecundario.Motivo = motivoDS;
+                    domiciliosecundario.TipoDomicilio = tipoDomicilioDS;
+                    domiciliosecundario.Calle = mg.normaliza(calleDS);
+                    domiciliosecundario.No = mg.normaliza(noDS);
+                    domiciliosecundario.NombreCf = mg.normaliza(nombreCFDS);
+                    domiciliosecundario.Pais = paisDDS;
+                    domiciliosecundario.Estado = estadoDDS;
+                    domiciliosecundario.Municipio = municipioDDS;
+                    domiciliosecundario.Temporalidad = temporalidadDS;
+                    domiciliosecundario.ResidenciaHabitual = mg.normaliza(residenciaHabitualDS);
+                    domiciliosecundario.Cp = mg.normaliza(cpDS);
+                    domiciliosecundario.Referencias = mg.normaliza(referenciasDS);
+                    domiciliosecundario.Horario = mg.normaliza(horarioDS);
+                    domiciliosecundario.Observaciones = mg.normaliza(observacionesDS);*/
+                    #endregion
+
+                    #region -Estudios-
+                    estudios.Estudia = estudia;
+                    estudios.GradoEstudios = gradoEstudios;
+                    estudios.InstitucionE = mg.normaliza(institucionE);
+                    estudios.Horario = mg.normaliza(horarioE);
+                    estudios.Direccion = mg.normaliza(direccionE);
+                    estudios.Telefono = telefonoE;
+                    estudios.Observaciones = mg.normaliza(observacionesE);
+                    #endregion
+
+                    #region -Trabajo-
+                    trabajo.Trabaja = trabaja;
+                    trabajo.TipoOcupacion = tipoOcupacion;
+                    trabajo.Puesto = mg.normaliza(puesto);
+                    trabajo.EmpledorJefe = mg.normaliza(empleadorJefe);
+                    trabajo.EnteradoProceso = enteradoProceso;
+                    trabajo.SePuedeEnterar = sePuedeEnterar;
+                    trabajo.TiempoTrabajano = tiempoTrabajando;
+                    trabajo.Salario = mg.normaliza(salario);
+                    trabajo.Direccion = mg.normaliza(direccionT);
+                    trabajo.Horario = mg.normaliza(horarioT);
+                    trabajo.Telefono = telefonoT;
+                    trabajo.Observaciones = mg.normaliza(observacionesT);
+                    #endregion
+
+                    #region -ActividadSocial-
+                    actividadsocial.TipoActividad = mg.normaliza(tipoActividad);
+                    actividadsocial.Horario = mg.normaliza(horarioAS);
+                    actividadsocial.Lugar = mg.normaliza(lugarAS);
+                    actividadsocial.Telefono = telefonoAS;
+                    actividadsocial.SePuedeEnterar = sePuedeEnterarAS;
+                    actividadsocial.Referencia = mg.normaliza(referenciaAS);
+                    actividadsocial.Observaciones = mg.normaliza(observacionesAS);
+                    #endregion
+
+                    #region -AbandonoEstado-
+                    abandonoEstado.VividoFuera = vividoFuera;
+                    abandonoEstado.LugaresVivido = mg.normaliza(lugaresVivido);
+                    abandonoEstado.TiempoVivido = mg.normaliza(tiempoVivido);
+                    abandonoEstado.MotivoVivido = mg.normaliza(motivoVivido);
+                    abandonoEstado.ViajaHabitual = viajaHabitual;
+                    abandonoEstado.LugaresViaje = mg.normaliza(lugaresViaje);
+                    abandonoEstado.TiempoViaje = mg.normaliza(tiempoViaje);
+                    abandonoEstado.MotivoViaje = mg.normaliza(motivoViaje);
+                    abandonoEstado.DocumentacionSalirPais = documentaciónSalirPais;
+                    abandonoEstado.Pasaporte = pasaporte;
+                    abandonoEstado.Visa = visa;
+                    abandonoEstado.FamiliaresFuera = familiaresFuera;
+                    //abandonoEstado.Cuantos = cuantosFamiliares;
+                    #endregion
+
+                    #region -Salud-
+                    saludfisica.Enfermedad = enfermedad;
+                    saludfisica.EspecifiqueEnfermedad = mg.normaliza(especifiqueEnfermedad);
+                    saludfisica.EmbarazoLactancia = embarazoLactancia;
+                    saludfisica.Tiempo = mg.normaliza(tiempoEmbarazo);
+                    saludfisica.Tratamiento = mg.normaliza(tratamiento);
+                    saludfisica.Discapacidad = discapacidad;
+                    saludfisica.EspecifiqueDiscapacidad = mg.normaliza(especifiqueDiscapacidad);
+                    saludfisica.ServicioMedico = servicioMedico;
+                    saludfisica.EspecifiqueServicioMedico = especifiqueServicioMedico;
+                    saludfisica.InstitucionServicioMedico = institucionServicioMedico;
+                    saludfisica.Observaciones = mg.normaliza(observacionesSalud);
+                    #endregion
+
+                    #region -IdDomicilio-  
+                    int idDomicilio = ((from table in _context.Domicilio
+                                        select table.IdDomicilio).Max()) + 1;
+                    domicilio.IdDomicilio = idDomicilio;
+                    //domiciliosecundario.IdDomicilio = idDomicilio;
+                    #endregion
+
+                    #region -IdPersona-
+                    int idPersona = ((from table in _context.Persona
+                                        select table.IdPersona).Max()) + 1;
 
 
-                /*for (int i = 0; i < datosDomiciolioSecundario.Count; i++)
-                {
-                    if (datosDomiciolioSecundario[i][1] == currentUser)
-                    {
-                        datosDomiciolioSecundario.RemoveAt(i);
-                        i--;
-                    }
-                }*/
-                #endregion
+                    persona.IdPersona = idPersona;
+                    domicilio.PersonaIdPersona = idPersona;
+                    estudios.PersonaIdPersona = idPersona;
+                    trabajo.PersonaIdPersona = idPersona;
+                    actividadsocial.PersonaIdPersona = idPersona;
+                    abandonoEstado.PersonaIdPersona = idPersona;
+                    saludfisica.PersonaIdPersona = idPersona;
 
-                #region -Familiares Extranjero-
-                if (arrayFamExtranjero != null)
-                {
-                    JArray famExtranjero = JArray.Parse(arrayFamExtranjero);
-                    for (int i = 0; i < famExtranjero.Count; i = i + 12)
+                    #endregion
+
+                    #region -ConsumoSustancias-
+                    if (arraySustancias != null)
                     {
-                        familiaresForaneos.Nombre = mg.normaliza(famExtranjero[i].ToString());
-                        familiaresForaneos.Relacion = famExtranjero[i + 1].ToString();
-                        try
+                        JArray sustancias = JArray.Parse(arraySustancias);
+
+                        for (int i = 0; i < sustancias.Count; i = i + 5)
                         {
-                            familiaresForaneos.Edad = Int32.Parse(famExtranjero[i + 2].ToString());
+                            consumosustanciasBD.Sustancia = sustancias[i].ToString();
+                            consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
+                            consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                            consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                            consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
+                            consumosustanciasBD.PersonaIdPersona = idPersona;
+                            _context.Add(consumosustanciasBD);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                         }
-                        catch
-                        {
-                            familiaresForaneos.Edad = 0;
-                        }
-                        familiaresForaneos.Sexo = famExtranjero[i + 3].ToString();
-                        familiaresForaneos.TiempoConocerlo = famExtranjero[i + 4].ToString();
-                        familiaresForaneos.Pais = famExtranjero[i + 5].ToString();
-                        familiaresForaneos.Estado = mg.normaliza(famExtranjero[i + 6].ToString());
-                        familiaresForaneos.Telefono = famExtranjero[i + 7].ToString();
-                        familiaresForaneos.FrecuenciaContacto = famExtranjero[i + 8].ToString();
-                        familiaresForaneos.EnteradoProceso = famExtranjero[i + 9].ToString();
-                        familiaresForaneos.PuedeEnterarse = famExtranjero[i + 10].ToString();
-                        familiaresForaneos.Observaciones = mg.normaliza(famExtranjero[i + 11].ToString());
-                        familiaresForaneos.PersonaIdPersona = idPersona;
-                        _context.Add(familiaresForaneos);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     }
-                }
-                /*for (int i = 0; i < datosFamiliaresExtranjero.Count; i++)
-                {
-                    if (datosFamiliaresExtranjero[i][1] == currentUser)
+                    /*for (int i = 0; i < datosSustancias.Count; i++)
                     {
-                        datosFamiliaresExtranjero.RemoveAt(i);
-                        i--;
+                        if (datosSustancias[i][1] == currentUser)
+                        {
+                            datosSustancias.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -FamiliarReferencia-
+                    if (arrayFamiliarReferencia != null)
+                    {
+                        JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
+                        for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                        {
+                            asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
+                            try
+                            {
+                                asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                            }
+                            catch
+                            {
+                                asientoFamiliar.Edad = 0;
+                            }
+                            asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                            asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                            asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                            asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                            asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                            asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                            asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
+                            asientoFamiliar.PersonaIdPersona = idPersona;
+                            _context.Add(asientoFamiliar);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
+                        }
                     }
-                }*/
-                #endregion
+                    /*for (int i = 0; i < datosFamiliares.Count; i++)
+                    {
+                        if (datosFamiliares[i][1] == currentUser)
+                        {
+                            datosFamiliares.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
 
-                #region -Guardar Foto-
-                if (fotografia != null)
-                {
-                    string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
-                    file_name = mg.replaceSlashes(file_name);
-                    persona.rutaFoto = file_name;
-                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
-                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                    await fotografia.CopyToAsync(stream);
-                    stream.Close();
+                    #region -Domicilio Secundario-
+                    if (arrayDomSec != null)
+                    {
+                        JArray domSec = JArray.Parse(arrayDomSec);
+                        for (int i = 0; i < domSec.Count; i = i + 14)
+                        {
+                            domiciliosecundario.Motivo = mg.normaliza(domSec[i].ToString());
+                            domiciliosecundario.TipoDomicilio = domSec[i + 1].ToString();
+                            domiciliosecundario.Calle = mg.normaliza(domSec[i + 2].ToString());
+                            domiciliosecundario.No = mg.normaliza(domSec[i + 3].ToString());
+                            domiciliosecundario.NombreCf = mg.normaliza(domSec[i + 4].ToString());
+                            domiciliosecundario.Pais = domSec[i + 5].ToString();
+                            domiciliosecundario.Estado = mg.normaliza(domSec[i + 6].ToString());
+                            domiciliosecundario.Municipio = domSec[i + 7].ToString();
+                            domiciliosecundario.Temporalidad = domSec[i + 8].ToString();
+                            domiciliosecundario.ResidenciaHabitual = domSec[i + 9].ToString();
+                            domiciliosecundario.Cp = domSec[i + 10].ToString();
+                            domiciliosecundario.Referencias = mg.normaliza(domSec[i + 11].ToString());
+                            domiciliosecundario.Horario = mg.normaliza(domSec[i + 12].ToString());
+                            domiciliosecundario.Observaciones = mg.normaliza(domSec[i + 13].ToString());
+                            domiciliosecundario.IdDomicilio = idDomicilio;
+                            _context.Add(domiciliosecundario);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                    }
+
+
+                    /*for (int i = 0; i < datosDomiciolioSecundario.Count; i++)
+                    {
+                        if (datosDomiciolioSecundario[i][1] == currentUser)
+                        {
+                            datosDomiciolioSecundario.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -Familiares Extranjero-
+                    if (arrayFamExtranjero != null)
+                    {
+                        JArray famExtranjero = JArray.Parse(arrayFamExtranjero);
+                        for (int i = 0; i < famExtranjero.Count; i = i + 12)
+                        {
+                            familiaresForaneos.Nombre = mg.normaliza(famExtranjero[i].ToString());
+                            familiaresForaneos.Relacion = famExtranjero[i + 1].ToString();
+                            try
+                            {
+                                familiaresForaneos.Edad = Int32.Parse(famExtranjero[i + 2].ToString());
+                            }
+                            catch
+                            {
+                                familiaresForaneos.Edad = 0;
+                            }
+                            familiaresForaneos.Sexo = famExtranjero[i + 3].ToString();
+                            familiaresForaneos.TiempoConocerlo = famExtranjero[i + 4].ToString();
+                            familiaresForaneos.Pais = famExtranjero[i + 5].ToString();
+                            familiaresForaneos.Estado = mg.normaliza(famExtranjero[i + 6].ToString());
+                            familiaresForaneos.Telefono = famExtranjero[i + 7].ToString();
+                            familiaresForaneos.FrecuenciaContacto = famExtranjero[i + 8].ToString();
+                            familiaresForaneos.EnteradoProceso = famExtranjero[i + 9].ToString();
+                            familiaresForaneos.PuedeEnterarse = famExtranjero[i + 10].ToString();
+                            familiaresForaneos.Observaciones = mg.normaliza(famExtranjero[i + 11].ToString());
+                            familiaresForaneos.PersonaIdPersona = idPersona;
+                            _context.Add(familiaresForaneos);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                    }
+                    /*for (int i = 0; i < datosFamiliaresExtranjero.Count; i++)
+                    {
+                        if (datosFamiliaresExtranjero[i][1] == currentUser)
+                        {
+                            datosFamiliaresExtranjero.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -Guardar Foto-
+                    if (fotografia != null)
+                    {
+                        string file_name = persona.IdPersona + "_" + persona.Paterno + "_" + persona.Nombre + ".jpg";
+                        file_name = mg.replaceSlashes(file_name);
+                        persona.rutaFoto = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await fotografia.CopyToAsync(stream);
+                        stream.Close();
+                    }
+                    #endregion
+
+                    #region -Expediente Unico-
+                    // _context.Database.ExecuteSqlCommand("CALL spInsertEU(" + idPersona + tabla + idselecionado + CURS + ")");
+
+                    //if(idselecionado != null && tabla != null)
+                    //{
+                    //    var var_idnuevo = idPersona;
+                    //    var var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
+                    //    var var_idSelect = idselecionado;
+                    //    var var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                    //    var var_tablaCurs = "ClaveUnicaScorpio";
+                    //    var var_curs = 1;
+
+                    //    _context.Database.ExecuteSqlCommand("CALL spInsertExpedienteUnico('" + var_idnuevo + "', '" + var_tablanueva + "', '" + var_idSelect + "', '" + var_tablaSelect + "', '" + var_tablaCurs + "', '" + var_curs + "')");
+                    //}
+                    #endregion
+
+                    #region -Añadir a contexto-
+                    _context.Add(persona);
+                    _context.Add(domicilio);
+                    // _context.Add(domiciliosecundario);
+                    _context.Add(estudios);
+                    _context.Add(trabajo);
+                    _context.Add(actividadsocial);
+                    _context.Add(abandonoEstado);
+                    _context.Add(saludfisica);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                    return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
+                    #endregion
+
                 }
-                #endregion
+                if (esCL = true)
+                {
 
-                #region -Expediente Unico-
-               // _context.Database.ExecuteSqlCommand("CALL spInsertEU(" + idPersona + tabla + idselecionado + CURS + ")");
+                    #region -Persona-
+                    personacl.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
+                    personacl.Sinocentropenitenciario = sinocentropenitenciario;
+                    personacl.TieneResolucion = mg.normaliza(resolucion);
+                    personacl.Nombre = mg.removeSpaces(mg.normaliza(nombre));
+                    personacl.Paterno = mg.removeSpaces(mg.normaliza(paterno));
+                    personacl.Materno = mg.removeSpaces(mg.normaliza(materno));
+                    personacl.NombrePadre = mg.normaliza(nombrePadre);
+                    personacl.NombreMadre = mg.normaliza(nombreMadre);
+                    personacl.Alias = mg.normaliza(alias);
+                    personacl.Genero = mg.normaliza(sexo);
+                    personacl.Edad = edad;
+                    personacl.Fnacimiento = fNacimiento;
+                    personacl.Lnpais = lnPais;
+                    personacl.Lnestado = lnEstado;
+                    personacl.Lnmunicipio = lnMunicipio;
+                    personacl.Lnlocalidad = mg.normaliza(lnLocalidad);
+                    personacl.EstadoCivil = estadoCivil;
+                    personacl.Duracion = duracion;
+                    personacl.OtroIdioma = mg.normaliza(otroIdioma);
+                    personacl.ComIndigena = mg.normaliza(comIndigena);
+                    personacl.ComLgbtttiq = mg.normaliza(comLGBTTTIQ);
+                    personacl.EspecifiqueIdioma = mg.normaliza(especifiqueIdioma);
+                    personacl.LeerEscribir = mg.normaliza(leerEscribir);
+                    personacl.Traductor = mg.normaliza(traductor);
+                    personacl.EspecifiqueTraductor = mg.normaliza(especifiqueTraductor);
+                    personacl.TelefonoFijo = telefonoFijo;
+                    personacl.Celular = celular;
+                    personacl.Hijos = mg.normaliza(hijos);
+                    personacl.Nhijos = nHijos;
+                    personacl.NpersonasVive = nPersonasVive;
+                    personacl.Propiedades = mg.normaliza(propiedades);
+                    personacl.Curp = mg.normaliza(CURP);
+                    personacl.ConsumoSustancias = mg.normaliza(consumoSustancias);
+                    personacl.Familiares = mg.normaliza(familiares);
+                    personacl.ReferenciasPersonales = mg.normaliza(referenciasPersonales);
+                    personacl.UbicacionExpediente = mg.normaliza(ubicacionExpediente);
+                    personacl.UltimaActualización = DateTime.Now;
+                    personacl.Capturista = currentUser;
+                    personacl.Candado = 0;
+                    personacl.MotivoCandado = "NA";
+                    personacl.Centropenitenciario = mg.normaliza(centropenitenciario);
+                    personacl.Sinocentropenitenciario = sinocentropenitenciario;
+                    personacl.ClaveUnicaScorpio = CURS;
+                    personacl.Ruta = 0; 
+                    personacl.Ce = ce;
 
-                //if(idselecionado != null && tabla != null)
-                //{
-                //    var var_idnuevo = idPersona;
-                //    var var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
-                //    var var_idSelect = idselecionado;
-                //    var var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                //    var var_tablaCurs = "ClaveUnicaScorpio";
-                //    var var_curs = 1;
+                    var estado = (from e in _context.Estados
+                                  where e.Id.ToString() == estadoD
+                                  select e.Estado).FirstOrDefault().ToString();
+                    var municipio = (from m in _context.Municipios
+                                     where m.Id.ToString() == municipioD
+                                     select m.Municipio).FirstOrDefault().ToString();
+                    personacl.Colaboracion = "NO";
+                    //if (personacl.Capturista.EndsWith("\u0040dgepms.com") && estado == "Durango" && (municipio == "Gómez Palacio" || municipio == "Lerdo"))
+                    //{
+                    //    personacl.Colaboracion = "SI";
+                    //    personacl.Supervisor = "janeth@nortedgepms.com";
+                    //}
+                    //if (personacl.Capturista.EndsWith("\u0040nortedgepms.com") && estado == "Durango" && municipio == "Durango")
+                    //{
+                    //    personacl.Colaboracion = "SI";
+                    //    personacl.Supervisor = "esmeralda.vargas@dgepms.com";
+                    //}
+                    #endregion
 
-                //    _context.Database.ExecuteSqlCommand("CALL spInsertExpedienteUnico('" + var_idnuevo + "', '" + var_tablanueva + "', '" + var_idSelect + "', '" + var_tablaSelect + "', '" + var_tablaCurs + "', '" + var_curs + "')");
-                //}
-                #endregion
+                    #region -Domicilio-
+                    domiciliocl.TipoDomicilio = tipoDomicilio;
+                    domiciliocl.Calle = mg.normaliza(calle);
+                    domiciliocl.No = String.IsNullOrEmpty(no) ? no : no.ToUpper();
+                    domiciliocl.Pais = paisD;
+                    domiciliocl.Estado = estadoD;
+                    domiciliocl.Municipio = municipioD;
+                    domiciliocl.Temporalidad = temporalidad;
+                    domiciliocl.ResidenciaHabitual = mg.normaliza(residenciaHabitual);
+                    domiciliocl.Cp = cp;
+                    domiciliocl.Referencias = mg.normaliza(referencias);
+                    domiciliocl.DomcilioSecundario = cuentaDomicilioSecundario;
+                    domiciliocl.Horario = mg.normaliza(horario);
+                    domiciliocl.Observaciones = mg.normaliza(observaciones);
+                    domiciliocl.Lat = "1989";
+                    domiciliocl.Lng = "-8967292";
+                    domiciliocl.TipoUbicacion = mg.normaliza(domiciliocl.TipoUbicacion);
 
-                #region -Añadir a contexto-
-                _context.Add(persona);
-                _context.Add(domicilio);
-                // _context.Add(domiciliosecundario);
-                _context.Add(estudios);
-                _context.Add(trabajo);
-                _context.Add(actividadsocial);
-                _context.Add(abandonoEstado);
-                _context.Add(saludfisica);
-                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
-                #endregion
+                    domiciliocl.NombreCf = mg.normaliza(inputAutocomplete);
+
+                    List<Zonas> zonasList = new List<Zonas>();
+                    zonasList = (from Zonas in _context.Zonas
+                                 select Zonas).ToList();
+
+                    domiciliocl.Zona = "SIN ZONA ASIGNADA";
+                    int matches = 0;
+                    for (int i = 0; i < zonasList.Count; i++)
+                    {
+                        if (zonasList[i].Colonia.ToUpper() == domiciliocl.NombreCf)
+                        {
+                            matches++;
+                        }
+                    }
+                    for (int i = 0; i < zonasList.Count; i++)
+                    {
+                        if (zonasList[i].Colonia.ToUpper() == domiciliocl.NombreCf && (matches <= 1 || zonasList[i].Cp == domiciliocl.Cp))
+                        {
+                            domiciliocl.Zona = zonasList[i].Zona.ToUpper();
+                        }
+                    }
+                    #endregion
+
+                    #region -Domicilio Secundario-   
+                    /*domiciliosecundariocl.Motivo = motivoDS;
+                    domiciliosecundariocl.TipoDomicilio = tipoDomicilioDS;
+                    domiciliosecundariocl.Calle = mg.normaliza(calleDS);
+                    domiciliosecundariocl.No = mg.normaliza(noDS);
+                    domiciliosecundariocl.NombreCf = mg.normaliza(nombreCFDS);
+                    domiciliosecundariocl.Pais = paisDDS;
+                    domiciliosecundariocl.Estado = estadoDDS;
+                    domiciliosecundariocl.Municipio = municipioDDS;
+                    domiciliosecundariocl.Temporalidad = temporalidadDS;
+                    domiciliosecundariocl.ResidenciaHabitual = mg.normaliza(residenciaHabitualDS);
+                    domiciliosecundariocl.Cp = mg.normaliza(cpDS);
+                    domiciliosecundariocl.Referencias = mg.normaliza(referenciasDS);
+                    domiciliosecundariocl.Horario = mg.normaliza(horarioDS);
+                    domiciliosecundariocl.Observaciones = mg.normaliza(observacionesDS);*/
+                    #endregion
+
+                    #region -Estudios-
+                    estudioscl.Estudia = estudia;
+                    estudioscl.GradoEstudios = gradoEstudios;
+                    estudioscl.InstitucionE = mg.normaliza(institucionE);
+                    estudioscl.Horario = mg.normaliza(horarioE);
+                    estudioscl.Direccion = mg.normaliza(direccionE);
+                    estudioscl.Telefono = telefonoE;
+                    estudioscl.Observaciones = mg.normaliza(observacionesE);
+                    #endregion
+
+                    #region -Trabajo-
+                    trabajocl.Trabaja = trabaja;
+                    trabajocl.TipoOcupacion = tipoOcupacion;
+                    trabajocl.Puesto = mg.normaliza(puesto);
+                    trabajocl.EmpledorJefe = mg.normaliza(empleadorJefe);
+                    trabajocl.EnteradoProceso = enteradoProceso;
+                    trabajocl.SePuedeEnterar = sePuedeEnterar;
+                    trabajocl.TiempoTrabajano = tiempoTrabajando;
+                    trabajocl.Salario = mg.normaliza(salario);
+                    trabajocl.Direccion = mg.normaliza(direccionT);
+                    trabajocl.Horario = mg.normaliza(horarioT);
+                    trabajocl.Telefono = telefonoT;
+                    trabajocl.Observaciones = mg.normaliza(observacionesT);
+                    #endregion
+
+                    #region -ActividadSocial-
+                    actividadsocialcl.TipoActividad = mg.normaliza(tipoActividad);
+                    actividadsocialcl.Horario = mg.normaliza(horarioAS);
+                    actividadsocialcl.Lugar = mg.normaliza(lugarAS);
+                    actividadsocialcl.Telefono = telefonoAS;
+                    actividadsocialcl.SePuedeEnterar = sePuedeEnterarAS;
+                    actividadsocialcl.Referencia = mg.normaliza(referenciaAS);
+                    actividadsocialcl.Observaciones = mg.normaliza(observacionesAS);
+                    #endregion
+
+                    #region -AbandonoEstado-
+                    abandonoEstadocl.VividoFuera = vividoFuera;
+                    abandonoEstadocl.LugaresVivido = mg.normaliza(lugaresVivido);
+                    abandonoEstadocl.TiempoVivido = mg.normaliza(tiempoVivido);
+                    abandonoEstadocl.MotivoVivido = mg.normaliza(motivoVivido);
+                    abandonoEstadocl.ViajaHabitual = viajaHabitual;
+                    abandonoEstadocl.LugaresViaje = mg.normaliza(lugaresViaje);
+                    abandonoEstadocl.TiempoViaje = mg.normaliza(tiempoViaje);
+                    abandonoEstadocl.MotivoViaje = mg.normaliza(motivoViaje);
+                    abandonoEstadocl.DocumentacionSalirPais = documentaciónSalirPais;
+                    abandonoEstadocl.Pasaporte = pasaporte;
+                    abandonoEstadocl.Visa = visa;
+                    abandonoEstadocl.FamiliaresFuera = familiaresFuera;
+                    #endregion
+
+                    #region -Salud-
+                    saludfisicacl.Enfermedad = enfermedad;
+                    saludfisicacl.EspecifiqueEnfermedad = mg.normaliza(especifiqueEnfermedad);
+                    saludfisicacl.EmbarazoLactancia = embarazoLactancia;
+                    saludfisicacl.Tiempo = mg.normaliza(tiempoEmbarazo);
+                    saludfisicacl.Tratamiento = mg.normaliza(tratamiento);
+                    saludfisicacl.Discapacidad = discapacidad;
+                    saludfisicacl.EspecifiqueDiscapacidad = mg.normaliza(especifiqueDiscapacidad);
+                    saludfisicacl.ServicioMedico = servicioMedico;
+                    saludfisicacl.EspecifiqueServicioMedico = especifiqueServicioMedico;
+                    saludfisicacl.InstitucionServicioMedico = institucionServicioMedico;
+                    saludfisicacl.Observaciones = mg.normaliza(observacionesSalud);
+                    #endregion
+
+                    #region -IdDomicilio-  
+                    int idDomiciliocl = ((from table in _context.Domiciliocl
+                                           select table.IdDomiciliocl).Max()) + 1;
+                   // int idDomiciliocl = _context.Domiciliocl.Select(item => (int?)item.IdDomicilioCl).Max() ?? 0 + 1;
+                    domiciliocl.IdDomiciliocl = idDomiciliocl;
+                    //domiciliosecundario.IdDomicilio = idDomicilio;
+                    #endregion
+
+                    #region -IdPersona-
+                    //int idPersonacl = _context.Personacl.Select(item => (int?)item.IdPersonaCl).Max() ?? 0 + 1;
+                    int idPersonacl = ((from table in _context.Personacl
+                                        select table.IdPersonaCl).Max()) + 1;
+                
+                    personacl.IdPersonaCl = idPersonacl;
+                    domiciliocl.PersonaclIdPersonacl = idPersonacl;
+                    estudioscl.PersonaClIdPersonaCl = idPersonacl;
+                    trabajocl.PersonaClIdPersonaCl = idPersonacl;
+                    actividadsocialcl.PersonaClIdPersonaCl = idPersonacl;
+                    abandonoEstadocl.PersonaclIdPersonacl = idPersonacl;
+                    saludfisicacl.PersonaClIdPersonaCl = idPersonacl;
+
+                    #endregion
+
+                    #region -ConsumoSustancias-
+                    if (arraySustancias != null)
+                    {
+                        JArray sustancias = JArray.Parse(arraySustancias);
+
+                        for (int i = 0; i < sustancias.Count; i = i + 5)
+                        {
+                            consumosustanciascl.Sustancia = sustancias[i].ToString();
+                            consumosustanciascl.Frecuencia = sustancias[i + 1].ToString();
+                            consumosustanciascl.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                            consumosustanciascl.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                            consumosustanciascl.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
+                            consumosustanciascl.PersonaClIdPersonaCl = idPersonacl;
+                            _context.Add(consumosustanciascl);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                    }
+                    /*for (int i = 0; i < datosSustancias.Count; i++)
+                    {
+                        if (datosSustancias[i][1] == currentUser)
+                        {
+                            datosSustancias.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -FamiliarReferencia-
+                    if (arrayFamiliarReferencia != null)
+                    {
+                        JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
+                        for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                        {
+                            asientoFamiliarcl.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliarcl.Relacion = familiarReferencia[i + 1].ToString();
+                            try
+                            {
+                                asientoFamiliarcl.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                            }
+                            catch
+                            {
+                                asientoFamiliarcl.Edad = 0;
+                            }
+                            asientoFamiliarcl.Sexo = familiarReferencia[i + 3].ToString();
+                            asientoFamiliarcl.Dependencia = familiarReferencia[i + 4].ToString();
+                            asientoFamiliarcl.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliarcl.VivenJuntos = familiarReferencia[i + 6].ToString();
+                            asientoFamiliarcl.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliarcl.Telefono = familiarReferencia[i + 8].ToString();
+                            asientoFamiliarcl.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliarcl.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                            asientoFamiliarcl.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                            asientoFamiliarcl.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliarcl.Tipo = familiarReferencia[i + 13].ToString();
+                            asientoFamiliarcl.PersonaClIdPersonaCl = idPersonacl;
+                            _context.Add(asientoFamiliarcl);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
+                        }
+                    }
+                    /*for (int i = 0; i < datosFamiliares.Count; i++)
+                    {
+                        if (datosFamiliares[i][1] == currentUser)
+                        {
+                            datosFamiliares.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -Domicilio Secundario-
+                    if (arrayDomSec != null)
+                    {
+                        JArray domSec = JArray.Parse(arrayDomSec);
+                        for (int i = 0; i < domSec.Count; i = i + 14)
+                        {
+                            domiciliosecundariocl.Motivo = mg.normaliza(domSec[i].ToString());
+                            domiciliosecundariocl.TipoDomicilio = domSec[i + 1].ToString();
+                            domiciliosecundariocl.Calle = mg.normaliza(domSec[i + 2].ToString());
+                            domiciliosecundariocl.No = mg.normaliza(domSec[i + 3].ToString());
+                            domiciliosecundariocl.NombreCf = mg.normaliza(domSec[i + 4].ToString());
+                            domiciliosecundariocl.Pais = domSec[i + 5].ToString();
+                            domiciliosecundariocl.Estado = mg.normaliza(domSec[i + 6].ToString());
+                            domiciliosecundariocl.Municipio = domSec[i + 7].ToString();
+                            domiciliosecundariocl.Temporalidad = domSec[i + 8].ToString();
+                            domiciliosecundariocl.ResidenciaHabitual = domSec[i + 9].ToString();
+                            domiciliosecundariocl.Cp = domSec[i + 10].ToString();
+                            domiciliosecundariocl.Referencias = mg.normaliza(domSec[i + 11].ToString());
+                            domiciliosecundariocl.Horario = mg.normaliza(domSec[i + 12].ToString());
+                            domiciliosecundariocl.Observaciones = mg.normaliza(domSec[i + 13].ToString());
+                            domiciliosecundariocl.IdDomicilioCl = idDomiciliocl;
+                            _context.Add(domiciliosecundariocl);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                    }
+
+
+                    /*for (int i = 0; i < datosDomiciolioSecundario.Count; i++)
+                    {
+                        if (datosDomiciolioSecundario[i][1] == currentUser)
+                        {
+                            datosDomiciolioSecundario.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -Familiares Extranjero-
+                    if (arrayFamExtranjero != null)
+                    {
+                        JArray famExtranjero = JArray.Parse(arrayFamExtranjero);
+                        for (int i = 0; i < famExtranjero.Count; i = i + 12)
+                        {
+                            familiaresForaneoscl.Nombre = mg.normaliza(famExtranjero[i].ToString());
+                            familiaresForaneoscl.Relacion = famExtranjero[i + 1].ToString();
+                            try
+                            {
+                                familiaresForaneoscl.Edad = Int32.Parse(famExtranjero[i + 2].ToString());
+                            }
+                            catch
+                            {
+                                familiaresForaneoscl.Edad = 0;
+                            }
+                            familiaresForaneoscl.Sexo = famExtranjero[i + 3].ToString();
+                            familiaresForaneoscl.TiempoConocerlo = famExtranjero[i + 4].ToString();
+                            familiaresForaneoscl.Pais = famExtranjero[i + 5].ToString();
+                            familiaresForaneoscl.Estado = mg.normaliza(famExtranjero[i + 6].ToString());
+                            familiaresForaneoscl.Telefono = famExtranjero[i + 7].ToString();
+                            familiaresForaneoscl.FrecuenciaContacto = famExtranjero[i + 8].ToString();
+                            familiaresForaneoscl.EnteradoProceso = famExtranjero[i + 9].ToString();
+                            familiaresForaneoscl.PuedeEnterarse = famExtranjero[i + 10].ToString();
+                            familiaresForaneoscl.Observaciones = mg.normaliza(famExtranjero[i + 11].ToString());
+                            familiaresForaneoscl.PersonaClIdPersonaCl = idPersonacl;
+                            _context.Add(familiaresForaneoscl);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                    }
+                    /*for (int i = 0; i < datosFamiliaresExtranjero.Count; i++)
+                    {
+                        if (datosFamiliaresExtranjero[i][1] == currentUser)
+                        {
+                            datosFamiliaresExtranjero.RemoveAt(i);
+                            i--;
+                        }
+                    }*/
+                    #endregion
+
+                    #region -Guardar Foto-
+                    if (fotografia != null)
+                    {
+                        string file_name = personacl.IdPersonaCl + "_" + personacl.Paterno + "_" + personacl.Nombre + ".jpg";
+                        file_name = mg.replaceSlashes(file_name);
+                        personacl.RutaFoto = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotoscl");
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await fotografia.CopyToAsync(stream);
+                        stream.Close();
+                    }
+                    #endregion
+
+                    #region -Expediente Unico-
+                    // _context.Database.ExecuteSqlCommand("CALL spInsertEU(" + idPersona + tabla + idselecionado + CURS + ")");
+
+                    //if(idselecionado != null && tabla != null)
+                    //{
+                    //    var var_idnuevo = idPersona;
+                    //    var var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
+                    //    var var_idSelect = idselecionado;
+                    //    var var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                    //    var var_tablaCurs = "ClaveUnicaScorpio";
+                    //    var var_curs = 1;
+
+                    //    _context.Database.ExecuteSqlCommand("CALL spInsertExpedienteUnico('" + var_idnuevo + "', '" + var_tablanueva + "', '" + var_idSelect + "', '" + var_tablaSelect + "', '" + var_tablaCurs + "', '" + var_curs + "')");
+                    //}
+                    #endregion
+
+                    //#region -Añadir a contexto-
+                    //  _context.Add(personacl);   //Sirve
+                    ////_context.Add(domiciliocl);
+                    //// _context.Add(domiciliosecundario);
+                    //// _context.Add(estudioscl);
+                    //_context.Add(trabajocl);  //Sirve
+                    ////_context.Add(actividadsocialcl);
+                    //_context.Add(abandonoEstadocl);
+                    //  _context.Add(saludfisicacl); //Sirve 
+
+
+
+                    //try
+                    //{
+                    //    // Realiza las operaciones de guardado en tu contexto aquí
+                    //    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                    //    //await _context.SaveChangesAsync(CancellationToken.None);
+                    //    // Si llegas a este punto, el guardado fue exitoso sin errores.
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    if (ex.InnerException != null)
+                    //    {
+                    //        // Consulta la excepción interna para obtener más detalles
+                    //        Exception innerException = ex.InnerException;
+                    //        Console.WriteLine("Mensaje de la excepción interna: " + innerException.Message);
+                    //        Console.WriteLine("Tipo de excepción interna: " + innerException.GetType().FullName);
+                    //        Console.WriteLine("StackTrace: " + ex.StackTrace);
+                    //         ex = ex.InnerException; 
+                    //        // También puedes seguir consultando innerException.InnerException si es necesario
+                    //    }
+                    //    else
+                    //    {
+                    //        Console.WriteLine("No hay excepción interna.");
+                    //    }
+                    //    // Registra cualquier excepción que se produzca durante el guardado
+
+                    //}
+                    //return RedirectToAction("RegistroConfirmation/" + personacl.IdPersonaCl, "Personas");
+                    //#endregion
+
+                    #region -Añadir a contexto-
+                    _context.Add(personacl); //Sirve
+                    _context.Add(domiciliocl);
+                    // _context.Add(domiciliosecundario);
+                    _context.Add(estudioscl);
+                    _context.Add(trabajocl); //Sirve
+                    _context.Add(actividadsocialcl);
+                    _context.Add(abandonoEstadocl);
+                    _context.Add(saludfisicacl); //Sirve 
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                    return RedirectToAction("RegistroConfirmation/" + personacl.IdPersonaCl, "Personas");
+                    #endregion
+
+
+
+
+                }
             }
-            return RedirectToAction("RegistroConfirmation/" + 0, "Personas");
+            return View();
         }
         #endregion
 
         #region -RegistroConfirmation-
         public async Task<IActionResult> RegistroConfirmation(int? id)
         {
-            var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
-            if (persona == null)
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool escl = false;
+            bool esmcyscp = false;
+            foreach (var rol in roles)
             {
-                ViewBag.nombreRegistrado = null;
-            }
-            else
-            {
-                ViewBag.nombreRegistrado = persona.NombreCompleto;
-                ViewBag.idRegistrado = persona.IdPersona;
+                if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+                {
+                    var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+                    if (persona == null)
+                    {
+                        ViewBag.nombreRegistrado = null;
+                    }
+                    else
+                    {
+                        ViewBag.nombreRegistrado = persona.NombreCompleto;
+                        ViewBag.idRegistrado = persona.IdPersona;
+                        ViewBag.esmcyscp = esmcyscp = true;
+                    }
+                }
+                else
+                {
+                    var persona = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+                    if (persona == null)
+                    {
+                        ViewBag.nombreRegistrado = null;
+                    }
+                    else
+                    {
+                        ViewBag.nombreRegistrado = persona.NombreCompleto;
+                        ViewBag.idRegistrado = persona.IdPersonaCl;
+                        ViewBag.escl = escl = true;
+                    }
+                }
             }
             return View();
         }
@@ -2717,11 +3264,50 @@ namespace scorpioweb.Controllers
         #region -Presentaciones periodicas-
         public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
         {
+
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.user = user;
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+            ViewBag.Serviciosprevios = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "Masteradmin")
+                {
+                    ViewBag.Masteradmin = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "ArchivoMCSCP")
+                {
+                    ViewBag.Archivo = true;
+                }
+            }
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Servicios previos")
+                {
+                    ViewBag.Serviciosprevios = true;
+                }
+            }
             if (id == null)
             {
                 return NotFound();
             }
-
+            #endregion
             List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>();
 
             var queripersonasis = from p in _context.Persona
@@ -2761,21 +3347,20 @@ namespace scorpioweb.Controllers
         #region -EditarComentario-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditComentario(Presentacionperiodica presentacionperiodica, Persona persona)
-        {
-            int idPresentacion = presentacionperiodica.IdpresentacionPeriodica;
-            int idPersona = persona.IdPersona;
-            var comentario = presentacionperiodica.ComentarioFirma;
-            if (comentario == null)
-            {
-                comentario = "";
-            }
 
-            var comentarioUpdate = (from a in _context.Presentacionperiodica
-                                    where a.IdpresentacionPeriodica == idPresentacion
-                                    select a).FirstOrDefault();
-            comentarioUpdate.ComentarioFirma = comentario.ToUpper();
-            _context.SaveChanges();
+        public async Task<IActionResult> EditComentario(int id, int idpersona,  [Bind("IdpresentacionPeriodica,FechaFirma,ComentarioFirma,RegistroidHuella")] Presentacionperiodica presentacionperiodica)
+        {
+            id = presentacionperiodica.IdpresentacionPeriodica;
+            presentacionperiodica.RegistroidHuella = presentacionperiodica.RegistroidHuella;
+            presentacionperiodica.ComentarioFirma = presentacionperiodica.ComentarioFirma != null ? presentacionperiodica.ComentarioFirma.ToUpper() : "NA";
+            presentacionperiodica.FechaFirma = presentacionperiodica.FechaFirma;
+
+            //_context.SaveChanges();
+
+            var oldDomicilio = await _context.Presentacionperiodica.FindAsync(presentacionperiodica.IdpresentacionPeriodica);
+            _context.Entry(oldDomicilio).CurrentValues.SetValues(presentacionperiodica);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
 
             try
             {
@@ -2792,7 +3377,7 @@ namespace scorpioweb.Controllers
                     throw;
                 }
             }
-            return RedirectToAction("PresentacionPeriodicaPersona/" + idPersona);
+            return RedirectToAction("PresentacionPeriodicaPersona/" + idpersona);
         }
         #endregion
 
@@ -4994,6 +5579,7 @@ namespace scorpioweb.Controllers
             DateTime fechaControl = (DateTime.Today).AddDays(3);
             DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
             DateTime fechaHoy = DateTime.Today;
+            var fechaProcesal = DateTime.Now.AddMonths(-6);
 
             if (currentFilter == null)
             {
@@ -5042,6 +5628,13 @@ namespace scorpioweb.Controllers
             List<Archivointernomcscp> queryHistorialArchivoadmin = (from a in _context.Archivointernomcscp
                                                                     group a by a.PersonaIdPersona into grp
                                                                     select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
+
+
+            var listaaudit = (from a in _context.Audit
+                              join s in _context.Supervision on int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) equals s.IdSupervision
+                              where a.TableName == "Supervision" && a.NewValues.Contains("en espera de respuesta")
+                              group a by int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) into grp
+                              select grp.OrderByDescending(a => a.Id).FirstOrDefault());
             #endregion
 
             #region -Jointables-
@@ -5164,6 +5757,27 @@ namespace scorpioweb.Controllers
                             municipiosVM = municipio
                         };
 
+
+            var tableAudiot = from persona in personaVM
+                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                              join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
+                              join audit in listaaudit on supervision.IdSupervision equals int.Parse(Regex.Replace(audit.PrimaryKey, @"[^0-9]", ""))
+                              select new PlaneacionWarningViewModel
+                              {
+                                  personaVM = persona,
+                                  supervisionVM = supervision,
+                                  causapenalVM = causapenal,
+                                  planeacionestrategicaVM = planeacion,
+                                  figuraJudicial = fracciones.FiguraJudicial,
+                                  auditVM = audit,
+                                  fechaCmbio = audit.DateTime,
+                                  municipiosVM = municipio
+                              };
+
             if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
                 var ViewDataAlertasVari = Enumerable.Empty<PlaneacionWarningViewModel>();
@@ -5254,8 +5868,20 @@ namespace scorpioweb.Controllers
                                              }).Union
                                             (where).Union
                                             //(archivoadmin).Union
-                                            (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE"))
-                                            ;
+                                            (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
+                                            (from t in tableAudiot
+                                             where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                             select new PlaneacionWarningViewModel
+                                             {
+                                                 personaVM = t.personaVM,
+                                                 municipiosVM = t.municipiosVM,
+                                                 supervisionVM = t.supervisionVM,
+                                                 causapenalVM = t.causapenalVM,
+                                                 planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                                 fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                                 tipoAdvertencia = "Estado Procesal",
+                                                 auditVM = t.auditVM
+                                             });
                         break;
                     case "SIN RESOLUCION":
                         ViewDataAlertasVari = sinResolucion;
@@ -5361,6 +5987,21 @@ namespace scorpioweb.Controllers
                                                   municipiosVM = municipio,
                                                   tipoAdvertencia = "Pendiente de asignación - colaboración"
                                               };
+                        break;
+                    case "ESTADO PROCESAL":
+                    ViewDataAlertasVari =from t in tableAudiot
+                                         where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                         select new PlaneacionWarningViewModel
+                                         {
+                                             personaVM = t.personaVM,
+                                             municipiosVM = t.municipiosVM,
+                                             supervisionVM = t.supervisionVM,
+                                             causapenalVM = t.causapenalVM,
+                                             planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                             fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                             tipoAdvertencia = "Estado Procesal",
+                                             auditVM = t.auditVM
+                                         };
                         break;
                 }
 
@@ -5481,8 +6122,20 @@ namespace scorpioweb.Controllers
                                                  causapenalVM = t.causapenalVM,
                                                  planeacionestrategicaVM = t.planeacionestrategicaVM,
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
-                                             })
-                                             ;
+                                             }).Union
+                                             (from t in tableAudiot
+                                                where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                                select new PlaneacionWarningViewModel
+                                                {
+                                                    personaVM = t.personaVM,
+                                                    municipiosVM = t.municipiosVM,
+                                                    supervisionVM = t.supervisionVM,
+                                                    causapenalVM = t.causapenalVM,
+                                                    planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                                    fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                                    tipoAdvertencia = "Estado Procesal",
+                                                    auditVM = t.auditVM
+                                                });
                         break;
                     //case "EXPEDIENTE FISICO EN RESGUARDO":
                     //    ViewData["alertas"] = archivo;
@@ -5576,6 +6229,21 @@ namespace scorpioweb.Controllers
                                                   planeacionestrategicaVM = t.planeacionestrategicaVM,
                                                   tipoAdvertencia = "Se paso el tiempo de la firma"
                                               };
+                        break;
+                    case "ESTADO PROCESAL":
+                        ViewData["alertas"] = from t in tableAudiot
+                                               where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                               select new PlaneacionWarningViewModel
+                                               {
+                                                   personaVM = t.personaVM,
+                                                   municipiosVM = t.municipiosVM,
+                                                   supervisionVM = t.supervisionVM,
+                                                   causapenalVM = t.causapenalVM,
+                                                   planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                                   fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                                   tipoAdvertencia = "Estado Procesal",
+                                                   auditVM = t.auditVM
+                                               };
                         break;
                 }
             }

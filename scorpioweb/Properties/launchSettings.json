@@ -1,12 +1,4 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:58121/",
-      "sslPort": 44359
-    }
-  },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
@@ -14,7 +6,6 @@
       "launchUrl": "https://localhost:44359/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-        //"ASPNETCORE_ENVIRONMENT": "Production"
       }
     },
     "scorpioweb": {
@@ -22,10 +13,16 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-        //"ASPNETCORE_ENVIRONMENT": "Production"
       },
-      //"applicationUrl": "http://localhost:58122/"
       "applicationUrl": "http://10.6.60.190/;https://localhost:44359/"
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:58121/",
+      "sslPort": 44359
     }
   }
 }

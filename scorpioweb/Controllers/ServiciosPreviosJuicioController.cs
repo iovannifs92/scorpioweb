@@ -82,14 +82,19 @@ namespace scorpioweb.Controllers
         private List<SelectListItem> listaSituacionJuridica = new List<SelectListItem>
         {
             new SelectListItem{ Text = "Detenido", Value = "DETENIDO" },
-            new SelectListItem{ Text = "Imposibilidad de Arraigo", Value = "IMPOSIBILIDAD DE ARRAIGO" }
+            new SelectListItem{ Text = "No Detenido", Value = "NO DETENIDO" },
+            new SelectListItem{ Text = "Imposibilidad de Arraigo", Value = "IMPOSIBILIDAD DE ARRAIGO" },
+            new SelectListItem{ Text = "Prision Preventiva", Value = "PRISION PREVENTIVA" },
+            new SelectListItem{ Text = "Sentenciado", Value = "SENTENCIADO" },
+            new SelectListItem{ Text = "Resguardo Domiciliario", Value = "RESGUARDO DOMICILIARIO" }
         };
 
         private List<SelectListItem> listaRealizoEntrevista = new List<SelectListItem>
         {
             new SelectListItem{ Text="NA", Value="NA"},
             new SelectListItem{ Text = "Si", Value = "SI" },
-            new SelectListItem{ Text = "Negativa", Value = "NEGATIVA" }
+            new SelectListItem{ Text = "Negativa", Value = "NEGATIVA" },
+            new SelectListItem{ Text = "No Fue Localizado", Value = "NO FUE LOCALIZADO" }
         };
 
         private List<SelectListItem> listaTipoDetenido = new List<SelectListItem>

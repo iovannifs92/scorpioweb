@@ -42,13 +42,19 @@
                 $("#Pais, #Localidad").addClass("col-md-3");
             }
         });
-
-
         $('#RealizoEntrevista').change(function () {
-            console.log("Hola");
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $("#bloqueEntrevista").css("display", "block");
+                $("#TipoDetenidodiv").css("display", "block");
+                $("#Aerdiv").css("display", "block");
+                $("#Tamizajediv").css("display", "block");
+            }
+            else if (opcion == "NEGATIVA") {
+                $("#bloqueEntrevista").css("display", "block");
+                $("#TipoDetenidodiv").css("display", "none");
+                $("#Aerdiv").css("display", "none");
+                $("#Tamizajediv").css("display", "none"); 
             }
             else {
                 $("#bloqueEntrevista").css("display", "none");
@@ -230,36 +236,6 @@
     //    });
     //};
 
-    function myFunction(materno) {
-        var nombre = document.getElementById("nombre").value;
-        var paterno = document.getElementById("paterno").value;
-        var materno = materno;
-
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Personas/testSimilitud",
-            traditional: true,
-            data: {
-                nombre, paterno, materno,
-            },
-            success: function (response) {
-                if (response.success == true) {
-                    var msg = confirm("Se encontro una persona " + response.porcentaje + "% parecido, ¿Desea ir a la entrevista?");
-                    if (msg == true) {
-                        window.location.href = response.responseText;
-                    } else {
-                    }
-                } else {
-                }
-
-            },
-            error: function (response) {
-                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                console.log(response);
-            }
-        });
-    }
 
     function pasarvalor(nombre) {
         //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor", 
@@ -369,7 +345,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Situacion" class="control-label">Situación Jurídica</label>
-                    <select class="form-control" name="UnidadInvestigacion" id="UnidadInvestigacion"
+                <select class="form-control" name="Situacion" id="Situacion"
                             asp-items="@(new SelectList(ViewBag.listaSituacionJuridica, "Value", "Text", @ViewBag.idSituacionJuridica))">
                     </select>
                 </div>
@@ -383,19 +359,19 @@
                 @* Bloque Si realizo entrevista *@
                 <div class="form-group" id="bloqueEntrevista" name="bloqueEntrevista" style="display:none">
 
-                    <div class="form-group">
+                <div class="form-group" id="TipoDetenidodiv">
                         <label asp-for="TipoDetenido" class="control-label">¿Qué tipo de detenido es?</label>
                         <select class="form-control" name="TipoDetenido" id="TipoDetenido"
                                 asp-items="@(new SelectList(ViewBag.listaTipoDetenido, "Value", "Text"))">
                         </select>
                     </div>
-                    <div class="form-group">
+                <div class="form-group" id="Aerdiv">
                         <label asp-for="Aer" class="control-label">Resultado Análisis de Evaluación de Riesgos</label>
                         <select class="form-control" name="Aer" id="Aer"
                                 asp-items="@(new SelectList(ViewBag.listaAER, "Value", "Text"))">
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="Tamizajediv">
                         <label asp-for="Tamizaje" class="control-label"></label>
                         <select class="form-control" name="Tamizaje" id="Tamizaje"
                                 asp-items="@(new SelectList(ViewBag.listaTamizaje, "Value", "Text"))">
@@ -448,7 +424,7 @@
                     <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
                 </div>
                 <div class="input-group" style="padding-top:1%">
-                    <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
+                    <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
                 </div>
             </form>
         </div>

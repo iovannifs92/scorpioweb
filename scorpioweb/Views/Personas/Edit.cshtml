@@ -1096,6 +1096,11 @@
                     asp-items="@(new SelectList(ViewBag.listaUbicacionExp, "Value", "Text", @ViewBag.idUbicacionExp))">
             </select>
         </div>*@
+             <div class="form-group col-lg-12">
+                <label asp-for="Supervisor" class="control-label"></label>
+                <input readonly asp-for="Supervisor" class="form-control" />
+                <span asp-validation-for="Supervisor" class="text-danger"></span>
+            </div>
             <div class="form-group col-md-1" style="padding-top:25px;">
                 <button type="button" class="btn btn-primary" id="btnEditarReferencias">
                     <i class="fa fa-pencil"></i>

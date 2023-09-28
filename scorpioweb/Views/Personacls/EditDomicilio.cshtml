@@ -1,4 +1,4 @@
-﻿@model scorpioweb.Models.Domicilio
+﻿@model scorpioweb.Models.Domiciliocl
 
 @* Necesario para los modales en el servidor *@
 @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
@@ -18,14 +18,14 @@
             $.ajaxSetup({
                 async: false
             });
-            localStorage.setItem('municipioAnterior',$('#municipioD').val());
-            var url = '@Url.Content("~/")' + "Personas/GetMunicipio";
+            localStorage.setItem('municipioAnterior', $('#municipioD').val());
+            var url = '@Url.Content("~/")' + "Personacls/GetMunicipio";
             var ddlsource = '#estadoD';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 var items = "<option value=''>Sin municipio</option>";
                 $("#municipioD").empty();
                 $.each(data, function (i, municipio) {
-                    if(municipio.text == document.getElementById("municipioD").text) {
+                    if (municipio.text == document.getElementById("municipioD").text) {
                         items += "<option value='" + municipio.value + "' selected>" + municipio.text + "</option>";
                     }
                     else {
@@ -34,7 +34,7 @@
                 });
                 $('#municipioD').html(items);
             });
-            localStorage.setItem('municipioD',$('#municipioD').val());
+            localStorage.setItem('municipioD', $('#municipioD').val());
             $.ajaxSetup({
                 async: true
             });
@@ -42,7 +42,7 @@
         $('#paisD').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
-                 $("#estadoD").val(0);
+                $("#estadoD").val(0);
                 var items = "<option value='0'>Sin municipio</option>";
                 $('#municipioD').html(items);
                 $("#municipioD").val(0);
@@ -90,7 +90,7 @@
         var items = "<option value='0'>Selecciona</option>";
         $('#MunicipioM').html(items);
         $('#EstadoM').change(function () {
-            var url = '@Url.Content("~/")' + "Personas/GetMunicipioED";
+            var url = '@Url.Content("~/")' + "Personacls/GetMunicipioED";
             var ddlsource = '#EstadoM';
             $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
                 var items = '';
@@ -102,20 +102,20 @@
             });
         });
         $('#PaisM').change(function () {
-        var selectedCountry = $(this).children("option:selected").val();
-        if (selectedCountry != "MEXICO") {
-            $("#EstadoM").val(0);
-            var items = "<option value='0'>Selecciona</option>";
-            $('#MunicipioM').html(items);
-            $("#MunicipioM").val(0);
-            $("#DivEstadoM").css("display", "none");
-            $("#DivMunicipioM").css("display", "none");
-        }
-        else {
-            $('#MunicipioM').html(items);
-            $("#MunicipioM").val(0);
-            $("#DivEstadoM").css("display", "block");
-            $("#DivMunicipioM").css("display", "block");
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                $("#EstadoM").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#MunicipioM').html(items);
+                $("#MunicipioM").val(0);
+                $("#DivEstadoM").css("display", "none");
+                $("#DivMunicipioM").css("display", "none");
+            }
+            else {
+                $('#MunicipioM').html(items);
+                $("#MunicipioM").val(0);
+                $("#DivEstadoM").css("display", "block");
+                $("#DivMunicipioM").css("display", "block");
             }
         });
         //#endregion
@@ -148,7 +148,7 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "/Personas/CrearDomicilioSecundario",
+                url: "/Personacls/CrearDomicilioSecundario",
                 traditional: true,
                 data: {
                     datosDomicilio: [IdDomicilio, TipoDomicilio, Calle, No, TipoUbicacion, NombreCf, Pais, Estado, Municipio, Temporalidad, ResidenciaHabitual, Cp, Referencias, Motivo, Horario, Observaciones],
@@ -271,7 +271,7 @@
                     var text = $(this).text();
                     for (i = 0; i < res.length; i++) {
                         if (!this.value || (request.term && !matcher[i].test(text)))
-                        return;
+                            return;
                     }
                     resultset.push({
                         label: text,
@@ -341,17 +341,17 @@
     <div class="col-lg-12">
         <form asp-action="EditDomicilio" id="forma">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdDomicilio" />
-            <input type="hidden" asp-for="PersonaIdPersona" />
+            <input type="hidden" asp-for="IdDomiciliocl" />
+            <input type="hidden" asp-for="PersonaclIdPersonacl" />
 
             @*<div id="map"></div>
             <script id="GoogleApi"></script>
             <script src="~/js/scripts.js"></script>
             <script>
-                var url = "https://maps.googleapis.com/maps/api/js?key=";
-                var api = key;
-                var url2 = "&callback=iniciarMap&v=weekly";
-                document.getElementById("GoogleApi").src = url + api + url2;
+            var url = "https://maps.googleapis.com/maps/api/js?key=";
+            var api = key;
+            var url2 = "&callback=iniciarMap&v=weekly";
+            document.getElementById("GoogleApi").src = url + api + url2;
             </script>*@
             @if (User.IsInRole("Masteradmin"))
             {
@@ -370,7 +370,7 @@
                         asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text", @ViewBag.idtDomicilio))">
                 </select>
             </div>
-           @* <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
+      @*      <button class="btn btn-primary form-group col-sm-3" type="button" style="margin-left:-15px;" id="btnGeocoding" name="btnGeocoding">
                 <i class="fa fa-map-marker"></i> Posicionar marcador
             </button>*@
             <div class="form-group col-xs-5">
@@ -469,7 +469,7 @@
                     </button>
                 </div>
                 <div class="form-group col-md-1 col-sm-1  col-xs-3" id="DivbtnEditar" style="padding-top:25px;">
-                    <a id="btnEditar" name="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personas",new {id=@Model.IdDomicilio,nombre=@ViewData["Nombre"],idpersona=@Model.PersonaIdPersona},Context.Request.Scheme)','Edita Domicilo Secundario')" class="btn btn-success">
+                    <a id="btnEditar" name="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personacls",new {id=@Model.IdDomiciliocl,nombre=@ViewData["Nombre"],idpersona=@Model.PersonaclIdPersonacl},Context.Request.Scheme)','Edita Domicilo Secundario')" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </div>
@@ -477,7 +477,7 @@
             else
             {
                 <div class="form-group col-md-1 col-sm-1 col-xs-3" id="DivbtnEditar" style="display:none;">
-                    <a id="btnEditar" name="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personas",null,Context.Request.Scheme)','Edita Domicilo Secundario',@Model.IdDomicilio)" class="btn btn-success">
+                    <a id="btnEditar" name="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personacls",null,Context.Request.Scheme)','Edita Domicilo Secundario',@Model.IdDomiciliocl)" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </div>
@@ -503,7 +503,7 @@
 </div>
 
 <div>
-    <a asp-action="MenuEdicion" asp-route-id="@Model.PersonaIdPersona" class="btn btn-link">
+    <a asp-action="MenuEdicion" asp-route-id="@Model.PersonaclIdPersonacl" class="btn btn-link">
         Regresar
     </a>
 </div>
@@ -518,9 +518,9 @@
             <div class="modal-body">
 
                 <div class="form-group">
-                    <input type="hidden" name="IdDomicilioSecundario" type="text" class="form-control" />
+                    <input type="hidden" name="IdDomicilioSecundarioCl" type="text" class="form-control" />
                 </div>
-                <input type="hidden" readonly name="IdDomicilioM" id="IdDomicilioM" class="form-control" value="@Model.IdDomicilio" />
+                <input type="hidden" readonly name="IdDomicilioM" id="IdDomicilioM" class="form-control" value="@Model.IdDomiciliocl" />
                 <div class="form-group col-md-12">
                     <label class="control-label">Tipo de Domicilio</label>
                     <select required class="form-control" name="TipoDomicilio" id="TipoDomicilioM">

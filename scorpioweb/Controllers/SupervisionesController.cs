@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using scorpioweb.Class;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace scorpioweb.Controllers
 {
@@ -1027,7 +1028,7 @@ namespace scorpioweb.Controllers
         }
 
         #region -Update Persona supervision-
-        public JsonResult UpdatePersonasupervision(Supervision supervision, Planeacionestrategica planeacionestrategica, string superid, string campo, string planeacionid, string estados, DateTime fecha, DateTime intermedio)
+        public async Task<JsonResult>  UpdatePersonasupervision(Supervision supervision, Planeacionestrategica planeacionestrategica, string superid, string personaid,string cpid, string campo, string planeacionid, string estados, DateTime fecha, DateTime intermedio)
         {
 
             #region -Actualizar fechas en supervision-
@@ -1037,6 +1038,8 @@ namespace scorpioweb.Controllers
                 supervision.Inicio = fecha;
                 var camps = campo;
                 supervision.IdSupervision = Int32.Parse(superid);
+                supervision.PersonaIdPersona = Int32.Parse(personaid);
+                supervision.CausaPenalIdCausaPenal = Int32.Parse(cpid);
                 supervision.EstadoSupervision = mg.normaliza(estados);
             }
 
@@ -1096,7 +1099,18 @@ namespace scorpioweb.Controllers
                              where s.IdSupervision == supervision.IdSupervision
                              select s).FirstOrDefault();
                 query.EstadoSupervision = supervision.EstadoSupervision;
-                _context.SaveChanges();
+
+                try
+                {
+                    var oldSupervision = await _context.Supervision.FindAsync(supervision.IdSupervision);
+                    _context.Entry(oldSupervision).CurrentValues.SetValues(supervision);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                }
+                catch (Exception ex)
+                {
+                    var innerException = ex.InnerException;
+                }
+
             }
 
             #endregion
@@ -2268,27 +2282,51 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> AgregarBitacora(Bitacora bitacora, string IdBitacora, DateTime Fecha, string tipoPersona,
                 string tipoVisita, string Texto, string SupervisionIdSupervision, string FracionesImpuestasIdFracionesImpuestas, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidFraccion)
         {
-            
+
+            //int idbitacora = _context.Bitacora.Max(table => table.IdBitacora) + 1;
+
+            //string currentUser = User.Identity.Name;
+
+            //var path = "";
+            //foreach (var formFile in files)
+            //{
+            //    if (formFile.Length > 0)
+            //    {
+            //        string file_name = idbitacora + "_" + SupervisionIdSupervision + "_" + idpersona + Path.GetExtension(formFile.FileName);
+            //        bitacora.RutaEvidencia = file_name;
+            //        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+            //        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+            //        await formFile.CopyToAsync(stream);
+            //        stream.Close();
+
+            //    }
+            //}
+            //await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
             int idbitacora = _context.Bitacora.Max(table => table.IdBitacora) + 1;
 
             string currentUser = User.Identity.Name;
 
-            var path = "";
-            foreach (var formFile in files)
+            if (files != null && files.Count > 0)
             {
-                if (formFile.Length > 0)
-                {
-                    string file_name = idbitacora + "_" + SupervisionIdSupervision + "_" + idpersona + Path.GetExtension(formFile.FileName);
-                    bitacora.RutaEvidencia = file_name;
-                    var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
-                    var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
-                    await formFile.CopyToAsync(stream);
-                    stream.Close();
-                   
-                }
-            }
-            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                var uploadTasks = new List<Task>();
 
+                foreach (var formFile in files)
+                {
+                    if (formFile.Length > 0)
+                    {
+                        string fileExtension = Path.GetExtension(formFile.FileName);
+                        string file_name = $"{idbitacora}_{SupervisionIdSupervision}_{idpersona}{fileExtension}";
+
+                        bitacora.RutaEvidencia = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+
+                        uploadTasks.Add(formFile.CopyToAsync(stream));
+                    }
+                }
+
+                await Task.WhenAll(uploadTasks);
+            }
             if (ModelState.ErrorCount <= 1)
             {
 

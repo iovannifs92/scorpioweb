@@ -316,8 +316,6 @@ namespace scorpioweb.Controllers
             _context.Add(oficialia);
             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
             return RedirectToAction("EditRegistros", "Oficialia");
-
-            return View(oficialia);
         }
         #endregion
 

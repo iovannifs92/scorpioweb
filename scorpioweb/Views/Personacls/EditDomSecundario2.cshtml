@@ -1,0 +1,344 @@
+﻿@{
+    ViewBag.Title = "Abandono estado";
+    Layout = null;
+}
+
+<script type="text/javascript">
+ //* Modal EditdomicilioSecundario*/
+        $('#estadoEDS').change(function () {
+            var url = '@Url.Content("~/")' + "Personacls/GetMunicipio";
+            var ddlsource = '#estadoEDS';
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                var items = '';
+                $("#municipioEDS").empty();
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#municipioEDS').html(items);
+            });
+        });
+        $('#paisEDS').change(function () {
+            var p = document.getElementById("paisEDS");
+            var selectedCountry = $(this).children("option:selected").val();
+            if (selectedCountry != "MEXICO") {
+                 $("#estadoEDS").val(0);
+                var items = "<option value='0'>Selecciona</option>";
+                $('#municipioEDS').html(items);
+                $("#municipioEDS").val(0);
+                $("#DivEstadoEDS").css("display", "none");
+                $("#DivMunicipioEDS").css("display", "none");
+                $("#DivPaisEDS").removeClass("col-md-4");
+                $("DivPaisEDS").addClass("col-md-12");
+            }
+            else {
+                $("#DivEstadoEDS").css("display", "block");
+                $("#DivMunicipioEDS").css("display", "block");
+                $("#DivPaisEDS").removeClass("col-md-12");
+                $("#DivPaisEDS").addClass("col-md-4");
+            }
+        });
+ //#endregion
+
+//*Combobox Modal AdddomicilioSecundario*/
+        var items = "<option value='0'>Selecciona</option>";
+            $('#MunicipioMD').html(items);
+        $('#EstadoMD').change(function () {
+            var url = '@Url.Content("~/")' + "Personacls/GetMunicipioED";
+            var ddlsource = '#EstadoMD';
+            //alert("url: " + url + " ddlsource val: " + $(ddlsource).val());
+            $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+                //alert("entrando en JSON");
+                var items = '';
+                $("#MunicipioMD").empty();
+
+                $.each(data, function (i, municipio) {
+                    items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+                });
+                $('#MunicipioMD').html(items);
+            });
+        });
+
+        $('#PaisMD').change(function () {
+        var selectedCountry = $(this).children("option:selected").val();
+        if (selectedCountry != "MEXICO") {
+            $("#EstadoMD").val(0);
+            var items = "<option value='0'>Selecciona</option>";
+            $('#MunicipioMD').html(items);
+            $("#MunicipioMD").val(0);
+            $("#DivEstadoMD").css("display", "none");
+            $("#DivMunicipioMD").css("display", "none");
+
+        }
+        else {
+            $('#MunicipioMD').html(items);
+            $("#MunicipioMD").val(0);
+            $("#DivEstadoMD").css("display", "block");
+            $("#DivMunicipioMD").css("display", "block");
+
+            }
+
+        });
+
+        $('#btnGuardarDomiSecu2').on("click", function (e) {
+            e.preventDefault();
+            //alert("Entrando a boton");
+            var IdDomicilio = document.getElementById("IdDomicilioMD").value;
+            var td = document.getElementById("TipoDomicilioMD");
+            var TipoDomicilio = td.options[td.selectedIndex].value;
+            var Calle = document.getElementById("CalleMD").value;
+           // alert("JSON" + Calle);
+            var No = document.getElementById("NoMD").value;
+            var TipoUbicacion = document.getElementById("TipoUbicacionMD").value;
+            var NombreCf = document.getElementById("NombreCfMD").value;
+            var p = document.getElementById("PaisMD");
+            var Pais = p.options[p.selectedIndex].value;
+            var e = document.getElementById("EstadoMD");
+            var Estado = e.options[e.selectedIndex].value;
+            var m = document.getElementById("MunicipioMD");
+            var Municipio = m.options[m.selectedIndex].value;
+            var te = document.getElementById("TemporalidadMD");
+            var Temporalidad = te.options[te.selectedIndex].value;
+            var rh = document.getElementById("ResidenciaHabitualMD");
+            var ResidenciaHabitual = rh.options[rh.selectedIndex].value;
+            var Cp = document.getElementById("CpMD").value;
+            var Referencias = document.getElementById("ReferenciasMD").value;
+            var Motivo = document.getElementById("MotivoMD").value;
+            var Horario = document.getElementById("HorarioMD").value;
+            var Observaciones = document.getElementById("ObservacionesMD").value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personacls/CrearDomicilioSecundario",
+                traditional: true,
+                data: {
+                    datosDomicilio: [IdDomicilio, TipoDomicilio, Calle, No, TipoUbicacion, NombreCf, Pais, Estado, Municipio, Temporalidad, ResidenciaHabitual, Cp, Referencias, Motivo, Horario, Observaciones],
+                },
+                success: function (response) {
+                    alert("Datos Guardados con exito");
+                    location.reload();
+                },
+                error: function (response) {
+                    location.reload();
+                }
+            });
+        });
+//#endregion
+
+
+
+
+
+</script>
+
+
+@{int i = 0;}
+@foreach (var item in ViewData["joinTablesDomcilioSec"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>)
+{
+    i++;
+    <div class="form-group col-md-12">
+        <form asp-action="EditDomSecundario" asp-route-nombre="@ViewBag.nombre" asp-route-idPersona="@ViewBag.idPersona">
+            <div>
+                <h4>Domicilio Secundario <span>@i</span> </h4>
+            </div>
+            <div class="form-group col-md-6">
+                <input name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioclVM.IdDomicilioSecundarioCl" class="form-control" readonly style="display:none" />
+            </div>
+            <div class="form-group col-lg-6">
+                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioclVM.IdDomicilioCl" class="form-control" readonly style="display:none" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tipo de Ubiacion</label>
+                <select class="form-control" name="TipoDomicilio" id="tipoDomicilio"
+                        asp-items="@(new SelectList(ViewBag.listatDomicilio, "Value", "Text",@item.domicilioSecundarioclVM.TipoDomicilio))">
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Calle</label>
+                <input name="Calle" id="Calle" value=" @item.domicilioSecundarioclVM.Calle" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">No</label>
+                <input name="No" id="No" value="@item.domicilioSecundarioclVM.No" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Tipo de  Ubicacion</label>
+                <input name="TipoUbicacion" id="TipoUbicacion" value="@item.domicilioSecundarioclVM.TipoUbicacion" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Nombre de Colonia/Fracionamiento</label>
+                <input name="NombreCf" id="NombreCf" value="@item.domicilioSecundarioclVM.NombreCf" class="form-control" />
+            </div>
+            <div class="form-group col-md-4" id="DivPaisEDS">
+                <label class="control-label">País</label>
+                <select class="form-control" name="Pais" id="paisEDS"
+                        asp-items="@(new SelectList(ViewBag.ListaPaisED, "Value", "Text", @item.domicilioSecundarioclVM.Pais))">
+                </select>
+            </div>
+            <div class="form-group col-md-4" id="DivEstadoEDS">
+                <label class="control-label">Estado</label>
+                <select class="form-control" name="Estado" id="estadoEDS"
+                        asp-items="@(new SelectList(ViewBag.ListaEstadoED, "Id", "Estado", @item.domicilioSecundarioclVM.Estado))">
+                </select>
+            </div>
+            <div class="form-group col-md-4" id="DivMunicipioEDS">
+                <label class="control-label">Municipio</label>
+                <select class="form-control" name="Municipio" id="municipioEDS"
+                        asp-items="@(new SelectList(ViewBag.ListaMunicipioED, "Id", "Municipio", item.domicilioSecundarioclVM.Municipio))">
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Temporalidad</label>
+                <select class="form-control" name="Temporalidad" id="Temporalidad"
+                        asp-items="@(new SelectList(ViewBag.ListaTemporalidad, "Value", "Text",@item.domicilioSecundarioclVM.Temporalidad))">
+                </select>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label class="control-label">Residencia Habitual</label>
+                <select class="form-control" name="ResidenciaHabitual" id="ResidenciaHabitual"
+                        asp-items="@(new SelectList(ViewBag.listaResidenciaHabitual, "Value", "Text",@item.domicilioSecundarioclVM.ResidenciaHabitual))">
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Código Postal</label>
+                <input name="Cp" id="Cp" value="@item.domicilioSecundarioclVM.Cp" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Referencias</label>
+                <input name="Referencias" id="Referencias" value="@item.domicilioSecundarioclVM.Referencias" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Horario</label>
+                <input name="Horario" id="Horario" value="@item.domicilioSecundarioclVM.Horario" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Motivo</label>
+                <input name="Motivo" id="Motivo" value="@item.domicilioSecundarioclVM.Motivo" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Observaciones</label>
+                <input name="Observaciones" id="Observaciones" value="@item.domicilioSecundarioclVM.Observaciones" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+                <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalAddDomSecundario" class="btn btn-success">
+                    <i class="fa fa-plus"></i> Añadir Domicilio
+                </button>
+                <button asp-action="DeleteConfirmedDom" asp-route-id="@item.domicilioSecundarioclVM.IdDomicilioSecundarioCl" asp-route-nombre="@ViewBag.nombre" asp-route-idpersona="@ViewBag.idPersona" onclick="return update();" class="btn btn-danger" type="submit">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
+            </div>
+        </form>
+    </div>
+    <hr width=90>
+}
+
+<!-- Modal Creacion de nuevo domicilio-->
+<div class="modal fade" id="modalAddDomSecundario" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Nuevo Domicilio Secundario</h5>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <input type="hidden" name="IdDomicilioSecundarioCl" id="IdDomicilioSecundarioCl" class="form-control" />
+                </div>
+                @foreach (var item in ViewData["joinTablesDomcilioSec"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>)
+                {
+                    <input readonly type="hidden" name="IdDomicilio" id="IdDomicilioMD" class="form-control" value="@item.domicilioSecundarioclVM.IdDomicilioCl" />
+                    break;
+                }
+                <div class="form-group col-md-12">
+                    <label class="control-label">Tipo de Domicilio</label>
+                    <select required class="form-control" name="TipoDomicilio" id="TipoDomicilioMD">
+                        <option value="RENTADA">Rentada</option>
+                        <option value="PRESTADA">Prestada</option>
+                        <option value="PROPIA">Propia</option>
+                        <option value="FAMILIAR">Familiar</option>
+                        <option value="SITACION DE CALLE">Situación de calle</option>
+                        <option value="IRREGULAR">Irregular</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Calle</label>
+                    <input id="CalleMD" name="Calle" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">No</label>
+                    <input id="NoMD" name="No" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Tipo de Ubicacion</label>
+                    <input id="TipoUbicacionMD" name="TipoUbicacion" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Nombre de Colonia/Fracionamiento</label>
+                    <input id="NombreCfMD" name="NombreCf" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12" id="DivPaisMD">
+                    <label class="control-label">País</label>
+                    <select class="form-control" name="Pais" id="PaisMD"
+                            asp-items="@(new SelectList(ViewBag.ListaPaisM, "Value", "Text"))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivEstadoMD">
+                    <label class="control-label">Estado</label>
+                    <select class="form-control" name="Estado" id="EstadoMD"
+                            asp-items="@(new SelectList(ViewBag.ListaEstadoM, "Id", "Estado"))">
+                    </select>
+                </div>
+                <div class="form-group col-md-6" id="DivMunicipioMD">
+                    <label class="control-label">Minucipio</label>
+                    <select class="form-control" name="Municipio" id="MunicipioMD"
+                            asp-items="@(new SelectList( ViewBag.ListaMunicipioM, "Id", "Municipio"))">
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Temporalidad</label>
+                    <select required class="form-control" name="Temporalidad" id="TemporalidadMD">
+                        <option value="MAS DE 10 AÑOS">Más de 10 años</option>
+                        <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
+                        <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
+                        <option value="ENTRE 6 MESES Y 2 AÑOS">Entre 6 meses y 2 años</option>
+                        <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Residencia Habitual</label>
+                    <select required class="form-control" name="ResidenciaHabitual" id="ResidenciaHabitualMD">
+                        <option value="Si">Si</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Código Postal</label>
+                    <input id="CpMD" name="Cp" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Referencias</label>
+                    <input id="ReferenciasMD" name="Referencias" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Horario</label>
+                    <input id="HorarioMD" name="Horario" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Motivo</label>
+                    <input id="MotivoMD" name="Motivo" type="text" class="form-control" />
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label">Observaciones</label>
+                    <input id="ObservacionesMD" name="Ovservaciones" type="text" class="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarDomiSecu2" name="btnGuardarDomiSecu2">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

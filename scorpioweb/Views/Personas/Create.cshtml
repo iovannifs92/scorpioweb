@@ -1097,6 +1097,14 @@
                                     <label class="control-label">Lugar de Internamiento</label>
                                     @Html.TextBox("centropenitenciario", null, new { @class = "form-control", maxlength = "45" })
                                 </div>
+                                @if(ViewBag.UserCL == true)
+                                {
+                                    <div class="form-group col-md-12">
+                                        <label class="control-label">Carpeta de Ejecucion</label>
+                                        <input name="ce" id="ce" type="text" class="form-control" />
+                                    </div>
+                                }
+                                
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Nombre (s)</label>
                                     <input required name="nombre" id="nombre" type="text" class="form-control" />

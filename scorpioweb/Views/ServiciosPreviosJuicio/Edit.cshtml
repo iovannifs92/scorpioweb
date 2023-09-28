@@ -22,13 +22,19 @@
                 $('#lnMunicipio').html(items);
             });
         });
-
-
-
         $('#RealizoEntrevista').change(function () {
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $("#bloqueEntrevista").css("display", "block");
+                $("#TipoDetenidodiv").css("display", "block");
+                $("#Aerdiv").css("display", "block");
+                $("#Tamizajediv").css("display", "block");
+            }
+            else if (opcion == "NEGATIVA") {
+                $("#bloqueEntrevista").css("display", "block");
+                $("#TipoDetenidodiv").css("display", "none");
+                $("#Aerdiv").css("display", "none");
+                $("#Tamizajediv").css("display", "none");
             }
             else {
                 $("#bloqueEntrevista").css("display", "none");
@@ -242,7 +248,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Situacion" class="control-label">Situación Jurídica</label>
-                <select class="form-control" name="UnidadInvestigacion" id="UnidadInvestigacion"
+                <select class="form-control" name="Situacion" id="Situacion"
                         asp-items="@(new SelectList(ViewBag.listaSituacionJuridica, "Value", "Text", @ViewBag.idSituacionJuridica))">
                 </select>
             </div>
@@ -256,19 +262,19 @@
             @* Bloque Si realizo entrevista *@
             <div class="form-group" id="bloqueEntrevista" name="bloqueEntrevista" style="@(ViewBag.RealizoEntrevista=="NEGATIVA" ? "display:none":string.Empty)">
 
-                <div class="form-group">
+                <div class="form-group" id="TipoDetenidodiv">
                     <label asp-for="TipoDetenido" class="control-label">¿Qué tipo de detenido es?</label>
                     <select class="form-control" name="TipoDetenido" id="TipoDetenido"
                             asp-items="@(new SelectList(ViewBag.listaTipoDetenido, "Value", "Text", @ViewBag.idlTipoDetenido))">
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="Aerdiv">
                     <label asp-for="Aer" class="control-label">Resultado Análisis de Evaluación de Riesgos</label>
                     <select class="form-control" name="Aer" id="Aer"
                             asp-items="@(new SelectList(ViewBag.listaAER, "Value", "Text", @ViewBag.idAER))">
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="Tamizajediv">
                     <label asp-for="Tamizaje" class="control-label"></label>
                     <select class="form-control" name="Tamizaje" id="Tamizaje"
                             asp-items="@(new SelectList(ViewBag.listaTamizaje, "Value", "Text", @ViewBag.idTamizaje))">

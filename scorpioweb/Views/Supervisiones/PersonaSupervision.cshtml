@@ -46,7 +46,7 @@
             }
         });
     };
-    function cambioestado(ids, value) {
+    function cambioestado(ids,idp,idcp, value) {
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -54,6 +54,8 @@
             traditional: true,
             data: {
                 superid: ids,
+                personaid: idp,
+                cpid: idcp,
                 estados: value,
             },
             success: function (response) {
@@ -234,7 +236,7 @@
                     <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategica, value)" name="FechaInforme" id="FechaInforme" class="form-control" asp-for="@item.planeacionestrategicaVM.FechaInforme" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                 </td>
                 <td>
-                    <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision, value)"
+                    <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision,@item.supervisionVM.PersonaIdPersona,@item.supervisionVM.CausaPenalIdCausaPenal, value)"
                     asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
                     </select>
                 </td>

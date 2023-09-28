@@ -30,6 +30,8 @@
                 <tr>
                     <form asp-action="EditComentario" style="font-size:10px">   
                         <input name="IdPersona" id="IdPersona" readonly style="display:none" value="@item2.personaVM.IdPersona" />
+                        <input name="FechaFirma" id="FechaFirma" readonly style="display:none" value="@item2.presentacionperiodicaVM.FechaFirma" />
+                        <input name="RegistroidHuella" id="RegistroidHuella" readonly style="display:none" value="@item2.presentacionperiodicaVM.RegistroidHuella" />
                         <input name="IdpresentacionPeriodica" id="IdpresentacionPeriodica" readonly style="display:none" value="@item2.presentacionperiodicaVM.IdpresentacionPeriodica" />
                         <td>
                             @if (item2.presentacionperiodicaVM.FechaFirma != null)
@@ -41,14 +43,15 @@
                             <div class="form-group">
                                 <textarea class="form-control" name="ComentarioFirma" id="ComentarioFirma" rows="3" style="width:800px;">@item2.presentacionperiodicaVM.ComentarioFirma</textarea>
                             </div>
-                        </td>
-                        <td>
+                            
+                            <td>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa fa-save"></i>
                                     Guardar
                                 </button>
                             </div>
+                            </td>
                         </td>
                     </form>
                 </tr>

@@ -32,7 +32,7 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Metodos Generales-
-        MetodosGenerales mg = new MetodosGenerales();
+        private readonly MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
         #region -Constructor-
@@ -148,7 +148,7 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Busqueda en registros-
-        public async Task<JsonResult> BuscarAR(string var_buscar)
+        public JsonResult BuscarAR(string var_buscar)
         {
 
             var listaNombres = _context.BuscarArchivoRegistros
@@ -317,12 +317,12 @@ namespace scorpioweb.Models
 
             if (antesdel.Any())
             {
-                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar});
             }
             else
             {
                 borrar = true;
-                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar});
             }
         }
         public JsonResult deletesuper(Archivo archivo, Historialeliminacion historialeliminacion, string[] datosuper)
@@ -350,13 +350,13 @@ namespace scorpioweb.Models
                 _context.SaveChanges();
 
                 _context.Database.ExecuteSqlCommand("CALL spBorrarRegistroArchivo(" + id + ")");
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar });
             }
             catch (Exception ex)
             {
                 var error = ex;
                 borrar = false;
-                return Json(new { success = true, responseText = Url.Action("index", "Archivo"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("index", "Archivo"), borrar });
             }
         }
         #endregion
@@ -610,7 +610,7 @@ namespace scorpioweb.Models
             return View(archivoregistro);
         }
 
-        public JsonResult DeleteArchivo(Archivoregistro archivoregistro, Historialeliminacion historialeliminacion, int dato)
+        public JsonResult DeleteArchivo(Archivoregistro archivoregistro, int dato)
         {
             var borrar = false;
 
@@ -625,13 +625,13 @@ namespace scorpioweb.Models
                 _context.Archivoregistro.Remove(ar);
                 _context.SaveChanges();
 
-                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar });
             }
             catch (Exception ex)
             {
                 var error = ex;
                 borrar = false;
-                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), borrar });
             }
         }
         #endregion 
@@ -1064,7 +1064,7 @@ namespace scorpioweb.Models
 
             return View();
         }
-        public async Task<JsonResult> HistorialPrestamo()
+        public JsonResult HistorialPrestamo()
         {
 
 
