@@ -10,6 +10,7 @@ namespace scorpioweb.Models
         public string paterno { get; set; }
         public string materno { get; set; }
         public string nombre { get; set; }
+        public string DatoExtra { get; set; }
         public string Tabla { get; set; }
     }
 }

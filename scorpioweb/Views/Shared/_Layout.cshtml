@@ -62,7 +62,7 @@
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Asistentes"))
                     {
-                        <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
+                        <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Operativo"))
                     {
@@ -76,7 +76,7 @@
                     {
                         <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Operativo") || User.IsInRole("Director"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director"))
                     {
                         <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
                     }
@@ -111,6 +111,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nombre</th>
+                                        <th>Dato Extra</th>
                                         <th>Area a la que pertenece</th>
                                         <th></th>
                                     </tr>
@@ -171,7 +172,7 @@
                 @*<p>&copy; 2019 - SCORPIO</p>*@
             </div>
 
-            @if (User.IsInRole("Masteradmin") @*|| User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Coordinador")*@)
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia") @*|| User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Coordinador")*@)
             {
                 <div class="col-1 col-md-1" style="float:right">
                     <label for="victima" title="Buscar Nombre en victimas">Otro</label>
@@ -189,7 +190,6 @@
                     <input type="text" class="form-control" id="Paterno" name="Paterno" onkeypress="return soloLetras(event)" placeholder="Paterno...">
                 </div>
             }
-
         </footer>
     </div>
 
@@ -330,13 +330,14 @@
                     alert("No se encontro ningún registro que coincida")
                     return;
                 }
-
                 for (let i = 0; i < response.busqueda.length; i++) {
+                    var nombre = response.busqueda[i].paterno + " " + response.busqueda[i].materno + " " + response.busqueda[i].nombre;
                     row = row
                         + "<tr>"
                         + "<td>" + response.busqueda[i].id + "</td>"
-                        + "<td>" + response.busqueda[i].paterno + " " + response.busqueda[i].materno + " " + response.busqueda[i].nombre + "</td>"
+                        + "<td>" + nombre + "</td>"
                         + "<td>" + response.busqueda[i].tabla + "</td>"
+                        + "<td>" + response.busqueda[i].datoExtra + "</td>"
                     row = row + "<td>";
                     switch (response.busqueda[i].tabla) {
 
@@ -356,6 +357,10 @@
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Prisionespreventivas style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
                             break;
+                        case 'EJECUCION':
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Ejecucion style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                            break;
                         case 'OFICIALIA':
                             row = row
                                 + "PENDIENTE";
@@ -374,6 +379,13 @@
                 //location.reload();
             }
         });
+    };
+
+    function pasarvalor(nombre) {
+        //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor", 
+        //ESTE USA  window.parent.miFuncionEnPaginaPrincipal(nombre) PARA MANDARLO A LA PAGUINA PRINCIPAL; + "<div class=\"col-md-3\"><a  onclick='pasarvalor(\"" + response.busqueda[i].id + "\")' style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+
+        window.parent.miFuncionEnPaginaPrincipal(nombre);
     };
 
 

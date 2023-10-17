@@ -60,8 +60,11 @@ namespace scorpioweb.Controllers
                 {
                     ListaCoordinadores.Add(u.ToString());
                 }
+                if (await userManager.IsInRoleAsync(u, "Ejecucion"))
+                {
+                    ListaCoordinadores.Add(u.ToString());
+                }
             }
-
             return ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com"))).ToList();
         }
         public async Task<List<string>> ObtenerListaCoordinadoresRN()

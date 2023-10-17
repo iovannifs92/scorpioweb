@@ -42,9 +42,16 @@
 @if (ViewBag.WarningsUser > 0)
 {
     <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
-        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.sigueinteSuperviosor</h3>
     </a>
-}  
+   
+}
+@if (User.Identity.Name.EndsWith("@dgepms.com"))
+{
+    <a href="/Personas/Create" class="link-archivo">
+    <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
+    </a>
+}
 <div class="card-group" style="padding-top:2%">
   
     @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
@@ -189,6 +196,19 @@
                 </h4>
                 <p class="card-text">
                     Ubicación de expedientes que se encuentran en la base
+                </p>
+            </div>
+        </div>
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a href="http://10.6.60.216/scorpio/">
+                        <img class="card-img-top" src="~/images/statistics.png" alt="Card image cap" style="padding-bottom:5%;" />
+                        Estadisticas MC y SCP
+                    </a>
+                </h4>
+                <p class="card-text">
+                    Estadísticas generales del área de MC Y SCP
                 </p>
             </div>
         </div>

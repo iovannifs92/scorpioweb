@@ -31,7 +31,7 @@
 
 
 <div class="card-group" style="padding-top:2%">
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.Identity.Name == "jazmin.flores@dgepms.com")
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.Identity.Name == "jazmin.flores@dgepms.com")
     {
         <div class="col-md-12 col-md-12">
             <h2>Ejecución de Penas  </h2>
@@ -54,7 +54,7 @@
             </div>
         </div>
     }
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.Identity.Name == "jazmin.flores@dgepms.com")
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.Identity.Name == "jazmin.flores@dgepms.com")
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
@@ -67,7 +67,7 @@
             </div>
         </div>
     }
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Operativo") || User.Identity.Name == "jazmin.flores@dgepms.com")
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Operativo") || User.Identity.Name == "jazmin.flores@dgepms.com")
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">

@@ -454,7 +454,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EpCausaPenal(int id, [Bind("Causapenal,Delito,Clasificaciondelito,JuzgadoOrigen,FechaSentencia,Multa,Reparacion,Firmeza,Penaanos,Penameses,Penadias,Apartir,EjecucionIdEjecucion")] Epcausapenal epcausapenal)
+        public async Task<IActionResult> EpCausaPenal(int id, [Bind("Causapenal,CpAcumuladas,TieneceAcumuladas,Delito,Clasificaciondelito,JuzgadoOrigen,FechaSentencia,Multa,Reparacion,Firmeza,Penaanos,Penameses,Penadias,Apartir,EjecucionIdEjecucion")] Epcausapenal epcausapenal)
         {
             if (ModelState.IsValid)
             {
@@ -471,6 +471,8 @@ namespace scorpioweb.Controllers
                 epcausapenal.Penameses = epcausapenal.Penameses;
                 epcausapenal.Penadias = epcausapenal.Penadias;
                 epcausapenal.Apartir = epcausapenal.Apartir;
+                epcausapenal.CpAcumuladas = epcausapenal.CpAcumuladas;
+                epcausapenal.TieneceAcumuladas = epcausapenal.TieneceAcumuladas;
                 epcausapenal.EstadodeCausa = 0;
                 epcausapenal.EjecucionIdEjecucion = epcausapenal.EjecucionIdEjecucion;
 
@@ -527,7 +529,7 @@ namespace scorpioweb.Controllers
             ViewBag.Liatajuzgado = Liatajuzgado;
 
             #endregion
-
+         
 
             return View();
         }
@@ -535,7 +537,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEPCausaPenal(int id, [Bind("Idepcausapenal, Causapenal, Delito, Clasificaciondelito, JuzgadoOrigen, FechaSentencia, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias, Apartir, EjecucionIdEjecucion")] Epcausapenal epcausapenal)
+        public async Task<IActionResult> EditEPCausaPenal(int id, [Bind("Idepcausapenal, Causapenal, TieneceAcumuladas, CpAcumuladas, Delito, Clasificaciondelito, JuzgadoOrigen, FechaSentencia, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias, Apartir, EjecucionIdEjecucion")] Epcausapenal epcausapenal)
         {
 
 
@@ -560,6 +562,8 @@ namespace scorpioweb.Controllers
                     epcausapenal.Penameses = epcausapenal.Penameses;
                     epcausapenal.Penadias = epcausapenal.Penadias;
                     epcausapenal.Apartir = epcausapenal.Apartir;
+                    epcausapenal.TieneceAcumuladas = epcausapenal.TieneceAcumuladas;
+                    epcausapenal.CpAcumuladas = epcausapenal.CpAcumuladas;
                     epcausapenal.EjecucionIdEjecucion = epcausapenal.EjecucionIdEjecucion;
 
                     _context.Update(epcausapenal);
@@ -607,7 +611,7 @@ namespace scorpioweb.Controllers
 
             if (tieneinstancia.Any() || tieneTermino.Any())
             {
-                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar });
             }
             else
             {
@@ -618,7 +622,7 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
                 _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"),  borrar });
             }
 
         }

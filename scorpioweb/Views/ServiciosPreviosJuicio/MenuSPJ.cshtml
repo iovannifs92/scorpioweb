@@ -9,39 +9,35 @@
 
 <div class="card-group" style="padding-top:2%">
     <div style="text-align:center" class="col-md-12 col-md-12">
-        <h2>Servicios Previos Al juicio</h2>
+        <h2>Servicios Previos al Juicio</h2>
     </div>
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
-    {
-        <div class="col-sm-6 col-md-6 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="ServiciosPreviosJuicio" asp-action="Index">
-                        <img class="card-img-top" src="~/images/verdict.png" alt="Servicios Previos" style="padding-bottom:5%;">
-                        Servicios Previos al Juicio
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Entrevistas de Servicios previos al Juicio 
-                </p>
-            </div>
+    <div class="col-sm-6 col-md-6 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="ServiciosPreviosJuicio" asp-action="Index">
+                    <img class="card-img-top" src="~/images/testing.png" alt="Servicios Previos" style="padding-bottom:5%;" />
+                    Servicios Previos al Juicio
+                </a>
+            </h4>
+            <p class="card-text">
+                Entrevistas de Servicios previos al Juicio 
+            </p>
         </div>
+    </div>
 
-        <div class="col-sm-6 col-md-6 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="ServiciosPreviosJuicio" asp-action="FichaTecnica">
-                        <img class="card-img-bottom" src="~/images/folderDowload.png" alt="Ficha Tecnica" style="padding-bottom:5%;">
-                        Descargar Ficha Tecnica<span class="badge" style="background-color:red"></span>
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Ficha Tecnica
-                </p>
-            </div>
+    <div class="col-sm-6 col-md-6 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a href="http://10.6.60.216/aernuevo/">
+                    <img class="card-img-bottom" src="~/images/aer.png" alt="Ficha Tecnica" style="padding-bottom:5%;">
+                    Calculo Evaluacion Riesgo Adolecentes</span>
+                </a>
+            </h4>
+            <p class="card-text">
+                Ficha Tecnica
+            </p>
         </div>
-        
-    }
+    </div>
 </div>
 
 

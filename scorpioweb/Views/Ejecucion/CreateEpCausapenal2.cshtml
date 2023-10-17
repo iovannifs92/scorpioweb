@@ -4,7 +4,7 @@
     Layout = null;
 }
 
-<script>
+<script type="text/javascript">
   $(document).ready(function () {
         function autocomplete(inp, arr) {
                 var currentFocus;
@@ -87,7 +87,15 @@
         var catalogojuez = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
         autocomplete(document.getElementById("JuzgadoOrigen"), catalogojuez);
     });
-
+    $('#TieneceAcumuladas').change(function () {
+        var dat = $(this).children("option:selected").val();
+        if (dat == "SI") {
+            $("#CpAcumuladas").css("display", "block");
+        }
+        else {
+            $("#CpAcumuladas").css("display", "none");
+        }
+    });
 
 </script>
 
@@ -99,6 +107,20 @@
                 <label class="control-label">Causa Penal</label>
                 <input required asp-for="Causapenal" class="form-control" />
                 <span asp-validation-for="Causapenal" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">
+                    ¿Cuenta con Causas Penales Acumuladas?
+                </label>
+                <select asp-for="TieneceAcumuladas" class="form-control" id="TieneceAcumuladas">
+                    <option value="NO">No</option>
+                    <option value="SI">Si</option>
+                </select>
+            </div>
+            <div class="form-group col-md-12" id="CpAcumuladas" name="CpAcumuladas" >
+                <label class="control-label">Causas Penales Acumuladas</label>
+                <input asp-for="CpAcumuladas" class="form-control" />
+                <span asp-validation-for="CpAcumuladas" class="text-danger"></span>
             </div>
             <div class="form-group autocomplete">
                 <label class="control-label">Delito</label>
@@ -175,3 +197,6 @@
     </div>
 </div>
 
+<script>
+    alert(1);
+</script>

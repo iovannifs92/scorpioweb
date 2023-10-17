@@ -337,9 +337,14 @@ namespace scorpioweb.Controllers
         #endregion
 
 
+        public async Task<IActionResult> MenuSPJ()
+        {
+            return View();
+        }
 
-        #region -Index-
-        public async Task<IActionResult> Index(
+
+            #region -Index-
+            public async Task<IActionResult> Index(
             string sortOrder,
             string currentFilter,
             string searchString,

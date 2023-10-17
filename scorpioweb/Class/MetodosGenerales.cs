@@ -10,12 +10,14 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace scorpioweb.Class
 {
     public class MetodosGenerales
     {
-
         public string normaliza(string normalizar)
         {
             if (!String.IsNullOrEmpty(normalizar))
@@ -368,6 +370,7 @@ namespace scorpioweb.Class
             }
 
             string resultado = string.Join(" ", palabrasModificadas);
+
             return resultado;
         }
 

@@ -7,6 +7,8 @@ namespace scorpioweb.Models
     {
         public int Idepcausapenal { get; set; }
         public string Causapenal { get; set; }
+        public string TieneceAcumuladas { get; set; }
+        public string CpAcumuladas { get; set; }
         public string Delito { get; set; }
         public string Clasificaciondelito { get; set; }
         public string JuzgadoOrigen { get; set; }

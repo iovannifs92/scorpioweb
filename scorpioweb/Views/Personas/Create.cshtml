@@ -923,83 +923,83 @@
     });
     //#endregion
 
-    //function myFunction(materno) {
-    //    var nombre = document.getElementById("nombre").value;
-    //    var paterno = document.getElementById("paterno").value;
-    //    var materno = materno;
+    function myFunction(materno) {
+        var nombre = document.getElementById("nombre").value;
+        var paterno = document.getElementById("paterno").value;
+        var materno = materno;
 
-    //    $.ajax({
-    //        type: "POST",
-    //        dataType: "json",
-    //        url: "/Personas/testSimilitud",
-    //        traditional: true,
-    //        data: {
-    //                nombre, paterno, materno,
-    //        },
-    //        success: function (response) {
-    //            $('#tblSimilitud').html('');
-    //            var row = '';
-    //            if (response.lista.length == 0) {
-    //                //alert("No se encontro ningún registro que coincida")
-    //                return;
-    //            }
-    //            for (let i = 0; i < response.lista.length; i++) {
-    //                row = row
-    //                    + "<tr>"
-    //                    + "<td>" + response.lista[i].id + "</td>"
-    //                    + "<td>" + response.lista[i].nombre + "</td>"
-    //                    + "<td>" + response.lista[i].tabla + "</td>"
-    //                    + "<td>" + response.lista[i].dato + "</td>"
-    //                row = row + "<td>";
-    //                if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true && response.lista[i].tabla == "MCYSCP") {
-    //                row = row
-    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personas/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
-    //                }
-    //                else{
-    //                    row = row
-    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='mostrarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
-    //                }
-    //                row = row + "</td>";       
-    //                row = row + "</tr>";
-    //            };
-    //            if (row != '') {
-    //                $('#tblSimilitud').append(row);
-    //            }
-    //            $("#similitudModal").modal();
-    //        },
-    //        error: function (response) {
-    //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-    //            console.log(response);
-    //        }
-    //    });
-    //}
-    //PARA SACAR VALORES DE UNA LISTA EN C#
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Personas/testSimilitud",
+            traditional: true,
+            data: {
+                    nombre, paterno, materno,
+            },
+            success: function (response) {
+                $('#tblSimilitud').html('');
+                var row = '';
+                if (response.lista.length == 0) {
+                    //alert("No se encontro ningún registro que coincida")
+                    return;
+                }
+                for (let i = 0; i < response.lista.length; i++) {
+                    row = row
+                        + "<tr>"
+                        + "<td>" + response.lista[i].id + "</td>"
+                        + "<td>" + response.lista[i].nombre + "</td>"
+                        + "<td>" + response.lista[i].tabla + "</td>"
+                        + "<td>" + response.lista[i].dato + "</td>"
+                    row = row + "<td>";
+                    if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true && response.lista[i].tabla == "MCYSCP") {
+                    row = row
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personas/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+                    }
+                    else{
+                        row = row
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='mostrarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+                    }
+                    row = row + "</td>";       
+                    row = row + "</tr>";
+                };
+                if (row != '') {
+                    $('#tblSimilitud').append(row);
+                }
+                $("#similitudModal").modal();
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                console.log(response);
+            }
+        });
+    }
+   // PARA SACAR VALORES DE UNA LISTA EN C#
 
-    //function mostrarDatos(id,tabla) {
-    //    var nombre = document.getElementById("nombre").value;
-    //    var paterno = document.getElementById("paterno").value;
-    //    var materno = materno;
-    //    $.ajax({
-    //        url: "/Personas/Savcardatos",
-    //        type: "POST",
-    //        dataType: "json",
-    //        cache: false,
-    //        traditional: true,
-    //        data: {
-    //            id, tabla,
-    //        },
-    //        success: function(response){
-    //            document.getElementById("nombre").value = response.lista[0].nombre;
-    //            document.getElementById("paterno").value = response.lista[0].paterno;
-    //            document.getElementById("materno").value = response.lista[0].materno;
-    //            document.getElementById("edad").value = response.lista[0].edad;
-    //            document.getElementById("tabla").value = tabla;
-    //            document.getElementById("idselecionado").value = id;
+    function mostrarDatos(id,tabla) {
+        var nombre = document.getElementById("nombre").value;
+        var paterno = document.getElementById("paterno").value;
+        var materno = materno;
+        $.ajax({
+            url: "/Personas/Savcardatos",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                id, tabla,
+            },
+            success: function(response){
+                document.getElementById("nombre").value = response.lista[0].nombre;
+                document.getElementById("paterno").value = response.lista[0].paterno;
+                document.getElementById("materno").value = response.lista[0].materno;
+                document.getElementById("edad").value = response.lista[0].edad;
+                document.getElementById("tabla").value = tabla;
+                document.getElementById("idselecionado").value = id;
 
-    //        }
-    //    });
-    //    $("#similitudModal").modal("hide");
-    //};
+            }
+        });
+        $("#similitudModal").modal("hide");
+    };
 
     function SacaCURS() {
         var nombre = document.getElementById("nombre").value;
@@ -1025,35 +1025,35 @@
     };
 
 
-    function myFunction(materno) {
-        var nombre = document.getElementById("nombre").value;
-        var paterno = document.getElementById("paterno").value;
-        var materno = materno;
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Personas/testSimilitud",
-            traditional: true,
-            data: {
-                nombre, paterno, materno,
-            },
-            success: function (response) {
-                if (response.success == true) {
-                    var msg = confirm("Se encontro una persona " + response.porcentaje + "% parecido, ¿Desea ir a la entrevista?");
-                    if (msg == true) {
-                        window.location.href = response.responseText;
-                    } else {
-                    }
-                } else {
-                }
+    //function myFunction(materno) {
+    //    var nombre = document.getElementById("nombre").value;
+    //    var paterno = document.getElementById("paterno").value;
+    //    var materno = materno;
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        url: "/Personas/testSimilitud",
+    //        traditional: true,
+    //        data: {
+    //            nombre, paterno, materno,
+    //        },
+    //        success: function (response) {
+    //            if (response.success == true) {
+    //                var msg = confirm("Se encontro una persona " + response.porcentaje + "% parecido, ¿Desea ir a la entrevista?");
+    //                if (msg == true) {
+    //                    window.location.href = response.responseText;
+    //                } else {
+    //                }
+    //            } else {
+    //            }
 
-            },
-            error: function (response) {
-                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                console.log(response);
-            }
-        });
-    }
+    //        },
+    //        error: function (response) {
+    //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+    //            console.log(response);
+    //        }
+    //    });
+    //}
 
 
 
@@ -1064,10 +1064,16 @@
 }
 
 @ViewBag.Javascript
-<h2>Entrevista de encuadre</h2>
+<h2 style="margin-top:20px">Entrevista de encuadre</h2>
 <br />
-<label id="datosLabel"></label>
+@if(ViewBag.UserCL == false  && User.Identity.Name.EndsWith("@dgepms.com"))
+{
+  <a href="/Personas/Create" class="link-archivo">
+    <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
+  </a>  
+}
 
+<label id="datosLabel"></label>
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data" id="forma">

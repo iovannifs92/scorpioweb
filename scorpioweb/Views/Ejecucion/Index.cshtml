@@ -179,7 +179,7 @@
     </tbody>
 </table>
 
-@if (User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Masteradmin") || User.IsInRole("Ejecucion"))
+@if (User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Masteradmin") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion"))
 {
         <a onclick="showModal('@Url.Action("Create", "Ejecucion", Context.Request.Scheme)','Carpeta de Ejecución',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
 }

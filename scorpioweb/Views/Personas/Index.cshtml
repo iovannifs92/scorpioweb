@@ -2202,9 +2202,20 @@
 <h2>Supervisados MC y SCP</h2>
 @if (ViewBag.WarningsUser > 0)
 {
-    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
-        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
-    </a>
+    <div class="col-md-6">
+        <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+            <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+        </a>
+    </div>
+    
+}
+@if (User.Identity.Name.EndsWith("@dgepms.com"))
+{
+    <div class="col-md-6">
+        <a href="/Personas/Create" class="link-archivo">
+                <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
+        </a>
+    </div>
 }
 <p>
     <a asp-action="Create">
