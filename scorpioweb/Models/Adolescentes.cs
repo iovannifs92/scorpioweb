@@ -44,6 +44,8 @@ namespace scorpioweb.Models
         public string Estudia { get; set; }
         public string InstitucionEst { get; set; }
         public string DireccionEst { get; set; }
+        public string HorarioEscuela { get; set; }
+        public string TelefonoEscuela { get; set; }
         public string UltimoGradoEstudios { get; set; }
         public string Trabaja { get; set; }
         public string Ocupacion { get; set; }
@@ -108,5 +110,8 @@ namespace scorpioweb.Models
         public string Verificacion8 { get; set; }
         public string Observaciones8 { get; set; }
         public string Folio { get; set; }
+        public string Usuario { get; set; }
+        public string QuienVerifica { get; set; }
+        public string ParentescoVefifica { get; set; }
     }
 }

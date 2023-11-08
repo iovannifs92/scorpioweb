@@ -221,122 +221,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
-        #region -testSimilitud-
-        public JsonResult testSimilitud(string nombre, string paterno, string materno)
-        {
-            bool simi = false;
-            var nombreCompleto = mg.normaliza(paterno) + " " + mg.normaliza(materno) + " " + mg.normaliza(nombre);
-
-            var query = (from p in _context.Persona
-                         join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
-                         from d in domicilioJoin.DefaultIfEmpty()
-                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into supervisionJoin
-                         from s in supervisionJoin.DefaultIfEmpty()
-                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
-                         from cp in causapenalJoin.DefaultIfEmpty()
-                         group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.Curp } into g
-                         select new
-                         {
-                             id = g.Key.IdPersona,
-                             nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
-                             NomTabla = "MCYSCP",
-                             datoExtra = $"CURP: {g.Key.Curp} Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g)};\n"
-                         }).Union
-                         (from a in _context.Archivo
-                          join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
-                          group new { ar.CausaPenal, ar.CarpetaEjecucion } by new { a.IdArchivo, a.Paterno, a.Materno, a.Nombre } into g
-                          select new
-                          {
-                              id = g.Key.IdArchivo,
-                              nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
-                              NomTabla = "Archivo",
-                              datoExtra = $"Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n"
-                          }).Union
-                            (from e in _context.Ejecucion
-                             join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcausapenalJoin
-                             from epcp in epcausapenalJoin.DefaultIfEmpty()
-                             group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce } into g
-                             select new
-                             {
-                                 id = g.Key.IdEjecucion,
-                                 nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
-                                 NomTabla = "Ejecucion",
-                                 datoExtra = $"Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g)};\n"
-                             }).Union
-                                    (from sp in _context.Serviciospreviosjuicio
-                                     select new
-                                     {
-                                         id = sp.IdserviciosPreviosJuicio,
-                                         nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
-                                         NomTabla = "Servicios Previos",
-                                         datoExtra = $"Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n"
-                                     }).Union
-                                    (from pp in _context.Prisionespreventivas
-                                     select new
-                                     {
-                                         id = pp.Idprisionespreventivas,
-                                         nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
-                                         NomTabla = "Prision Preventiva",
-                                         datoExtra = $"Causa penal: {pp.CausaPenal};\n"
-                                     }).Union
-                                    (from pp in _context.Oficialia
-                                     select new
-                                     {
-                                         id = pp.IdOficialia,
-                                         nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
-                                         NomTabla = "Oficialia",
-                                         datoExtra = $"Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n"
-                                     });
-
-            var result = query.ToList();
-
-            int idpersona = 0;
-            string nomCom = "";
-            string tabla = "";
-            string datoextra = "";
-            var cosine = new Cosine(2);
-            double r = 0;
-            var list = new List<Tuple<string, string, int, string, double>>();
-
-            List<string> listaNombre = new List<string>();
-
-
-            foreach (var q in query)
-            {
-                r = cosine.Similarity(q.nomcom, nombreCompleto);
-                if (r >= 0.87)
-                {
-                    nomCom = q.nomcom;
-                    idpersona = q.id;
-                    tabla = q.NomTabla;
-                    datoextra = q.datoExtra;
-                    list.Add(new Tuple<string, string, int, string, double>(nomCom, tabla, idpersona, datoextra, r));
-                    simi = true;
-                }
-            }
-            List<object> elementos = new List<object>();
-            if (list.Count() != 0)
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var item = list[i];
-                    double porcentaje = item.Item5 * 100;
-                    int porcentajeFloor = (int)Math.Floor(porcentaje);
-                    string nombreP = item.Item1;
-                    string tablaP = item.Item2;
-                    int idPersona = item.Item3;
-                    string datoextraP = item.Item4;
-
-                    elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP });
-                }
-                return Json(new { success = true, lista = elementos });
-            }
-            return Json(new { success = false, lista = elementos });
-        }
-        #endregion
-
-
         public async Task<IActionResult> MenuSPJ()
         {
             return View();
@@ -491,7 +375,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,ClaveUnicaScorpio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones, FechaNacimiento, LnMunicipio, LnEstado")] Serviciospreviosjuicio serviciospreviosjuicio)
+        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,ClaveUnicaScorpio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones, FechaNacimiento, LnMunicipio, LnEstado")] Serviciospreviosjuicio serviciospreviosjuicio, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string CURSUsada)
         {
             int idAER = 0;
             serviciospreviosjuicio.Nombre = mg.normaliza(serviciospreviosjuicio.Nombre);
@@ -554,6 +438,35 @@ namespace scorpioweb.Controllers
                 await evidencia.CopyToAsync(stream);
                 stream.Close();
             }
+            #endregion
+
+            #region -Expediente Unico-
+            if (idselecionado != null && tabla != null)
+            {
+                string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("ServiciosPrevios"));
+                string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                string var_tablaCurs = "ClaveUnicaScorpio";
+                int var_idnuevo = idAER;
+                int var_idSelect = Int32.Parse(idselecionado);
+                string var_curs = CURS;
+                if (CURSUsada != null)
+                {
+                    var_curs = CURSUsada;
+                }
+                serviciospreviosjuicio.ClaveUnicaScorpio = CURS;
+
+                string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                _context.Database.ExecuteSqlCommand(query);
+            }
+            else
+            {
+                expedienteunico.ClaveUnicaScorpio = serviciospreviosjuicio.ClaveUnicaScorpio;
+                expedienteunico.Personacl = idAER.ToString();
+                _context.Add(expedienteunico);
+            }
+
+
+
             #endregion
 
             _context.Add(serviciospreviosjuicio);
@@ -659,7 +572,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(IFormFile evidencia, [Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio, ClaveUnicaScorpio ,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,serviciospreviosjuicioIdserviciospreviosjuicio,FechaCaptura,Usuario,, FechaNacimiento, LnMunicipio, LnEstado")] Serviciospreviosjuicio serviciospreviosjuicio)
+        public async Task<IActionResult> Edit(IFormFile evidencia, [Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio, ClaveUnicaScorpio ,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,serviciospreviosjuicioIdserviciospreviosjuicio,FechaCaptura,Usuario,ClaveUnicaScorpio, FechaNacimiento, LnMunicipio, LnEstado")] Serviciospreviosjuicio serviciospreviosjuicio)
         {
 
             if (ModelState.IsValid)
@@ -697,6 +610,7 @@ namespace scorpioweb.Controllers
                     serviciospreviosjuicio.LnEstado = serviciospreviosjuicio.LnEstado;
                     serviciospreviosjuicio.LnMunicipio = serviciospreviosjuicio.LnMunicipio;
                     serviciospreviosjuicio.FechaNacimiento = serviciospreviosjuicio.FechaNacimiento;
+                    serviciospreviosjuicio.ClaveUnicaScorpio = serviciospreviosjuicio.ClaveUnicaScorpio;
 
 
                     if (!(serviciospreviosjuicio.Paterno == null && serviciospreviosjuicio.Materno == null && serviciospreviosjuicio.FechaNacimiento == null && serviciospreviosjuicio.Sexo == null && serviciospreviosjuicio.LnEstado == null && serviciospreviosjuicio.Nombre == null))

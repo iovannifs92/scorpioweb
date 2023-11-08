@@ -140,24 +140,61 @@
     });
 
 
+    //function borrarEPCP(id, idep) {
+    //    var usuario = '@ViewBag.user';
+    //    var cambiar = confirm("¿Desea borrar el registro?");
+    //    if (cambiar == true) {
+    //        $.ajax({
+    //            type: "POST",
+    //            dataType: "json",
+    //            url: "/Ejecucion/antesdeleteCP",
+    //            traditional: true,
+    //            data: {
+    //                id: id,
+    //                idep: idep,
+    //            },
+    //            success: function (response) {
+    //                if (response.borrar == false) {
+    //                    alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
+    //                } else {
+    //                    alert("Datos Borrados con exito");
+    //                }
+    //            },
+    //            error: function (response) {
+    //                alert(response.error);
+    //                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+    //            }
+    //        });
+    //    }
+    //    return innerFunc;
+    //};
+
+
     function borrarEPCP(id, idep) {
+        var idsuper = id;
         var usuario = '@ViewBag.user';
         var cambiar = confirm("¿Desea borrar el registro?");
         if (cambiar == true) {
+            let razon = prompt("Porque desea borrar el registro?", "");
+            if (razon == null || razon == "") {
+                return;
+                text = "NA";
+            } else {
+                text = razon;
+            }
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 url: "/Ejecucion/antesdeleteCP",
                 traditional: true,
                 data: {
-                    id: id,
-                    idep: idep,
+                    datoeje: [id, idep, razon, usuario],
                 },
                 success: function (response) {
                     if (response.borrar == false) {
-                        alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
+                        alert(response.mensaje)
                     } else {
-                        alert("Datos Borrados con exito");
+                        alert("Registro borrado con exito!!")
                     }
                 },
                 error: function (response) {
@@ -168,6 +205,7 @@
         }
         return innerFunc;
     };
+
 
     function CrearInstancia(id, i) {
         var idCausapenal = document.getElementById("Causapenal" + i).value;
@@ -275,11 +313,11 @@
             <input style="display:none" readonly name="Idepcausapenal" id="Idepcausapenal" value="@item.epcausapenalVM.Idepcausapenal" class="form-control" />
             <input style="display:none" readonly name="EjecucionIdEjecucion" id="EjecucionIdEjecucion" value="@item.epcausapenalVM.EjecucionIdEjecucion" class="form-control" />
 
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
                 <input name="Causapenal" id="Causapenal" value="@item.epcausapenalVM.Causapenal" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">
                     ¿Cuanta con Causas Penales Acumuladas?
                 </label>
@@ -290,7 +328,7 @@
                 </select>
                
             </div>
-            <div class="form-group" id="DivCpAcumuladas" name="DivCpAcumuladas">
+            <div class="form-group col-md-12" id="DivCpAcumuladas" name="DivCpAcumuladas">
                 <label class="control-label">Causas Penales Acumuladas </label>
                 <input class="form-control" id="CpAcumuladas" name="CpAcumuladas" value="@item.epcausapenalVM.CpAcumuladas"/>
             </div>
@@ -325,8 +363,16 @@
                 <input name="Reparacion" id="Reparacion" value="@item.epcausapenalVM.Reparacion" class="form-control" />
             </div>
             <div class="form-group col-md-12">
-                <label class="control-label">Firmeza</label>
-                <input name="Firmeza" id="Firmeza" value="@item.epcausapenalVM.Firmeza" class="form-control" type="date"/>
+                <label class="control-label">Firmezaaa</label>
+                <input name="Firmeza" id="Firmeza" asp-for="@item.epcausapenalVM.Firmeza" class="form-control" type="date" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Revocacion</label>
+                <select name="Revocacion" class="form-control" id="Revocacion">
+                    <option selected="@item.epcausapenalVM.Revocacion">@item.epcausapenalVM.Revocacion</option>
+                    <option value="NO">No</option>
+                    <option value="SI">Si</option>
+                </select>
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Pena en Años</label>
@@ -344,19 +390,29 @@
                 <label class="control-label">Apartir</label>
                 <input required id="Apartir" name="Apartir" class="form-control" asp-for="@item.epcausapenalVM.Apartir" type="date" />
             </div>
-            <div class="col-md-6">
-                <button type="submit" class="btn btn-primary btn-block" style="margin-bottom:10px">
-                    <i class="fa fa-save"></i>
-                    Guardar
-                </button>
-            </div>
+            
             @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
             {
                 <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-bottom:10px">
+                        <i class="fa fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+                <div class="col-md-6">
                     <button onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal, @item.epcausapenalVM.EjecucionIdEjecucion)" class="btn btn-danger btn-block" style="margin-bottom:10px">
-                    <i class="fa fa-trash"></i> Borrar
-                </button>
-            </div>
+                        <i class="fa fa-trash"></i> Borrar
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-bottom:10px">
+                        <i class="fa fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
             }
             <div class="card card-body">
                 <button type="button" class="btn btn-success fa fa-bank btn-block" data-toggle="modal" style="margin-bottom:10px" data-target="#exampleModalCenter@(i)" onclick="cambioTitle(@(i))">
@@ -437,7 +493,7 @@
                         <input name="Formaconclucion@(i)" id="Formaconclucion@(i)" class="form-control" />
                     </div>
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="evidencia@(i)" name="evidencia@(i)" lang="es">
+                        <input required type="file" class="custom-file-input" id="evidencia@(i)" name="evidencia@(i)" lang="es">
                     </div>
                 </div>
                 <div class="modal-footer">

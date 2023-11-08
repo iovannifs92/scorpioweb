@@ -13,6 +13,7 @@ using scorpioweb.Models;
 using F23.StringSimilarity;
 using Newtonsoft.Json.Linq;
 using scorpioweb.Class;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace scorpioweb.Controllers
 {
@@ -712,8 +713,106 @@ namespace scorpioweb.Controllers
             return _context.Causapenal.Any(e => e.IdCausaPenal == id);
         }
 
+        //#region -EditCausas-
+        //public async Task<IActionResult> EditCausapenal(int? id)
+        //{
+        //    var causapenal = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == id);
+        //    if (causapenal == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    List<Causapenal> listaCP = new List<Causapenal>();
+        //    List<Causapenal> CPVM = _context.Causapenal.ToList();
+        //    listaCP = (
+        //        from CPTable in CPVM
+        //        select CPTable
+        //        ).ToList();
+        //    ViewBag.cp = listaCP;
+        //    ViewBag.directorio = _context.Directoriojueces.Select(Directoriojueces => Directoriojueces.Area).ToList();
+        //    ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+
+        //    ViewBag.listaCnpp = listaSiNo;
+        //    ViewBag.idCnpp = BuscaId(listaSiNo, causapenal.Cnpp);
+
+        //    ViewBag.listaCambio = listaSiNo;
+        //    ViewBag.idCambio = BuscaId(listaSiNo, causapenal.Cambio);
+
+        //    #region Distrito
+        //    List<SelectListItem> ListaDistrito;
+        //    ListaDistrito = new List<SelectListItem>
+        //    {
+        //      new SelectListItem{ Text="I", Value="I"},
+        //      new SelectListItem{ Text="II", Value="II"},
+        //      new SelectListItem{ Text="III", Value="III"},
+        //      new SelectListItem{ Text="IV", Value="IV"},
+        //      new SelectListItem{ Text="V", Value="V"},
+        //      new SelectListItem{ Text="VI", Value="VI"},
+        //      new SelectListItem{ Text="VII", Value="VII"},
+        //      new SelectListItem{ Text="VIII", Value="VIII"},
+        //      new SelectListItem{ Text="IX", Value="IX"},
+        //      new SelectListItem{ Text="X", Value="X"},
+        //      new SelectListItem{ Text="XI", Value="XI"},
+        //      new SelectListItem{ Text="XII", Value="XII"},
+        //      new SelectListItem{ Text="XIII", Value="XIII"},
+        //      new SelectListItem{ Text="XIV", Value="XIV"},
+        //      new SelectListItem{ Text="XV", Value="XV"},
+        //      new SelectListItem{ Text="XVI", Value="XVI"},
+
+        //    };
+        //    ViewBag.listaDistrito = ListaDistrito;
+        //    ViewBag.idDistrito = BuscaId(ListaDistrito, causapenal.Distrito);
+        //    #endregion
+
+        //    return View(causapenal);
+        //}
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditCausapenal(int id, [Bind("IdCausaPenal, Cnpp, Cambio, Distrito, CausaPenal, Usuario, Fechacreacion")] Causapenal causapenal, string cp, string Cnpp)
+        //{
+        //    if (id != causapenal.IdCausaPenal)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            causapenal.Cnpp = mg.normaliza(causapenal.Cnpp);
+        //            causapenal.Juez = mg.normaliza(causapenal.Juez);
+        //            causapenal.Cambio = mg.normaliza(causapenal.Cambio);
+        //            causapenal.Distrito = mg.normaliza(causapenal.Distrito);
+        //            causapenal.CausaPenal = mg.normaliza(causapenal.CausaPenal);
+        //            causapenal.Usuario = mg.normaliza(causapenal.Usuario);
+        //            causapenal.Fechacreacion = causapenal.Fechacreacion;
+        //            var oldCausapenal = await _context.Causapenal.FindAsync(causapenal.IdCausaPenal);
+        //            _context.Entry(oldCausapenal).CurrentValues.SetValues(oldCausapenal);
+        //            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+        //            _context.Update(cambiodeobligaciones);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!CausapenalExists(causapenal.IdCausaPenal))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id }) });
+
+        //        return RedirectToAction("EditCausapenal/" + causapenal.IdCausaPenal, "Causaspenales");
+        //    }
+        //    return View(causapenal);
+        //}
+        //#endregion
         #region -EditCausas-
-        public async Task<IActionResult> EditCausas(int? id)
+        public async Task<IActionResult> EditCausapenal(int? id)
         {
             var IdCausaPenal = id;
             if (IdCausaPenal == null)
@@ -808,7 +907,7 @@ namespace scorpioweb.Controllers
 
                                      };
 
-            
+
             if ((ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>).Count() == 0)
             {
                 ViewBag.tieneDelitos = false;
@@ -823,7 +922,7 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditCausas(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB, Historialcp historialcp, string cnpp, string juez, string distrito, string cambio, string cp)
+        public async Task<IActionResult> EditCausapenal(int id, [Bind("IdCausaPenal,Cnpp,Juez,Cambio,Distrito,CausaPenal")] Causapenal causa, Delito delitoDB, Historialcp historialcp, string cnpp, string juez, string distrito, string cambio, string cp)
         {
             string currentUser = User.Identity.Name;
 
@@ -846,15 +945,15 @@ namespace scorpioweb.Controllers
             var cosine = new Cosine(2);
             double r = 0;
             var simi = false;
-            foreach (var q in queryhcp)
-            {
-                r = cosine.Similarity(q, queryhcpN);
-                if (r == 1)
-                {
-                    simi = true;
-                    break;
-                }
-            }
+            //foreach (var q in queryhcp)
+            //{
+            //    r = cosine.Similarity(q, queryhcpN);
+            //    if (r == 1)
+            //    {
+            //        simi = true;
+            //        break;
+            //    }
+            //}
 
             if (ModelState.IsValid)
             {
@@ -894,8 +993,7 @@ namespace scorpioweb.Controllers
                     }
                     #endregion
                     var oldCausa = await _context.Causapenal.FindAsync(id);
-                    if (simi != true)
-                    {
+             
                         if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
                         {
                             historialcp.Cnpp = oldCausa.Cnpp;
@@ -907,10 +1005,10 @@ namespace scorpioweb.Controllers
                             historialcp.CausapenalIdCausapenal = id;
 
                             _context.Add(historialcp);
-                            await _context.SaveChangesAsync();
+                            await _context.SaveChangesAsync(null, 1);
                         }
-                    }
                     
+
 
                     _context.Entry(oldCausa).CurrentValues.SetValues(causa);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);

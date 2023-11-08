@@ -1,60 +1,139 @@
-﻿@model scorpioweb.Models.Ejecucion
+﻿@model scorpioweb.Models.EjecucionCP
 
 @{
     ViewData["Title"] = "Details";
+    
 }
 
-<h2>Details</h2>
+<style>
+* {
+  box-sizing: border-box;
+}
 
-<div>
-    <h4>Ejecucion</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Paterno)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Paterno)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Materno)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Materno)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Yo)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Yo)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Ce)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Ce)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Usuario)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Usuario)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.LugarInternamiento)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.LugarInternamiento)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.IdEjecucion">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 400px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+@foreach (var item in ViewData["joinTableEjecucion"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
+{
+    <h1>Estado actual @item.ejecucionVM.EstadoActual</h1>
+    <div class="row col-md-12">
+        <div class="" style="background-color:#fff;">
+            <h2>Carpeta de Ejecucion : @item.ejecucionVM.Ce</h2>
+            <p><b>Nombre Completo:</b> @item.ejecucionVM.Paterno @item.ejecucionVM.Materno @item.ejecucionVM.Nombre </p>
+            <p><b>Y/O:</b> @item.ejecucionVM.Yo  </p>
+            <p><b>Lugar de Internamiento:</b> @item.ejecucionVM.LugarInternamiento  </p>
+            <p><b>Juzgado:</b> @item.ejecucionVM.Juzgado  </p>
+            <p><b>CE Acumuladas:</b> @item.ejecucionVM.CeAcumuladas  </p>
+        </div>
+    </div>
+    break;
+}
+
+@foreach (var item in ViewData["joinTableEjecucion"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
+{
+    @if(item.epcausapenalVM is null)
+    {
+        <div class="column" style="background-color:#bbb;">
+            <h2>Causa penal</h2>
+            <p>Sin Datos...</p>
+        </div>
+        <div class="column" style="background-color:#ccc;">
+            <h2>Datos de Causas</h2>
+            <p>Sin Datos...</p>
+        </div>
+    }
+    else
+    {
+        <div class="column" style="background-color:#bbb;">
+            <h2>Causa penal @item.epcausapenalVM.Causapenal</h2>
+            <p><b>Causas penales Acumuladas:</b> @item.epcausapenalVM.CpAcumuladas</p>
+            <p><b>Delito:</b> @item.epcausapenalVM.Delito</p>
+            <p><b>Clasificacion:</b> @item.epcausapenalVM.Clasificaciondelito</p>
+            <p><b>Juzgado de Origen:</b> @item.epcausapenalVM.JuzgadoOrigen</p>
+            <p><b>Fecha de Sentencia:</b> @item.epcausapenalVM.FechaSentencia</p>
+            <p><b>Multa:</b> @item.epcausapenalVM.Multa <b>-------Reparacion:</b> @item.epcausapenalVM.Reparacion</p>
+            <p><b>Firmeza:</b> @item.epcausapenalVM.Firmeza</p>
+            <p><b>Pena: </b>
+            @item.epcausapenalVM.Penaanos Años,
+            @item.epcausapenalVM.Penameses Meses,
+            @item.epcausapenalVM.Penadias Dias
+            </p>
+            <p><b>Apartir:</b> @item.epcausapenalVM.Apartir</p>
+        </div>
+        if (item.epinstanciaVM is null && item.epterminoVM is null)
+        {
+            <div class="column" style="background-color:#ccc;">
+                <h2>Datos de Causa</h2>
+                <p>Sin Datos...</p>
+            </div>
+        }
+        else if (item.epterminoVM is null)
+        {
+            <div class="column" style="background-color:#ccc;">
+                <h2>Datos de Causa @item.epcausapenalVM.Causapenal</h2>
+                <h3>Instancia</h3>
+                <p><b>Fecha:</b>@item.epinstanciaVM.Fecha</p>
+                <p><b>Multa:</b>@item.epinstanciaVM.Multa</p>
+                <p><b>Reparacion:</b>@item.epinstanciaVM.Reparacion</p>
+                <p><b>Firmeza:</b>@item.epinstanciaVM.Firmeza</p>
+                <p>
+                    <b>Pena: </b>
+                    @item.epinstanciaVM.Penaanos Años,
+                    @item.epinstanciaVM.Penameses Meses,
+                    @item.epinstanciaVM.Penadias Dias
+                </p>
+            </div>
+        }
+        else if (item.epinstanciaVM is null)
+        {
+            <div class="column" style="background-color:#ccc;">
+                <h2>Datos de Causa @item.epcausapenalVM.Causapenal</h2>
+                <h3>Termino</h3>
+                <p><b>Fecha: </b>@item.epterminoVM.Fecha</p>
+                <p><b>Forma de Conclucion: </b>@item.epterminoVM.Formaconclucion</p>
+                <a style="font-size: x-large;" href="~/EvidenciaTermino/@Html.DisplayFor(modelItem => item.epterminoVM.Urldocumento)" target="_blank">
+                    <i class="fa fa-paperclip fa-9x"></i>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="column" style="background-color:#ccc;">
+                <h2>Datos de Causa @item.epcausapenalVM.Causapenal</h2>
+                <h3>Instancia</h3>
+                <p><b>Fecha:</b>@item.epinstanciaVM.Fecha</p>
+                <p><b>Multa:</b>@item.epinstanciaVM.Multa</p>
+                <p><b>Reparacion:</b>@item.epinstanciaVM.Reparacion</p>
+                <p><b>Firmeza:</b>@item.epinstanciaVM.Firmeza</p>
+                <p>
+                    <b>Pena: </b>
+                    @item.epinstanciaVM.Penaanos Años,
+                    @item.epinstanciaVM.Penameses Meses,
+                    @item.epinstanciaVM.Penadias Dias
+                </p>
+                <h3>Termino</h3>
+                <p><b>Fecha: </b>@item.epterminoVM.Fecha</p>
+                <p><b>Forma de Conclucion: </b>@item.epterminoVM.Formaconclucion</p>
+                <a style="font-size: x-large;" href="~/EvidenciaTermino/@Html.DisplayFor(modelItem => item.epterminoVM.Urldocumento)" target="_blank">
+                    <i class="fa fa-paperclip fa-9x"></i>
+                </a>
+            </div>
+        }
+    }
+
+}
+<div style="margin-top:30px">
+    <a asp-action="Index">Regresar a lista </a>
 </div>

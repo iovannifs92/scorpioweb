@@ -1,5 +1,4 @@
-﻿@*@model IEnumerable<scorpioweb.Models.CausaDelitoViewModel>
-
+﻿
 @{
     ViewData["Title"] = "Editar Causa Penal";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -201,7 +200,7 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "/Causaspenales/EditCausas",
+                url: "/Causaspenales/EditCausapenal",
                 traditional: true,
                 data: {
                     id, juez, Cambio, distrito, cp, Cnpp,
@@ -270,7 +269,7 @@
         <div class="form-group col-md-4">
             <form asp-action="EditCausas">
                 <div class="form-group">
-                    <input name="IdCausaPenal" id="IdCausaPenal" value="@item.causaPenalVM.IdCausaPenal" style="display:none" readonly/>
+                    <input name="IdCausaPenal" id="IdCausaPenal" value="@item.causaPenalVM.IdCausaPenal" class="form-control" style="display:none " readonly />
                 </div>
                 <div class="form-group col-md-12 autocomplete" style="padding-top:15px;">
                     <label class="control-label">Juez</label>
@@ -430,9 +429,7 @@
 
 
 <div id="dialog" title="Historial de causas penales ">
-    @{
-        int i = 0;
-    }
+    @{int i = 0;}
     @foreach (var item in ViewData["joinTableshistory"] as IEnumerable<scorpioweb.Models.CausaDelitoViewModel>)
     {
         i++;
@@ -463,15 +460,14 @@
                     @Html.Label((string)@item.historialcp.Causapenal)
                 </div>
                 <div class="form-group col-md-12" style="font-size: 10px; ">
-                    <button type="button" id="btnUseCp" name="btnUseCp" class="btn btn-success fa fa-exchange" onclick="myFunction('@item.historialcp.Juez','@item.historialcp.Cnpp','@item.historialcp.Cambio','@item.historialcp.Distrito','@item.historialcp.Causapenal')">
+                    <button type="button" id="btnUseCp" name="btnUseCp" class="btn btn-success"  onclick="myFunction('@item.historialcp.Juez','@item.historialcp.Cnpp','@item.historialcp.Cambio','@item.historialcp.Distrito','@item.historialcp.Causapenal')">
                         <i class=""></i> Usar Causa
                     </button>
                     <button type="button" id="btnBorrarCp" name="btnBorrarCp" class="btn btn-danger fa fa-trash" onclick="Borrar('@item.historialcp.IdHistorialcp')">
                         <i class=""></i> Borrar
                     </button>
                 </div>
-
             </div>
         </div>
     }
-</div>*@
+</div>

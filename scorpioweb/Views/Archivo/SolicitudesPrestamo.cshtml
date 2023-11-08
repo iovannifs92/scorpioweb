@@ -22,7 +22,23 @@
             }
         })
     }
-
+    function Prestar(archivoIdArchivo, usuario) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Archivo/Prestar",
+            traditional: true,
+            data: {
+                archivoIdArchivo, usuario
+            },
+            success: function (response) {
+                location.reload();
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
 
 
     function solicitud(id, estado) {
@@ -94,7 +110,7 @@
                         @Html.DisplayFor(modelItem => item.QuienSolicita)
                     </td>
                     <td>
-                        <a onclick="showModal('@Url.Action("CreatePrestamo", "Archivo", new {id=@item.IdArchivo}, Context.Request.Scheme)','Prestamo de Archivo',null )" class="btn btn-success  fa fa-file-pdf-o" style="margin-top:10px" title="Prestar"> Prestar</a>
+                        <a onclick="Prestar(@item.IdArchivo,'@item.QuienSolicita')" class="btn btn-success fa fa-file-pdf-o" style="margin-top:10px" title="Prestar"> Prestar</a>
                         <a onclick="solicitud(@item.IdArchivo, false,'')" class="btn btn-warning fa fa-file-pdf-o" style="margin-top:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
                     </td>
                 </tr>

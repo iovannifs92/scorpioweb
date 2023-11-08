@@ -104,6 +104,93 @@
 
         }
     });
+
+
+    function myFunction(materno) {
+        var nombre = document.getElementById("nombreee").value;
+        var paterno = document.getElementById("paternoee").value;
+        var materno = materno;
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Api/testSimilitud",
+            traditional: true,
+            data: {
+                nombre, paterno, materno,
+            },
+            success: function (response) {
+                $('#tblSimilitud').html('');
+                var row = '';
+                if (response.lista.length == 0) {
+                    //alert("No se encontro ningún registro que coincida")
+                    return;
+                }
+                for (let i = 0; i < response.lista.length; i++) {
+                    row = row
+                        + "<tr>"
+                        + "<td>" + response.lista[i].id + "</td>"
+                        + "<td>" + response.lista[i].nombre + "</td>"
+                        + "<td>" + response.lista[i].tabla + "</td>"
+                        + "<td>" + response.lista[i].dato + "</td>"
+                    row = row + "<td>";
+                    if (response.lista[i].tabla == "ServiciosPrevios") {
+                        row = row
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='buscarDatos(\"" + response.lista[i].nombre + "\")' class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+                    }
+                    else {
+                        row = row
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='usarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+                    }
+                    row = row + "</td>";
+                    row = row + "</tr>";
+                };
+                if (row != '') {
+                    $('#tblSimilitud').append(row);
+                }
+                $("#similitudModal").modal();
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                console.log(response);
+            }
+        });
+    };
+
+
+    function buscarDatos(nombre) {
+        //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor",
+        //ESTE USA  window.parent.miFuncionEnPaginaPrincipal(nombre) PARA MANDARLO A LA PAGUINA PRINCIPAL;
+        window.parent.miFuncionEnPaginaPrincipal(nombre);
+    };
+
+
+    function usarDatos(id, tabla) {
+        document.getElementById("tabla").value = tabla;
+        document.getElementById("idselecionado").value = id;
+        $.ajax({
+            url: "/Api/Savcardatos",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                id, tabla,
+            },
+            success: function (response) {
+                //document.getElementById("nombre").value = response.lista[0].nombre;
+                //document.getElementById("paterno").value = response.lista[0].paterno;
+                //document.getElementById("materno").value = response.lista[0].materno;
+                document.getElementById("CURS").value = response.lista[0].claveUnicaScorpio;
+            }
+        });
+        $("#similitudModal").modal("hide");
+    };
+
+    function btnclose() {
+        $('#similitudModal').modal('toggle');
+    }
+
 </script>
 
 
@@ -111,7 +198,9 @@
     <div class="col-md-12">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdEjecucion" />
+            <input readonly type="hidden" asp-for="IdEjecucion" />
+            <input readonly type="hidden" asp-for="FechaCarga" class="form-control" />
+            <input type="hidden" readonly asp-for="ClaveUnicaScorpio" />
             <div class="form-group">
                 <label asp-for="Paterno" class="control-label"></label>
                 <input asp-for="Paterno" class="form-control" />
@@ -163,16 +252,22 @@
                 <input required asp-for="CeAcumuladas" class="form-control" id="CeAcumuladas" name="CeAcumuladas" />
                 <span asp-validation-for="CeAcumuladas" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Usuario" class="control-label"></label>
-                <select class="form-control" name="Usuario" id="Usuario" 
-                        asp-items="@(new SelectList(@ViewBag.ListaEjecucion, ViewBag.ListaEjecucionEdit))">
-                </select>
-            </div>
             <div class="form-group autocomplete">
                 <label asp-for="LugarInternamiento" class="control-label"></label>
                 <input asp-for="LugarInternamiento" class="form-control" />
                 <span asp-validation-for="LugarInternamiento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Estado Actual</label>
+                <select class="form-control" name="EstadoActual" id="EstadoActual"
+                        asp-items="@(new SelectList(ViewBag.EstadoActual, @ViewBag.EstadoActualEdit))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Encargago</label>
+                <select class="form-control" name="Encargado" id="Encargado"
+                        asp-items="@(new SelectList(ViewBag.ListaEjecucion, @ViewBag.ListaEjecucionEdit))">
+                </select>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary fa fa-save"> Guardar</button>   

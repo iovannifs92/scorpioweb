@@ -340,15 +340,15 @@ namespace scorpioweb.Class
 
         Dictionary<string, string> remplazoBases = new Dictionary<string, string>
         {
-            { "MCYSCP", "ideumcyscp" },
-            { "Archivo", "ideuarchivo" },
-            { "Ejecucion", "ideuejecucion" },
-            { "ServiciosPrevios", "ideuserviciospreviosjuicio" },
-            { "PrisionPreventiva", "ideuprisionespreventivas" },
-            { "Vinculacion", "ideuvinculacion" },
-            { "Oficialia", "ideuoficialia" },
-            { "LibertadCondicionada", "ideulibertadcondicionada" },
-            { "Adolecentes", "ideuadolecentes" }
+            { "MCYSCP", "persona" },
+            { "Archivo", "archivo" },
+            { "Ejecucion", "ejecucion" },
+            { "ServiciosPrevios", "serviciospreviosjuicio" },
+            { "PrisionPreventiva", "prisionespreventivas" },
+            { "Vinculacion", "vinculacion" },
+            { "Oficialia", "oficialia" },
+            { "LibertadCondicionada", "personacl" },
+            { "Adolecentes", "adolecentess" }
         };
 
         public String cambioAbase(string palabra)

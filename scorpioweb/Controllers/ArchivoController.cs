@@ -186,7 +186,7 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Create Persona Archivo-
-        public JsonResult Createadd(int id, string nombre, string ap, string am, string yo, string condicion, Archivo archivo)
+        public JsonResult Createadd(int id, string nombre, string ap, string am, string yo, string condicion, Archivo archivo, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS)
         {
             bool create = false;
             var idExiste = (from a in _context.Archivo
@@ -194,7 +194,7 @@ namespace scorpioweb.Models
                             select a.IdArchivo);
 
             if (id != 0 && !idExiste.Any())
-            {
+            { 
                 try
                 {
                     create = true;
@@ -204,6 +204,25 @@ namespace scorpioweb.Models
                     archivo.Nombre = mg.removeSpaces(mg.normaliza(nombre));
                     archivo.Yo = mg.removeSpaces(mg.normaliza(yo));
                     archivo.CondicionEspecial = mg.removeSpaces(mg.normaliza(condicion));
+
+
+                    #region -Expediente Unico-
+                    if (idselecionado != null && tabla != null)
+                    {
+                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
+                        string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                        string var_tablaCurs = "ClaveUnicaScorpio";
+                        int var_idnuevo = id;
+                        int var_idSelect = Int32.Parse(idselecionado);
+                        string var_curs = CURS;
+                        archivo.ClaveUnicaScorpio = CURS;
+
+                        string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                        _context.Database.ExecuteSqlCommand(query);
+                    }
+                    #endregion
+
+
 
                     _context.Add(archivo);
                     _context.SaveChanges();
@@ -240,7 +259,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Yo,Urldocumento, CondicionEspecial, ExpedienteUnicoIdExpedienteUnico, Solucitud, QuienSolicita")] Archivo archivo)
+        public async Task<IActionResult> Edit(int id, [Bind("IdArchivo,Paterno,Materno,Nombre,Yo,Urldocumento, CondicionEspecial, ExpedienteUnicoIdExpedienteUnico, Solucitud, QuienSolicita,ClaveUnicaScorpio")] Archivo archivo)
         {
             if (id != archivo.IdArchivo)
             {
@@ -256,6 +275,7 @@ namespace scorpioweb.Models
                 archivo.CondicionEspecial = mg.removeSpaces(mg.normaliza(archivo.CondicionEspecial));
                 archivo.Solucitud = archivo.Solucitud;
                 archivo.QuienSolicita = archivo.QuienSolicita;
+                archivo.ClaveUnicaScorpio = archivo.ClaveUnicaScorpio;
                 try
                 {
                     _context.Update(archivo);
@@ -674,7 +694,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePrestamo([Bind("Entrega,Recibe,Area,FechaInicial,FechaRenovacion,Estatus,Renovaciones,Urlvale,ArcchivoIdArchivo")] Archivoprestamo archivoprestamo, int archivoIdArchivo, int optradio, Archivoprestamodigital archivoprestamodigital)
+        public async Task<IActionResult> CreatePrestamo([Bind("Entrega,Recibe,Area,FechaInicial,FechaRenovacion,Estatus,Renovaciones,Urlvale,ArcchivoIdArchivo")] Archivoprestamo archivoprestamo, int archivoIdArchivo, string usuario,  int optradio, Archivoprestamodigital archivoprestamodigital)
         {
             if (ModelState.IsValid)
             {
@@ -1407,6 +1427,31 @@ namespace scorpioweb.Models
 
         }
 
+
+        public JsonResult Prestar(Archivoprestamodigital archivoprestamodigital, int archivoIdArchivo, string usuario)
+        {
+            var sacarnomArea = (from a in _context.Areas
+                                where a.UserName == usuario
+                                select a.Area).First();
+
+            archivoprestamodigital.ArchivoIdArchivo = archivoIdArchivo;
+            archivoprestamodigital.Usuario = mg.normaliza(usuario);
+            archivoprestamodigital.UsuarioOtorgaPermiso = mg.normaliza(User.Identity.Name);
+            archivoprestamodigital.FechaPrestamo = DateTime.Now;
+            archivoprestamodigital.FechaCierre = DateTime.Now.AddDays(7);
+            archivoprestamodigital.EstadoPrestamo = 1;
+            var query = (from a in _context.Archivo
+                         where a.IdArchivo == archivoIdArchivo
+                         select a).FirstOrDefault();
+            query.Solucitud = 0;
+            query.QuienSolicita = "";
+            _context.SaveChanges();
+
+            _context.Add(archivoprestamodigital);
+            _context.SaveChanges();
+
+            return Json(new { success = true, responseText = Url.Action("SolicitudPrestamo", "Archivo"), });
+        }
 
 
         #endregion 

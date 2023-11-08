@@ -1028,18 +1028,14 @@ namespace scorpioweb.Controllers
         }
 
         #region -Update Persona supervision-
-        public async Task<JsonResult>  UpdatePersonasupervision(Supervision supervision, Planeacionestrategica planeacionestrategica, string superid, string personaid,string cpid, string campo, string planeacionid, string estados, DateTime fecha, DateTime intermedio)
+        public async Task<JsonResult>  UpdatePersonasupervision(Supervision supervision, Planeacionestrategica planeacionestrategica, string superid,string personaid,string causapenalid ,  string campo, string planeacionid, string estados, DateTime fecha, DateTime intermedio)
         {
 
             #region -Actualizar fechas en supervision-
             if (superid != null)
             {
-                supervision.Termino = fecha;
-                supervision.Inicio = fecha;
                 var camps = campo;
                 supervision.IdSupervision = Int32.Parse(superid);
-                supervision.PersonaIdPersona = Int32.Parse(personaid);
-                supervision.CausaPenalIdCausaPenal = Int32.Parse(cpid);
                 supervision.EstadoSupervision = mg.normaliza(estados);
             }
 
@@ -1051,6 +1047,7 @@ namespace scorpioweb.Controllers
             {
                 if (campo == "Inicio")
                 {
+                    supervision.Inicio = fecha;
                     var query = (from s in _context.Supervision
                                  where s.IdSupervision == supervision.IdSupervision
                                  select s).FirstOrDefault();
@@ -1059,6 +1056,7 @@ namespace scorpioweb.Controllers
                 }
                 if (campo == "Termino")
                 {
+                    supervision.Termino = fecha;
                     var query = (from s in _context.Supervision
                                  where s.IdSupervision == supervision.IdSupervision
                                  select s).FirstOrDefault();
@@ -1095,6 +1093,14 @@ namespace scorpioweb.Controllers
                           select s);
             if (empty2.Any())
             {
+
+                supervision.PersonaIdPersona = Int32.Parse(personaid);
+                supervision.CausaPenalIdCausaPenal = Int32.Parse(causapenalid);
+                var supervisions = await _context.Supervision.SingleOrDefaultAsync(m => m.IdSupervision == supervision.IdSupervision);
+                supervision.Inicio = supervisions.Inicio;
+                supervision.Termino = supervisions.Termino;
+                supervision.Tta = supervisions.Tta;
+
                 var query = (from s in _context.Supervision
                              where s.IdSupervision == supervision.IdSupervision
                              select s).FirstOrDefault();

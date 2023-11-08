@@ -82,10 +82,23 @@
         }
         return innerFunc;
     };
+
+    function miFuncionEnPaginaPrincipal(nombre) {
+        // ACCIONES LLEGAN DESDE LA VISTA PARCIAL, LLEGA UN VALOR "nombre" SE COLOCA EN EL BUSCADOR Y SE SIMULA UN CLICK
+        //alert("Función activada desde la vista parcial" + nombre);
+        document.getElementById("SearchString").value = nombre;
+        var boton = document.getElementById("buscar");
+        boton.click();
+        document.getElementById("SearchString").value = "";
+    };
 </script>
 
 <h2>Ejecución de penas</h2>
-
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion")){
+    <a type="button" class="btn btn-info" id="edicion" title="Menu Procesos" href="/Ejecucion/Reacignacion" style="margin-bottom:10px;">
+        <i>Carpetas en Turno</i> 
+    </a>
+}
 <form asp-action="Index" method="get">
     <div>
         <div class="col-md-6">
@@ -98,7 +111,7 @@
             <i class="fa fa-search"></i>
             Buscar
         </button> 
-        <a style="margin-left:10px" asp-action="Index">Regresar al listado completo</a>
+        <a style="margin-left:10px" asp-action="Index">Regresar al listado completo</a> || <a asp-action="Index" asp-route-sortOrder="@ViewData["JuzgadoSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Ver solo mi Juzgado</a>
     </div>
 </form>
 
@@ -109,27 +122,24 @@
                 Id
             </th>
             <th>
-                Paterno
+                Carpeta de Ejecución
             </th>
             <th>
-                Materno
-            </th>
-            <th>
-                Nombre
+                Nombre Completo
             </th>
             <th>
                 Yo
             </th>
             <th>
-                Carpeta de Ejecución
-            </th>
-            <th>
-                Usuario
+                Encargado
             </th>
             <th>
                 Lugar de Internamiento
+            </th>  
+            <th>
+                Estado Actual
             </th>
-            <th></th>
+            <th></th><th></th>
         </tr>
     </thead>
     <tbody>
@@ -140,39 +150,43 @@
                     @Html.DisplayFor(modelItem => item.ejecucionVM.IdEjecucion)
                     </td>
                     <td>
-                    @Html.DisplayFor(modelItem => item.ejecucionVM.Paterno)
+                        @Html.DisplayFor(modelItem => item.ejecucionVM.Ce)
                     </td>
                     <td>
-                    @Html.DisplayFor(modelItem => item.ejecucionVM.Materno)
-                    </td>
-                    <td>
-                    @Html.DisplayFor(modelItem => item.ejecucionVM.Nombre)
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Paterno) @Html.DisplayFor(modelItem => item.ejecucionVM.Materno) @Html.DisplayFor(modelItem => item.ejecucionVM.Nombre)
                     </td>
                     <td>
                     @Html.DisplayFor(modelItem => item.ejecucionVM.Yo)
-                    </td>
                     <td>
-                    @Html.DisplayFor(modelItem => item.ejecucionVM.Ce)
-                    </td>
-                    <td>
-                    @Html.DisplayFor(modelItem => item.ejecucionVM.Usuario)
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.Encargado)
                     </td>
                     <td>
                     @Html.DisplayFor(modelItem => item.ejecucionVM.LugarInternamiento)
                     </td>
                     <td>
+                    @Html.DisplayFor(modelItem => item.ejecucionVM.EstadoActual)
+                    </td>
+                    <td>
+                        @if (ViewBag.J == item.ejecucionVM.Juzgado || User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                        {
                         <a onclick="showModal('@Url.Action("EpCausaPenal", "Ejecucion", new {id=@item.ejecucionVM.IdEjecucion}, Context.Request.Scheme)','Causa Penal',null )" class="btn btn-primary fa fa-folder" title="Agregar Causapenal" style="margin-bottom:10px;"> Causa Penal</a>
                         <a type="button" class="btn btn-info" id="edicion" title="Menu Procesos" href="/Ejecucion/MenuProcesos/@item.ejecucionVM.IdEjecucion" style="margin-bottom:10px;">
                             <i class="fa fa-cogs"></i> Procesos
                         </a>
                         <a onclick="showModal('@Url.Action("Edit", "Ejecucion", new {id=@item.ejecucionVM.IdEjecucion}, Context.Request.Scheme)','Editar',null )" class="btn btn-success fa fa-pencil" title="Editar" style="margin-bottom:10px;"> Editar</a>
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
-                    {
-                                <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarEjecucion(@item.ejecucionVM.IdEjecucion)" style="margin-bottom:10px;">
-                                    <i class="fa fa-trash"></i>
-                            </a>
-                    }
-
+                            @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                            {
+                            <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarEjecucion(@item.ejecucionVM.IdEjecucion)" style="margin-bottom:10px;">
+                                <i class="fa fa-trash"></i>
+                                </a>
+                            }
+                        }
+                       
+                    </td>
+                    <td>
+                        <a type="button" class="btn btn-info" id="edicion" title="Ver" href="/Ejecucion/Details/@item.ejecucionVM.IdEjecucion" style="margin-bottom:10px;">
+                            <i class="fa fa-eye"></i> Ver Carpeta de Ejecucion
+                        </a>
                     </td>
                 </tr>
         }

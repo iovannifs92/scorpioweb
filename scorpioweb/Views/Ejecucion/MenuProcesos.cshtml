@@ -1,4 +1,4 @@
-﻿@model IEnumerable<scorpioweb.Models.EjecucionAFAA>
+﻿@model IEnumerable<scorpioweb.Models.EjecucionCP>
 
 @{
     ViewData["Title"] = "Menu Procesos";
@@ -75,64 +75,36 @@
         })
     }
 
-    function DeleteInstancia(id) {
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Ejecucion/DeleteEpInstancia",
-                traditional: true,
-                data: {
-                    dato: id,
-                },
-                success: function (response) {
-                    if (response.borrar == true) {
-                        alert("El Registro ha sido borrado");
-                        location.reload();
-                    } else {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                    }
-                },
-                error: function (response) {
-                    alert(response.error);
-
-                }
-            });
-        } else {
-            return;
-        }
-        return;
-    };
 
     function DeleteInstancia(id) {
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Ejecucion/DeleteInstancia",
-                traditional: true,
-                data: {
-                    dato: id,
-                },
-                success: function (response) {
-                    if (response.borrar == true) {
-                        alert("El Registro ha sido borrado");
-                        location.reload();
-                    } else {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                    }
-                },
-                error: function (response) {
-                    alert(response.error);
-
-                }
-            });
-        } else {
+        var usuario = '@ViewBag.user';
+        let razon = prompt("Porque desea borrar el registro?", "");
+        if (razon == null || razon == "") {
             return;
+            text = "NA";
+        } else {
+            text = razon;
         }
-        return;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Ejecucion/DeleteEpInstancia",
+            traditional: true,
+            data: {
+                datoInicio: [id, razon, usuario],
+            },
+            success: function (response) {
+                if (response.borrar == true) {
+                    alert("El Registro ha sido borrado");
+                    location.reload();
+                } else {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+            }
+        });
     };
     function DeleteTermino(id) {
         var usuario = '@ViewBag.user';
@@ -175,7 +147,7 @@
         <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
     </a>
 }
-@foreach (var item in ViewData["joinTablesEjecucion"] as IEnumerable<scorpioweb.Models.EjecucionAFAA>)
+@foreach (var item in ViewData["joinTablesEjecucion"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
 {
     <div class="container-fluid">
         <div class="row">

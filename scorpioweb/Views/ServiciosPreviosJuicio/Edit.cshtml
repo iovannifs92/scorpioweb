@@ -147,9 +147,10 @@
     <div class="col-md-12">
         <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
-            <input type="hidden" asp-for="Usuario" />
-            <input type="hidden" asp-for="FechaCaptura" />
+            <input readonly type="hidden" asp-for="IdserviciosPreviosJuicio" />
+            <input readonly type="hidden" asp-for="Usuario" />
+            <input readonly type="hidden" asp-for="FechaCaptura" />
+            <input readonly type="hidden" asp-for="ClaveUnicaScorpio" />
             <div class="form-group">
                 <label asp-for="Nombre" class="control-label"></label>
                 <input required maxlength="100" asp-for="Nombre" class="form-control" />

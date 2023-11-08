@@ -207,7 +207,23 @@ namespace scorpioweb.Controllers
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
-            ViewBag.Recibe = ListaRecibe;
+            List<SelectListItem> ListaUsuariosOficialia = new List<SelectListItem>();
+            int i = 0;
+            i++;
+            var usersOficialia = userManager.Users.OrderBy(r => r.UserName);
+            foreach (var u in usersOficialia)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
+                {
+                    ListaUsuariosOficialia.Add(new SelectListItem
+                    {
+                        Text = u.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.Recibe = ListaUsuariosOficialia;
 
             List<string> coordinadores = await ObtenerListaCoordinadores();
             List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();

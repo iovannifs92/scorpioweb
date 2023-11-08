@@ -23,6 +23,9 @@ using Org.BouncyCastle.Crypto;
 using System.Globalization;
 using Microsoft.AspNetCore.Rewrite.Internal;
 using DocumentFormat.OpenXml.Wordprocessing;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2013.Word;
 
 namespace scorpioweb.Controllers
 {
@@ -40,6 +43,18 @@ namespace scorpioweb.Controllers
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
+        String BuscaId(List<SelectListItem> lista, String texto)
+        {
+            foreach (var item in lista)
+            {
+                if (mg.normaliza(item.Value) == mg.normaliza(texto))
+                {
+                    return item.Value;
+                }
+            }
+            return "";
+        }
+
         #endregion
 
 
@@ -52,21 +67,120 @@ namespace scorpioweb.Controllers
             this.userManager = userManager;
         }
 
+        #region -AsignaSupervision-
+
+        public async Task<IActionResult> Reacignacion(string searchString, string currentFilter,  int? pageNumber, string sortOrder)   
+        {
+            var usu = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && usu.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+            ViewData["CurrentSort"] = sortOrder;
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            int i = 0;
+
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "Ejecucion"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+
+            var filter = from e in _context.Ejecucion
+                         select e;
+
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                filter = filter.Where(acp => (acp.Paterno + " " + acp.Materno + " " + acp.Nombre).Contains(searchString.ToUpper()) ||
+                                             (acp.Nombre + " " + acp.Materno + " " + acp.Paterno).Contains(searchString.ToUpper()) ||
+                                             (acp.Materno + " " + acp.Paterno + " " + acp.Nombre).Contains(searchString.ToUpper()) ||
+                                             (acp.Yo).Contains(searchString.ToUpper()) ||
+                                             (acp.IdEjecucion.ToString()).Contains(searchString.ToUpper()) || 
+                                             (acp.Juzgado.ToString()).Contains(searchString.ToUpper()) ||
+                                             (acp.Ce.ToString()).Contains(searchString.ToUpper()));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(p => p.IdEjecucion);
+                    break;
+                default:
+                    filter = filter.OrderByDescending(p => p.IdEjecucion);
+                    break;
+            }
+            int pageSize = filter.Count();
+            return View(await PaginatedList<Ejecucion>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSupervisor(Ejecucion ejecucion)
+        {
+            int id = ejecucion.IdEjecucion;
+            string encargado = ejecucion.Encargado;
+
+            var personaUpdate = await _context.Ejecucion
+                .FirstOrDefaultAsync(p => p.IdEjecucion == id);
+
+            personaUpdate.Encargado = encargado;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EjecucionExists(ejecucion.IdEjecucion))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        #endregion
+
         #region -Index-
         public async Task<IActionResult> Index(
            string sortOrder,
            string currentFilter,
            string searchString,
-           string estadoSuper,
-           string figuraJudicial,
+           bool filtroJ,
            int? pageNumber
            )
-
         {
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["JuzgadoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "Juzgado_desc" : "";
             ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
 
             if (searchString != null)
@@ -85,6 +199,25 @@ namespace scorpioweb.Controllers
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+            ViewBag.flag = false;
+
+            //JUZGADO 1
+            if (ViewBag.User == "mitzy.robles@dgepms.com" || ViewBag.User == "leobardo.gonzalez@dgepms.com")
+            {
+                ViewBag.J = "JUZGADO 1";
+            }
+            //JUZGADO 1
+            if (ViewBag.User == "stephany.garcia@dgepms.com" || ViewBag.User == "ana.quinonez@dgepms.com")
+            {
+                ViewBag.J = "JUZGADO 2";
+            }
+            //JUZGADO 1
+            if (ViewBag.User == "isabel.almora@dgepms.com" || ViewBag.User == "alma.gladiola@dgepms.com")
+            {
+                ViewBag.J = "JUZGADO 3";
+            }
+      
+            
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
                                    where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
@@ -96,6 +229,17 @@ namespace scorpioweb.Controllers
             //List<Archivoprestamo> queryArchivoHistorial = (from a in _context.Archivoprestamo
             //                                               group a by a.ArcchivoIdArchivo into grp
             //                                               select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
+            //var filter = Enumerable.Empty<EjecucionCP>();  // Inicializa filter con una lista vacía de EjecucionCP
+
+            //if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion"))
+            //{
+            //    filter = from e in _context.Ejecucion
+            //               where e.Encargado == user.ToString()
+            //               select new EjecucionCP
+            //               {
+            //                   ejecucionVM = e
+            //               };
+            //}
 
             var filter = from e in _context.Ejecucion
                          select new EjecucionCP
@@ -103,11 +247,8 @@ namespace scorpioweb.Controllers
                              ejecucionVM = e
                          };
 
-
-
             ViewData["CurrentFilter"] = searchString;
-            ViewData["EstadoS"] = estadoSuper;
-            ViewData["FiguraJ"] = figuraJudicial;
+     
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -116,6 +257,7 @@ namespace scorpioweb.Controllers
                                              (acp.ejecucionVM.Materno + " " + acp.ejecucionVM.Paterno + " " + acp.ejecucionVM.Nombre).Contains(searchString.ToUpper()) ||
                                              (acp.ejecucionVM.Yo).Contains(searchString.ToUpper()) ||
                                              (acp.ejecucionVM.IdEjecucion.ToString()).Contains(searchString.ToUpper()) ||
+                                             (acp.ejecucionVM.Juzgado.ToString()).Contains(searchString.ToUpper()) ||
                                              (acp.ejecucionVM.Ce.ToString()).Contains(searchString.ToUpper()));
             }
 
@@ -124,8 +266,8 @@ namespace scorpioweb.Controllers
                 case "name_desc":
                     filter = filter.OrderByDescending(acp => acp.ejecucionVM.Paterno);
                     break;
-                case "causa_penal_desc":
-                    filter = filter.OrderByDescending(acp => acp.ejecucionVM.Materno);
+                case "Juzgado_desc":
+                    filter = filter.Where(p => p.ejecucionVM.Encargado == user.ToString());
                     break;
                 case "estado_cumplimiento_desc":
                     filter = filter.OrderByDescending(acp => acp.ejecucionVM.Nombre);
@@ -134,6 +276,7 @@ namespace scorpioweb.Controllers
             }
 
             filter = filter.OrderByDescending(spcp => spcp.ejecucionVM.IdEjecucion);
+
 
 
             int pageSize = 10;
@@ -151,12 +294,43 @@ namespace scorpioweb.Controllers
 
             var ejecucion = await _context.Ejecucion
                 .SingleOrDefaultAsync(m => m.IdEjecucion == id);
+
+           var hola = from ep in _context.Ejecucion
+                                               join epcp in _context.Epcausapenal on ep.IdEjecucion equals epcp.EjecucionIdEjecucion
+                                               join epi in _context.Epinstancia on epcp.Idepcausapenal equals epi.EpcausapenalIdepcausapenal
+                                               join ept in _context.Eptermino on epcp.Idepcausapenal equals ept.EpcausapenalIdepcausapenal
+                                               where ep.IdEjecucion == id
+                                               select new EjecucionCP
+                                               {
+                                                   ejecucionVM = ep,
+                                                   epcausapenalVM = epcp,
+                                                   epinstanciaVM = epi,
+                                                   epterminoVM = ept
+                                               };
+
+        ViewData["joinTableEjecucion"] = from e in _context.Ejecucion
+                                            join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcpGroup
+                                            from epcp in epcpGroup.DefaultIfEmpty()
+                                            join epi in _context.Epinstancia on epcp.Idepcausapenal equals epi.EpcausapenalIdepcausapenal into epiGroup
+                                            from epi in epiGroup.DefaultIfEmpty()
+                                            join ept in _context.Eptermino on epcp.Idepcausapenal equals ept.EpcausapenalIdepcausapenal into eptGroup
+                                            from ept in eptGroup.DefaultIfEmpty()
+                                            where e.IdEjecucion == id
+                                            select new EjecucionCP                                            {
+                                                ejecucionVM = e,
+                                                epcausapenalVM = epcp,
+                                                epinstanciaVM = epi,
+                                                epterminoVM = ept
+                                            };
+
+
+
             if (ejecucion == null)
             {
                 return NotFound();
             }
 
-            return View(ejecucion);
+            return View();
         }
         #region -Create Ejecucion-
         // GET: Ejecucion/Create
@@ -174,8 +348,16 @@ namespace scorpioweb.Controllers
             Liatajuzgado.Add("JUZGADO 2");
             Liatajuzgado.Add("JUZGADO 3");
             Liatajuzgado.Add("JUZGADO 4");
+            Liatajuzgado.Add("TURNO");
 
             ViewBag.Liatajuzgado = Liatajuzgado;
+
+
+            List<string> EstadoActual = new List<string>();
+            EstadoActual.Add("NA");
+            EstadoActual.Add("ACTIVO");
+            EstadoActual.Add("CONCLUIDO");
+            ViewBag.EstadoActual = EstadoActual;
 
             return View();
         }
@@ -185,7 +367,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Juzgado,TieneceAcumuladas,CeAcumuladas,Usuario,LugarInternamiento")] Ejecucion ejecucion)
+        public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Juzgado,TieneceAcumuladas,CeAcumuladas,Usuario,LugarInternamiento,EstadoActual,Encargado,FechaCarga")] Ejecucion ejecucion, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS)
         {
             if (ModelState.IsValid)
             {
@@ -199,6 +381,45 @@ namespace scorpioweb.Controllers
                 ejecucion.CeAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.CeAcumuladas));
                 ejecucion.Usuario = mg.removeSpaces(mg.normaliza(ejecucion.Usuario));
                 ejecucion.LugarInternamiento = mg.removeSpaces(mg.normaliza(ejecucion.LugarInternamiento));
+                ejecucion.EstadoActual = mg.removeSpaces(mg.normaliza(ejecucion.EstadoActual));
+                ejecucion.FechaCarga = DateTime.Now;
+                if(ejecucion.Juzgado == "JUZGADO 1")
+                {
+                    ejecucion.Encargado = "mitzy.robles@dgepms.com";
+                }
+                else if(ejecucion.Juzgado == "JUZGADO 2")
+                {
+                    ejecucion.Encargado = "stephany.garcia@dgepms.com";
+                }
+                else if(ejecucion.Juzgado == "JUZGADO 3")
+                {
+                    ejecucion.Encargado = "isabel.almora@dgepms.com";
+                }
+                else
+                {
+                    ejecucion.Encargado = "uriel.ortega@dgepms.com";
+                }
+                int
+
+                idE = ((from table in _context.Ejecucion
+                          select table.IdEjecucion).Max()) + 1;
+
+
+
+                #region -Expediente Unico-
+                if (idselecionado != null && tabla != null)
+                {
+                    string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
+                    string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                    string var_tablaCurs = "ClaveUnicaScorpio";
+                    int var_idnuevo = idE;
+                    int var_idSelect = Int32.Parse(idselecionado);
+                    string var_curs = CURS;
+                    ejecucion.ClaveUnicaScorpio = CURS;
+                    string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                    _context.Database.ExecuteSqlCommand(query);
+                }
+                #endregion
 
                 _context.Add(ejecucion);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -234,7 +455,7 @@ namespace scorpioweb.Controllers
 
             var tagged = ListaUserEjecucion.Select((item, i) => new { Item = item, Index = (int?)i });
             var index = (from pair in tagged
-                         where pair.Item == ejecucion.Usuario.ToLower()
+                         where pair.Item == ejecucion.Encargado.ToLower()
                          select pair.Item).FirstOrDefault();
 
             ViewBag.ListaEjecucion = ListaUserEjecucion.Where(r => ListaUserEjecucion.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
@@ -247,7 +468,7 @@ namespace scorpioweb.Controllers
             LiataJzgado.Add("JUZGADO 2");
             LiataJzgado.Add("JUZGADO 3");
             LiataJzgado.Add("JUZGADO 4");
-
+            LiataJzgado.Add("TURNO");
 
             ViewBag.LiataJuzgado = LiataJzgado;
 
@@ -259,6 +480,43 @@ namespace scorpioweb.Controllers
             ViewBag.LiataJuzgadoEdit = selectturno;
 
             #endregion
+
+            #region -Eestado actual-
+            List<string> EstadoActual = new List<string>();
+            EstadoActual.Add("NA");
+            EstadoActual.Add("ACTIVO");
+            EstadoActual.Add("CONCLUIDO");
+            ViewBag.EstadoActual = EstadoActual;
+            var estado = EstadoActual.Select((item, i) => new { Item = item, Index = (int?)i });
+            var selectestado = (from pair in estado
+                                where pair.Item == ejecucion.EstadoActual
+                               select pair.Item).FirstOrDefault();
+            ViewBag.EstadoActualEdit = selectestado;
+            #endregion
+
+
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            int j = 0;
+
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "Ejecucion"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = j.ToString()
+                    });
+                    j++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+            var encargado = ListaUsuarios.Select((item, i) => new { Item = item, Index = (int?)i });
+            //var selectUsuario = (from pair in encargado
+            //                   where pair.Item == ejecucion.Encargado
+            //                   select pair.Item).FirstOrDefault();
+            //ViewBag.EstadoActualEdit = selectestado;
+
 
             if (id == null)
             {
@@ -280,7 +538,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,TieneceAcumuladas,CeAcumuladas,Usuario,Juzgado,LugarInternamiento")] Ejecucion ejecucion)
+        public async Task<IActionResult> Edit(int id, [Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,TieneceAcumuladas,CeAcumuladas,Usuario,Juzgado,LugarInternamiento,EstadoActual,Encargado,FechaCarga")] Ejecucion ejecucion)
         {
             if (id != ejecucion.IdEjecucion)
             {
@@ -301,6 +559,9 @@ namespace scorpioweb.Controllers
                     ejecucion.Juzgado = mg.removeSpaces(mg.normaliza(ejecucion.Juzgado));
                     ejecucion.Usuario = mg.removeSpaces(mg.normaliza(ejecucion.Usuario));
                     ejecucion.LugarInternamiento = mg.removeSpaces(mg.normaliza(ejecucion.LugarInternamiento));
+                    ejecucion.Encargado = mg.removeSpaces(mg.normaliza(ejecucion.Encargado));
+                    ejecucion.EstadoActual = mg.removeSpaces(mg.normaliza(ejecucion.EstadoActual));
+                    ejecucion.FechaCarga = ejecucion.FechaCarga;
 
                     var oldEjecucion = await _context.Ejecucion.FindAsync(id);
                     _context.Entry(oldEjecucion).CurrentValues.SetValues(ejecucion);
@@ -454,7 +715,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EpCausaPenal(int id, [Bind("Causapenal,CpAcumuladas,TieneceAcumuladas,Delito,Clasificaciondelito,JuzgadoOrigen,FechaSentencia,Multa,Reparacion,Firmeza,Penaanos,Penameses,Penadias,Apartir,EjecucionIdEjecucion")] Epcausapenal epcausapenal)
+        public async Task<IActionResult> EpCausaPenal(int id, [Bind("Causapenal,CpAcumuladas,TieneceAcumuladas,Delito,Clasificaciondelito,JuzgadoOrigen,FechaSentencia,Multa,Reparacion,Firmeza,Revocacion,Penaanos,Penameses,Penadias,Apartir,EjecucionIdEjecucion")] Epcausapenal epcausapenal)
         {
             if (ModelState.IsValid)
             {
@@ -467,6 +728,7 @@ namespace scorpioweb.Controllers
                 epcausapenal.Multa = mg.removeSpaces(mg.normaliza(epcausapenal.Multa));
                 epcausapenal.Reparacion = mg.removeSpaces(mg.normaliza(epcausapenal.Reparacion));
                 epcausapenal.Firmeza = epcausapenal.Firmeza;
+                epcausapenal.Revocacion = mg.removeSpaces(mg.normaliza(epcausapenal.Revocacion));
                 epcausapenal.Penaanos = epcausapenal.Penaanos;
                 epcausapenal.Penameses = epcausapenal.Penameses;
                 epcausapenal.Penadias = epcausapenal.Penadias;
@@ -537,10 +799,8 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEPCausaPenal(int id, [Bind("Idepcausapenal, Causapenal, TieneceAcumuladas, CpAcumuladas, Delito, Clasificaciondelito, JuzgadoOrigen, FechaSentencia, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias, Apartir, EjecucionIdEjecucion")] Epcausapenal epcausapenal)
+        public async Task<IActionResult> EditEPCausaPenal(int id, [Bind("Idepcausapenal, Causapenal, TieneceAcumuladas, CpAcumuladas, Delito, Clasificaciondelito, JuzgadoOrigen, FechaSentencia, Multa, Reparacion, Firmeza, Revocacion, Penaanos, Penameses, Penadias, Apartir, EjecucionIdEjecucion")] Epcausapenal epcausapenal)
         {
-
-
             if (id != epcausapenal.Idepcausapenal)
             {
                 return NotFound();
@@ -558,6 +818,7 @@ namespace scorpioweb.Controllers
                     epcausapenal.Multa = mg.removeSpaces(mg.normaliza(epcausapenal.Multa));
                     epcausapenal.Reparacion = mg.removeSpaces(mg.normaliza(epcausapenal.Reparacion));
                     epcausapenal.Firmeza = epcausapenal.Firmeza;
+                    epcausapenal.Revocacion = mg.removeSpaces(mg.normaliza(epcausapenal.Revocacion));
                     epcausapenal.Penaanos = epcausapenal.Penaanos;
                     epcausapenal.Penameses = epcausapenal.Penameses;
                     epcausapenal.Penadias = epcausapenal.Penadias;
@@ -588,86 +849,123 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Borrar Causa Penal-
-        public JsonResult antesdeleteCP(Epcausapenal epcausapenal, Causapenal causapenal, int id, int idep)
+        public JsonResult antesdeleteCP(Epcausapenal epcausapenal, Causapenal causapenal,Historialeliminacion historialeliminacion, string[] datoeje)
         {
             var borrar = false;
+            var id = Int32.Parse(datoeje[0]);
+            var idep = Int32.Parse(datoeje[1]);
+            var razon = mg.normaliza(datoeje[2]);
+            var user = mg.normaliza(datoeje[3]);
 
 
             var antesdel = from epcp in _context.Epcausapenal
                            where epcp.Idepcausapenal == idep
                            select epcp;
 
-
-            var tieneinstancia = from epi in _context.Epinstancia
-                                 join epcp in _context.Epcausapenal on epi.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
-                                 where epcp.Idepcausapenal == idep
-                                 select epi;
-
-            var tieneTermino = from ept in _context.Eptermino
-                               join epcp in _context.Epcausapenal on ept.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
-                               where epcp.Idepcausapenal == idep
-                               select ept;
-
-
-            if (tieneinstancia.Any() || tieneTermino.Any())
-            {
-                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar });
-            }
-            else
-            {
-                borrar = true;
-                var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
-                
-                _context.Epcausapenal.Remove(epcausapenalDel);
-                _context.SaveChanges();
-                _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"),  borrar });
-            }
-
-        }
-        public async Task<JsonResult> deleteEpCp(Epcausapenal epcausapenal, Historialeliminacion historialeliminacion, string[] datoEjecucion)
-        {
-            var borrar = false;
-            var id = Int32.Parse(datoEjecucion[0]);
-            var idep = Int32.Parse(datoEjecucion[1]);
-            var razon = mg.normaliza(datoEjecucion[2]);
-            var user = mg.normaliza(datoEjecucion[3]);
-
             var query = (from s in _context.Ejecucion
                          where s.IdEjecucion == idep
                          select s).FirstOrDefault();
 
+            var tieneinstancia = from epi in _context.Epinstancia
+                                 join epcp in _context.Epcausapenal on epi.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
+                                 where epcp.Idepcausapenal == id
+                                 select epi;
 
-            try
+            var tieneTermino = from ept in _context.Eptermino
+                               join epcp in _context.Epcausapenal on ept.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
+                               where epcp.Idepcausapenal == id
+                               select ept;
+            var mensaje = "Tiene instancia y termino, borrelos primero";
+            if (tieneinstancia.Any() && !tieneTermino.Any())
             {
-                borrar = true;
-                historialeliminacion.Id = id;
-                historialeliminacion.Descripcion = "IDEJECUCION= " + query.IdEjecucion + " NOMBRE= " + query.Paterno + " " + query.Materno + " " + query.Nombre + " CE= " + query.Ce;
-                historialeliminacion.Tipo = "EJECUCION";
-                historialeliminacion.Razon = mg.normaliza(razon);
-                historialeliminacion.Usuario = mg.normaliza(user);
-                historialeliminacion.Fecha = DateTime.Now;
-                historialeliminacion.Supervisor = mg.normaliza(query.Usuario);
-                _context.Add(historialeliminacion);
-                _context.SaveChanges();
-
-
-                var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
-                _context.Epcausapenal.Remove(epcausapenalDel);
-                _context.SaveChanges();
-                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-                return Json(new { success = true, responseText = Url.Action("Index", "Ejecucion"), borrar = borrar });
-
+                mensaje = "Tiene Instancia, borre primero la Instancia";
             }
-            catch (Exception ex)
+            if (!tieneinstancia.Any() && tieneTermino.Any())
             {
-                var error = ex;
-                borrar = false;
-                return Json(new { success = true, responseText = Url.Action("Index", "Ejecucion"), borrar = borrar });
+                mensaje = "Tiene Termino, borre primerio el Termino";
             }
+
+
+            if (tieneinstancia.Any() || tieneTermino.Any())
+            {
+                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar , mensaje});
+            }
+            else
+            {
+                try
+                {
+                    borrar = true;
+                    historialeliminacion.Id = id;
+                    historialeliminacion.Descripcion = "IDEJECUCION= " + query.IdEjecucion + " NOMBRE= " + query.Paterno + " " + query.Materno + " " + query.Nombre + " CE= " + query.Ce;
+                    historialeliminacion.Tipo = "EJECUCION";
+                    historialeliminacion.Razon = mg.normaliza(razon);
+                    historialeliminacion.Usuario = mg.normaliza(user);
+                    historialeliminacion.Fecha = DateTime.Now;
+                    historialeliminacion.Supervisor = mg.normaliza(query.Usuario);
+                    _context.Add(historialeliminacion);
+                    _context.SaveChanges();
+
+
+                    var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
+                    _context.Epcausapenal.Remove(epcausapenalDel);
+                    _context.SaveChanges();
+                    
+
+                    return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar });
+
+                }
+                catch (Exception ex)
+                {
+                    var error = ex;
+                    borrar = false;
+                    return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"),  borrar, error });
+                }
+            }
+
         }
+        //AJAX NO ARREGLADO 
+        //public async Task<JsonResult> deleteEpCp(Epcausapenal epcausapenal, Historialeliminacion historialeliminacion, string[] datoEjecucion, string nombre)
+        //{
+        //    var borrar = false;
+        //    var id = Int32.Parse(datoEjecucion[0]);
+        //    var idep = Int32.Parse(datoEjecucion[1]);
+        //    var razon = mg.normaliza(datoEjecucion[2]);
+        //    var user = mg.normaliza(datoEjecucion[3]);
+
+        //    var query = (from s in _context.Ejecucion
+        //                 where s.IdEjecucion == idep
+        //                 select s).FirstOrDefault();
+
+
+        //    try
+        //    {
+        //        borrar = true;
+        //        historialeliminacion.Id = id;
+        //        historialeliminacion.Descripcion = "IDEJECUCION= " + query.IdEjecucion + " NOMBRE= " + query.Paterno + " " + query.Materno + " " + query.Nombre + " CE= " + query.Ce;
+        //        historialeliminacion.Tipo = "EJECUCION";
+        //        historialeliminacion.Razon = mg.normaliza(razon);
+        //        historialeliminacion.Usuario = mg.normaliza(user);
+        //        historialeliminacion.Fecha = DateTime.Now;
+        //        historialeliminacion.Supervisor = mg.normaliza(query.Usuario);
+        //        _context.Add(historialeliminacion);
+        //        _context.SaveChanges();
+
+
+        //        var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
+        //        _context.Epcausapenal.Remove(epcausapenalDel);
+        //        _context.SaveChanges();
+        //        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+        //        return Json(new { success = true, responseText = Url.Action("Index", "Ejecucion"), borrar = borrar });
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var error = ex;
+        //        borrar = false;
+        //        return Json(new { success = true, responseText = Url.Action("Index", "Ejecucion"), borrar = borrar });
+        //    }
+        //}
 
         #endregion
 
@@ -701,7 +999,7 @@ namespace scorpioweb.Controllers
                                                   //join epA in _context.Epamparo on ep.IdEjecucion equals epA.EjecucionIdEjecucion
                                                   //join epAu in _context.Epaudiencia on ep.IdEjecucion equals epAu.EjecucionIdEjecucion
                                               where ep.IdEjecucion == id
-                                              select new EjecucionAFAA
+                                              select new EjecucionCP
                                               {
                                                   ejecucionVM = ep,
                                                   //epamparoVM = epA,
@@ -782,7 +1080,7 @@ namespace scorpioweb.Controllers
             ViewData["AtencionFEP"] = from ep in ejecucions
                                       join epa in epatencionfs on ep.IdEjecucion equals epa.EjecucionIdEjecucion
                                       where ep.IdEjecucion == id
-                                      select new EjecucionAFAA
+                                      select new EjecucionCP
                                       {
                                           epatencionfVM = epa
                                       };
@@ -978,7 +1276,7 @@ namespace scorpioweb.Controllers
             ViewData["AudienciaEP"] = from ep in ejecucions
                                       join epa in epaudiencias on ep.IdEjecucion equals epa.EjecucionIdEjecucion
                                       where ep.IdEjecucion == id
-                                      select new EjecucionAFAA
+                                      select new EjecucionCP
                                       {
                                           epaudienciaVM = epa
                                       };
@@ -1155,7 +1453,7 @@ namespace scorpioweb.Controllers
             ViewData["AmparoEP"] = from ep in ejecucions
                                    join epa in epamparos on ep.IdEjecucion equals epa.EjecucionIdEjecucion
                                    where ep.IdEjecucion == id
-                                   select new EjecucionAFAA
+                                   select new EjecucionCP
                                    {
                                        epamparoVM = epa
                                    };
@@ -1376,14 +1674,14 @@ namespace scorpioweb.Controllers
                                      ejecucionVM = ep
                                  }).FirstOrDefault();
 
-            var epa = _context.Eptermino.FirstOrDefault(m => m.Ideptermino == id);
+            var epa = _context.Epinstancia.FirstOrDefault(m => m.Idepinstancia == id);
             try
             {
                 borrar = true;
 
                 historialeliminacion.Id = id;
-                historialeliminacion.Descripcion = "IDCAUSAPENAL= " + queryhitorial.epcausapenalVM.Idepcausapenal + " NOMBRE= " + queryhitorial.ejecucionVM.Paterno + " " + queryhitorial.ejecucionVM.Paterno + " " + queryhitorial.ejecucionVM.Paterno + " CP= " + queryhitorial.epcausapenalVM.Causapenal + " RAZON DE TERMINO= " + queryhitorial.epterminoVM.Formaconclucion;
-                historialeliminacion.Tipo = "EPTERMINO";
+                historialeliminacion.Descripcion = "IDCAUSAPENAL= " + queryhitorial.epcausapenalVM.Idepcausapenal + " NOMBRE= " + queryhitorial.ejecucionVM.Paterno + " " + queryhitorial.ejecucionVM.Paterno + " " + queryhitorial.ejecucionVM.Paterno + " CP= " + queryhitorial.epcausapenalVM.Causapenal;
+                historialeliminacion.Tipo = "EPINICIO";
                 historialeliminacion.Razon = mg.normaliza(razon);
                 historialeliminacion.Usuario = mg.normaliza(user);
                 historialeliminacion.Fecha = DateTime.Now;
@@ -1392,7 +1690,7 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
 
 
-                _context.Eptermino.Remove(epa);
+                _context.Epinstancia.Remove(epa);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 var idejecucion = (from e in _context.Ejecucion
@@ -1485,25 +1783,54 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpTermino(int id, [Bind("Ideptermino, Fecha, Formaconclucion")] Eptermino eptermino)
+        public async Task<IActionResult> EditEpTermino(int id, [Bind("Ideptermino, Fecha, Formaconclucion,EpcausapenalIdepcausapenal")] Eptermino eptermino, IFormFile archivo)
         {
 
             if (id != eptermino.Ideptermino)
             {
                 return NotFound();
             }
+            var idejecucion = (from cp in _context.Epcausapenal
+                              join e in _context.Ejecucion on cp.EjecucionIdEjecucion equals e.IdEjecucion
+                              where cp.Idepcausapenal == eptermino.EpcausapenalIdepcausapenal
+                              select cp.EjecucionIdEjecucion).ToList().First();
 
             if (ModelState.IsValid)
             {
                 try
                 {
+
                     eptermino.Fecha = eptermino.Fecha;
                     eptermino.Formaconclucion = mg.removeSpaces(mg.normaliza(eptermino.Formaconclucion));
                     eptermino.Ideptermino = id;
+                    eptermino.EpcausapenalIdepcausapenal = eptermino.EpcausapenalIdepcausapenal;
+                   
+                    var oldtermino = await _context.Eptermino.FindAsync(eptermino.Ideptermino);
 
-                    _context.Update(eptermino);
+                    if (archivo == null)
+                    {
+                        eptermino.Urldocumento = oldtermino.Urldocumento;
+                    }
+                    else
+                    {
+                        string file_name = idejecucion + "_" + eptermino.EpcausapenalIdepcausapenal + "_" + id + Path.GetExtension(archivo.FileName);
+                        eptermino.Urldocumento = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Cierredecaso");
+
+                        if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                        {
+                            System.IO.File.Delete(Path.Combine(uploads, file_name));
+                        }
+
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await archivo.CopyToAsync(stream);
+                        stream.Close();
+                    }
+
+                    _context.Entry(oldtermino).CurrentValues.SetValues(eptermino);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-
+                    //_context.Update(cierredecaso);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -1515,8 +1842,8 @@ namespace scorpioweb.Controllers
                     {
                         throw;
                     }
-                }
-                return RedirectToAction(nameof(MenuProcesos));
+                }                
+                return RedirectToAction("MenuProcesos/"+ idejecucion, "Ejecucion");
             }
             return View(eptermino);
         }

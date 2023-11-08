@@ -178,70 +178,96 @@
                 paterno, materno, Fnacimiento, genero, lnestado, nombre,
             },
             success: function (response) {
-                document.getElementById("CURS").value = response.curs;
+                document.getElementById("ClaveUnicaScorpio").value = response.curs;
                 //document.getElementById("CURP").value = response.curs + "*";
             }
         });
     };
 
-    //function myFunction(materno) {
-    //    var nombre = document.getElementById("nombreee").value;
-    //    var paterno = document.getElementById("paternoee").value;
-    //    var materno = materno;
+    function myFunction(materno) {
+        var nombre = document.getElementById("nombreee").value;
+        var paterno = document.getElementById("paternoee").value;
+        var materno = materno;
 
-    //    $.ajax({
-    //        type: "POST",
-    //        dataType: "json",
-    //        url: "/ServiciosPreviosJuicio/testSimilitud",
-    //        traditional: true,
-    //        data: {
-    //            nombre, paterno, materno,
-    //        },
-    //        success: function (response) {
-    //            $('#tblSimilitud').html('');
-    //            var row = '';
-    //            if (response.lista.length == 0) {
-    //                //alert("No se encontro ningún registro que coincida")
-    //                return;
-    //            }
-    //            for (let i = 0; i < response.lista.length; i++) {
-    //                row = row
-    //                    + "<tr>"
-    //                    + "<td>" + response.lista[i].id + "</td>"
-    //                    + "<td>" + response.lista[i].nombre + "</td>"
-    //                    + "<td>" + response.lista[i].tabla + "</td>"
-    //                    + "<td>" + response.lista[i].dato + "</td>"
-    //                row = row + "<td>";
-    //                if (@Html.Raw(Json.Serialize(ViewBag.Serviciosprevios)) == true && response.lista[i].tabla == "Servicios Previos") {
-    //                    row = row
-    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='pasarvalor(\"" + response.lista[i].nombre + "\")' class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
-    //                }
-    //                else {
-    //                    row = row
-    //                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='mostrarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
-    //                }
-    //                row = row + "</td>";
-    //                row = row + "</tr>";
-    //            };
-    //            if (row != '') {
-    //                $('#tblSimilitud').append(row);
-    //            }
-    //            $("#similitudModal").modal();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Api/testSimilitud",
+            traditional: true,
+            data: {
+                nombre, paterno, materno,
+            },
+            success: function (response) {
+                $('#tblSimilitud').html('');
+                var row = '';
+                if (response.lista.length == 0) {
+                    //alert("No se encontro ningún registro que coincida")
+                    return;
+                }
+                for (let i = 0; i < response.lista.length; i++) {
+                    row = row
+                        + "<tr>"
+                        + "<td>" + response.lista[i].id + "</td>"
+                        + "<td>" + response.lista[i].nombre + "</td>"
+                        + "<td>" + response.lista[i].tabla + "</td>"
+                        + "<td>" + response.lista[i].dato + "</td>"
+                    row = row + "<td>";
+                    if (response.lista[i].tabla == "ServiciosPrevios") {
+                        row = row
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='buscarDatos(\"" + response.lista[i].nombre + "\")' class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+                    }
+                    else {
+                        row = row
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='usarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+                    }
+                    row = row + "</td>";
+                    row = row + "</tr>";
+                };
+                if (row != '') {
+                    $('#tblSimilitud').append(row);
+                }
+                $("#similitudModal").modal();
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                console.log(response);
+            }
+        });
+    };
 
-    //        },
-    //        error: function (response) {
-    //            alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-    //            console.log(response);
-    //        }
-    //    });
-    //};
 
-
-    function pasarvalor(nombre) {
+    function buscarDatos(nombre) {
         //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor", 
         //ESTE USA  window.parent.miFuncionEnPaginaPrincipal(nombre) PARA MANDARLO A LA PAGUINA PRINCIPAL;
         window.parent.miFuncionEnPaginaPrincipal(nombre);
     };
+
+
+    function usarDatos(id, tabla) {
+        document.getElementById("tabla").value = tabla;
+        document.getElementById("idselecionado").value = id;
+        $.ajax({
+            url: "/Api/Savcardatos",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                id, tabla,
+            },
+            success: function(response){
+                //document.getElementById("nombre").value = response.lista[0].nombre;
+                //document.getElementById("paterno").value = response.lista[0].paterno;
+                //document.getElementById("materno").value = response.lista[0].materno;
+                document.getElementById("CURS").value = response.lista[0].claveUnicaScorpio;
+            }
+        });
+        $("#similitudModal").modal("hide");
+    };
+
+    function btnclose() {
+        $('#similitudModal').modal('toggle');
+    }
 
 </script>
 
@@ -260,7 +286,7 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label">Apellido Materno</label>
-                    <input required asp-for="Materno" id="maternoee" name="Materno" class="form-control" @*onblur="myFunction(value)"*@ />
+                    <input required asp-for="Materno" id="maternoee" name="Materno" class="form-control" onblur="myFunction(value)" />
                 </div>
                 <div class="form-group">
                     <label class="control-label">Sexo</label>
@@ -283,7 +309,7 @@
                             asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" onblur="SacaCURS()">
                     </select>
                 </div>
-                <input asp-for="ClaveUnicaScorpio" id="CURS" name="ClaveUnicaScorpio" class="form-control" readonly type="hidden" />
+            <input asp-for="ClaveUnicaScorpio" id="ClaveUnicaScorpio" name="ClaveUnicaScorpio" class="form-control" readonly type="hidden" />
                 <div class="form-group col-md-6" id="Municipio">
                     <label class="control-label">Municipio</label>
                     <select class="form-control" name="LnMunicipio" id="lnMunicipio"
@@ -419,6 +445,10 @@
                     <label asp-for="Observaciones" class="control-label"></label>
                     <textarea maxlength="500" class="form-control" rows="5" name="Observaciones" id="Observaciones"></textarea>
                 </div>
+                <input readonly type="hidden" id="CURS" name="CURS" type="text" class="form-control" />
+                <input readonly type="hidden" id="CURSUsada" name="CURSUsada" type="text" class="form-control" />
+                <input readonly type="hidden" id="tabla" name="tabla" type="text" class="form-control" />
+                <input readonly type="hidden" id="idselecionado" name="idselecionado" type="text" class="form-control" />
                 <div class="custom-file">
                     <label class="control-label">Reporte Técnico</label>
                     <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
@@ -430,18 +460,16 @@
         </div>
     </div>
 
-<div id="similitudModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div id="similitudModal" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             @*            <div class="text-right"  style="background-color:#0078a7">
             <button type="button" hrf data-dismiss="modal">x</button>
             </div>*@
             <div class="modal-header float-center" style="background-color:#0078a7">
-                <div style="text-align:right; margin-right:30px">
-                    <button class="btn btn-default" data-toggle="modal" data-target="#similitudModal">
-                        <i class="fa fa-close"></i>
-                    </button>
-                </div>
+                <button type="button" class="close" onclick="btnclose()" aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
                 <h3 id="modal_body" style="text-align:center; color:#000">Similitud </h3>
             </div>
             <div class="modal-body">
@@ -460,10 +488,8 @@
                     </table>
                 </div>
             </div>
-            <div style="text-align:right; margin-block:30px">
-                <button class="btn btn-default" data-toggle="modal" data-target="#similitudModal">
-                    <i class="fa fa-close"></i>
-                </button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" onclick="btnclose()">Cerrar</button>
             </div>
         </div>
     </div>

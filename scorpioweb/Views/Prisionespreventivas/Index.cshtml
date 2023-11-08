@@ -21,6 +21,15 @@
             }
         })
     }
+
+    function miFuncionEnPaginaPrincipal(nombre) {
+        // ACCIONES LLEGAN DESDE LA VISTA PARCIAL, LLEGA UN VALOR "nombre" SE COLOCA EN EL BUSCADOR Y SE SIMULA UN CLICK
+        //alert("Función activada desde la vista parcial" + nombre);
+        document.getElementById("SearchString").value = nombre;
+        var boton = document.getElementById("buscar");
+        boton.click();
+        document.getElementById("SearchString").value = "";
+    }
 </script>
 
 <h2>Prisiones Preventivas</h2>
@@ -28,8 +37,8 @@
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
         <p>
-            Búsqueda por nombre: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
-            <button type="submit" class="btn btn-default">
+            Búsqueda por nombre: <input type="text" name="SearchString" id="SearchString" value="@ViewData["currentFilter"]" />
+            <button type="submit" id="buscar" class="btn btn-default">
                 <i class="fa fa-search"></i>
                 Buscar
             </button>

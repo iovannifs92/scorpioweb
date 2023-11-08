@@ -16,6 +16,7 @@ namespace scorpioweb.Models
         public string Multa { get; set; }
         public string Reparacion { get; set; }
         public DateTime? Firmeza { get; set; }
+        public string Revocacion { get; set; }
         public int? Penaanos { get; set; }
         public int? Penameses { get; set; }
         public int? Penadias { get; set; }

@@ -17,5 +17,8 @@ namespace scorpioweb.Models
         public string CeAcumuladas { get; set; }
         public string TieneceAcumuladas { get; set; }
         public string ClaveUnicaScorpio { get; set; }
+        public string EstadoActual { get; set; }
+        public string Encargado { get; set; }
+        public DateTime? FechaCarga { get; set; }
     }
 }

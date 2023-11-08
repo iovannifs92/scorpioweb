@@ -162,16 +162,6 @@
             },
             success: function (response) {
                 if (response.success) {
-                    //if (page > 1) {
-                    //    document.getElementById("btnPrev").disabled = false;
-                    //    document.getElementById("btnPrevs").disabled = false;
-                    //    document.getElementById("btnNext").disabled = false;
-                    //    document.getElementById("btnNexts").disabled = false;
-                    //} else {
-                    //    document.getElementById("btnPrev").disabled = true;
-                    //    document.getElementById("btnPrevs").disabled = true;
-                    //}
-                    //alert(response.success)
                     get();
                 } else {
                     alert(response.responseText);
@@ -183,9 +173,6 @@
         });
     };
 </script>
-
-
-
 
 <h2>Supervisados Libertad Condicionada</h2>
 @*ES LO DE LAS ALERTA DE PRESTAMOS DE ARCHIVO 
@@ -199,12 +186,6 @@
     <a asp-action="Create" asp-controller="Personas">
         Nueva entrevista encuadre
     </a>
-    @*@if (ViewBag.Admin == true)
-    {
-        <a asp-action="Reasignacion">
-            &ensp;Reasignación
-        </a>
-    }*@
 </p>
 <div class="form-group col-md-12" id="divbuscar">
     Búsqueda:
@@ -221,29 +202,11 @@
     </a>
 
 </div>
-@*<div class="form-group col-md-12" id="divSbuscar" style="display:none">
-    Búsqueda:
-    <input type="text" name="SearchS" id="SearchS" />
-    <button id="myBtn2" class="btn btn-default" onclick="getSPersona()">
-        <i class="fa fa-search"></i>
-        Buscar
-    </button>
-    <a onclick="getPersona()" class="btn btn-link">
-        Regresar al listado completo
-    </a> |
-    @if (ViewBag.Serviciosprevios == false)
-    {
-        <a onclick="getS()" class="btn btn-link">
-            Ver solo mis Supervisados
-        </a>
-    }
-</div>*@
 <br />
 <div class="row">
     <table class="table table-striped table-responsive">
         <thead>
             <tr>
-                @*<th><a>ID</a></th>*@
                 <th>
                     <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ID</a>
                 </th>

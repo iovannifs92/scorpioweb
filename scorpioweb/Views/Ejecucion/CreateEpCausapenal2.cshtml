@@ -103,7 +103,7 @@
     <div class="col-md-12">
         <form asp-action="EpCausaPenal" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
                 <input required asp-for="Causapenal" class="form-control" />
                 <span asp-validation-for="Causapenal" class="text-danger"></span>
@@ -122,12 +122,12 @@
                 <input asp-for="CpAcumuladas" class="form-control" />
                 <span asp-validation-for="CpAcumuladas" class="text-danger"></span>
             </div>
-            <div class="form-group autocomplete">
+            <div class="form-group col-md-12 autocomplete">
                 <label class="control-label">Delito</label>
                 <input required asp-for="Delito" class="form-control" />
                 <span asp-validation-for="Delito" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Clasificación del delito</label>
                 <input asp-for="Clasificaciondelito" class="form-control" />
                 <span asp-validation-for="Clasificaciondelito" class="text-danger"></span>
@@ -138,27 +138,27 @@
                         asp-items="@(new SelectList(ViewBag.Liatajuzgado, "Value"))">
                 </select>
             </div>*@
-            <div class="form-group autocomplete">
+            <div class="form-group col-md-12 autocomplete">
                 <label class="control-label">Juzgado de Origen</label>
                 <input asp-for="JuzgadoOrigen" class="form-control"/>
                 <span asp-validation-for="JuzgadoOrigen" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Fecha de Sentencia</label>
                 <input required asp-for="FechaSentencia" type="date" class="form-control" />
                 <span asp-validation-for="FechaSentencia" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Multa</label>
                 <input required asp-for="Multa" class="form-control" />
                 <span asp-validation-for="Multa" class="text-danger"></span>
             </div> 
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Reparacion</label>
                 <input required asp-for="Reparacion" class="form-control" />
                 <span asp-validation-for="Reparacion" class="text-danger"></span>
             </div> 
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Firmeza</label>
                 <input required asp-for="Firmeza" class="form-control" type="date" />
                 <span asp-validation-for="Firmeza" class="text-danger"></span>
@@ -178,7 +178,7 @@
                 <input required asp-for="Penadias" class="form-control" />
                 <span asp-validation-for="Penadias" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group col-md-12">
                 <label class="control-label">Apartir de </label>
                 <input required asp-for="Apartir" type="date" class="form-control" />
                 <span asp-validation-for="Apartir" class="text-danger"></span>

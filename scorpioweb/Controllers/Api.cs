@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using F23.StringSimilarity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ using QRCoder;
 using SautinSoft.Document;
 
 using SautinSoft.Document.MailMerging;
+using scorpioweb.Class;
 using scorpioweb.Models;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,9 @@ namespace scorpioweb.Controllers
 
         private readonly penas2Context _context;
 
+        #region -Metodos Generales-
+        MetodosGenerales mg = new MetodosGenerales();
+        #endregion
         public Api(penas2Context context, IHostingEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -189,8 +194,9 @@ namespace scorpioweb.Controllers
                 relacionlugar = tableAdolescente[0].adolescentesVM.RelacionLugar,
                 //amenazatestigo = tableAdolescente[0].adolescentesVM.AmenazasTca,
                 #endregion
-                #region -RIESGOS DETECTADOS-
-
+                #region -DATOS VERIFICACION-
+                quienVerifica= tableAdolescente[0].adolescentesVM.QuienVerifica,
+                parentescoVerifica = tableAdolescente[0].adolescentesVM.ParentescoVefifica,
                 #endregion
                 #region -FACTORES DE ESTABILIDAD DETECTADOS-
                 #endregion
@@ -201,7 +207,13 @@ namespace scorpioweb.Controllers
                 riesgototal = tableAdolescente[0].aerAdolescentesDetallesVM.RiesgoTotal,
                 #endregion
             }
+
             };
+
+            if (tableAdolescente[0].adolescentesVM.RelacionLugar == "Radica")
+            {
+                var observacionRadica = "";
+            }
 
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
             dc.MailMerge.Execute(datosAdolecentes);
@@ -221,5 +233,161 @@ namespace scorpioweb.Controllers
         {
 
         }
+
+        #region -testSimilitud-
+        public JsonResult testSimilitud(string nombre, string paterno, string materno)
+        {
+            bool simi = false;
+            var nombreCompleto = mg.normaliza(paterno) + " " + mg.normaliza(materno) + " " + mg.normaliza(nombre);
+            var query = (from p in _context.Persona
+                         join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
+                         from d in domicilioJoin.DefaultIfEmpty()
+                         join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into supervisionJoin
+                         from s in supervisionJoin.DefaultIfEmpty()
+                         join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
+                         from cp in causapenalJoin.DefaultIfEmpty()
+                         group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio } into g
+                         select new
+                         {
+                             id = g.Key.IdPersona,
+                             nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
+                             NomTabla = "MCYSCP",
+                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g)};\n"
+                         }).Union
+                         (from a in _context.Archivo
+                          join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
+                          group new { ar.CausaPenal, ar.CarpetaEjecucion } by new { a.IdArchivo, a.Paterno, a.Materno, a.Nombre, a.ClaveUnicaScorpio } into g
+                          select new
+                          {
+                              id = g.Key.IdArchivo,
+                              nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
+                              NomTabla = "Archivo",
+                              datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n"
+                          }).Union
+                            (from e in _context.Ejecucion
+                             join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcausapenalJoin
+                             from epcp in epcausapenalJoin.DefaultIfEmpty()
+                             group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce, e.ClaveUnicaScorpio } into g
+                             select new
+                             {
+                                 id = g.Key.IdEjecucion,
+                                 nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
+                                 NomTabla = "Ejecucion",
+                                 datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g)};\n"
+                             }).Union
+                                    (from sp in _context.Serviciospreviosjuicio
+                                     where sp.Paterno.Contains(paterno) && sp.Materno.Contains(materno)
+                                     select new
+                                     {
+                                         id = sp.IdserviciosPreviosJuicio,
+                                         nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
+                                         NomTabla = "ServiciosPrevios",
+                                         datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n"
+                                     }).Union
+                                        (from pp in _context.Prisionespreventivas
+                                         select new
+                                         {
+                                             id = pp.Idprisionespreventivas,
+                                             nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
+                                             NomTabla = "PrisionPreventiva",
+                                             datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n"
+                                         }).Union
+                                            (from pp in _context.Oficialia
+                                             select new
+                                             {
+                                                 id = pp.IdOficialia,
+                                                 nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
+                                                 NomTabla = "Oficialia",
+                                                 datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n"
+                                             }).Union
+                                                 (from p in _context.Personacl
+                                                  join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl into domicilioJoin
+                                                  from d in domicilioJoin.DefaultIfEmpty()
+                                                  select new
+                                                  {
+                                                      id = p.IdPersonaCl,
+                                                      nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                                                      NomTabla = "LibertadCondicionada",
+                                                      datoExtra = $"CLAVE UNICA SCORPIO: {p.ClaveUnicaScorpio}; Edad: {p.Edad};\n Domicilio: {d.Calle}, {d.No}, {d.NombreCf};\n"
+                                                  });
+
+            var result = query.ToList();
+
+            int idpersona = 0;
+            string nomCom = "";
+            string tabla = "";
+            string datoextra = "";
+            var cosine = new Cosine(2);
+            double r = 0;
+            var list = new List<Tuple<string, string, int, string, double>>();
+
+            List<string> listaNombre = new List<string>();
+
+
+            foreach (var q in query)
+            {
+                r = cosine.Similarity(q.nomcom, nombreCompleto);
+                if (r >= 0.87)
+                {
+                    nomCom = q.nomcom;
+                    idpersona = q.id;
+                    tabla = q.NomTabla;
+                    datoextra = q.datoExtra;
+                    list.Add(new Tuple<string, string, int, string, double>(nomCom, tabla, idpersona, datoextra, r));
+                    simi = true;
+                }
+            }
+            List<object> elementos = new List<object>();
+            if (list.Count() != 0)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var item = list[i];
+                    double porcentaje = item.Item5 * 100;
+                    int porcentajeFloor = (int)Math.Floor(porcentaje);
+                    string nombreP = item.Item1;
+                    string tablaP = item.Item2;
+                    int idPersona = item.Item3;
+                    string datoextraP = item.Item4;
+
+                    elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP });
+                }
+                return Json(new { success = true, lista = elementos });
+            }
+            return Json(new { success = false, lista = elementos });
+        }
+
+
+        public JsonResult Savcardatos(int id, string tabla)
+        {
+            List<object> listaDatos = new List<object>();
+
+            switch (tabla)
+            {
+                case "MCYSCP":
+                    listaDatos.AddRange(_context.Persona.Where(table => table.IdPersona == id).ToList());
+                    break;
+                case "Archivo":
+                    listaDatos.AddRange(_context.Archivo.Where(table => table.IdArchivo == id).ToList());
+                    break;
+                case "Ejecucion":
+                    listaDatos.AddRange(_context.Ejecucion.Where(table => table.IdEjecucion == id).ToList());
+                    break;
+                case "ServiciosPrevios":
+                    listaDatos.AddRange(_context.Serviciospreviosjuicio.Where(table => table.IdserviciosPreviosJuicio == id).ToList());
+                    break;
+                case "PrisionPreventiva":
+                    listaDatos.AddRange(_context.Prisionespreventivas.Where(table => table.Idprisionespreventivas == id).ToList());
+                    break;
+                case "Oficialia":
+                    listaDatos.AddRange(_context.Oficialia.Where(table => table.IdOficialia == id).ToList());
+                    break;
+                case "LibertadCondicionada":
+                    listaDatos.AddRange(_context.Personacl.Where(table => table.IdPersonaCl == id).ToList());
+                    break;
+            }
+            return Json(new { success = false, lista = listaDatos });
+        }
+        #endregion
     }
 }

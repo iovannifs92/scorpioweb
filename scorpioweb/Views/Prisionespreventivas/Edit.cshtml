@@ -93,8 +93,9 @@
     <div class="col-md-12">
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Idprisionespreventivas" />
-            <input type="hidden" asp-for="Capturista" />
+            <input readonly type="hidden" asp-for="Idprisionespreventivas" />
+            <input readonly type="hidden" asp-for="Capturista" />
+            <input readonly type="hidden" asp-for="ClaveUnicaScorpio" />
             <div class="form-group">
                 <label asp-for="NumeroControl" class="control-label">Número de control de la prisión preventiva</label>
                 <input asp-for="NumeroControl" class="form-control" id="NumeroControl"/>

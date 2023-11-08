@@ -91,7 +91,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile archivo, [Bind("Idprisionespreventivas,NumeroControl,Paterno,Materno,Nombre,Genero,FechaRecepcion,CausaPenal,Delito,Capturista,Observaciones")] Prisionespreventivas prisionespreventivas)
+        public async Task<IActionResult> Create(IFormFile archivo, [Bind("Idprisionespreventivas,NumeroControl,Paterno,Materno,Nombre,Genero,FechaRecepcion,CausaPenal,Delito,Capturista,Observaciones")] Prisionespreventivas prisionespreventivas, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS)
         {
             string currentUser = User.Identity.Name;
 
@@ -126,6 +126,22 @@ namespace scorpioweb.Controllers
                 var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
                 await archivo.CopyToAsync(stream);
                 stream.Close();
+            }
+            #endregion
+
+            #region -Expediente Unico-
+            if (idselecionado != null && tabla != null)
+            {
+                string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("PrisionPreventiva"));
+                string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                string var_tablaCurs = "ClaveUnicaScorpio";
+                int var_idnuevo = id;
+                int var_idSelect = Int32.Parse(idselecionado);
+                string var_curs = CURS;
+                prisionespreventivas.ClaveUnicaScorpio = CURS;
+
+                string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                _context.Database.ExecuteSqlCommand(query);
             }
             #endregion
 
@@ -179,7 +195,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(IFormFile archivo, [Bind("Idprisionespreventivas,NumeroControl,Paterno,Materno,Nombre,Genero,FechaRecepcion,CausaPenal,Delito,Capturista,Observaciones")] Prisionespreventivas prisionespreventivas)
+        public async Task<IActionResult> Edit(IFormFile archivo, [Bind("Idprisionespreventivas,NumeroControl,Paterno,Materno,Nombre,Genero,FechaRecepcion,CausaPenal,Delito,Capturista,Observaciones,ClaveUnicaScorpio")] Prisionespreventivas prisionespreventivas)
         {
             if (ModelState.IsValid)
             {
@@ -198,6 +214,7 @@ namespace scorpioweb.Controllers
                     prisionespreventivas.Nombre = mg.normaliza(prisionespreventivas.Nombre);
                     prisionespreventivas.CausaPenal = mg.normaliza(prisionespreventivas.CausaPenal);
                     prisionespreventivas.Observaciones = mg.normaliza(prisionespreventivas.Observaciones);
+                    prisionespreventivas.ClaveUnicaScorpio = prisionespreventivas.ClaveUnicaScorpio;
                     var oldPrisionespreventivas = await _context.Prisionespreventivas.FindAsync(prisionespreventivas.Idprisionespreventivas);
 
                     if (clone)
