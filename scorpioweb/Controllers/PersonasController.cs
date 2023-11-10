@@ -4735,7 +4735,6 @@ namespace scorpioweb.Controllers
             ViewBag.Pais = domisecu.Pais;
             #endregion
 
-
             #region TemporalidadDomicilio
             List<SelectListItem> ListaDomicilioT;
             ListaDomicilioT = new List<SelectListItem>

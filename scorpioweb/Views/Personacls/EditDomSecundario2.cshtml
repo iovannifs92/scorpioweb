@@ -5,6 +5,21 @@
 
 <script type="text/javascript">
  //* Modal EditdomicilioSecundario*/
+
+
+
+    $('#estadoEDSa').change(function () {
+        var url = '@Url.Content("~/")' + "Personacls/GetMunicipio";
+        var ddlsource = '#estadoEDSa';
+        $.getJSON(url, { EstadoId: $(ddlsource).val() }, function (data) {
+            var items = '';
+            $("#municipioEDSa").empty();
+            $.each(data, function (i, municipio) {
+                items += "<option value='" + municipio.value + "'>" + municipio.text + "</option>";
+            });
+            $('#municipioEDSa').html(items);
+        });
+    });
         $('#estadoEDS').change(function () {
             var url = '@Url.Content("~/")' + "Personacls/GetMunicipio";
             var ddlsource = '#estadoEDS';
@@ -81,6 +96,7 @@
 
         $('#btnGuardarDomiSecu2').on("click", function (e) {
             e.preventDefault();
+     
             //alert("Entrando a boton");
             var IdDomicilio = document.getElementById("IdDomicilioMD").value;
             var td = document.getElementById("TipoDomicilioMD");
@@ -92,9 +108,9 @@
             var NombreCf = document.getElementById("NombreCfMD").value;
             var p = document.getElementById("PaisMD");
             var Pais = p.options[p.selectedIndex].value;
-            var e = document.getElementById("EstadoMD");
+            var e = document.getElementById("estadoEDSa");
             var Estado = e.options[e.selectedIndex].value;
-            var m = document.getElementById("MunicipioMD");
+            var m = document.getElementById("municipioEDSa");
             var Municipio = m.options[m.selectedIndex].value;
             var te = document.getElementById("TemporalidadMD");
             var Temporalidad = te.options[te.selectedIndex].value;
@@ -123,11 +139,6 @@
             });
         });
 //#endregion
-
-
-
-
-
 </script>
 
 
@@ -141,10 +152,10 @@
                 <h4>Domicilio Secundario <span>@i</span> </h4>
             </div>
             <div class="form-group col-md-6">
-                <input name="IdDomicilioSecundario" id="IdDomicilioSecundario" value="@item.domicilioSecundarioclVM.IdDomicilioSecundarioCl" class="form-control" readonly style="display:none" />
+                <input name="IdDomicilioSecundarioCl" id="IdDomicilioSecundarioCl" value="@item.domicilioSecundarioclVM.IdDomicilioSecundarioCl" class="form-control" readonly style="display:none" />
             </div>
             <div class="form-group col-lg-6">
-                <input name="IdDomicilio" id="IdDomicilio" value="@item.domicilioSecundarioclVM.IdDomicilioCl" class="form-control" readonly style="display:none" />
+                <input name="IdDomicilioCL" id="IdDomicilioCL" value="@item.domicilioSecundarioclVM.IdDomicilioCl" class="form-control" readonly style="display:none" />
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Tipo de Ubiacion</label>
@@ -287,13 +298,13 @@
                 </div>
                 <div class="form-group col-md-6" id="DivEstadoMD">
                     <label class="control-label">Estado</label>
-                    <select class="form-control" name="Estado" id="EstadoMD"
+                    <select class="form-control" name="Estado" id="estadoEDSa"
                             asp-items="@(new SelectList(ViewBag.ListaEstadoM, "Id", "Estado"))">
                     </select>
                 </div>
                 <div class="form-group col-md-6" id="DivMunicipioMD">
                     <label class="control-label">Minucipio</label>
-                    <select class="form-control" name="Municipio" id="MunicipioMD"
+                    <select class="form-control" name="Municipio" id="municipioEDSa"
                             asp-items="@(new SelectList( ViewBag.ListaMunicipioM, "Id", "Municipio"))">
                     </select>
                 </div>

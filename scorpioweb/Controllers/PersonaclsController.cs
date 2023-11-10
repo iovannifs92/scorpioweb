@@ -136,19 +136,6 @@ namespace scorpioweb.Models
             return "";
         }
         #endregion
-        #region -GetMunicipio-
-        public JsonResult GetMunicipio(int EstadoId)
-        {
-            TempData["message"] = DateTime.Now;
-            List<Municipios> municipiosList = new List<Municipios>();
-
-            municipiosList = (from Municipios in _context.Municipios
-                              where Municipios.EstadosId == EstadoId
-                              select Municipios).ToList();
-
-            return Json(new SelectList(municipiosList, "Id", "Municipio"));
-        }
-        #endregion
         #region -curp-
         //Curp sin contar homonimos a 17 caracteres
         public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
@@ -205,6 +192,90 @@ namespace scorpioweb.Models
 
             return Json(new { success = false });
         }
+
+        #region -Estados y Municipios-
+        public JsonResult GetMunicipio(int EstadoId)
+        {
+            TempData["message"] = DateTime.Now;
+            List<Municipios> municipiosList = new List<Municipios>();
+
+            municipiosList = (from Municipios in _context.Municipios
+                              where Municipios.EstadosId == EstadoId
+                              select Municipios).ToList();
+
+            return Json(new SelectList(municipiosList, "Id", "Municipio"));
+        }
+
+        public JsonResult GetMunicipioED(int EstadoId)
+        {
+            TempData["message"] = DateTime.Now;
+            List<Municipios> municipiosList = new List<Municipios>();
+
+            if (EstadoId != 0)
+            {
+                municipiosList = (from Municipios in _context.Municipios
+                                  where Municipios.EstadosId == EstadoId
+                                  select Municipios).ToList();
+            }
+            else
+            {
+                municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            }
+            municipiosList.Insert(0, new Municipios { Id = 0, Municipio = "Selecciona" });
+            return Json(new SelectList(municipiosList, "Id", "Municipio"));
+        }
+
+        //public JsonResult GetZona()
+        //{
+        //    List<Zonas> zonasList = new List<Zonas>();
+        //    zonasList = (from Zonas in _context.Zonas
+        //                 select Zonas).ToList();
+        //    return Json(new
+        //    {
+        //        success = true,
+        //        zonas = zonasList
+        //    });
+        //}
+
+        public string generaEstado(string id)
+        {
+            string estado = "";
+
+            if (id == "0")
+            {
+                estado = "SIN ESTADO";
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(id))
+                {
+                    List<Estados> estados = _context.Estados.ToList();
+                    estado = (estados.FirstOrDefault(x => x.Id == Int32.Parse(id)).Estado).ToUpper();
+                }
+            }
+            return estado;
+        }
+
+
+        public string generaMunicipio(string id)
+        {
+            string municipio = "";
+
+            if (id == "0")
+            {
+                municipio = "SIN MUNICIPIO";
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(id))
+                {
+                    List<Municipios> municipios = _context.Municipios.ToList();
+                    municipio = (municipios.FirstOrDefault(x => x.Id == Int32.Parse(id)).Municipio).ToUpper();
+                }
+            }
+            return municipio;
+        }
+        #endregion
         #endregion
         #endregion
 
@@ -845,7 +916,7 @@ namespace scorpioweb.Models
             }
 
             ViewBag.idPersona = id;
-            ViewData["Nombre"] = nombre;
+            ViewBag.nombre = nombre;
             var domiciliocl = await _context.Domiciliocl.SingleOrDefaultAsync(m => m.PersonaclIdPersonacl == id);
 
             #region TIPODOMICILIO          
@@ -994,7 +1065,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomiciliocl,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaclIdPersonacl,Zona")] Domiciliocl domiciliocl, string inputAutocomplete)
+        public async Task<IActionResult> EditDomicilio(int id, [Bind("IdDomiciliocl,TipoDomicilio,Calle,No,TipoUbicacion,NombreCf,Pais,Estado,Municipio,Temporalidad,ResidenciaHabitual,Cp,Referencias,Horario,DomcilioSecundario,Observaciones,Zona,Lat,Lng,PersonaclIdPersonacl,Zona")] Domiciliocl domiciliocl, string inputAutocomplete, string nombre, int idPersona)
         {
             if (id != domiciliocl.PersonaclIdPersonacl)
             {
@@ -1037,7 +1108,7 @@ namespace scorpioweb.Models
             {
                 try
                 {
-                    var oldDomicilio = await _context.Domicilio.FindAsync(domiciliocl.IdDomiciliocl);
+                    var oldDomicilio = await _context.Domiciliocl.FindAsync(domiciliocl.IdDomiciliocl);
                     _context.Entry(oldDomicilio).CurrentValues.SetValues(domiciliocl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(domicilio);
@@ -1054,7 +1125,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction("MenuEdicion/" + domiciliocl.PersonaclIdPersonacl, "Personascl");
+                return RedirectToAction("MenuEdicion/" + domiciliocl.PersonaclIdPersonacl, "Personacls", new { nombre });
             }
             return View(domiciliocl);
         }
@@ -1076,8 +1147,7 @@ namespace scorpioweb.Models
                 return NotFound();
             }
 
-            var domisecucl = await _context.Domiciliocl.SingleOrDefaultAsync(m => m.PersonaclIdPersonacl == id);
-
+            var domisecu = await _context.Domiciliocl.SingleOrDefaultAsync(m => m.IdDomiciliocl == id);
             #region -To List databases-
             List<Personacl> personaclVM = _context.Personacl.ToList();
             List<Domiciliocl> domicilioclVM = _context.Domiciliocl.ToList();
@@ -1108,7 +1178,6 @@ namespace scorpioweb.Models
             };
 
             ViewBag.listatDomicilio = LiatatDomicilio;
-            ViewBag.idtDomicilio = BuscaId(LiatatDomicilio, domisecucl.TipoDomicilio);
             #endregion
 
             #region PAIS          
@@ -1130,10 +1199,8 @@ namespace scorpioweb.Models
             };
 
             ViewBag.ListaPaisED = ListaPaisD;
-            ViewBag.idPaisED = BuscaId(ListaPaisD, domisecucl.Pais);
 
             ViewBag.ListaPaisM = ListaPaisD;
-            ViewBag.idPaisM = BuscaId(ListaPaisD, domisecucl.Pais);
             #endregion
 
             #region Destado
@@ -1141,22 +1208,20 @@ namespace scorpioweb.Models
             listaEstadosD = (from table in _context.Estados
                              select table).ToList();
 
-            List<Domiciliosecundario> listadomiciliosecundarios = new List<Domiciliosecundario>();
-            listadomiciliosecundarios = (from table in _context.Domiciliosecundario
+            List<Domiciliosecundariocl> listadomiciliosecundarios = new List<Domiciliosecundariocl>();
+            listadomiciliosecundarios = (from table in _context.Domiciliosecundariocl
                                          select table).ToList();
 
 
             listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoED = listaEstadosD;
-            ViewBag.idEstadoED = domisecucl.Estado;
-
+           
             ViewBag.ListaEstadoM = listaEstadosD;
-            ViewBag.idEstadoM = domisecucl.Estado;
             #endregion
 
             #region Lnmunicipio
             int estadoD;
-            bool success = Int32.TryParse(domisecucl.Estado, out estadoD);
+            bool success = Int32.TryParse(domisecu.Estado, out estadoD);
             List<Municipios> listaMunicipiosD = new List<Municipios>();
             if (success)
             {
@@ -1166,12 +1231,7 @@ namespace scorpioweb.Models
             }
 
             ViewBag.ListaMunicipioED = listaMunicipiosD;
-            ViewBag.idMunicipioED = domisecucl.Municipio;
-
             ViewBag.ListaMunicipioM = listaMunicipiosD;
-            ViewBag.idMunicipioM = domisecucl.Municipio;
-
-            ViewBag.Pais = domisecucl.Pais;
             #endregion
 
 
@@ -1187,20 +1247,15 @@ namespace scorpioweb.Models
             };
 
             ViewBag.ListaTemporalidad = ListaDomicilioT;
-            ViewBag.idTemporalidad = BuscaId(ListaDomicilioT, domisecucl.Temporalidad);
-
-
-
+   
             ViewBag.listaResidenciaHabitual = listaSiNo;
-            ViewBag.idResidenciaHabitual = BuscaId(listaSiNo, domisecucl.ResidenciaHabitual);
-
             #endregion
-            if (domisecucl == null)
+            if (domisecu == null)
             {
                 return NotFound();
             }
 
-            return View(domisecucl);
+            return View(domisecu);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1222,7 +1277,7 @@ namespace scorpioweb.Models
                     domiciliosecundariocl.Observaciones = mg.normaliza(domiciliosecundariocl.Observaciones);
 
 
-                    var oldDomicilio = await _context.Domiciliosecundario.FindAsync(domiciliosecundariocl.IdDomicilioSecundarioCl);
+                    var oldDomicilio = await _context.Domiciliosecundariocl.FindAsync(domiciliosecundariocl.IdDomicilioSecundarioCl);
                     _context.Entry(oldDomicilio).CurrentValues.SetValues(domiciliosecundariocl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(domiciliosecundario);
@@ -1239,7 +1294,7 @@ namespace scorpioweb.Models
                     //    throw;
                     //}
                 }
-                return RedirectToAction("EditDomicilio/" + idPersona, "Personascl", new { nombre = nombre });
+                return RedirectToAction("EditDomicilio/" + idPersona, "Personacls", new { nombre });
             }
             return View();
         }
@@ -1263,7 +1318,7 @@ namespace scorpioweb.Models
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("EditDomicilio/" + idpersona, "Personascl");
+            return RedirectToAction("EditDomicilio/" + idpersona, "Personacls");
         }
 
         public async Task<IActionResult> CrearDomicilioSecundario(Domiciliosecundariocl domiciliosecundariocl, string[] datosDomicilio)
@@ -1519,7 +1574,7 @@ namespace scorpioweb.Models
             {
                 try
                 {
-                    var oldTrabajo = await _context.Trabajo.FindAsync(trabajocl.IdTrabajoCl);
+                    var oldTrabajo = await _context.Trabajocl.FindAsync(trabajocl.IdTrabajoCl);
                     _context.Entry(oldTrabajo).CurrentValues.SetValues(trabajocl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(trabajo);
@@ -1536,7 +1591,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction("MenuEdicion/" + trabajocl.PersonaClIdPersonaCl, "Personascl");
+                return RedirectToAction("MenuEdicion/" + trabajocl.PersonaClIdPersonaCl, "Personacls");
             }
             return View(trabajocl);
         }
@@ -1686,7 +1741,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction("MenuEdicion/" + abandonoestadocl.PersonaclIdPersonacl, "Personascl");
+                return RedirectToAction("MenuEdicion/" + abandonoestadocl.PersonaclIdPersonacl, "Personacls");
             }
             return View(abandonoestadocl);
         }
@@ -1956,7 +2011,7 @@ namespace scorpioweb.Models
                     familiaresforaneoscl.Observaciones = mg.normaliza(familiaresforaneoscl.Observaciones);
 
 
-                    var oldFamiliaresforaneos = await _context.Familiaresforaneos.FindAsync(familiaresforaneoscl.IdFamiliaresForaneosCl);
+                    var oldFamiliaresforaneos = await _context.Familiaresforaneoscl.FindAsync(familiaresforaneoscl.IdFamiliaresForaneosCl);
                     _context.Entry(oldFamiliaresforaneos).CurrentValues.SetValues(familiaresforaneoscl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(familiaresforaneos);
@@ -1966,7 +2021,7 @@ namespace scorpioweb.Models
                 {
 
                 }
-                return RedirectToAction("EditAbandonoEstado/" + familiaresforaneoscl.PersonaClIdPersonaCl, "Personascl");
+                return RedirectToAction("EditAbandonoEstado/" + familiaresforaneoscl.PersonaClIdPersonaCl, "Personacls");
             }
             return View(familiaresforaneoscl);
         }
@@ -1977,8 +2032,8 @@ namespace scorpioweb.Models
             _context.Familiaresforaneoscl.Remove(familiarfcl);
             await _context.SaveChangesAsync();
 
-            var empty = (from ff in _context.Familiaresforaneos
-                         where ff.PersonaIdPersona == familiarfcl.PersonaClIdPersonaCl
+            var empty = (from ff in _context.Familiaresforaneoscl
+                         where ff.PersonaClIdPersonaCl == familiarfcl.PersonaClIdPersonaCl
                          select ff);
 
             if (!empty.Any())
@@ -1993,7 +2048,7 @@ namespace scorpioweb.Models
 
 
 
-            return RedirectToAction("EditAbandonoEstado/" + familiarfcl.PersonaClIdPersonaCl, "Personascl");
+            return RedirectToAction("EditAbandonoEstado/" + familiarfcl.PersonaClIdPersonaCl, "Personacls");
         }
 
         public async Task<IActionResult> CrearFamiliarforaneo(Familiaresforaneoscl familiaresforaneoscl, string[] datosFamiliarF)
@@ -2138,7 +2193,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction("MenuEdicion/" + saludfisicacl.PersonaClIdPersonaCl, "Personascl");
+                return RedirectToAction("MenuEdicion/" + saludfisicacl.PersonaClIdPersonaCl, "Personacls");
             }
             return View(saludfisicacl);
         }

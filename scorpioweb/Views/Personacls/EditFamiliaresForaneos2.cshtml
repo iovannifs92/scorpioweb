@@ -5,7 +5,8 @@
     //region Guardar AddFamiliarForaneo
     $('#btnGuaardarFamiliarF1').on("click", function (e) {
         e.preventDefault();
-        var PersonaIdPersona = document.getElementById("PersonaIdPersonaFE").value;
+        alert(2)
+        var PersonaIdPersona = document.getElementById("PersonaClIdPersonaCl").value;
         var Nombre = document.getElementById("NombreFE").value;
         var Edad = document.getElementById("EdadFE").value;
         var s = document.getElementById("SexoFE");
@@ -25,11 +26,12 @@
         var ent = document.getElementById("PuedeEnterarseFE");
         var PuedeEnterarse = ent.options[ent.selectedIndex].value;
         var Observaciones = document.getElementById("observacionesFE").value;
+        alert(1)
 
         $.ajax({
             type: "POST",
             dataType: "json",
-            url: "/Personas/CrearFamiliarforaneo",
+            url: "/Personacls/CrearFamiliarforaneo",
             traditional: true,
             data: {
                 datosFamiliarF: [PersonaIdPersona, Nombre, Edad, Sexo, Relacion, TiempoConocerlo, Pais, Estado, Telefono, FrecuenciaContacto, EnteradoProceso, PuedeEnterarse, Observaciones],
@@ -47,7 +49,7 @@
 </script>
 
 @{int i = 0;}
-@foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
+@foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>)
 {
     i++;
     <div class="form-group col-md-12">
@@ -56,74 +58,74 @@
                 <h4>Familiar Foraneo <span>@i</span> </h4>
             </div>
             <div class="form-group col-md-6">
-                <input type="hidden" name="IdFamiliaresForaneos" id="IdFamiliaresForaneos" value="@item.familiaresForaneosVM.IdFamiliaresForaneos" class="form-control" readonly />
+                <input type="hidden" name="IdFamiliaresForaneosCl" id="IdFamiliaresForaneosCl" value="@item.familiaresForaneosclVM.IdFamiliaresForaneosCl" class="form-control" readonly />
             </div>
             <div class="form-group col-lg-6">
-                <input type="hidden" name="PersonaIdPersona" id="PersonaIdPersona" value="@item.familiaresForaneosVM.PersonaIdPersona" class="form-control" readonly />
+                <input type="hidden" name="PersonaClIdPersonaCl" id="PersonaClIdPersonaCl" value="@item.familiaresForaneosclVM.PersonaClIdPersonaCl" class="form-control" readonly />
             </div>
 
             <div class="form-group col-md-12">
                 <label class="control-label">Nombre</label>
-                <input name="Nombre" id="Nombre" value=" @item.familiaresForaneosVM.Nombre" class="form-control" />
+                <input name="Nombre" id="Nombre" value=" @item.familiaresForaneosclVM.Nombre" class="form-control" />
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Edad</label>
-                <input name="Edad" id="Edad" value="@item.familiaresForaneosVM.Edad" class="form-control" />
+                <input name="Edad" id="Edad" value="@item.familiaresForaneosclVM.Edad" class="form-control" />
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Genero</label>
                 <select class="form-control" name="Sexo" id="Sexo"
-                        asp-items="@(new SelectList(ViewBag.listaGenero, "Value", "Text", @item.familiaresForaneosVM.Sexo))">
+                        asp-items="@(new SelectList(ViewBag.listaGenero, "Value", "Text", @item.familiaresForaneosclVM.Sexo))">
                 </select>
             </div>
             <div class="form-group col-md-4">
                 <label class="control-label">Relación</label>
                 <select class="form-control" name="Relacion" id="Relacion"
-                        asp-items="@(new SelectList(ViewBag.listaRelacion, "Value", "Text", @item.familiaresForaneosVM.Relacion))">
+                        asp-items="@(new SelectList(ViewBag.listaRelacion, "Value", "Text", @item.familiaresForaneosclVM.Relacion))">
                 </select>
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Tiempo de conocerlo</label>
                 <select class="form-control" name="TiempoConocerlo" id="TiempoConocerlo"
-                        asp-items="@(new SelectList(ViewBag.listTiempo, "Value", "Text", @item.familiaresForaneosVM.TiempoConocerlo))">
+                        asp-items="@(new SelectList(ViewBag.listTiempo, "Value", "Text", @item.familiaresForaneosclVM.TiempoConocerlo))">
                 </select>
             </div>
             <div class="form-group col-md-6" id="DivPais">
                 <label class="control-label">Pais</label>
                 <select class="form-control" name="Pais" id="Pais"
-                        asp-items="@(new SelectList(ViewBag.ListaPais, "Value", "Text", @item.familiaresForaneosVM.Pais))">
+                        asp-items="@(new SelectList(ViewBag.ListaPais, "Value", "Text", @item.familiaresForaneosclVM.Pais))">
                 </select>
             </div>
             <div class="form-group col-md-6" id="DivEstado">
                 <label class="control-label">Estado</label>
-                <input name="Estado" id="Estado" value="@item.familiaresForaneosVM.Estado" class="form-control" />
+                <input name="Estado" id="Estado" value="@item.familiaresForaneosclVM.Estado" class="form-control" />
             </div>
 
             <div class="form-group col-md-6">
                 <label class="control-label">Telefono</label>
-                <input name="Telefono" id="Telefono" value="@item.familiaresForaneosVM.Telefono" class="form-control" />
+                <input name="Telefono" id="Telefono" value="@item.familiaresForaneosclVM.Telefono" class="form-control" />
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Frecuencia de Contacto</label>
                 <select class="form-control" name="FrecuenciaContacto" id="FrecuenciaContacto"
-                        asp-items="@(new SelectList(ViewBag.ListFrecuencia, "Value", "Text", @item.familiaresForaneosVM.FrecuenciaContacto))">
+                        asp-items="@(new SelectList(ViewBag.ListFrecuencia, "Value", "Text", @item.familiaresForaneosclVM.FrecuenciaContacto))">
                 </select>
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Enterado de Proceso</label>
                 <select class="form-control" name="EnteradoProceso" id="EnteradoProceso"
-                        asp-items="@(new SelectList(ViewBag.listaProseso, "Value", "Text", @item.familiaresForaneosVM.EnteradoProceso))">
+                        asp-items="@(new SelectList(ViewBag.listaProseso, "Value", "Text", @item.familiaresForaneosclVM.EnteradoProceso))">
                 </select>
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Puede Enterarse del Proseso</label>
                 <select class="form-control" name="PuedeEnterarse" id="PuedeEnterarse"
-                        asp-items="@(new SelectList(ViewBag.listaEnterar, "Value", "Text", @item.familiaresForaneosVM.PuedeEnterarse))">
+                        asp-items="@(new SelectList(ViewBag.listaEnterar, "Value", "Text", @item.familiaresForaneosclVM.PuedeEnterarse))">
                 </select>
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Observaciones</label>
-                <input name="Observaciones" id="Observaciones" value="@item.familiaresForaneosVM.Observaciones" class="form-control" />
+                <input name="Observaciones" id="Observaciones" value="@item.familiaresForaneosclVM.Observaciones" class="form-control" />
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">
@@ -132,7 +134,7 @@
                 <button id="btnDomSecu" name="btnDomSecu" type="button" data-toggle="modal" data-target="#modalFamiliaresExtranjero" class="btn btn-success">
                     <i class="fa fa-plus"></i> Añadir Familiar Foraneo
                 </button>
-                <button asp-action="DeleteConfirmedFamiiarF" asp-route-id="@item.familiaresForaneosVM.IdFamiliaresForaneos" onclick="return update();" class="btn btn-danger" type="submit">
+                <button asp-action="DeleteConfirmedFamiiarF" asp-route-id="@item.familiaresForaneosclVM.IdFamiliaresForaneosCl" onclick="return update();" class="btn btn-danger" type="submit">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
             </div>
@@ -151,13 +153,13 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input type="hidden" name="IdFamiliaresForaneos" style="display:none" type="text" class="form-control" />
+                    <input type="hidden" name="IdFamiliaresForaneosCl" style="display:none" type="text" class="form-control" />
                 </div>
-                @foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
+                @foreach (var item in ViewData["joinTableFamiliarF"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>)
                 {
                     <div class="form-group">
                         <label type="hidden" class="control-label">Persona IdPersona</label>
-                        <input readonly type="hidden" name="PersonaIdPersona" id="PersonaIdPersonaFE" class="form-control" value="@item.familiaresForaneosVM.PersonaIdPersona" />
+                        <input readonly type="hidden" name="PersonaClIdPersonaCl" id="PersonaClIdPersonaCl" class="form-control" value="@item.familiaresForaneosclVM.PersonaClIdPersonaCl" />
                     </div>
                     break;
                 }

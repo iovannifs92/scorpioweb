@@ -334,12 +334,12 @@
 }
 
 <h2>Domicilio</h2>
-<h3>@ViewData["Nombre"]</h3>
+<h3>@ViewBag.nombre</h3>
 <hr />
 
 <div class="row">
     <div class="col-lg-12">
-        <form asp-action="EditDomicilio" id="forma">
+        <form asp-action="EditDomicilio" asp-route-nombre="@ViewBag.nombre" asp-route-idPersona="@ViewBag.idPersona" id="forma">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdDomiciliocl" />
             <input type="hidden" asp-for="PersonaclIdPersonacl" />
@@ -469,7 +469,7 @@
                     </button>
                 </div>
                 <div class="form-group col-md-1 col-sm-1  col-xs-3" id="DivbtnEditar" style="padding-top:25px;">
-                    <a id="btnEditar" name="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personacls",new {id=@Model.IdDomiciliocl,nombre=@ViewData["Nombre"],idpersona=@Model.PersonaclIdPersonacl},Context.Request.Scheme)','Edita Domicilo Secundario')" class="btn btn-success">
+                    <a id="btnEditar" name="btnEditar" onclick="showModal('@Url.Action("EditDomSecundario2","Personacls",new {id=@Model.IdDomiciliocl,nombre=@ViewBag.nombre,idpersona=@Model.PersonaclIdPersonacl},Context.Request.Scheme)','Edita Domicilo Secundario')" class="btn btn-success">
                         <i class="fa fa-pencil"></i> Editar
                     </a>
                 </div>
