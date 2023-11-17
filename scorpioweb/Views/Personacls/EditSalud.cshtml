@@ -1,10 +1,17 @@
 ﻿@model scorpioweb.Models.Saludfisicacl
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
+    var TieneEnfermedad = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.enfermedad))');
+    var TieneEmbarazo = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.idEmbarazoLactancia))')
     var tipo = 0;
     $(document).ready(function () {
-        $('#enfermedad').change(function () {
+
+        $("#especifiqueEnfermedad, #tratamiento").css("display", TieneEnfermedad === "SI" ? "block" : "none");
+        $("#tiempoEmbarazo").css("display", TieneEmbarazo === "SI" ? "block" : "none");
+
+        $("#Enfermedad").change(function () {
             var dat = $(this).children("option:selected").val();
+         
             if (dat == "SI") {
                 $("#especifiqueEnfermedad").css("display", "block");
                 $("#tratamiento").css("display", "block");
@@ -15,15 +22,16 @@
             }
         });
 
+
         $('#embarazoLactancia').change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
                 $("#tiempoEmbarazo").css("display", "block");
-                $("#tratamiento").css("display", "block");
+              
             }
             else {
                 $("#tiempoEmbarazo").css("display", "none");
-                $("#tratamiento").css("display", "none");
+               
             }
 
         });
@@ -67,38 +75,23 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdSaludFisicaCl" />
             <input type="hidden" asp-for="PersonaClIdPersonaCl" />
+            
             <div class="form-group col-md-12">
                 <label class="control-label">¿Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
-                <select class="form-control" id="enfermedad" name="Enfermedad"
+                <select class="form-control" id="Enfermedad" name="Enfermedad"
                         asp-items="@(new SelectList(ViewBag.listaEnfermedad, "Value", "Text", @ViewBag.idEnfermedad))">
                 </select>
             </div>
-            @if (ViewBag.enfermedad == "SI")
-            {
-                <div class="form-group col-md-12" id="especifiqueEnfermedad">
-                    <label class="control-label">Especifique Enfermedad</label>
-                    <input asp-for="EspecifiqueEnfermedad" class="form-control" />
-                    <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-12" id="tratamiento">
-                    <label class="control-label">Tratamiento médico indicado</label>
-                    <input asp-for="Tratamiento" class="form-control" />
-                    <span asp-validation-for="Tratamiento" class="text-danger"></span>
-                </div>
-            }
-            else
-            {
-                <div class="form-group col-md-12" style="display:none" id="especifiqueEnfermedad">
-                    <label class="control-label">Especifique Enfermedad</label>
-                    <input asp-for="EspecifiqueEnfermedad" class="form-control" />
-                    <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-12" style="display:none" id="tratamiento">
-                    <label class="control-label">Tratamiento médico indicado</label>
-                    <input asp-for="Tratamiento" class="form-control" />
-                    <span asp-validation-for="Tratamiento" class="text-danger"></span>
-                </div>
-            }
+            <div class="form-group col-md-12" id="especifiqueEnfermedad">
+                <label class="control-label">Especifique Enfermedad</label>
+                <input asp-for="EspecifiqueEnfermedad" class="form-control" style="text-transform:uppercase" />
+                <span asp-validation-for="EspecifiqueEnfermedad" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="tratamiento">
+                <label class="control-label">Tratamiento médico indicado para tratar la enfermedad</label>
+                <input asp-for="Tratamiento" class="form-control" style="text-transform:uppercase" />
+                <span asp-validation-for="Tratamiento" class="text-danger"></span>
+            </div>
 
             @if (ViewData["Genero"].ToString() == "F")
             {
@@ -109,12 +102,11 @@
                     </select>
                 </div>
                 <div class="form-group col-md-12" id="tiempoEmbarazo">
-                    <label class="control-label">Tiempo</label>
-                    <input asp-for="Tiempo" class="form-control" />
+                    <label class="control-label">Tiempo de embarazo</label>
+                    <input asp-for="Tiempo" class="form-control" style="text-transform:uppercase" />
                     <span asp-validation-for="Tiempo" class="text-danger"></span>
                 </div>
             }
-
 
 
             <div class="form-group col-md-12">
@@ -127,7 +119,7 @@
             {
                 <div class="form-group col-md-12" id="especifiqueDiscapacidad">
                     <label class="control-label">Específique la discapacidad</label>
-                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
+                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" style="text-transform:uppercase" />
                     <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
                 </div>
             }
@@ -135,7 +127,7 @@
             {
                 <div class="form-group col-md-12" style="display:none" id="especifiqueDiscapacidad">
                     <label class="control-label">Específique la discapacidad</label>
-                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" />
+                    <input asp-for="EspecifiqueDiscapacidad" class="form-control" style="text-transform:uppercase" />
                     <span asp-validation-for="EspecifiqueDiscapacidad" class="text-danger"></span>
                 </div>
             }
@@ -181,7 +173,7 @@
 
             <div class="form-group col-md-12">
                 <label asp-for="Observaciones" class="control-label"></label>
-                <input asp-for="Observaciones" class="form-control" />
+                <input asp-for="Observaciones" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">

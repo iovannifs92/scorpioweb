@@ -27,10 +27,94 @@
         var listDomSecEditados = new Array;
         var listFamExtranjero = new Array;
         var listFamExtranjerosEditados = new Array;
+        var UltimoConsumo = new Date('@ViewBag.ultimoConsumo.ToString("yyyy-MM-ddTHH:mm:ss")');
+        var UltimoConsumoFormatoFecha = UltimoConsumo.toISOString().split('T')[0];
+
         
     
     $(document).ready(function () {
-        //#region centro penitenciario
+        //#region otro idioma
+        var IdiomaSiNo = @Html.Raw(Json.Serialize(ViewBag.idioma));
+        var x = @Html.Raw(Json.Serialize(ViewBag.EspecifiqueIdioma));
+
+        if (IdiomaSiNo == "SI") {
+            $("#DivEspecifiqueIdioma").show();
+            $("#InputEspecifiqueIdioma").val(x);
+        } else {
+            $("#DivEspecifiqueIdioma").hide();
+            $("#InputEspecifiqueIdioma").val("NA");
+            $("#DivOtroIdioma").removeClass("col-lg-6").addClass("col-md-12");
+        }
+
+        $("#OtroIdioma").change(function () {
+            if ($(this).val() === "SI") {
+                $("#DivEspecifiqueIdioma").show();
+                $("#InputEspecifiqueIdioma").val(x);
+                $("#DivOtroIdioma").removeClass("col-md-12").addClass("col-lg-6");
+            } else {
+                $("#DivEspecifiqueIdioma").hide();
+                $("#InputEspecifiqueIdioma").val("NA");
+                $("#DivOtroIdioma").removeClass("col-lg-6").addClass("col-md-12");
+
+            }
+        });
+        //#end region
+
+        //#region traductor
+        var RequiereTraductorSiNo = @Html.Raw(Json.Serialize( ViewBag.traductor));
+        var EspecifiqueTraductor = @Html.Raw(Json.Serialize( ViewBag.EspecifiqueTraductor));
+
+        if (RequiereTraductorSiNo == "SI") {
+            $("#DivEspecifiqueTraductor").show();
+            $("#InputEspecifiqueTraductor").val(EspecifiqueTraductor);
+        } else {
+            $("#DivEspecifiqueTraductor").hide();
+            $("#InputEspecifiqueTraductor").val("NA");
+            $("#DivTraductor").removeClass("col-lg-6").addClass("col-md-12");
+        }
+
+        $("#Traductor").change(function () {
+            if ($(this).val() === "SI") {
+                $("#DivEspecifiqueTraductor").show()
+                $("#InputEspecifiqueTraductor").val(EspecifiqueTraductor);
+                $("#DivTraductor").removeClass("col-md-12").addClass("col-lg-6");
+            } else {
+                $("#DivEspecifiqueTraductor").hide();
+                $("#InputEspecifiqueTraductor").val("NA");
+                $("#DivTraductor").removeClass("col-lg-6").addClass("col-md-12");
+
+            }
+        });
+        //#endregion
+
+        //#region hijos
+
+        var TieneHijosSiNo = @Html.Raw(Json.Serialize( ViewBag.TieneHijos));
+        var NumeroHijos = @Html.Raw(Json.Serialize( ViewBag.NumeroHijos));
+
+        if (TieneHijosSiNo == "SI") {
+            $("#DivNhijos").show();
+            $("#InputNumeroHijos").val(NumeroHijos);
+        } else {
+            $("#DivNhijos").hide();
+            $("#InputEspecifiqueTraductor").val("0");
+            $("#DivHijos").removeClass("col-lg-6").addClass("col-md-12");
+        }
+
+        $("#Hijos").change(function () {
+            if ($(this).val() === "SI") {
+                $("#DivNhijos").show();
+                $("#InputNumeroHijos").val(NumeroHijos);
+                $("#DivHijos").removeClass("col-md-12").addClass("col-lg-6");
+            } else {
+                $("#DivNhijos").hide();
+                $("#InputNumeroHijos").val("0");
+                $("#DivHijos").removeClass("col-lg-6").addClass("col-md-12");
+
+            }
+        });
+        //#endregion
+         //#region centro penitenciario
         var sinocentropenitenciario = @Html.Raw(Json.Serialize(ViewBag.idSinoCentroPenitenciario));
             if(sinocentropenitenciario == "SI"){
                 $("#lugarInternamientoDiv").show();
@@ -161,45 +245,45 @@
                 $("#DivLnlocalidad").addClass("col-lg-3");
             }
         });
-        $('#OtroIdioma').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#DivEspecifiqueIdioma").css("display", "block");
-                $("#DivOtroIdioma").removeClass("col-md-12");
-                $("#DivOtroIdioma").addClass("col-lg-6");
-            }
-            else {
-                $("#DivEspecifiqueIdioma").css("display", "none");
-                $("#DivOtroIdioma").removeClass("col-lg-6");
-                $("#DivOtroIdioma").addClass("col-md-12");
-            }
-        });
-        $('#Traductor').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#DivEspecifiqueTraductor").css("display", "block");
-                $("#DivTraductor").removeClass("col-md-12");
-                $("#DivTraductor").addClass("col-lg-6");
-            }
-            else {
-                $("#DivEspecifiqueTraductor").css("display", "none");
-                $("#DivTraductor").removeClass("col-lg-6");
-                $("#DivTraductor").addClass("col-md-12");
-            }
-        });
-        $('#Hijos').change(function () {
-            var dat = $(this).children("option:selected").val();
-            if (dat == "SI") {
-                $("#DivNhijos").css("display", "block");
-                $("#DivHijos").removeClass("col-md-12");
-                $("#DivHijos").addClass("col-lg-6");
-            }
-            else {
-                $("#DivNhijos").css("display", "none");
-                $("#DivHijos").removeClass("col-lg-6");
-                $("#DivHijos").addClass("col-md-12");
-            }
-        });
+        // $('#OtroIdioma').change(function () {
+        //     var dat = $(this).children("option:selected").val();
+        //     if (dat == "SI") {
+        //         $("#DivEspecifiqueIdioma").css("display", "block");
+        //         $("#DivOtroIdioma").removeClass("col-md-12");
+        //         $("#DivOtroIdioma").addClass("col-lg-6");
+        //     }
+        //     else {
+        //         $("#DivEspecifiqueIdioma").css("display", "none");
+        //         $("#DivOtroIdioma").removeClass("col-lg-6");
+        //         $("#DivOtroIdioma").addClass("col-md-12");
+        //     }
+        // });
+        // $('#Traductor').change(function () {
+        //     var dat = $(this).children("option:selected").val();
+        //     if (dat == "SI") {
+        //         $("#DivEspecifiqueTraductor").css("display", "block");
+        //         $("#DivTraductor").removeClass("col-md-12");
+        //         $("#DivTraductor").addClass("col-lg-6");
+        //     }
+        //     else {
+        //         $("#DivEspecifiqueTraductor").css("display", "none");
+        //         $("#DivTraductor").removeClass("col-lg-6");
+        //         $("#DivTraductor").addClass("col-md-12");
+        //     }
+        // });
+        // $('#Hijos').change(function () {
+        //     var dat = $(this).children("option:selected").val();
+        //     if (dat == "SI") {
+        //         $("#DivNhijos").css("display", "block");
+        //         $("#DivHijos").removeClass("col-md-12");
+        //         $("#DivHijos").addClass("col-lg-6");
+        //     }
+        //     else {
+        //         $("#DivNhijos").css("display", "none");
+        //         $("#DivHijos").removeClass("col-lg-6");
+        //         $("#DivHijos").addClass("col-md-12");
+        //     }
+        // });
         $('#sexo').change(function () {
             var gen = $(this).children("option:selected").val();
             if (gen == "F") {
@@ -276,7 +360,7 @@
             document.getElementById("sustanciaE").value = '@ViewBag.idSustancia';
             document.getElementById("frecuenciaE").value = '@ViewBag.idFrecuencia';
             document.getElementById("cantidadE").value = '@ViewBag.cantidad';
-            document.getElementById("ultimoConsumoE").value = '@ViewBag.ultimoConsumo';
+            document.getElementById("ultimoConsumoE").value = UltimoConsumoFormatoFecha;
             document.getElementById("observacionesConsumoE").value = '@ViewBag.Observaciones';
             document.getElementById("idConsumoSustanciasE").value = '@ViewBag.idConsumoSustancias';
             $('#modalEditarSustancias').modal('show');
@@ -284,6 +368,7 @@
             listSustanciasEditadas.length = 0;
         });
         $("#btnAgregarFamiliar").click(function () {
+            tipo = 1;
             if (tipo == 1) {
                 document.getElementById("textoAFRAgregar").innerHTML = "Asiento Familiar"
             }
@@ -340,6 +425,32 @@
             $('#modalEditarAsientoFamiliar').modal('show');
             contadorFamiliares = 1;
             listFamiliaresEditados.length = 0;
+        });
+        $("#btnAgregarReferencia").click(function () {
+            tipo = 2;
+            if (tipo == 1) {
+                document.getElementById("textoAFRAgregar").innerHTML = "Asiento Familiar"
+            }
+            else {
+                document.getElementById("textoAFRAgregar").innerHTML = "Referencia"
+            }
+            document.getElementById("AFNombreA").value = '';
+            document.getElementById("AFRelacionA").value = 'ESPOSO (A)';
+            document.getElementById("AFEdadA").value = '0';
+            document.getElementById("AFSexoA").value = 'M';
+            document.getElementById("AFDependenciaA").value = 'NO';
+            document.getElementById("AFDependenciaExplicaOA").value = '';
+            document.getElementById("AFVivenJuntosA").value = 'SI';
+            document.getElementById("AFDireccionFamiliarOA").value = '';
+            document.getElementById("AFtelefonoFamiliarA").value = '';
+            document.getElementById("AFLocalizacionA").value = '';
+            document.getElementById("AFEnteradoProcesoA").value = 'SI';
+            document.getElementById("AFPuedeEnterarseOA").value = 'NA';
+            document.getElementById("AFobservacionesA").value = '';
+            $("#AFDependenciaExplicaA").css("display", "none");
+            $("#AFDireccionFamiliarA").css("display", "none");
+            $("#AFPuedeEnterarseA").css("display", "none");
+            $('#modalAgregarAsientoFamiliar').modal('show')
         });
         $("#btnEditarReferencias").click(function () {
             document.getElementById("textoAFREditar").innerHTML = "Referencia"
@@ -482,24 +593,24 @@
             listSustanciasEditadas.push(observaciones);
             listSustanciasEditadas.push(idConsumo);
             $('#arraySustanciasEditadas').val(JSON.stringify(listSustanciasEditadas));
-            if(6*contadorSustancia >= listaConsumo.length)
-            {
+            if (6 * contadorSustancia >= listaConsumo.length) {
                 $("#modalEditarSustancias").modal('hide');
             }
-            else
-            {
-                document.getElementById("sustanciaE").value = listaConsumo[6*contadorSustancia];
-                document.getElementById("frecuenciaE").value = listaConsumo[6*contadorSustancia + 1];
-                document.getElementById("cantidadE").value = listaConsumo[6*contadorSustancia + 2];
-                document.getElementById("ultimoConsumoE").value = listaConsumo[6*contadorSustancia + 3];
-                document.getElementById("observacionesConsumoE").value = listaConsumo[6*contadorSustancia + 4];
-                document.getElementById("idConsumoSustanciasE").value = listaConsumo[6*contadorSustancia + 5];
+            else {
+                document.getElementById("sustanciaE").value = listaConsumo[6 * contadorSustancia];
+                document.getElementById("frecuenciaE").value = listaConsumo[6 * contadorSustancia + 1];
+                document.getElementById("cantidadE").value = listaConsumo[6 * contadorSustancia + 2];
+                document.getElementById("ultimoConsumoE").value = listaConsumo[6 * contadorSustancia + 3];
+                document.getElementById("observacionesConsumoE").value = listaConsumo[6 * contadorSustancia + 4];
+                document.getElementById("idConsumoSustanciasE").value = listaConsumo[6 * contadorSustancia + 5];
                 contadorSustancia++;
             }
         });
+
         $('#btnDeleteSustancia').on("click", function (e) {
             e.preventDefault();
             var contadorSustanciaPrev = contadorSustancia;
+            alert("Sustancia borrada!")
             btnSiguienteSustancia.click();
             listSustanciasEditadas[listSustanciasEditadas.length - 1] = -listSustanciasEditadas[listSustanciasEditadas.length - 1];//negative ids means delete
             $('#arraySustanciasEditadas').val(JSON.stringify(listSustanciasEditadas));
@@ -513,6 +624,8 @@
                 {
                     var consumoSustancias = document.getElementById('consumoSustancias');
                     consumoSustancias.value = 'NO';
+                    $("#btnEditarSustancias").hide();
+                    alert("Sustancias borradas!, favor de guardar datos generales para completar")
                 }
             }
         });
@@ -710,6 +823,7 @@
             btnSiguienteFamiliar.click();
             if (tipo == 1) 
             {
+                alert("Familiar borrado!")
                 listFamiliaresEditados[listFamiliaresEditados.length - 1] = -listFamiliaresEditados[listFamiliaresEditados.length - 1];
                 $('#arrayFamiliaresEditados').val(JSON.stringify(listFamiliaresEditados));
                 if(ASIENTO_SIZE*contadorFamiliaresPrev >= listaFamiliares.length)
@@ -722,11 +836,14 @@
                     {
                         var Familiares = document.getElementById('Familiares');
                         Familiares.value = 'NO';
+                        alert("Familiares borrados!, favor de guardar datos generales para completar")
+                        $("#btnEditarFamiliares").hide();
                     }
                 }
             }
             else
             {
+                alert("Referencia borrada!")
                 listReferenciasEditadas[listReferenciasEditadas.length - 1] = -listReferenciasEditadas[listReferenciasEditadas.length - 1];
                 $('#arrayReferenciasEditadas').val(JSON.stringify(listReferenciasEditadas));
                 if(ASIENTO_SIZE*contadorReferenciasPrev >= listaReferencias.length)
@@ -739,6 +856,8 @@
                     {
                         var ReferenciasPersonales = document.getElementById('ReferenciasPersonales');
                         ReferenciasPersonales.value = 'NO';
+                        alert("Referencias borradas!,favor de guardar datos generales para completar")
+                        $("#btnEditarReferencias").hide();
                     }
                 }
             }
@@ -921,8 +1040,19 @@
                 <input asp-for="Duracion" class="form-control" />
                 <span asp-validation-for="Duracion" class="text-danger"></span>
             </div>
-
-            @if (ViewBag.idioma == "SI")
+           
+            <div class="form-group col-lg-6" id="DivOtroIdioma">
+                <label class="control-label">¿Habla otro idioma, lengua o dialecto, distinto al español?</label>
+                <select class="form-control" name="OtroIdioma" id="OtroIdioma"
+                        asp-items="@(new SelectList(ViewBag.listaOtroIdioma, "Value", "Text", @ViewBag.idOtroIdioma))">
+                </select>
+            </div>
+            <div class="form-group col-lg-6" id="DivEspecifiqueIdioma">
+                <label class="control-label">Especifique idioma</label>
+                <input asp-for="EspecifiqueIdioma" class="form-control" id="InputEspecifiqueIdioma" value=@ViewBag.EspecifiqueIdioma style="text-transform:uppercase" />
+                <span asp-validation-for="EspecifiqueIdioma" class="text-danger"></span>
+            </div>
+@*             @if (ViewBag.idioma == "SI")
             {
                 <div class="form-group col-lg-6" id="DivOtroIdioma">
                     <label class="control-label">¿Habla otro idioma, lengua o dialecto, distinto al español?</label>
@@ -949,7 +1079,7 @@
                     <input asp-for="EspecifiqueIdioma" class="form-control" />
                     <span asp-validation-for="EspecifiqueIdioma" class="text-danger"></span>
                 </div>
-            }
+            } *@
             <div class="form-group col-lg-6">
                 <label class="control-label">¿Pertenece a una comunidad Indígena?</label>
                 <select class="form-control" name="ComIndigena" id="ComIndigena"
@@ -975,7 +1105,20 @@
                 </select>
             </div>
 
-            @if (ViewBag.traductor == "SI")
+          
+            <div class="form-group col-lg-6" id="DivTraductor">
+                <label class="control-label">¿Requiere de traductor o interprete?</label>
+                <select class="form-control" name="Traductor" id="Traductor"
+                        asp-items="@(new SelectList(ViewBag.listaTraductor, "Value", "Text", @ViewBag.idTraductor))">
+                </select>
+            </div>
+            <div class="form-group col-lg-6" id="DivEspecifiqueTraductor">
+                <label class="control-label">Especifique Traductor</label>
+                <input asp-for="EspecifiqueTraductor" class="form-control" id="InputEspecifiqueTraductor" style="text-transform:uppercase" />
+                <span asp-validation-for="EspecifiqueTraductor" class="text-danger"></span>
+            </div>
+
+          @*   @if (ViewBag.traductor == "SI")
             {
                 <div class="form-group col-lg-6" id="DivTraductor">
                     <label class="control-label">¿Requiere de traductor o interprete?</label>
@@ -1003,7 +1146,7 @@
                     <span asp-validation-for="EspecifiqueTraductor" class="text-danger"></span>
                 </div>
             }
-
+ *@
             <div class="form-group col-lg-6">
                 <label class="control-label">Telefono Fijo</label>
                 <input asp-for="TelefonoFijo" class="form-control" type="tel" pattern="[0-9]{10}" maxlength="10" />
@@ -1015,7 +1158,18 @@
                 <span asp-validation-for="Celular" class="text-danger"></span>
             </div>
 
-            @if (ViewBag.Hijos == "SI")
+            <div class="form-group col-lg-6" id="DivHijos">
+                <label class="control-label">¿Tiene hijos?</label>
+                <select class="form-control" name="Hijos" id="Hijos"
+                        asp-items="@(new SelectList(ViewBag.listaHijos, "Value", "Text", @ViewBag.idHijos))">
+                </select>
+            </div>
+            <div class="form-group col-lg-6" id="DivNhijos">
+                <label class="control-label">Numero de hijos</label>
+                <input asp-for="Nhijos" class="form-control" id="InputNumeroHijos" />
+                <span asp-validation-for="Nhijos" class="text-danger"></span>
+            </div>
+           @*  @if (ViewBag.Hijos == "SI")
             {
                 <div class="form-group col-lg-6" id="DivHijos">
                     <label class="control-label">¿Tiene hijos?</label>
@@ -1043,7 +1197,7 @@
                     <span asp-validation-for="Nhijos" class="text-danger"></span>
                 </div>
             }
-
+ *@
             <div class="form-group col-md-12">
                 <label class="control-label">Numero de personas con quien vive</label>
                 <input asp-for="NpersonasVive" class="form-control" />
@@ -1060,35 +1214,72 @@
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-11">
+            
+            <div class="form-group col-md-9">
                 <label class="control-label">¿Consume Sustancias?</label>
                 <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
                         asp-items="@(new SelectList(ViewBag.listaConsumoSustancias, "Value","Text",@ViewBag.ConsumoSustancias))">
                 </select>
             </div>
-            <div class="form-group col-md-1" style="padding-top:25px;">
+            <div class="form-group col-md-1" style="padding-top:25px; padding-left: 5px;">
+                <button type="button" class="btn btn-success" id="btnAgregarSustancia" name="btnAgregarSustancia" style="width: 100px;">
+                    <i class="fa fa-plus"></i>
+                    Sustancia
+                </button>
+            </div>
+            <div class="form-group col-md-1" style="padding-top:25px; padding-left: 2em;">
                 <button type="button" class="btn btn-primary" style="display:none;" id="btnEditarSustancias">
                     <i class="fa fa-pencil"></i>
                     Editar
                 </button>
             </div>
-            <div class="form-group col-md-11">
+@*             <div class="form-group col-md-1" style="padding-top:25px;">
+                <button type="button" class="btn btn-primary" style="display:none;" id="btnEditarSustancias">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </button>
+            </div> *@
+            <div class="form-group col-md-9">
                 <label class="control-label">¿Tiene familiares?</label>
                 <select class="form-control" name="Familiares" id="Familiares"
                         asp-items="@(new SelectList(ViewBag.listaFamiliares, "Value", "Text", @ViewBag.idFamiliares))">
                 </select>
             </div>
-            <div class="form-group col-md-1" style="padding-top:25px;">
+            <div class="form-group col-md-1" style="padding-top:25px; padding-left: 5px;">
+                <button type="button" class="btn btn-success" id="btnAgregarFamiliar" name="btnAgregarFamiliar" style="width: 100px;">
+                    <i class="fa fa-plus"></i>
+                    Familiar
+                </button>
+            </div>
+            <div class="form-group col-md-1" style="padding-top:25px;  padding-left: 2em;">
                 <button type="button" class="btn btn-primary" id="btnEditarFamiliares">
                     <i class="fa fa-pencil"></i>
                     Editar
                 </button>
             </div>
-            <div class="form-group col-md-11">
+  @*           <div class="form-group col-md-1" style="padding-top:25px;">
+                <button type="button" class="btn btn-primary" id="btnEditarFamiliares">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </button>
+            </div> *@
+            <div class="form-group col-md-9">
                 <label class="control-label">¿Tiene referencias?</label>
                 <select class="form-control" name="ReferenciasPersonales" id="ReferenciasPersonales"
                         asp-items="@(new SelectList(ViewBag.listaReferenciasPersonales, "Value", "Text", @ViewBag.idReferenciasPersonales))">
                 </select>
+            </div>
+            <div class="form-group col-md-1" style="padding-top:25px; padding-left: 5px;">
+                <button type="button" class="btn btn-success " id="btnAgregarReferencia" name="btnAgregarReferencia" style="width: 100px;">
+                    <i class="fa fa-plus"></i>
+                    Referencia
+                </button>
+            </div>
+            <div class="form-group col-md-1" style="padding-top:25px; padding-left: 2em;">
+                <button type="button" class="btn btn-primary" id="btnEditarReferencias">
+                    <i class="fa fa-pencil"></i>
+                    Editar
+                </button>
             </div>
             @*<div class="form-group col-md-11">
             <label class="control-label">Ubicación del Expediente (solo Durango)</label>
@@ -1101,13 +1292,13 @@
                 <input readonly asp-for="Supervisor" class="form-control" />
                 <span asp-validation-for="Supervisor" class="text-danger"></span>
             </div>
-            <div class="form-group col-md-1" style="padding-top:25px;">
+@*             <div class="form-group col-md-1" style="padding-top:25px;">
                 <button type="button" class="btn btn-primary" id="btnEditarReferencias">
                     <i class="fa fa-pencil"></i>
                     Editar
                 </button>
             </div>
-
+ *@
             <div class="form-group col-lg-12">
                 <label asp-for="UltimaActualización" class="control-label"></label>
                 <input asp-for="UltimaActualización" class="form-control" />
@@ -1136,65 +1327,15 @@
     </a>
 </div>
 
-<!-- Modal Editar consumo de sustancias -->
-<div class="modal fade" id="modalEditarSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color:#0078A7;">
-                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Consumo de sustancias</h5>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" name="idConsumoSustanciasE" id="idConsumoSustanciasE" value="@ViewBag.idConsumoSustancias" />
-                <div>
-                    <label class="control-label">Sustancia</label>
-                    <select class="form-control" name="sustanciaE" id="sustanciaE"
-                            asp-items="@(new SelectList(ViewBag.listaSustancia, "Value", "Text", @ViewBag.idSustancia))">
-                    </select>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Frecuencia de consumo</label>
-                    <select class="form-control" name="frecuenciaE" id="frecuenciaE"
-                            asp-items="@(new SelectList(ViewBag.listaFrecuencia, "Value", "Text", @ViewBag.idFrecuencia))">
-                    </select>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Cantidad</label>
-                    <input class="form-control" maxlength="200" name="cantidadE" type="text" id="cantidadE" value=@ViewBag.cantidad />
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Último consumo</label>
-                    <input required name="ultimoConsumoE" id="ultimoConsumoE" type="date" class="form-control" value=@ViewBag.ultimoConsumo?.Date.ToString("yyyy-MM-dd") />
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label" for="observaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoE" id="observacionesConsumoE" style="white-space: pre-line">@ViewBag.observaciones</textarea>
-                    <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-danger form-group col-xs-3 col-sm-2" id="btnDeleteSustancia" name="btnDeleteSustancia">
-                    <i class="fa fa-trash"></i> Borrar
-                </button>
-                <button type="button" class="btn btn-success" id="btnAgregarSustancia" name="btnAgregarSustancia">
-                    <i class="fa fa-plus"></i>
-                    Agregar
-                </button>
-                <button type="submit" class="btn btn-primary" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
-                    <i class="fa fa-arrow-right"></i>
-                    Siguiente
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Modal Agregar consumo de sustancias -->
 <div class="modal fade" id="modalAgregarSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background-color:#0078A7;">
+            <div class="modal-header" style="background-color:#0078A7; padding-top: 5px; padding-bottom: 5px; margin-bottom: 10px;">
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;">Consumo de sustancias</h5>
+                <button type="button" class="btn btn-danger btn-lg close" data-dismiss="modal" aria-label="Close" style="font-size: 30px; padding-bottom: 5px;margin-top: -30px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div>
@@ -1231,15 +1372,15 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Cantidad</label>
-                    <input class="form-control" maxlength="200" name="cantidadA" type="text" id="cantidadA" />
+                    <input class="form-control" maxlength="200" name="cantidadA" type="text" id="cantidadA" style="text-transform:uppercase" />
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Último consumo</label>
-                    <input required name="ultimoConsumoA" id="ultimoConsumoA" type="date" class="form-control" />
+                    <input required name="ultimoConsumoA" id="ultimoConsumoA" type="date" class="form-control" style="text-transform:uppercase" />
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="observaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoA" id="observacionesConsumoA"></textarea>
+                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoA" id="observacionesConsumoA" style="text-transform:uppercase"></textarea>
                     <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
                 </div>
             </div>
@@ -1258,19 +1399,174 @@
     </div>
 </div>
 
+<!-- Modal Editar consumo de sustancias -->
+<div class="modal fade" id="modalEditarSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7; padding-top: 5px; padding-bottom: 5px; margin-bottom: 10px;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Consumo de sustancias</h5>
+                <button type="button" class="btn btn-danger btn-lg close" data-dismiss="modal" aria-label="Close" style="font-size: 30px; padding-bottom: 5px;margin-top: -30px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="idConsumoSustanciasE" id="idConsumoSustanciasE" value="@ViewBag.idConsumoSustancias" />
+                <div>
+                    <label class="control-label">Sustancia</label>
+                    <select class="form-control" name="sustanciaE" id="sustanciaE"
+                            asp-items="@(new SelectList(ViewBag.listaSustancia, "Value", "Text", @ViewBag.idSustancia))">
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Frecuencia de consumo</label>
+                    <select class="form-control" name="frecuenciaE" id="frecuenciaE"
+                            asp-items="@(new SelectList(ViewBag.listaFrecuencia, "Value", "Text", @ViewBag.idFrecuencia))">
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Cantidad</label>
+                    <input class="form-control" maxlength="200" name="cantidadE" type="text" id="cantidadE" value=@ViewBag.cantidad style="text-transform:uppercase" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Último consumo</label>
+                    <input required name="ultimoConsumoE" id="ultimoConsumoE" type="date" class="form-control" @* value=@ViewBag.ultimoConsumo?.Date.ToString("yyyy-MM-dd") *@ />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="observaciones">Observaciones</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoE" id="observacionesConsumoE" style="white-space: pre-line; text-transform:uppercase;">@ViewBag.observaciones</textarea>
+                    <small class="form-text text-muted">Poner aclaraciones de la sustancia que consume y si selecciono otra sustancia en opciones especificar la sustancia.</small>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger form-group col-xs-3 col-sm-2" id="btnDeleteSustancia" name="btnDeleteSustancia">
+                    <i class="fa fa-trash"></i> Borrar
+                </button>
+@*                 <button type="button" class="btn btn-success" id="btnAgregarSustancia" name="btnAgregarSustancia">
+                    <i class="fa fa-plus"></i>
+                    Agregar
+                </button> *@
+                <button type="submit" class="btn btn-primary" id="btnSiguienteSustancia" name="btnSiguienteSustancia">
+                    <i class="fa fa-arrow-right"></i>
+                    Siguiente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Asiento Familiar -->
+<div class="modal fade" id="modalAgregarAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7; padding-top: 5px; padding-bottom: 5px; margin-bottom: 10px;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFRAgregar"></h5>
+                <button type="button" class="btn btn-danger btn-lg close" data-dismiss="modal" aria-label="Close" style="font-size: 30px; padding-bottom: 5px;margin-top: -30px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Nombre</label>
+                    <input class="form-control" maxlength="150" name="AFNombreA" type="text" id="AFNombreA" style="text-transform:uppercase" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Relación</label>
+                    <select class="form-control" name="AFRelacionA" id="AFRelacionA" asp-items="@(new SelectList(ViewBag.listaRelacion, "Value", "Text"))">
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Edad</label>
+                    <input class="form-control" value="0" name="AFEdadA" type="text" id="AFEdadA" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="control-label">Genero</label>
+                    <select required class="form-control" name="AFSexoA" id="AFSexoA">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="N">Prefiero no decirlo</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Depende en algo de él?</label>
+                    <select required class="form-control" name="AFDependenciaA" id="AFDependenciaA">
+                        <option value="NO">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFDependenciaExplicaA">
+                    <label class="control-label" for="AFDependenciaExplicaA">Explicar en que depende de él y cada cuanto</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFDependenciaExplicaOA" id="AFDependenciaExplicaOA" style="text-transform:uppercase"></textarea>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Vive con él?</label>
+                    <select required class="form-control" name="AFVivenJuntosA" id="AFVivenJuntosA">
+                        <option value="SI">Si</option>
+                        <option value="NO">No</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFDireccionFamiliarA">
+                    <label class="control-label">Dirección</label>
+                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOA" id="AFDireccionFamiliarOA" type="text" style="text-transform:uppercase" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">Teléfono (10 dígitos)</label>
+                    <input name="AFtelefonoFamiliarA" id="AFtelefonoFamiliarA" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="AFDependenciaExplica">Días y horarios en que se encuentra</label>
+                    <textarea maxlength="200" class="form-control" rows="2" name="AFLocalizacionA" id="AFLocalizacionA" style="text-transform:uppercase"></textarea>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label">¿Enterado de su proceso penal?</label>
+                    <select required class="form-control" name="AFEnteradoProcesoA" id="AFEnteradoProcesoA">
+                        <option value="SI">Si</option>
+                        <option value="NO">No</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%; display:none;" id="AFPuedeEnterarseA">
+                    <label class="control-label">¿Se puede enterar?</label>
+                    <select required class="form-control" name="AFPuedeEnterarseOA" id="AFPuedeEnterarseOA">
+                        <option value="NA">NA</option>
+                        <option value="NO">No</option>
+                        <option value="SI">Si</option>
+                    </select>
+                </div>
+                <div style="padding-top:1%;">
+                    <label class="control-label" for="AFobservaciones">Observaciones</label>
+                    <textarea maxlength="250" class="form-control" rows="2" name="AFobservacionesA" id="AFobservacionesA" style="text-transform:uppercase"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseAF">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarFamiliar" name="btnGuardarFamiliar">
+                    <i class="fa fa-save"></i>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Modal Editar Asiento Familiar -->
 <div class="modal fade" id="modalEditarAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background-color:#0078A7;">
+            <div class="modal-header" style="background-color:#0078A7;padding-bottom: 5px; margin-bottom: 10px;">
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFREditar"></h5>
+                <button type="button" class="btn btn-danger btn-lg close" data-dismiss="modal" aria-label="Close" style="font-size: 30px; padding-bottom: 5px;margin-top: -30px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="AFTipoE" id="AFTipoE" />
                 <input type="hidden" name="AFidAsientoFamiliarE" id="AFidAsientoFamiliarE" />
                 <div class="form-group">
                     <label class="control-label">Nombre</label>
-                    <input class="form-control" maxlength="150" name="AFNombreE" type="text" id="AFNombreE"/>
+                    <input class="form-control" maxlength="150" name="AFNombreE" type="text" id="AFNombreE" style="text-transform:uppercase" />
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Relación</label>
@@ -1280,7 +1576,7 @@
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Edad</label>
-                    <input class="form-control" name="AFEdadE" type="number" id="AFEdadE"/>
+                    <input class="form-control" name="AFEdadE" type="text" id="AFEdadE"/>
                 </div>
                 <div class="form-group col-md-4">
                     <label class="control-label">Genero</label>
@@ -1306,7 +1602,7 @@
                 </div>
                 <div style="padding-top:1%; display:none;" id="AFDireccionFamiliarE">
                     <label class="control-label">Dirección</label>
-                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOE" id="AFDireccionFamiliarOE" type="text"/>
+                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOE" id="AFDireccionFamiliarOE" type="text" style="text-transform:uppercase" />
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Teléfono (10 dígitos)</label>
@@ -1330,7 +1626,7 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="AFobservaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" name="AFobservacionesE" id="AFobservacionesE"></textarea>
+                    <textarea maxlength="250" class="form-control" name="AFobservacionesE" id="AFobservacionesE" style="text-transform:uppercase"></textarea>
                 </div>
             </div>
 
@@ -1338,10 +1634,10 @@
                 <button type="submit" class="btn btn-danger form-group col-xs-3 col-sm-2" id="btnDeleteFamiliar" name="btnDeleteFamiliar">
                     <i class="fa fa-trash"></i> Borrar
                 </button>
-                <button type="button" class="btn btn-success" id="btnAgregarFamiliar" name="btnAgregarFamiliar">
+@*                 <button type="button" class="btn btn-success" id="btnAgregarFamiliar" name="btnAgregarFamiliar">
                     <i class="fa fa-plus"></i>
                     Agregar
-                </button>
+                </button> *@
                 <button type="submit" class="btn btn-primary" id="btnSiguienteFamiliar" name="btnSiguienteFamiliar">
                     <i class="fa fa-arrow-right"></i>
                     Siguiente
@@ -1351,96 +1647,3 @@
     </div>
 </div>
 
-<!-- Modal Agregar Asiento Familiar -->
-<div class="modal fade" id="modalAgregarAsientoFamiliar" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color:#0078A7;">
-                <h5 class="modal-title" style="font-size: 30px; color:#fff;" id="textoAFRAgregar"></h5>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="control-label">Nombre</label>
-                    <input class="form-control" maxlength="150" name="AFNombreA" type="text" id="AFNombreA" />
-                </div>
-                <div class="form-group col-md-4">
-                    <label class="control-label">Relación</label>
-                    <select class="form-control" name="AFRelacionA" id="AFRelacionA">
-                    </select>
-                </div>
-                <div class="form-group col-md-4">
-                    <label class="control-label">Edad</label>
-                    <input class="form-control" value="0" name="AFEdadA" type="text" id="AFEdadA" />
-                </div>
-                <div class="form-group col-md-4">
-                    <label class="control-label">Genero</label>
-                    <select required class="form-control" name="AFSexoA" id="AFSexoA">
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="N">Prefiero no decirlo</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">¿Depende en algo de él?</label>
-                    <select required class="form-control" name="AFDependenciaA" id="AFDependenciaA">
-                        <option value="NO">No</option>
-                        <option value="SI">Si</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%; display:none;" id="AFDependenciaExplicaA">
-                    <label class="control-label" for="AFDependenciaExplicaA">Explicar en que depende de él y cada cuanto</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="AFDependenciaExplicaOA" id="AFDependenciaExplicaOA"></textarea>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">¿Vive con él?</label>
-                    <select required class="form-control" name="AFVivenJuntosA" id="AFVivenJuntosA">
-                        <option value="SI">Si</option>
-                        <option value="NO">No</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%; display:none;" id="AFDireccionFamiliarA">
-                    <label class="control-label">Dirección</label>
-                    <input class="form-control" maxlength="200" name="AFDireccionFamiliarOA" id="AFDireccionFamiliarOA" type="text" />
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">Teléfono (10 dígitos)</label>
-                    <input name="AFtelefonoFamiliarA" id="AFtelefonoFamiliarA" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label" for="AFDependenciaExplica">Días y horarios en que se encuentra</label>
-                    <textarea maxlength="200" class="form-control" rows="2" name="AFLocalizacionA" id="AFLocalizacionA"></textarea>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label">¿Enterado de su proceso penal?</label>
-                    <select required class="form-control" name="AFEnteradoProcesoA" id="AFEnteradoProcesoA">
-                        <option value="SI">Si</option>
-                        <option value="NO">No</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%; display:none;" id="AFPuedeEnterarseA">
-                    <label class="control-label">¿Se puede enterar?</label>
-                    <select required class="form-control" name="AFPuedeEnterarseOA" id="AFPuedeEnterarseOA">
-                        <option value="NA">NA</option>
-                        <option value="NO">No</option>
-                        <option value="SI">Si</option>
-                    </select>
-                </div>
-                <div style="padding-top:1%;">
-                    <label class="control-label" for="AFobservaciones">Observaciones</label>
-                    <textarea maxlength="250" class="form-control" rows="2" name="AFobservacionesA" id="AFobservacionesA"></textarea>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnCloseAF">
-                    <i class="fa fa-close"></i>
-                    Cerrar
-                </button>
-                <button type="button" class="btn btn-primary" id="btnGuardarFamiliar" name="btnGuardarFamiliar">
-                    <i class="fa fa-save"></i>
-                    Guardar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>

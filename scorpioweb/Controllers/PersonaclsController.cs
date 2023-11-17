@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using F23.StringSimilarity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -368,7 +370,8 @@ namespace scorpioweb.Models
                     break;
             }
             personas.OrderByDescending(p => p.IdPersonaCl);
-            if (usuario == true) {
+            if (usuario == true)
+            {
                 personas = personas.Where(p => p.Supervisor == nomsuper);
             };
 
@@ -504,11 +507,11 @@ namespace scorpioweb.Models
         public async Task<IActionResult> Edit(int? id)
         {
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
-
+            
             if (id == null)
             {
                 return NotFound();
-            }
+            }          
 
             var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
             if (personacl == null)
@@ -523,7 +526,7 @@ namespace scorpioweb.Models
                 consumocl.Add(consumosustanciascl[i].Sustancia?.ToString());
                 consumocl.Add(consumosustanciascl[i].Frecuencia?.ToString());
                 consumocl.Add(consumosustanciascl[i].Cantidad?.ToString());
-                consumocl.Add(consumosustanciascl[i].UltimoConsumo?.ToString());
+                consumocl.Add(consumosustanciascl[i].UltimoConsumo?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 consumocl.Add(consumosustanciascl[i].Observaciones?.ToString());
                 consumocl.Add(consumosustanciascl[i].IdConsumoSustanciasCl.ToString());
             }
@@ -653,6 +656,8 @@ namespace scorpioweb.Models
 
             #endregion
 
+            #region -viewbags y listas-
+           
             ViewBag.listaOtroIdioma = listaNoSi;
             ViewBag.idOtroIdioma = BuscaId(listaNoSi, personacl.OtroIdioma);
 
@@ -682,15 +687,87 @@ namespace scorpioweb.Models
 
             ViewBag.idCentroPenitenciario = personacl.Centropenitenciario;
             ViewBag.pais = personacl.Lnpais;
+            
             ViewBag.idioma = personacl.OtroIdioma;
+            ViewBag.EspecifiqueIdioma = personacl.EspecifiqueIdioma;
+
+
             ViewBag.traductor = personacl.Traductor;
-            ViewBag.Hijos = personacl.Hijos;
+            ViewBag.EspecifiqueTraductor = personacl.EspecifiqueTraductor;
+           
+            ViewBag.TieneHijos = personacl.Hijos;
+            ViewBag.NumeroHijos = personacl.Nhijos;
+            
 
+            #endregion
 
+            #region -botones edicion sustancias, familiares y referencias-
+
+            string familiarTipo = "", referenciaTipo = "", SI = "SI", NO = "NO";
+
+            //PARA SABER SI LA PERSONA TIENE REGISTRO DE SUSTANCIAS
+            int NumeroConsumoSustancias = _context.Consumosustanciascl.Where(a => a.PersonaClIdPersonaCl == id).Count();
+            if (NumeroConsumoSustancias >= 1)
+            {
+                ViewBag.ConsumoSustancias = BuscaId(listaNoSi, SI);
+            }
+            else
+            {
+                ViewBag.ConsumoSustancias = BuscaId(listaNoSi, NO);
+            }
+
+            //CUENTA SI LA PERSONA TIENE FAMILIARES O REFERENCIAS EN ASIENTO FAMILIAR
+            int NumeroFamiliares = _context.Asientofamiliarcl.Where(a => a.PersonaClIdPersonaCl == id).Count();
+            //ALMACENA EL TIPO DE ASIENTO FAMILIAR YA SEA REFERENCIA O FAMILIAR
+            List<string> TiposAsiento = _context.Asientofamiliarcl.Where(a => a.PersonaClIdPersonaCl == id).Select(a => a.Tipo).ToList();
+
+            //SI LA PERSONA CUENTA CON REFERENCIA O FAMILIAR SE LLENAN VARIABLES
+            foreach (string tipoAsiento in TiposAsiento)
+            {
+                if (tipoAsiento == "FAMILIAR")
+                {
+                    familiarTipo = tipoAsiento;
+                }
+                else if (tipoAsiento == "REFERENCIA")
+                {
+                    referenciaTipo = tipoAsiento;
+                }
+            }
+            //SI ENCONTRO LLENA VIEWBAGS PARA BOTONES DE EDICION DE FAMILIAR y REFERENCIA
+            if (NumeroFamiliares >= 1)
+            {
+                switch (familiarTipo)
+                {
+                    case "FAMILIAR":
+                        ViewBag.idFamiliares = BuscaId(listaNoSi, SI);
+                        break;
+                    default:
+                        ViewBag.idFamiliares = BuscaId(listaSiNo, NO);
+                        break;
+                }
+                switch (referenciaTipo)
+                {
+                    case "REFERENCIA":
+                        ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, SI);
+                        break;
+                    default:
+                        ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, NO);
+                        break;
+                }
+            }
+            else
+            {
+                // SI NO ENCONTRO REGISTRO EN ASIENTO FAMILIAR BOTONES DE EDICION NO DISPNIBLES
+                ViewBag.idFamiliares = BuscaId(listaSiNo, NO);
+                ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, NO);
+
+            }
+            #endregion
 
             #region Consume sustancias
+
             ViewBag.listaConsumoSustancias = listaNoSi;
-            ViewBag.ConsumoSustancias = BuscaId(listaNoSi, personacl.ConsumoSustancias);
+            
 
             contadorSustancia = 0;
 
@@ -732,7 +809,7 @@ namespace scorpioweb.Models
             {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustanciascl[contadorSustancia].Sustancia);
                 ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustanciascl[contadorSustancia].Frecuencia);
-                ViewBag.cantidad = consumosustanciascl[contadorSustancia].Cantidad;
+                ViewBag.cantidad = consumosustanciascl[contadorSustancia].Cantidad;                            
                 ViewBag.ultimoConsumo = consumosustanciascl[contadorSustancia].UltimoConsumo;
                 ViewBag.observaciones = consumosustanciascl[contadorSustancia].Observaciones;
                 ViewBag.idConsumoSustancias = consumosustanciascl[contadorSustancia].IdConsumoSustanciasCl;
@@ -743,7 +820,7 @@ namespace scorpioweb.Models
                 ViewBag.idSustancia = "ALCOHOL";
                 ViewBag.idFrecuencia = "DIARIO";
                 ViewBag.cantidad = null;
-                ViewBag.ultimoConsumo = null;
+                ViewBag.ultimoConsumo = DateTime.ParseExact("01/01/1990", "MM/dd/yyyy", CultureInfo.InvariantCulture);
                 ViewBag.observaciones = null;
             }
 
@@ -753,9 +830,9 @@ namespace scorpioweb.Models
             #endregion
 
             #region Familiares
+            
             ViewBag.listaFamiliares = listaSiNo;
-            ViewBag.idFamiliares = BuscaId(listaSiNo, personacl.Familiares);
-
+               
             contadorFamiliares = 0;
 
             List<SelectListItem> ListaRelacion;
@@ -826,8 +903,8 @@ namespace scorpioweb.Models
             #endregion
 
             #region Referencias
+            
             ViewBag.listaReferenciasPersonales = listaSiNo;
-            ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, personacl.ReferenciasPersonales);
 
             contadorReferencias = 0;
 
@@ -876,7 +953,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersonaCl,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor,RutaFoto,Familiares,ReferenciasPersonales,Capturista,Candado,MotivoCandado,Colaboracion,UbicacionExpediente,ComLgbtttiq,ComIndigena,TieneResolucion")] Personacl personacl)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersonaCl,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor,RutaFoto,Familiares,ReferenciasPersonales,Capturista,Candado,MotivoCandado,Colaboracion,UbicacionExpediente,ComLgbtttiq,ComIndigena,TieneResolucion")] Personacl personacl, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
         {
             if (id != personacl.IdPersonaCl)
             {
@@ -887,8 +964,290 @@ namespace scorpioweb.Models
             {
                 try
                 {
-                    _context.Update(personacl);
-                    await _context.SaveChangesAsync();
+                    personacl.Nombre = mg.removeSpaces(mg.normaliza(personacl.Nombre));
+                    personacl.Paterno = mg.removeSpaces(mg.normaliza(personacl.Paterno));
+                    personacl.Materno = mg.removeSpaces(mg.normaliza(personacl.Materno));
+                    personacl.NombrePadre = mg.normaliza(personacl.NombrePadre);
+                    personacl.NombreMadre = mg.normaliza(personacl.NombreMadre);
+                    personacl.Alias = mg.normaliza(personacl.Alias);
+                    personacl.Lnlocalidad = mg.normaliza(personacl.Lnlocalidad);
+                    personacl.Duracion = mg.normaliza(personacl.Duracion);
+                    personacl.DatosGeneralescol = mg.normaliza(personacl.DatosGeneralescol);
+                    personacl.EspecifiqueIdioma = mg.normaliza(personacl.EspecifiqueIdioma);
+                    personacl.EspecifiqueTraductor = mg.normaliza(personacl.EspecifiqueTraductor);
+                    personacl.ComIndigena = mg.normaliza(personacl.ComIndigena);
+                    personacl.ComLgbtttiq = mg.normaliza(personacl.ComLgbtttiq);
+                    if (!(personacl.Paterno == null && personacl.Materno == null && personacl.Nombre == null && personacl.Genero == null && personacl.Fnacimiento == null && personacl.Lnestado == null))
+                    {
+                        var curs = mg.sacaCurs(personacl.Paterno, personacl.Materno, personacl.Fnacimiento, personacl.Genero, personacl.Lnestado, personacl.Nombre);
+                        personacl.ClaveUnicaScorpio = curs;
+                        personacl.Curp = curs + "*";
+                    }
+                    personacl.Curp = mg.normaliza(personacl.Curp);
+                    personacl.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
+                    personacl.Sinocentropenitenciario = sinocentropenitenciario;
+                    personacl.ConsumoSustancias = mg.normaliza(personacl.ConsumoSustancias);
+                    personacl.Familiares = mg.normaliza(personacl.Familiares);
+                    personacl.ReferenciasPersonales = mg.normaliza(personacl.ReferenciasPersonales);
+                    personacl.RutaFoto = mg.normaliza(personacl.RutaFoto);
+                    personacl.Capturista = personacl.Capturista;
+                    personacl.UbicacionExpediente = mg.normaliza(personacl.UbicacionExpediente);
+                    if (personacl.Candado == null) { personacl.Candado = 0; }
+                    personacl.Candado = personacl.Candado;
+                    personacl.MotivoCandado = mg.normaliza(personacl.MotivoCandado);
+                                                   
+                    #region -sustancias agregadas -
+                   
+                    int idConsumoSustancias = ((from table in _context.Consumosustanciascl
+                                                select table.IdConsumoSustanciasCl).Max());
+                    if (arraySustancias != null)
+                    {
+                        JArray sustancias = JArray.Parse(arraySustancias);
+
+                        for (int i = 0; i < sustancias.Count; i = i + 5)
+                        {
+                            Consumosustanciascl consumosustanciasCLBD = new Consumosustanciascl();
+                            personacl.ConsumoSustancias = "SI";
+                            consumosustanciasCLBD.IdConsumoSustanciasCl = ++idConsumoSustancias;
+                            consumosustanciasCLBD.Sustancia = sustancias[i].ToString();
+                            consumosustanciasCLBD.Frecuencia = sustancias[i + 1].ToString();
+                            consumosustanciasCLBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                            consumosustanciasCLBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                            consumosustanciasCLBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
+                            consumosustanciasCLBD.PersonaClIdPersonaCl = id;
+
+                            _context.Add(consumosustanciasCLBD);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                    }
+                    #endregion
+
+                    #region -Sustancias editadas -
+
+                    if (arraySustanciasEditadas != null)
+                    {
+                        JArray sustancias = JArray.Parse(arraySustanciasEditadas);
+
+                        for (int i = 0; i < sustancias.Count; i = i + 6)
+                        {
+                            int idConsumo = Int32.Parse(sustancias[i + 5].ToString());
+                          
+                            if (idConsumo < 0)
+                            {
+                                idConsumo = -idConsumo;
+                                var sustancia = await _context.Consumosustanciascl.SingleOrDefaultAsync(m => m.IdConsumoSustanciasCl == idConsumo);
+                                _context.Consumosustanciascl.Remove(sustancia);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                            }
+                            else
+                            {
+                                Consumosustanciascl consumosustanciasCLBD = new Consumosustanciascl();
+                                try
+                                {                                
+                                    consumosustanciasCLBD.IdConsumoSustanciasCl = idConsumo;
+                                    consumosustanciasCLBD.Sustancia = sustancias[i].ToString();
+                                    consumosustanciasCLBD.Frecuencia = sustancias[i + 1].ToString();
+                                    consumosustanciasCLBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                                    consumosustanciasCLBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                                    consumosustanciasCLBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
+                                    consumosustanciasCLBD.PersonaClIdPersonaCl = id;
+                                   
+                                    var oldconsumosustanciasCLBD = await _context.Consumosustanciascl.FindAsync(consumosustanciasCLBD.IdConsumoSustanciasCl);
+                                    _context.Entry(oldconsumosustanciasCLBD).CurrentValues.SetValues(consumosustanciasCLBD);
+                                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                                }
+                                catch (DbUpdateConcurrencyException)
+                                {
+                                    if (!PersonaclExists(consumosustanciasCLBD.PersonaClIdPersonaCl))
+                                    {
+                                        return NotFound();
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region -Familiares, referencias agregados-
+
+                    int idAsientoFamiliar = ((from table in _context.Asientofamiliarcl
+                                              select table.IdAsientoFamiliarCl).Max());
+                    if (arrayFamiliarReferencia != null)
+                    {
+                        JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
+                        for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                        {
+                            Asientofamiliarcl asientoFamiliarCL = new Asientofamiliarcl();
+                            try
+                            {
+                                asientoFamiliarCL.IdAsientoFamiliarCl = ++idAsientoFamiliar;
+                                asientoFamiliarCL.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                                asientoFamiliarCL.Relacion = familiarReferencia[i + 1].ToString();
+                                asientoFamiliarCL.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                                asientoFamiliarCL.Sexo = familiarReferencia[i + 3].ToString();
+                                asientoFamiliarCL.Dependencia = familiarReferencia[i + 4].ToString();
+                                asientoFamiliarCL.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                                asientoFamiliarCL.VivenJuntos = familiarReferencia[i + 6].ToString();
+                                asientoFamiliarCL.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                                asientoFamiliarCL.Telefono = familiarReferencia[i + 8].ToString();
+                                asientoFamiliarCL.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                                asientoFamiliarCL.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                                asientoFamiliarCL.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                                asientoFamiliarCL.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                                asientoFamiliarCL.Tipo = familiarReferencia[i + 13].ToString();
+                                if (asientoFamiliarCL.Tipo.Equals("FAMILIAR"))
+                                {
+                                    personacl.Familiares = "SI";
+                                }
+                                else if (asientoFamiliarCL.Tipo.Equals("REFERENCIA"))
+                                {
+                                    personacl.ReferenciasPersonales = "SI";
+                                }
+                                asientoFamiliarCL.PersonaClIdPersonaCl = id;
+
+                                _context.Add(asientoFamiliarCL);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                            }
+                            catch (DbUpdateConcurrencyException)
+                            {
+                                if (!PersonaclExists(asientoFamiliarCL.PersonaClIdPersonaCl))
+                                {
+                                    return NotFound();
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+                
+                    #region -Familiares editados-
+
+                    if (arrayFamiliaresEditados != null)
+                    {
+                        JArray familiarReferencia = JArray.Parse(arrayFamiliaresEditados);
+
+                        for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                        {
+                            int idAsiento = Int32.Parse(familiarReferencia[i + 13].ToString());
+                            if (idAsiento < 0)
+                            {
+                                idAsiento = -idAsiento;
+                                
+                                var asiento = await _context.Asientofamiliarcl.SingleOrDefaultAsync(m => m.IdAsientoFamiliarCl == idAsiento);
+                                _context.Asientofamiliarcl.Remove(asiento);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                            }
+                            else
+                            {
+                                Asientofamiliarcl asientoFamiliarCL = new Asientofamiliarcl();
+                                try
+                                {                                   
+                                    asientoFamiliarCL.IdAsientoFamiliarCl = Int32.Parse(familiarReferencia[i + 13].ToString());
+                                    asientoFamiliarCL.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                                    asientoFamiliarCL.Relacion = familiarReferencia[i + 1].ToString();
+                                    asientoFamiliarCL.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                                    asientoFamiliarCL.Sexo = familiarReferencia[i + 3].ToString();
+                                    asientoFamiliarCL.Dependencia = familiarReferencia[i + 4].ToString();
+                                    asientoFamiliarCL.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                                    asientoFamiliarCL.VivenJuntos = familiarReferencia[i + 6].ToString();
+                                    asientoFamiliarCL.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                                    asientoFamiliarCL.Telefono = familiarReferencia[i + 8].ToString();
+                                    asientoFamiliarCL.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                                    asientoFamiliarCL.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                                    asientoFamiliarCL.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                                    asientoFamiliarCL.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                                    asientoFamiliarCL.Tipo = "FAMILIAR";
+                                    asientoFamiliarCL.PersonaClIdPersonaCl = id;
+                                   
+                                    var oldAsientofamiliar = await _context.Asientofamiliarcl.FindAsync(asientoFamiliarCL.IdAsientoFamiliarCl);
+                                   
+                                    _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliarCL);
+                                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                                }
+                                catch (DbUpdateConcurrencyException)
+                                {
+                                    if (!PersonaclExists(asientoFamiliarCL.PersonaClIdPersonaCl))
+                                    {
+                                        return NotFound();
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+
+                    #region -Referencias editadas-
+                   
+                    if (arrayReferenciasEditadas != null)
+                    {
+                        JArray familiarReferencia = JArray.Parse(arrayReferenciasEditadas);
+
+                        for (int i = 0; i < familiarReferencia.Count; i = i + 14)
+                        {
+                            int idAsiento = Int32.Parse(familiarReferencia[i + 13].ToString());
+                            if (idAsiento < 0)
+                            {
+                                idAsiento = -idAsiento;
+                                var asiento = await _context.Asientofamiliarcl.SingleOrDefaultAsync(m => m.IdAsientoFamiliarCl == idAsiento);
+                                _context.Asientofamiliarcl.Remove(asiento);
+                                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                            }
+                            else
+                            {
+                                Asientofamiliarcl asientoFamiliarCL = new Asientofamiliarcl();
+                                try
+                                {
+                                    asientoFamiliarCL.IdAsientoFamiliarCl = Int32.Parse(familiarReferencia[i + 13].ToString());
+                                    asientoFamiliarCL.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                                    asientoFamiliarCL.Relacion = familiarReferencia[i + 1].ToString();
+                                    asientoFamiliarCL.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                                    asientoFamiliarCL.Sexo = familiarReferencia[i + 3].ToString();
+                                    asientoFamiliarCL.Dependencia = familiarReferencia[i + 4].ToString();
+                                    asientoFamiliarCL.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                                    asientoFamiliarCL.VivenJuntos = familiarReferencia[i + 6].ToString();
+                                    asientoFamiliarCL.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                                    asientoFamiliarCL.Telefono = familiarReferencia[i + 8].ToString();
+                                    asientoFamiliarCL.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                                    asientoFamiliarCL.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                                    asientoFamiliarCL.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                                    asientoFamiliarCL.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                                    asientoFamiliarCL.Tipo = "REFERENCIA";
+                                    asientoFamiliarCL.PersonaClIdPersonaCl = id;
+                                   
+                                    var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliarCL.IdAsientoFamiliarCl);
+                                    _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliarCL);
+                                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                                }
+                                catch (DbUpdateConcurrencyException)
+                                {
+                                    if (!PersonaclExists(asientoFamiliarCL.PersonaClIdPersonaCl))
+                                    {
+                                        return NotFound();
+                                    }
+                                    else
+                                    {
+                                        throw;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    #endregion
+                   
+                    var oldPersona = await _context.Personacl.FindAsync(id);
+                    _context.Entry(oldPersona).CurrentValues.SetValues(personacl);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -901,7 +1260,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MenuEdicion/" + id/*, "Personas"*/);
             }
             return View(personacl);
         }
@@ -1377,6 +1736,7 @@ namespace scorpioweb.Models
             }
 
             ViewBag.estudia = estudioscl.Estudia;
+
             ViewBag.listaEstudia = listaNoSi;
             ViewBag.idEstudia = BuscaId(listaNoSi, estudioscl.Estudia);
 
@@ -1435,21 +1795,25 @@ namespace scorpioweb.Models
             {
                 return NotFound();
             }
-
-            estudioscl.InstitucionE = mg.normaliza(estudioscl.InstitucionE);
-            estudioscl.Horario = mg.normaliza(estudioscl.Horario);
-            estudioscl.Direccion = mg.normaliza(estudioscl.Direccion);
-            estudioscl.Observaciones = mg.normaliza(estudioscl.Observaciones);
-
-
-
+       
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var oldEstudios = await _context.Estudios.FindAsync(estudioscl.IdEstudiosCl);
+                    estudioscl.Estudia = mg.normaliza(estudioscl.Estudia);
+
+                    estudioscl.InstitucionE = estudioscl.Estudia.Equals("NO") ? "NA" : mg.normaliza(estudioscl.InstitucionE);
+                    estudioscl.Horario = estudioscl.Estudia.Equals("NO") ? "NA" : mg.normaliza(estudioscl.Horario);
+                    estudioscl.Direccion = estudioscl.Estudia.Equals("NO") ? "NA" : mg.normaliza(estudioscl.Direccion);
+                    estudioscl.Telefono = estudioscl.Estudia.Equals("NO") ? "0" : mg.normaliza(estudioscl.Telefono);
+
+                    estudioscl.Observaciones = mg.normaliza(estudioscl.Observaciones);
+
+                    var oldEstudios = await _context.Estudioscl.FindAsync(estudioscl.IdEstudiosCl);
+                   
                     _context.Entry(oldEstudios).CurrentValues.SetValues(estudioscl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+             
                     //_context.Update(estudios);
                     //await _context.SaveChangesAsync();
                 }
@@ -1464,7 +1828,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction("MenuEdicion/" + estudioscl.PersonaClIdPersonaCl, "Personascl");
+                return RedirectToAction("MenuEdicion/" + id);
             }
             return View(estudioscl);
         }
@@ -1626,19 +1990,20 @@ namespace scorpioweb.Models
                 return NotFound();
             }
 
-            actividadsocialcl.TipoActividad = mg.normaliza(actividadsocialcl.TipoActividad);
-            actividadsocialcl.Horario = mg.normaliza(actividadsocialcl.Horario);
-            actividadsocialcl.Lugar = mg.normaliza(actividadsocialcl.Lugar);
-            actividadsocialcl.Referencia = mg.normaliza(actividadsocialcl.Referencia);
-            actividadsocialcl.Observaciones = mg.normaliza(actividadsocialcl.Observaciones);
-
-
-
+ 
             if (ModelState.IsValid)
             {
                 try
                 {
+
+                    actividadsocialcl.TipoActividad = mg.normaliza(actividadsocialcl.TipoActividad);
+                    actividadsocialcl.Horario = mg.normaliza(actividadsocialcl.Horario);
+                    actividadsocialcl.Lugar = mg.normaliza(actividadsocialcl.Lugar);
+                    actividadsocialcl.Referencia = mg.normaliza(actividadsocialcl.Referencia);
+                    actividadsocialcl.Observaciones = mg.normaliza(actividadsocialcl.Observaciones);
+                   
                     var oldActividadsocialcl = await _context.Actividadsocialcl.FindAsync(actividadsocialcl.IdActividadSocialCl);
+                    
                     _context.Entry(oldActividadsocialcl).CurrentValues.SetValues(actividadsocialcl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(actividadsocial);
@@ -1655,7 +2020,7 @@ namespace scorpioweb.Models
                         throw;
                     }
                 }
-                return RedirectToAction("MenuEdicion/" + actividadsocialcl.PersonaClIdPersonaCl, "Personascl");
+                return RedirectToAction("MenuEdicion/" + id);
             }
             return View(actividadsocialcl);
         }
@@ -2159,24 +2524,35 @@ namespace scorpioweb.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditSalud(int id, [Bind("IdSaludFisicaCl,Enfermedad,EspecifiqueEnfermedad,EmbarazoLactancia,Tiempo,Tratamiento,Discapacidad,EspecifiqueDiscapacidad,ServicioMedico,EspecifiqueServicioMedico,InstitucionServicioMedico,Observaciones,PersonaClIdPersonaCl")] Saludfisicacl saludfisicacl)
         {
-            if (id != saludfisicacl.IdSaludFisicaCl)
+            if (id != saludfisicacl.PersonaClIdPersonaCl)
             {
                 return NotFound();
             }
-
-            saludfisicacl.EspecifiqueEnfermedad = mg.normaliza(saludfisicacl.EspecifiqueEnfermedad);
-            saludfisicacl.Tratamiento = mg.normaliza(saludfisicacl.Tratamiento);
-            saludfisicacl.EspecifiqueDiscapacidad = mg.normaliza(saludfisicacl.EspecifiqueDiscapacidad);
-            saludfisicacl.Observaciones = mg.normaliza(saludfisicacl.Observaciones);
-            saludfisicacl.Tiempo = mg.normaliza(saludfisicacl.Tiempo);
-
-
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var oldSaludfisicacl = await _context.Saludfisicacl.FindAsync(saludfisicacl.PersonaClIdPersonaCl);
+                    saludfisicacl.Enfermedad = mg.normaliza(saludfisicacl.Enfermedad);
+                    saludfisicacl.EspecifiqueEnfermedad = saludfisicacl.Enfermedad.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.EspecifiqueEnfermedad);
+                    saludfisicacl.Tratamiento = saludfisicacl.Enfermedad.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.Tratamiento);
+                  
+                    saludfisicacl.EmbarazoLactancia = mg.normaliza(saludfisicacl.EmbarazoLactancia);
+                    saludfisicacl.Tiempo = saludfisicacl.EmbarazoLactancia.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.Tiempo);
+
+                    saludfisicacl.Discapacidad = mg.normaliza(saludfisicacl.Discapacidad);
+                    saludfisicacl.EspecifiqueDiscapacidad = saludfisicacl.Discapacidad.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.EspecifiqueDiscapacidad);
+
+                    saludfisicacl.ServicioMedico = mg.normaliza(saludfisicacl.ServicioMedico);
+                    saludfisicacl.EspecifiqueServicioMedico = saludfisicacl.ServicioMedico.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.EspecifiqueServicioMedico);
+                    saludfisicacl.InstitucionServicioMedico = saludfisicacl.ServicioMedico.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.InstitucionServicioMedico);
+
+                    saludfisicacl.Observaciones = mg.normaliza(saludfisicacl.Observaciones);
+                   
+
+
+                    var oldSaludfisicacl = await _context.Saludfisicacl.FindAsync(saludfisicacl.IdSaludFisicaCl);
+                    
                     _context.Entry(oldSaludfisicacl).CurrentValues.SetValues(saludfisicacl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(saludfisica);
@@ -2198,7 +2574,6 @@ namespace scorpioweb.Models
             return View(saludfisicacl);
         }
         #endregion
-
 
         #region -Delete-
         // GET: Personacls/Delete/5
@@ -2301,7 +2676,7 @@ namespace scorpioweb.Models
         private bool TrabajoclExists(int id)
         {
             return _context.Trabajocl.Any(e => e.IdTrabajoCl == id);
-        } 
+        }
         private bool ActividadSocialExists(int id)
         {
             return _context.Actividadsocialcl.Any(e => e.IdActividadSocialCl == id);
@@ -2310,7 +2685,7 @@ namespace scorpioweb.Models
         {
             return _context.Abandonoestadocl.Any(e => e.IdAbandonoEstadocl == id);
         }
-                private bool SaludfisicaclExists(int id)
+        private bool SaludfisicaclExists(int id)
         {
             return _context.Saludfisicacl.Any(e => e.IdSaludFisicaCl == id);
         }
