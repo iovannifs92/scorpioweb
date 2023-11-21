@@ -1,0 +1,197 @@
+﻿@model IEnumerable<scorpioweb.Models.SupervisionPyCPCL>
+
+@{
+    ViewData["Title"] = "MenuEdicion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/css/tabla.css">
+<style>
+    #vinculacion {
+        background-color: #EC7DAF;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #vinculacion:hover {
+            background-color: #FF3B93;
+        }
+
+    #victima {
+        background-color: #95ECDD;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #victima:hover {
+            background-color: #55FFE2;
+        }
+
+    #suspension {
+        background-color: #ECD099;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #suspension:hover {
+            background-color: #FEC859;
+        }
+
+    #cambio {
+        background-color: #B0DF69;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #cambio:hover {
+            background-color: #A7FD2A;
+        }
+</style>
+
+<script>
+    showModal = (url, title, id) => {
+        $.ajax({
+            type: "GET",
+            url: url + "?id=" + id,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal .modal-title").html(title);
+                $("#form-modal").modal('show');
+            },
+            error: function (res) {
+
+            }
+        })
+    }
+
+    //function candado(id, candado) {
+
+    //    var personaidpersona = id;
+    //    let text;
+    //    if (candado == true) {
+    //        let razon = prompt("Razón de Bloqueo", "");
+    //        if (razon == null || razon == "") {
+    //            text = "NA";
+    //        } else {
+    //            text = razon;
+    //        }
+    //    } else {
+    //        text = "NA";
+    //    }
+
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        url: "/Supervisiones/LoockCandado",
+    //        traditional: true,
+    //        data: {
+    //            datoCandado: [candado, personaidpersona, text],
+    //        },
+    //        success: function(response) {
+    //            if (response.success) {
+    //                location.reload();
+    //            } else {
+    //                alert(response.responseText);
+    //            }
+    //        },
+    //        error: function(response) {
+    //            location.reload();
+    //        }
+    //    });
+    //}
+</script>
+
+
+@if (ViewBag.WarningsUser > 0)
+{
+    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+    </a>
+}
+@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCPCL>)
+{
+    <h2 class="blockquote text-center"><a href="/Personascl/Details/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</a></h2>
+
+    <div class=col-md-6>
+        <h3 style="text-align:left" class="blockquote text-center">Id Persona:</h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="/Personas/Procesos/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.IdPersonaCl</a></h3>
+    </div>
+    <div class=col-md-6>
+        <h3 style="text-align:center" class="blockquote text-center">Causa Penal:</h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="@("Causaspenales/DetailsCP/"+item.causapenalVM.IdCausaPenalcl)" target="_blank">@item.causapenalVM.IdCausaPenalcl</a></h3>
+    </div>
+    <div class="col-md-12 text-center">
+        @if (@item.personaVM.Candado == 0)
+        {
+            <button class="btn btn-primary btn-lg fa fa-unlock" onclick="candado(@item.personaVM.IdPersonaCl,true)"></button>
+        }
+        else
+        {
+            <button title="@item.personaVM.MotivoCandado" class="btn btn-danger btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersonaCl,false)"></button>
+        }
+        <a class="btn btn-info btn-lg fa fa-pencil" href="@("Personas/PresentacionPeriodicaPersona/"+item.personaVM.IdPersonaCl)" target="_blank"></a>
+        <a class="btn btn-success btn-lg fa fa-calendar" onclick="showModal('@Url.Action("Create","Calendarios",null,Context.Request.Scheme)','Nuevo evento', @item.supervisionVM.IdSupervisioncl)">   </a>
+    </div>
+
+    break;
+}
+@foreach (var item in ViewData["joinTablesSupervision"] as IEnumerable<scorpioweb.Models.SupervisionPyCPCL>)
+{
+    //El color de el boton se define con el Id
+    <div class="container col-md-12">
+        <br>
+        <div class="row">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="Edit" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="datosGenerales" class="btn btn-primary btn-lg btn-block btn-huge">Supervisión</a>
+            </div>
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EditBeneficios" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" asp-route-idcp="@item.causapenalVM.IdCausaPenalcl" asp-route-supervisor="@item.personaVM.Supervisor" id="domicilio" class="btn btn-primary btn-lg btn-block btn-huge">Beneficios</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EditPlaneacionEstrategica" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Planeación Estrategica</a>
+            </div>
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EditCambiodeobligaciones" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="cambio" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EditRevocacion" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="salud" class="btn btn-primary btn-lg btn-block btn-huge">Revocación</a>
+            </div>
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="EditSuspensionseguimiento" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="suspension" class="btn btn-primary btn-lg btn-block btn-huge">Suspensión Seguimiento</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="ListaVictima" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Nombre @item.personaVM.Paterno @item.personaVM.Materno" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="victima" class="btn btn-primary btn-lg btn-block btn-huge">Victima</a>
+            </div>
+            <div class="col-md-6" style="padding-top:3%;">
+                <a asp-action="ListaBitacora" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" asp-route-idcp="@item.causapenalVM.IdCausaPenalcl" asp-route-supervisor="@item.personaVM.Supervisor" id="escolaridad" class="btn btn-primary btn-lg btn-block btn-huge">Bitacora</a>
+            </div>
+        </div>
+        <div class="row">
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+            {
+                <div class="col-md-6" style="padding-top:3%;">
+                    <a asp-action="EditCierredecaso" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Cierre de caso</a>
+                </div>
+            }
+        </div>
+        <div class="row" hidden="hidden">
+            <div class="col-md-6" style="padding-top:3%;">
+                <a id="vinculacion" class="btn btn-primary btn-lg btn-block btn-huge">Vinculación</a>
+            </div>
+        </div>
+    </div>
+    break;
+}
+
+
+<br />
+<div class=col-md-6 style="margin-top: 20px">
+    <a style="" href='javascript:history.go(-1)'>Regresar</a>
+</div>

@@ -1,0 +1,56 @@
+﻿@model scorpioweb.Models.Supervisioncl
+
+@{
+    ViewData["Title"] = "MenuEdicion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Supervision</h1>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" readonly asp-for="IdSupervisioncl" />
+            <input type="hidden" readonly asp-for="PersonaclIdPersonacl" class="form-control" />
+            <input type="hidden" readonly asp-for="CausaPenalclIdCausaPenalcl" class="form-control" />
+            <div class="form-group">
+                <label asp-for="Inicio" class="control-label"></label>
+                <input type="date" asp-for="Inicio" class="form-control" />
+                <span asp-validation-for="Inicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Termino" class="control-label"></label>
+                <input type="date" asp-for="Termino" class="form-control" />
+                <span asp-validation-for="Termino" class="text-danger"></span>
+            </div> 
+            <div class="form-group">
+                <label  class="control-label">Estado de Supervision</label>
+                <select class="form-control" name="EstadoSupervision" id="EstadoSupervision"
+                        asp-items="@(new SelectList(ViewBag.listaEstadosSupervision, "Value", "Text", @ViewBag.idEstadoSupervision))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Estado de Cumplimiento</label>
+                <select class="form-control" name="EstadoCumplimiento"
+                        asp-items="@(new SelectList(ViewBag.listaEstadoC, "Value", "Text", @ViewBag.idEstadoCumplimiento))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">TTa</label>
+                <select class="form-control" name="Tta"
+                        asp-items="@(new SelectList(ViewBag.listanosi, "Value", "Text", @ViewBag.idTta))">
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Supervision" asp-route-id="@Model.IdSupervisioncl">Regresar al menu</a>
+</div>

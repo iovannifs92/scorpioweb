@@ -1,0 +1,79 @@
+﻿@model scorpioweb.Models.Planeacionestrategicacl
+@{
+    ViewData["Title"] = "MenuEdicion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+
+<h1>Planeacionestrategicl</h1>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="EditPlaneacionEstrategica">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" readonly asp-for="IdPlaneacionEstrategicacl" />
+            <input type="hidden" readonly asp-for="SupervisionclIdSupervisioncl" />
+            <div class="form-group">
+                <label asp-for="PlanSupervision" class="control-label"></label>
+                <select class="form-control" name="PlanSupervision" id="PlanSupervision"
+                        asp-items="@(new SelectList(ViewBag.listaplaneacion, "Value", "Text", @ViewBag.idPlaneacion))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Motivo no Planeacion</label>
+                <input asp-for="MotivoNoPlaneacion" class="form-control" />
+                <span asp-validation-for="MotivoNoPlaneacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Visita de Verificacion</label>
+                <input asp-for="VisitaVerificacion" type="date" class="form-control" />
+                <span asp-validation-for="VisitaVerificacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Informe Inicial</label>
+                <input asp-for="InformeInicial" type="date" class="form-control" />
+                <span asp-validation-for="InformeInicial" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Informe de Seguimiento</label>
+                <input asp-for="InformeSeguimiento" type="date" class="form-control" />
+                <span asp-validation-for="InformeSeguimiento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Informe Final</label>
+                <input asp-for="InformeFinal" type="date" class="form-control" />
+                <span asp-validation-for="InformeFinal" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Fecha de Ultimo Contacto</label>
+                <input asp-for="FechaUltimoContacto" type="date" class="form-control" />
+                <span asp-validation-for="FechaUltimoContacto" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Fecha de Proximo Contacto</label>
+                <input asp-for="FechaProximoContacto" type="date" class="form-control" />
+                <span asp-validation-for="FechaProximoContacto" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Dia de Firma</label>
+                <input asp-for="DiaFirma" class="form-control" />
+                <span asp-validation-for="DiaFirma" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Periodicidad de Firma</label>
+                <select class="form-control" name="PeriodicidadFirma" id="PeriodicidadFirma"
+                        asp-items="@(new SelectList(ViewBag.listaplaneacion, "Value", "Text", @ViewBag.idPlaneacion))">
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

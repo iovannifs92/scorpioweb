@@ -126,13 +126,28 @@ namespace scorpioweb.Controllers
 
         };
 
+        private List<SelectListItem> listaPeridodicidad = new List<SelectListItem>
+        { 
+            new SelectListItem{ Text = "", Value = "" },
+            new SelectListItem{ Text = "Diaria", Value = "DIARIA" },
+            new SelectListItem { Text = "Semanal", Value = "SEMANAL" },
+            new SelectListItem { Text = "Quincenal", Value = "QUINCENAL" },
+            new SelectListItem { Text = "Mensual", Value = "MENSUAL" },
+            new SelectListItem { Text = "Bimestral", Value = "BIMESTRAL" },
+            new SelectListItem { Text = "Trimestral", Value = "TRIMESTRAL" },
+            new SelectListItem { Text = "Semestral", Value = "SEMESTRAL" },
+            new SelectListItem { Text = "Anual", Value = "ANUAL", },
+            new SelectListItem { Text = "No aplica", Value = "NO APLICA" }
+            };
 
 
 
-        #endregion
 
-        #region -Metodos Generales-
-        MetodosGenerales mg = new MetodosGenerales();
+
+#endregion
+
+#region -Metodos Generales-
+MetodosGenerales mg = new MetodosGenerales();
         #region -Crea QR-
         public void creaQR(int? id)
         {
@@ -1040,7 +1055,7 @@ namespace scorpioweb.Controllers
             }
 
             var empty = (from s in _context.Supervision
-                         where s.IdSupervision == supervision.IdSupervision
+                         where s.IdSupervision == supervision.IdSupervision 
                          select s);
 
             if (empty.Any())

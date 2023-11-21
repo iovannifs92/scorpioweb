@@ -1,0 +1,74 @@
+﻿@model scorpioweb.Models.Supervisioncl
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Create</title>
+</head>
+<body>
+
+<h4>Supervisioncl</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="IdSupervisioncl" class="control-label"></label>
+                <input asp-for="IdSupervisioncl" class="form-control" />
+                <span asp-validation-for="IdSupervisioncl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inicio" class="control-label"></label>
+                <input asp-for="Inicio" class="form-control" />
+                <span asp-validation-for="Inicio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Termino" class="control-label"></label>
+                <input asp-for="Termino" class="form-control" />
+                <span asp-validation-for="Termino" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EstadoSupervision" class="control-label"></label>
+                <input asp-for="EstadoSupervision" class="form-control" />
+                <span asp-validation-for="EstadoSupervision" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PersonaclIdPersonacl" class="control-label"></label>
+                <input asp-for="PersonaclIdPersonacl" class="form-control" />
+                <span asp-validation-for="PersonaclIdPersonacl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EstadoCumplimiento" class="control-label"></label>
+                <input asp-for="EstadoCumplimiento" class="form-control" />
+                <span asp-validation-for="EstadoCumplimiento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CausaPenalclIdCausaPenalcl" class="control-label"></label>
+                <input asp-for="CausaPenalclIdCausaPenalcl" class="form-control" />
+                <span asp-validation-for="CausaPenalclIdCausaPenalcl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tta" class="control-label"></label>
+                <input asp-for="Tta" class="form-control" />
+                <span asp-validation-for="Tta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+</body>
+</html>
