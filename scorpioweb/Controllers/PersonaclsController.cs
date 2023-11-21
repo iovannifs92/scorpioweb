@@ -2199,7 +2199,6 @@ namespace scorpioweb.Models
         }
         #endregion
 
-
         #region -Delete-
         // GET: Personacls/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -2230,8 +2229,125 @@ namespace scorpioweb.Models
             return RedirectToAction(nameof(Index));
         }
         #endregion
+
+        #region -Presentaciones periodicas-
+        public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
+        {
+            #region -ListaUsuarios-            
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.user = user;
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = false;
+            ViewBag.Serviciosprevios = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "Masteradmin")
+                {
+                    ViewBag.Masteradmin = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "ArchivoMCSCP")
+                {
+                    ViewBag.Archivo = true;
+                }
+            }
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Servicios previos")
+                {
+                    ViewBag.Serviciosprevios = true;
+                }
+            }
+            if (id == null)
+            {
+                return NotFound();
+            }
+            #endregion
+            List<Presentacionperiodicacl> lists = new List<Presentacionperiodicacl>();
+
+            var queripersonasis = from p in _context.Personacl
+                                  join rh in _context.Registrohuellacl on p.IdPersonaCl equals rh.PersonaclIdPersonacl
+                                  join pp in _context.Presentacionperiodicacl on rh.IdregistroHuellacl equals pp.IdregistroHuellacl
+                                  where p.IdPersonaCl == id
+                                  select new PresentacionPeriodicaclPersonacl
+                                  {
+                                      presentacionperiodicaVM = pp,
+                                      registrohuellaVM = rh,
+                                      personaVM = p
+                                  };
+            var maxfra = queripersonasis.OrderByDescending(u => u.presentacionperiodicaVM.FechaFirma);
+
+            if (queripersonasis.Count() == 0)
+            {
+                return RedirectToAction("PresentacionPeriodicaConfirmation/" + "Personascl");
+            }
+            else
+            {
+                ViewData["joinTablasPresentacion"] = maxfra;
+                return View();
+            }
+        }
+
+        public async Task<IActionResult> PresentacionPeriodicaConfirmation()
+        {
+            return View();
+        }
+
+        private bool PresentacionExists(int id)
+        {
+            return _context.Presentacionperiodicacl.Any(e => e.IdpresentacionPeriodicacl == id);
+        }
+
+        #region -EditarComentario-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> EditComentario(int id, int idpersonacl, [Bind("IdpresentacionPeriodicacl,FechaFirma,ComentarioFirma,IdregistroHuellacl")] Presentacionperiodicacl presentacionperiodicacl)
+        {
+            id = presentacionperiodicacl.IdpresentacionPeriodicacl;
+            presentacionperiodicacl.IdregistroHuellacl = presentacionperiodicacl.IdregistroHuellacl;
+            presentacionperiodicacl.ComentarioFirma = presentacionperiodicacl.ComentarioFirma != null ? presentacionperiodicacl.ComentarioFirma.ToUpper() : "NA";
+            presentacionperiodicacl.FechaFirma = presentacionperiodicacl.FechaFirma;
+
+            var oldDomicilio = await _context.Presentacionperiodicacl.FindAsync(presentacionperiodicacl.IdpresentacionPeriodicacl);
+            _context.Entry(oldDomicilio).CurrentValues.SetValues(presentacionperiodicacl);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PresentacionExists(presentacionperiodicacl.IdpresentacionPeriodicacl))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("PresentacionPeriodicaPersona/" + idpersonacl);
+        }
         #endregion
 
+        #endregion
+
+        #endregion
 
         public IActionResult Menucl()
         {

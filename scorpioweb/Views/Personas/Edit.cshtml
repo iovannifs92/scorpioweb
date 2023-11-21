@@ -1159,12 +1159,13 @@
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Cantidad</label>
-                    <input class="form-control" maxlength="200" name="cantidadE" type="text" id="cantidadE" value=@ViewBag.cantidad />
+                    <input class="form-control" maxlength="200" name="cantidadE" type="text" id="cantidadE" value=@ViewBag.ultimoConsumo />
                 </div>
                 <div style="padding-top:1%;">
                     <label class="control-label">Último consumo</label>
-                    <input required name="ultimoConsumoE" id="ultimoConsumoE" type="date" class="form-control" value=@ViewBag.ultimoConsumo?.Date.ToString("yyyy-MM-dd") />
+                    <input required name="ultimoConsumoE" id="ultimoConsumoE" type="date" class="form-control"  />
                 </div>
+                <imput value=@ViewBag.cantidad></imput>
                 <div style="padding-top:1%;">
                     <label class="control-label" for="observaciones">Observaciones</label>
                     <textarea maxlength="250" class="form-control" rows="2" name="observacionesConsumoE" id="observacionesConsumoE" style="white-space: pre-line">@ViewBag.observaciones</textarea>
