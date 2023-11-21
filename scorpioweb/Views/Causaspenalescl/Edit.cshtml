@@ -1,0 +1,265 @@
+﻿@model scorpioweb.Models.Causapenalcl
+
+@{
+    ViewData["Title"] = "Editar Causa Penal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btnGuardarDelito').on("click", function (e) {
+            e.preventDefault();
+            var tipodel = document.getElementById("tipoD").value;
+            var modalidad = document.getElementById("modalidadD").value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/GuardarDelito",
+                traditional: true,
+                data: {
+                    datosDelito: [tipodel, modalidad],
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.responseText);
+                        document.ready = document.getElementById("tipoD").value = '';
+                        document.ready = document.getElementById("modalidadD").value = '';
+                        var otraDelito = confirm("¿Agregar otro delito?");
+                        if (otraDelito == true) {
+                            alert("Coloque los datos correspondientes");
+                        } else {
+                            $("#modalCreateDelito").modal('hide');
+                        }
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+
+            function addActive(x) {
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+
+        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+        autocomplete(document.getElementById("tipoD"), catalogo);
+
+        var jueces = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
+        autocomplete(document.getElementById("Juez"), jueces);
+    });
+</script>
+<h1>Editar Causa Penal</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdCausaPenalcl" />
+            <div class="form-group">
+                <label class="control-label">Cnpp</label>
+                <select class="form-control" name="Cnpp" id="Cnpp"
+                        asp-items="@(new SelectList(ViewBag.listaCnpp, "Value", "Text", @ViewBag.idCnpp))">
+                </select>
+            </div>
+            <div class="form-group autocomplete" style="padding-top:15px;">
+                <label class="control-label">Juez</label>
+                <input asp-for="Juez" required type="text" maxlength="150" class="form-control" name="Juez" id="Juez" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Cambio</label>
+                <select class="form-control" name="Cambio" id="Cambio"
+                        asp-items="@(new SelectList(ViewBag.listaCambio, "Value", "Text", @ViewBag.idCambio))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Distrito</label>
+                <select class="form-control" name="Distrito" id="Distrito"
+                        asp-items="@(new SelectList(ViewBag.listaDistrito, "Value", "Text", @ViewBag.idDistrito))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CausaPenal" class="control-label"></label>
+                <input asp-for="CausaPenal" class="form-control" />
+                <span asp-validation-for="CausaPenal" class="text-danger"></span>
+            </div>
+            <input asp-for="Fechacreacion" readonly type="hidden" class="form-control" />
+            <input asp-for="Usuario" readonly type="hidden" class="form-control" />
+            <div class="form-group col-md-12">
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC") || User.IsInRole("Oficialia"))
+                {
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCreateDelito">
+                        <i class="fa fa-plus"></i> Crear Delito
+                    </button>
+                }
+                @if (ViewBag.tieneDelitos == true)
+                {
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDelito">
+                        <i class="fa fa-eye"></i> Ver Delitos
+                    </button>
+
+                }
+            </div>
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC") || User.IsInRole("Oficialia"))
+            {
+                <div class="form-group col-md-12">
+                    <button type="submit" id="btnguardarEdit" name="btnguardarEdit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Regresar a lista</a>
+</div>
+
+<div class="modal fade" id="modalDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Delitos asociados a la causa</h5>
+            </div>
+            <div class="modal-body">
+                @foreach (var item in ViewData["joinTablesCausaDelito"] as IEnumerable<scorpioweb.Models.CausaclDelitoclViewModel>)
+                {
+                    <table class="table table-bordered">
+                        <tr>
+                            <td style="width: 25%;background-color: #E2E2E2;border-color: #fff;color: #000;">Tipo</td>
+                            <td style="width: 65%;">@item.delitoVM.Tipo</td>
+                        </tr>
+                        <tr>
+                            <td style="background-color:#E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
+                            <td>@item.delitoVM.Modalidad</td>
+                            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC") || User.IsInRole("Oficialia"))
+                            {
+                                <td style="border-right: solid White;
+                                               border-bottom: solid White;
+                                               border-top: solid White;">
+                                    <a class="btn btn-primary" asp-action="EditDelito" asp-route-id="@item.delitoVM.IdDelitocl">
+                                        <i class="fa fa-pencil"></i> Editar
+                                    </a>
+                                </td>
+                            }
+                        </tr>
+                    </table>
+
+                }
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-close"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Crear Delito -->
+<div class="modal fade" id="modalCreateDelito" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+                <h1 class="modal-title" style="font-size: 30px; color:#fff;" id="exampleModalLongTitle">Delito</h1>
+            </div>
+            <div class="form-group col-md-12 autocomplete" style="padding-top:15px;">
+                <label class="control-label">Tipo</label>
+                <input required name="tipoD" id="tipoD" type="text" maxlength="150" class="form-control" />
+            </div>
+            <div class="form-group col-md-12">
+                <label class="control-label">Modalidad</label>
+                <input id="modalidadD" type="text" class="form-control" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary  col-xs-2" data-dismiss="modal" style="margin-right:280px">
+                    <i class="fa fa-close"></i> Cerrar
+                </button>
+                <button type="button" id="btnGuardarDelito" name="btnGuardarDelito" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar delito
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

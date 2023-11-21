@@ -1,0 +1,63 @@
+﻿@*Detalles Persona*@
+@model IEnumerable<scorpioweb.Models.PersonaclCausaPenalclViewModel>
+
+@{
+    ViewData["Title"] = "Personas Asignadas ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaclCausaPenalclViewModel>)
+    {
+        <h2>Personas Dentro de la CP @item.causaPenalclVM.CausaPenal</h2>
+        break;
+    }
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Apellido Paterno 
+                </th>
+                <th>
+                    Apellido Materno
+                </th>
+                <th>
+                    Nombre(s)
+                </th>
+                <th>
+                    Supervisor
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaclCausaPenalclViewModel>)
+            {
+          <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaclVM.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaclVM.Materno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaclVM.Nombre)
+            </td>
+            <td>
+                 @Html.DisplayFor(modelItem => item.personaclVM.Supervisor)
+            </td>
+
+            <td>
+                <a href="/Personas/Details/@item.personaclVM.IdPersonaCl">
+                Detalles
+              </a>
+            </td>
+          </tr>
+            }
+        </tbody>
+        </table>
+        <hr />
+
+        <div>
+            <a asp-action="Index">Regresar al listado completo</a>
+        </div>

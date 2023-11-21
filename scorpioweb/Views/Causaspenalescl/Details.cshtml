@@ -1,0 +1,69 @@
+﻿@model scorpioweb.Models.Causapenalcl
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+</head>
+<body>
+
+<div>
+    <h4>Causapenalcl</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Cnpp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Cnpp)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Juez)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Juez)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Cambio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Cambio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Distrito)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Distrito)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CausaPenal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CausaPenal)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Fechacreacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Fechacreacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Usuario)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdCausaPenalcl">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+</body>
+</html>
