@@ -505,7 +505,7 @@ namespace scorpioweb.Controllers
             ViewBag.IdSupervisionclGuardar = id;
 
             ViewBag.listaFracciones = listaFracciones;
-            ViewBag.listaFiguraJudicial = listaFiguraJudicial;
+            //ViewBag.listaFiguraJudicial = listaFiguraJudicial;
             ViewBag.listaCumplimiento = listaCumplimiento;
 
 

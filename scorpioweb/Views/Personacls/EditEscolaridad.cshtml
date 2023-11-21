@@ -8,11 +8,30 @@
 
 <script type="text/javascript">
     var tipo = 0;
-    $(document).ready(function () {
-        $('#estudia').change(function () {
+    var ActualmenteEstudia = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.idEstudia))');
+    $(document).ready(function () {      
+        
+        if (ActualmenteEstudia == "SI") {
+            $("#DivEstudiaSiNo").removeClass("col-md-3").addClass("col-md-12");
+            $("#DivGradoEstudios").css("display", "block");         
+            $("#DivInstitucionE").css("display", "block");
+            $("#DivHorario").css("display", "block");
+            $("#DivDireccion").css("display", "block");
+            $("#DivTelefono").css("display", "block");
+            $("#DivObservaciones").css("display", "block");
+        } else {
+            $("#DivInstitucionE").css("display", "none");
+            $("#DivHorario").css("display", "none");
+            $("#DivDireccion").css("display", "none");
+            $("#DivTelefono").css("display", "none");
+        }
+
+        $("#Estudia").change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
+
                 $("#DivGradoEstudios").css("display", "block");
+                $("#DivEstudiaSiNo").removeClass("col-md-3").addClass("col-md-12");
                 $("#DivInstitucionE").css("display", "block");
                 $("#DivHorario").css("display", "block");
                 $("#DivDireccion").css("display", "block");
@@ -20,11 +39,12 @@
                 $("#DivObservaciones").css("display", "block");
             }
             else {
+                $("#DivEstudiaSiNo").removeClass("col-md-12").addClass("col-md-3");
+              
                 $("#DivInstitucionE").css("display", "none");
                 $("#DivHorario").css("display", "none");
                 $("#DivDireccion").css("display", "none");
                 $("#DivTelefono").css("display", "none");
-
             }
         });
 
@@ -40,81 +60,47 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdEstudiosCl" />
             <input type="hidden" asp-for="PersonaClIdPersonaCl">
-            <div class="form-group col-md-3">
+            
+            <div class="form-group col-md-3" id="DivGradoEstudios">
+                <label class="control-label">Último grado de estudios</label>
+                <select class="form-control" name="GradoEstudios"
+                        asp-items="@(new SelectList(ViewBag.listaGradoEstudios, "Value", "Text", @ViewBag.idGradoEstudios))">
+                </select>
+            </div>
+            <div class="form-group col-md-3" id="DivEstudiaSiNo">
                 <label class="control-label">¿Actualmente estudia?</label>
-                <select class="form-control" name="Estudia" id="estudia"
+                <select class="form-control" name="Estudia" id="Estudia"
                         asp-items="@(new SelectList(ViewBag.listaEstudia, "Value", "Text", @ViewBag.idEstudia))">
                 </select>
             </div>
-            @if (ViewBag.estudia == "SI")
-            {
-                <div class="form-group col-md-3" id="DivGradoEstudios">
-                    <label class="control-label">Último grado de estudios</label>
-                    <select class="form-control" name="GradoEstudios"
-                            asp-items="@(new SelectList(ViewBag.listaGradoEstudios, "Value", "Text", @ViewBag.idGradoEstudios))">
-                    </select>
-                </div>
-                <div class="form-group col-md-6" id="DivInstitucionE">
-                    <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
-                    <input asp-for="InstitucionE" class="form-control" />
-                    <span asp-validation-for="InstitucionE" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-12" id="DivHorario">
-                    <label asp-for="Horario" class="control-label"></label>
-                    <input asp-for="Horario" class="form-control" />
-                    <span asp-validation-for="Horario" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6" id="DivDireccion">
-                    <label asp-for="Direccion" class="control-label"></label>
-                    <input asp-for="Direccion" class="form-control" />
-                    <span asp-validation-for="Direccion" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6" id="DivTelefono">
-                    <label class="control-label">Teléfono (10 dígitos)</label>
-                    <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-                    <span asp-validation-for="Telefono" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-12" id="DivObservaciones">
-                    <label asp-for="Observaciones" class="control-label"></label>
-                    <input asp-for="Observaciones" class="form-control" />
-                    <span asp-validation-for="Observaciones" class="text-danger"></span>
-                </div>
-            }
-            else
-            {
-                <div class="form-group col-md-3" id="DivGradoEstudios">
-                    <label class="control-label">Último grado de estudios</label>
-                    <select class="form-control" name="GradoEstudios"
-                            asp-items="@(new SelectList(ViewBag.listaGradoEstudios, "Value", "Text", @ViewBag.idGradoEstudios))">
-                    </select>
-                </div>
-                <div class="form-group col-md-6" style="display:none" id="DivInstitucionE">
-                    <label class="control-label">Nombre de la institución donde realiza(ó) sus estudios</label>
-                    <input asp-for="InstitucionE" class="form-control" />
-                    <span asp-validation-for="InstitucionE" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-12" style="display:none" id="DivHorario">
-                    <label asp-for="Horario" class="control-label"></label>
-                    <input asp-for="Horario" class="form-control" />
-                    <span asp-validation-for="Horario" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6" style="display:none" id="DivDireccion">
-                    <label asp-for="Direccion" class="control-label"></label>
-                    <input asp-for="Direccion" class="form-control" />
-                    <span asp-validation-for="Direccion" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6" style="display:none" id="DivTelefono">
-                    <label class="control-label">Teléfono (10 dígitos)</label>
-                    <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-                    <span asp-validation-for="Telefono" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-12" id="DivObservaciones">
-                    <label asp-for="Observaciones" class="control-label"></label>
-                    <input asp-for="Observaciones" class="form-control" />
-                    <span asp-validation-for="Observaciones" class="text-danger"></span>
-                </div>
-            }
+            <div class="form-group col-md-6" id="DivInstitucionE">
+                <label class="control-label">Nombre de la institución en la que actualmente realiza sus estudios</label>
+                <input asp-for="InstitucionE" class="form-control" id="InstitucionText" style="text-transform:uppercase" />
+                <span asp-validation-for="InstitucionE" class="text-danger"></span>
+            </div>
 
+            <div class="form-group col-md-6" id="DivHorario">
+                <label asp-for="Horario" class="control-label"></label>
+                <input asp-for="Horario" class="form-control" id="HorarioText" style="text-transform:uppercase" />
+                <span asp-validation-for="Horario" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group col-md-6" id="DivDireccion">
+                <label asp-for="Direccion" class="control-label"></label>
+                <input asp-for="Direccion" class="form-control" id="DireccionText" style="text-transform:uppercase" />
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group col-md-6" id="DivTelefono">
+                <label class="control-label">Teléfono (10 dígitos)</label>
+                <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" id="TelefonoText" />
+                <span asp-validation-for="Telefono" class="text-danger"></span>           
+            </div>
+            <div class="form-group col-md-12" id="DivObservaciones">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <input asp-for="Observaciones" class="form-control" style="text-transform:uppercase" />
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">

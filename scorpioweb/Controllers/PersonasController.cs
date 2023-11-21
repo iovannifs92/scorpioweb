@@ -42,11 +42,14 @@ using System.ComponentModel.DataAnnotations;
 using Syncfusion.EJ2.Navigations;
 using Syncfusion.EJ2.Linq;
 
+
+
 namespace scorpioweb.Controllers
 {
     [Authorize]
     public class PersonasController : Controller
     {
+
         #region -Variables Globales-
         //To get content root path of the project
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -3574,6 +3577,7 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> MenuEdicion(int? id)
         {
+       
             if (id == null)
             {
                 return NotFound();
@@ -3701,7 +3705,7 @@ namespace scorpioweb.Controllers
                 consumo.Add(consumosustancias[i].Sustancia?.ToString());
                 consumo.Add(consumosustancias[i].Frecuencia?.ToString());
                 consumo.Add(consumosustancias[i].Cantidad?.ToString());
-                consumo.Add(consumosustancias[i].UltimoConsumo?.ToString());
+                consumo.Add(consumosustancias[i].UltimoConsumo?.ToString("yyyy-MM-ddTHH:mm:ss"));
                 consumo.Add(consumosustancias[i].Observaciones?.ToString());
                 consumo.Add(consumosustancias[i].IdConsumoSustancias.ToString());
             }
@@ -3834,6 +3838,8 @@ namespace scorpioweb.Controllers
 
             #endregion
 
+            #region -viewbags y listas-
+
             ViewBag.listaOtroIdioma = listaNoSi;
             ViewBag.idOtroIdioma = BuscaId(listaNoSi, persona.OtroIdioma);
 
@@ -3861,21 +3867,87 @@ namespace scorpioweb.Controllers
             ViewBag.listaSinoCentroPenitenciario = listaNoSi;
             ViewBag.idSinoCentroPenitenciario = BuscaId(listaNoSi, persona.Sinocentropenitenciario);
 
-            //ViewBag.listaUbicacionExp = listaUbicacionExpediente;
-            //ViewBag.idUbicacionExp = BuscaId(listaUbicacionExpediente, persona.UbicacionExpediente);
-
             ViewBag.idCentroPenitenciario = persona.Centropenitenciario;
             ViewBag.pais = persona.Lnpais;
+            
             ViewBag.idioma = persona.OtroIdioma;
+            ViewBag.EspecifiqueIdioma = persona.EspecifiqueIdioma;
+           
             ViewBag.traductor = persona.Traductor;
-            ViewBag.Hijos = persona.Hijos;
+            ViewBag.EspecifiqueTraductor = persona.EspecifiqueTraductor;
 
+            ViewBag.TieneHijos = persona.Hijos;
+            ViewBag.NumeroHijos = persona.Nhijos;
 
+            #endregion
+
+            #region -botones edicion sustancias, familiares y referencias-
+
+            string familiarTipo = "", referenciaTipo = "", SI = "SI", NO = "NO";
+
+            //PARA SABER SI LA PERSONA TIENE REGISTRO DE SUSTANCIAS
+            int NumeroConsumoSustancias = _context.Consumosustancias.Where(a => a.PersonaIdPersona == id).Count();
+            if (NumeroConsumoSustancias >= 1)
+            {
+                ViewBag.ConsumoSustancias = BuscaId(listaNoSi, SI);
+            }
+            else
+            {
+                ViewBag.ConsumoSustancias = BuscaId(listaNoSi, NO);
+            }
+
+            //CUENTA SI LA PERSONA TIENE FAMILIARES O REFERENCIAS EN ASIENTO FAMILIAR
+            int NumeroFamiliares = _context.Asientofamiliar.Where(a => a.PersonaIdPersona == id).Count();
+            //ALMACENA EL TIPO DE ASIENTO FAMILIAR YA SEA REFERENCIA O FAMILIAR
+            List<string> TiposAsiento = _context.Asientofamiliar.Where(a => a.PersonaIdPersona == id).Select(a => a.Tipo).ToList();
+
+            //SI LA PERSONA CUENTA CON REFERENCIA O FAMILIAR SE LLENAN VARIABLES
+            foreach (string tipoAsiento in TiposAsiento)
+            {
+                if (tipoAsiento == "FAMILIAR")
+                {
+                    familiarTipo = tipoAsiento;
+                }
+                else if (tipoAsiento == "REFERENCIA")
+                {
+                    referenciaTipo = tipoAsiento;
+                }
+            }
+            //SI ENCONTRO LLENA VIEWBAGS PARA BOTONES DE EDICION DE FAMILIAR y REFERENCIA
+            if (NumeroFamiliares >= 1)
+            {
+                switch (familiarTipo)
+                {
+                    case "FAMILIAR":
+                        ViewBag.idFamiliares = BuscaId(listaNoSi, SI);
+                        break;
+                    default:
+                        ViewBag.idFamiliares = BuscaId(listaSiNo, NO);
+                        break;
+                }
+                switch (referenciaTipo)
+                {
+                    case "REFERENCIA":
+                        ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, SI);
+                        break;
+                    default:
+                        ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, NO);
+                        break;
+                }
+            }
+            else
+            {
+                // SI NO ENCONTRO REGISTRO EN ASIENTO FAMILIAR BOTONES DE EDICION NO DISPNIBLES
+                ViewBag.idFamiliares = BuscaId(listaSiNo, NO);
+                ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, NO);
+
+            }
+            #endregion
 
             #region Consume sustancias
-            ViewBag.listaConsumoSustancias = listaNoSi;
-            ViewBag.ConsumoSustancias = BuscaId(listaNoSi, persona.ConsumoSustancias);
 
+            ViewBag.listaConsumoSustancias = listaNoSi;
+           
             contadorSustancia = 0;
 
             List<SelectListItem> ListaSustancia;
@@ -3927,7 +3999,7 @@ namespace scorpioweb.Controllers
                 ViewBag.idSustancia = "ALCOHOL";
                 ViewBag.idFrecuencia = "DIARIO";
                 ViewBag.cantidad = null;
-                ViewBag.ultimoConsumo = null;
+                ViewBag.ultimoConsumo = DateTime.ParseExact("01/01/1990", "MM/dd/yyyy", CultureInfo.InvariantCulture);
                 ViewBag.observaciones = null;
             }
 
@@ -3935,10 +4007,10 @@ namespace scorpioweb.Controllers
             ViewBag.ListaAsientoFamiliares = asientofamiliares;
             ViewBag.ListaAsientoReferencias = asientoreferencias;
             #endregion
-
+            
             #region Familiares
+           
             ViewBag.listaFamiliares = listaSiNo;
-            ViewBag.idFamiliares = BuscaId(listaSiNo, persona.Familiares);
 
             contadorFamiliares = 0;
 
@@ -4010,8 +4082,8 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region Referencias
+            
             ViewBag.listaReferenciasPersonales = listaSiNo;
-            ViewBag.idReferenciasPersonales = BuscaId(listaSiNo, persona.ReferenciasPersonales);
 
             contadorReferencias = 0;
 
@@ -4062,7 +4134,6 @@ namespace scorpioweb.Controllers
 
             Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
             Familiaresforaneos familiaresForaneos = new Familiaresforaneos();
-
             string currentUser = User.Identity.Name;
 
             if (id != persona.IdPersona)
@@ -4103,8 +4174,34 @@ namespace scorpioweb.Controllers
                 if (persona.Candado == null) { persona.Candado = 0; }
                 persona.Candado = persona.Candado;
                 persona.MotivoCandado = mg.normaliza(persona.MotivoCandado);
-                #region -ConsumoSustancias-
-                //Sustancias editadas
+
+                #region - sustancias agregadas -
+              
+                int idConsumoSustancias = ((from table in _context.Consumosustancias
+                                            select table.IdConsumoSustancias).Max());
+                if (arraySustancias != null)
+                {
+                    JArray sustancias = JArray.Parse(arraySustancias);
+
+                    for (int i = 0; i < sustancias.Count; i = i + 5)
+                    {
+                        Consumosustancias consumosustanciasBD = new Consumosustancias();
+                        persona.ConsumoSustancias = "SI";
+                        consumosustanciasBD.Sustancia = sustancias[i].ToString();
+                        consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
+                        consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
+                        consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
+                        consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
+                        consumosustanciasBD.PersonaIdPersona = id;
+                        consumosustanciasBD.IdConsumoSustancias = ++idConsumoSustancias;
+                        _context.Add(consumosustanciasBD);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                    }
+                }
+                #endregion
+
+                #region - Sustancias editadas -
+                
                 if (arraySustanciasEditadas != null)
                 {
                     JArray sustancias = JArray.Parse(arraySustanciasEditadas);
@@ -4151,27 +4248,59 @@ namespace scorpioweb.Controllers
                         }
                     }
                 }
+                #endregion
 
-                //Sustancias agregadas
-                int idConsumoSustancias = ((from table in _context.Consumosustancias
-                                            select table.IdConsumoSustancias).Max());
-                if (arraySustancias != null)
+                #region -Familiares, referencias agregados-
+              
+                int idAsientoFamiliar = ((from table in _context.Asientofamiliar
+                                          select table.IdAsientoFamiliar).Max());
+                if (arrayFamiliarReferencia != null)
                 {
-                    JArray sustancias = JArray.Parse(arraySustancias);
-
-                    for (int i = 0; i < sustancias.Count; i = i + 5)
+                    JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
+                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
                     {
-                        Consumosustancias consumosustanciasBD = new Consumosustancias();
-
-                        consumosustanciasBD.Sustancia = sustancias[i].ToString();
-                        consumosustanciasBD.Frecuencia = sustancias[i + 1].ToString();
-                        consumosustanciasBD.Cantidad = mg.normaliza(sustancias[i + 2].ToString());
-                        consumosustanciasBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
-                        consumosustanciasBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
-                        consumosustanciasBD.PersonaIdPersona = id;
-                        consumosustanciasBD.IdConsumoSustancias = ++idConsumoSustancias;
-                        _context.Add(consumosustanciasBD);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        Asientofamiliar asientoFamiliar = new Asientofamiliar();                        
+                        try
+                        {
+                            asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
+                            asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                            asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
+                            asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
+                            asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                            asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                            asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                            asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                            asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                            asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                            asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                            asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                            asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                            asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                            asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
+                            if (asientoFamiliar.Tipo.Equals("FAMILIAR"))
+                            {
+                                persona.Familiares = "SI";
+                            }
+                            else if (asientoFamiliar.Tipo.Equals("REFERENCIA"))
+                            {
+                                persona.ReferenciasPersonales = "SI";
+                            }
+                            asientoFamiliar.PersonaIdPersona = id;
+                            
+                            _context.Add(asientoFamiliar);
+                            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
+                            {
+                                return NotFound();
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
                     }
                 }
                 #endregion
@@ -4194,34 +4323,28 @@ namespace scorpioweb.Controllers
                         else
                         {
                             Asientofamiliar asientoFamiliar = new Asientofamiliar();
-
-                            asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
-                            asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
+                    
                             try
                             {
+                                asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
+                                asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                                asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                                 asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
-                            }
-                            catch
-                            {
-                                asientoFamiliar.Edad = 0;
-                            }
-                            asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
-                            asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                            asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
-                            asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                            asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
-                            asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                            asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
-                            asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
-                            asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                            asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
-                            asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
-                            asientoFamiliar.Tipo = "FAMILIAR";
-                            asientoFamiliar.PersonaIdPersona = id;
-
-                            try
-                            {
+                                asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                                asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                                asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                                asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                                asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                                asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                                asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                                asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                                asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                                asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                                asientoFamiliar.Tipo = "FAMILIAR";
+                                asientoFamiliar.PersonaIdPersona = id;
+                                
                                 var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
+                                
                                 _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
                                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             }
@@ -4235,14 +4358,14 @@ namespace scorpioweb.Controllers
                                 {
                                     throw;
                                 }
-                            }
+                            }                          
                         }
                     }
                 }
                 #endregion
 
-
                 #region -Referencias editadas-
+                
                 if (arrayReferenciasEditadas != null)
                 {
                     JArray familiarReferencia = JArray.Parse(arrayReferenciasEditadas);
@@ -4260,34 +4383,28 @@ namespace scorpioweb.Controllers
                         else
                         {
                             Asientofamiliar asientoFamiliar = new Asientofamiliar();
-
-                            asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
-                            asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
+                      
                             try
                             {
+                                asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
+                                asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
+                                asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
                                 asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
-                            }
-                            catch
-                            {
-                                asientoFamiliar.Edad = 0;
-                            }
-                            asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
-                            asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                            asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
-                            asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                            asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
-                            asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                            asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
-                            asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
-                            asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                            asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
-                            asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
-                            asientoFamiliar.Tipo = "REFERENCIA";
-                            asientoFamiliar.PersonaIdPersona = id;
-
-                            try
-                            {
+                                asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
+                                asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
+                                asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
+                                asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
+                                asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
+                                asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
+                                asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
+                                asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
+                                asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
+                                asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
+                                asientoFamiliar.Tipo = "REFERENCIA";
+                                asientoFamiliar.PersonaIdPersona = id;
+                                
                                 var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
+                                
                                 _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
                                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             }
@@ -4305,47 +4422,8 @@ namespace scorpioweb.Controllers
                         }
                     }
                 }
-                #endregion
-
-                //Familiares, referencias agregados
-                int idAsientoFamiliar = ((from table in _context.Asientofamiliar
-                                          select table.IdAsientoFamiliar).Max());
-                if (arrayFamiliarReferencia != null)
-                {
-                    JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
-                    for (int i = 0; i < familiarReferencia.Count; i = i + 14)
-                    {
-                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
-
-                        asientoFamiliar.Nombre = mg.normaliza(familiarReferencia[i].ToString());
-                        asientoFamiliar.Relacion = familiarReferencia[i + 1].ToString();
-                        try
-                        {
-                            asientoFamiliar.Edad = Int32.Parse(familiarReferencia[i + 2].ToString());
-                        }
-                        catch
-                        {
-                            asientoFamiliar.Edad = 0;
-                        }
-                        asientoFamiliar.Sexo = familiarReferencia[i + 3].ToString();
-                        asientoFamiliar.Dependencia = familiarReferencia[i + 4].ToString();
-                        asientoFamiliar.DependenciaExplica = mg.normaliza(familiarReferencia[i + 5].ToString());
-                        asientoFamiliar.VivenJuntos = familiarReferencia[i + 6].ToString();
-                        asientoFamiliar.Domicilio = mg.normaliza(familiarReferencia[i + 7].ToString());
-                        asientoFamiliar.Telefono = familiarReferencia[i + 8].ToString();
-                        asientoFamiliar.HorarioLocalizacion = mg.normaliza(familiarReferencia[i + 9].ToString());
-                        asientoFamiliar.EnteradoProceso = familiarReferencia[i + 10].ToString();
-                        asientoFamiliar.PuedeEnterarse = familiarReferencia[i + 11].ToString();
-                        asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
-                        asientoFamiliar.Tipo = familiarReferencia[i + 13].ToString();
-                        asientoFamiliar.PersonaIdPersona = id;
-                        asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
-                        _context.Add(asientoFamiliar);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-
-                    }
-                }
-
+                #endregion              
+               
                 try
                 {
                     var oldPersona = await _context.Persona.FindAsync(id);

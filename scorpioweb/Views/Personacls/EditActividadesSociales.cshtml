@@ -16,17 +16,17 @@
             <input type="hidden" asp-for="PersonaClIdPersonaCl" />
             <div class="form-group col-md-6">
                 <label class="control-label">Tipo de actividad</label>
-                <input asp-for="TipoActividad" class="form-control" />
+                <input asp-for="TipoActividad" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="TipoActividad" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Horario" class="control-label"></label>
-                <input asp-for="Horario" class="form-control" />
+                <input asp-for="Horario" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Horario" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Lugar donde realiza su actividad</label>
-                <input asp-for="Lugar" class="form-control" />
+                <input asp-for="Lugar" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Lugar" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">
@@ -42,62 +42,14 @@
             </div>
             <div class="form-group col-md-6">
                 <label class="control-label">Especificar persona de referencia</label>
-                <input asp-for="Referencia" class="form-control" />
+                <input asp-for="Referencia" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Referencia" class="text-danger"></span>
             </div>
             <div class="form-group col-md-12">
                 <label asp-for="Observaciones" class="control-label"></label>
-                <input asp-for="Observaciones" class="form-control" />
+                <input asp-for="Observaciones" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Observaciones" class="text-danger"></span>
             </div>
-            @*}
-            else
-            {
-            <div style="padding-top:1%;">
-            <label class="control-label">¿Depende en algo de él?</label>
-            <select required class="form-control" name="AFDependencia" id="AFDependencia">
-            <option value="NO">No</option>
-            <option value="SI">Si</option>
-            </select>
-            </div>
-            <div class="form-group col-md-6" style="display:none">
-            <label class="control-label">Tipo de actividad</label>
-            <input asp-for="TipoActividad" class="form-control" />
-            <span asp-validation-for="TipoActividad" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6" style="display:none">
-            <label asp-for="Horario" class="control-label"></label>
-            <input asp-for="Horario" class="form-control" />
-            <span asp-validation-for="Horario" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12" style="display:none">
-            <label class="control-label">Lugar donde realiza su actividad</label>
-            <input asp-for="Lugar" class="form-control" />
-            <span asp-validation-for="Lugar" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12" style="display:none">
-            <label class="control-label">Teléfono (10 dígitos)</label>
-            <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
-            <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-6" style="display:none">
-            <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
-            <select class="form-control" name="SePuedeEnterar" id="SePuedeEnterar"
-            asp-items="@(new SelectList(ViewBag.listasePuedeEnterarASr, "Value", "Text", @ViewBag.idsePuedeEnterarAS))">
-            </select>
-            </div>
-            <div class="form-group col-md-6" style="display:none">
-            <label class="control-label">Especificar persona de referencia</label>
-            <input asp-for="Referencia" class="form-control" />
-            <span asp-validation-for="Referencia" class="text-danger"></span>
-            </div>
-            <div class="form-group col-md-12" style="display:none">
-            <label asp-for="Observaciones" class="control-label"></label>
-            <input asp-for="Observaciones" class="form-control" />
-            <span asp-validation-for="Observaciones" class="text-danger"></span>
-            </div>
-            }*@
-
             <div class="col-md-12">
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">
