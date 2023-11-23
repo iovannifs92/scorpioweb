@@ -154,7 +154,7 @@
                 <a asp-action="EditPlaneacionEstrategica" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="actividadesSociales" class="btn btn-primary btn-lg btn-block btn-huge">Planeación Estrategica</a>
             </div>
             <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditCambiodeobligaciones" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="cambio" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
+                <a asp-action="EditCambioObligaciones" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="cambio" class="btn btn-primary btn-lg btn-block btn-huge">Cambio de Obligaciónes</a>
             </div>
         </div>
         <div class="row">
@@ -193,5 +193,5 @@
 
 <br />
 <div class=col-md-6 style="margin-top: 20px">
-    <a style="" href='javascript:history.go(-1)'>Regresar</a>
+    <a asp-action="Index">Regresar</a>
 </div>

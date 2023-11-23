@@ -62,7 +62,8 @@
             <div class="form-group">
                 <label class="control-label">Periodicidad de Firma</label>
                 <select class="form-control" name="PeriodicidadFirma" id="PeriodicidadFirma"
-                        asp-items="@(new SelectList(ViewBag.listaplaneacion, "Value", "Text", @ViewBag.idPlaneacion))">
+                        asp-items="@(new SelectList(ViewBag.listaPeriodicida, "Value", "Text", ViewBag.idPeriodicida))">
+                        asp-items="@(new SelectList(ViewBag.listaPeriodicida, "Value", "Text", ViewBag.idPeriodicida))">
                 </select>
             </div>
             <div class="form-group">
@@ -75,5 +76,5 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Regresar</a>
 </div>

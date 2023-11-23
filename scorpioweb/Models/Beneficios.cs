@@ -13,5 +13,6 @@ namespace scorpioweb.Models
         public string Evidencia { get; set; }
         public string FiguraJudicial { get; set; }
         public int SupervisionclIdSupervisioncl { get; set; }
+       
     }
 }

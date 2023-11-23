@@ -272,6 +272,8 @@
     <form asp-action="EditArchivo" asp-route-id="@item.archivoregistroVM.IdArchivoRegistro" asp-route-archivoIdArchivo="@item.archivoregistroVM.ArchivoIdArchivo" enctype="multipart/form-data">
         <p>
             <a class="btn btn-primary btn-lg btn-block" data-toggle="collapse" href="@(collapse+i)" role="button" aria-expanded="false" aria-controls="collapseExample">
+                @item.archivoVM.Nombre  @item.archivoVM.Paterno  @item.archivoVM.Materno 
+                <br></br>
                 Causa Penal @item.archivoregistroVM.CausaPenal
             </a>
         </p>
@@ -288,7 +290,7 @@
             </div>
             <div class="form-group col-md-12">
                 <label class="control-label">Situacion</label>
-                <input name="Situacion" id="Situacion" value="@item.archivoregistroVM.Situacion" class="form-control" />
+                <textarea name="Situacion" id="Situacion" value="@item.archivoregistroVM.Situacion" class="form-control">@item.archivoregistroVM.Situacion</textarea>
             </div>
 
             <div class="form-group col-md-12">

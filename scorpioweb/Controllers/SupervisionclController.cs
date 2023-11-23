@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -387,30 +391,8 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
-        // GET: Supervisioncl/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        // POST: Supervisioncl/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdSupervisioncl,Inicio,Termino,EstadoSupervision,PersonaclIdPersonacl,EstadoCumplimiento,CausaPenalclIdCausaPenalcl,Tta")] Supervisioncl supervisioncl)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(supervisioncl);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(supervisioncl);
-        }
-
-
-        #region Edicines 
+        #region Edits 
         #region EditSupervision
         // GET: Supervisioncl/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -474,7 +456,6 @@ namespace scorpioweb.Controllers
             return View(supervisioncl);
         }
         #endregion
-
         #region --Edit Beneficioos-
         public async Task<IActionResult> EditBeneficios(int? id, string nombre, string cp, string idpersona, string supervisor, int idcp)
         {
@@ -496,8 +477,11 @@ namespace scorpioweb.Controllers
             List<Bitacora> bitacora = _context.Bitacora.ToList();
             List<Supervision> supervision = _context.Supervision.ToList();
             List<Persona> personas = _context.Persona.ToList();
+            List<Condicionescl> condicionescl = _context.Condicionescl.ToList();
+            ViewBag.condicionescl = condicionescl;
 
-            ViewData["fracciones"] = from b in beneficios
+
+            ViewData["Beneficios"] = from b in beneficios
                                      where b.SupervisionclIdSupervisioncl == id
                                      orderby b.SupervisionclIdSupervisioncl
                                      select b;
@@ -505,38 +489,94 @@ namespace scorpioweb.Controllers
             ViewBag.IdSupervisionclGuardar = id;
 
             ViewBag.listaFracciones = listaFracciones;
-            //ViewBag.listaFiguraJudicial = listaFiguraJudicial;
+            ViewBag.listaBeneficios = listaBeneficios;
             ViewBag.listaCumplimiento = listaCumplimiento;
 
 
             return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditFraccionesimpuestas(int id, [Bind("IdFracciones,Tipo,Autoridad,FechaInicio,FechaTermino,Estado,Evidencia,FiguraJudicial,SupervisionIdSupervision")] Fraccionesimpuestas fraccionesimpuestas)
+        }   
+        #endregion
+        public ActionResult addCondicion(string tipo, Condicionescl condicionescl)
         {
-            if (id != fraccionesimpuestas.SupervisionIdSupervision)
+            condicionescl.Tipo = mg.removeSpaces(mg.normaliza(tipo));
+            _context.Add(condicionescl);
+            _context.SaveChanges();
+            return Json(new { success = true});
+
+        }
+        public async Task<IActionResult> CrearCondicion(Beneficios beneficios, string[] datosBeneficios,string[] datosidCondiciones)
+        {
+            for (int i = 0; i < datosidCondiciones.Length; i++)
+            {
+                beneficios.SupervisionclIdSupervisioncl = Int32.Parse(datosBeneficios[0]);
+                beneficios.FiguraJudicial = datosBeneficios[1];
+                beneficios.FechaInicio = mg.validateDatetime(datosBeneficios[2]);
+                beneficios.FechaTermino = mg.validateDatetime(datosBeneficios[3]);
+                beneficios.Estado = datosBeneficios[4];
+                beneficios.Tipo = datosidCondiciones[i];
+
+                _context.Add(beneficios);
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+              
+            }
+            return View();
+            //return RedirectToAction(nameof(Index));
+        }
+        #region -Editar y borrar beneficios-        
+
+        public async Task<IActionResult> EditCondiciones(string nombre, string cp, int id, string idpersona)
+        {
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+            if (id == 0)
+            {
+                return View();
+            }
+
+            ViewBag.cp = cp;
+            ViewBag.nombre = nombre;
+            ViewBag.idpersona = idpersona;
+
+
+            var beneficios = await _context.Beneficios.SingleOrDefaultAsync(m => m.IdBeneficios == id);
+            if (beneficios == null)
             {
                 return NotFound();
             }
 
+            List<Condicionescl> condicionescl = _context.Condicionescl.ToList();
 
+            ViewBag.listacondicionescl = condicionescl.Select(c => c.Tipo );
+            ViewBag.idCondicionescl =  beneficios.Tipo;
+
+            ViewBag.listaCumplimiento = listaCumplimiento;
+            ViewBag.idCumplimiento = mg.BuscaId(listaCumplimiento, beneficios.Estado);
+
+            ViewBag.listaBeneficios = listaBeneficios;
+            ViewBag.idFiguraJudicial = mg.BuscaId(listaBeneficios, beneficios.FiguraJudicial);
+
+            return View(beneficios);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCondiciones([Bind("IdBeneficios,Tipo,Autoridad,FechaInicio,FechaTermino,Estado,Evidencia,FiguraJudicial,SupervisionclIdSupervisioncl")] Beneficios beneficios, string nombre, string cp, string idpersona)
+        {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    fraccionesimpuestas.Autoridad = mg.normaliza(fraccionesimpuestas.Autoridad);
-
-                    var oldFraccionesimpuestas = await _context.Fraccionesimpuestas.FindAsync(fraccionesimpuestas.IdFracciones, fraccionesimpuestas.SupervisionIdSupervision);
-                    _context.Entry(oldFraccionesimpuestas).CurrentValues.SetValues(fraccionesimpuestas);
+                    var oldBeneficios = await _context.Beneficios.FindAsync(beneficios.IdBeneficios, beneficios.SupervisionclIdSupervisioncl);
+                    _context.Entry(oldBeneficios).CurrentValues.SetValues(beneficios);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                    _context.Update(fraccionesimpuestas);
-                    await _context.SaveChangesAsync();
+                    //_context.Update(fraccionesimpuestas);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SupervisionclExists(fraccionesimpuestas.SupervisionIdSupervision))
+                    if (!BeneficioExists(beneficios.SupervisionclIdSupervisioncl))
                     {
                         return NotFound();
                     }
@@ -545,10 +585,254 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("EditFraccionesimpuestas/" + fraccionesimpuestas.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("EditBeneficios/" + beneficios.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
             }
-            return View(fraccionesimpuestas);
+            return View(beneficios);
         }
+
+
+        public async Task<IActionResult> DeleteBeneficio(int? id, string nombre, string cp, string idpersona)
+        {
+            var beneficios = await _context.Beneficios.SingleOrDefaultAsync(m => m.IdBeneficios == id);
+            var oldbeneficios = await _context.Beneficios.FindAsync(beneficios.IdBeneficios, beneficios.SupervisionclIdSupervisioncl);
+            _context.Entry(oldbeneficios).CurrentValues.SetValues(oldbeneficios);
+
+            _context.Beneficios.Remove(beneficios);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("EditBeneficios/" + beneficios.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
+        }
+
+
+        #region -Acciones de supervision-
+        //public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int? id, string idpersona, string[] datosBitacora, string supervisor, int idcp)
+        //{
+        //    int index = cp.IndexOf("?");
+        //    if (index >= 0)
+        //        cp = cp.Substring(0, index);
+
+
+        //    ViewBag.cp = cp;
+        //    ViewBag.nombre = nombre;
+        //    ViewBag.idpersona = idpersona;
+        //    ViewBag.supervisor = supervisor;
+        //    ViewBag.idcp = idcp;
+        //    ViewBag.idfraccionesimpuestas = id;
+
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    List<Bitacora> bitacora = _context.Bitacora.ToList();
+        //    List<Fraccionesimpuestas> fraccionesImpuestas = _context.Fraccionesimpuestas.ToList();
+        //    List<Supervision> supervision = _context.Supervision.ToList();
+        //    int SupervisionIdSupervision = 0;
+        //    var idsupervision = datosBitacora[0];
+        //    if (idsupervision != null)
+        //    {
+        //        SupervisionIdSupervision = Int32.Parse(idsupervision);
+        //    }
+
+        //    var snbitacora = await _context.Bitacora.Where(m => m.FracionesImpuestasIdFracionesImpuestas == id).ToListAsync();
+        //    if (snbitacora.Count == 0)
+        //    {
+        //        return RedirectToAction("CreateBitacora2", new { id, SupervisionIdSupervision, @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+        //    }
+
+
+        //    #region -Select idOficialia
+        //    List<Bitacora> bitacorasvm = _context.Bitacora.ToList();
+
+        //    var leftjoin = from o in _context.Oficialia
+        //                   join p in _context.Persona on o.UsuarioTurnar equals p.Supervisor
+        //                   join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+        //                   join b in bitacorasvm on o.IdOficialia equals b.OficialiaIdOficialia into temp
+        //                   from bo in temp.DefaultIfEmpty()
+        //                   select new ListaOficialiaBitacoraViewModel
+        //                   {
+        //                       oficialiavm = o,
+        //                       supervisionvm = s,
+        //                       personavm = p,
+        //                       bitacoravm = bo
+        //                   };
+
+        //    var wheres = (from bn in leftjoin
+        //                  where bn.oficialiavm.UsuarioTurnar == supervisor
+        //                  group bn by bn.oficialiavm.IdOficialia into grp
+        //                  select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
+
+
+        //    var selects = (from wh in wheres
+        //                   select wh.oficialiavm.IdOficialia).ToList();
+
+        //    List<SelectListItem> ListaOficios = new List<SelectListItem>();
+        //    ListaOficios = new List<SelectListItem>
+        //    {
+        //      new SelectListItem{ Text="NA", Value="0"},
+        //    };
+        //    foreach (var select in selects)
+        //    {
+        //        ListaOficios.Add(
+        //         new SelectListItem { Text = select.ToString(), Value = select.ToString() }
+        //        );
+
+        //    }
+        //    ViewBag.expoficialia = ListaOficios;
+
+        //    #endregion
+
+        //    ViewData["tablaBiatacora"] = from Bitacora in bitacora
+        //                                 where Bitacora.FracionesImpuestasIdFracionesImpuestas == id
+        //                                 select new BitacoraViewModal
+        //                                 {
+        //                                     bitacoraVM = Bitacora
+        //                                 };
+
+
+
+
+
+        //    ViewData["tienebitacora"] = from s in supervision
+        //                                join b in bitacora on s.IdSupervision equals b.SupervisionIdSupervision
+        //                                join fi in fraccionesImpuestas on b.FracionesImpuestasIdFracionesImpuestas equals fi.IdFracciones
+        //                                where s.IdSupervision == id
+        //                                select new BitacoraViewModal
+        //                                {
+        //                                    bitacoraVM = b,
+        //                                    supervisionVM = s,
+        //                                    fraccionesimpuestasVM = fi
+        //                                };
+
+
+
+        //    #region ListaTipoPersona
+        //    List<SelectListItem> ListaTipoPersona;
+        //    ListaTipoPersona = new List<SelectListItem>
+        //    {
+        //      new SelectListItem{ Text="Supervisado", Value="SUPERVISADO"},
+        //      new SelectListItem{ Text="Víctima", Value="VICTIMA"},
+
+        //    };
+        //    ViewBag.TipoPersona = ListaTipoPersona;
+        //    #endregion
+
+        //    #region ListaTipoVisita
+        //    List<SelectListItem> ListaTipoVisita;
+        //    ListaTipoVisita = new List<SelectListItem>
+        //    {
+        //      new SelectListItem{ Text="Presencial", Value="PRESENCIAL"},
+        //      new SelectListItem{ Text="Firma Periódica", Value="FIRMA PERIODICA"},
+        //      new SelectListItem{ Text="WhatsApp", Value="WHATSAPP"},
+        //      new SelectListItem{ Text="Telefónica", Value="TELEFONICA"},
+        //      new SelectListItem{ Text="Correo Electrónico", Value="CORREO ELECTRONICO"},
+        //      new SelectListItem{ Text="Citatorio", Value="CITATORIO"},
+        //      new SelectListItem{ Text="Visita Domiciliar", Value="VISITA DOMICILIAR"},
+        //      new SelectListItem{ Text="Notificación a Víctima", Value="NOTIFICACION A VICTIMA"},
+        //    };
+        //    ViewBag.TipoVisita = ListaTipoVisita;
+        //    #endregion
+
+        //    return View();
+        //}
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> EditAddAccionSupervision([Bind("IdBitacora,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,OficialiaIdOficialia,FechaRegistro,SupervisionIdSupervision,FracionesImpuestasIdFracionesImpuestas ")] Bitacora bitacora, IFormFile evidencia, string nombre, string cp, string idpersona, string supervisor, string idcp)
+        //{
+        //    bitacora.Texto = mg.normaliza(bitacora.Texto);
+        //    bitacora.OficialiaIdOficialia = bitacora.OficialiaIdOficialia;
+        //    bitacora.FechaRegistro = bitacora.FechaRegistro;
+
+        //    var supervision = _context.Supervision
+        //       .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            bitacora.Texto = mg.normaliza(bitacora.Texto);
+
+
+        //            var oldBitacora = await _context.Bitacora.FindAsync(bitacora.IdBitacora, bitacora.SupervisionIdSupervision);
+
+        //            if (evidencia == null)
+        //            {
+        //                bitacora.RutaEvidencia = oldBitacora.RutaEvidencia;
+        //            }
+        //            else
+        //            {
+        //                string file_name = bitacora.IdBitacora + "_" + bitacora.SupervisionIdSupervision + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+        //                bitacora.RutaEvidencia = file_name;
+        //                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
+
+        //                if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+        //                {
+        //                    System.IO.File.Delete(Path.Combine(uploads, file_name));
+        //                }
+
+        //                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+        //                await evidencia.CopyToAsync(stream);
+        //                stream.Close();
+        //            }
+
+        //            _context.Entry(oldBitacora).CurrentValues.SetValues(bitacora);
+
+        //            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+        //            _context.Update(bitacora);
+        //            await evidencia.CopyToAsync(stream);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!BeneficioExists(bitacora.SupervisionIdSupervision))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+        //    }
+        //    return View();
+        //}
+
+        //public async Task<IActionResult> CrearAccionSuper(Bitacora bitacora, string[] datosBitacora)
+        //{
+        //    bitacora.SupervisionIdSupervision = Int32.Parse(datosBitacora[0]);
+        //    bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosBitacora[1]);
+        //    bitacora.Fecha = mg.validateDatetime(datosBitacora[2]);
+        //    bitacora.TipoPersona = datosBitacora[3];
+        //    bitacora.Texto = mg.normaliza(datosBitacora[4]);
+        //    bitacora.TipoVisita = datosBitacora[5];
+        //    bitacora.RutaEvidencia = datosBitacora[6];
+
+
+        //    var supervision = _context.Supervision
+        //       .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
+
+        //    _context.Add(bitacora);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction("EditFraccionesimpuestas/" + bitacora.SupervisionIdSupervision, "Supervisiones");
+        //}
+        //public async Task<IActionResult> DeleteRegistro2(int? id, string nombre, string cp, string idpersona, string supervisor, string idcp)
+        //{
+        //    var Bitacora = await _context.Bitacora.SingleOrDefaultAsync(m => m.IdBitacora == id);
+        //    var oldBitacora = await _context.Bitacora.FindAsync(Bitacora.IdBitacora, Bitacora.SupervisionIdSupervision);
+        //    _context.Entry(oldBitacora).CurrentValues.SetValues(Bitacora);
+
+
+        //    _context.Bitacora.Remove(Bitacora);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction("EditFraccionesimpuestas/" + Bitacora.SupervisionIdSupervision, "Supervisiones", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, idcp = idcp, @supervisor = supervisor });
+
+        //}
+
+        #endregion
+
         #endregion
         #region EditPlaneacionEstrategica
         // GET: Supervisioncl/Edit/5
@@ -568,8 +852,8 @@ namespace scorpioweb.Controllers
             ViewBag.listaplaneacion = listaNoSiNa;
             ViewBag.idPlaneacion = mg.BuscaId(listaNoSiNa, planeacionestrategicacl.PlanSupervision);
 
-            ViewBag.listaPeriodicidas = listaPeridodicidad;
-            ViewBag.idEstadoCumplimiento = mg.BuscaId(listaCumplimiento, planeacionestrategicacl.PeriodicidadFirma);
+            ViewBag.listaPeriodicida = listaPeridodicidad;
+            ViewBag.idPeriodicida = mg.BuscaId(listaPeridodicidad, planeacionestrategicacl.PeriodicidadFirma);
             #endregion
 
             return View(planeacionestrategicacl);
@@ -610,43 +894,206 @@ namespace scorpioweb.Controllers
             return View(planeacionestrategicacl);
         }
         #endregion
-        #endregion
 
-        // GET: Supervisioncl/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        #region -EditCambiodeobligaciones-
+        public async Task<IActionResult> EditCambioObligaciones(int? id, string nombre, string cp, string idpersona, string cambio)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var supervisioncl = await _context.Supervisioncl
-                .SingleOrDefaultAsync(m => m.IdSupervisioncl == id);
-            if (supervisioncl == null)
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            await PermisosEdicion(id);
+
+            var cambiodeobligaciones = await _context.Cambiodeobligacionescl.SingleOrDefaultAsync(m => m.SupervisionclIdSupervisioncl == id);
+            if (cambiodeobligaciones == null)
             {
                 return NotFound();
             }
 
-            return View(supervisioncl);
+            ViewBag.listaSediocambio = listaSiNoNa;
+            ViewBag.idSediocambio = mg.BuscaId(listaSiNoNa, cambiodeobligaciones.SeDioCambio);
+            ViewBag.cambio = cambiodeobligaciones.SeDioCambio;
+
+            ViewBag.listaMotivoAprobacion = listaMotivoAprobacion;
+            ViewBag.idMotivoAprobacion = mg.BuscaId(listaMotivoAprobacion, cambiodeobligaciones.MotivoAprobacion);
+
+            return View(cambiodeobligaciones);
         }
 
-        // POST: Supervisioncl/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> EditCambiodeobligaciones(int id, [Bind("IdCambiodeObligacionescl,SeDioCambio,FechaAprobacion,MotivoAprobacion,SupervisionclIdSupervisioncl")] Cambiodeobligacionescl cambiodeobligacionescl)
         {
-            var supervisioncl = await _context.Supervisioncl.SingleOrDefaultAsync(m => m.IdSupervisioncl == id);
-            _context.Supervisioncl.Remove(supervisioncl);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (id != cambiodeobligacionescl.SupervisionclIdSupervisioncl)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    cambiodeobligacionescl.MotivoAprobacion = mg.normaliza(cambiodeobligacionescl.MotivoAprobacion);
+                    var oldCambiodeobligaciones = await _context.Cambiodeobligacionescl.FindAsync(cambiodeobligacionescl.IdCambiodeObligacionescl, cambiodeobligacionescl.SupervisionclIdSupervisioncl);
+                    _context.Entry(oldCambiodeobligaciones).CurrentValues.SetValues(cambiodeobligacionescl);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(cambiodeobligaciones);
+                    //await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CambiodeObligacionesclExists(cambiodeobligacionescl.SupervisionclIdSupervisioncl))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Supervision/" + cambiodeobligacionescl.SupervisionclIdSupervisioncl, "Supervisioncl");
+            }
+            return View(cambiodeobligacionescl);
         }
+        #endregion
+
+        #region -EditCierredecaso-
+        public async Task<IActionResult> EditCierredecaso(int? id, string nombre, string cp, string idpersona)
+        {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+
+            await PermisosEdicion(id);
+
+            var cierre = await _context.Cierredecasocl.SingleOrDefaultAsync(m => m.SupervisionclIdSupervisioncl == id);
+            if (cierre == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.CierreCaso = listaCierreCaso;
+            ViewBag.idCierreCaso = mg.BuscaId(listaCierreCaso, cierre.ComoConcluyo);
+            ViewBag.listaSeCerroCaso = listaSiNoNa;
+            ViewBag.idSeCerroCaso = mg.BuscaId(listaSiNoNa, cierre.SeCerroCaso);
+            ViewBag.cierre = cierre.SeCerroCaso;
+            #region Autorizo
+            List<SelectListItem> ListaAutorizo;
+            ListaAutorizo = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Director", Value = "DIRECTOR" },
+                new SelectListItem{ Text = "Coordinador", Value = "COORDINADOR" }
+                };
+
+            ViewBag.listaAutorizo = ListaAutorizo;
+            ViewBag.idAutorizo = mg.BuscaId(ListaAutorizo, cierre.Autorizo);
+            #endregion
+
+            ViewBag.Achivocierre = cierre.RutaArchivo;
+
+
+
+            return View(cierre);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCierredecaso(int id, [Bind("IdCierreDeCaso,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionIdSupervision")] Cierredecasocl cierredecasocl, IFormFile archivo)
+        {
+
+            var supervision = _context.Supervisioncl
+               .SingleOrDefault(m => m.IdSupervisioncl == cierredecasocl.SupervisionclIdSupervisioncl);
+
+            if (id != cierredecasocl.SupervisionclIdSupervisioncl)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    cierredecasocl.ComoConcluyo = mg.normaliza(cierredecasocl.ComoConcluyo);
+                    var oldcierredecaso = await _context.Cierredecaso.FindAsync(cierredecasocl.IdCierreDeCasocl, cierredecasocl.SupervisionclIdSupervisioncl);
+
+                    if (archivo == null)
+                    {
+                        cierredecasocl.RutaArchivo = oldcierredecaso.RutaArchivo;
+                    }
+                    else
+                    {
+                        string file_name = cierredecasocl.IdCierreDeCasocl + "_" + cierredecasocl.SupervisionclIdSupervisioncl + "_" + supervision.PersonaclIdPersonacl + Path.GetExtension(archivo.FileName);
+                        cierredecasocl.RutaArchivo = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Cierredecaso");
+
+                        if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                        {
+                            System.IO.File.Delete(Path.Combine(uploads, file_name));
+                        }
+
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await archivo.CopyToAsync(stream);
+                        stream.Close();
+                    }
+
+                    _context.Entry(oldcierredecaso).CurrentValues.SetValues(cierredecasocl);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(cierredecaso);
+                    //await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CierredecasoclExists(cierredecasocl.SupervisionclIdSupervisioncl))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Supervision/" + cierredecasocl.IdCierreDeCasocl, "Supervisioncl");
+            }
+            return View(cierredecasocl);
+        }
+        #endregion
+
+
+        #endregion
+
         #region -VERIFICAR EXISTE-
         private bool SupervisionclExists(int id)
         {
             return _context.Supervisioncl.Any(e => e.IdSupervisioncl == id);
-        }   private bool PlaneacionExists(int id)
+        }   
+        private bool PlaneacionExists(int id)
         {
             return _context.Planeacionestrategicacl.Any(e => e.IdPlaneacionEstrategicacl == id);
+        } 
+        private bool BeneficioExists(int id)
+        {
+            return _context.Planeacionestrategicacl.Any(e => e.IdPlaneacionEstrategicacl == id);
+        }
+        private bool CambiodeObligacionesclExists(int id)
+        {
+            return _context.Cambiodeobligacionescl.Any(e => e.IdCambiodeObligacionescl == id);
+        } 
+        private bool CierredecasoclExists(int id)
+        {
+            return _context.Cierredecasocl.Any(e => e.IdCierreDeCasocl == id);
         }
         #endregion
     }

@@ -225,7 +225,7 @@
                 <td>
                     <select class="form-control" name="Estado" id="Estado" style="font-size:9px" onchange="cambioestado(@item.IdFracciones, value)"
                             asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Text", "Text", item.Estado))">
-                    </select>
+                    </select>  
                 </td>
                 @if (ViewBag.usuario)
                 {

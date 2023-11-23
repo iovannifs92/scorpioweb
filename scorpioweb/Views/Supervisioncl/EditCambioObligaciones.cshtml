@@ -1,51 +1,65 @@
 ﻿@model scorpioweb.Models.Cambiodeobligacionescl
 
 @{
-    Layout = null;
+    ViewData["Title"] = "MenuEdicion";
+    Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>EditCambioObligaciones</title>
-</head>
-<body>
-
-<h4>Cambiodeobligacionescl</h4>
+<h1>Cambiodeobligacionescl</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditCambioObligaciones">
+        <form asp-action="EditCambiodeobligaciones" asp-route-id="@Model.SupervisionclIdSupervisioncl">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdCambiodeObligacionescl" />
+            <input type="hidden" name="IdCambiodeObligacionescl" id="IdCambiodeObligacionescl" asp-for="IdCambiodeObligacionescl" />
+            <input type="hidden" name="SupervisionclIdSupervisioncl" id="SupervisionclIdSupervisioncl" asp-for="SupervisionclIdSupervisioncl" />
             <div class="form-group">
-                <label asp-for="SeDioCambio" class="control-label"></label>
-                <input asp-for="SeDioCambio" class="form-control" />
-                <span asp-validation-for="SeDioCambio" class="text-danger"></span>
+                <label class="control-label">Se dio Cambiooo</label>
+                <select class="form-control" name="SeDioCambio" id="SeDioCambio"
+                        asp-items="@(new SelectList(ViewBag.listaSediocambio, "Value", "Text", @ViewBag.idSediocambio))">
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="FechaAprobacion" class="control-label"></label>
-                <input asp-for="FechaAprobacion" class="form-control" />
-                <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MotivoAprobacion" class="control-label"></label>
-                <input asp-for="MotivoAprobacion" class="form-control" />
-                <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="SupervisionclIdSupervisioncl" />
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+            @if (ViewBag.cambio == null || ViewBag.cambio == "SI")
+            {
+                <div class="form-group" id="DivFechaAprobacion">
+                    <label class="control-label">Fecha de Aprobación</label>
+                    <input asp-for="FechaAprobacion" class="form-control" type="date" />
+                    <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="DivMotivoAprobacion">
+                    <label class="control-label"> Motivo de Aprobación</label>
+                    <select class="form-control" name="MotivoAprobacion" id="MotivoAprobacion"
+                            asp-items="@(new SelectList(ViewBag.listaMotivoAprobacion, "Value", "Text", @ViewBag.idMotivoAprobacion))">
+                    </select>
+                </div>
+            }
+            @if (ViewBag.cambio == null || ViewBag.cambio == "NO" || ViewBag.cambio == "NA")
+            {
+                <div class="form-group" style="display: none;" id="DivFechaAprobacion">
+                    <label class="control-label">Fecha de Aprobación</label>
+                    <input asp-for="FechaAprobacion" class="form-control" type="date" />
+                    <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
+                </div>
+                <div class="form-group" style="display: none;" id="DivMotivoAprobacion">
+                    <label class="control-label"> Motivo de Aprobación</label>
+                    <input asp-for="MotivoAprobacion" class="form-control" />
+                    <span asp-validation-for="MotivoAprobacion" class="text-danger"></span>
+                </div>
+            }
+            @if (ViewBag.usuario)
+            {
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            }
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Regresar</a>
 </div>
 
-</body>
-</html>
