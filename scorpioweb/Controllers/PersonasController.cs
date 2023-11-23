@@ -2545,7 +2545,6 @@ namespace scorpioweb.Controllers
                     }
                     #endregion
 
-
                     #region -ASIGNAR SUPERVISOR-
                     //Obtén el último supervisor
                     if (User.Identity.Name.EndsWith("@dgepms.com"))
@@ -2605,7 +2604,6 @@ namespace scorpioweb.Controllers
                         }
                     }
                     #endregion
-
 
                     #region -Expediente Unico-
                     if (idselecionado != null && tabla != null)
@@ -2668,7 +2666,7 @@ namespace scorpioweb.Controllers
                     personacl.Lnmunicipio = lnMunicipio;
                     personacl.Lnlocalidad = mg.normaliza(lnLocalidad);
                     personacl.EstadoCivil = estadoCivil;
-                    personacl.Duracion = duracion;
+                    personacl.Duracion = mg.normaliza(duracion);
                     personacl.OtroIdioma = mg.normaliza(otroIdioma);
                     personacl.ComIndigena = mg.normaliza(comIndigena);
                     personacl.ComLgbtttiq = mg.normaliza(comLGBTTTIQ);
