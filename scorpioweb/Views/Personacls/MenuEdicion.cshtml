@@ -13,7 +13,7 @@
 
 <script>
     showModal = (url, title, id) => {
-        alert("hola");
+      
         $.ajax({
             type: "GET",
             url: url + "?id=" + id,
@@ -26,14 +26,14 @@
 
             }
         })
-        alert("hola");
+       
     }
 </script>
 
 <div class="row" style="text-align:center; padding-top:3%">
     <img src="~/Fotos/@ViewBag.rutaFoto" class="img-thumbnail" width="200" height="200">
     <br />
-    <a id="btnEditarFoto" style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personascls",null,Context.Request.Scheme)','Edita Fotografía',@Model.IdPersonaCl)" class="btn btn-success">
+    <a id="btnEditarFoto" style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personacls",null,Context.Request.Scheme)','Edita Fotografía',@Model.IdPersonaCl)" class="btn btn-success">
         <i class="fa fa-pencil"></i> Editar Foto
     </a>
     <h2 class="blockquote">@Model.Paterno @Model.Materno @Model.Nombre</h2>

@@ -1,22 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Security.Claims;
+using System.Web;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using F23.StringSimilarity;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using scorpioweb.Models;
+using Microsoft.AspNetCore.Http;
+using System.Globalization;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using SautinSoft.Document;
+using SautinSoft.Document.Drawing;
+using QRCoder;
+using System.Drawing;
+using Size = SautinSoft.Document.Drawing.Size;
+using System.Security.Claims;
+using System.Data;
+using Google.DataTable.Net.Wrapper.Extension;
+using Google.DataTable.Net.Wrapper;
+using F23.StringSimilarity;
+using System.Threading;
 using Newtonsoft.Json.Linq;
+using System.Configuration;
+using System.Text;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using SautinSoft.Document.MailMerging;
+using DocumentFormat.OpenXml.Office.Word;
+using System.Data.SqlClient;
+using scorpioweb.Data;
+using DocumentFormat.OpenXml.EMMA;
 using scorpioweb.Class;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
+using Microsoft.AspNetCore.Rewrite.Internal;
+using ZXing.OneD;
+using System.ComponentModel.DataAnnotations;
+using Syncfusion.EJ2.Navigations;
+using Syncfusion.EJ2.Linq;
 
 namespace scorpioweb.Models
 {
@@ -121,7 +145,6 @@ namespace scorpioweb.Models
 
         }
         #endregion
-
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
@@ -282,6 +305,7 @@ namespace scorpioweb.Models
         #endregion
 
         #region -PersonasCL-
+
         #region -Index-
         // GET: Personacls
         public async Task<IActionResult> Index()
@@ -416,7 +440,7 @@ namespace scorpioweb.Models
         }
         #endregion
 
-        #region -Details-
+        #region -Detalles-
         // GET: Personacls/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -427,12 +451,283 @@ namespace scorpioweb.Models
 
             var personacl = await _context.Personacl
                 .SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+
+            var domicilioEM = await _context.Domiciliocl.SingleOrDefaultAsync(d => d.PersonaclIdPersonacl == id);
+
+            #region -To List databases-
+
+            List<Personacl> personaclVM = _context.Personacl.ToList();
+            List<Domiciliocl> domicilioclVM = _context.Domiciliocl.ToList();
+            List<Estudioscl> estudiosclVM = _context.Estudioscl.ToList();
+            List<Estados> estados = _context.Estados.ToList();
+            List<Municipios> municipios = _context.Municipios.ToList();
+            List<Domiciliosecundariocl> domicilioSecundarioclVM = _context.Domiciliosecundariocl.ToList();
+            List<Consumosustanciascl> consumoSustanciasclVM = _context.Consumosustanciascl.ToList();
+            List<Trabajocl> trabajoclVM = _context.Trabajocl.ToList();
+            List<Actividadsocialcl> actividadSocialclVM = _context.Actividadsocialcl.ToList();
+            List<Abandonoestadocl> abandonoEstadoclVM = _context.Abandonoestadocl.ToList();
+            List<Saludfisicacl> saludFisicaclVM = _context.Saludfisicacl.ToList();
+            List<Familiaresforaneoscl> familiaresForaneosclVM = _context.Familiaresforaneoscl.ToList();
+            List<Asientofamiliarcl> asientoFamiliarclVM = _context.Asientofamiliarcl.ToList();
+
+            #endregion
+
+
+            #region -Jointables-
+
+            ViewData["joinTables"] = from PersonaCLTable in personaclVM
+                                     join DomicilioCL in domicilioclVM on personacl.IdPersonaCl equals DomicilioCL.PersonaclIdPersonacl
+                                     join EstudiosCL in estudiosclVM on personacl.IdPersonaCl equals EstudiosCL.PersonaClIdPersonaCl
+                                     join TrabajoCL in trabajoclVM on personacl.IdPersonaCl equals TrabajoCL.PersonaClIdPersonaCl
+                                     join ActividaSocialCL in actividadSocialclVM on personacl.IdPersonaCl equals ActividaSocialCL.PersonaClIdPersonaCl
+                                     join AbandonoEstadoCL in abandonoEstadoclVM on personacl.IdPersonaCl equals AbandonoEstadoCL.PersonaclIdPersonacl
+                                     join SaludFisicaCL in saludFisicaclVM on personacl.IdPersonaCl equals SaludFisicaCL.PersonaClIdPersonaCl
+                                     //join nacimientoEstado in estados on (Int32.Parse(persona.Lnestado)) equals nacimientoEstado.Id
+                                     //join nacimientoMunicipio in municipios on (Int32.Parse(persona.Lnmunicipio)) equals nacimientoMunicipio.Id
+                                     join domicilioEstado in estados on (Int32.Parse(DomicilioCL.Estado)) equals domicilioEstado.Id
+                                     join domicilioMunicipio in municipios on (Int32.Parse(DomicilioCL.Municipio)) equals domicilioMunicipio.Id
+                                     where PersonaCLTable.IdPersonaCl == id
+                                     select new PersonaclsViewModal
+                                     {
+                                         personaclVM = PersonaCLTable,
+                                         domicilioclVM = DomicilioCL,
+                                         estudiosclVM = EstudiosCL,
+                                         trabajoclVM = TrabajoCL,
+                                         actividadSocialclVM = ActividaSocialCL,
+                                         abandonoEstadoclVM = AbandonoEstadoCL,
+                                         saludFisicaclVM = SaludFisicaCL,
+                                         //estadosVMPersona=nacimientoEstado,
+                                         //municipiosVMPersona=nacimientoMunicipio,  
+                                         estadosVMDomicilio = domicilioEstado,
+                                         municipiosVMDomicilio = domicilioMunicipio
+                                     };
+
+            #endregion
+
+
+            #region Sacar el nombre de estdo y municipio (NACIMIENTO)
+
+            var LNE = (from e in _context.Estados
+                       join p in _context.Personacl on e.Id equals int.Parse(p.Lnestado)
+                       where p.IdPersonaCl == id
+                       select new
+                       {
+                           e.Estado
+                       });
+
+            string selectem1 = LNE.FirstOrDefault().Estado.ToString();
+            ViewBag.lnestado = selectem1.ToUpper();
+
+            var LNM = (from p in _context.Personacl
+                       join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl
+                       join m in _context.Municipios on p.Lnmunicipio equals m.Id.ToString()
+                       where p.IdPersonaCl == id
+                       select new
+                       {
+                           m.Municipio
+                       });
+
+
+
+            string selectem2 = LNM.FirstOrDefault().Municipio.ToString();
+            ViewBag.lnmunicipio = selectem2.ToUpper();
+
+            #endregion
+
+            #region Sacar el nombre de estdo y municipio (DOMICILIO)
+
+            var E = (from d in _context.Domiciliocl
+                     join m in _context.Estados on int.Parse(d.Estado) equals m.Id
+                     join p in _context.Personacl on d.PersonaclIdPersonacl equals p.IdPersonaCl
+                     where p.IdPersonaCl == id
+                     select new
+                     {
+                         m.Estado
+                     });
+
+            string selectem3 = E.FirstOrDefault().Estado.ToString();
+            ViewBag.estado = selectem3.ToUpper();
+
+            var M = (from d in _context.Domiciliocl
+                     join m in _context.Municipios on int.Parse(d.Municipio) equals m.Id
+                     join p in _context.Personacl on d.PersonaclIdPersonacl equals p.IdPersonaCl
+                     where p.IdPersonaCl == id
+                     select new
+                     {
+                         m.Municipio,
+                         m.Id
+                     });
+
+            string selectem4 = M.FirstOrDefault().Municipio.ToString();
+            ViewBag.municipio = selectem4.ToUpper();
+
+            #endregion
+
+            #region Lnmunicipio
+
+            int Lnestado;
+            bool success = Int32.TryParse(personacl.Lnestado, out Lnestado);
+            List<Municipios> listaMunicipios = new List<Municipios>();
+            if (success)
+            {
+                listaMunicipios = (from table in _context.Municipios
+                                   where table.EstadosId == Lnestado
+                                   select table).ToList();
+            }
+
+            listaMunicipios.Insert(0, new Municipios { Id = null, Municipio = "Selecciona" });
+
+            ViewBag.ListadoMunicipios = listaMunicipios;
+            ViewBag.idMunicipio = personacl.Lnmunicipio;
+
+            #endregion
+
+            #region -JoinTables null-
+
+            ViewData["joinTablesDomSec"] = from PersonaCLTable in personaclVM
+                                           join DomicilioCL in domicilioclVM on personacl.IdPersonaCl equals DomicilioCL.PersonaclIdPersonacl
+                                           join DomicilioSecCL in domicilioSecundarioclVM.DefaultIfEmpty() on DomicilioCL.IdDomiciliocl equals DomicilioSecCL.IdDomicilioCl
+                                           where PersonaCLTable.IdPersonaCl == id
+                                           select new PersonaclsViewModal
+                                           {
+                                               domicilioSecundarioclVM = DomicilioSecCL
+                                           };
+
+            ViewData["joinTablesConsumoSustancias"] = from PersonaCLTable in personaclVM
+                                                      join SustanciasCL in consumoSustanciasclVM on personacl.IdPersonaCl equals SustanciasCL.PersonaClIdPersonaCl
+                                                      where PersonaCLTable.IdPersonaCl == id
+                                                      select new PersonaclsViewModal
+                                                      {
+                                                          consumoSustanciasclVM = SustanciasCL
+                                                      };
+
+            ViewData["joinTablesFamiliaresForaneos"] = from PersonaCLTable in personaclVM
+                                                       join FamiliarForaneoCL in familiaresForaneosclVM on personacl.IdPersonaCl equals FamiliarForaneoCL.PersonaClIdPersonaCl
+                                                       where PersonaCLTable.IdPersonaCl == id
+                                                       select new PersonaclsViewModal
+                                                       {
+                                                           familiaresForaneosclVM = FamiliarForaneoCL
+                                                       };
+
+            ViewData["joinTablesFamiliares"] = from PersonaCLTable in personaclVM
+                                               join FamiliarCL in asientoFamiliarclVM on personacl.IdPersonaCl equals FamiliarCL.PersonaClIdPersonaCl
+                                               where PersonaCLTable.IdPersonaCl == id && FamiliarCL.Tipo == "FAMILIAR"
+                                               select new PersonaclsViewModal
+                                               {
+                                                   asientoFamiliarclVM = FamiliarCL
+                                               };
+
+            ViewData["joinTablesReferencia"] = from PersonaCLTable in personaclVM
+                                               join ReferenciaCL in asientoFamiliarclVM on personacl.IdPersonaCl equals ReferenciaCL.PersonaClIdPersonaCl
+                                               where PersonaCLTable.IdPersonaCl == id && ReferenciaCL.Tipo == "REFERENCIA"
+                                               select new PersonaclsViewModal
+                                               {
+                                                   asientoFamiliarclVM = ReferenciaCL
+                                               };
+
+
+            ViewBag.Referencia = ((ViewData["joinTablesReferencia"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>).Count()).ToString();
+
+            ViewBag.Familiar = ((ViewData["joinTablesFamiliares"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>).Count()).ToString();
+
+            #endregion
+
+
             if (personacl == null)
             {
                 return NotFound();
             }
 
-            return View(personacl);
+            return View(/*personacl*/);
+        }
+        #endregion
+
+        #region -AsignaSupervision-
+        public async Task<IActionResult> AsignacionSupervision()        
+        {            
+            var usu = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+           
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && usu.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            int i = 0;
+            foreach (var user in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(user, "AdminLC"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+                if (await userManager.IsInRoleAsync(user, "SupervisiorLC"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = user.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+            return View(await _context.Personacl.ToListAsync());
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSupervisor(Personacl personacl)
+        {          
+            try
+            {
+                
+                int Id= personacl.IdPersonaCl;
+                string supervisor = personacl.Supervisor;
+                var personaUpdate = await _context.Personacl.FirstOrDefaultAsync(p => p.IdPersonaCl == Id);
+                personaUpdate.Supervisor = supervisor;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PersonaclExists(personacl.IdPersonaCl))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Menucl");
+        }
+
+
+        #endregion
+      
+        #region -obtenerDatos-
+        public ActionResult OnGetChartData()
+        {
+            var resultados = from p in _context.Personacl
+                             where p.Supervisor != null
+                             group p by p.Supervisor into grupo                             
+                             select new
+                             {
+                                 Supervisor = grupo.Key,
+                                 NumeroSupervisados = grupo.Count()
+                             };         
+            var json = resultados.ToGoogleDataTable()
+            .NewColumn(new Column(ColumnType.String, "Supervisor"), x => x.Supervisor)
+            .NewColumn(new Column(ColumnType.Number, "Supervisiones"), x => x.NumeroSupervisados)
+            .Build()
+            .GetJson();
+
+            return Content(json);
         }
         #endregion
 
@@ -507,11 +802,11 @@ namespace scorpioweb.Models
         public async Task<IActionResult> Edit(int? id)
         {
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
-            
+
             if (id == null)
             {
                 return NotFound();
-            }          
+            }
 
             var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
             if (personacl == null)
@@ -657,7 +952,7 @@ namespace scorpioweb.Models
             #endregion
 
             #region -viewbags y listas-
-           
+
             ViewBag.listaOtroIdioma = listaNoSi;
             ViewBag.idOtroIdioma = BuscaId(listaNoSi, personacl.OtroIdioma);
 
@@ -687,17 +982,17 @@ namespace scorpioweb.Models
 
             ViewBag.idCentroPenitenciario = personacl.Centropenitenciario;
             ViewBag.pais = personacl.Lnpais;
-            
+
             ViewBag.idioma = personacl.OtroIdioma;
             ViewBag.EspecifiqueIdioma = personacl.EspecifiqueIdioma;
 
 
             ViewBag.traductor = personacl.Traductor;
             ViewBag.EspecifiqueTraductor = personacl.EspecifiqueTraductor;
-           
+
             ViewBag.TieneHijos = personacl.Hijos;
             ViewBag.NumeroHijos = personacl.Nhijos;
-            
+
 
             #endregion
 
@@ -767,7 +1062,7 @@ namespace scorpioweb.Models
             #region Consume sustancias
 
             ViewBag.listaConsumoSustancias = listaNoSi;
-            
+
 
             contadorSustancia = 0;
 
@@ -809,7 +1104,7 @@ namespace scorpioweb.Models
             {
                 ViewBag.idSustancia = BuscaId(ListaSustancia, consumosustanciascl[contadorSustancia].Sustancia);
                 ViewBag.idFrecuencia = BuscaId(ListaFrecuencia, consumosustanciascl[contadorSustancia].Frecuencia);
-                ViewBag.cantidad = consumosustanciascl[contadorSustancia].Cantidad;                            
+                ViewBag.cantidad = consumosustanciascl[contadorSustancia].Cantidad;
                 ViewBag.ultimoConsumo = consumosustanciascl[contadorSustancia].UltimoConsumo;
                 ViewBag.observaciones = consumosustanciascl[contadorSustancia].Observaciones;
                 ViewBag.idConsumoSustancias = consumosustanciascl[contadorSustancia].IdConsumoSustanciasCl;
@@ -830,9 +1125,9 @@ namespace scorpioweb.Models
             #endregion
 
             #region Familiares
-            
+
             ViewBag.listaFamiliares = listaSiNo;
-               
+
             contadorFamiliares = 0;
 
             List<SelectListItem> ListaRelacion;
@@ -903,7 +1198,7 @@ namespace scorpioweb.Models
             #endregion
 
             #region Referencias
-            
+
             ViewBag.listaReferenciasPersonales = listaSiNo;
 
             contadorReferencias = 0;
@@ -995,9 +1290,9 @@ namespace scorpioweb.Models
                     if (personacl.Candado == null) { personacl.Candado = 0; }
                     personacl.Candado = personacl.Candado;
                     personacl.MotivoCandado = mg.normaliza(personacl.MotivoCandado);
-                                                   
+
                     #region -sustancias agregadas -
-                   
+
                     int idConsumoSustancias = ((from table in _context.Consumosustanciascl
                                                 select table.IdConsumoSustanciasCl).Max());
                     if (arraySustancias != null)
@@ -1031,7 +1326,7 @@ namespace scorpioweb.Models
                         for (int i = 0; i < sustancias.Count; i = i + 6)
                         {
                             int idConsumo = Int32.Parse(sustancias[i + 5].ToString());
-                          
+
                             if (idConsumo < 0)
                             {
                                 idConsumo = -idConsumo;
@@ -1043,7 +1338,7 @@ namespace scorpioweb.Models
                             {
                                 Consumosustanciascl consumosustanciasCLBD = new Consumosustanciascl();
                                 try
-                                {                                
+                                {
                                     consumosustanciasCLBD.IdConsumoSustanciasCl = idConsumo;
                                     consumosustanciasCLBD.Sustancia = sustancias[i].ToString();
                                     consumosustanciasCLBD.Frecuencia = sustancias[i + 1].ToString();
@@ -1051,7 +1346,7 @@ namespace scorpioweb.Models
                                     consumosustanciasCLBD.UltimoConsumo = mg.validateDatetime(sustancias[i + 3].ToString());
                                     consumosustanciasCLBD.Observaciones = mg.normaliza(sustancias[i + 4].ToString());
                                     consumosustanciasCLBD.PersonaClIdPersonaCl = id;
-                                   
+
                                     var oldconsumosustanciasCLBD = await _context.Consumosustanciascl.FindAsync(consumosustanciasCLBD.IdConsumoSustanciasCl);
                                     _context.Entry(oldconsumosustanciasCLBD).CurrentValues.SetValues(consumosustanciasCLBD);
                                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
@@ -1126,7 +1421,7 @@ namespace scorpioweb.Models
                         }
                     }
                     #endregion
-                
+
                     #region -Familiares editados-
 
                     if (arrayFamiliaresEditados != null)
@@ -1139,7 +1434,7 @@ namespace scorpioweb.Models
                             if (idAsiento < 0)
                             {
                                 idAsiento = -idAsiento;
-                                
+
                                 var asiento = await _context.Asientofamiliarcl.SingleOrDefaultAsync(m => m.IdAsientoFamiliarCl == idAsiento);
                                 _context.Asientofamiliarcl.Remove(asiento);
                                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
@@ -1148,7 +1443,7 @@ namespace scorpioweb.Models
                             {
                                 Asientofamiliarcl asientoFamiliarCL = new Asientofamiliarcl();
                                 try
-                                {                                   
+                                {
                                     asientoFamiliarCL.IdAsientoFamiliarCl = Int32.Parse(familiarReferencia[i + 13].ToString());
                                     asientoFamiliarCL.Nombre = mg.normaliza(familiarReferencia[i].ToString());
                                     asientoFamiliarCL.Relacion = familiarReferencia[i + 1].ToString();
@@ -1165,9 +1460,9 @@ namespace scorpioweb.Models
                                     asientoFamiliarCL.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                                     asientoFamiliarCL.Tipo = "FAMILIAR";
                                     asientoFamiliarCL.PersonaClIdPersonaCl = id;
-                                   
+
                                     var oldAsientofamiliar = await _context.Asientofamiliarcl.FindAsync(asientoFamiliarCL.IdAsientoFamiliarCl);
-                                   
+
                                     _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliarCL);
                                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                                 }
@@ -1188,7 +1483,7 @@ namespace scorpioweb.Models
                     #endregion
 
                     #region -Referencias editadas-
-                   
+
                     if (arrayReferenciasEditadas != null)
                     {
                         JArray familiarReferencia = JArray.Parse(arrayReferenciasEditadas);
@@ -1224,7 +1519,7 @@ namespace scorpioweb.Models
                                     asientoFamiliarCL.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                                     asientoFamiliarCL.Tipo = "REFERENCIA";
                                     asientoFamiliarCL.PersonaClIdPersonaCl = id;
-                                   
+
                                     var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliarCL.IdAsientoFamiliarCl);
                                     _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliarCL);
                                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
@@ -1244,7 +1539,7 @@ namespace scorpioweb.Models
                         }
                     }
                     #endregion
-                   
+
                     var oldPersona = await _context.Personacl.FindAsync(id);
                     _context.Entry(oldPersona).CurrentValues.SetValues(personacl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -1574,7 +1869,7 @@ namespace scorpioweb.Models
 
             listaEstadosD.Insert(0, new Estados { Id = 0, Estado = "Selecciona" });
             ViewBag.ListaEstadoED = listaEstadosD;
-           
+
             ViewBag.ListaEstadoM = listaEstadosD;
             #endregion
 
@@ -1606,7 +1901,7 @@ namespace scorpioweb.Models
             };
 
             ViewBag.ListaTemporalidad = ListaDomicilioT;
-   
+
             ViewBag.listaResidenciaHabitual = listaSiNo;
             #endregion
             if (domisecu == null)
@@ -1795,7 +2090,7 @@ namespace scorpioweb.Models
             {
                 return NotFound();
             }
-       
+
             if (ModelState.IsValid)
             {
                 try
@@ -1810,10 +2105,10 @@ namespace scorpioweb.Models
                     estudioscl.Observaciones = mg.normaliza(estudioscl.Observaciones);
 
                     var oldEstudios = await _context.Estudioscl.FindAsync(estudioscl.IdEstudiosCl);
-                   
+
                     _context.Entry(oldEstudios).CurrentValues.SetValues(estudioscl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-             
+
                     //_context.Update(estudios);
                     //await _context.SaveChangesAsync();
                 }
@@ -1990,7 +2285,7 @@ namespace scorpioweb.Models
                 return NotFound();
             }
 
- 
+
             if (ModelState.IsValid)
             {
                 try
@@ -2001,9 +2296,9 @@ namespace scorpioweb.Models
                     actividadsocialcl.Lugar = mg.normaliza(actividadsocialcl.Lugar);
                     actividadsocialcl.Referencia = mg.normaliza(actividadsocialcl.Referencia);
                     actividadsocialcl.Observaciones = mg.normaliza(actividadsocialcl.Observaciones);
-                   
+
                     var oldActividadsocialcl = await _context.Actividadsocialcl.FindAsync(actividadsocialcl.IdActividadSocialCl);
-                    
+
                     _context.Entry(oldActividadsocialcl).CurrentValues.SetValues(actividadsocialcl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(actividadsocial);
@@ -2536,7 +2831,7 @@ namespace scorpioweb.Models
                     saludfisicacl.Enfermedad = mg.normaliza(saludfisicacl.Enfermedad);
                     saludfisicacl.EspecifiqueEnfermedad = saludfisicacl.Enfermedad.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.EspecifiqueEnfermedad);
                     saludfisicacl.Tratamiento = saludfisicacl.Enfermedad.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.Tratamiento);
-                  
+
                     saludfisicacl.EmbarazoLactancia = mg.normaliza(saludfisicacl.EmbarazoLactancia);
                     saludfisicacl.Tiempo = saludfisicacl.EmbarazoLactancia.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.Tiempo);
 
@@ -2548,11 +2843,11 @@ namespace scorpioweb.Models
                     saludfisicacl.InstitucionServicioMedico = saludfisicacl.ServicioMedico.Equals("NO") ? "NA" : mg.normaliza(saludfisicacl.InstitucionServicioMedico);
 
                     saludfisicacl.Observaciones = mg.normaliza(saludfisicacl.Observaciones);
-                   
+
 
 
                     var oldSaludfisicacl = await _context.Saludfisicacl.FindAsync(saludfisicacl.IdSaludFisicaCl);
-                    
+
                     _context.Entry(oldSaludfisicacl).CurrentValues.SetValues(saludfisicacl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                     //_context.Update(saludfisica);
@@ -2572,6 +2867,73 @@ namespace scorpioweb.Models
                 return RedirectToAction("MenuEdicion/" + saludfisicacl.PersonaClIdPersonaCl, "Personacls");
             }
             return View(saludfisicacl);
+        }
+        #endregion
+
+        #region -Edit foto -
+        public async Task<IActionResult> EditFoto(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+            if (personacl == null)
+            {
+                return NotFound();
+            }
+
+            return View(personacl);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditFoto([Bind("IdPersonaCl")] Personacl personacl, IFormFile fotoEditada)
+        {
+            if (ModelState.IsValid)
+            {
+
+                #region -Guardar Foto-
+                var file_name = (from a in _context.Personacl
+                                 where a.IdPersonaCl == personacl.IdPersonaCl
+                                 select a.RutaFoto).FirstOrDefault();
+                if (file_name == null || file_name == "NA")
+                {
+                    var query = (from a in _context.Personacl
+                                 where a.IdPersonaCl == personacl.IdPersonaCl
+                                 select a).FirstOrDefault();
+                    file_name = query.IdPersonaCl + "_" + query.Paterno + "_" + query.Nombre + ".jpg";
+                    query.RutaFoto = file_name;
+                    try
+                    {
+                        var oldFoto = await _context.Persona.FindAsync(query.IdPersonaCl);
+                        _context.Entry(oldFoto).CurrentValues.SetValues(query);
+                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                        //_context.Update(query);
+                        //await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!PersonaclExists(query.IdPersonaCl))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+                var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotoscl");
+                var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
+                #endregion
+
+                fotoEditada.CopyTo(stream);
+                stream.Close();
+                return RedirectToAction("MenuEdicion/" + personacl.IdPersonaCl, "Personacls");
+            }
+            return View(personacl);
         }
         #endregion
 
@@ -2723,6 +3085,232 @@ namespace scorpioweb.Models
 
         #endregion
 
+        #region -Reportes-
+        public ActionResult ReportePersona()
+        {
+            return View();
+        }
+        #region -Crea QR-
+        public void creaQR(int? id)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode("10.6.60.190/Personacls/Details/" + id, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            System.IO.FileStream fs = System.IO.File.Open(this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg", FileMode.Create);
+            qrCodeImage.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+            fs.Close();
+        }
+        #endregion
+
+        public void Imprimir(int? id)
+        {
+            var personacl = _context.Personacl
+               .SingleOrDefault(m => m.IdPersonaCl == id);
+
+
+            #region -To List databases-
+
+            List<Personacl> personaclVM = _context.Personacl.ToList();
+            List<Domiciliocl> domicilioclVM = _context.Domiciliocl.ToList();
+            List<Estudioscl> estudiosclVM = _context.Estudioscl.ToList();
+            List<Estados> estados = _context.Estados.ToList();
+            List<Municipios> municipios = _context.Municipios.ToList();
+            List<Domiciliosecundariocl> domicilioSecundarioclVM = _context.Domiciliosecundariocl.ToList();
+            List<Consumosustanciascl> consumoSustanciasclVM = _context.Consumosustanciascl.ToList();
+            List<Trabajocl> trabajoclVM = _context.Trabajocl.ToList();
+            List<Actividadsocialcl> actividadSocialclVM = _context.Actividadsocialcl.ToList();
+            List<Abandonoestadocl> abandonoEstadoclVM = _context.Abandonoestadocl.ToList();
+            List<Saludfisicacl> saludFisicaclVM = _context.Saludfisicacl.ToList();
+            List<Familiaresforaneoscl> familiaresForaneosclVM = _context.Familiaresforaneoscl.ToList();
+            List<Asientofamiliarcl> asientoFamiliarclVM = _context.Asientofamiliarcl.ToList();
+
+            #endregion
+
+            #region -Jointables-
+            List<PersonaclsViewModal> vistaPersona = (from PersonaTableCL in personaclVM
+                                                      join DomicilioCL in domicilioclVM on personacl.IdPersonaCl equals DomicilioCL.PersonaclIdPersonacl
+                                                      join EstudiosCL in estudiosclVM on personacl.IdPersonaCl equals EstudiosCL.PersonaClIdPersonaCl
+                                                      join TrabajoCL in trabajoclVM on personacl.IdPersonaCl equals TrabajoCL.PersonaClIdPersonaCl
+                                                      join ActividaSocialCL in actividadSocialclVM on personacl.IdPersonaCl equals ActividaSocialCL.PersonaClIdPersonaCl
+                                                      join AbandonoEstadoCL in abandonoEstadoclVM on personacl.IdPersonaCl equals AbandonoEstadoCL.PersonaclIdPersonacl
+                                                      join SaludFisicaCL in saludFisicaclVM on personacl.IdPersonaCl equals SaludFisicaCL.PersonaClIdPersonaCl
+                                                      join NacimientoEstadoCL in estados on (Int32.Parse(personacl.Lnestado)) equals NacimientoEstadoCL.Id
+                                                      join NacimientoMunicipioCL in municipios on (Int32.Parse(personacl.Lnmunicipio)) equals NacimientoMunicipioCL.Id
+                                                      join DomicilioEstadoCL in estados on (Int32.Parse(DomicilioCL.Estado)) equals DomicilioEstadoCL.Id
+                                                      join DomicilioMunicipioCL in municipios on (Int32.Parse(DomicilioCL.Municipio)) equals DomicilioMunicipioCL.Id
+                                                      where PersonaTableCL.IdPersonaCl == id
+                                                      select new PersonaclsViewModal
+                                                      {
+                                                          personaclVM = PersonaTableCL,
+                                                          domicilioclVM = DomicilioCL,
+                                                          estudiosclVM = EstudiosCL,
+                                                          trabajoclVM = TrabajoCL,
+                                                          actividadSocialclVM = ActividaSocialCL,
+                                                          abandonoEstadoclVM = AbandonoEstadoCL,
+                                                          saludFisicaclVM = SaludFisicaCL,
+                                                          estadosVMPersona = NacimientoEstadoCL,
+                                                          municipiosVMPersona = NacimientoMunicipioCL,
+                                                          estadosVMDomicilio = DomicilioEstadoCL,
+                                                          municipiosVMDomicilio = DomicilioMunicipioCL
+                                                      }).ToList();
+            #endregion
+            creaQR(id);
+
+            #region -GeneraDocumento-
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateEntrevista.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\entrevista.docx";
+            string rutaFoto = ((vistaPersona[0].personaclVM.Genero == ("M")) ? "hombre.png" : "mujer.png");
+            if (vistaPersona[0].personaclVM.RutaFoto != null)
+            {
+                rutaFoto = vistaPersona[0].personaclVM.RutaFoto;
+            }
+            string picPath = this._hostingEnvironment.WebRootPath + "\\Fotoscl\\" + rutaFoto;
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            string lnacimientoCleaned = "";
+            if (vistaPersona[0].personaclVM.Lnlocalidad != "NA")
+            {
+                if (lnacimientoCleaned != "")
+                {
+                    lnacimientoCleaned += ",";
+                }
+                lnacimientoCleaned += vistaPersona[0].personaclVM.Lnlocalidad;
+            }
+            if (vistaPersona[0].municipiosVMPersona.Municipio != "Sin municipio")
+            {
+                if (lnacimientoCleaned != "")
+                {
+                    lnacimientoCleaned += ",";
+                }
+                lnacimientoCleaned += vistaPersona[0].municipiosVMPersona.Municipio.ToUpper();
+            }
+            if (vistaPersona[0].estadosVMPersona.Estado != "Sin estado")
+            {
+                if (lnacimientoCleaned != "")
+                {
+                    lnacimientoCleaned += ",";
+                }
+                lnacimientoCleaned += vistaPersona[0].estadosVMPersona.Estado.ToUpper();
+            }
+            if (lnacimientoCleaned != "")
+            {
+                lnacimientoCleaned += ",";
+            }
+            lnacimientoCleaned += vistaPersona[0].personaclVM.Lnpais;
+            var dataSource = new[] { new {
+                nombre = vistaPersona[0].personaclVM.Paterno+" "+ vistaPersona[0].personaclVM.Materno +" "+ vistaPersona[0].personaclVM.Nombre,
+                nombrepadre = vistaPersona[0].personaclVM.NombrePadre,
+                nombremadre = vistaPersona[0].personaclVM.NombreMadre,
+                genero = vistaPersona[0].personaclVM.Genero,
+                lnacimiento = lnacimientoCleaned,
+                fnacimiento =(Convert.ToDateTime(vistaPersona[0].personaclVM.Fnacimiento)).ToString("dd MMMM yyyy"),
+                edad=vistaPersona[0].personaclVM.Edad,
+                estadocivil=vistaPersona[0].personaclVM.EstadoCivil,
+                duracionestadocivil=vistaPersona[0].personaclVM.Duracion,
+                hablaidioma=vistaPersona[0].personaclVM.OtroIdioma,
+                especifiqueidioma=vistaPersona[0].personaclVM.EspecifiqueIdioma,
+                leerescribir=vistaPersona[0].personaclVM.LeerEscribir,
+                traductor=vistaPersona[0].personaclVM.Traductor,
+                especifiquetraductor=vistaPersona[0].personaclVM.EspecifiqueTraductor,
+                telefono=vistaPersona[0].personaclVM.TelefonoFijo,
+                celular=vistaPersona[0].personaclVM.Celular,
+                hijos=vistaPersona[0].personaclVM.Hijos,
+                cuantoshijos=vistaPersona[0].personaclVM.Nhijos,
+                personasvive=vistaPersona[0].personaclVM.NpersonasVive,
+                otraspropiedades=vistaPersona[0].personaclVM.Propiedades,
+                curp=vistaPersona[0].personaclVM.Curp,
+                consumosustancias=vistaPersona[0].personaclVM.ConsumoSustancias,
+                familiares=vistaPersona[0].personaclVM.Familiares,
+                referenciasPersonales=vistaPersona[0].personaclVM.ReferenciasPersonales,
+                tipopropiedad=vistaPersona[0].domicilioclVM.TipoDomicilio,
+                direccion=vistaPersona[0].domicilioclVM.Calle+" "+vistaPersona[0].domicilioclVM.No+", "+vistaPersona[0].domicilioclVM.NombreCf+" CP "+vistaPersona[0].domicilioclVM.Cp+", "+vistaPersona[0].estadosVMDomicilio.Estado+", "+vistaPersona[0].municipiosVMDomicilio.Municipio+", "+vistaPersona[0].domicilioclVM.Pais,
+                tiempoendomicilio=vistaPersona[0].domicilioclVM.Temporalidad,
+                residenciahabitual=vistaPersona[0].domicilioclVM.ResidenciaHabitual,
+                referenciasdomicilio=vistaPersona[0].domicilioclVM.Referencias,
+                horariodomicilio=vistaPersona[0].domicilioclVM.Horario,
+                observacionesdomicilio=vistaPersona[0].domicilioclVM.Observaciones,
+                domiciliosecundario=vistaPersona[0].domicilioclVM.DomcilioSecundario,
+                estudia=vistaPersona[0].estudiosclVM.Estudia,
+                gradoestudios=vistaPersona[0].estudiosclVM.GradoEstudios,
+                institucionestudios=vistaPersona[0].estudiosclVM.InstitucionE,
+                horarioescuela=vistaPersona[0].estudiosclVM.Horario,
+                direccionescuela=vistaPersona[0].estudiosclVM.Direccion,
+                telefonoescuela=vistaPersona[0].estudiosclVM.Telefono,
+                observacionesescolaridad=vistaPersona[0].estudiosclVM.Observaciones,
+                trabaja=vistaPersona[0].trabajoclVM.Trabaja,
+                tipoocupacion=vistaPersona[0].trabajoclVM.TipoOcupacion,
+                puesto=vistaPersona[0].trabajoclVM.Puesto,
+                empleador=vistaPersona[0].trabajoclVM.EmpledorJefe,
+                enteradoprocesotrabajo=vistaPersona[0].trabajoclVM.EnteradoProceso,
+                sepuedeenterartrabajo=vistaPersona[0].trabajoclVM.SePuedeEnterar,
+                tiempotrabajando=vistaPersona[0].trabajoclVM.TiempoTrabajano,
+                salario= mg.Dinero(vistaPersona[0].trabajoclVM.Salario),
+                temporalidadpago=vistaPersona[0].trabajoclVM.TemporalidadSalario,
+                direcciontrabajo=vistaPersona[0].trabajoclVM.Direccion,
+                horariotrabajo=vistaPersona[0].trabajoclVM.Horario,
+                telefonotrabajo=vistaPersona[0].trabajoclVM.Telefono,
+                observacionestrabajo=vistaPersona[0].trabajoclVM.Observaciones,
+                tipoactividad=vistaPersona[0].actividadSocialclVM.TipoActividad,
+                horarioactividad=vistaPersona[0].actividadSocialclVM.Horario,
+                lugaractividad=vistaPersona[0].actividadSocialclVM.Lugar,
+                telefonoactividad=vistaPersona[0].actividadSocialclVM.Telefono,
+                sepuedeenteraractividad=vistaPersona[0].actividadSocialclVM.SePuedeEnterar,
+                referenciaactividad=vistaPersona[0].actividadSocialclVM.Referencia,
+                observacionesactividad=vistaPersona[0].actividadSocialclVM.Observaciones,
+                vividofuera=vistaPersona[0].abandonoEstadoclVM.VividoFuera,
+                lugaresvivido=vistaPersona[0].abandonoEstadoclVM.LugaresVivido,
+                temporalidadviajes=vistaPersona[0].abandonoEstadoclVM.TiempoVivido,
+                motivovivido=vistaPersona[0].abandonoEstadoclVM.MotivoVivido,
+                viajahabitualmente=vistaPersona[0].abandonoEstadoclVM.ViajaHabitual,
+                lugaresviaje=vistaPersona[0].abandonoEstadoclVM.LugaresViaje,
+                tiempoviajes=vistaPersona[0].abandonoEstadoclVM.TiempoViaje,
+                motivoviajes=vistaPersona[0].abandonoEstadoclVM.MotivoViaje,
+                documentacion=vistaPersona[0].abandonoEstadoclVM.DocumentacionSalirPais,
+                pasaporte=vistaPersona[0].abandonoEstadoclVM.Pasaporte,
+                visa=vistaPersona[0].abandonoEstadoclVM.Visa,
+                familiaresfuera=vistaPersona[0].abandonoEstadoclVM.FamiliaresFuera,
+                enfermedades=vistaPersona[0].saludFisicaclVM.Enfermedad,
+                especenfermedad=vistaPersona[0].saludFisicaclVM.EspecifiqueEnfermedad,
+                tratamientomedico=vistaPersona[0].saludFisicaclVM.Tratamiento,
+                discapacidad=vistaPersona[0].saludFisicaclVM.Discapacidad,
+                especdiscapacidad=vistaPersona[0].saludFisicaclVM.EspecifiqueDiscapacidad,
+                serviciomedico=vistaPersona[0].saludFisicaclVM.ServicioMedico,
+                tiposervicio=vistaPersona[0].saludFisicaclVM.EspecifiqueServicioMedico,
+                institucionsalud=vistaPersona[0].saludFisicaclVM.InstitucionServicioMedico,
+                observacionessalud=vistaPersona[0].saludFisicaclVM.Observaciones
+
+            } };
+
+
+            dc.MailMerge.FieldMerging += (sender, e) =>
+            {
+                if (e.FieldName == "foto")
+                {
+                    e.Inlines.Clear();
+                    e.Inlines.Add(new Picture(dc, picPath) { Layout = new InlineLayout(new Size(100, 100)) });
+                    e.Cancel = false;
+                }
+                if (e.FieldName == "QR")
+                {
+                    e.Inlines.Clear();
+                    e.Inlines.Add(new Picture(dc, this._hostingEnvironment.WebRootPath + "\\images\\QR.jpg") { Layout = new InlineLayout(new Size(100, 100)) });
+                    e.Cancel = false;
+                }
+            };
+
+            dc.MailMerge.Execute(dataSource);
+
+
+            dc.Save(resultPath);
+
+            //Response.Redirect("https://localhost:44359/Documentos/entrevista.docx");
+            Response.Redirect("http://10.6.60.190/Documentos/entrevista.docx");
+            #endregion
+
+        }
+        #endregion
         #endregion
 
         public IActionResult Menucl()
@@ -2761,21 +3349,7 @@ namespace scorpioweb.Models
 
             return View(personacl);
         }
-        public async Task<IActionResult> EditFoto(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
-            if (personacl == null)
-            {
-                return NotFound();
-            }
-
-            return View(personacl);
-        }
 
         #region -Existe-
         private bool PersonaclExists(int id)

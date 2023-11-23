@@ -1,0 +1,126 @@
+﻿@model IEnumerable<scorpioweb.Models.Personacl>
+@using scorpioweb.Controllers;
+
+
+@{
+    ViewData["Title"] = "Asignación";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+@* Necesario para los modales en el servidor *@
+<script src="~/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { 'packages': ['bar'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+        var jsonData = $.ajax({
+            url: "/Personacls/OnGetChartData?handler=ChartData",
+            dataType: "json",
+            async: false,
+        }).responseText;
+
+        var data = new google.visualization.DataTable(jsonData);
+        var options = {
+            chart: {
+                title: 'Supervisiones activas',
+                subtitle: 'Número de supervisiones activas por supervisor',
+            },
+            bars: 'horizontal',
+            vAxis: { format: 'decimal' },
+            height: 400,
+            colors: ['#E80940']
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('chart'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
+</script>
+
+@if ((Model.Where(u => u.Supervisor == null)).Count() == 0)
+{
+    <h2>No hay entrevistas pendientes</h2>
+}
+else
+{
+    <h2>Asignación de Supervisión</h2>
+    @if (ViewBag.WarningsUser > 0)
+    {
+        <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+            <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+        </a>
+    }
+    <p>
+        <a asp-action="Reasignacion">
+            Resignación
+        </a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Fecha de ingreso
+                </th>
+                <th>
+                    Capturista
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Supervisor)
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Where(u => u.Supervisor == null || u.Supervisor == "Seleccionar" || u.Supervisor == ""))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UltimaActualización)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Capturista)
+                    </td>
+                    <td>
+                        <form asp-action="EditSupervisor">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <input type="hidden" asp-for="@item.IdPersonaCl" name="IdPersonacl" id="IdPersonacl" />
+                                <select class="form-control" name="Supervisor" id="Supervisor"
+                                        asp-items="@(new SelectList(ViewBag.ListadoUsuarios, "Text","Text"))">
+                                    <option>Seleccionar</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i>
+                                    Guardar
+                                </button>
+                                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.IdPersonaCl">
+                                    <i class="fa fa-eye"></i>
+                                    Detalles
+                                </a>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div style="align-content:center; width:100%; height:100%">
+    @*<h2>Recomendación de próxima supervisión: @ViewBag.Recomendacion</h2>*@
+    <div id="chart" style="width: 600px; height: 500px;"></div>
+</div>
+
+
+
