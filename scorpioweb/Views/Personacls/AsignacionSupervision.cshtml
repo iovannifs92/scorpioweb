@@ -39,7 +39,7 @@
     }
 </script>
 
-@if ((Model.Where(u => u.Supervisor == null)).Count() == 0)
+@if ((Model.Where(u => u.Supervisor == null || u.Supervisor == "")).Count() == 0)
 {
     <h2>No hay entrevistas pendientes</h2>
 }

@@ -714,7 +714,7 @@ namespace scorpioweb.Models
         public ActionResult OnGetChartData()
         {
             var resultados = from p in _context.Personacl
-                             where p.Supervisor != null
+                             where p.Supervisor != null && p.Supervisor != ""
                              group p by p.Supervisor into grupo                             
                              select new
                              {
@@ -2871,12 +2871,14 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Edit foto -
-        public async Task<IActionResult> EditFoto(int? id)
+        public async Task<IActionResult> EditFoto(int? id, string ruta)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
+            ViewBag.ruta = ruta;
 
             var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
             if (personacl == null)
@@ -2889,7 +2891,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditFoto([Bind("IdPersonaCl")] Personacl personacl, IFormFile fotoEditada)
+        public async Task<IActionResult> EditFoto([Bind("IdPersonaCl")] Personacl personacl, IFormFile fotoEditada, string ruta)
         {
             if (ModelState.IsValid)
             {

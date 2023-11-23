@@ -5,7 +5,7 @@
 }
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditFoto" enctype="multipart/form-data">
+        <form asp-action="EditFoto" asp-route-ruta="@ViewBag.ruta" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdPersonaCl" />
             <div class="custom-file">
