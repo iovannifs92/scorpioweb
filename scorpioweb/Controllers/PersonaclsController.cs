@@ -2877,8 +2877,12 @@ namespace scorpioweb.Models
             {
                 return NotFound();
             }
+            string ruta2 = ruta == null ? "" : ruta;
+            string[] partes = ruta2.Split('?');
+            string nuevaRuta = partes[0];
+            ViewBag.ruta = nuevaRuta;
 
-            ViewBag.ruta = ruta;
+
 
             var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
             if (personacl == null)
@@ -2933,7 +2937,16 @@ namespace scorpioweb.Models
 
                 fotoEditada.CopyTo(stream);
                 stream.Close();
-                return RedirectToAction("MenuEdicion/" + personacl.IdPersonaCl, "Personacls");
+                string ruta2 = ruta == null ? "" : ruta;
+                if (ruta2.Equals("detalles"))
+                {
+                    return RedirectToAction("Details/" + personacl.IdPersonaCl, "Personacls");
+                }
+                else
+                {
+                    return RedirectToAction("MenuEdicion/" + personacl.IdPersonaCl, "Personacls");
+                }
+                
             }
             return View(personacl);
         }

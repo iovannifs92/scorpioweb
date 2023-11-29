@@ -1,66 +1,212 @@
 ﻿@model scorpioweb.Models.Cierredecasocl
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    var CasoCerrado = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.cierre))');
+    var tipo = 0;
+    $(document).ready(function () {
+
+        if (CasoCerrado == "NA" || CasoCerrado == "NO" || CasoCerrado == null) 
+        {
+            $("#DivComoConcluyo").css("display", "none");
+            $("#DivNoArchivo").css("display", "none");
+            $("#DivFechaAprobacion").css("display", "none");
+            $("#DivAutorizo").css("display", "none");
+            $("#DivArchivo").css("display", "none");
+        }
+        else 
+        {
+            $("#DivComoConcluyo").css("display", "block");
+            $("#DivNoArchivo").css("display", "block");
+            $("#DivFechaAprobacion").css("display", "block");
+            $("#DivAutorizo").css("display", "block");
+            $("#DivArchivo").css("display", "block");
+        }
+
+        $('#SeCerroCaso').change(function () {
+            var dat = $(this).children("option:selected").val();
+            if (dat == "SI") {
+                $("#DivComoConcluyo").css("display", "block");
+                $("#DivNoArchivo").css("display", "block");
+                $("#DivFechaAprobacion").css("display", "block");
+                $("#DivAutorizo").css("display", "block");
+                $("#DivArchivo").css("display", "block");
+            }
+            else {
+                $("#DivComoConcluyo").css("display", "none");
+                $("#DivNoArchivo").css("display", "none");
+                $("#DivFechaAprobacion").css("display", "none");
+                $("#DivAutorizo").css("display", "none");
+                $("#DivArchivo").css("display", "none");
+            }
+        });
+
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+        var causasCierre = ["Sobreseimiento por acuerdo respiratorio", "Sobreseimiento por suspensión condicional del proceso", "Sobreseimiento por perdón", "Sobreseimiento por muerte del imputado", "Sobreseimiento la extinción de la acción penal", "Sobreseimiento por prescripción", "Sobreseimiento sin especificar", "Sentencia condenatoria en procedimiento abreviado", "Sentencia absolutoria en el procedimiento abreviado", "Sentencia condenatoria del juicio oral", "Sentencia absolutoria en el juicio oral", "No beneficio a proceso"];
+        autocomplete(document.getElementById("ComoConcluyo"), causasCierre);
+    });
+</script>
+
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Cierre de caso";
 }
 
-<!DOCTYPE html>
+<h2>Cierre de caso</h2>
+<div class="col-md-12">
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.idpersona</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">Nombre:</h4>
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.nombre</h4>
+    </div>
+    <div class=col-md-4>
+        <h4 style="text-align:center" class="blockquote text-center">
+            Causa Penal
+            <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
+    </div>
+</div>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>EditCierreCaso</title>
-</head>
-<body>
-
-<h4>Cierredecasocl</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditCierreCaso">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditCierreCaso" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdCierreDeCasocl" />
+            <input type="hidden" asp-for="SupervisionclIdSupervisioncl" />
             <div class="form-group">
-                <label asp-for="SeCerroCaso" class="control-label"></label>
-                <input asp-for="SeCerroCaso" class="form-control" />
-                <span asp-validation-for="SeCerroCaso" class="text-danger"></span>
+                <label class="control-label">Se cerro el Caso</label>
+                <select class="form-control" name="SeCerroCaso" id="SeCerroCaso"
+                        asp-items="@(new SelectList(ViewBag.listaSeCerroCaso, "Value", "Text", @ViewBag.idSeCerroCaso))">
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="ComoConcluyo" class="control-label"></label>
-                <input asp-for="ComoConcluyo" class="form-control" />
-                <span asp-validation-for="ComoConcluyo" class="text-danger"></span>
+            <div id="DivComoConcluyo" class="form-group">
+                <label class="control-label">Como Concluyó</label>
+                <select class="form-control" name="ComoConcluyo" id="ComoConcluyo"
+                        asp-items="@(new SelectList(ViewBag.CierreCaso, "Value", "Text", ViewBag.idCierreCaso))">
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="NoArchivo" class="control-label"></label>
+            <div class="form-group" id="DivNoArchivo">
+                <label class="control-label">Número de Archivo</label>
                 <input asp-for="NoArchivo" class="form-control" />
                 <span asp-validation-for="NoArchivo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="FechaAprobacion" class="control-label"></label>
+            <div class="form-group" id="DivFechaAprobacion">
+                <label class="control-label">Fecha de Aprobación</label>
                 <input asp-for="FechaAprobacion" class="form-control" />
                 <span asp-validation-for="FechaAprobacion" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Autorizo" class="control-label"></label>
-                <input asp-for="Autorizo" class="form-control" />
-                <span asp-validation-for="Autorizo" class="text-danger"></span>
+            <div class="form-group" id="DivAutorizo">
+                <label class="control-label">Quien Autorizo</label>
+                <select class="form-control" name="Autorizo"
+                        asp-items="@(new SelectList(ViewBag.listaAutorizo, "Value", "Text", @ViewBag.idAutorizo))">
+                </select>
             </div>
-            <input type="hidden" asp-for="SupervisionclIdSupervisioncl" />
+
+            @if (ViewBag.Achivocierre != null || ViewBag.cierre == ("NA") || ViewBag.cierre == "NO")
+            {
+                <div>
+                    <a id="btnEditar" href="~/Cierredecaso/@(ViewBag.Achivocierre)" target="_blank" style="padding-bottom:20px">
+                        Ver archivo
+                        <i class="fa fa-paperclip fa-6"></i>
+                    </a>
+                </div>
+                <div class="custom-file" style="padding-bottom:20px">
+                    <label class="control-label">Editar Archivo</label>
+                    <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
+                </div>
+            }
+            else
+            {
+                <div class="custom-file" style="padding-bottom:20px" id="DivArchivo">
+                    <label class="control-label">Agregar Archivo</label>
+                    <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
+                </div>
+            }
+
             <div class="form-group">
-                <label asp-for="RutaArchivo" class="control-label"></label>
-                <input asp-for="RutaArchivo" class="form-control" />
-                <span asp-validation-for="RutaArchivo" class="text-danger"></span>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Supervision" asp-route-id="@Model.SupervisionclIdSupervisioncl" class="btn btn-link">Regresar</a>
 </div>
 
-</body>
-</html>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+
