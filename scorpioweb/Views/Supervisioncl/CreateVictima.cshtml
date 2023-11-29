@@ -1,0 +1,89 @@
+﻿@model scorpioweb.Models.Victimacl
+
+@{
+    Layout = null;
+}
+<div class="row">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas guardar los datos?');" asp-action="CreateVictima" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input readonly name="IdVictimacl" id="IdVictimacl" class="form-control" style="display:none" />
+            <div class="form-group">
+                <label class="control-label">Nombre de Victima</label>
+                <input asp-for="NombreV" class="form-control" />
+                <span asp-validation-for="NombreV" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Edad" class="control-label"></label>
+                <input asp-for="Edad" class="form-control" />
+                <span asp-validation-for="Edad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Telefono" class="control-label"></label>
+                <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                <span asp-validation-for="Telefono"  class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">¿Conoce al Detenido?</label>
+                <select class="form-control" name="ConoceDetenido" id="ConoceDetenido">
+                    <option value="NA">NA</option>
+                    <option value="NO">No</option>
+                    <option value="SI">Si</option>
+               </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Relación</label>
+                <select class="form-control" name="TipoRelacion" id="TipoRelacion">
+                    <option value="MAMA">Máma</option>
+                    <option value="PAPA">Pápa</option>
+                    <option value="ESPOSO (A)">Esposo(a)</option>
+                    <option value="HERMANO (A)">Hermano(a)</option>
+                    <option value="HIJO (A)">Hijo(a)</option>
+                    <option value="ABUELO (A)">Abuelo(a)</option>
+                    <option value="FAMILIAR 1 NIVEL">Familiar 1 nivel</option>
+                    <option value="AMIGO">Amigo</option>
+                    <option value="CONOCIDO">Conocido</option>
+                    <option value="OTRO">Otro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">¿Tiempo de Conocerlo?</label>
+                <select required class="form-control" name="TiempoConocerlo" id="TiempoConocerlo">
+                    <option value="MAS DE 10 AÑOS">Más de 10 años</option>
+                    <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
+                    <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
+                    <option value="ENTRE 6 MESES Y 2 AÑOS">Entre 6 meses y 2 años</option>
+                    <option value="MENOS DE 6 MESES">Menos de 6 meses</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">¿Vive con el Supervisado?</label>
+                <select required class="form-control" name="ViveSupervisado" id="ViveSupervisado">
+                    <option value="NO">No</option>
+                    <option value="SI">Si</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Direccion" class="control-label"></label>
+                <input asp-for="Direccion" class="form-control" />
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div> 
+            <div class="form-group">
+                <label class="control-label">Colonia/Fraccionamiento</label>
+                <input asp-for="Victimacol" class="form-control" maxlength="45"/>
+                <span asp-validation-for="Victimacol" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <textarea asp-for="Observaciones" class="form-control" cols="20" rows="5"></textarea>
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+            <input readonly name="SupervisionclIdSupervisioncl" id="SupervisionclIdSupervisioncl" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
+            <br />
+            <div class="form-group" style="padding-top:15PX">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+
+            </div>
+        </form>
+    </div>
+</div>

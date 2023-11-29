@@ -1,381 +1,81 @@
-﻿@model scorpioweb.Models.Bitacora
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+﻿@model scorpioweb.Models.Bitacoracl
+
 @{
-    ViewData["Title"] = "Fracciones Impuestas";
+    Layout = null;
 }
 
-@* Necesario para los modales en el servidor *@
-@*<script src="~/js/jquery-1.11.1.min.js"></script>*@
-
-<script>
-    $(document).ready(function () {
-        $('#btnGuardarFraccion').on("click", function (e) {
-            e.preventDefault();
-            //alert("tipo: " + tipo);
-            var IdSupervision = document.getElementById("IdSupervision").value;
-            var fj = document.getElementById("FiguraJudicial");
-            var c = document.getElementById("cumplimiento");
-            var FiguraJudicial = fj.options[fj.selectedIndex].value;
-            var cumplimiento = c.options[c.selectedIndex].value;
-            var f1 = document.getElementById("f1").checked;
-            var f2 = document.getElementById("f2").checked;
-            var f3 = document.getElementById("f3").checked;
-            var f4 = document.getElementById("f4").checked;
-            var f5 = document.getElementById("f5").checked;
-            var f6 = document.getElementById("f6").checked;
-            var f7 = document.getElementById("f7").checked;
-            var f8 = document.getElementById("f8").checked;
-            var f9 = document.getElementById("f9").checked;
-            var f10 = document.getElementById("f10").checked;
-            var f11 = document.getElementById("f11").checked;
-            var f12 = document.getElementById("f12").checked;
-            var f13 = document.getElementById("f13").checked;
-            var f14 = document.getElementById("f14").checked;
-            var FechaInicio = document.getElementById("FechaInicio").value;
-            var FechaTermino = document.getElementById("FechaTermino").value;
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Supervisiones/CrearFracciones",
-                traditional: true,
-                data: {
-                    datosFracciones: [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, IdSupervision, FiguraJudicial, FechaInicio, FechaTermino, cumplimiento],
-                },
-                success: function (response) {
-                    if (response.success) {
-                        location.reload();
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Datos Guardados");
-                    location.reload();
-                }
-            });
-        });
-    });
-    showModal = (url, title, id) => {
-        var idSupervision = document.getElementById("IdS").value;
-        $.ajax({
-            type: "GET",
-            url: url + "?id=" + id,
-            success: function (res) {
-                $("#form-modal .modal-body").html(res);
-                $("#form-modal .modal-title").html(title);
-                $("#form-modal").modal('show');
-            },
-            traditional: true,
-            data: {
-                datosBitacora: [idSupervision],
-            },
-            error: function (res) {
-
-            }
-        })
-    }
-    var arr = [];
-    function myFunction(id) {
-        var encontro = false;
-        var doble;
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] === id) {
-                encontro = true;
-                doble = i;
-                break;
-            }
-        }
-        if (encontro == false) {
-            arr.push(id);
-        } else {
-            arr.splice(doble, 1);
-        }
-    }
-    $(document).ready(function () {
-        $('#btnImprimirR').on("click", function (e) {
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Supervisiones/imprimirReporteSupervision",
-                traditional: true,
-                data: {
-                    datosidFraccion: arr,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        location.reload();
-                    } else {
-                        alert(response.responseText);
-                    }
-                },
-                error: function (response) {
-                    alert("Informe Generado");
-                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
-                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
-                    window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
-                }
-            });
-
-        });
-    });
-
-    function cambioestado(idf, value) {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Supervisiones/UpdateEstado",
-            traditional: true,
-            data: {
-                id: idf,
-                estados: value,
-            },
-            success: function (response) {
-            },
-            error: function (response) {
-                location.reload();
-            }
-        });
-    };
-</script>
-<h2>Fracciónes Impuestas</h2>
-<div class="col-md-12">
-    <div class=col-md-4>
-        <h4 style="text-align:center" class="blockquote text-center">Id Persona:</h4>
-        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.idpersona</h4>
-    </div>
-    <div class=col-md-4>
-        <h4 style="text-align:center" class="blockquote text-center">Nombre:</h4>
-        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.nombre</h4>
-    </div>
-    <div class=col-md-4>
-        <h4 style="text-align:center" class="blockquote text-center">
-            Causa Penal
-            <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
-    </div>
-</div>
-<input style="display:none" name="IdS" id="IdS" class="form-control" value="@ViewBag.IdSupervisionGuardar" />
-
-<table class="table" style="text-align:center">
-    <thead style="text-align:center">
-        <tr>
-            <th>
-                Reporte
-            </th>
-            <th>
-                Figura Judicial
-            </th>
-            <th>
-                Fracción
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Autoridad)
-            </th>
-            <th>
-                Fecha de inicio
-            </th>
-            <th>
-                Fecha  de termino
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in ViewData["fracciones"] as IEnumerable<scorpioweb.Models.Beneficios>)
-        {
-            <tr>
-                <td>
-                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdBeneficios)">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FiguraJudicial)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tipo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Autoridad)
-                </td>
-                <td>
-                    @if (item.FechaInicio != null)
+<div class="row">
+    <div class="col-md-12">
+        <form onsubmit="return confirm('¿Deseas modificar los datos?');" asp-action="EditBitacora" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-idpersona="@ViewBag.idpersona" asp-route-idcp="@ViewBag.idcp" asp-route-supervisor="@ViewBag.supervisor" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdBitacoracl" readonly />
+            <input type="hidden" asp-for="FechaRegistro" readonly />
+            <input type="hidden" asp-for="BeneficiosclIdBeneficioscl" readonly />
+            <div class="form-group col-md-6">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input asp-for="Fecha" type="date" class="form-control" />
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+            @*<div class="form-group col-lg-4 autocomplete">
+            <label class="control-label"> Id Oficialia</label>
+            <input asp-for="OficialiaIdOficialia" class="form-control" />
+            <span asp-validation-for="OficialiaIdOficialia" type="text" class="text-danger"></span>
+            </div>*@
+            <div class="form-group col-md-6">
+                <label class="control-label">Supervisado / Víctima</label>
+                <select asp-for="TipoPersona" class="form-control" name="TipoPersona" id="TipoPersona"
+                        asp-items="@(new SelectList(ViewBag.TipoPersona, "Value", "Text", @ViewBag.idTipoPersona))">
+                </select>
+            </div>
+            <div class="form-group col-lg-12">
+                <label class="control-label">Acción de Supervisión</label>
+                <select asp-for="TipoVisita" class="form-control" name="TipoVisita" id="TipoVisita"
+                        asp-items="@(new SelectList(ViewBag.TipoAccion, "Value", "Text", @ViewBag.idTipoAccion))">
+                </select>
+            </div>
+            @if (@ViewBag.countFrac != null)
+            {
+                <div class="form-group">
+                    <label class="control-label">Beneficios</label>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Figura Judicial</th>
+                            <th scope="col">Beneficio</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in ViewData["BeneficiosBitaccora"] as IEnumerable<scorpioweb.Models.BitacoraclViewModal>)
                     {
-                        @(item.FechaInicio.Value.ToString("dd MMMM yyyy"))
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    <input class="form-check-input" type="checkbox" id="chkBeneficio_@item.beneficiosVM.IdBeneficios" value="option1"
+                                           onclick="marcar(@item.beneficiosVM.IdBeneficios)"
+                                    @(item.beneficiosVM.IdBeneficios == @ViewBag.IdBeneficios ? "checked" : "")>
+                                </th>
+                                <td>@item.beneficiosVM.FiguraJudicial</td>
+                                <td>@item.beneficiosVM.Tipo</td>
+                            </tr>
+                        </tbody>
                     }
-                </td>
-                <td>
-                    @if (item.FechaTermino != null)
-                    {
-                        @if (DateTime.Now < item.FechaTermino)
-                        {
-                            @item.FechaTermino.Value.ToString("dd MMMM yyyy")
-                        }
-                        else
-                        {
-                            @if (item.FiguraJudicial == "SCP")
-                            {
-                                <span style="color:red;">@item.FechaTermino.Value.ToString("dd MMMM yyyy")</span>
-                            }
-                        }
-                    }
-                </td>
-                <td>
-                    <select class="form-control" name="Estado" id="Estado" style="font-size:9px" onchange="cambioestado(@item.IdFracciones, value)"
-                            asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Text", "Text", item.Estado))">
-                    </select>
-                </td>
-                @if (ViewBag.usuario)
-                {
-                    <td>
-                        <form onsubmit="return confirm('¿Deseas borrar esta fracción?');" asp-action="DeleteFraccion" asp-route-id="@item.IdFracciones" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp" asp-route-supervisor="@ViewBag.supervisor" asp-route-idcp="@ViewBag.idcp" asp-route-idpersona="@ViewBag.idpersona">
-                            <a id="btnEditar" onclick="showModal('@Url.Action("AddOrEdit", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre,idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Edita Fracción', null)" class="btn btn-success">
-                                <i class="fa fa-pencil"></i> Editar
-                            </a>
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fa fa-trash"></i> Borrar
-                            </button>
-                            <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdFracciones, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
-                                <i class="fa fa-plus"></i> Acciones de Supervisión
-                            </a>
-                        </form>
-                    </td>
-                }
-            </tr>
-        }
-    </tbody>
-</table>
-
-@if (ViewBag.usuario)
-{
-    <div>
-        @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
-
-        <button id="btnNuevaFraccion" name="btnNuevaFraccion" type="button" data-toggle="modal" data-target="#modalNuevaFraccion" class="btn btn-primary">
-            <i class="fa fa-plus"></i> Añadir Fracciones
-        </button>
-
-        <a id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
-    </div>
-    <br />
-}
-<div>
-    <a asp-action="Supervision" asp-route-id="@ViewBag.IdSupervisionGuardar" class="btn btn-link">Regresar</a>
-</div>
-
-
-<!-- Modal Creacion de nueva fraccion -->
-<div class="modal fade" id="modalNuevaFraccion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color:#0078A7;">
-                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Añadir Nueva Fracción</h5>
+                </table>
+            }
+            <div class="form-group col-lg-12">
+                <label asp-for="Texto" class="control-label"></label>
+                <textarea asp-for="Texto" class="form-control" cols="20" rows="5"></textarea>
+                <span asp-validation-for="Texto" class="text-danger"></span>
             </div>
-            <div class="modal-body">
-                <div class="form-group" hidden>
-                    <label class="control-label">Id Supervision</label>
-                    <input readonly name="IdSupervision" id="IdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" />
-                </div>
-                <div class="form-group" style="padding-top:1%;">
-                    <label class="control-label">Figura Judicial</label>
-                    <select class="form-control" name="FiguraJudicial" id="FiguraJudicial">
-                        <option value="MC">MC</option>
-                        <option value="SCP">SCP</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Fracciones impuestas</label><br />
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f1" value="option1">
-                        <label class="form-check-label" for="f1">I</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f2" value="option2">
-                        <label class="form-check-label" for="f2">II</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f3" value="option1">
-                        <label class="form-check-label" for="f3">III</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f4" value="option2">
-                        <label class="form-check-label" for="f4">IV</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f5" value="option2">
-                        <label class="form-check-label" for="f5">V</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f6" value="option6">
-                        <label class="form-check-label" for="f6">VI</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f7" value="option7">
-                        <label class="form-check-label" for="f7">VII</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f8" value="option8">
-                        <label class="form-check-label" for="f8">VIII</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f9" value="option9">
-                        <label class="form-check-label" for="f9">IX</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f10" value="option10">
-                        <label class="form-check-label" for="f10">X</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f11" value="option11">
-                        <label class="form-check-label" for="f11">XI</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f12" value="option12">
-                        <label class="form-check-label" for="f12">XII</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f13" value="option13">
-                        <label class="form-check-label" for="f13">XIII</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f14" value="option14">
-                        <label class="form-check-label" for="f14">XIV</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Fecha de inicio</label>
-                    <input name="FechaInicio" id="FechaInicio" class="form-control" type="date" />
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Fecha de termino</label>
-                    <input name="FechaTermino" id="FechaTermino" class="form-control" type="date" />
-                </div>
-                <div class="form-group" style="padding-top:1%;">
-                    <label class="control-label">Estado de cumplimiento</label>
-                    <select class="form-control" name="cumplimiento" id="cumplimiento">
-                        <option value="CUMPLIMIENTO">CUMPLIMIENTO</option>
-                        <option value="INCUMPLIMIENTO">INCUMPLIMIENTO</option>
-                    </select>
-                </div>
+            <div class="custom-file form-group col-lg-12" style="padding-bottom:20px">
+                <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
             </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardarFraccion" name="btnGuardarFraccion">Guardar Fracción</button>
+            <input type="hidden" asp-for="SupervisionclIdSupervisioncl" />
+            <div class="form-group col-lg-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Guardar
+                </button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
-
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

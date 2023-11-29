@@ -7615,7 +7615,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
         #region -Imprimir Reporte Supervision-
         public JsonResult imprimirContactos(Contactos contactos)
         {
@@ -7822,7 +7821,6 @@ namespace scorpioweb.Controllers
 
         }
         #endregion
-
 
         #region-VistaBitacora-
         public IActionResult VistaBitacora(int id)

@@ -172,6 +172,24 @@ namespace scorpioweb.Controllers
             new SelectListItem { Text = "Anual", Value = "ANUAL", },
             new SelectListItem { Text = "No aplica", Value = "NO APLICA" }
         };
+        private List<SelectListItem> listaBitacoras = new List<SelectListItem>
+        {
+            new SelectListItem{ Text = "", Value = "" },
+            new SelectListItem{ Text = "Resolucio", Value = "RESOLUCION" },
+            new SelectListItem { Text = "Notificacion", Value = "NOTIFICACION" },
+            new SelectListItem { Text = "Verificacion", Value = "VERIFICACION" },
+            new SelectListItem { Text = "Informe Inicial", Value = "INFORME INICIAL" },
+            new SelectListItem { Text = "Informe de Supervision", Value = "INFORME DE SUPERVISION" },
+            new SelectListItem { Text = "Visita Domiciliaria", Value = "VISITA DOMICILIARIA" },
+            new SelectListItem { Text = "Oficio de Vigilancia", Value = "OFICIO DE VIGILANCIA" },
+            new SelectListItem { Text = "Plan de Estrategia", Value = "PLAN DE ESTRATEGIA" }
+        }; 
+        private List<SelectListItem> listaPersona = new List<SelectListItem>
+        {
+             new SelectListItem{ Text="Supervisado", Value="SUPERVISADO"},
+             new SelectListItem{ Text="Víctima", Value="VICTIMA"},
+        };
+
 
         #endregion
 
@@ -1071,8 +1089,600 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -Bitacora-
+        public async Task<IActionResult> ListaBitacora(int? id, string nombre, string cp, string idpersona, string idcp, string supervisor)
+        {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+            ViewBag.supervisor = supervisor;
+            ViewBag.idcp = idcp;
+
+            var supervision = _context.Supervisioncl
+            .SingleOrDefault(m => m.IdSupervisioncl == id);
+
+            var persona = _context.Personacl
+           .SingleOrDefault(m => m.IdPersonaCl == supervision.PersonaclIdPersonacl);
+            var cpp = _context.Causapenalcl
+           .SingleOrDefault(m => m.IdCausaPenalcl == supervision.CausaPenalclIdCausaPenalcl);
+            //ViewBag.nombre = persona.NombreCompleto;
+            //ViewBag.cp = cp.CausaPenal;
+
+            //var oficialia = (from _cp in _context.Causapenal
+            //                 join o in _context.Oficialia on _cp.IdCausaPenal equals o.IdCausaPenal
+            //                 join b in _context.Bitacora on o.IdOficialia equals b.IdOficialia
+            //                 where _cp.IdCausaPenal == cpp.IdCausaPenal);
+
+            await PermisosEdicion(id);
+
+
+            List<Bitacoracl> bitacora = _context.Bitacoracl.ToList();
+            List<Beneficios> beneficios = _context.Beneficios.ToList();
+
+            ViewData["BitacoraBeneficios"] = from b in bitacora
+                                             join be in beneficios on b.BeneficiosclIdBeneficioscl equals be.IdBeneficios into tmp
+                                             from fleft in tmp.DefaultIfEmpty()
+                                             where b.SupervisionclIdSupervisioncl == id
+                                             orderby b.Fecha descending
+                                             select new BitacoraclViewModal
+                                             {
+                                                 bitacoraVM = b,
+                                                 beneficiosVM = fleft
+                                             };
+
+            ViewBag.IdSupervisionGuardar = id;
+
+
+            return View();
+        }
+        #region -Create Bitacora-
+        public IActionResult CreateBitacora(string nombre, string cp, int id, string supervisor, int idcp, int idpersona, int idfraccionesimpuestas)
+        {
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+            ViewBag.idcp = idcp;
+            ViewBag.supervisor = supervisor;
+            ViewBag.idfraccionesimpuestas = idfraccionesimpuestas;
+
+            ViewBag.listaBitacoras = listaBitacoras;
+
+            var Beneficios = (from s in _context.Supervisioncl
+                                      join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
+                                      where b.SupervisionclIdSupervisioncl == id
+                                      select new BitacoraclViewModal
+                                      {
+                                          beneficiosVM = b
+                                      });
+
+
+            ViewBag.countFrac = null;
+
+            if (idfraccionesimpuestas == 0)
+            {
+                ViewBag.countFrac = Beneficios.Count();
+                ViewData["BeneficiosBitaccora"] = Beneficios;
+            }
+
+            ViewBag.IdSupervisionGuardar = id;
+
+            return View();
+        }
+        //public IActionResult CreateBitacora2(string nombre, string cp, int id, int SupervisionIdSupervision, string idpersona, string supervisor, int idcp)
+        //{
+        //    int index = cp.IndexOf("?");
+        //    if (index >= 0)
+        //        cp = cp.Substring(0, index);
+
+        //    ViewBag.nombre = nombre;
+        //    ViewBag.cp = cp;
+        //    ViewBag.idpersona = idpersona;
+        //    ViewBag.supervisor = supervisor;
+        //    ViewBag.idcp = idcp;
+
+        //    ViewBag.FracionesImpuestasIdFracionesImpuestas = id;
+        //    ViewBag.SupervisionIdSupervision = SupervisionIdSupervision;
+
+        //    #region -Select idOficialia
+
+        //    List<Bitacora> bitacorasvm = _context.Bitacora.ToList();
+
+        //    var leftjoin = from o in _context.Oficialia
+        //                   join p in _context.Persona on o.UsuarioTurnar equals p.Supervisor
+        //                   join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+        //                   join b in bitacorasvm on o.IdOficialia equals b.OficialiaIdOficialia into temp
+        //                   from bo in temp.DefaultIfEmpty()
+        //                   select new ListaOficialiaBitacoraViewModel
+        //                   {
+        //                       oficialiavm = o,
+        //                       supervisionvm = s,
+        //                       personavm = p,
+        //                       bitacoravm = bo
+        //                   };
+        //    var wheres = (from bn in leftjoin
+        //                  where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
+        //                  group bn by bn.oficialiavm.IdOficialia into grp
+        //                  select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
+
+        //    var select = (from wh in wheres
+        //                  select wh.oficialiavm.IdOficialia).ToList();
+
+        //    ViewBag.expoficialia = select;
+        //    #endregion
+
+
+        //    return View();
+        //}
+
+
+        #region -siNumero-
+        public static int siNumero(string numero)
+        {
+            int id = 0;
+
+            try
+            {
+                id = int.Parse(numero);
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return id;
+        }
+        #endregion
+
+
+        public async Task<IActionResult> AgregarBitacora(Bitacoracl bitacoracl, string IdBitacoracl, DateTime Fecha, string tipoPersona,
+        string tipoVisita, string Texto, string SupervisionclIdSupervisioncl, string BeneficiosclIdBeneficioscl, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidBeneficio)
+        {
+            int idbitacora = _context.Bitacoracl.Max(p => p.IdBitacoracl) + 1;
+
+            string currentUser = User.Identity.Name;
+
+            if (files != null && files.Count > 0)
+            {
+                var uploadTasks = new List<Task>();
+
+                foreach (var formFile in files)
+                {
+                    if (formFile.Length > 0)
+                    {
+                        string fileExtension = Path.GetExtension(formFile.FileName);
+                        string file_name = $"{idbitacora}_{SupervisionclIdSupervisioncl}_{idpersona}{fileExtension}";
+
+                        bitacoracl.RutaEvidencia = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "EvidenciaCL");
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+
+                        uploadTasks.Add(formFile.CopyToAsync(stream));
+                    }
+                }
+
+                await Task.WhenAll(uploadTasks);
+            }
+            if (ModelState.ErrorCount <= 1)
+            {
+
+                for (int i = 0; i < datosidBeneficio.Length; i++)
+                {
+
+                    bitacoracl.Fecha = Fecha;
+                    bitacoracl.TipoPersona = mg.normaliza(tipoPersona);
+                    bitacoracl.TipoVisita = mg.normaliza(tipoVisita);
+                    bitacoracl.Texto = mg.normaliza(Texto);
+                    bitacoracl.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
+                    bitacoracl.FechaRegistro = DateTime.Now;
+                    bitacoracl.BeneficiosclIdBeneficioscl = Int32.Parse(datosidBeneficio[i]);
+                    bitacoracl.RutaEvidencia = bitacoracl.RutaEvidencia;
+
+                    var supervision = _context.Supervisioncl
+                    .SingleOrDefault(m => m.IdSupervisioncl == bitacoracl.SupervisionclIdSupervisioncl);
+
+                    _context.Add(bitacoracl);
+                    _context.SaveChanges();
+
+                }
+
+                if (datosidBeneficio.Length == 0)
+                {
+                    if (BeneficiosclIdBeneficioscl != null)
+                    {
+                        bitacoracl.BeneficiosclIdBeneficioscl = Int32.Parse(BeneficiosclIdBeneficioscl);
+                    }
+                    bitacoracl.Fecha = Fecha;
+                    bitacoracl.TipoPersona = mg.normaliza(tipoPersona);
+                    bitacoracl.TipoVisita = mg.normaliza(tipoVisita);
+                    bitacoracl.Texto = mg.normaliza(Texto);
+                    bitacoracl.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
+                    bitacoracl.FechaRegistro = DateTime.Now;
+
+                    var supervision = _context.Supervisioncl
+                   .SingleOrDefault(m => m.IdSupervisioncl == bitacoracl.SupervisionclIdSupervisioncl);
+
+                    _context.Add(bitacoracl);
+                    await _context.SaveChangesAsync();
+
+                    bitacoracl = await _context.Bitacoracl.OrderByDescending(b => b.IdBitacoracl).FirstOrDefaultAsync();
+
+
+
+                }
+
+                if (bitacoracl.BeneficiosclIdBeneficioscl != null)
+                {
+                    return RedirectToAction("EditFraccionesimpuestas/" + bitacoracl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                }
+                else
+                {
+                    return RedirectToAction("ListaBitacora/" + bitacoracl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                }
+
+            }
+            return View(bitacoracl);
+        }
+
 
         #endregion
+        public async Task<IActionResult> EditBitacora(int? id, string nombre, string cp, int idpersona, string supervisor, int idcp, int idSupervisioncl,int IdBeneficios)
+        {
+            //int index = cp.IndexOf("?");
+            //if (index >= 0)
+            //    cp = cp.Substring(0, index);
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+            ViewBag.supervisor = supervisor;
+            ViewBag.idcp = idcp;
+            ViewBag.idSupervisioncl = idSupervisioncl;
+            ViewBag.IdBeneficios = IdBeneficios;
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+            //PENDIENTE PARA QUE SALGAN LOS BENEFICISO EN LA EDICION DE BITACORAS 
+            var bitacora = await _context.Bitacoracl.SingleOrDefaultAsync(m => m.IdBitacoracl == id);
+
+            var Beneficios = (from s in _context.Supervisioncl
+                              join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
+                              where b.SupervisionclIdSupervisioncl == idSupervisioncl
+                              select new BitacoraclViewModal
+                              {
+                                  beneficiosVM = b
+                              });
+
+
+            ViewBag.countFrac = null;
+
+            if (idSupervisioncl == 0)
+            {
+                ViewBag.countFrac = Beneficios.Count();
+                ViewData["BeneficiosBitaccora"] = Beneficios;
+            }
+            if (bitacora == null)
+            {
+                return NotFound();
+            }
+
+            #region ListaTipoPersona
+            ViewBag.TipoPersona = listaPersona;
+            ViewBag.idTipoPersona = mg.BuscaId(listaPersona, bitacora.TipoPersona);
+            #endregion
+
+            #region ListaTipoAccion
+            ViewBag.TipoAccion = listaBitacoras;
+            ViewBag.idTipoAccion = mg.BuscaId(listaBitacoras, bitacora.TipoVisita);
+            #endregion
+
+            ViewBag.RutaEvidencia = bitacora.RutaEvidencia;
+
+            return View(bitacora);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBitacora([Bind("IdBitacoracl,Fecha,TipoPersona,Texto,TipoVisita,RutaEvidencia,OficialiaIdOficialia,FechaRegistro,BeneficiosclIdBeneficioscl,SupervisionclIdSupervisioncl")] Bitacoracl bitacoracl, IFormFile evidencia, string nombre, string cp, string idpersona, string supervisor, string idcp)
+        {
+            bitacoracl.Texto = mg.normaliza(bitacoracl.Texto);
+            bitacoracl.OficialiaIdOficialia = bitacoracl.OficialiaIdOficialia;
+            bitacoracl.BeneficiosclIdBeneficioscl = bitacoracl.BeneficiosclIdBeneficioscl;
+
+            var supervision = _context.Supervision
+               .SingleOrDefault(m => m.IdSupervision == bitacoracl.SupervisionclIdSupervisioncl);
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var oldBitacora = await _context.Bitacoracl.FindAsync(bitacoracl.IdBitacoracl, bitacoracl.SupervisionclIdSupervisioncl);
+
+                    if (evidencia == null)
+                    {
+                        bitacoracl.RutaEvidencia = oldBitacora.RutaEvidencia;
+                    }
+                    else
+                    {
+                        string file_name = bitacoracl.IdBitacoracl + "_" + bitacoracl.SupervisionclIdSupervisioncl + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
+                        bitacoracl.RutaEvidencia = file_name;
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidenciacl");
+
+                        if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
+                        {
+                            System.IO.File.Delete(Path.Combine(uploads, file_name));
+                        }
+
+                        var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create);
+                        await evidencia.CopyToAsync(stream);
+                        stream.Close();
+                    }
+
+                    _context.Entry(oldBitacora).CurrentValues.SetValues(bitacoracl);
+
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(bitacora);
+                    //await evidencia.CopyToAsync(stream);
+                    //await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!BitacoraExists(bitacoracl.SupervisionclIdSupervisioncl))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("ListaBitacora/" + bitacoracl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @idcp = idcp, @supervisor = supervisor });
+
+            }
+            return View(bitacoracl);
+        }
+        public async Task<IActionResult> DeleteRegistro(int? id, string nombre, string cp, string idpersona, string idcp, string supervisor)
+        {
+            var Bitacora = await _context.Bitacoracl.SingleOrDefaultAsync(m => m.IdBitacoracl == id);
+            var oldBitacora = await _context.Bitacoracl.FindAsync(Bitacora.IdBitacoracl, Bitacora.SupervisionclIdSupervisioncl);
+            _context.Entry(oldBitacora).CurrentValues.SetValues(Bitacora);
+
+            _context.Bitacoracl.Remove(Bitacora);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ListaBitacora/" + Bitacora.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @idcp = idcp, @supervisor = supervisor });
+        }
+        #endregion
+
+        #region -Victima-
+        public async Task<IActionResult> ListaVictima(int? id, string cp, string nombre, string idpersona)
+        {
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            var supervision = _context.Supervisioncl
+            .SingleOrDefault(m => m.IdSupervisioncl == id);
+
+            var persona = _context.Personacl
+           .SingleOrDefault(m => m.IdPersonaCl == supervision.PersonaclIdPersonacl);
+            var cpp = _context.Causapenalcl
+           .SingleOrDefault(m => m.IdCausaPenalcl == supervision.CausaPenalclIdCausaPenalcl);
+
+
+
+            await PermisosEdicion(id);
+
+
+            List<Victimacl> victimas = _context.Victimacl.ToList();
+
+            ViewData["Victima"] = from table in victimas
+                                  where table.SupervisionclIdSupervisioncl == id
+                                  orderby table.IdVictimacl
+                                  select table;
+
+            ViewBag.IdSupervisionGuardar = id;
+
+
+            return View();
+        }
+        public IActionResult CreateVictima(int? id, string nombre, string cp, string idpersona)
+        {
+
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            ViewBag.IdSupervisionGuardar = id;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateVictima(Victimacl victimacl, string IdVictima, string NombreV, string Edad, string Telefono, string ConoceDetenido, string TipoRelacion,
+            string TiempoConocerlo, string ViveSupervisado, string Direccion, string Victimacol, string Observaciones, string SupervisionIdSupervision, string nombre, string cp, string idpersona)
+        {
+
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            string currentUser = User.Identity.Name;
+            if (ModelState.ErrorCount <= 1)
+            {
+                victimacl.NombreV = mg.normaliza(NombreV);
+                victimacl.Edad = Edad;
+                victimacl.Telefono = Telefono;
+                victimacl.ConoceDetenido = mg.normaliza(ConoceDetenido);
+                victimacl.TipoRelacion = mg.normaliza(TipoRelacion);
+                victimacl.TiempoConocerlo = mg.normaliza(TiempoConocerlo);
+                victimacl.ViveSupervisado = mg.normaliza(ViveSupervisado);
+                victimacl.Direccion = mg.normaliza(Direccion);
+                victimacl.Victimacol = mg.normaliza(Victimacol);
+                victimacl.Observaciones = mg.normaliza(Observaciones);
+
+
+                var supervision = _context.Supervisioncl
+               .SingleOrDefault(m => m.IdSupervisioncl == victimacl.SupervisionclIdSupervisioncl);
+
+
+                var persona = _context.Personacl
+               .SingleOrDefault(m => m.IdPersonaCl == supervision.PersonaclIdPersonacl);
+                var cpp = _context.Causapenalcl
+               .SingleOrDefault(m => m.IdCausaPenalcl == supervision.CausaPenalclIdCausaPenalcl);
+
+                //ViewBag.Npersona = persona.NombreCompleto;
+                //ViewBag.cp = cpp.CausaPenal;
+
+                int idVictima = ((from table in _context.Victimacl
+                                  select table.IdVictimacl).Max()) + 1;
+
+                victimacl.IdVictimacl = idVictima;
+                _context.Add(victimacl);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ListaVictima/" + victimacl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
+                //return RedirectToAction("ListaVictima/" + victima.SupervisionIdSupervision, "Supervisiones");
+            }
+            return View(victimacl);
+        }
+
+        public async Task<IActionResult> Editvictima(int? id, string nombre, string cp, string idpersona)
+        {
+            int index = cp.IndexOf("?");
+            if (index >= 0)
+                cp = cp.Substring(0, index);
+
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var Victima = await _context.Victimacl.SingleOrDefaultAsync(m => m.IdVictimacl == id);
+            if (Victima == null)
+            {
+                return NotFound();
+            }
+
+            List<SelectListItem> ListaConoceDetenido;
+            ListaConoceDetenido = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="NA", Value="NA"},
+              new SelectListItem{ Text="Si", Value="SI"},
+              new SelectListItem{ Text="No", Value="NO"},
+            };
+            ViewBag.ConoceDetenido = ListaConoceDetenido;
+            ViewBag.idConoceDetenido = mg.BuscaId(ListaConoceDetenido, Victima.ConoceDetenido);
+
+
+            List<SelectListItem> ListaRelacion;
+            ListaRelacion = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Máma", Value="MAMA"},
+              new SelectListItem{ Text="Pápa", Value="PAPA"},
+              new SelectListItem{ Text="Esposo (a)", Value="ESPOSO (A)"},
+              new SelectListItem{ Text="Hermano (a)", Value="HERMAN0 (A)"},
+              new SelectListItem{ Text="Hijo (a)", Value="HIJO (A)"},
+              new SelectListItem{ Text="Abelo (a)", Value="ABUELO (A)"},
+              new SelectListItem{ Text="Familiar 1 Nivel", Value="FAMILIAR 1 NIVEL"},
+              new SelectListItem{ Text="Amigo", Value="AMIGO"},
+              new SelectListItem{ Text="Conocido", Value="CONOCIDO (A)"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+            ViewBag.TipoRelacion = ListaRelacion;
+            ViewBag.idTipoRelacion = mg.BuscaId(ListaRelacion, Victima.TipoRelacion);
+
+            List<SelectListItem> ListaTiempo;
+            ListaTiempo = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="Menos de un año", Value="MENOS DE 1 AÑO"},
+              new SelectListItem{ Text="Entre 1 y 2 años", Value="ENTRE 1 Y 2 AÑOS"},
+              new SelectListItem{ Text="Entre 2 y 5 años(a)", Value="ENTRE 2 Y 5 AÑOS"},
+              new SelectListItem{ Text="Más de 5 años", Value="MÁS DE 5 AÑOS"},
+              new SelectListItem{ Text="Toda la vida", Value="TODA LA VIDA"},
+            };
+            ViewBag.TiempoConocerlo = ListaTiempo;
+            ViewBag.idTiempoConocerlo = mg.BuscaId(ListaTiempo, Victima.TiempoConocerlo);
+
+            ViewBag.ViveSupervisado = listaSiNoNa;
+            ViewBag.idViveSupervisado = mg.BuscaId(listaSiNoNa, Victima.ViveSupervisado);
+
+
+            return View(Victima);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editvictima(int id, [Bind("IdVictimacl,NombreV,Edad,Telefono,ConoceDetenido,TipoRelacion,TiempoConocerlo,ViveSupervisado,Direccion,Victimacol,SupervisionclIdSupervisioncl, Observaciones")] Victimacl victimacl, string nombre, string cp, string idpersona)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var oldVictima = await _context.Victimacl.FindAsync(victimacl.IdVictimacl, victimacl.SupervisionclIdSupervisioncl);
+                    _context.Entry(oldVictima).CurrentValues.SetValues(victimacl);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!VictimaExists(victimacl.IdVictimacl))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("ListaVictima/" + victimacl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
+            }
+            return View();
+        }
+        public async Task<IActionResult> DeleteVictima(int? id, string nombre, string cp, string idpersona)
+        {
+            var Victima = await _context.Victimacl.SingleOrDefaultAsync(m => m.IdVictimacl == id);
+            _context.Victimacl.Remove(Victima);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ListaVictima/" + Victima.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona });
+
+        }
+        public async Task<IActionResult> VerVictima(int? id, string nombre, string cp, string idpersona)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var Victima = await _context.Victimacl
+                .SingleOrDefaultAsync(m => m.IdVictimacl == id);
+            if (Victima == null)
+            {
+                return NotFound();
+            }
+            return View(Victima);
+        }
+        #endregion
+
+        #endregion -Edits-
 
         #region -VERIFICAR EXISTE-
         private bool SupervisionclExists(int id)
@@ -1095,6 +1705,15 @@ namespace scorpioweb.Controllers
         {
             return _context.Cierredecasocl.Any(e => e.IdCierreDeCasocl == id);
         }
+        private bool VictimaExists(int id)
+        {
+            return _context.Victimacl.Any(e => e.IdVictimacl == id);
+        }
+        private bool BitacoraExists(int id)
+        {
+            return _context.Bitacoracl.Any(e => e.IdBitacoracl == id);
+        }
+
         #endregion
     }
 }

@@ -1,0 +1,151 @@
+﻿@model scorpioweb.Models.Bitacora
+
+@{
+    Layout = null;
+}
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<link rel="stylesheet" type="text/css" href="~/css/style.css">
+<script src="~/js/jquery-ui.js"></script>
+
+<script>
+    var arr = [];
+    function marcar(id) {
+        alert(id);
+        var encontro = false;
+        var doble;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+        if (encontro == false) {
+            arr.push(id);
+        } else {
+            arr.splice(doble,1);
+        }      
+    };
+
+
+    function uploadFiles(inputId) {
+        var input = document.getElementById(inputId); //get file input id
+        var files = input.files; //get files
+        var formData = new FormData(); //create form
+        var nombre = '@ViewBag.nombre';
+        var cp = '@ViewBag.cp';
+        var idPersona = '@ViewBag.idpersona';
+        var idCp = '@ViewBag.idcp';
+        var supervisor = '@ViewBag.supervisor';
+        var idpersona = '@ViewBag.idpersona';
+        var BeneficiosclIdBeneficioscl = '@ViewBag.idfraccionesimpuestas';
+        for (var i = 0; i != files.length; i++) {
+        formData.append("files", files[i]); //loop through all files and append
+        }
+
+        formData.append('IdBitacoracl', $("#IdBitacoracl").val());
+        formData.append('Fecha', $("#Fecha").val());
+        formData.append('BeneficiosclIdBeneficioscl', $("#BeneficiosclIdBeneficioscl").val());
+        formData.append('tipoPersona', $("#tipoPersona").val());
+        formData.append('tipoVisita', $("#tipoVisita").val());
+        formData.append('Texto', $("#Texto").val());
+        formData.append('IdSupervisioncl', $("#IdSupervisioncl").val());
+        formData.append('SupervisionclIdSupervisioncl', $("#SupervisionclIdSupervisioncl").val());
+        formData.append('nombre', nombre);
+        formData.append('cp', cp);
+        formData.append('idCp', idCp);
+        formData.append('supervisor', supervisor);
+        formData.append('idpersona', idpersona);
+        formData.append('BeneficiosclIdBeneficioscl', BeneficiosclIdBeneficioscl);
+        //formData.append('datosidFraccion', arr);
+         for (var i = 0; i < arr.length; i++) {
+          formData.append('datosidBeneficio[]', arr[i]);
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Supervisioncl/AgregarBitacora",
+            processData: false,
+            contentType: false,
+            data: formData, 
+            success: function(data) {
+                alert('Datos guardados con exito!!');
+                location.reload();
+            }
+        });
+    };
+
+</script>
+
+
+
+
+
+<div class="row">
+    <div class="col-md-12">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input readonly name="IdBitacoracl" id="IdBitacoracl" class="form-control" style="display:none" />
+            <input readonly name="BeneficiosclIdBeneficioscl" id="BeneficiosclIdBeneficioscl" class="form-control" style="display:none" />
+            <div class="form-group col-md-6">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input required asp-for="Fecha" name="Fecha" id="Fecha" type="date" class="form-control" />
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label">Supervisado / Víctima</label>
+                <select class="form-control" name="tipoPersona" id="tipoPersona">
+                    <option value="SUPERVISADO">Supervisado</option>
+                    <option value="VICTIMA">Víctima</option>
+                </select>
+            </div>
+
+            <div class="form-group col-md-12">
+                <label class="control-label">Accion de Supervision</label>
+            <select required class="form-control" name="tipoVisita" id="tipoVisita"
+                    asp-items="@(new SelectList(ViewBag.listaBitacoras, "Value", "Text"))">
+                </select>
+            </div>
+            @if(@ViewBag.countFrac != null){
+                <div class="form-group">
+                    <label class="control-label">Beneficios</label>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Figura Judicial</th>
+                            <th scope="col">Beneficio</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in ViewData["BeneficiosBitaccora"] as IEnumerable<scorpioweb.Models.BitacoraclViewModal>)
+                    {
+                    <tbody>
+                        <tr>
+                            <th scope="row"><input class="form-check-input" type="checkbox" @*id="@(fid+i)"*@ value="option1" onclick="marcar(@item.beneficiosVM.IdBeneficios)"></th>
+                            <td>@item.beneficiosVM.FiguraJudicial</td>
+                            <td>@item.beneficiosVM.Tipo</td>
+                        </tr>
+                    </tbody>  
+                    }
+                </table>   
+            }
+           
+            <div class="form-group">
+                <label asp-for="Texto" class="control-label"></label>
+                <textarea asp-for="Texto" class="form-control" cols="20" rows="5" id="Texto" name="Texto"></textarea>
+                <span asp-validation-for="Texto" class="text-danger"></span>
+            </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+            </div>
+            <input readonly name="IdSupervisioncl" id="IdSupervisioncl" class="form-control" style="display:none" />
+         <input readonly name="SupervisionclIdSupervisioncl" id="SupervisionclIdSupervisioncl" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
+            <br />
+            <div class="form-group" style="padding-top:15PX">
+                <button id="btnBitacora" name="btnBitacora" onclick="uploadFiles('evidencia')" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+
+            </div>
+    </div>
+</div>
