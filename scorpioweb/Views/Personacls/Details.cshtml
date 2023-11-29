@@ -41,7 +41,7 @@
             <div class="row" style="text-align:center; padding-top:1%">
                 <img src="~/Fotoscl/@rutaFoto" class="img-thumbnail" width="200" height="200">
                 <h2>@item.personaclVM.Paterno @item.personaclVM.Materno @item.personaclVM.Nombre</h2>
-                <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personacls", new { id = @item.personaclVM.IdPersonaCl, ruta="detalls" }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaclVM.IdPersonaCl)" class="btn btn-success">
+                <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personacls", new { id = @item.personaclVM.IdPersonaCl, ruta="detalles" }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaclVM.IdPersonaCl)" class="btn btn-success">
                     <i class="fa fa-pencil"></i> Editar Foto
                 </a>
             </div>

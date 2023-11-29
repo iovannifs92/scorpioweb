@@ -86,6 +86,15 @@ namespace scorpioweb.Controllers
 
 
         #region -Variables globales-
+
+        private readonly List<SelectListItem> listaNaSiNo = new List<SelectListItem>
+
+        {
+            new SelectListItem{ Text="NA", Value="NA"},
+            new SelectListItem{ Text="Si", Value="SI"},
+            new SelectListItem{ Text="No", Value="NO"}
+        };
+
         private readonly List<SelectListItem> listaEstadosSupervision = new List<SelectListItem>
         {
             new SelectListItem{ Text = "", Value = "" },
@@ -392,7 +401,12 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+     
+
+      
+
         #region Edits 
+
         #region EditSupervision
         // GET: Supervisioncl/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -456,6 +470,7 @@ namespace scorpioweb.Controllers
             return View(supervisioncl);
         }
         #endregion
+
         #region --Edit Beneficioos-
         public async Task<IActionResult> EditBeneficios(int? id, string nombre, string cp, string idpersona, string supervisor, int idcp)
         {
@@ -522,6 +537,7 @@ namespace scorpioweb.Controllers
             return View();
             //return RedirectToAction(nameof(Index));
         }
+
         #region -Editar y borrar beneficios-        
 
         public async Task<IActionResult> EditCondiciones(string nombre, string cp, int id, string idpersona)
@@ -834,6 +850,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #endregion
+
         #region EditPlaneacionEstrategica
         // GET: Supervisioncl/Edit/5
         public async Task<IActionResult> EditPlaneacionEstrategica(int? id)
@@ -962,8 +979,150 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -EditRevocacion-
+
+
+        public async Task<IActionResult> EditRevocacion(int? id, string nombre, string cp, string idpersona)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            await PermisosEdicion(id);
+
+            var SupervisionCL = await _context.Revocacioncl.SingleOrDefaultAsync(m => m.SupervisionclIdSupervisioncl == id);
+            if (SupervisionCL == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.listaRevocado = listaNaSiNo;
+            ViewBag.idRevocado = mg.BuscaId(listaNaSiNo, SupervisionCL.Revocado);
+            ViewBag.revocado = SupervisionCL.Revocado;
+
+
+
+
+            return View(SupervisionCL);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRevocacion(int id, [Bind("IdRevocacioncl,Revocado,FechaAprobacion,MotivoRevocacion, SupervisionclIdSupervisioncl")] Revocacioncl RevocacionCL)
+        {
+            if (id != RevocacionCL.SupervisionclIdSupervisioncl)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    RevocacionCL.MotivoRevocacion = (RevocacionCL.Revocado.Equals("NA") || RevocacionCL.Revocado.Equals("NO")) ? "NA" : mg.normaliza(RevocacionCL.MotivoRevocacion);
+                    RevocacionCL.FechaAprobacion = (RevocacionCL.Revocado.Equals("NA") || RevocacionCL.Revocado.Equals("NO")) ? new DateTime(1999, 1, 1, 0, 0, 0) : RevocacionCL.FechaAprobacion;
+
+                    var oldRevocacion = await _context.Revocacioncl.FindAsync(RevocacionCL.IdRevocacioncl, RevocacionCL.SupervisionclIdSupervisioncl);
+                    _context.Entry(oldRevocacion).CurrentValues.SetValues(RevocacionCL);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(revocacion);
+                    //await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SupervisionclExists(RevocacionCL.SupervisionclIdSupervisioncl))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Supervision/" + RevocacionCL.SupervisionclIdSupervisioncl, "Supervisioncl");
+            }
+
+            return View(RevocacionCL);
+        }
+        #endregion
+
+        #region -EditSuspensionseguimiento-
+
+        public async Task<IActionResult> EditSuspensionseguimiento(int? id, string nombre, string cp, string idpersona)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+
+            await PermisosEdicion(id);
+
+            var SupervisionCL = await _context.Suspensionseguimientocl.SingleOrDefaultAsync(m => m.SupervisionclIdSupervisioncl == id);
+            if (SupervisionCL == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.listaSuspendido = listaNaSiNo;
+            ViewBag.idSuspendido = mg.BuscaId(listaNaSiNo, SupervisionCL.Suspendido);
+            ViewBag.suspe = SupervisionCL.Suspendido;
+
+            return View(SupervisionCL);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSuspensionseguimiento(int id, [Bind("IdSuspensionSeguimientocl,Suspendido,FechaAprobacion,MotivoSuspension,SupervisionclIdSupervisioncl")] Suspensionseguimientocl SuspensionseguimientoCL)
+        {
+            if (id != SuspensionseguimientoCL.SupervisionclIdSupervisioncl)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+
+                    SuspensionseguimientoCL.MotivoSuspension = (SuspensionseguimientoCL.Suspendido.Equals("NO") || SuspensionseguimientoCL.Suspendido.Equals("NA")) ? "NA" : mg.normaliza(SuspensionseguimientoCL.MotivoSuspension);
+                    SuspensionseguimientoCL.FechaAprobacion = (SuspensionseguimientoCL.Suspendido.Equals("NO") || SuspensionseguimientoCL.Suspendido.Equals("NA")) ? new DateTime(1999, 1, 1, 0, 0, 0) : SuspensionseguimientoCL.FechaAprobacion;
+
+
+                    var oldSuspensionseguimiento = await _context.Suspensionseguimientocl.FindAsync(SuspensionseguimientoCL.IdSuspensionSeguimientocl, SuspensionseguimientoCL.SupervisionclIdSupervisioncl);
+                    _context.Entry(oldSuspensionseguimiento).CurrentValues.SetValues(SuspensionseguimientoCL);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    //_context.Update(suspensionseguimiento);
+                    //await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!SupervisionclExists(SuspensionseguimientoCL.SupervisionclIdSupervisioncl))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Supervision/" + SuspensionseguimientoCL.SupervisionclIdSupervisioncl, "Supervisioncl");
+            }
+            return View();
+        }
+        #endregion
+
         #region -EditCierredecaso-
-        public async Task<IActionResult> EditCierredecaso(int? id, string nombre, string cp, string idpersona)
+        public async Task<IActionResult> EditCierreCaso(int? id, string nombre, string cp, string idpersona)
         {
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
@@ -1011,7 +1170,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCierredecaso(int id, [Bind("IdCierreDeCaso,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionIdSupervision")] Cierredecasocl cierredecasocl, IFormFile archivo)
+        public async Task<IActionResult> EditCierreCaso(int id, [Bind("IdCierreDeCasocl,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionclIdSupervisioncl")] Cierredecasocl cierredecasocl, IFormFile archivo)
         {
 
             var supervision = _context.Supervisioncl
@@ -1026,8 +1185,12 @@ namespace scorpioweb.Controllers
                 try
                 {
 
-                    cierredecasocl.ComoConcluyo = mg.normaliza(cierredecasocl.ComoConcluyo);
-                    var oldcierredecaso = await _context.Cierredecaso.FindAsync(cierredecasocl.IdCierreDeCasocl, cierredecasocl.SupervisionclIdSupervisioncl);
+                    cierredecasocl.ComoConcluyo = (cierredecasocl.SeCerroCaso.Equals("NO") || cierredecasocl.SeCerroCaso.Equals("NA")) ? "NA" : mg.normaliza(cierredecasocl.ComoConcluyo);
+                    cierredecasocl.NoArchivo = (cierredecasocl.SeCerroCaso.Equals("NO") || cierredecasocl.SeCerroCaso.Equals("NA")) ? "NA" : mg.normaliza(cierredecasocl.NoArchivo);
+                    cierredecasocl.FechaAprobacion = (cierredecasocl.SeCerroCaso.Equals("NO") || cierredecasocl.SeCerroCaso.Equals("NA")) ? new DateTime(1999, 1, 1, 0, 0, 0) : cierredecasocl.FechaAprobacion;
+                    cierredecasocl.Autorizo = (cierredecasocl.SeCerroCaso.Equals("NO") || cierredecasocl.SeCerroCaso.Equals("NA")) ? "NA" : mg.normaliza(cierredecasocl.Autorizo);
+
+                    var oldcierredecaso = await _context.Cierredecasocl.FindAsync(cierredecasocl.IdCierreDeCasocl, cierredecasocl.SupervisionclIdSupervisioncl);
 
                     if (archivo == null)
                     {
@@ -1065,7 +1228,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/" + cierredecasocl.IdCierreDeCasocl, "Supervisioncl");
+                return RedirectToAction("Supervision/" + cierredecasocl.SupervisionclIdSupervisioncl, "Supervisioncl");
             }
             return View(cierredecasocl);
         }
