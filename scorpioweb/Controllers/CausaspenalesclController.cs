@@ -58,7 +58,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "AdminMCSCP" || rol == "AdminMCSCP")
+                if (rol == "AdminLC" || rol == "SupervisiorLC"|| rol == "Masteradmin")
                 {
                     flagCoordinador = true;
                 }
@@ -393,7 +393,69 @@ namespace scorpioweb.Controllers
             return View(causapenalcl);
         }
 
-        // GET: Causaspenalescl/Delete/5
+        #region -Delete-
+        public JsonResult antesdelete(Causapenalcl causapenalcl, Personaclcausapenalcl personaclcausapenalcl, string[] datocp)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datocp[0]);
+
+            var query = (from c in _context.Causapenalcl
+                         where c.IdCausaPenalcl == id
+                         select c).FirstOrDefault();
+
+            var antesdel = from pc in _context.Personaclcausapenalcl
+                           where pc.CausaPenalclIdCausaPenalcl == id
+                           select pc;
+
+            if (antesdel.Any())
+            {
+                return Json(new { success = true, responseText = Url.Action("Index", "Causaspenalescl"), borrar = borrar });
+            }
+            else
+            {
+                borrar = true;
+                return Json(new { success = true, responseText = Url.Action("Index", "Causaspenalescl"), borrar = borrar });
+            }
+        }
+
+
+        public JsonResult deletecp(Causapenalcl causapenalcl, Historialeliminacion historialeliminacion, string[] datocp)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datocp[0]);
+            var razon = mg.normaliza(datocp[1]);
+            var user = mg.normaliza(datocp[2]);
+
+            var query = (from c in _context.Causapenalcl
+                         where c.IdCausaPenalcl == id
+                         select c).FirstOrDefault();
+
+            try
+            {
+                borrar = true;
+                historialeliminacion.Id = id;
+                historialeliminacion.Descripcion = query.CausaPenal;
+                historialeliminacion.Tipo = "CAUSA PENAL";
+                historialeliminacion.Razon = mg.normaliza(razon);
+                historialeliminacion.Usuario = user;
+                historialeliminacion.Fecha = DateTime.Now;
+                historialeliminacion.Supervisor = "NA";
+                _context.Add(historialeliminacion);
+                _context.SaveChanges();
+
+                var causapenals = _context.Causapenalcl.FirstOrDefault(m => m.IdCausaPenalcl == id);
+                _context.Causapenalcl.Remove(causapenals);
+                _context.SaveChanges();
+
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+            }
+        }
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -401,26 +463,27 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            var causapenalcl = await _context.Causapenalcl
+            var causapenal = await _context.Causapenalcl
                 .SingleOrDefaultAsync(m => m.IdCausaPenalcl == id);
-            if (causapenalcl == null)
+            if (causapenal == null)
             {
                 return NotFound();
             }
 
-            return View(causapenalcl);
+            return View(causapenal);
         }
 
-        // POST: Causaspenalescl/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var causapenalcl = await _context.Causapenalcl.SingleOrDefaultAsync(m => m.IdCausaPenalcl == id);
-            _context.Causapenalcl.Remove(causapenalcl);
-            await _context.SaveChangesAsync();
+            var causapenal = await _context.Causapenalcl.SingleOrDefaultAsync(m => m.IdCausaPenalcl == id);
+            _context.Causapenalcl.Remove(causapenal);
+            await _context.SaveChangesAsync(null, 1);
             return RedirectToAction(nameof(Index));
         }
+        #endregion
 
         #region -Asignacion-
         public async Task<IActionResult> Asignacion(int? id, string cp)

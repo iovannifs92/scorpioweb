@@ -67,6 +67,13 @@ namespace scorpioweb.Models
         public static List<Asientofamiliarcl> referenciaspersonalescl;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private List<SelectListItem> listaJuzgados = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "NA", Value = "NA" },
+            new SelectListItem { Text = "JUZGADO 1", Value = "JUZGADO 1" },
+            new SelectListItem { Text = "JUZGADO 2", Value = "JUZGADO 2" },
+            new SelectListItem { Text = "JUZGADO 3", Value = "JUZGADO 3" }
+        };
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
         {
             new SelectListItem{ Text="No", Value="NO"},
@@ -305,6 +312,45 @@ namespace scorpioweb.Models
         #endregion
 
         #region -PersonasCL-
+
+        #region -Menu CL-
+        public IActionResult Menucl()
+        {
+            return View();
+        }
+        public async Task<IActionResult> MenuEdicion(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+
+            var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+            if (personacl == null)
+            {
+                return NotFound();
+            }
+
+            string rutaFoto = ((personacl.Genero == ("M")) ? "hombre.png" : "mujer.png");
+            if (personacl.RutaFoto != null)
+            {
+                rutaFoto = personacl.RutaFoto;
+            }
+            ViewBag.rutaFoto = rutaFoto;
+
+            return View(personacl);
+        }
+        #endregion
 
         #region -Index-
         // GET: Personacls
@@ -895,6 +941,12 @@ namespace scorpioweb.Models
             }
             #endregion
 
+            #region listaJuzgado          
+            ViewBag.listaJuzgados = listaJuzgados;
+            ViewBag.idJuzgados = BuscaId(listaJuzgados, personacl.Juzgado);
+
+            #endregion
+
             #region Lnestado
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
@@ -1248,7 +1300,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersonaCl,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor,RutaFoto,Familiares,ReferenciasPersonales,Capturista,Candado,MotivoCandado,Colaboracion,UbicacionExpediente,ComLgbtttiq,ComIndigena,TieneResolucion")] Personacl personacl, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersonaCl,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor,RutaFoto,Familiares,ReferenciasPersonales,Capturista,Candado,MotivoCandado,Colaboracion,UbicacionExpediente,ComLgbtttiq,ComIndigena,TieneResolucion,Juzgado,Ce")] Personacl personacl, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
         {
             if (id != personacl.IdPersonaCl)
             {
@@ -1259,6 +1311,8 @@ namespace scorpioweb.Models
             {
                 try
                 {
+                    personacl.Ce = mg.removeSpaces(mg.normaliza(personacl.Ce));
+                    personacl.Juzgado = mg.removeSpaces(mg.normaliza(personacl.Juzgado));
                     personacl.Nombre = mg.removeSpaces(mg.normaliza(personacl.Nombre));
                     personacl.Paterno = mg.removeSpaces(mg.normaliza(personacl.Paterno));
                     personacl.Materno = mg.removeSpaces(mg.normaliza(personacl.Materno));
@@ -2953,31 +3007,79 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Delete-
-        // GET: Personacls/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public JsonResult antesdelete(Personacl personacl, Historialeliminacion historialeliminacion, string[] datoPersona)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var borrar = false;
+            var idpersona = Int32.Parse(datoPersona[0]);
 
-            var personacl = await _context.Personacl
-                .SingleOrDefaultAsync(m => m.IdPersonaCl == id);
-            if (personacl == null)
-            {
-                return NotFound();
-            }
+            var query = (from p in _context.Personacl
+                         where p.IdPersonaCl == idpersona
+                         select p).FirstOrDefault();
 
-            return View(personacl);
+
+            var antesDel = from s in _context.Supervisioncl
+                           where s.PersonaclIdPersonacl == idpersona
+                           select s;
+
+            var antesDel2 = from pp in _context.Presentacionperiodicacl
+                            join rh in _context.Registrohuellacl on pp.IdregistroHuellacl equals rh.IdregistroHuellacl
+                            where rh.PersonaclIdPersonacl == idpersona
+                            select pp;
+
+            var nom = query.NombreCompleto;
+
+            if (antesDel.Any() || antesDel2.Any())
+            {
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personacls"), borrar = borrar, nombre = nom });
+            }
+            var stadoc = (from p in _context.Personacl
+                          where p.IdPersonaCl == personacl.IdPersonaCl
+                          select p.IdPersonaCl).FirstOrDefault();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(personacl.IdPersonaCl) });
+
         }
 
-        // POST: Personacls/Delete/5
+        public JsonResult deletePersona(Personacl personacl, Historialeliminacion historialeliminacion, string[] datoPersona)
+        {
+            var borrar = false;
+            var idpersona = Int32.Parse(datoPersona[0]);
+            var razon = mg.normaliza(datoPersona[1]);
+            var user = mg.normaliza(datoPersona[2]);
+
+            var query = (from p in _context.Personacl
+                         where p.IdPersonaCl == idpersona
+                         select p).FirstOrDefault();
+            try
+            {
+                borrar = true;
+                historialeliminacion.Id = idpersona;
+                historialeliminacion.Descripcion = query.Paterno + " " + query.Materno + " " + query.Nombre;
+                historialeliminacion.Tipo = "PERSONA";
+                historialeliminacion.Razon = mg.normaliza(razon);
+                historialeliminacion.Usuario = user;
+                historialeliminacion.Fecha = DateTime.Now;
+                historialeliminacion.Supervisor = mg.normaliza(query.Supervisor);
+                _context.Add(historialeliminacion);
+                _context.SaveChanges();
+                _context.Database.ExecuteSqlCommand("CALL spBorrarPersonacl(" + idpersona + ")");
+                return Json(new { success = true, responseText = Url.Action("index", "Personacls"), borrar = borrar });
+            }
+            catch (Exception ex)
+            {
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Personacls"), borrar = borrar, error = ex });
+            }
+        }
+
+        // POST: Personas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
-            _context.Personacl.Remove(personacl);
+            var persona = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+            _context.Personacl.Remove(persona);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -3098,6 +3200,51 @@ namespace scorpioweb.Models
         }
         #endregion
 
+        #endregion
+
+        #region -Procesos-
+        public async Task<IActionResult> Procesos(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var supervisiones = await _context.Supervisioncl.Where(m => m.PersonaclIdPersonacl == id).ToListAsync();
+            if (supervisiones.Count == 0)
+            {
+                return RedirectToAction("SinSupervision");
+            }
+
+
+            List<Beneficios> beneficiosVM = _context.Beneficios.ToList();
+
+
+            List<Beneficios> queryBeneficios = (from b in beneficiosVM
+                                                group b by b.SupervisionclIdSupervisioncl into grp
+                                                select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
+
+
+            var queryCausas = from c in _context.Causapenalcl
+                              join s in _context.Supervisioncl on c.IdCausaPenalcl equals s.CausaPenalclIdCausaPenalcl
+                              join p in _context.Personacl on s.PersonaclIdPersonacl equals p.IdPersonaCl
+                              join pe in _context.Planeacionestrategicacl on s.IdSupervisioncl equals pe.SupervisionclIdSupervisioncl
+                              join f in queryBeneficios on s.IdSupervisioncl equals f.SupervisionclIdSupervisioncl into tmp
+                              from sinfracciones in tmp.DefaultIfEmpty()
+                              where p.IdPersonaCl == id
+                              select new Procesoscl
+                              {
+                                  supervisionVM = s,
+                                  causapenalVM = c,
+                                  personaVM = p,
+                                  planeacionestrategicaVM = pe,
+                                  beneficiosVM = ((sinfracciones == null) ? null : sinfracciones)
+                              };
+
+            ViewData["joinTbalasProceso1"] = queryCausas.ToList();
+
+            return View();
+        }
         #endregion
 
         #region -Reportes-
@@ -3327,44 +3474,6 @@ namespace scorpioweb.Models
         }
         #endregion
         #endregion
-
-        public IActionResult Menucl()
-        {
-            return View();
-        }
-        public async Task<IActionResult> MenuEdicion(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-
-            #region -Solicitud Atendida Archivo prestamo Digital-
-            var warningRespuesta = from a in _context.Archivoprestamodigital
-                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
-                                   select a;
-            ViewBag.WarningsUser = warningRespuesta.Count();
-            #endregion
-
-
-            var personacl = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
-            if (personacl == null)
-            {
-                return NotFound();
-            }
-
-            string rutaFoto = ((personacl.Genero == ("M")) ? "hombre.png" : "mujer.png");
-            if (personacl.RutaFoto != null)
-            {
-                rutaFoto = personacl.RutaFoto;
-            }
-            ViewBag.rutaFoto = rutaFoto;
-
-            return View(personacl);
-        }
-
 
         #region -Existe-
         private bool PersonaclExists(int id)

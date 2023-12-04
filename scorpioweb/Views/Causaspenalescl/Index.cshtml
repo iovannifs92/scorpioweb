@@ -13,7 +13,7 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "/Causaspenales/antesdelete",
+                url: "/Causaspenalescl/antesdelete",
                 traditional: true,
                 data: {
                     datocp: [idcp],
@@ -34,7 +34,7 @@
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
-                                url: "/Causaspenales/deletecp",
+                                url: "/Causaspenalescl/deletecp",
                                 traditional: true,
                                 data: {
                                     datocp: [id, razon, usuario],
@@ -139,7 +139,7 @@
                 </a>
             </td>
             <td>
-                <a style="margin-bottom:5px" asp-action="Delete" asp-route-id="@item.IdCausaPenalcl" class="btn btn-danger">
+                <a style="margin-bottom:5px" onclick="borrarCp(@item.IdCausaPenalcl)" class="btn btn-danger">
                     <i class="fa fa-trash"> Delete</i>
                 </a>
             </td>

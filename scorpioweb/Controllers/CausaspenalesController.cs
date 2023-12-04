@@ -485,10 +485,7 @@ namespace scorpioweb.Controllers
                 ).ToList();
             }
 
-
-
             ViewBag.personas = listaPersonas;
-
             selectedPersona = new List<string>();
 
             return View();
@@ -1099,7 +1096,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "AdminMCSCP" || rol == "AdminMCSCP")
+                if (rol == "SupervisorMCSCP" || rol == "AdminMCSCP"|| rol == "Masteradmin")
                 {
                     flagCoordinador = true;
                 }
