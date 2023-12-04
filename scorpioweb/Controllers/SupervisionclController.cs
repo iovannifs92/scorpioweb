@@ -47,15 +47,15 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "AdminMCSCP" || rol == "AdminMCSCP")
+                if (rol == "SupervisiorLC" || rol == "AdminLC" || rol == "Masteradmin")
                 {
                     flagCoordinador = true;
                 }
             }
 
-            var query = from persona in _context.Persona
-                        join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona
-                        where supervision.IdSupervision == id
+            var query = from persona in _context.Personacl
+                        join supervision in _context.Supervisioncl on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+                        where supervision.IdSupervisioncl == id
                         select new
                         {
                             supervisor = persona.Supervisor
@@ -140,23 +140,10 @@ namespace scorpioweb.Controllers
         };
         private List<SelectListItem> listaCierreCaso = new List<SelectListItem>
         {
-            new SelectListItem{ Text = "NA", Value = "NA" },
-            new SelectListItem{ Text = "Sobreseimiento por acuerdo reparatorio", Value = "SOBRESEIMIENTO POR ACUERDO REPARATORIO" },
-            new SelectListItem{ Text = "Sobreseimiento por suspensión condicional del proceso", Value = "SOBRESEIMIENTO POR SUSPENSION CONDICIONAL DEL PROCESO" },
-            new SelectListItem{ Text = "Sobreseimiento por perdón", Value = "SOBRESEIMIENTO POR PERDON" },
-            new SelectListItem{ Text = "Sobreseimiento por muerte del imputado", Value = "SOBRESEIMIENTO POR MUERTE DEL IMPUTADO" },
-            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL" },
-            new SelectListItem{ Text = "Sobreseimiento por prescripción", Value = "SOBRESEIMIENTO POR PRESCRIPCION" },
-            new SelectListItem{ Text = "Criterio de oportunidad", Value = "CRITERIO DE OPORTUNIDAD" },
-            new SelectListItem{ Text = "Sentencia condenatoria en procedimiento abreviado", Value = "SENTENCIA CONDENATORIA EN PROCEDIMIENTO ABREVIADO" },
-            new SelectListItem{ Text = "Sentencia absolutoria en procedimiento abreviado", Value = "SENTENCIA ABSOLUTORIA EN PROCEDIMIENTO ABREVIADO" },
-            new SelectListItem{ Text = "Sentencia condenatoria en juicio oral", Value = "SENTENCIA CONDENATORIA EN JUICIO ORAL" },
-            new SelectListItem{ Text = "Sentencia absolutoria en juicio oral", Value = "SENTENCIA ABSOLUTORIA EN JUICIO ORAL" },
-            new SelectListItem{ Text = "No vinculación a proceso", Value = "NO VINCULACIÓN A PROCESO" },
+            new SelectListItem{ Text = "Libertad Absoluta", Value = "LIBERTAD ABSOLUTA" },
+            new SelectListItem{ Text = "Por declinación", Value = "POR DECLINACION" },
             new SelectListItem{ Text = "Beneficio", Value = "BENEFICIO" },
-            new SelectListItem{ Text = "Prision Preventiva", Value = "PRISION PREVENTIVA" },
-            new SelectListItem{ Text = "No vinculación a proceso", Value = "NO VINCULACION A PROCESO" },
-            new SelectListItem{ Text = "Por declinación", Value = "POR DECLINACION" }
+            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL" }
         };
 
         private List<SelectListItem> listaMotivoAprobacion = new List<SelectListItem>
@@ -263,18 +250,18 @@ namespace scorpioweb.Controllers
                     supervisor = true;
                 }
             }
-            //List<Beneficios> fraccionesimpuestasVM = _context.Beneficios.ToList();
+            List<Beneficios> BeneficiosVM = _context.Beneficios.ToList();
 
-            //List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
-            //                                             group f by f.SupervisionIdSupervision into grp
-            //                                             select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+            List<Beneficios> queryBeneficios = (from b in BeneficiosVM
+                                                         group b by b.SupervisionclIdSupervisioncl into grp
+                                                         select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
 
-            //List<Supervision> querySupervisionSinFraccion = (from s in _context.Supervision
-            //                                                 join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision into SupervisionFracciones
-            //                                                 from sf in SupervisionFracciones.DefaultIfEmpty()
-            //                                                 select new Supervision
-            //                                                 {
-            //                                                 }).ToList();
+            List<Supervisioncl> querySupervisionSinBenefico = (from s in _context.Supervisioncl
+                                                             join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl into SupervisionFracciones
+                                                             from sf in SupervisionFracciones.DefaultIfEmpty()
+                                                             select new Supervisioncl
+                                                             {
+                                                             }).ToList();
 
 
             List<Cierredecasocl> queryFile = (from c in _context.Cierredecasocl
@@ -298,14 +285,19 @@ namespace scorpioweb.Controllers
                          join cp in _context.Causapenalcl on s.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl
                          join pe in _context.Planeacionestrategicacl on s.IdSupervisioncl equals pe.SupervisionclIdSupervisioncl
                          join cc in _context.Cierredecasocl on s.IdSupervisioncl equals cc.SupervisionclIdSupervisioncl
+                         join beneficios in queryBeneficios on s.IdSupervisioncl equals beneficios.SupervisionclIdSupervisioncl
+                         into PersonaSupervisionCausaPenal
+                         from beneficios in PersonaSupervisionCausaPenal.DefaultIfEmpty()
                          select new SupervisionPyCPCL
                          {
                              personaVM = p,
                              supervisionVM = s,
                              causapenalVM = cp,
                              planeacionestrategicaVM = pe,
-                             cierredecasoVM = cc
+                             cierredecasoVM = cc,
+                             beneficiosVM = beneficios
                          };
+
 
             if (supervisor == false)
             {
@@ -1031,7 +1023,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditRevocacion(int id, [Bind("IdRevocacioncl,Revocado,FechaAprobacion,MotivoRevocacion, SupervisionclIdSupervisioncl")] Revocacioncl RevocacionCL)
+        public async Task<IActionResult> EditRevocacion(int id, [Bind("IdRevocacioncl,Revocado,FechaAprobacion,MotivoRevocacion,SupervisionclIdSupervisioncl")] Revocacioncl RevocacionCL)
         {
             if (id != RevocacionCL.SupervisionclIdSupervisioncl)
             {
@@ -1846,6 +1838,140 @@ namespace scorpioweb.Controllers
         #endregion
 
         #endregion -Edits-
+
+        #region -Actualizar Candado-
+        public JsonResult LoockCandado(Personacl personacl, string[] datoCandado)
+        //public async Task<IActionResult> LoockCandado(Persona persona, string[] datoCandado)
+        {
+            personacl.Candado = Convert.ToSByte(datoCandado[0] == "true");
+            personacl.IdPersonaCl = Int32.Parse(datoCandado[1]);
+            personacl.MotivoCandado = mg.normaliza(datoCandado[2]);
+
+            var empty = (from p in _context.Personacl
+                         where p.IdPersonaCl == personacl.IdPersonaCl
+                         select p);
+
+            if (empty.Any())
+            {
+                var query = (from p in _context.Personacl
+                             where p.IdPersonaCl == personacl.IdPersonaCl
+                             select p).FirstOrDefault();
+                query.Candado = personacl.Candado;
+                query.MotivoCandado = personacl.MotivoCandado;
+                _context.SaveChanges();
+            }
+            var stadoc = (from p in _context.Personacl
+                          where p.IdPersonaCl ==personacl.IdPersonaCl
+                          select p.Candado).FirstOrDefault();
+            //return View();
+
+            return Json(new { success = true, responseText = Convert.ToString(stadoc), idPersonas = Convert.ToString(personacl.IdPersonaCl) });
+        }
+        public JsonResult getEstadodeCanadado(int id)
+        {
+            //IEnumerable<Persona> shops = _context.Persona;
+            //return Json(shops.Select(u => new { u.Candado, u.IdPersona }).Where(u => u.IdPersona == id));
+
+            var stadoc = (from p in _context.Personacl
+                          where p.IdPersonaCl == id
+                          select p.Candado);
+
+            return Json(stadoc);
+        }
+        #endregion
+
+        #region -Delete-
+        public JsonResult antesdelete(Supervisioncl supervisioncl, Beneficios beneficios, string[] datosuper)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datosuper[0]);
+
+            var antesdel = from s in _context.Supervisioncl
+                           join fi in _context.Bitacoracl on s.IdSupervisioncl equals fi.SupervisionclIdSupervisioncl
+                           where s.IdSupervisioncl == id
+                           select s;
+
+            if (antesdel.Any())
+            {
+                return Json(new { success = true, responseText = Url.Action("Index", "Supervisioncl"), borrar = borrar });
+            }
+            else
+            {
+                borrar = true;
+                return Json(new { success = true, responseText = Url.Action("Index", "Supervisioncl"), borrar = borrar });
+            }
+        }
+        public JsonResult deletesuper(Supervisioncl supervisioncl, Historialeliminacion historialeliminacion, string[] datosuper)
+        {
+            var borrar = false;
+            var id = Int32.Parse(datosuper[0]);
+            var razon = mg.normaliza(datosuper[1]);
+            var user = mg.normaliza(datosuper[2]);
+
+            var query = (from s in _context.Supervisioncl
+                         join p in _context.Personacl on s.PersonaclIdPersonacl equals p.IdPersonaCl
+                         where s.IdSupervisioncl == id
+                         select s).FirstOrDefault();
+
+            var queryP = (from s in _context.Supervisioncl
+                          join p in _context.Personacl on s.PersonaclIdPersonacl equals p.IdPersonaCl
+                          where s.IdSupervisioncl == id
+                          select p).FirstOrDefault();
+
+            try
+            {
+                borrar = true;
+                historialeliminacion.Id = id;
+                historialeliminacion.Descripcion = "IDPERSONA= " + query.PersonaclIdPersonacl + " IDCAUSAPENAL= " + query.CausaPenalclIdCausaPenalcl + " IDSUPERVISIÓN= " + query.IdSupervisioncl;
+                historialeliminacion.Tipo = "SUPERVISIÓN";
+                historialeliminacion.Razon = mg.normaliza(razon);
+                historialeliminacion.Usuario = mg.normaliza(user);
+                historialeliminacion.Fecha = DateTime.Now;
+                historialeliminacion.Supervisor = mg.normaliza(queryP.Supervisor);
+                _context.Add(historialeliminacion);
+                _context.SaveChanges();
+
+                _context.Database.ExecuteSqlCommand("CALL spBorrarSupervisioncl(" + id + ")");
+                return Json(new { success = true, responseText = Url.Action("index", "Supervisioncl"), borrar = borrar });
+
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("index", "Supervisioncl"), borrar = borrar });
+            }
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var supervision = await _context.Supervisioncl
+                .SingleOrDefaultAsync(m => m.IdSupervisioncl == id);
+            if (supervision == null)
+            {
+                return NotFound();
+            }
+
+            return View(supervision);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var supervision = await _context.Supervisioncl.SingleOrDefaultAsync(m => m.IdSupervisioncl == id);
+            _context.Supervisioncl.Remove(supervision);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        #endregion
+
 
         #region -VERIFICAR EXISTE-
         private bool SupervisionclExists(int id)

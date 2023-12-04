@@ -6,7 +6,7 @@
 }
 
 
-@foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
+@foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesoscl>)
 {
     <h3>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h3>
     break;
@@ -16,7 +16,7 @@
     <thead>
         <tr>
             <th>Causa Penal</th>
-            <th>Figura Judicial</th>
+            <th>Beneficio</th>
             <th>Estado de Supervision</th>
             <th>Periodicidad de firma</th>
             <th>Fecha de ultimo Contacto</th>
@@ -24,13 +24,13 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
+        @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesoscl>)
         {
             <tr>
                 <th>
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </th>
-                @if (item.fraccionesimpuestasVM == null)
+                @if (item.beneficiosVM == null)
                 {
                     <td>
                         NA
@@ -39,7 +39,7 @@
                 else
                 {
                     <td>
-                        @Html.DisplayFor(modelItem => item.fraccionesimpuestasVM.FiguraJudicial)
+                        @Html.DisplayFor(modelItem => item.beneficiosVM.FiguraJudicial)
                     </td>
                 }
                 @if (item.supervisionVM.EstadoSupervision == null)
@@ -75,10 +75,10 @@
                 }
 
 
-                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP"))
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC"))
                 {
                 <td>
-                    <a class="btn btn-primary" asp-controller="Supervisiones" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervision">
+                    <a class="btn btn-primary" asp-controller="Supervisioncl" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervisioncl">
                         <i class="fa fa-cog"></i>
                         Supervisión
                     </a>

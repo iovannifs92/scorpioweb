@@ -71,6 +71,14 @@ namespace scorpioweb.Controllers
         public static List<Asientofamiliar> referenciaspersonales;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        
+        private List<SelectListItem> listaJuzgados = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "NA", Value = "NA" },
+            new SelectListItem { Text = "JUZGADO 1", Value = "JUZGADO 1" },
+            new SelectListItem { Text = "JUZGADO 2", Value = "JUZGADO 2" },
+            new SelectListItem { Text = "JUZGADO 3", Value = "JUZGADO 3" }
+        };
         private List<SelectListItem> listaNoSi = new List<SelectListItem>
         {
             new SelectListItem{ Text="No", Value="NO"},
@@ -2129,6 +2137,8 @@ namespace scorpioweb.Controllers
             ViewBag.calleDGEP = "Calle Miguel de Cervantes Saavedra";
             ViewBag.noDGEP = "502";
 
+            ViewBag.listaJuzgados = listaJuzgados;
+
             return View();
         }
 
@@ -2136,7 +2146,7 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos, 
                                                 Personacl personacl, Domiciliocl domiciliocl, Estudioscl estudioscl, Trabajocl trabajocl, Actividadsocialcl actividadsocialcl, Abandonoestadocl abandonoEstadocl, Saludfisicacl saludfisicacl, Domiciliosecundariocl domiciliosecundariocl, Consumosustanciascl consumosustanciascl, Asientofamiliarcl asientoFamiliarcl, Familiaresforaneoscl familiaresForaneoscl, Expedienteunico expedienteunico,
-            string resolucion, string centropenitenciario, string ce, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string resolucion, string centropenitenciario, string ce,string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string CURS, string CURSUsada, string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
@@ -2651,6 +2661,7 @@ namespace scorpioweb.Controllers
                     #region -Persona-
                     personacl.Centropenitenciario = mg.removeSpaces(mg.normaliza(centropenitenciario));
                     personacl.Sinocentropenitenciario = sinocentropenitenciario;
+                    personacl.Juzgado = Juzgado;
                     personacl.TieneResolucion = mg.normaliza(resolucion);
                     personacl.Nombre = mg.removeSpaces(mg.normaliza(nombre));
                     personacl.Paterno = mg.removeSpaces(mg.normaliza(paterno));
@@ -7855,10 +7866,26 @@ namespace scorpioweb.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
 
+            string currentUser = User.Identity.Name;
             var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool esMCSCP = false;
+            bool esCL = false;
+
             String users = user.ToString();
             ViewBag.RolesUsuario = users;
 
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+                {
+                    esMCSCP = true;
+                }
+                if (rol == "AdminLC" || rol == "SupervisiorLC")
+                {
+                    esCL = true;
+                }
+            }
 
             if (searchString != null)
             {
@@ -7868,6 +7895,8 @@ namespace scorpioweb.Controllers
             {
                 searchString = currentFilter;
             }
+
+
 
 
             ViewData["CurrentFilter"] = searchString;
@@ -7897,6 +7926,17 @@ namespace scorpioweb.Controllers
                     libronegro = libronegro.OrderByDescending(p => p.Idlibronegro);
                     break;
             }
+
+            //if (esMCSCP = true)
+            //{
+            //    libronegro.Where(l => l.Area == "MCYSCP");
+            //}
+            //if (esCL = true)
+            //{
+            //    libronegro.Where(l => l.Area == "CL");
+            //}
+
+
             int pageSize = 10;
             return View(await PaginatedList<Libronegro>.CreateAsync(libronegro.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
@@ -7912,6 +7952,23 @@ namespace scorpioweb.Controllers
             {
                 //int idArchivo = ((from table in _context.Archivoregistro
                 //                  select table.IdArchivoRegistro).Max() + 1);
+
+
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
+                var roles = await userManager.GetRolesAsync(user);
+
+                foreach (var rol in roles)
+                {
+                    if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+                    {
+                        libronegro.Area = "MCYSCP";
+                    }
+                    if (rol == "AdminLC" || rol == "SupervisiorLC")
+                    {
+                        libronegro.Area = "CL";
+                    }
+                }
+
 
                 libronegro.Paterno = mg.normaliza(libronegro.Paterno);
                 libronegro.Materno = mg.normaliza(libronegro.Materno);
@@ -7952,7 +8009,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> libronegroedit(int id, [Bind("Idlibronegro,Nombre,Paterno,Materno,Cp,Telefono,Direccion,F1,F2,F3,F4 ")] Libronegro libronegro)
+        public async Task<IActionResult> libronegroedit(int id, [Bind("Idlibronegro,Nombre,Paterno,Materno,Cp,Telefono,Direccion,F1,F2,F3,F4,Area ")] Libronegro libronegro)
         {
 
             if (id != libronegro.Idlibronegro)
@@ -7963,6 +8020,7 @@ namespace scorpioweb.Controllers
             if (ModelState.IsValid)
             {
 
+                libronegro.Area = mg.normaliza(libronegro.Area);
                 libronegro.Paterno = mg.normaliza(libronegro.Paterno);
                 libronegro.Materno = mg.normaliza(libronegro.Materno);
                 libronegro.Nombre = mg.normaliza(libronegro.Nombre);

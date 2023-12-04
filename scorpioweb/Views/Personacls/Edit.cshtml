@@ -885,6 +885,17 @@
                 <label class="control-label">Lugar de Internamiento</label>
                 @Html.TextBox("centropenitenciario",(object)ViewBag.idCentroPenitenciario,new { @class = "form-control", maxlength = "45"})
             </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Ce" class="control-label">Carpeta de Ejecución</label>
+                <input required asp-for="Ce" class="form-control" style="text-transform:uppercase" />
+                <span asp-validation-for="Ce" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6" id="Juzgado">
+                <label class="control-label">Juzgado de Origen</label>
+                <select class="form-control" name="Juzgado" id="Juzgado"
+                            asp-items="@(new SelectList(ViewBag.listaJuzgados, "Text", "Value", @ViewBag.idJuzgados))">
+                </select>
+            </div>
             <input hidden name="arraySustancias" id="arraySustancias" type="text" />
             <input hidden name="arraySustanciasEditadas" id="arraySustanciasEditadas" type="text" />
             <input hidden name="arrayFamiliarReferencia" id="arrayFamiliarReferencia" type="text" />

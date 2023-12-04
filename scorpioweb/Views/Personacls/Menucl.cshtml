@@ -16,7 +16,7 @@
 }*@
 <div class="card-group" style="padding-top:2%">
 
-    @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
+    @if (User.IsInRole("AdminLC") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
 
@@ -48,8 +48,8 @@
         </div>
     </div>
 
-    @if (!User.IsInRole("Asistentes"))
-    {
+@*    @if (!User.IsInRole("Asistentes"))
+    {*@
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -63,7 +63,7 @@
                 </p>
             </div>
         </div>
-    }
+@*    }*@
 
 
 
