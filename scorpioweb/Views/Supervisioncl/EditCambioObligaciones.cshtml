@@ -1,12 +1,12 @@
 ﻿@model scorpioweb.Models.Cambiodeobligacionescl
 
 @{
-    ViewData["Title"] = "MenuEdicion";
+    ViewData["Title"] = "Cambio de obligaciones";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 
-<h1>Cambiodeobligacionescl</h1>
+<h1>Cambio de obligaciones</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -15,7 +15,7 @@
             <input type="hidden" name="IdCambiodeObligacionescl" id="IdCambiodeObligacionescl" asp-for="IdCambiodeObligacionescl" />
             <input type="hidden" name="SupervisionclIdSupervisioncl" id="SupervisionclIdSupervisioncl" asp-for="SupervisionclIdSupervisioncl" />
             <div class="form-group">
-                <label class="control-label">Se dio Cambiooo</label>
+                <label class="control-label">Se dio Cambio</label>
                 <select class="form-control" name="SeDioCambio" id="SeDioCambio"
                         asp-items="@(new SelectList(ViewBag.listaSediocambio, "Value", "Text", @ViewBag.idSediocambio))">
                 </select>

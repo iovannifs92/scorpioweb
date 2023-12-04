@@ -73,14 +73,14 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "/Supervisiones/antesdelete",
+                url: "/Supervisioncl/antesdelete",
                 traditional: true,
                 data: {
                     datosuper: [idsuper],
                 },
                 success: function (response) {
                     if (response.borrar == false) {
-                        alert("No se ha borrado porque el supervisado tiene fracciones impuestas");
+                        alert("No se ha borrado porque el supervisado tiene beneficios impuestos");
                     } else {
                         function borrarcp(id) {
                             var usuario = '@ViewBag.user';
@@ -94,7 +94,7 @@
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
-                                url: "/Supervisiones/deletesuper",
+                                url: "/Supervisioncl/deletesuper",
                                 traditional: true,
                                 data: {
                                     datosuper: [id, razon, usuario],
@@ -219,7 +219,7 @@
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
                 </td>
                 <td>
-                    @* @Html.DisplayFor(modelItem => item.beneficiosVM.Tipo )*@
+                    @Html.DisplayFor(modelItem => item.beneficiosVM.FiguraJudicial)
                 </td>
                 @*@if (@ViewBag.Admin == true|| @ViewBag.Masteradmin == true)
             {*@
@@ -265,18 +265,18 @@
                     </a>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-default" id="edicion" title="Presentaciónes" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersonaCl">
+                    <a type="button" class="btn btn-default" id="edicion" title="Presentaciónes" href="/Personacls/PresentacionPeriodicaPersona/@item.personaVM.IdPersonaCl">
                         <i class="fa fa-calendar"></i> Presentaciónes
                     </a>
                 </td>
-                @if ((User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin")))
+                @*@if ((User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin")))
                 {
                     <td>
                         <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervisioncl&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersonaCl&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenalcl">
                             <i class="fa fa-check-square"></i> Fracciones
                         </a>
                     </td>
-                }
+                }*@
 
 
                 <td>

@@ -65,41 +65,41 @@
         })
     }
 
-    //function candado(id, candado) {
+    function candado(id, candado) {
 
-    //    var personaidpersona = id;
-    //    let text;
-    //    if (candado == true) {
-    //        let razon = prompt("Razón de Bloqueo", "");
-    //        if (razon == null || razon == "") {
-    //            text = "NA";
-    //        } else {
-    //            text = razon;
-    //        }
-    //    } else {
-    //        text = "NA";
-    //    }
+        var personaidpersona = id;
+        let text;
+        if (candado == true) {
+            let razon = prompt("Razón de Bloqueo", "");
+            if (razon == null || razon == "") {
+                text = "NA";
+            } else {
+                text = razon;
+            }
+        } else {
+            text = "NA";
+        }
 
-    //    $.ajax({
-    //        type: "POST",
-    //        dataType: "json",
-    //        url: "/Supervisiones/LoockCandado",
-    //        traditional: true,
-    //        data: {
-    //            datoCandado: [candado, personaidpersona, text],
-    //        },
-    //        success: function(response) {
-    //            if (response.success) {
-    //                location.reload();
-    //            } else {
-    //                alert(response.responseText);
-    //            }
-    //        },
-    //        error: function(response) {
-    //            location.reload();
-    //        }
-    //    });
-    //}
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisioncl/LoockCandado",
+            traditional: true,
+            data: {
+                datoCandado: [candado, personaidpersona, text],
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.responseText);
+                }
+            },
+            error: function(response) {
+                location.reload();
+            }
+        });
+    }
 </script>
 
 
@@ -115,11 +115,11 @@
 
     <div class=col-md-6>
         <h3 style="text-align:left" class="blockquote text-center">Id Persona:</h3>
-        <h3 style="text-align:center" class="blockquote text-center"><a href="/Personas/Procesos/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.IdPersonaCl</a></h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="/Personacls/Procesos/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.IdPersonaCl</a></h3>
     </div>
     <div class=col-md-6>
         <h3 style="text-align:center" class="blockquote text-center">Causa Penal:</h3>
-        <h3 style="text-align:center" class="blockquote text-center"><a href="@("Causaspenales/DetailsCP/"+item.causapenalVM.IdCausaPenalcl)" target="_blank">@item.causapenalVM.IdCausaPenalcl</a></h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="@("Causaspenalescl/DetailsCP/"+item.causapenalVM.IdCausaPenalcl)" target="_blank">@item.causapenalVM.CausaPenal</a></h3>
     </div>
     <div class="col-md-12 text-center">
         @if (@item.personaVM.Candado == 0)
@@ -130,8 +130,8 @@
         {
             <button title="@item.personaVM.MotivoCandado" class="btn btn-danger btn-lg fa fa-lock" onclick="candado(@item.personaVM.IdPersonaCl,false)"></button>
         }
-        <a class="btn btn-info btn-lg fa fa-pencil" href="@("Personas/PresentacionPeriodicaPersona/"+item.personaVM.IdPersonaCl)" target="_blank"></a>
-        <a class="btn btn-success btn-lg fa fa-calendar" onclick="showModal('@Url.Action("Create","Calendarios",null,Context.Request.Scheme)','Nuevo evento', @item.supervisionVM.IdSupervisioncl)">   </a>
+        <a class="btn btn-info btn-lg fa fa-pencil" href="/Personacls/PresentacionPeriodicaPersona/@item.personaVM.IdPersonaCl" target="_blank"></a>
+       @* <a class="btn btn-success btn-lg fa fa-calendar" onclick="showModal('@Url.Action("Create","Calendarios",null,Context.Request.Scheme)','Nuevo evento', @item.supervisionVM.IdSupervisioncl)">   </a>*@
     </div>
 
     break;
@@ -174,7 +174,7 @@
             </div>
         </div>
         <div class="row">
-            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC"))
             {
                 <div class="col-md-6" style="padding-top:3%;">
                     <a asp-action="EditCierreCaso" asp-route-id="@item.supervisionVM.IdSupervisioncl" asp-route-nombre="@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre" asp-route-cp="@item.causapenalVM.CausaPenal" asp-route-idpersona="@item.personaVM.IdPersonaCl" id="trabajo" class="btn btn-primary btn-lg btn-block btn-huge">Cierre de caso</a>
