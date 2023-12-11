@@ -1,0 +1,650 @@
+﻿@{
+    ViewData["Title"] = "AlertasCL";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript">
+    function formatDate(dateString) {
+        if (dateString == null) {
+            return "";
+        }
+        var d = new Date(dateString);
+        const month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        var date = d.getDate() + '-' + month[d.getMonth()] + '-' + d.getFullYear();
+        return date;
+    };
+    function populateAdmin(result, i, date) {
+      
+        var row = '';
+        row = row
+            + "<tr>"
+            + "<td>" + result.query[i].personaclVM.idPersonaCl + "</td>"
+            + "<td>" + result.query[i].personaclVM.nombreCompleto + "</td>";
+        if (result.query[i].causapenalVM != null) {
+            row = row + "<td>" + result.query[i].causapenalclVM.causaPenal + "</td>";
+        }
+        else {
+            row = row + "<td>NA</td>";
+        }
+        
+        switch (result.query[i].tipoAdvertencia) {
+            case "Sin Resolución":
+                
+                row = row
+                    + "<td style=\"color:red\">"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row
+                    + "<td>"
+                    + "    " + formatDate(result.query[i].personaclVM.ultimaActualización)
+                    + "</td>";
+                break;
+            case "Informe fuera de tiempo":
+                if (result.query[i].figuraJudicial != "SUSTITUCIÓN DE LA PENA") {
+                    row = row
+                        + "<td>"
+                        + "Control de supervisión"
+                        + "</td>";
+                }
+                else {
+                    var date60 = Date.now();
+                    date60 += 1000 * 60 * 60 * 24 * 60;
+                    var date5 = Date.now();
+                    date5 += 1000 * 60 * 60 * 24 * 5;
+                    if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < date60 && Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) > date5) {
+                        row = row
+                            + "<td>"
+                            + "    Informe en próximos 60 días"
+                            + "</td>";
+                    }
+                    else {
+                        if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < Date.now()) {
+                            row = row
+                                + "<td style=\"color:red\">"
+                                + "    Informe fuera de tiempo"
+                                + "</td>";
+                        }
+                        else {
+                            row = row
+                                + "<td style=\"color:#F0AD00\">"
+                                + "    Informe en menos de 5 días"
+                                + "</td>";
+                        }
+                    }
+                }
+                row = row
+                    + "<td>"
+                    + "    " + date
+                    + "</td>";
+                break;
+            case "Control de supervisión a 3 días o menos":
+                if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < Date.now()) {
+                    row = row
+                        + "<td style=\"color:red\">"
+                        + "    Control de supervisión fuera de tiempo"
+                        + "</td>";
+                }
+                else {
+                    row = row
+                        + "<td>"
+                        + "    " + result.query[i].tipoAdvertencia
+                        + "</td>";
+                }
+                row = row
+                    + "<td>"
+                    + "    " + date
+                    + "</td>";
+                break;
+            case "Sin fecha de informe":
+                if (result.query[i].figuraJudicial != "SUSTITUCIÓN DE LA PENA") {
+                    row = row
+                        + "<td>"
+                        + "    " + result.query[i].tipoAdvertencia
+                        + "</td>";
+                }
+                else {
+                    row = row
+                        + "<td>"
+                        + "    Sin control de supervisión"
+                        + "</td>";
+                }
+                row = row
+                    + "<td>"
+                    + "    " + date
+                    + "</td>";
+                break;
+            case "Sin periodicidad de firma":
+                row = row
+                    + "<td>"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row + "<td></td>";
+                break;
+            // case "Expediente físico en resguardo":
+            //     row = row
+            //         + "<td>"
+            //         + "    " + result.query[i].tipoAdvertencia
+            //         + "</td>";
+            //     var fecha = formatDate(result.query[i].archivointernomcscpVM.fecha);
+            //     var tolerance = Date.now();
+            //     tolerance -= 1000 * 60 * 60 * 24 * 5;
+            //     if (Date.parse(fecha) < tolerance) {
+            //         row = row
+            //             + "<td style=\"color:red\">"
+            //             + "    " + fecha
+            //             + "</td>";
+            //     }
+            //     else {
+            //         row = row
+            //             + "<td>"
+            //             + "    " + fecha
+            //             + "</td>";
+            //     }
+            //     break;
+            case "Sin supervisión":
+               
+                row = row
+                    + "<td>"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row
+                    + "<td>"
+                    + "    " + formatDate(result.query[i].personaclVM.ultimaActualización)
+                    + "</td>";
+                break;
+            case "Sin figura judicial":
+                row = row
+                    + "<td>"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row + "<td></td>";
+                break;
+            case "Pendiente de asignación - colaboración":
+                row = row
+                    + "<td>"
+                    + "    " + result.query[i].tipoAdvertencia
+                    + "</td>";
+                row = row + "<td></td>";
+                break;
+            case "Se paso el tiempo de la firma":
+                var date3 = Date.now();
+                date3 += 1000 * 60 * 60 * 24 * 3;
+                if (Date.parse(result.query[i].planeacionestrategicaclVM.fechaProximoContacto) < Date.now()) {
+                    row = row
+                        + "<td style=\"color:red\">"
+                        + "    " + result.query[i].tipoAdvertencia
+                        + "</td>";
+                }
+                var dateString = result.query[i].planeacionestrategicaclVM.fechaProximoContacto;
+                var datepc = formatDate(dateString);
+                row = row
+                    + "<td>"
+                    + "    " + datepc
+                    + "</td>";
+            break;
+            // case "Estado Procesal":
+            //     row = row
+            //         + "<td style=\"color:red\">"
+            //         + "    " + result.query[i].tipoAdvertencia
+            //         + "</td>";
+            //     row = row
+            //         + "<td>"
+            //         + "    " + result.query[i].auditVM.dateTime
+            //         + "</td>";
+            // break;
+        }
+        if (result.query[i].personaclVM.celular != null) {
+            row = row + "<td>" + result.query[i].personaclVM.celular + "</td>"
+        }
+        else {
+            row = row + "<td>NA</td>";
+        }
+        row = row
+            + "<td>" + result.query[i].municipiosVM.municipio + "</td>"
+            + "<td>" + result.query[i].personaclVM.supervisor + "</td>";
+        row = row + "<td>";
+        if (result.query[i].figuraJudicial != null) {
+            row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+        }
+        else {
+             row = row + "<td>NA</td>";
+        }
+        row = row + "</td>";
+
+        if (result.query[i].tipoAdvertencia == "Sin supervisión") {
+             row = row
+                        + "<td>"
+                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Causaspenalescl/" + "\">"
+                        + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                        + "    </a >"
+                        + "</td>";
+            row = row + "<td></td>";   
+        }
+        else if (result.query[i].tipoAdvertencia == "Sin figura judicial") {
+            row = row
+                + "<td>"
+                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisioncl/EditBeneficios/" + result.query[i].supervisionclVM.idSupervisioncl + "?nombre=" + result.query[i].personaclVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalclVM.causaPenal + "&amp;idpersona=" + result.query[i].personaclVM.IdPersonaCl + "\">"
+                + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                + "    </a >"
+                + "</td>";
+            row = row + "<td></td>";
+        }
+        else if (result.query[i].tipoAdvertencia == "Sin Resolución") {
+            row = row
+                + "<td>"
+                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personacls/Edit/" + result.query[i].personaclVM.idPersonaCl + "\">"
+                + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                + "    </a >"
+                + "</td>";
+            row = row + "<td></td>";
+        }
+        else if (result.query[i].supervisionclVM != null || result.query[i].causapenalclVM != null) {
+            row = row
+                + "<td>"
+                + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisioncl/EditPlaneacionEstrategica/" + result.query[i].supervisionclVM.idSupervisioncl + "?nombre=" + result.query[i].personaclVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalclVM.causaPenal + "&amp;idpersona=" + result.query[i].personaclVM.idPersonaCl + "\">"
+                + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                + "    </a >"
+                + "</td>";
+           
+        }
+       
+        row = row + "</tr>";
+        return row;
+    };
+    $(document).ready(function () {
+        $('#currentFilter').change(function () {
+            var s = document.getElementById("currentFilter");
+            var filtro = s.options[s.selectedIndex].value;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Personacls/filtra",
+                traditional: true,
+                data: {
+                    currentFilter: filtro,
+                },
+                success: function (result) {
+                    
+                    if (result.success) {
+                        $('#tblAlertas').html('');
+                        var row = '';
+
+                        if (result.admin) {
+                            var nortedgepms = false;
+                            var dgepms = false;
+                            if (result.user != "janeth@nortedgepms.com" &&
+                                result.user != "raquel@nortedgepms.com") {
+                                dgepms = true;
+                            }
+                            if (result.user != "andrea.valdez@dgepms.com") {
+                                nortedgepms = true;
+                            }
+                            for (let i = 0; i < result.query.length; i++) {
+                                
+                                if (result.query[i].planeacionestrategicaclVM == null) {
+                                    date = "";
+                                    
+                                }
+                                else {
+                                    var dateString = result.query[i].planeacionestrategicaclVM.informeInicial;
+                                    date = formatDate(dateString);
+                                   
+                                }
+
+                                if (nortedgepms && result.query[i].personaclVM.supervisor != null && result.query[i].personaclVM.supervisor.endsWith("\u0040nortedgepms.com")) {
+                                    row = row + populateAdmin(result, i, date);
+                                                              
+                                }
+
+                                if (dgepms &&  result.query[i].personaclVM.supervisor != null && result.query[i].personaclVM.supervisor.endsWith("\u0040dgepms.com")) {
+                                    row = row + populateAdmin(result, i, date);
+                                   
+                                }
+                                
+
+                            }
+                            
+                        }
+                        else {
+                           
+                            for (let i = 0; i < result.query.length; i++) {
+                                if (result.query[i].personaclVM.supervisor.endsWith("\u0040nortedgepms.com") && result.query[i].tipoAdvertencia == "Se paso el tiempo de la firma") {
+                                    continue;
+                                }
+                                if (result.query[i].planeacionestrategicaclVM == null) {
+                                    date = "";
+                                }
+                                else {
+                                    var dateString = result.query[i].planeacionestrategicaclVM.informeInicial;
+                                    date = formatDate(dateString);
+                                }
+                                if (result.query[i].personaclVM.supervisor == result.user || (result.query[i].tipoAdvertencia == "Expediente físico en resguardo" && result.query[i].personaclVM.ubicacionExpediente == result.user.toUpperCase())) {                                
+                                    row = row
+                                        + "<tr>"
+                                        + "<td>" + result.query[i].personaclVM.idPersonaCl + "</td>"
+                                        + "<td>" + result.query[i].personaclVM.nombreCompleto + "</td>";
+                                    if (result.query[i].causapenalclVM != null) {
+                                        row = row + "<td>" + result.query[i].causapenalclVM.causaPenal + "</td>";
+                                    }
+                                    else {
+                                        row = row + "<td>NA</td>";
+                                    }
+                                    switch (result.query[i].tipoAdvertencia) {
+                                        case "Sin Resolución":
+                                            row = row
+                                                + "<td style=\"color:red\">"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row
+                                                + "<td>"
+                                                + "    " + formatDate(result.query[i].personaclVM.ultimaActualización)
+                                                + "</td>";
+                                            break;
+                                        case "Informe fuera de tiempo":
+                                            if (result.query[i].figuraJudicial != "SUSTITUCIÓN DE LA PENA") {
+                                                row = row
+                                                    + "<td>"
+                                                    + "Control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            else {
+                                                var date60 = Date.now();
+                                                date60 += 1000 * 60 * 60 * 24 * 60;
+                                                var date5 = Date.now();
+                                                date5 += 1000 * 60 * 60 * 24 * 5;
+                                                if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < date60 && Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) > date5) {
+                                                    row = row
+                                                        + "<td>"
+                                                        + "    Informe en próximos 60 días"
+                                                        + "</td>";
+                                                }
+                                                else {
+                                                    if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < Date.now()) {
+                                                        row = row
+                                                            + "<td style=\"color:red\">"
+                                                            + "    Informe fuera de tiempo"
+                                                            + "</td>";
+                                                    }
+                                                    else {
+                                                        row = row
+                                                            + "<td style=\"color:#F0AD00\">"
+                                                            + "    Informe en menos de 5 días"
+                                                            + "</td>";
+                                                    }
+                                                }
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Control de supervisión a 3 días o menos":
+                                            if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < Date.now()) {
+                                                row = row
+                                                    + "<td style=\"color:red\">"
+                                                    + "    Control de supervisión fuera de tiempo"
+                                                    + "</td>";
+                                            }
+                                            else {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin fecha de informe":
+                                            if (result.query[i].figuraJudicial != "SUSTITUCIÓN DE LA PENA") {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            else {
+                                                row = row
+                                                    + "<td>"
+                                                    + "    Sin control de supervisión"
+                                                    + "</td>";
+                                            }
+                                            row = row
+                                                + "<td>"
+                                                + "    " + date
+                                                + "</td>";
+                                            break;
+                                        case "Sin periodicidad de firma":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td>";
+                                            if (result.query[i].planeacionestrategicaclVM.periodicidadFirma != null)
+                                                row = row + "    " + result.query[i].planeacionestrategicaclVM.periodicidadFirma;
+                                            row = row + "</td>";
+                                            break;
+                                        // case "Expediente físico en resguardo":
+                                        //     row = row
+                                        //         + "<td>"
+                                        //         + "    " + result.query[i].tipoAdvertencia
+                                        //         + "</td>";
+                                        //     var fecha = formatDate(result.query[i].archivointernomcscpVM.fecha);
+                                        //     var tolerance = Date.now();
+                                        //     tolerance -= 1000 * 60 * 60 * 24 * 5;
+                                        //     if (Date.parse(fecha) < tolerance) {
+                                        //         row = row
+                                        //             + "<td style=\"color:red\">"
+                                        //             + "    " + fecha
+                                        //             + "</td>";
+                                        //     }
+                                        //     else {
+                                        //         row = row
+                                        //             + "<td>"
+                                        //             + "    " + fecha
+                                        //             + "</td>";
+                                        //     }
+                                        //     break;
+                                        case "Sin supervisión":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row
+                                                + "<td>"
+                                                + "    " + formatDate(result.query[i].personaclVM.ultimaActualización)
+                                                + "</td>";
+                                            break;
+                                        case "Sin figura judicial":
+                                            row = row
+                                                + "<td>"
+                                                + "    " + result.query[i].tipoAdvertencia
+                                                + "</td>";
+                                            row = row + "<td></td>";
+                                            break;
+                                        case "Se paso el tiempo de la firma":
+                                            var date3 = Date.now();
+                                            date3 += 1000 * 60 * 60 * 24 * 3;
+                                            if (Date.parse(result.query[i].planeacionestrategicaclVM.fechaProximoContacto) < Date.now()) {
+                                                row = row
+                                                    + "<td style=\"color:red\">"
+                                                    + "    " + result.query[i].tipoAdvertencia
+                                                    + "</td>";
+                                            }
+                                            var dateString = result.query[i].planeacionestrategicaclVM.fechaProximoContacto;
+                                            var datepc = formatDate(dateString);
+                                            row = row
+                                                + "<td>"
+                                                + "    " + datepc
+                                                + "</td>";
+                                            break;
+                                        // case "Estado Procesal":
+                                        //     row = row
+                                        //         + "<td style=\"color:red\">"
+                                        //         + "    " + result.query[i].tipoAdvertencia
+                                        //         + "</td>";
+                                        //     row = row
+                                        //         + "<td>"
+                                        //         + "    " + formatDate(result.query[i].auditVM.dateTime)
+                                        //         + "</td>";
+                                        //     break;
+                                        //case "Sin estado de supervisión":
+                                        //    row = row
+                                        //        + "<td>"
+                                        //        + "    " + result.query[i].tipoAdvertencia
+                                        //        + "</td>";
+                                        //    row = row + "<td>";
+                                        //    if (result.query[i].supervisionVM.estadoSupervision != null)
+                                        //    {
+                                        //        row = row + "    " + result.query[i].supervisionVM.estadoSupervision;
+                                        //    }
+                                        //    row = row + "</td>";
+                                        //    break;
+                                    }
+                                    if (result.query[i].personaclVM.celular != null) {
+                                        row = row + "<td>" + result.query[i].personaclVM.celular + "</td>"
+                                    }
+                                    else {
+                                        row = row + "<td>NA</td>";
+                                    }
+                                    row = row + "<td>" + result.query[i].municipiosVM.municipio + "</td>";
+                                    row = row + "<td>";
+                                    if (result.query[i].figuraJudicial != null) {
+                                        row = row + "<td>" + result.query[i].figuraJudicial + "</td>";
+                                    }
+                                    else {
+                                        row = row + "<td>NA</td>";
+                                    }
+                                    row = row + "</td>";
+
+                                    if (result.query[i].tipoAdvertencia == "Sin supervisión") {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Causaspenalescl/" + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                        row = row + "<td></td>";
+                                    }
+                                    else if (result.query[i].tipoAdvertencia == "Sin figura judicial") {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisioncl/EditBeneficios/" + result.query[i].supervisionclVM.idSupervisioncl + "?nombre=" + result.query[i].personaclVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalclVM.causaPenal + "&amp;idpersona=" + result.query[i].personaclVM.IdPersonaCl + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                        row = row + "<td></td>";
+                                    }
+                                    else if (result.query[i].tipoAdvertencia == "Sin Resolución") {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Personacls/Edit/" + result.query[i].personaclVM.IdPersonaCl + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                        row = row + "<td></td>";
+                                    }
+                                    else if (result.query[i].supervisionclVM != null || result.query[i].causapenalclVM != null) {
+                                        row = row
+                                            + "<td>"
+                                            + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisioncl/EditPlaneacionEstrategica/" + result.query[i].supervisionclVM.idSupervisioncl + "?nombre=" + result.query[i].personaclVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalclVM.causaPenal + "&amp;idpersona=" + result.query[i].personaclVM.idPersonaCl + "\">"
+                                            + "        <i class=\"fa fa-pencil\"></i> Detalle"
+                                            + "    </a >"
+                                            + "</td>";
+                                    }
+
+                                    row = row + "</tr>";
+                                }
+                            }
+                        }
+                        if (row != '') {
+                            $('#tblAlertas').append(row);
+                        }
+                    } else {
+                        alert(result.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+        });
+        $("#currentFilter").change();
+    });
+</script>
+
+<div class="text-center" style="padding-top:1%">
+    <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+    <br />
+    <h4>Alertas</h4>
+    @if (ViewBag.WarningsUser > 0)
+    {
+        <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+            <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+        </a>
+    }
+</div>
+
+<form asp-action="WarningSupervisor" method="get">
+    <div class="form-group col-xs-4">
+        <label class="control-label">Tipo</label>
+        <select class="form-control" name="currentFilter" id="currentFilter">
+            <option value="TODOS">Todos</option>
+            @* <option value="PENDIENTE DE ASIGNACION - COLABORACION">Pendiente de asignación - colaboración</option> *@
+            <option value="SIN RESOLUCION">Sin Resolución</option>
+            @*<option value="EXPEDIENTE FISICO EN RESGUARDO">Expediente físico en resguardo</option>*@
+            <option value="INFORME FUERA DE TIEMPO">Informe fuera de tiempo</option>
+            <option value="CONTROL DE SUPERVISION A 3 DIAS O MENOS">Control de supervisión a 3 días o menos</option>
+            <option value="SIN FECHA DE INFORME">Sin fecha de informe/Sin control de supervisión</option>
+            <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
+            <option value="SIN SUPERVISION">Sin supervisión</option>
+            <option value="SIN FIGURA JUDICIAL">Sin figura judicial</option>
+            @* <option value="ESTADO PROCESAL">Estado Procesal</option> *@
+            @*<option value="SIN ESTADO DE SUPERVISION">Sin estado de supervisión</option>*@
+            @if (ViewBag.norte == false)
+            {
+                <option value="SE PASO EL TIEMPO DE LA FIRMA">Se paso el tiempo de la firma</option>
+            }
+        </select>
+    </div>
+</form>
+
+<table class="table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                <a>ID</a>
+            </th>
+            <th>
+                <a>Nombre</a>
+            </th>
+            <th>
+                <a>Causa Penal</a>
+            </th>
+            <th>
+                <a>Tipo de alerta</a>
+            </th>
+            <th>
+                <a>Información de campo</a>
+            </th>
+            <th>
+                <a>Celular</a>
+            </th>
+            <th>
+                <a>Municipio</a>
+            </th>
+            @if (ViewBag.ShowSupervisor)
+            {
+                <th>
+                    <a>Supervisor</a>
+                </th>
+            }
+            <th>
+                <a>Tipo de Beneficio</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody id="tblAlertas">
+    </tbody>
+</table>
