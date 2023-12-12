@@ -67,6 +67,11 @@
                     return;
                 }
                 for (let i = 0; i < response.lista.length; i++) {
+                    if (response.lista[i].clave != null) {
+                        row = row + "<tr style='background-color: #F7F2E7'>"
+                    } else {
+                        row = row + "<tr>"
+                    }
                     row = row
                         + "<tr>"
                         + "<td>" + response.lista[i].id + "</td>"
@@ -120,7 +125,7 @@
                 id, tabla,
             },
             success: function (response) {
-                document.getElementById("CURS").value = response.lista[0].claveUnicaScorpio;
+                document.getElementById("CURS").value = response.lista[0].p.claveUnicaScorpio;
                 //document.getElementById("paterno").value = response.lista[0].paterno;
                 //document.getElementById("materno").value = response.lista[0].materno;
                 //document.getElementById("edad").value = response.lista[0].edad;

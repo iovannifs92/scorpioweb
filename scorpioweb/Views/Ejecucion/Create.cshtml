@@ -122,6 +122,11 @@
                     return;
                 }
                 for (let i = 0; i < response.lista.length; i++) {
+                    if (response.lista[i].clave != null) {
+                        row = row + "<tr style='background-color: #F7F2E7'>"
+                    } else {
+                        row = row + "<tr>"
+                    }
                     row = row
                         + "<tr>"
                         + "<td>" + response.lista[i].id + "</td>"
@@ -176,7 +181,7 @@
                 //document.getElementById("nombre").value = response.lista[0].nombre;
                 //document.getElementById("paterno").value = response.lista[0].paterno;
                 //document.getElementById("materno").value = response.lista[0].materno;
-                document.getElementById("CURS").value = response.lista[0].claveUnicaScorpio;
+                document.getElementById("CURS").value = response.lista[0].p.claveUnicaScorpio;
             }
         });
         $("#similitudModal").modal("hide");
@@ -191,7 +196,7 @@
     <form asp-action="Create" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group col-md-12">
-        <div class="form-group col-md-12">
+        <div class="form-group">
             <label asp-for="Nombre" class="control-label"></label>
             <input required asp-for="Nombre" id="nombreee" name="nombre" class="form-control" />
             <span asp-validation-for="Nombre" class="text-danger"></span>

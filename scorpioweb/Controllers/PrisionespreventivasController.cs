@@ -95,6 +95,7 @@ namespace scorpioweb.Controllers
         {
             string currentUser = User.Identity.Name;
 
+            prisionespreventivas.NumeroControl = prisionespreventivas.NumeroControl;
             prisionespreventivas.Paterno = mg.normaliza(prisionespreventivas.Paterno);
             prisionespreventivas.Materno = mg.normaliza(prisionespreventivas.Materno);
             prisionespreventivas.Nombre = mg.normaliza(prisionespreventivas.Nombre);

@@ -30,13 +30,13 @@
                 <span asp-validation-for="FechaTermino" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Se dio Cambio</label>
+                <label class="control-label">Estado</label>
                 <select class="form-control" name="Estado" id="Estado"
                         asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Value", "Text", @ViewBag.idCumplimiento))">
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Se dio Cambio</label>
+                <label class="control-label">Figura Judicial</label>
                 <select class="form-control" name="FiguraJudicial" id="FiguraJudicial"
                         asp-items="@(new SelectList(ViewBag.listaFiguraJudicial, "Value", "Text", @ViewBag.idFiguraJudicial))">
                 </select>

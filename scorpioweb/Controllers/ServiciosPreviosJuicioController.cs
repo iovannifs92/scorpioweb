@@ -410,7 +410,14 @@ namespace scorpioweb.Controllers
             serviciospreviosjuicio.LnEstado = serviciospreviosjuicio.LnEstado;
             serviciospreviosjuicio.LnMunicipio = serviciospreviosjuicio.LnMunicipio;
             serviciospreviosjuicio.FechaNacimiento = serviciospreviosjuicio.FechaNacimiento;
-            serviciospreviosjuicio.ClaveUnicaScorpio = serviciospreviosjuicio.ClaveUnicaScorpio;
+            if (CURSUsada != null)
+            {
+                serviciospreviosjuicio.ClaveUnicaScorpio = CURSUsada;
+            }
+            else
+            {
+                serviciospreviosjuicio.ClaveUnicaScorpio = CURS;
+            }
 
             int cont = (from table in _context.Serviciospreviosjuicio
                         select table.IdserviciosPreviosJuicio).Count();
@@ -453,8 +460,6 @@ namespace scorpioweb.Controllers
                 {
                     var_curs = CURSUsada;
                 }
-                serviciospreviosjuicio.ClaveUnicaScorpio = CURS;
-
                 string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                 _context.Database.ExecuteSqlCommand(query);
             }

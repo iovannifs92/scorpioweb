@@ -2209,7 +2209,7 @@
     </div>
     
 }
-@if (User.Identity.Name.EndsWith("@dgepms.com"))
+@if (User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
 {
     <div class="col-md-6">
         <a href="/Personas/Create" class="link-archivo">

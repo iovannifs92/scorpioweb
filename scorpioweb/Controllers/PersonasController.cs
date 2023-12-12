@@ -145,6 +145,31 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="ARCHIVO", Value="ARCHIVO"}
         };
 
+        public async Task<List<string>> ObtenerListaSupervisoresmcyscocl()
+        {
+            List<string> listasupervisores = new List<string>();
+
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "SupervisiorLC"))
+                {
+                    listasupervisores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "AdminLC"))
+                {
+                    listasupervisores.Add(u.ToString());
+                }
+                if (await userManager.IsInRoleAsync(u, "AdminMCSCP"))
+                {
+                    listasupervisores.Add(u.ToString());
+                }if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
+                {
+                    listasupervisores.Add(u.ToString());
+                }
+            }
+
+            return listasupervisores.Where(r => listasupervisores.Any(f => !r.EndsWith("\u0040nortedgepms.com"))).ToList();
+        }
         #endregion
 
         #region -Constructor-
@@ -2168,7 +2193,7 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
-            bool esMCSCP = false;
+            bool esMCSCP = false; 
             bool esCL = false;
 
             foreach (var rol in roles)
@@ -2229,7 +2254,15 @@ namespace scorpioweb.Controllers
                     persona.Capturista = currentUser;
                     persona.Candado = 0;
                     persona.MotivoCandado = "NA";
-                    persona.ClaveUnicaScorpio = CURS;
+                    if (CURSUsada != null)
+                    {
+                        persona.ClaveUnicaScorpio = CURSUsada;
+                    }
+                    else
+                    {
+                        persona.ClaveUnicaScorpio = CURS;
+                    }
+                    
 
                     var estado = (from e in _context.Estados
                                     where e.Id.ToString() == estadoD
@@ -2618,7 +2651,7 @@ namespace scorpioweb.Controllers
                     #region -Expediente Unico-
                     if (idselecionado != null && tabla != null)
                     {
-                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
+                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
                         string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
                         string var_tablaCurs = "ClaveUnicaScorpio";
                         int var_idnuevo = idPersona;
@@ -2702,7 +2735,14 @@ namespace scorpioweb.Controllers
                     personacl.MotivoCandado = "NA";
                     personacl.Centropenitenciario = mg.normaliza(centropenitenciario);
                     personacl.Sinocentropenitenciario = sinocentropenitenciario;
-                    personacl.ClaveUnicaScorpio = CURS;
+                    if (CURSUsada != null)
+                    {
+                        personacl.ClaveUnicaScorpio = CURSUsada;
+                    }
+                    else
+                    {
+                        personacl.ClaveUnicaScorpio = CURS;
+                    }
                     personacl.Ruta = 0; 
                     personacl.Ce = ce;
 
@@ -3030,7 +3070,7 @@ namespace scorpioweb.Controllers
                     #region -Expediente Unico-
                     if (idselecionado != null && tabla != null)
                     {
-                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
+                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
                         string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
                         string var_tablaCurs = "ClaveUnicaScorpio";
                         int var_idnuevo = idPersona;
@@ -7897,6 +7937,9 @@ namespace scorpioweb.Controllers
             }
 
 
+            List<string> supervisores = await ObtenerListaSupervisoresmcyscocl();
+            ViewBag.listaSupervisores = supervisores;
+
 
 
             ViewData["CurrentFilter"] = searchString;
@@ -7940,13 +7983,17 @@ namespace scorpioweb.Controllers
             int pageSize = 10;
             return View(await PaginatedList<Libronegro>.CreateAsync(libronegro.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
-        public IActionResult libronegrocreate()
+        public async Task<IActionResult> libronegrocreate()
         {
+            List<string> supervisores = await ObtenerListaSupervisoresmcyscocl();
+
+            ViewBag.listaSupervisores = supervisores;
+
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> libronegrocreate([Bind("Materno,Paterno,Nombre,Cp,Telefono,Direccion,F1,F2,F3,F4")] Libronegro libronegro)
+        public async Task<IActionResult> libronegrocreate([Bind("Materno,Paterno,Nombre,Cp,Telefono,Direccion,F1,F2,F3,F4,Supervisor")] Libronegro libronegro)
         {
             if (ModelState.IsValid)
             {
@@ -7980,6 +8027,9 @@ namespace scorpioweb.Controllers
                 libronegro.F2 = mg.normaliza(libronegro.F2);
                 libronegro.F3 = mg.normaliza(libronegro.F3);
                 libronegro.F4 = mg.normaliza(libronegro.F4);
+                libronegro.Proceso = libronegro.Proceso;
+                libronegro.Supervisor = libronegro.Supervisor;
+                libronegro.FechaCaptura = DateTime.Now;
 
                 _context.Add(libronegro);
                 await _context.SaveChangesAsync();
@@ -7990,7 +8040,7 @@ namespace scorpioweb.Controllers
 
             return View(libronegro);
         }
-
+       
         public async Task<IActionResult> libronegroedit(int? id)
         {
             if (id == null)
@@ -8004,12 +8054,16 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            List<string> supervisores = await ObtenerListaSupervisoresmcyscocl();
+
+            ViewBag.listaSupervisores = supervisores;
+
             return View(libronegro);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> libronegroedit(int id, [Bind("Idlibronegro,Nombre,Paterno,Materno,Cp,Telefono,Direccion,F1,F2,F3,F4,Area ")] Libronegro libronegro)
+        public async Task<IActionResult> libronegroedit(int id, [Bind("Idlibronegro,Nombre,Paterno,Materno,Cp,Telefono,Direccion,F1,F2,F3,F4,Area,Proceso,Supervisor ")] Libronegro libronegro)
         {
 
             if (id != libronegro.Idlibronegro)
@@ -8031,6 +8085,8 @@ namespace scorpioweb.Controllers
                 libronegro.F2 = mg.normaliza(libronegro.F2);
                 libronegro.F3 = mg.normaliza(libronegro.F3);
                 libronegro.F4 = mg.normaliza(libronegro.F4);
+                libronegro.Proceso = libronegro.Proceso;
+                libronegro.Supervisor = libronegro.Supervisor;
 
                 try
                 {
@@ -8055,7 +8111,30 @@ namespace scorpioweb.Controllers
             return RedirectToAction("libronegro", "Personas");
         }
 
+        public void Toggle(int id)
+        {
+            var libronegro = (from ln in _context.Libronegro
+                          where ln.Idlibronegro == id
+                          select ln).FirstOrDefault();
+            if (libronegro.Proceso == 0 || libronegro.Proceso == null)
+            {
+                libronegro.Proceso = 1;
+            }
+            else
+            {
+                libronegro.Proceso = 0;
+            }
+            _context.SaveChanges();
+        }
+        public void cambioS(int id, string value)
+        {
+            var libronegro = (from ln in _context.Libronegro
+                          where ln.Idlibronegro == id
+                          select ln).FirstOrDefault();
+                libronegro.Supervisor = value;
 
+            _context.SaveChanges();
+        }
 
         #endregion
     }

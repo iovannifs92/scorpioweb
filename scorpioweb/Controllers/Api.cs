@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Crypto.Prng;
 using QRCoder;
 using SautinSoft.Document;
 
@@ -244,71 +245,97 @@ namespace scorpioweb.Controllers
                          from d in domicilioJoin.DefaultIfEmpty()
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into supervisionJoin
                          from s in supervisionJoin.DefaultIfEmpty()
+                         join eu in _context.Expedienteunico on p.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                         from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                          join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
                          from cp in causapenalJoin.DefaultIfEmpty()
-                         group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio } into g
+                         group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, cp.CausaPenal, p.ClaveUnicaScorpio, claveunica = eu.ClaveUnicaScorpio } into g
                          select new
                          {
                              id = g.Key.IdPersona,
                              nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                              NomTabla = "MCYSCP",
-                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g)};\n"
+                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
+                             claveUnica = g.Key.claveunica
                          }).Union
                          (from a in _context.Archivo
                           join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
-                          group new { ar.CausaPenal, ar.CarpetaEjecucion } by new { a.IdArchivo, a.Paterno, a.Materno, a.Nombre, a.ClaveUnicaScorpio } into g
+                          join eu in _context.Expedienteunico on a.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                          from eu in ExpedienteunicoJoin.DefaultIfEmpty()
+                          group new { ar.CausaPenal, ar.CarpetaEjecucion } by new { a.IdArchivo, a.Paterno, a.Materno, a.Nombre, a.ClaveUnicaScorpio, claveunica = eu.ClaveUnicaScorpio } into g
                           select new
                           {
                               id = g.Key.IdArchivo,
                               nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                               NomTabla = "Archivo",
-                              datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n"
+                              datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n",
+                              claveUnica = g.Key.claveunica
                           }).Union
                             (from e in _context.Ejecucion
                              join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcausapenalJoin
                              from epcp in epcausapenalJoin.DefaultIfEmpty()
-                             group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce, e.ClaveUnicaScorpio } into g
+                             join eu in _context.Expedienteunico on e.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                             from eu in ExpedienteunicoJoin.DefaultIfEmpty()
+                             group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce, e.ClaveUnicaScorpio, epcp.Causapenal, claveunica = eu.ClaveUnicaScorpio } into g
                              select new
                              {
                                  id = g.Key.IdEjecucion,
                                  nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                                  NomTabla = "Ejecucion",
-                                 datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g)};\n"
+                                 datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g.Key.Causapenal)};\n",
+                                 claveUnica = g.Key.claveunica
                              }).Union
                                     (from sp in _context.Serviciospreviosjuicio
                                      where sp.Paterno.Contains(paterno) && sp.Materno.Contains(materno)
+                                     join eu in _context.Expedienteunico on sp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                                     from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                                      select new
                                      {
                                          id = sp.IdserviciosPreviosJuicio,
                                          nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
                                          NomTabla = "ServiciosPrevios",
-                                         datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n"
+                                         datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n",
+                                         claveUnica = eu.ClaveUnicaScorpio
                                      }).Union
                                         (from pp in _context.Prisionespreventivas
+                                         join eu in _context.Expedienteunico on pp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                                         from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                                          select new
                                          {
                                              id = pp.Idprisionespreventivas,
                                              nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
                                              NomTabla = "PrisionPreventiva",
-                                             datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n"
+                                             datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n",
+                                             claveUnica = eu.ClaveUnicaScorpio
                                          }).Union
                                             (from pp in _context.Oficialia
+                                             join eu in _context.Expedienteunico on pp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                                             from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                                              select new
                                              {
                                                  id = pp.IdOficialia,
                                                  nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
                                                  NomTabla = "Oficialia",
-                                                 datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n"
+                                                 datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n",
+                                                 claveUnica = eu.ClaveUnicaScorpio
                                              }).Union
                                                  (from p in _context.Personacl
-                                                  join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl into domicilioJoin
+                                                  join d in _context.Domiciliocl on p.IdPersonaCl equals d.IdDomiciliocl into domicilioJoin
                                                   from d in domicilioJoin.DefaultIfEmpty()
+                                                  join s in _context.Supervisioncl on p.IdPersonaCl equals s.PersonaclIdPersonacl into supervisionJoin
+                                                  from s in supervisionJoin.DefaultIfEmpty()
+                                                  join eu in _context.Expedienteunico on p.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                                                  from eu in ExpedienteunicoJoin.DefaultIfEmpty()
+                                                  join cp in _context.Causapenalcl on s.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl into causapenalJoin
+                                                  from cp in causapenalJoin.DefaultIfEmpty()
+                                                  group cp.CausaPenal by new { p.IdPersonaCl, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, cp.CausaPenal, claveunica = eu.ClaveUnicaScorpio} into g
                                                   select new
                                                   {
-                                                      id = p.IdPersonaCl,
-                                                      nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                                                      id = g.Key.IdPersonaCl,
+                                                      nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                                                       NomTabla = "LibertadCondicionada",
-                                                      datoExtra = $"CLAVE UNICA SCORPIO: {p.ClaveUnicaScorpio}; Edad: {p.Edad};\n Domicilio: {d.Calle}, {d.No}, {d.NombreCf};\n"
+                                                      datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
+                                                      claveUnica = g.Key.claveunica
                                                   });
 
             var result = query.ToList();
@@ -317,9 +344,10 @@ namespace scorpioweb.Controllers
             string nomCom = "";
             string tabla = "";
             string datoextra = "";
+            string clave = "";
             var cosine = new Cosine(2);
             double r = 0;
-            var list = new List<Tuple<string, string, int, string, double>>();
+            var list = new List<Tuple<string, string, int, string, double, string>>();
 
             List<string> listaNombre = new List<string>();
 
@@ -333,7 +361,8 @@ namespace scorpioweb.Controllers
                     idpersona = q.id;
                     tabla = q.NomTabla;
                     datoextra = q.datoExtra;
-                    list.Add(new Tuple<string, string, int, string, double>(nomCom, tabla, idpersona, datoextra, r));
+                    clave = q.claveUnica;
+                    list.Add(new Tuple<string, string, int, string, double, string>(nomCom, tabla, idpersona, datoextra, r, clave));
                     simi = true;
                 }
             }
@@ -349,8 +378,8 @@ namespace scorpioweb.Controllers
                     string tablaP = item.Item2;
                     int idPersona = item.Item3;
                     string datoextraP = item.Item4;
-
-                    elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP });
+                    string claveunica = item.Item6;
+                    elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP, Clave = claveunica });
                 }
                 return Json(new { success = true, lista = elementos });
             }
@@ -365,25 +394,103 @@ namespace scorpioweb.Controllers
             switch (tabla)
             {
                 case "MCYSCP":
-                    listaDatos.AddRange(_context.Persona.Where(table => table.IdPersona == id).ToList());
+                    var query = (from p in _context.Persona
+                                 join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
+                                 from d in domicilioJoin.DefaultIfEmpty()
+                                 join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona into estudiosJoin
+                                 from e in estudiosJoin.DefaultIfEmpty()
+                                 join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona into trabajoJoin
+                                 from t in trabajoJoin.DefaultIfEmpty()
+                                 join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona into actividadessocialesJoin
+                                 from a in actividadessocialesJoin.DefaultIfEmpty()
+                                 join ae in _context.Abandonoestado on p.IdPersona equals ae.PersonaIdPersona into abandonoestadoJoin
+                                 from ae in abandonoestadoJoin.DefaultIfEmpty()
+                                 join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
+                                 from s in saludfisicaJoin.DefaultIfEmpty()
+                                 where p.IdPersona == id
+                                 select new
+                                 {
+                                     p,
+                                     d,
+                                     e,
+                                     t,
+                                     a,
+                                     ae,
+                                     s
+                                 }).ToList();
+                    listaDatos.AddRange(query);
                     break;
                 case "Archivo":
-                    listaDatos.AddRange(_context.Archivo.Where(table => table.IdArchivo == id).ToList());
+                    var queryArchivo = (from p in _context.Archivo
+                                   where p.IdArchivo == id
+                                   select new
+                                   {
+                                       p
+                                   }).ToList();
+                    listaDatos.AddRange(queryArchivo);
                     break;
                 case "Ejecucion":
-                    listaDatos.AddRange(_context.Ejecucion.Where(table => table.IdEjecucion == id).ToList());
+                    var queryEjecucion = (from p in _context.Ejecucion
+                                   where p.IdEjecucion == id
+                                   select new
+                                   {
+                                       p
+                                   }).ToList();
+                    listaDatos.AddRange(queryEjecucion);
                     break;
                 case "ServiciosPrevios":
-                    listaDatos.AddRange(_context.Serviciospreviosjuicio.Where(table => table.IdserviciosPreviosJuicio == id).ToList());
+                    var querySP = (from p in _context.Serviciospreviosjuicio
+                                   where p.IdserviciosPreviosJuicio == id
+                                   select new
+                                   {
+                                       p
+                                   }).ToList();
+                    listaDatos.AddRange(querySP);
                     break;
                 case "PrisionPreventiva":
-                    listaDatos.AddRange(_context.Prisionespreventivas.Where(table => table.Idprisionespreventivas == id).ToList());
+                    var queryPP = (from p in _context.Prisionespreventivas
+                                   where p.Idprisionespreventivas == id
+                                   select new
+                                   {
+                                       p
+                                   }).ToList();
+                    listaDatos.AddRange(queryPP);
                     break;
                 case "Oficialia":
-                    listaDatos.AddRange(_context.Oficialia.Where(table => table.IdOficialia == id).ToList());
+                    var queryO = (from p in _context.Oficialia
+                                   where p.IdOficialia == id
+                                   select new
+                                   {
+                                       p
+                                   }).ToList();
+                    listaDatos.AddRange(queryO);
                     break;
                 case "LibertadCondicionada":
-                    listaDatos.AddRange(_context.Personacl.Where(table => table.IdPersonaCl == id).ToList());
+                    var queryCL = (from p in _context.Personacl
+                                   join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl into domicilioJoin
+                                   from d in domicilioJoin.DefaultIfEmpty()
+                                   join e in _context.Estudioscl on p.IdPersonaCl equals e.PersonaClIdPersonaCl into estudiosJoin
+                                   from e in estudiosJoin.DefaultIfEmpty()
+                                   join t in _context.Trabajocl on p.IdPersonaCl equals t.PersonaClIdPersonaCl into trabajoJoin
+                                   from t in trabajoJoin.DefaultIfEmpty()
+                                   join a in _context.Actividadsocialcl on p.IdPersonaCl equals a.PersonaClIdPersonaCl into actividadessocialesJoin
+                                   from a in actividadessocialesJoin.DefaultIfEmpty()
+                                   join ae in _context.Abandonoestadocl on p.IdPersonaCl equals ae.PersonaclIdPersonacl into abandonoestadoJoin
+                                   from ae in abandonoestadoJoin.DefaultIfEmpty()
+                                   join s in _context.Saludfisicacl on p.IdPersonaCl equals s.PersonaClIdPersonaCl into saludfisicaJoin
+                                   from s in saludfisicaJoin.DefaultIfEmpty()
+                                   where p.IdPersonaCl == id
+                                   select new
+                                   {
+                                       p,
+                                       d,
+                                       e,
+                                       t,
+                                       a,
+                                       ae,
+                                       s
+                                   }).ToList();
+                    listaDatos.AddRange(queryCL);
                     break;
             }
             return Json(new { success = false, lista = listaDatos });

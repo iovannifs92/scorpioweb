@@ -944,8 +944,12 @@
                     return;
                 }
                 for (let i = 0; i < response.lista.length; i++) {
+                    if (response.lista[i].clave != null) {
+                        row = row + "<tr style='background-color: #F7F2E7'>"
+                    } else {
+                        row = row + "<tr>"
+                    }
                     row = row
-                        + "<tr>"
                         + "<td>" + response.lista[i].id + "</td>"
                         + "<td>" + response.lista[i].nombre + "</td>"
                         + "<td>" + response.lista[i].tabla + "</td>"
@@ -976,7 +980,15 @@
             }
         });
     }
-   // PARA SACAR VALORES DE UNA LISTA EN C#
+    function formatDate(dateString) {
+        if (dateString == null) {
+            return "";
+        }
+        var d = new Date(dateString);
+        const month = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+        var date = d.getDate() + '/' + month[d.getMonth()] + '/' + d.getFullYear();
+        return date;
+    };
     function usarDatos(id, tabla) {
         document.getElementById("tabla").value = tabla;
         document.getElementById("idselecionado").value = id;
@@ -990,10 +1002,112 @@
                 id, tabla,
             },
             success: function(response){
-                //document.getElementById("nombre").value = response.lista[0].nombre;
-                //document.getElementById("paterno").value = response.lista[0].paterno;
-                //document.getElementById("materno").value = response.lista[0].materno;
-                document.getElementById("CURSUsada").value = response.lista[0].claveUnicaScorpio;
+                //DATOS GENERALES
+                alert("fecha 1 " + formatDate(response.lista[0].p.fnacimiento))
+                document.getElementById("nombre").value = response.lista[0].p.nombre;
+                document.getElementById("paterno").value = response.lista[0].p.paterno;
+                document.getElementById("materno").value = response.lista[0].p.materno;
+                document.getElementById("nombreMadre").value = response.lista[0].p.nombreMadre;
+                document.getElementById("nombrePadre").value = response.lista[0].p.nombrePadre;
+                document.getElementById("alias").value = response.lista[0].p.alias;
+                document.getElementById("sexo").value = response.lista[0].p.genero;
+                document.getElementById("edad").value = response.lista[0].p.edad;
+                document.getElementById("fNacimiento").value = formatDate(response.lista[0].p.fnacimiento);
+                document.getElementById("lnPais").value = response.lista[0].p.lnpais;
+                document.getElementById("lnEstado").value = response.lista[0].p.lnestado;
+                alert(response.lista[0].p.claveUnicaScorpio)
+                document.getElementById("lnMunicipio").value = response.lista[0].p.lnmunicipio;
+
+                document.getElementById("lnLocalidad").value = response.lista[0].p.lnlocalidad;
+                document.getElementById("estadoCivil").value = response.lista[0].p.estadoCivil;
+                document.getElementById("duracion").value = response.lista[0].p.duracion;
+                document.getElementById("otroIdioma").value = response.lista[0].p.otroidioma;
+                document.getElementById("especifiqueIdioma").value = response.lista[0].p.especifiqueIdioma;
+                document.getElementById("ComIndigena").value = response.lista[0].p.comndigena;
+
+                document.getElementById("CURSUsada").value = response.lista[0].p.claveUnicaScorpio;
+
+
+                //document.getElementById("ComLgbtttiq").value = response.lista[0].p.ComLgbtttiq;
+                //document.getElementById("leerEscribir").value = response.lista[0].p.leerEscribir;
+                //document.getElementById("traductor").value = response.lista[0].p.traductor;
+                //document.getElementById("especifiqueTraductor").value = response.lista[0].p.especifiqueTraductor;
+                //document.getElementById("telefonoFijo").value = response.lista[0].p.telefonoFijo;
+                //document.getElementById("celular").value = response.lista[0].p.celular;
+                //document.getElementById("hijos").value = response.lista[0].p.hijos;
+                //document.getElementById("nHijos").value = response.lista[0].p.nHijos;
+                //document.getElementById("nPersonasVive").value = response.lista[0].p.nPersonasVive;
+                //document.getElementById("propiedades").value = response.lista[0].p.propiedades;
+                //document.getElementById("CURP").value = response.lista[0].p.CURP;
+                ////DATOS DOMICILIO
+                //document.getElementById("tipoDomicilio").value = response.lista[0].d.tipoDomicilio;
+                //document.getElementById("calle").value = response.lista[0].d.calle;
+                //document.getElementById("no").value = response.lista[0].d.no;
+                //document.getElementById("combobox").value = response.lista[0].d.;
+                //document.getElementById("paisD").value = response.lista[0].d.paisD;
+                //document.getElementById("estadoD").value = response.lista[0].d.estadoD;
+                //document.getElementById("municipioD").value = response.lista[0].d.municipioD;
+                //document.getElementById("temporalidad").value = response.lista[0].d.temporalidad;
+                //document.getElementById("residenciaHabitual").value = response.lista[0].d.residenciaHabitual;
+                //document.getElementById("cp").value = response.lista[0].d.cp;
+                //document.getElementById("referencias").value = response.lista[0].d.referencias;
+                //document.getElementById("horario").value = response.lista[0].d.horario;
+                //document.getElementById("observaciones").value = response.lista[0].d.observaciones;
+                ////DATOS ESCOLARIDAD
+                //document.getElementById("estudia").value = response.lista[0].e.estudia;
+                //document.getElementById("gradoEstudios").value = response.lista[0].e.gradoEstudios;
+                //document.getElementById("institucionE").value = response.lista[0].e.institucionE;
+                //document.getElementById("horarioE").value = response.lista[0].e.observaciones;
+                //document.getElementById("direccionE").value = response.lista[0].e.observaciones;
+                //document.getElementById("telefonoE").value = response.lista[0].e.observaciones;
+                //document.getElementById("Observaciones").value = response.lista[0].e.observaciones;
+                ////DATOS TRABAJO
+                //document.getElementById("trabaja").value = response.lista[0].t.trabaja;
+                //document.getElementById("tipoOcupacion").value = response.lista[0].t.tipoOcupacion;
+                //document.getElementById("puesto").value = response.lista[0].t.puesto;
+                //document.getElementById("empleadorJefe").value = response.lista[0].t.empleadorJefe;
+                //document.getElementById("enteradoProceso").value = response.lista[0].t.enteradoProceso;
+                //document.getElementById("sePuedeEnterar").value = response.lista[0].t.sePuedeEnterar;
+                //document.getElementById("tiempoTrabajando").value = response.lista[0].t.tiempoTrabajando;
+                //document.getElementById("salario").value = response.lista[0].t.salario;
+                //document.getElementById("temporalidadSalario").value = response.lista[0].t.trabaja;
+                //document.getElementById("direccionT").value = response.lista[0].t.trabaja;
+                //document.getElementById("horarioT").value = response.lista[0].t.trabaja;
+                //document.getElementById("telefonoT").value = response.lista[0].t.trabaja;
+                //document.getElementById("observacionesT").value = response.lista[0].t.trabaja;
+                ////DATOS ACTVIDADES SOCIALES 
+                //document.getElementById("observacionesT").value = response.lista[0].a.trabaja;
+                //document.getElementById("tipoActividad").value = response.lista[0].a.tipoActividad;
+                //document.getElementById("horarioAS").value = response.lista[0].a.horarioAS;
+                //document.getElementById("lugarAS").value = response.lista[0].a.lugarAS;
+                //document.getElementById("telefonoAS").value = response.lista[0].a.telefonoAS;
+                //document.getElementById("sePuedeEnterarAS").value = response.lista[0].a.sePuedeEnterarAS;
+                //document.getElementById("referenciaAS").value = response.lista[0].a.referenciaAS;
+                //document.getElementById("observacionesAS").value = response.lista[0].a.observacionesAS;
+                ////DATOS ABANDONO ESTADO
+                //document.getElementById("vividoFuera").value = response.lista[0].ae.vividoFuera;
+                //document.getElementById("lugaresVivido").value = response.lista[0].ae.lugaresVivido;
+                //document.getElementById("tiempoVivido").value = response.lista[0].ae.tiempoVivido;
+                //document.getElementById("motivoVivido").value = response.lista[0].ae.motivoVivido;
+                //document.getElementById("viajaHabitual").value = response.lista[0].ae.viajaHabitual;
+                //document.getElementById("lugaresViaje").value = response.lista[0].ae.lugaresViaje;
+                //document.getElementById("tiempoViaje").value = response.lista[0].ae.tiempoViaje;
+                //document.getElementById("motivoViaje").value = response.lista[0].ae.motivoViaje;
+                //document.getElementById("documentacionSalirPais").value = response.lista[0].ae.documentacionSalirPais;
+                //document.getElementById("pasaporte").value = response.lista[0].ae.pasaporte;
+                //document.getElementById("visa").value = response.lista[0].ae.visa;
+                ////DATOS SALUD
+                //document.getElementById("enfermedad").value = response.lista[0].s.enfermedad;
+                //document.getElementById("especifiqueEnfermedad").value = response.lista[0].s.especifiqueEnfermedad;
+                //document.getElementById("embarazoLactancia").value = response.lista[0].s.embarazoLactancia;
+                //document.getElementById("tiempoEmbarazo").value = response.lista[0].s.tiempoEmbarazo;
+                //document.getElementById("tratamiento").value = response.lista[0].s.tratamiento;
+                //document.getElementById("discapacidad").value = response.lista[0].s.discapacidad;
+                //document.getElementById("especifiqueDiscapacidad").value = response.lista[0].s.especifiqueDiscapacida;
+                //document.getElementById("servicioMedico").value = response.lista[0].s.servicioMedico;
+                //document.getElementById("especifiqueServicioMedico").value = response.lista[0].s.especifiqueServicioMedico;
+                //document.getElementById("institucionServicioMedico").value = response.lista[0].s.institucionServicioMedico;
+                //document.getElementById("observacionesSalud").value = response.lista[0].s.observacionesSalud;
             }
         });
         $("#similitudModal").modal("hide");
@@ -1002,8 +1116,6 @@
     function btnclose() {
         $('#similitudModal').modal('toggle');
     }
-
-
 
     function SacaCURS() {
         var nombre = document.getElementById("nombre").value;
@@ -1030,6 +1142,8 @@
 
 </script>
 
+
+
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
 }
@@ -1037,7 +1151,7 @@
 @ViewBag.Javascript
 <h2 style="margin-top:20px">Entrevista de encuadre</h2>
 <br />
-@if(ViewBag.UserCL == false  && User.Identity.Name.EndsWith("@dgepms.com"))
+@if(User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
 {
   <a href="/Personas/Create" class="link-archivo">
     <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
@@ -1076,12 +1190,17 @@
                                 </div>
                                 @if(ViewBag.UserCL == true)
                                 {
-                                    <div class="form-group col-md-12">
-                                        <label class="control-label">Carpeta de Ejecucion</label>
-                                        <input name="ce" id="ce" type="text" class="form-control" />
-                                    </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Carpeta de Ejecucion</label>
+                                    <input name="ce" id="ce" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-6" id="Juzgado">
+                                    <label class="control-label">Juzgado de Origen</label>
+                                    <select class="form-control" name="Juzgado" id="Juzgado"
+                                                asp-items="@(new SelectList(ViewBag.listaJuzgados, "Text", "Value"))">
+                                    </select>
+                                </div>
                                 }
-                                
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Nombre (s)</label>
                                     <input required name="nombre" id="nombre" type="text" class="form-control" />
@@ -1108,7 +1227,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Alias</label>
-                                    <input name="alias" type="text" class="form-control" />
+                                    <input name="alias" id="alias" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">   
                                     <label class="control-label">Sexo</label>
@@ -1161,11 +1280,11 @@
                                 </div>
                                 <div class="form-group col-md-3" id="Localidad">
                                     <label class="control-label">Localidad</label>
-                                    <input name="lnLocalidad" type="text" class="form-control"/>
+                                    <input name="lnLocalidad" id="lnLocalidad" type="text" class="form-control"/>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Estado Civil</label>
-                                    <select class="form-control" name="estadoCivil">
+                                    <select class="form-control" name="estadoCivil" id="estadoCivil">
                                         <option value="Soltero (a)">Soltero (a)</option>
                                         <option value="Casado (a)">Casado (a)</option>
                                         <option value="Union libre">Unión libre</option>
@@ -1175,69 +1294,69 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Duración (estado civil)</label>
-                                    <input name="duracion" type="text" class="form-control" />
+                                    <input name="duracion" id="duracion" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Habla otro idioma, lengua o dialecto, distinto al español?</label>
-                                    <select class="form-control" name="otroIdioma">
+                                    <select class="form-control" name="otroIdioma" id="otroIdioma">
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Cuál?</label>
-                                    <input name="especifiqueIdioma" type="text" class="form-control" />
+                                    <input name="especifiqueIdioma" id="especifiqueIdioma" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Pertenece a una comunidad Indígena?</label>
-                                    <select class="form-control" name="ComIndigena">
+                                    <select class="form-control" name="ComIndigena" id="ComIndigena">
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Pertenece a la comunidad LGBTTTIQ?</label>
-                                    <select class="form-control" name="ComLgbtttiq">
+                                    <select class="form-control" name="ComLgbtttiq" id="ComLgbtttiq">
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Sabe leer y escribir?</label>
-                                    <select class="form-control" name="leerEscribir">
+                                    <select class="form-control" name="leerEscribir" id="leerEscribir">
                                         <option value="Si">Si</option>
                                         <option value="No">No</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Requiere de traductor o interprete?</label>
-                                    <select class="form-control" name="traductor">
+                                    <select class="form-control" name="traductor" id="traductor">
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Especificar tipo de traductor</label>
-                                    <input name="especifiqueTraductor" type="text" class="form-control" />
+                                    <input name="especifiqueTraductor" id="especifiqueTraductor" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Télefono Fijo (10 Dígitos)</label>
-                                    <input name="telefonoFijo" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                                    <input name="telefonoFijo" id="telefonoFijo" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Celular (10 Dígitos)</label>
-                                    <input name="celular" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
+                                    <input name="celular" id="celular" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Tiene hijos?</label>
-                                    <select class="form-control" name="hijos">
+                                    <select class="form-control" name="hijos" id="hijos">
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Cuántos?</label>
-                                    <input name="nHijos" type="number" value="0" class="form-control" />
+                                    <input name="nHijos" id="nHijos" type="number" value="0" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Con cuántas personas vive?</label>
@@ -1245,7 +1364,7 @@
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Cuenta con propiedades en otra localidad, municipio y/o en otro estado o país?</label>
-                                    <select class="form-control" name="propiedades">
+                                    <select class="form-control" name="propiedades" id="propiedades">
                                         <option value="No">No</option>
                                         <option value="Si">Si</option>
                                     </select>
@@ -1336,7 +1455,7 @@
                                 <label style="padding-top:30px;" class="control-label col-sm-12">La propiedad del lugar o del inmueble, es:</label>
                                 <div class="form-group col-sm-12" style="padding-left:0%;padding-right:0%;">
                                     <div class="form-group col-sm-9">
-                                        <select required class="form-control" name="tipoDomicilio">
+                                        <select required class="form-control" name="tipoDomicilio" id="tipoDomicilio">
                                             <option value="RENTADA">Rentada</option>
                                             <option value="PRESTADA">Prestada</option>
                                             <option value="PROPIA">Propia</option>
@@ -1359,7 +1478,7 @@
                                 </div>
                                 <div class="form-group col-md-5">
                                     <label class="control-label">Colonia/Fraccionamiento/Localidad</label>
-                                    <select class="form-control" id="combobox" name="combobox" @*style="display:bl;*@"
+                                    <select class="form-control" id="combobox" name="combobox" @*style="display:bl;*@
                                             asp-items="@(new SelectList(ViewBag.colonias, "Idzonas", "ColoniaCP", 523))">
                                     </select>
                                 </div>
@@ -1394,7 +1513,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">¿Cuánto tiempo ha vivido en este domicilio?</label>
-                                    <select required class="form-control" name="temporalidad">
+                                    <select required class="form-control" name="temporalidad" id="temporalidad">
                                         <option value="MAS DE 10 AÑOS">Más de 10 años</option>
                                         <option value="ENTRE 5 Y 10 AÑOS">Entre 5 y 10 años</option>
                                         <option value="ENTRE 2 Y 5 AÑOS">Entre 2 y 5 años</option>
@@ -1404,7 +1523,7 @@
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">¿Este domicilio es su residencia habitual?</label>
-                                    <select required class="form-control" name="residenciaHabitual">
+                                    <select required class="form-control" name="residenciaHabitual" id="residenciaHabitual">
                                         <option value="Si">Si</option>
                                         <option value="No">No</option>
                                     </select>
@@ -1604,7 +1723,7 @@
                                 
                                 <div class="form-group" style="padding-left:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="observacionesE" id="observaciones"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="observaciones" id="observaciones"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1719,23 +1838,23 @@
                             <div id="collapse5" class="panel-collapse collapse" style="padding-top:1%;">
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Tipo de actividad</label>
-                                    <input maxlength="150" name="tipoActividad" type="text" class="form-control" />
+                                    <input maxlength="150" name="tipoActividad" id="tipoActividad" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Horario:</label>
-                                    <input maxlength="100" name="horarioAS" type="text" class="form-control" />
+                                    <input maxlength="100" name="horarioAS" id="horarioAS" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Lugar donde realiza su actividad</label>
-                                    <input maxlength="100" name="lugarAS" type="text" class="form-control" />
+                                    <input maxlength="100" name="lugarAS" id="lugarAS" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
-                                    <input maxlength="10" name="telefonoAS" type="text" class="form-control" />
+                                    <input maxlength="10" name="telefonoAS" id="telefonoAS" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
-                                    <select required class="form-control" name="sePuedeEnterarAS">
+                                    <select required class="form-control" name="sePuedeEnterarAS" id="sePuedeEnterarAS">
                                         <option value="NA">NA</option>
                                         <option value="SI">Si</option>
                                         <option value="NO">No</option>
@@ -1743,7 +1862,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Especificar persona de referencia</label>
-                                    <input maxlength="100" name="referenciaAS" type="text" class="form-control" />
+                                    <input maxlength="100" name="referenciaAS" id="referenciaAS" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observacionesAS">Observaciones</label>
@@ -1768,15 +1887,15 @@
                                 </div>
                                 <div class="form-group col-md-12" style="display:none" id="lugaresVivido">
                                     <label class="control-label">Si ha vivido fuera especificar que lugares</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="lugaresVivido" id="lugaresVividoDentro"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="lugaresVivido" id="lugaresVivido"></textarea>
                                 </div>
                                 <div class="form-group col-md-12" style="display:none" id="tiempoVivido">
                                     <label class="control-label">Tiempo que vivio en esos lugares</label>
-                                    <input maxlength="100" name="tiempoVivido" id="tiempoVividoDentro" type="text" class="form-control" />
+                                    <input maxlength="100" name="tiempoVivido" id="tiempoVivido" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12" style="display:none" id="motivoVivido">
                                     <label class="control-label">Motivo</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="motivoVivido" id="motivoVividoDentro"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="motivoVivido" id="motivoVivido"></textarea>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
@@ -1787,33 +1906,33 @@
                                 </div>
                                 <div class="form-group col-md-12" style="display:none" id="lugaresViaje">
                                     <label class="control-label">Si viaja frecuentemente especificar a que lugares viaja</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="lugaresViaje"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="lugaresViaje" id="lugaresViaje"></textarea>
                                 </div>
                                 <div class="form-group col-md-12" style="display:none" id="tiempoViaje">
                                     <label class="control-label">¿Cada cuanto viaja a esos lugares?</label>
-                                    <input maxlength="100" name="tiempoViaje" type="text" class="form-control" />
+                                    <input maxlength="100" name="tiempoViaje" id="tiempoViaje" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-12" style="display:none" id="motivoViaje">
                                     <label class="control-label">Motivo por el que viaja</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="motivoViaje"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="motivoViaje" id="motivoViaje"></textarea>
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
-                                    <select required class="form-control" name="documentaciónSalirPais" id="documentacionSalirPais">
+                                    <select required class="form-control" name="documentacionSalirPais" id="documentacionSalirPais">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12" id="pasaporte" style="display:none">
                                     <label class="control-label">¿Cuenta con pasaporte?</label>
-                                    <select required class="form-control" name="pasaporte" id="pasaporteDentro">
+                                    <select required class="form-control" name="pasaporte" id="pasaporte">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12" id="visa" style="display:none">
                                     <label class="control-label">¿Cuenta con visa?</label>
-                                    <select required class="form-control" name="visa" id="visaDentro">
+                                    <select required class="form-control" name="visa" id="visa">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
@@ -1847,7 +1966,7 @@
                                 </div>
                                 <div class="form-group" style="display:none" id="especifiqueEnfermedad">
                                     <label class="control-label">Especifique la enfermedad</label>
-                                    <textarea maxlength="100" class="form-control" rows="2" name="especifiqueEnfermedad"></textarea>
+                                    <textarea maxlength="100" class="form-control" rows="2" name="especifiqueEnfermedad" id="especifiqueEnfermedad"></textarea>
                                 </div>
                                 <div class="form-group" id="embarazo" style="display:none">
                                     <label class="control-label">¿Está embarazada o en período de lactancia?</label>
@@ -1858,11 +1977,11 @@
                                 </div>
                                 <div class="form-group" style="display:none" id="tiempoEmbarazo">
                                     <label class="control-label">Tiempo de embarazo o lactancia</label>
-                                    <input maxlength="100" name="tiempoEmbarazo" type="text" class="form-control" />
+                                    <input maxlength="100" name="tiempoEmbarazo" id="tiempoEmbarazo" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group" style="display:none" id="tratamiento">
                                     <label class="control-label">Tratamiento médico indicado</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="tratamiento"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="tratamiento" id="tratamiento"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label">¿Tiene alguna condición física que requiera cuidados especiales?</label>
@@ -1873,7 +1992,7 @@
                                 </div>
                                 <div class="form-group" style="display:none" id="especifiqueDiscapacidad">
                                     <label class="control-label">Específique la discapacidad</label>
-                                    <input maxlength="100" class="form-control" type="text" name="especifiqueDiscapacidad" />
+                                    <input maxlength="100" class="form-control" type="text" name="especifiqueDiscapacidad" id="especifiqueDiscapacidad"/>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label">¿Cuenta con servicio médico?</label>
@@ -1884,7 +2003,7 @@
                                 </div>
                                 <div class="form-group col-md-6" id="especifiqueServicioMedico" style="display:none;">
                                     <label class="control-label">¿Qué tipo de servicio tiene?</label>
-                                    <select class="form-control" name="especifiqueServicioMedico">
+                                    <select class="form-control" name="especifiqueServicioMedico" id="especifiqueServicioMedico">
                                         <option value="NA">NA</option>
                                         <option value="SEGURO MEDICO">Seguro Médico</option>
                                         <option value="DERECHO HABIENTE">Derecho habiente</option>
@@ -1892,7 +2011,7 @@
                                 </div>
                                 <div class="form-group col-md-6" id="institucionServicioMedico" style="display:none;">
                                     <label class="control-label">Institución prestadora de servicio</label>
-                                    <select required class="form-control" name="institucionServicioMedico">
+                                    <select required class="form-control" name="institucionServicioMedico" id="institucionServicioMedico">
                                         <option value="NA">NA</option>
                                         <option value="IMSS">IMSS</option>
                                         <option value="ISSSTE">ISSSTE</option>
@@ -1903,7 +2022,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label" for="observacionesSalud">Observaciones</label>
-                                    <textarea maxlength="200" class="form-control" rows="2" name="observacionesSalud"></textarea>
+                                    <textarea maxlength="200" class="form-control" rows="2" name="observacionesSalud" id="observacionesSalud"></textarea>
                                     <small class="form-text text-muted">Observaciones</small>
                                 </div>
                             </div>
@@ -2218,7 +2337,7 @@
 </div>
 
 <div id="similitudModal" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width:800px; background-color:#fff">
         <div class="modal-content">
 @*            <div class="text-right"  style="background-color:#0078a7">
                 <button type="button" hrf data-dismiss="modal">x</button>

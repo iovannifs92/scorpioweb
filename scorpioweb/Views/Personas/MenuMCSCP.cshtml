@@ -42,11 +42,11 @@
 @if (ViewBag.WarningsUser > 0)
 {
     <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
-        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.sigueinteSuperviosor</h3>
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida</h3>
     </a>
    
 }
-@if (User.Identity.Name.EndsWith("@dgepms.com"))
+@if (User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
 {
     <a href="/Personas/Create" class="link-archivo">
     <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
@@ -215,13 +215,16 @@
     }
 </div>
 <div class="bg-light clearfix" id="seccionBotones">
+    
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
+        {
+            <section class="buttons" style="padding-right: 1em;">
+                <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>        
+            </section>
+        }
     <section class="buttons" style="padding-right: 1em;">
-        <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>        
+            <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda"></a>
     </section>
-    <section class="buttons" style="padding-right: 1em;">
-        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda"></a>
-    </section>
-   
     <section class="buttons" style="padding-right: 1em;">
         @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") )
         {
@@ -236,7 +239,7 @@
                 <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesUsuario</a>
             }
         }
-        @if (User.Identity.Name.EndsWith("@dgepms.com"))
+        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("SupervisorLC") && User.Identity.Name.EndsWith("@dgepms.com"))
         {
             <a asp-action="libronegro" class="fa fa-book float-right" style="color:black" id="libronegro" title="Libro negro"></a>
         }

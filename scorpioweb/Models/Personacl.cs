@@ -53,17 +53,13 @@ namespace scorpioweb.Models
         public sbyte? Ruta { get; set; }
         public string Sinocentropenitenciario { get; set; }
         public string Ce { get; set; }
+        public string Juzgado { get; set; }
         public string NombreCompleto
         {
             get
             {
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
-        }
-
-        public static implicit operator Personacl(string v)
-        {
-            throw new NotImplementedException();
         }
     }
 }

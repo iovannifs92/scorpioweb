@@ -16,5 +16,9 @@ namespace scorpioweb.Models
         public string F2 { get; set; }
         public string F3 { get; set; }
         public string F4 { get; set; }
+        public string Area { get; set; }
+        public string Supervisor { get; set; }
+        public DateTime? FechaCaptura { get; set; }
+        public sbyte? Proceso { get; set; }
     }
 }
