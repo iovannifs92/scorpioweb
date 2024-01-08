@@ -58,7 +58,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "AdminLC" || rol == "SupervisiorLC"|| rol == "Masteradmin")
+                if (rol == "AdminLC" || rol == "SupervisorLC" || rol == "Masteradmin")
                 {
                     flagCoordinador = true;
                 }
@@ -645,7 +645,7 @@ namespace scorpioweb.Controllers
                 _context.Add(cambiodeobligacionescl);
                 _context.Add(revocacioncl);
                 await _context.SaveChangesAsync(null, 1);
-                return RedirectToAction("Supervision", "Supervisiones", new { @id = idSupervision });
+                return RedirectToAction("Supervision", "Supervisioncl", new { @id = idSupervision });
             }
             return View(personaclcausapenalcl);
         }

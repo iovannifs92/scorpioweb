@@ -47,7 +47,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "SupervisiorLC" || rol == "AdminLC" || rol == "Masteradmin")
+                if (rol == "SupervisorLC" || rol == "AdminLC" || rol == "Masteradmin")
                 {
                     flagCoordinador = true;
                 }

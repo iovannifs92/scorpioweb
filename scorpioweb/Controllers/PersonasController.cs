@@ -151,7 +151,7 @@ namespace scorpioweb.Controllers
 
             foreach (var u in userManager.Users)
             {
-                if (await userManager.IsInRoleAsync(u, "SupervisiorLC"))
+                if (await userManager.IsInRoleAsync(u, "SupervisorLC"))
                 {
                     listasupervisores.Add(u.ToString());
                 }
@@ -189,390 +189,65 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -contarFalsos-
-        public void contarFalsos()
-        {
-            var personas = from p in _context.Persona
-                           select new
-                           {
-                               paterno = p.Paterno,
-                               materno = p.Materno,
-                               fnacimiento = p.Fnacimiento,
-                               genero = p.Genero,
-                               lnestado = p.Lnestado,
-                               nombre = p.Nombre,
-                               nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
-                               id = p.IdPersona
-                           };
-            var listaPersonas = personas.ToList();
-            var personasCount = personas.Count();
-            int cut = (int)(0.8 * personasCount);
-            var cosine = new Cosine(2);
-            string[] CURP = new string[personasCount];
-            for (int i = 0; i < personasCount; i++)
-            {
-                CURP[i] = curp(listaPersonas[i].paterno, listaPersonas[i].materno, listaPersonas[i].fnacimiento, listaPersonas[i].genero, listaPersonas[i].lnestado, listaPersonas[i].nombre);
-            }
-            int falsosNegativos = 0;
-            int falsosPositivos = 0;
-            int falsosPositivosTotal = 0;
-            for (int i = cut; i < personasCount; i++)
-            {
-                string nombreCompleto = listaPersonas[i].nomcom;
-                double mx = 0;
-                int mxId = 0;
-                for (int j = 0; j < cut; j++)
-                {
-                    double r = cosine.Similarity(listaPersonas[j].nomcom, nombreCompleto);
-                    if (r > mx)
-                    {
-                        mx = r;
-                        mxId = j;
-                    }
-                }
-                if (mx < 0.87 && CURP[mxId] == CURP[i])
-                {
-                    falsosNegativos++;
-                }
-                if (mx >= 0.87 && CURP[mxId] != CURP[i])
-                {
-                    if (CURP[i].IndexOf("*") == -1 && CURP[mxId].IndexOf("*") == -1)
-                    {
-                        Debug.WriteLine(nombreCompleto + ", " + listaPersonas[mxId].nomcom + ", " + CURP[i] + ", " + CURP[mxId] + ", " + listaPersonas[i].id + ", " + listaPersonas[mxId].id + ", " + mx + ", curp: " + cosine.Similarity(CURP[i], CURP[mxId]));
-                        falsosPositivos++;
-                    }
-                    falsosPositivosTotal++;
-                }
-            }
-            Debug.WriteLine("falsos Negativos " + falsosNegativos);
-            Debug.WriteLine("falsos Positivos " + falsosPositivos);
-            Debug.WriteLine("falsos Positivos Total " + falsosPositivosTotal);
-        }
-        #endregion
-
-        #region -curp-
-        //Curp sin contar homonimos a 17 caracteres
-        public string curp(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
-        {
-            int i;
-            StringBuilder curp = new StringBuilder("*********");
-
-            curp[0] = paterno[0];
-            for (i = 0; i < paterno.Length; i++)
-            {
-                if ("AEIOU".IndexOf(paterno[i]) >= 0)
-                {
-                    break;
-                }
-            }
-            if (i < paterno.Length)
-            {
-                curp[1] = paterno[i];
-            }
-            curp[2] = materno[0];
-            curp[3] = nombre[0];
-            curp.Insert(4, fnacimiento.Value.ToString("yyMMdd"));
-            if (genero == "M")
-                curp[10] = 'H';
-            else if (genero == "F")
-                curp[10] = 'M';
-            //https://es.wikipedia.org/wiki/Plantilla:Abreviaciones_de_los_estados_de_M%C3%A9xico
-            string[] abreviacionesEstados = { "**", "AG", "BC", "BS", "CM", "CO", "CL", "CS", "CH", "CX", "DG", "GT", "GR", "HG", "JC", "EM", "MI", "MO", "NA", "NL", "OA", "PU", "QT", "QR", "SL", "SI", "SO", "TB", "TM", "TL", "VE", "YU", "ZA" };
-            curp.Insert(11, abreviacionesEstados[Int32.Parse(lnestado)]);
-            for (i = 1; i < paterno.Length; i++)
-            {
-                if ("AEIOU".IndexOf(paterno[i]) == -1)
-                {
-                    break;
-                }
-            }
-            if (i < paterno.Length)
-            {
-                curp[13] = paterno[i];
-            }
-            for (i = 1; i < materno.Length; i++)
-            {
-                if ("AEIOU".IndexOf(materno[i]) == -1)
-                {
-                    break;
-                }
-            }
-            if (i < materno.Length)
-            {
-                curp[14] = materno[i];
-            }
-            for (i = 1; i < nombre.Length; i++)
-            {
-                if ("AEIOU".IndexOf(nombre[i]) == -1)
-                {
-                    break;
-                }
-            }
-            if (i < nombre.Length)
-            {
-                curp[15] = nombre[i];
-            }
-            if (Int32.Parse(fnacimiento.Value.ToString("yyyy")) < 2000)
-            {
-                curp[16] = '0';
-            }
-            else
-            {
-                curp[16] = 'A';
-            }
-            return curp.ToString();
-        }
-
-        public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
-        {
-            var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);
-            return Json(new { success = true, responseText = Convert.ToString(0), curs = curs}); ;
-        }
-        #endregion
-
-        //#region -testSimilitud-
-        //public JsonResult testSimilitud(string nombre, string paterno, string materno)
+        //public void contarFalsos()
         //{
-        //    bool simi = false;
-        //    var nombreCompleto = mg.normaliza(paterno) + " " + mg.normaliza(materno) + " " + mg.normaliza(nombre);
-
-        //    var query = from p in _context.Persona
-        //                select new
-        //                {
-        //                    nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
-        //                    id = p.IdPersona
-        //                };
-
-        //    int idpersona = 0;
-        //    string nomCom = "";
+        //    var personas = from p in _context.Persona
+        //                   select new
+        //                   {
+        //                       paterno = p.Paterno,
+        //                       materno = p.Materno,
+        //                       fnacimiento = p.Fnacimiento,
+        //                       genero = p.Genero,
+        //                       lnestado = p.Lnestado,
+        //                       nombre = p.Nombre,
+        //                       nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
+        //                       id = p.IdPersona
+        //                   };
+        //    var listaPersonas = personas.ToList();
+        //    var personasCount = personas.Count();
+        //    int cut = (int)(0.8 * personasCount);
         //    var cosine = new Cosine(2);
-        //    double r = 0;
-        //    var list = new List<Tuple<string, int, double>>();
-
-        //    List<string> listaNombre = new List<string>();
-
-
-        //    foreach (var q in query)
+        //    string[] CURP = new string[personasCount];
+        //    for (int i = 0; i < personasCount; i++)
         //    {
-        //        r = cosine.Similarity(q.nomcom, nombreCompleto);
-        //        if (r >= 0.87)
+        //        CURP[i] = curp(listaPersonas[i].paterno, listaPersonas[i].materno, listaPersonas[i].fnacimiento, listaPersonas[i].genero, listaPersonas[i].lnestado, listaPersonas[i].nombre);
+        //    }
+        //    int falsosNegativos = 0;
+        //    int falsosPositivos = 0;
+        //    int falsosPositivosTotal = 0;
+        //    for (int i = cut; i < personasCount; i++)
+        //    {
+        //        string nombreCompleto = listaPersonas[i].nomcom;
+        //        double mx = 0;
+        //        int mxId = 0;
+        //        for (int j = 0; j < cut; j++)
         //        {
-        //            nomCom = q.nomcom;
-        //            idpersona = q.id;
-        //            list.Add(new Tuple<string, int, double>(nomCom, idpersona, r));
-        //            simi = true;
+        //            double r = cosine.Similarity(listaPersonas[j].nomcom, nombreCompleto);
+        //            if (r > mx)
+        //            {
+        //                mx = r;
+        //                mxId = j;
+        //            }
+        //        }
+        //        if (mx < 0.87 && CURP[mxId] == CURP[i])
+        //        {
+        //            falsosNegativos++;
+        //        }
+        //        if (mx >= 0.87 && CURP[mxId] != CURP[i])
+        //        {
+        //            if (CURP[i].IndexOf("*") == -1 && CURP[mxId].IndexOf("*") == -1)
+        //            {
+        //                Debug.WriteLine(nombreCompleto + ", " + listaPersonas[mxId].nomcom + ", " + CURP[i] + ", " + CURP[mxId] + ", " + listaPersonas[i].id + ", " + listaPersonas[mxId].id + ", " + mx + ", curp: " + cosine.Similarity(CURP[i], CURP[mxId]));
+        //                falsosPositivos++;
+        //            }
+        //            falsosPositivosTotal++;
         //        }
         //    }
-        //    if (list.Count() != 0)
-        //    {
-        //        var tupleWithMaxItem1 = list.OrderBy(x => x.Item3).Last();
-
-        //        if (simi == true)
-        //        {
-        //            double i = tupleWithMaxItem1.Item3 * 100;
-        //            int porcentaje = (int)Math.Floor(i);
-        //            string id = tupleWithMaxItem1.Item2.ToString();
-        //            return Json(new { success = true, responseText = Url.Action("MenuEdicion/" + id, "Personas"), porcentaje = porcentaje });
-        //        }
-        //    }
-
-        //    return Json(new { success = false });
+        //    Debug.WriteLine("falsos Negativos " + falsosNegativos);
+        //    Debug.WriteLine("falsos Positivos " + falsosPositivos);
+        //    Debug.WriteLine("falsos Positivos Total " + falsosPositivosTotal);
         //}
-        //#endregion
-        //#region -testSimilitud-
-        //public JsonResult testSimilitud(string nombre, string paterno, string materno)
-        //{
-        //    bool simi = false;
-        //    var nombreCompleto = mg.normaliza(paterno) + " " + mg.normaliza(materno) + " " + mg.normaliza(nombre);
-        //    var inicuialnomnbre = paterno.Substring(0, 1).ToUpper();
-
-        //    var query = (from p in _context.Persona
-        //                 join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
-        //                 from d in domicilioJoin.DefaultIfEmpty()
-        //                 join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into supervisionJoin
-        //                 from s in supervisionJoin.DefaultIfEmpty()
-        //                 join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
-        //                 from cp in causapenalJoin.DefaultIfEmpty()
-        //                 group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio } into g
-        //                 select new
-        //                 {
-        //                     id = g.Key.IdPersona,
-        //                     nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
-        //                     NomTabla = "MCYSCP",
-        //                     datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g)};\n"
-        //                 }).Union
-        //                 (from a in _context.Archivo
-        //                  join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
-        //                  group new { ar.CausaPenal, ar.CarpetaEjecucion } by new { a.IdArchivo, a.Paterno, a.Materno, a.Nombre, a.ClaveUnicaScorpio } into g
-        //                  select new
-        //                  {
-        //                      id = g.Key.IdArchivo,
-        //                      nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
-        //                      NomTabla = "Archivo",
-        //                      datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n"
-        //                  }).Union
-        //                    (from e in _context.Ejecucion
-        //                     join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcausapenalJoin
-        //                     from epcp in epcausapenalJoin.DefaultIfEmpty()
-        //                     group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce, e.ClaveUnicaScorpio } into g
-        //                     select new
-        //                     {
-        //                         id = g.Key.IdEjecucion,
-        //                         nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
-        //                         NomTabla = "Ejecucion",
-        //                         datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g)};\n"
-        //                     }).Union
-        //                            (from sp in _context.Serviciospreviosjuicio
-        //                             where sp.Paterno.Contains(paterno) && sp.Materno.Contains(materno)
-        //                             select new
-        //                             {
-        //                                 id = sp.IdserviciosPreviosJuicio,
-        //                                 nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
-        //                                 NomTabla = "Servicios Previos",
-        //                                 datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n"
-        //                             }).Union
-        //                                (from pp in _context.Prisionespreventivas
-        //                                 select new
-        //                                 {
-        //                                     id = pp.Idprisionespreventivas,
-        //                                     nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
-        //                                     NomTabla = "Prision Preventiva",
-        //                                     datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n"
-        //                                 }).Union
-        //                                    (from pp in _context.Oficialia
-        //                                     select new
-        //                                     {
-        //                                         id = pp.IdOficialia,
-        //                                         nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
-        //                                         NomTabla = "Oficialia",
-        //                                         datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n"
-        //                                     }).Union
-        //                                         (from p in _context.Personacl
-        //                                          join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl into domicilioJoin
-        //                                          from d in domicilioJoin.DefaultIfEmpty()
-        //                                          select new
-        //                                          {
-        //                                              id = p.IdPersonaCl,
-        //                                              nomcom = p.Paterno + " " + p.Materno + " " + p.Nombre,
-        //                                              NomTabla = "LibertadCondicionada",
-        //                                              datoExtra = $"CLAVE UNICA SCORPIO: {p.ClaveUnicaScorpio}; Edad: {p.Edad};\n Domicilio: {d.Calle}, {d.No}, {d.NombreCf};\n"
-        //                                          });
-
-        //    var result = query.ToList();
-
-        //    int idpersona = 0;
-        //    string nomCom = "";
-        //    string tabla = "";
-        //    string datoextra = "";
-        //    var cosine = new Cosine(2);
-        //    double r = 0;
-        //    var list = new List<Tuple<string, string, int, string, double>>();
-
-        //    List<string> listaNombre = new List<string>();
-
-
-        //    foreach (var q in query)
-        //    {
-        //        r = cosine.Similarity(q.nomcom, nombreCompleto);
-        //        if (r >= 0.87)
-        //        {
-        //            nomCom = q.nomcom;
-        //            idpersona = q.id;
-        //            tabla = q.NomTabla;
-        //            datoextra = q.datoExtra;
-        //            list.Add(new Tuple<string, string, int, string, double>(nomCom, tabla, idpersona, datoextra, r));
-        //            simi = true;
-        //        }
-        //    }
-        //    List<object> elementos = new List<object>();
-        //    if (list.Count() != 0)
-        //    {
-        //        for (int i = 0; i < list.Count; i++)
-        //        {
-        //            var item = list[i];
-        //            double porcentaje = item.Item5 * 100;
-        //            int porcentajeFloor = (int)Math.Floor(porcentaje);
-        //            string nombreP = item.Item1;
-        //            string tablaP = item.Item2;
-        //            int idPersona = item.Item3;
-        //            string datoextraP = item.Item4;
-
-        //            elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP });
-        //        }
-        //        return Json(new { success = true, lista = elementos });
-        //    }
-        //    return Json(new { success = false, lista = elementos });
-        //}
-
-        //public JsonResult Savcardatos(int id, string tabla)
-        //{
-        //    List<object> listaDatos = new List<object>();
-
-        //    switch (tabla)
-        //    {
-        //        case "MCYSCP":
-        //            var query = (from p in _context.Persona
-        //                         join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
-        //                         from d in domicilioJoin.DefaultIfEmpty()
-        //                         join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona into estudiosJoin
-        //                         from e in estudiosJoin.DefaultIfEmpty()
-        //                         join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona into trabajoJoin
-        //                         from t in trabajoJoin.DefaultIfEmpty()
-        //                         join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona into actividadessocialesJoin
-        //                         from a in actividadessocialesJoin.DefaultIfEmpty()
-        //                         join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
-        //                         from s in saludfisicaJoin.DefaultIfEmpty()
-        //                         where p.IdPersona == id select new
-        //                         {
-        //                             p, d, e, t, a, s
-        //                         }).ToList();
-        //            listaDatos.AddRange(query);
-        //            break;
-        //        case "Archivo":
-        //            listaDatos.AddRange(_context.Archivo.Where(table => table.IdArchivo == id).ToList());
-        //            break;
-        //        case "Ejecucion":
-        //            listaDatos.AddRange(_context.Ejecucion.Where(table => table.IdEjecucion == id).ToList());
-        //            break;
-        //        case "Servicios Previos":
-        //            listaDatos.AddRange(_context.Serviciospreviosjuicio.Where(table => table.IdserviciosPreviosJuicio == id).ToList());
-        //            break;
-        //        case "Prision Preventiva":
-        //            listaDatos.AddRange(_context.Prisionespreventivas.Where(table => table.Idprisionespreventivas == id).ToList());
-        //            break;
-        //        case "Oficialia":
-        //            listaDatos.AddRange(_context.Oficialia.Where(table => table.IdOficialia == id).ToList());
-        //            break;
-        //        case "LibertadCondicionada":
-        //            var queryCL = (from p in _context.Personacl
-        //                           join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl into domicilioJoin
-        //                           from d in domicilioJoin.DefaultIfEmpty()
-        //                           join e in _context.Estudioscl on p.IdPersonaCl equals e.PersonaClIdPersonaCl into estudiosJoin
-        //                           from e in estudiosJoin.DefaultIfEmpty()
-        //                           join t in _context.Trabajocl on p.IdPersonaCl equals t.PersonaClIdPersonaCl into trabajoJoin
-        //                           from t in trabajoJoin.DefaultIfEmpty()
-        //                           join a in _context.Actividadsocialcl on p.IdPersonaCl equals a.PersonaClIdPersonaCl into actividadessocialesJoin
-        //                           from a in actividadessocialesJoin.DefaultIfEmpty()
-        //                           join s in _context.Saludfisicacl on p.IdPersonaCl equals s.PersonaClIdPersonaCl into saludfisicaJoin
-        //                           from s in saludfisicaJoin.DefaultIfEmpty()
-        //                           where p.IdPersonaCl == id
-        //                           select new
-        //                           {
-        //                               p = p,
-        //                               d = d,
-        //                               e = e,
-        //                               t = t,
-        //                               a = a,
-        //                               s = s
-        //                           }).ToList();
-        //            listaDatos.AddRange(queryCL);
-        //            break;
-        //    }
-        //    return Json(new { success = false, lista = listaDatos });
-        //}
-
-
-
-        //#endregion
+        #endregion
 
         #region -Pruebas-
         public ActionResult Pruebas()
@@ -714,45 +389,45 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -PROXIMO SUPERVISOR-
-            // Obtén el último supervisor
-            var ultimoSupervisor = _context.Persona
-                                    .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
-                                    .OrderByDescending(p => p.IdPersona)
-                                    .Select(p => p.Supervisor)
-                                    .FirstOrDefault();
-            // Obtén la lista de usuarios y ordénala alfabéticamente
-            List<SelectListItem> ListaSuper = new List<SelectListItem>();
-            int j = 0;
-            foreach (var usuarios in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(usuarios, "SupervisorMCSCP"))
-                {
-                    ListaSuper.Add(new SelectListItem
-                    {
-                        Text = usuarios.ToString(),
-                        Value = j.ToString()
-                    });
-                    j++;
-                }
-            }
+            //// Obtén el último supervisor
+            //var ultimoSupervisor = _context.Persona
+            //                        .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
+            //                        .OrderByDescending(p => p.IdPersona)
+            //                        .Select(p => p.Supervisor)
+            //                        .FirstOrDefault();
+            //// Obtén la lista de usuarios y ordénala alfabéticamente
+            //List<SelectListItem> ListaSuper = new List<SelectListItem>();
+            //int j = 0;
+            //foreach (var usuarios in userManager.Users)
+            //{
+            //    if (await userManager.IsInRoleAsync(usuarios, "SupervisorMCSCP"))
+            //    {
+            //        ListaSuper.Add(new SelectListItem
+            //        {
+            //            Text = usuarios.ToString(),
+            //            Value = j.ToString()
+            //        });
+            //        j++;
+            //    }
+            //}
 
-            // Ordena la lista alfabéticamente por el texto (nombre de usuario)
-            ListaSuper = ListaSuper
-                        .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
-                        .OrderBy(item => item.Text)
-                        .ToList();
+            //// Ordena la lista alfabéticamente por el texto (nombre de usuario)
+            //ListaSuper = ListaSuper
+            //            .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
+            //            .OrderBy(item => item.Text)
+            //            .ToList();
 
-            var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
+            //var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
 
-            if (siguienteSupervisor != null)
-            {
-                var valorSiguienteSupervisor = siguienteSupervisor.Text;
-                ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
-            }
-            else
-            {
-                ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
-            }
+            //if (siguienteSupervisor != null)
+            //{
+            //    var valorSiguienteSupervisor = siguienteSupervisor.Text;
+            //    ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
+            //}
+            //else
+            //{
+            //    ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
+            //}
             #endregion
 
             ViewData["CurrentFilter"] = searchString;
@@ -940,46 +615,46 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -ASIGNAR SUPERVISOR-
-            // Obtén el último supervisor
-            var ultimoSupervisor = _context.Persona
-                                    .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
-                                    .OrderByDescending(p => p.IdPersona)
-                                    .Select(p => p.Supervisor)
-                                    .FirstOrDefault();
-            // Obtén la lista de usuarios y ordénala alfabéticamente
-            List<SelectListItem> ListaSuper = new List<SelectListItem>();
-            int j = 0;
-            foreach (var users in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
-                {
-                    ListaSuper.Add(new SelectListItem
-                    {
-                        Text = users.ToString(),
-                        Value = j.ToString()
-                    });
-                    j++;
-                }
-            }
+            //// Obtén el último supervisor
+            //var ultimoSupervisor = _context.Persona
+            //                        .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
+            //                        .OrderByDescending(p => p.IdPersona)
+            //                        .Select(p => p.Supervisor)
+            //                        .FirstOrDefault();
+            //// Obtén la lista de usuarios y ordénala alfabéticamente
+            //List<SelectListItem> ListaSuper = new List<SelectListItem>();
+            //int j = 0;
+            //foreach (var users in userManager.Users)
+            //{
+            //    if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
+            //    {
+            //        ListaSuper.Add(new SelectListItem
+            //        {
+            //            Text = users.ToString(),
+            //            Value = j.ToString()
+            //        });
+            //        j++;
+            //    }
+            //}
 
-            // Ordena la lista alfabéticamente por el texto (nombre de usuario)
-            ListaSuper = ListaSuper
-                        .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
-                        .OrderBy(item => item.Text)
-                        .ToList();
-            ViewBag.ListadoUsuarios = ListaSuper;
+            //// Ordena la lista alfabéticamente por el texto (nombre de usuario)
+            //ListaSuper = ListaSuper
+            //            .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
+            //            .OrderBy(item => item.Text)
+            //            .ToList();
+            //ViewBag.ListadoUsuarios = ListaSuper;
 
-            var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
+            //var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
 
-            if (siguienteSupervisor != null)
-            {
-                var valorSiguienteSupervisor = siguienteSupervisor.Text;
-                ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
-            }
-            else
-            {
-                ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
-            }
+            //if (siguienteSupervisor != null)
+            //{
+            //    var valorSiguienteSupervisor = siguienteSupervisor.Text;
+            //    ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
+            //}
+            //else
+            //{
+            //    ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
+            //}
             #endregion
 
             ViewBag.Warnings = 0;
@@ -2073,7 +1748,7 @@ namespace scorpioweb.Controllers
 
         #region -CREATE-
         // GET: Personas/Create
-        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP, AdminLC, SupervisiorLC")]
+        [Authorize(Roles = "AdminMCSCP, SupervisorMCSCP, Masteradmin, Asistente, AuxiliarMCSCP, AdminLC, SupervisorLC")]
         public async Task<IActionResult> Create(Estados Estados)
         {
             ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
@@ -2091,53 +1766,53 @@ namespace scorpioweb.Controllers
                 {
                     ViewBag.UserMCYSCP = true;
                 }
-                if (rol == "AdminLC" || rol == "SupervisiorLC")
+                if (rol == "AdminLC" || rol == "SupervisorLC")
                 {
                     ViewBag.UserCL = true;
                 }
             }
 
             #region -ASIGNAR SUPERVISOR-
-            // Obtén el último supervisor
-            var ultimoSupervisor = _context.Persona
-                                    .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
-                                    .OrderByDescending(p => p.IdPersona)
-                                    .Select(p => p.Supervisor)
-                                    .FirstOrDefault();
-            // Obtén la lista de usuarios y ordénala alfabéticamente
-            List<SelectListItem> ListaSuper = new List<SelectListItem>();
-            int j = 0;
-            foreach (var users in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
-                {
-                    ListaSuper.Add(new SelectListItem
-                    {
-                        Text = users.ToString(),
-                        Value = j.ToString()
-                    });
-                    j++;
-                }
-            }
+            //// Obtén el último supervisor
+            //var ultimoSupervisor = _context.Persona
+            //                        .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
+            //                        .OrderByDescending(p => p.IdPersona)
+            //                        .Select(p => p.Supervisor)
+            //                        .FirstOrDefault();
+            //// Obtén la lista de usuarios y ordénala alfabéticamente
+            //List<SelectListItem> ListaSuper = new List<SelectListItem>();
+            //int j = 0;
+            //foreach (var users in userManager.Users)
+            //{
+            //    if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
+            //    {
+            //        ListaSuper.Add(new SelectListItem
+            //        {
+            //            Text = users.ToString(),
+            //            Value = j.ToString()
+            //        });
+            //        j++;
+            //    }
+            //}
 
-            // Ordena la lista alfabéticamente por el texto (nombre de usuario)
-            ListaSuper = ListaSuper
-                        .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
-                        .OrderBy(item => item.Text)
-                        .ToList();
-            ViewBag.ListadoUsuarios = ListaSuper;
+            //// Ordena la lista alfabéticamente por el texto (nombre de usuario)
+            //ListaSuper = ListaSuper
+            //            .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
+            //            .OrderBy(item => item.Text)
+            //            .ToList();
+            //ViewBag.ListadoUsuarios = ListaSuper;
 
-            var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
+            //var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
 
-            if (siguienteSupervisor != null)
-            {
-                var valorSiguienteSupervisor = siguienteSupervisor.Text;
-                ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
-            }
-            else
-            {
-                ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
-            }
+            //if (siguienteSupervisor != null)
+            //{
+            //    var valorSiguienteSupervisor = siguienteSupervisor.Text;
+            //    ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
+            //}
+            //else
+            //{
+            //    ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
+            //}
             #endregion
 
             List<Estados> listaEstados = new List<Estados>();
@@ -2202,7 +1877,7 @@ namespace scorpioweb.Controllers
                 {
                     esMCSCP = true;
                 }
-                if (rol == "AdminLC" || rol == "SupervisiorLC")
+                if (rol == "AdminLC" || rol == "SupervisorLC")
                 {
                     esCL = true;
                 }
@@ -2588,65 +2263,66 @@ namespace scorpioweb.Controllers
                     }
                     #endregion
 
-                    #region -ASIGNAR SUPERVISOR-
-                    //Obtén el último supervisor
-                    if (User.Identity.Name.EndsWith("@dgepms.com"))
-                    {
-                        var ultimoSupervisor = _context.Persona
-                                            .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
-                                            .OrderByDescending(p => p.IdPersona)
-                                            .Select(p => p.Supervisor)
-                                            .FirstOrDefault();
+                    // SE USABA PARA ASIGNAR UN SUPERVISADADO DE MANERA AUTOMATICA (DESDE EL PRINCIPIO PENSE QUE NO SERIA RENTBLE )
+                    //#region -ASIGNAR SUPERVISOR-
+                    ////Obtén el último supervisor
+                    //if (User.Identity.Name.EndsWith("@dgepms.com"))
+                    //{
+                    //    var ultimoSupervisor = _context.Persona
+                    //                        .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
+                    //                        .OrderByDescending(p => p.IdPersona)
+                    //                        .Select(p => p.Supervisor)
+                    //                        .FirstOrDefault();
 
-                        // Obtén la lista de usuarios y ordénala alfabéticamente
-                        List<SelectListItem> ListaSuper = new List<SelectListItem>();
-                        int j = 0;
-                        foreach (var users in userManager.Users)
-                        {
-                            if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
-                            {
-                                ListaSuper.Add(new SelectListItem
-                                {
-                                    Text = users.ToString(),
-                                    Value = j.ToString()
-                                });
-                                j++;
-                            }
-                        }
+                    //    // Obtén la lista de usuarios y ordénala alfabéticamente
+                    //    List<SelectListItem> ListaSuper = new List<SelectListItem>();
+                    //    int j = 0;
+                    //    foreach (var users in userManager.Users)
+                    //    {
+                    //        if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
+                    //        {
+                    //            ListaSuper.Add(new SelectListItem
+                    //            {
+                    //                Text = users.ToString(),
+                    //                Value = j.ToString()
+                    //            });
+                    //            j++;
+                    //        }
+                    //    }
 
-                        // Ordena la lista alfabéticamente por el texto (nombre de usuario)
-                        ListaSuper = ListaSuper
-                                     .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com").OrderBy(item => item.Text)
-                                    .ToList();
-                        ViewBag.ListadoUsuarios = ListaSuper;
+                    //    // Ordena la lista alfabéticamente por el texto (nombre de usuario)
+                    //    ListaSuper = ListaSuper
+                    //                 .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com").OrderBy(item => item.Text)
+                    //                .ToList();
+                    //    ViewBag.ListadoUsuarios = ListaSuper;
 
-                        var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
+                    //    var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
 
-                        if (siguienteSupervisor != null)
-                        {
-                            if (municipioD != "283" && municipioD != "282" && municipioD != "303")
-                            {
-                                persona.Supervisor = "enrique.martinez@dgepms.com";
-                            }
-                            else
-                            {
-                                var valorSiguienteSupervisor = siguienteSupervisor.Text;
-                                persona.Supervisor = valorSiguienteSupervisor;
-                            }
-                        }
-                        else
-                        {
-                            if (municipioD != "283" && municipioD != "282" && municipioD != "303")
-                            {
-                                persona.Supervisor = "enrique.martinez@dgepms.com";
-                            }
-                            else
-                            {
-                                persona.Supervisor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
-                            }
-                        }
-                    }
-                    #endregion
+                    //    if (siguienteSupervisor != null)
+                    //    {
+                    //        if (municipioD != "283" && municipioD != "282" && municipioD != "303")
+                    //        {
+                    //            persona.Supervisor = "enrique.martinez@dgepms.com";
+                    //        }
+                    //        else
+                    //        {
+                    //            var valorSiguienteSupervisor = siguienteSupervisor.Text;
+                    //            persona.Supervisor = valorSiguienteSupervisor;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        if (municipioD != "283" && municipioD != "282" && municipioD != "303")
+                    //        {
+                    //            persona.Supervisor = "enrique.martinez@dgepms.com";
+                    //        }
+                    //        else
+                    //        {
+                    //            persona.Supervisor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
+                    //        }
+                    //    }
+                    //}
+                    //#endregion
 
                     #region -Expediente Unico-
                     if (idselecionado != null && tabla != null)
@@ -7921,9 +7597,9 @@ namespace scorpioweb.Controllers
                 {
                     esMCSCP = true;
                 }
-                if (rol == "AdminLC" || rol == "SupervisiorLC")
-                {
-                    esCL = true;
+                if (rol == "AdminLC" || rol == "SupervisorLC") 
+                { 
+                        esCL = true;
                 }
             }
 
@@ -8010,7 +7686,7 @@ namespace scorpioweb.Controllers
                     {
                         libronegro.Area = "MCYSCP";
                     }
-                    if (rol == "AdminLC" || rol == "SupervisiorLC")
+                    if (rol == "AdminLC" || rol == "SupervisorLC")
                     {
                         libronegro.Area = "CL";
                     }

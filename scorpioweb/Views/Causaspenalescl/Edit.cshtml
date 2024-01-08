@@ -160,7 +160,7 @@
             <input asp-for="Fechacreacion" readonly type="hidden" class="form-control" />
             <input asp-for="Usuario" readonly type="hidden" class="form-control" />
             <div class="form-group col-md-12">
-                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC") || User.IsInRole("Oficialia"))
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC") || User.IsInRole("Oficialia"))
                 {
                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCreateDelito">
                         <i class="fa fa-plus"></i> Crear Delito
@@ -174,7 +174,7 @@
 
                 }
             </div>
-            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC") || User.IsInRole("Oficialia"))
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC") || User.IsInRole("Oficialia"))
             {
                 <div class="form-group col-md-12">
                     <button type="submit" id="btnguardarEdit" name="btnguardarEdit" class="btn btn-primary">
@@ -207,7 +207,7 @@
                         <tr>
                             <td style="background-color:#E2E2E2; border-color: #fff; color: #000;">Modalidad</td>
                             <td>@item.delitoVM.Modalidad</td>
-                            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC") || User.IsInRole("Oficialia"))
+                            @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC") || User.IsInRole("Oficialia"))
                             {
                                 <td style="border-right: solid White;
                                                border-bottom: solid White;

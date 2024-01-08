@@ -75,7 +75,7 @@
                 }
 
 
-                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC"))
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC"))
                 {
                 <td>
                     <a class="btn btn-primary" asp-controller="Supervisioncl" asp-action="Supervision" asp-route-id="@item.supervisionVM.IdSupervisioncl">

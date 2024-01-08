@@ -213,12 +213,6 @@ namespace scorpioweb.Controllers
             return municipio;
         }
         #endregion
-
-        public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
-        {
-            var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);
-            return Json(new { success = true, responseText = Convert.ToString(0), curs = curs }); ;
-        }
         #endregion
 
         public async Task<IActionResult> MenuSPJ()

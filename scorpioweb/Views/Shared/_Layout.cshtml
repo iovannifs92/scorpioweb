@@ -48,11 +48,11 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminCL") || User.IsInRole("SupervisiorLC"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminCL") || User.IsInRole("SupervisorLC"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Create">Entrevista</a></li>
                     }                 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisiorLC"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
                     }
@@ -68,7 +68,7 @@
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") || User.IsInRole("CoordinadorEjecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("SupervisiorLC"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") || User.IsInRole("CoordinadorEjecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("SupervisorLC"))
                     {
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }

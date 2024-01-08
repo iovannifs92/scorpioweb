@@ -106,17 +106,6 @@
                                 + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersonaCl + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personacls/MenuEdicion/" + result.page[i].idPersonaCl + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            if (result.page[i].candado == 0) {
-                                row = row
-                                    + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                                    + "</tr>";
-                                row = row + "</td>";
-                                row = row + "</div>";
-                            } else {
-                                row = row
-                                    + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                    + "</tr>";
-                            }
                         }else{
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
@@ -125,8 +114,17 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                         }
-                        row = row + "</td>";
-                        row = row + "</div>";
+                        if (result.page[i].candado == 0) {
+                            row = row
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                + "</tr>";
+                            row = row + "</td>";
+                            row = row + "</div>";
+                        }else {
+                            row = row
+                                + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                + "</tr>";
+                        }
                     } 
                 }
                 if (row != '') {

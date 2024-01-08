@@ -46,12 +46,12 @@
     </a>
    
 }
-@if (User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
+@*@if (User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
 {
     <a href="/Personas/Create" class="link-archivo">
     <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
     </a>
-}
+}*@
 <div class="card-group" style="padding-top:2%">
   
     @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
@@ -223,7 +223,7 @@
             </section>
         }
     <section class="buttons" style="padding-right: 1em;">
-            <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda"></a>
+        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
     </section>
     <section class="buttons" style="padding-right: 1em;">
         @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") )

@@ -338,7 +338,7 @@ namespace scorpioweb.Controllers
                                                       claveUnica = g.Key.claveunica
                                                   });
 
-            var result = query.ToList();
+            var result = query.OrderBy(o => o.claveUnica);
 
             int idpersona = 0;
             string nomCom = "";
@@ -352,7 +352,7 @@ namespace scorpioweb.Controllers
             List<string> listaNombre = new List<string>();
 
 
-            foreach (var q in query)
+            foreach (var q in result)
             {
                 r = cosine.Similarity(q.nomcom, nombreCompleto);
                 if (r >= 0.87)
@@ -381,6 +381,7 @@ namespace scorpioweb.Controllers
                     string claveunica = item.Item6;
                     elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP, Clave = claveunica });
                 }
+               
                 return Json(new { success = true, lista = elementos });
             }
             return Json(new { success = false, lista = elementos });
@@ -494,6 +495,14 @@ namespace scorpioweb.Controllers
                     break;
             }
             return Json(new { success = false, lista = listaDatos });
+        }
+        #endregion
+
+        #region -SACAR CURP-
+        public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
+        {
+            var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);
+            return Json(new { success = true, responseText = Convert.ToString(0), curs = curs }); ;
         }
         #endregion
     }

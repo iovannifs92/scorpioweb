@@ -1125,7 +1125,7 @@
         var lnestado = document.getElementById("lnEstado").value;
         var Fnacimiento = document.getElementById("fNacimiento").value;
         $.ajax({
-            url: "/Personas/cursJson",
+            url: "/Api/cursJson",
             type: "POST",
             dataType: "json",
             cache: false,
@@ -1151,13 +1151,6 @@
 @ViewBag.Javascript
 <h2 style="margin-top:20px">Entrevista de encuadre</h2>
 <br />
-@if(User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
-{
-  <a href="/Personas/Create" class="link-archivo">
-    <h3 style="text-align:left; color:lightseagreen">Proximo Supervisor: @ViewBag.sigueinteSuperviosor</h3>
-  </a>  
-}
-
 <label id="datosLabel"></label>
 <div class="row">
     <div class="col-md-4">
@@ -1192,7 +1185,7 @@
                                 {
                                 <div class="form-group col-md-6">
                                     <label class="control-label">Carpeta de Ejecucion</label>
-                                    <input name="ce" id="ce" type="text" class="form-control" />
+                                    <input required name="ce" id="ce" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group col-md-6" id="Juzgado">
                                     <label class="control-label">Juzgado de Origen</label>

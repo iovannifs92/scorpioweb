@@ -8,6 +8,18 @@
     bool oficialia = false;
 }
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script>
+    function openFullScreenWindow() {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+
+        const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+    }
+</script>
+
+
 @*@if (ViewBag.WarningsUser > 0)
 {
     <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
@@ -167,10 +179,6 @@
 @*    <section class="buttons" style="padding-right: 1em;">
         <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>
     </section>*@
-@*    <section class="buttons" style="padding-right: 1em;">
-        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda"></a>
-    </section>
-*@
     <section class="buttons" style="padding-right: 1em;">
 @*        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
         {
@@ -187,10 +195,14 @@
                 <a class="fa fa fa-comment float-right" asp-action="MensajesSistema" id="mensajeSistema">@ViewBag.MensajesUsuario</a>
            }
         } *@
-        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
+        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("SupervisorLC") && User.Identity.Name.EndsWith("@dgepms.com"))
         {
             <a asp-controller="Personas" asp-action="libronegro" class="fa fa-book float-right" style="color:black" id="libronegro" title="Libro negro"></a>
         }
+        
+    </section>
+    <section class="buttons" style="padding-right: 1em;">
+        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
     </section>
 </div>
 
