@@ -78,6 +78,11 @@
                         + "<td>" + response.lista[i].nombre + "</td>"
                         + "<td>" + response.lista[i].tabla + "</td>"
                         + "<td>" + response.lista[i].dato + "</td>"
+                        if (response.lista[i].foto != "NA") {
+                            row = row + "<td><img src='/" + response.lista[i].foto + "' class='img-thumbnail' width='200' height='200'></td>"
+                        } else {
+                            row = row + "<td width='200' height='200'></td>"
+                        }
                     row = row + "<td>";
                     if (response.lista[i].tabla == "Archivo") {
                         row = row
@@ -202,6 +207,8 @@
                                 <th>Nombre</th>
                                 <th>Tabla</th>
                                 <th>Dato Extra</th>
+                                <th>Fotos</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tblSimilitud">

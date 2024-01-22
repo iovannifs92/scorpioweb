@@ -249,14 +249,15 @@ namespace scorpioweb.Controllers
                          from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                          join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
                          from cp in causapenalJoin.DefaultIfEmpty()
-                         group cp.CausaPenal by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, cp.CausaPenal, p.ClaveUnicaScorpio, claveunica = eu.ClaveUnicaScorpio } into g
+                         group cp.CausaPenal by new {p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.rutaFoto, d.Calle, d.No, d.NombreCf, cp.CausaPenal, p.ClaveUnicaScorpio, claveunica = eu.ClaveUnicaScorpio, p.Edad } into g
                          select new
                          {
                              id = g.Key.IdPersona,
                              nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                              NomTabla = "MCYSCP",
-                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
-                             claveUnica = g.Key.claveunica
+                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad:{g.Key.Edad} ;\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
+                             claveUnica = g.Key.claveunica,
+                             foto = "Fotos/" + g.Key.rutaFoto
                          }).Union
                          (from a in _context.Archivo
                           join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
@@ -269,7 +270,8 @@ namespace scorpioweb.Controllers
                               nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                               NomTabla = "Archivo",
                               datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n Carpeta de Ejecucion: {string.Join(", ", g.Select(x => x.CarpetaEjecucion))};\n",
-                              claveUnica = g.Key.claveunica
+                              claveUnica = g.Key.claveunica,
+                              foto = "NA"
                           }).Union
                             (from e in _context.Ejecucion
                              join epcp in _context.Epcausapenal on e.IdEjecucion equals epcp.EjecucionIdEjecucion into epcausapenalJoin
@@ -283,20 +285,21 @@ namespace scorpioweb.Controllers
                                  nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                                  NomTabla = "Ejecucion",
                                  datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g.Key.Causapenal)};\n",
-                                 claveUnica = g.Key.claveunica
+                                 claveUnica = g.Key.claveunica,
+                                 foto = "NA"
                              }).Union
-                                    (from sp in _context.Serviciospreviosjuicio
-                                     where sp.Paterno.Contains(paterno) && sp.Materno.Contains(materno)
-                                     join eu in _context.Expedienteunico on sp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
-                                     from eu in ExpedienteunicoJoin.DefaultIfEmpty()
-                                     select new
-                                     {
-                                         id = sp.IdserviciosPreviosJuicio,
-                                         nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
-                                         NomTabla = "ServiciosPrevios",
-                                         datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n",
-                                         claveUnica = eu.ClaveUnicaScorpio
-                                     }).Union
+                                (from sp in _context.Serviciospreviosjuicio
+                                    join eu in _context.Expedienteunico on sp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
+                                    from eu in ExpedienteunicoJoin.DefaultIfEmpty()
+                                    select new
+                                    {
+                                        id = sp.IdserviciosPreviosJuicio,
+                                        nomcom = sp.Paterno + " " + sp.Materno + " " + sp.Nombre,
+                                        NomTabla = "ServiciosPrevios",
+                                        datoExtra = $"CLAVE UNICA SCORPIO: {sp.ClaveUnicaScorpio};  Edad: {sp.Edad};\n Domicilio: {sp.Calle}, {sp.Colonia};\n",
+                                        claveUnica = eu.ClaveUnicaScorpio,
+                                        foto = "NA"
+                                    }).Union
                                         (from pp in _context.Prisionespreventivas
                                          join eu in _context.Expedienteunico on pp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
                                          from eu in ExpedienteunicoJoin.DefaultIfEmpty()
@@ -306,7 +309,8 @@ namespace scorpioweb.Controllers
                                              nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
                                              NomTabla = "PrisionPreventiva",
                                              datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n",
-                                             claveUnica = eu.ClaveUnicaScorpio
+                                             claveUnica = eu.ClaveUnicaScorpio,
+                                             foto = "NA"
                                          }).Union
                                             (from pp in _context.Oficialia
                                              join eu in _context.Expedienteunico on pp.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
@@ -317,7 +321,8 @@ namespace scorpioweb.Controllers
                                                  nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
                                                  NomTabla = "Oficialia",
                                                  datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n",
-                                                 claveUnica = eu.ClaveUnicaScorpio
+                                                 claveUnica = eu.ClaveUnicaScorpio,
+                                                 foto = "NA"
                                              }).Union
                                                  (from p in _context.Personacl
                                                   join d in _context.Domiciliocl on p.IdPersonaCl equals d.IdDomiciliocl into domicilioJoin
@@ -328,14 +333,15 @@ namespace scorpioweb.Controllers
                                                   from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                                                   join cp in _context.Causapenalcl on s.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl into causapenalJoin
                                                   from cp in causapenalJoin.DefaultIfEmpty()
-                                                  group cp.CausaPenal by new { p.IdPersonaCl, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, cp.CausaPenal, claveunica = eu.ClaveUnicaScorpio} into g
+                                                  group cp.CausaPenal by new { p.IdPersonaCl, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, cp.CausaPenal, claveunica = eu.ClaveUnicaScorpio, p.RutaFoto} into g
                                                   select new
                                                   {
                                                       id = g.Key.IdPersonaCl,
                                                       nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                                                       NomTabla = "LibertadCondicionada",
                                                       datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
-                                                      claveUnica = g.Key.claveunica
+                                                      claveUnica = g.Key.claveunica,
+                                                      foto = "Fotoscl/" + g.Key.RutaFoto
                                                   });
 
             var result = query.OrderBy(o => o.claveUnica);
@@ -345,9 +351,10 @@ namespace scorpioweb.Controllers
             string tabla = "";
             string datoextra = "";
             string clave = "";
+            string foto = "";
             var cosine = new Cosine(2);
             double r = 0;
-            var list = new List<Tuple<string, string, int, string, double, string>>();
+            var list = new List<Tuple<string, string, int, string, double, string, string>>();
 
             List<string> listaNombre = new List<string>();
 
@@ -362,7 +369,8 @@ namespace scorpioweb.Controllers
                     tabla = q.NomTabla;
                     datoextra = q.datoExtra;
                     clave = q.claveUnica;
-                    list.Add(new Tuple<string, string, int, string, double, string>(nomCom, tabla, idpersona, datoextra, r, clave));
+                    foto = q.foto;
+                    list.Add(new Tuple<string, string, int, string, double, string, string>(nomCom, tabla, idpersona, datoextra, r, clave, foto));
                     simi = true;
                 }
             }
@@ -379,7 +387,8 @@ namespace scorpioweb.Controllers
                     int idPersona = item.Item3;
                     string datoextraP = item.Item4;
                     string claveunica = item.Item6;
-                    elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP, Clave = claveunica });
+                    string rutaF = item.Item7;
+                    elementos.Add(new { Id = idPersona, Nombre = nombreP, Tabla = tablaP, Dato = datoextraP, Clave = claveunica, foto = rutaF });
                 }
                
                 return Json(new { success = true, lista = elementos });

@@ -1403,15 +1403,14 @@ namespace scorpioweb.Controllers
 
             #endregion
 
-
             #region Sacar el nombre de estdo y municipio (NACIMIENTO)
-            var LNE = (from e in _context.Estados
+            var LNE = from e in _context.Estados
                        join p in _context.Persona on e.Id equals int.Parse(p.Lnestado)
                        where p.IdPersona == id
                        select new
                        {
                            e.Estado
-                       });
+                       };
 
             string selectem1 = LNE.FirstOrDefault().Estado.ToString();
             ViewBag.lnestado = selectem1.ToUpper();
@@ -1424,15 +1423,8 @@ namespace scorpioweb.Controllers
                            m.Municipio
                        });
 
-
-
             string selectem2 = LNM.FirstOrDefault().Municipio.ToString();
             ViewBag.lnmunicipio = selectem2.ToUpper();
-
-
-
-
-
             #endregion
 
             #region Sacar el nombre de estdo y municipio (DOMICILIO)
@@ -2337,15 +2329,33 @@ namespace scorpioweb.Controllers
                         {
                             var_curs = CURSUsada;
                         }
-                      
+
                         string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                         _context.Database.ExecuteSqlCommand(query);
                     }
                     else
                     {
-                        expedienteunico.ClaveUnicaScorpio = CURS;
-                        expedienteunico.Persona = idPersona.ToString();
-                        _context.Add(expedienteunico);
+                        if (CURS != null)
+                        {
+                            var unica = (from eu in _context.Expedienteunico
+                                         where eu.ClaveUnicaScorpio == CURS
+                                         select eu.IdexpedienteUnico).FirstOrDefault();
+                            if (unica == 0)
+                            {
+                                expedienteunico.ClaveUnicaScorpio = CURS;
+                                expedienteunico.Persona = idPersona.ToString();
+                                _context.Add(expedienteunico);
+                            }
+                            else
+                            {
+                                var query = (from a in _context.Expedienteunico
+                                             where a.IdexpedienteUnico == unica
+                                             select a).FirstOrDefault();
+
+                                query.Persona = idPersona.ToString();
+                                _context.SaveChanges();
+                            }
+                        } 
                     }
                     #endregion 
 
@@ -2749,7 +2759,7 @@ namespace scorpioweb.Controllers
                         string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
                         string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
                         string var_tablaCurs = "ClaveUnicaScorpio";
-                        int var_idnuevo = idPersona;
+                        int var_idnuevo = idPersonacl;
                         int var_idSelect = Int32.Parse(idselecionado);
                         string var_curs = CURS;
                         if (CURSUsada != null)
@@ -2761,9 +2771,27 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
-                        expedienteunico.ClaveUnicaScorpio = CURS;
-                        expedienteunico.Personacl = idPersonacl.ToString();
-                        _context.Add(expedienteunico);
+                        if (CURS != null)
+                        {
+                            var unica = (from eu in _context.Expedienteunico
+                                         where eu.ClaveUnicaScorpio == CURS
+                                         select eu.IdexpedienteUnico).FirstOrDefault();
+                            if (unica == 0)
+                            {
+                                expedienteunico.ClaveUnicaScorpio = CURS;
+                                expedienteunico.Personacl = idPersonacl.ToString();
+                                _context.Add(expedienteunico);
+                            }
+                            else
+                            {
+                                var query = (from a in _context.Expedienteunico
+                                             where a.IdexpedienteUnico == unica
+                                             select a).FirstOrDefault();
+
+                                query.Personacl = idPersonacl.ToString();
+                                _context.SaveChanges();
+                            }
+                        }
                     }
                     #endregion 
 

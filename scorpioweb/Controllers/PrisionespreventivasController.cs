@@ -102,7 +102,9 @@ namespace scorpioweb.Controllers
             prisionespreventivas.CausaPenal = mg.normaliza(prisionespreventivas.CausaPenal);
             prisionespreventivas.Observaciones = mg.normaliza(prisionespreventivas.Observaciones);
             prisionespreventivas.Capturista = currentUser;
+            prisionespreventivas.ClaveUnicaScorpio = CURS;
 
+            
             int id = 0;
             int cont = (from table in _context.Prisionespreventivas
                         select table.Idprisionespreventivas).Count();
@@ -139,10 +141,11 @@ namespace scorpioweb.Controllers
                 int var_idnuevo = id;
                 int var_idSelect = Int32.Parse(idselecionado);
                 string var_curs = CURS;
-                prisionespreventivas.ClaveUnicaScorpio = CURS;
 
-                string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                 _context.Database.ExecuteSqlCommand(query);
+
+
             }
             #endregion
 

@@ -176,7 +176,7 @@
                     var cp = document.getElementById("combobox");
                     var idPersona = cp.options[cp.selectedIndex].value;
                     $('#PersonaAsignada').val(JSON.stringify(idPersona));
-                     alert("Persona Selecionada");
+                    alert("Persona Selecionada");
                 }
             });
             $("#toggle").on("click", function () {
@@ -191,7 +191,7 @@
         <div class="form-group col-lg-6">
             <label class="control-label">Busca Persona</label>
             <form asp-action="Asignacion">
-               
+
                 <select type="submit" class="form-control" id="combobox" style="display:none;"
                         asp-items="@(new SelectList(ViewBag.personas, "IdPersona", "NombreCompleto"))">
                 </select>
@@ -200,7 +200,7 @@
         </div>
         <div class="form-group  col-lg-12">
             <form asp-action="Asignacion">
-                 <input hidden name="PersonaAsignada" id="PersonaAsignada" type="text" />
+                <input hidden name="PersonaAsignada" id="PersonaAsignada" type="text" />
                 <button type="submit" class="btn btn-primary" id="btnAsignar" name="btnAsignar">
                     <i class="fa fa-save"></i> Asignar
                 </button>

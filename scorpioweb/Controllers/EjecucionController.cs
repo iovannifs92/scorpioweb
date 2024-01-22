@@ -416,7 +416,7 @@ namespace scorpioweb.Controllers
                     int var_idSelect = Int32.Parse(idselecionado);
                     string var_curs = CURS;
                     ejecucion.ClaveUnicaScorpio = CURS;
-                    string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                    string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                     _context.Database.ExecuteSqlCommand(query);
                 }
                 #endregion

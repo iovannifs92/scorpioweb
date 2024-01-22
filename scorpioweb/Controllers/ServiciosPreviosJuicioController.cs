@@ -454,22 +454,35 @@ namespace scorpioweb.Controllers
                 {
                     var_curs = CURSUsada;
                 }
-                string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                 _context.Database.ExecuteSqlCommand(query);
             }
             else
             {
-                expedienteunico.ClaveUnicaScorpio = serviciospreviosjuicio.ClaveUnicaScorpio;
-                expedienteunico.Personacl = idAER.ToString();
-                _context.Add(expedienteunico);
+                var unica = (from eu in _context.Expedienteunico
+                             where eu.ClaveUnicaScorpio == CURS
+                             select eu.IdexpedienteUnico).FirstOrDefault();
+                if (unica == 0)
+                {
+                    expedienteunico.ClaveUnicaScorpio = CURS;
+                    expedienteunico.Serviciospreviosjuicio = idAER.ToString();
+                    _context.Add(expedienteunico);
+                }
+                else
+                {
+                    var query = (from a in _context.Expedienteunico
+                                 where a.IdexpedienteUnico == unica
+                                 select a).FirstOrDefault();
+
+                    query.Serviciospreviosjuicio = idAER.ToString();
+                    _context.SaveChanges();
+                }
             }
-
-
-
             #endregion
 
             _context.Add(serviciospreviosjuicio);
-            await _context.SaveChangesAsync();
+         
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
             return RedirectToAction(nameof(Index));
         }
         #endregion

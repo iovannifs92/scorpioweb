@@ -1,4 +1,4 @@
-﻿@model PaginatedList<scorpioweb.Models.Persona>
+﻿@model PaginatedList<scorpioweb.Models.Personacl>
 @*@{
         Layout = "/Views/Shared/_Layout.cshtml";
     }*@
@@ -13,7 +13,6 @@
 @{
     ViewBag.Title = "Reasignación";
 }
-
 
 
 <h3>Reasignación</h3>
@@ -56,42 +55,42 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr valign="middle">
-            <td>
-                @Html.DisplayFor(modelItem => item.IdPersona)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Supervisor)
-            </td>
-            <th>
-                @Html.DisplayFor(modelItem => item.UltimaActualización)
-            </th>
-            <td>
-                <form asp-action="EditSupervisorReasignacion">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group">
-                        <label class="control-label">Motivo</label>
-                        <input name="MotivoRealizo" id="MotivoRealizo" type="text" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <input type="hidden" asp-for="@item.IdPersona" name="IdPersona" id="IdPersona" />
-                        <select class="form-control" name="Supervisor" id="Supervisor"
-                                asp-items="@(new SelectList(@ViewBag.ListadoUsuarios, "Text","Text"))">
-                        </select>
-                    </div>
+            <tr valign="middle">
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdPersonaCl)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Paterno) @Html.DisplayFor(modelItem => item.Materno) @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Supervisor)
+                </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.UltimaActualización)
+                </th>
+                <td>
+                    <form asp-action="EditSupervisorReasignacion">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label class="control-label">Motivo</label>
+                            <input name="MotivoRealizo" id="MotivoRealizo" type="text" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <input type="hidden" asp-for="@item.IdPersonaCl" name="IdPersonaCl" id="IdPersonaCl" />
+                            <select class="form-control" name="Supervisor" id="Supervisor"
+                                    asp-items="@(new SelectList(@ViewBag.ListadoUsuarios, "Text","Text"))">
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-save"></i>
-                            Guardar
-                        </button>
-                    </div>
-                </form>
-            </td>
-        </tr>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i>
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
@@ -103,14 +102,14 @@
 }
 
 
-<a asp-action="Reasignacion"
+<a asp-action="Reasignacioncl"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
-<a asp-action="Reasignacion"
+<a asp-action="Reasignacioncl"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"

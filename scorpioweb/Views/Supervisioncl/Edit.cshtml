@@ -36,7 +36,7 @@
                         asp-items="@(new SelectList(ViewBag.listaEstadoC, "Value", "Text", @ViewBag.idEstadoCumplimiento))">
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" type="hidden" style="display:none;">
                 <label class="control-label">TTa</label>
                 <select class="form-control" name="Tta"
                         asp-items="@(new SelectList(ViewBag.listanosi, "Value", "Text", @ViewBag.idTta))">

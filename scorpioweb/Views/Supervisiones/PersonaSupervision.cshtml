@@ -80,7 +80,7 @@
             },
             success: function (response) {
                 if (response.borrar == false) {
-                    alert("No se ha borrado porque el supervisado tiene fracciones impuestas");
+                    alert("No se ha borrado porque el supervisado tiene fracciones impuestas o Bitacora");
                 } else {
                     function borrarcp(id) {
                         var usuario = '@ViewBag.user';

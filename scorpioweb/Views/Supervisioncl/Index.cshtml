@@ -80,7 +80,7 @@
                 },
                 success: function (response) {
                     if (response.borrar == false) {
-                        alert("No se ha borrado porque el supervisado tiene beneficios impuestos");
+                        alert("No se ha borrado porque el supervisado tiene beneficios impuestos o bitacoras");
                     } else {
                         function borrarcp(id) {
                             var usuario = '@ViewBag.user';
@@ -300,7 +300,7 @@
 <p>
     Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
 </p>
-<a asp-action="PersonaSupervision"
+<a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
@@ -309,7 +309,7 @@
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
-<a asp-action="PersonaSupervision"
+<a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"

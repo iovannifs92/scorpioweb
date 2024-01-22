@@ -712,6 +712,22 @@ namespace scorpioweb.Models
         {
             var nomsuper = User.Identity.Name.ToString();
 
+            #region -Sacar USUARIOS ADMIN-
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.user = user;
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Admin = false;
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+            #endregion
+
+
+
             ViewBag.RolesUsuarios = nomsuper;
             return View(await _context.Personacl.ToListAsync());
         }
@@ -1108,6 +1124,187 @@ namespace scorpioweb.Models
         }
 
 
+        #endregion
+
+        #region -Reasignacion-
+        public async Task<IActionResult> Reasignacioncl(
+           string sortOrder,
+           string currentFilter,
+           string searchString,
+           int? pageNumber)
+        {
+
+            List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
+            int i = 0;
+            foreach (var usuario in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(usuario, "SupervisorLC"))
+                {
+                    ListaUsuarios.Add(new SelectListItem
+                    {
+                        Text = usuario.ToString(),
+                        Value = i.ToString()
+                    });
+                    i++;
+                }
+            }
+            ViewBag.ListadoUsuarios = ListaUsuarios;
+
+            //var queryhayhuella = from r in _context.Registrohuella
+            //                     join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
+            //                     group r by r.PersonaIdPersona into grup
+            //                     select new
+            //                     {
+            //                         grup.Key,
+            //                         Count = grup.Count()
+            //                     };
+
+            //foreach (var personaHuella in queryhayhuella)
+            //{
+            //    if (personaHuella.Count >= 1)
+            //    {
+
+            //        ViewBag.personaIdPersona = personaHuella.Key;
+            //    };
+            //}
+
+
+            //#region -ListaUsuarios-        
+            //var user = await userManager.FindByNameAsync(User.Identity.Name);
+            //var roles = await userManager.GetRolesAsync(user);
+            //ViewBag.Admin = false;
+            //ViewBag.Masteradmin = false;
+            //ViewBag.Archivo = false;
+
+            //foreach (var rol in roles)
+            //{
+            //    if (rol == "AdminMCSCP")
+            //    {
+            //        ViewBag.Admin = true;
+            //    }
+            //}
+            //foreach (var rol in roles)
+            //{
+            //    if (rol == "Masteradmin")
+            //    {
+            //        ViewBag.Masteradmin = true;
+            //    }
+            //}
+            //foreach (var rol in roles)
+            //{
+            //    if (rol == "ArchivoMCSCP")
+            //    {
+            //        ViewBag.Archivo = true;
+            //    }
+            //}
+            //#endregion
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+
+            ViewData["CurrentFilter"] = searchString;
+
+            var personas = from p in _context.Personacl
+                           where p.Supervisor != null
+                           select p;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                foreach (var item in searchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
+                                                   p.Supervisor.Contains(searchString) || (p.IdPersonaCl.ToString()).Contains(searchString));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.IdPersonaCl);
+                    break;
+                default:
+                    personas = personas.OrderByDescending(p => p.IdPersonaCl);
+                    break;
+            }
+
+            int pageSize = 10;
+            // Response.Headers.Add("Refresh", "5");
+            return View(await PaginatedList<Personacl>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSupervisorReasignacion(Personacl persona, Reasignacionsupervisor reasignacionsupervisor)
+        {
+            int id = persona.IdPersonaCl;
+            string idS = (persona.IdPersonaCl).ToString();
+            string supervisor = persona.Supervisor;
+            string motivo = reasignacionsupervisor.MotivoRealizo;
+            string currentUser = User.Identity.Name;
+
+            var sA = from p in _context.Personacl
+                     where p.IdPersonaCl == id
+                     select new
+                     {
+                         p.Supervisor
+                     };
+
+            reasignacionsupervisor.PersonaIdpersona = (persona.IdPersonaCl).ToString();
+            reasignacionsupervisor.MotivoRealizo = reasignacionsupervisor.MotivoRealizo;
+            reasignacionsupervisor.FechaReasignacion = DateTime.Now;
+            reasignacionsupervisor.SAntiguo = sA.FirstOrDefault().Supervisor.ToString();
+            reasignacionsupervisor.QuienRealizo = currentUser;
+            reasignacionsupervisor.SNuevo = supervisor;
+            _context.Add(reasignacionsupervisor);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
+            var personaUpdate = await _context.Personacl
+                .FirstOrDefaultAsync(p => p.IdPersonaCl == id);
+            personaUpdate.Supervisor = supervisor;
+
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PersonaclExists(persona.IdPersonaCl))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction("Reasignacioncl");
+        }
+
+        #endregion
+
+        #region -SinSupervision-
+        public ActionResult SinSupervision()
+        {
+            return View();
+        }
         #endregion
 
         #region -obtenerDatos-
@@ -4092,7 +4289,7 @@ namespace scorpioweb.Models
                 borrar = true;
                 historialeliminacion.Id = idpersona;
                 historialeliminacion.Descripcion = query.Paterno + " " + query.Materno + " " + query.Nombre;
-                historialeliminacion.Tipo = "PERSONA";
+                historialeliminacion.Tipo = "PERSONACL";
                 historialeliminacion.Razon = mg.normaliza(razon);
                 historialeliminacion.Usuario = user;
                 historialeliminacion.Fecha = DateTime.Now;
@@ -4540,7 +4737,6 @@ namespace scorpioweb.Models
         {
             return _context.Saludfisicacl.Any(e => e.IdSaludFisicaCl == id);
         }
-
         #endregion
 
 

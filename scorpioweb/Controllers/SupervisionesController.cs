@@ -725,7 +725,12 @@ MetodosGenerales mg = new MetodosGenerales();
                            where s.IdSupervision == id
                            select s;
 
-            if (antesdel.Any())
+            var antesdel2 = from s in _context.Supervision
+                             join fi in _context.Bitacora on s.IdSupervision equals fi.SupervisionIdSupervision
+                             where s.IdSupervision == id
+                             select s;
+
+            if (antesdel.Any() || antesdel2.Any())
             {
                 return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales"), borrar = borrar });
             }
@@ -2326,6 +2331,7 @@ MetodosGenerales mg = new MetodosGenerales();
             int idbitacora = _context.Bitacora.Max(table => table.IdBitacora) + 1;
 
             string currentUser = User.Identity.Name;
+            string file_name = "";
 
             if (files != null && files.Count > 0)
             {
@@ -2336,7 +2342,7 @@ MetodosGenerales mg = new MetodosGenerales();
                     if (formFile.Length > 0)
                     {
                         string fileExtension = Path.GetExtension(formFile.FileName);
-                        string file_name = $"{idbitacora}_{SupervisionIdSupervision}_{idpersona}{fileExtension}";
+                        file_name = $"{idbitacora}_{SupervisionIdSupervision}_{idpersona}{fileExtension}";
 
                         bitacora.RutaEvidencia = file_name;
                         var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidencia");
@@ -2344,6 +2350,7 @@ MetodosGenerales mg = new MetodosGenerales();
 
                         uploadTasks.Add(formFile.CopyToAsync(stream));
                     }
+                    break;
                 }
 
                 await Task.WhenAll(uploadTasks);
@@ -2361,8 +2368,7 @@ MetodosGenerales mg = new MetodosGenerales();
                     bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                     bitacora.FechaRegistro = DateTime.Now;
                     bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
-                    bitacora.RutaEvidencia = bitacora.RutaEvidencia;
-
+                    bitacora.RutaEvidencia = file_name;
                     var supervision = _context.Supervision
                     .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
 
@@ -2383,6 +2389,7 @@ MetodosGenerales mg = new MetodosGenerales();
                     bitacora.Texto = mg.normaliza(Texto);
                     bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                     bitacora.FechaRegistro = DateTime.Now;
+                    bitacora.RutaEvidencia = file_name;
 
                     var supervision = _context.Supervision
                    .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);

@@ -475,9 +475,9 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                  return RedirectToAction("Supervision/" + supervisioncl.IdSupervisioncl, "Supervisioncl");
             }
-            return View(supervisioncl);
+            return RedirectToAction("Supervision/" + supervisioncl.IdSupervisioncl, "Supervisioncl");
         }
         #endregion
 
@@ -1399,6 +1399,7 @@ namespace scorpioweb.Controllers
             int idbitacora = _context.Bitacoracl.Max(p => p.IdBitacoracl) + 1;
 
             string currentUser = User.Identity.Name;
+            string file_name = "";
 
             if (files != null && files.Count > 0)
             {
@@ -1409,7 +1410,7 @@ namespace scorpioweb.Controllers
                     if (formFile.Length > 0)
                     {
                         string fileExtension = Path.GetExtension(formFile.FileName);
-                        string file_name = $"{idbitacora}_{SupervisionclIdSupervisioncl}_{idpersona}{fileExtension}";
+                        file_name = $"{idbitacora}_{SupervisionclIdSupervisioncl}_{idpersona}{fileExtension}";
 
                         bitacoracl.RutaEvidencia = file_name;
                         var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "EvidenciaCL");
@@ -1417,6 +1418,7 @@ namespace scorpioweb.Controllers
 
                         uploadTasks.Add(formFile.CopyToAsync(stream));
                     }
+                    break;
                 }
 
                 await Task.WhenAll(uploadTasks);
@@ -1471,7 +1473,7 @@ namespace scorpioweb.Controllers
 
                 if (bitacoracl.BeneficiosclIdBeneficioscl != null)
                 {
-                    return RedirectToAction("EditFraccionesimpuestas/" + bitacoracl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
+                    return RedirectToAction("EditBeneficios/" + bitacoracl.SupervisionclIdSupervisioncl, "Supervisioncl", new { @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
                 }
                 else
                 {
@@ -1887,11 +1889,17 @@ namespace scorpioweb.Controllers
             var id = Int32.Parse(datosuper[0]);
 
             var antesdel = from s in _context.Supervisioncl
-                           join fi in _context.Bitacoracl on s.IdSupervisioncl equals fi.SupervisionclIdSupervisioncl
+                           join b in _context.Bitacoracl on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
                            where s.IdSupervisioncl == id
                            select s;
 
-            if (antesdel.Any())
+
+            var antesdel2 = from s in _context.Supervisioncl
+                            join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
+                            where s.IdSupervisioncl == id
+                            select s;
+
+            if (antesdel.Any() || antesdel2.Any())
             {
                 return Json(new { success = true, responseText = Url.Action("Index", "Supervisioncl"), borrar = borrar });
             }

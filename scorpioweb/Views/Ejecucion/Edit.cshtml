@@ -202,19 +202,19 @@
             <input readonly type="hidden" asp-for="FechaCarga" class="form-control" />
             <input type="hidden" readonly asp-for="ClaveUnicaScorpio" />
             <div class="form-group">
-                <label asp-for="Paterno" class="control-label"></label>
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Apellido Paterno</label>
                 <input asp-for="Paterno" class="form-control" />
                 <span asp-validation-for="Paterno" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Materno" class="control-label"></label>
+                <label class="control-label">Apellido Materno</label>
                 <input asp-for="Materno" class="form-control" />
                 <span asp-validation-for="Materno" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Yo" class="control-label"></label>

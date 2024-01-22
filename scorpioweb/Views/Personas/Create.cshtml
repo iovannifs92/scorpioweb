@@ -947,24 +947,29 @@
                     if (response.lista[i].clave != null) {
                         row = row + "<tr style='background-color: #F7F2E7'>"
                     } else {
-                        row = row + "<tr>"
+                        row = row + "<tr style='background-color: #FFF'>>"
                     }
                     row = row
                         + "<td>" + response.lista[i].id + "</td>"
                         + "<td>" + response.lista[i].nombre + "</td>"
                         + "<td>" + response.lista[i].tabla + "</td>"
                         + "<td>" + response.lista[i].dato + "</td>"
+                        if(response.lista[i].foto != "NA"){
+                            row = row + "<td><img src='/" + response.lista[i].foto + "' class='img-thumbnail' width='200' height='200'></td>"
+                        }else{
+                        row = row + "<td width='200' height='200'></td>"
+                        }
+                            
                     row = row + "<td>";
                     if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true && response.lista[i].tabla == "MCYSCP") {
                     row = row
-                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personas/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personas/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";   
                     } else if (@Html.Raw(Json.Serialize(ViewBag.UserCL)) == true && response.lista[i].tabla == "LibertadCondicionada") {
                     row = row
-                        + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personacls/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
                     }
                     else{
                         row = row
-                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='usarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+                            + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='usarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>"; 
                     }
                     row = row + "</td>";       
                     row = row + "</tr>";
@@ -1003,7 +1008,7 @@
             },
             success: function(response){
                 //DATOS GENERALES
-                alert("fecha 1 " + formatDate(response.lista[0].p.fnacimiento))
+               
                 document.getElementById("nombre").value = response.lista[0].p.nombre;
                 document.getElementById("paterno").value = response.lista[0].p.paterno;
                 document.getElementById("materno").value = response.lista[0].p.materno;
@@ -1015,7 +1020,6 @@
                 document.getElementById("fNacimiento").value = formatDate(response.lista[0].p.fnacimiento);
                 document.getElementById("lnPais").value = response.lista[0].p.lnpais;
                 document.getElementById("lnEstado").value = response.lista[0].p.lnestado;
-                alert(response.lista[0].p.claveUnicaScorpio)
                 document.getElementById("lnMunicipio").value = response.lista[0].p.lnmunicipio;
 
                 document.getElementById("lnLocalidad").value = response.lista[0].p.lnlocalidad;
@@ -2330,7 +2334,7 @@
 </div>
 
 <div id="similitudModal" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width:800px; background-color:#fff">
+    <div class="modal-dialog" style="width:900px; background-color:#fff">
         <div class="modal-content">
 @*            <div class="text-right"  style="background-color:#0078a7">
                 <button type="button" hrf data-dismiss="modal">x</button>
@@ -2350,6 +2354,8 @@
                                 <th>Nombre</th>
                                 <th>Tabla</th>
                                 <th>Dato Extra</th>
+                                <th>Foto</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tblSimilitud">

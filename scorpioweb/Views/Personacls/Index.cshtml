@@ -241,10 +241,17 @@
         <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
     </a>
 }*@
+
 <p>
-    <a asp-action="Create" asp-controller="Personas">
+    <a asp-action="Create">
         Nueva entrevista encuadre
     </a>
+    @if (ViewBag.Admin == true)
+    {
+        <a asp-action="Reasignacioncl">
+            &ensp;Reasignación
+        </a>
+    }
 </p>
 <div class="form-group col-md-12" id="divbuscar">
     Búsqueda:
