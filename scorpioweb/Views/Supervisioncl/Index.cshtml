@@ -7,64 +7,77 @@
 }
 
 <script>
-    function cambiofechas(ids, campo, value) {
-        var e = document.getElementById("EstadoSupervision");
-        var estados = e.value;
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Supervisiones/UpdatePersonasupervision",
-            traditional: true,
-            data: {
-                superid: ids,
-                campo: campo,
-                fecha: value,
-                estados: estados,
-            },
-            success: function (response) {
-            },
-            error: function (response) {
-                location.reload();
-            }
-        });
-    };
+   
+    // function cambiofechas(ids, campo, value) {
+    //     var e = document.getElementById("EstadoSupervision");
+    //     var estados = e.value;
+    //     $.ajax({
+    //         type: "POST",
+    //         dataType: "json",
+    //         url: "/Supervisioncl/UpdatePersonasupervision",
+    //         traditional: true,
+    //         data: {
+    //             superid: ids,
+    //             campo: campo,
+    //             fecha: value,
+    //             estados: estados,
+    //         },
+    //         success: function (response) {
+    //         },
+    //         error: function (response) {
+    //             location.reload();
+    //         }
+    //     });
+    // };
 
-    function cambiofechainter(idpe, value) {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Supervisiones/UpdatePersonasupervision",
-            traditional: true,
-            data: {
-                planeacionid: idpe,
-                intermedio: value,
-            },
-            success: function (response) {
-            },
-            error: function (response) {
-                location.reload();
-            }
+    // function cambiofechainter(idpe, value) {
+    //     $.ajax({
+    //         type: "POST",
+    //         dataType: "json",
+    //         url: "/Supervisioncl/UpdatePersonasupervision",
+    //         traditional: true,
+    //         data: {
+    //             planeacionid: idpe,
+    //             intermedio: value,
+    //         },
+    //         success: function (response) {
+    //         },
+    //         error: function (response) {
+    //             location.reload();
+    //         }
+    //     });
+    // };
+
+    // function cambioestado(ids, personaid, causapenalid, value) {
+    //     $.ajax({
+    //         type: "POST",
+    //         dataType: "json",
+    //         url: "/Supervisiones/UpdatePersonasupervision",
+    //         traditional: true,
+    //         data: {
+    //             superid: ids,
+    //             personaid: personaid,
+    //             causapenalid: causapenalid,
+    //             estados: value,
+    //         },
+    //         success: function (response) {
+    //         },
+    //         error: function (response) {
+    //             location.reload();
+    //         }
+    //     });
+    // };
+    $(document).ready(function () {
+        $('#estadoSuper').change(function () {
+            $('#formBusqueda').submit();
         });
-    };
-    function cambioestado(ids, personaid, causapenalid, value) {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Supervisiones/UpdatePersonasupervision",
-            traditional: true,
-            data: {
-                superid: ids,
-                personaid: personaid,
-                causapenalid: causapenalid,
-                estados: value,
-            },
-            success: function (response) {
-            },
-            error: function (response) {
-                location.reload();
-            }
+    })
+
+    $(document).ready(function () {
+        $('#figuraJudicial').change(function () {
+            $('#formBusqueda').submit();
         });
-    };
+    })
     function borrarsuper(id) {
         var idsuper = id;
         var usuario = '@ViewBag.user';
@@ -135,21 +148,24 @@
     </a>
 }
 
-<form asp-action="Index" method="get">
+<form asp-action="Index" method="get" id="formBusqueda">
     <div class="form-actions no-color">
-        <div class="col-xs-3">
+        <div class="col-md-3">
             <label>
                 Búsqueda por nombre o CP
             </label>
-            <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="text" name="SearchString" value="@ViewData["currentFilte   r"]" />        
+            <button type="submit" class="btn btn-default btn-sm" style="margin-left:195px;margin-top: -45px;">
+                 <i class="fa fa-search"></i>
+                 Buscar
+            </button>
+           
         </div>
         <div class="col-xs-3">
             <label>
                 Estado de supervisión
             </label>
-            <select class="form-control" name="estadoSuper" id="estadoSuper"
-                    asp-items="@(new SelectList(ViewBag.listaFiltroEstadoSupervision, "Text", "Text", @ViewData["EstadoS"]))">
-            </select>
+            <select class="form-control" name="estadoSuper" id="estadoSuper" asp-items="@(new SelectList(ViewBag.listaFiltroEstadoSupervision, "Text", "Text", @ViewData["EstadoS"]))"></select>
         </div>
         <div class="col-xs-2">
             <label>
@@ -160,12 +176,7 @@
             </select>
         </div>
         <br />
-        <div class="col-xs-2">
-            <button type="submit" class="btn btn-default" style="margin-top:5px">
-                <i class="fa fa-search"></i>
-                Buscar
-            </button>
-        </div>
+     
         <br />
         <a asp-action="Index">Regresar al listado completo</a>
     </div>
@@ -225,29 +236,29 @@
             {*@
                 @* <input name="IdSupervision" id="IdSupervisioncl" readonly style="display:none" value="@item.supervisionVM.IdSupervisioncl" />
             <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />*@
-       @*         <td>
-                    <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Inicio" id="Inicio" class="form-control" asp-for="@item.supervisionVM.Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-                </td>
-                <td>
-                    <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-                </td>
-                <td>
-                    <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategicacl, value)" name="InformeSeguimiento" id="InformeSeguimiento" class="form-control" asp-for="@item.planeacionestrategicaVM.InformeSeguimiento" asp-format="{0:yyyy-MM-ddTHH:mm}" />
-                </td>
-                <td>
-                    <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervisioncl,@item.personaVM.IdPersonaCl, @item.causapenalVM.IdCausaPenalcl, value)"
-                            asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
-                    </select>
-                </td>*@
+                @*         <td>
+            <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Inicio" id="Inicio" class="form-control" asp-for="@item.supervisionVM.Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+            </td>
+            <td>
+            <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+            </td>
+            <td>
+            <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategicacl, value)" name="InformeSeguimiento" id="InformeSeguimiento" class="form-control" asp-for="@item.planeacionestrategicaVM.InformeSeguimiento" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+            </td>
+            <td>
+            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervisioncl,@item.personaVM.IdPersonaCl, @item.causapenalVM.IdCausaPenalcl, value)"
+            asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
+            </select>
+            </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.supervisionVM.Inicio)
-                </td> 
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.supervisionVM.Termino)
-                </td> 
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.planeacionestrategicaVM.InformeSeguimiento)
-                </td> 
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
                 </td>
@@ -270,13 +281,13 @@
                     </a>
                 </td>
                 @*@if ((User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin")))
-                {
-                    <td>
-                        <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervisioncl&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersonaCl&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenalcl">
-                            <i class="fa fa-check-square"></i> Fracciones
-                        </a>
-                    </td>
-                }*@
+            {
+            <td>
+            <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervisioncl&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersonaCl&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenalcl">
+            <i class="fa fa-check-square"></i> Fracciones
+            </a>
+            </td>
+            }*@
 
 
                 <td>
