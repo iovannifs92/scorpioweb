@@ -1,4 +1,4 @@
-﻿@model IEnumerable<scorpioweb.Models.Personacl>
+﻿@model IEnumerable<scorpioweb.Models.Persona>
 @*@{
         Layout = "/Views/Shared/_Layout.cshtml";
     }*@
@@ -12,7 +12,7 @@
 
 
 @{
-    ViewBag.Title = "Supervisados Libertad Condicionada";
+    ViewBag.Title = "Supervisados MC y SCP";
 }
 
 <script>
@@ -61,7 +61,7 @@
             type: "GET",
             dataType: "json",
             contentType: "application/json; charset=utf-8",
-            url: "/Personacls/Get?pageNumber=" + page + " &currentFilter=" + currentFilter + "&Search=" + searchValue,
+            url: "/Personas/GetPrueba?pageNumber=" + page + " &currentFilter=" + currentFilter + "&Search=" + searchValue,
             //Get?pageNumber=" + page + " & currentFilter=" + searchValue + "& Search=" + searchValue,
             data: {
                 pagelimit: 10
@@ -89,64 +89,67 @@
                     if (result.super == true || result.admin == true || result.invitado == true) {
                         row = row
                             + "<tr valign='middle'>"
-                            + "<td>" + result.page[i].idPersonaCl + "</td>"
+                            + "<td>" + result.page[i].idPersona + "</td>"
                             + "<td>" + result.page[i].nombreCompleto + "</td>"
                             + "<td>" + result.page[i].supervisor + "</td>"
                             + "<th>" + date + "</th>";
                         row = row + "<div class=\"col-xs-12\">";
                         row = row + "<td>";
+
                         if (result.nomsuper == result.page[i].supervisor || result.admin == true) {
                             //PARA MODIFICAR DATOS DE PERSONA SOLO SI USUARIO ES SU SUPERVISOR O USUARIO ES ADMIN
                             row = row
-                                + "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
-                                + "<div class=\"col-md-3\"><a href=/Personacls/Procesos/" + result.page[i].idPersonaCl + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
-                                + "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersonaCl + ")'><i class='fa fa-trash'></i></button></div>"
+                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersona + ")'><i class='fa fa-trash'></i></button></div>"
                             row = row
-                                + "<div class=\"col-md-3\"><a href=/Personacls/MenuEdicion/" + result.page[i].idPersonaCl + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
+                                + "<div class=\"col-md-3\"><a href=/Personas/MenuEdicion/" + result.page[i].idPersona + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                         }
                         else {
                             //SI USUARIO NO ES SUPERVISOR DE PERSONA NO DEJA MODIFICAR
+
                             row = row
-                                + "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+                                + "<div class=\"col-md-3\"><a  href=/Personas/Details/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
                             row = row
-                                + "<div class=\"col-md-3\"><a href=/Personacls/Procesos/" + result.page[i].idPersonaCl + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+                                + "<div class=\"col-md-3\"><a href=/Personas/Procesos/" + result.page[i].idPersona + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
                             row = row
-                                + "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+                                + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                         }
                         //SI EL USUARIO NO ES INVITADO MUESTRA LOS CANDADOS
                         if (result.invitado == false) {
                             switch (result.page[i].candado) {
                                 case 0:
                                     row = row
-                                        + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                                        + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
                                         + "</tr>";
                                     row = row + "</td>";
                                     row = row + "</div>";
                                     break;
+
                                 case 1:
                                     row = row
-                                        + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                                        + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                                         + "</tr>";
                                     break;
                             }
                         }
                         // if (result.page[i].candado == 0) {
                         //     row = row
-                        //         + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+                        //         + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersona + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
                         //         + "</tr>";
                         //     row = row + "</td>";
                         //     row = row + "</div>";
-                        // }
-                        // else {
+                        // } else {
                         //     row = row
-                        //         + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+                        //         + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersona + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
                         //         + "</tr>";
                         // }
-                        row = row + "</td>"
+                        // Cierre de la columna para las acciones
+                        row = row + "</td>";
                     }
                 }
                 if (row != '') {
@@ -178,7 +181,7 @@
         $.ajax({
             type: "POST",
             dataType: "json",
-            url: "/Personacls/LoockCandado",
+            url: "/Personas/LoockCandado",
             traditional: true,
             data: {
                 datoCandado: [candado, personaidpersona, text],
@@ -204,7 +207,7 @@
             $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: "/Personacls/antesdelete",
+                url: "/Personas/antesdelete",
                 traditional: true,
                 data: {
                     datoPersona: [personaidpersona],
@@ -225,7 +228,7 @@
                             $.ajax({
                                 type: "POST",
                                 dataType: "json",
-                                url: "/Personacls/deletePersona",
+                                url: "/Personas/deletePersona",
                                 traditional: true,
                                 data: {
                                     datoPersona: [id, razon, usuario],
@@ -258,22 +261,24 @@
 
 </script>
 
-<h2>Supervisados Libertad Condicionada</h2>
-@*ES LO DE LAS ALERTA DE PRESTAMOS DE ARCHIVO
-    @if (ViewBag.WarningsUser > 0)
-{
-    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
-        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
-    </a>
-}*@
+<h2>Supervisados MC y SCP</h2>
 
+@if (ViewBag.WarningsUser > 0)
+{
+    <div class="col-md-6">
+        <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+            <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+        </a>
+    </div>
+
+}
 <p>
     <a asp-action="Create">
         Nueva entrevista encuadre
     </a>
     @if (ViewBag.Admin == true)
     {
-        <a asp-action="Reasignacioncl">
+        <a asp-action="Reasignacion">
             &ensp;Reasignación
         </a>
     }

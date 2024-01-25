@@ -1,9 +1,18 @@
 ﻿@{
     ViewData["Title"] = "SinSupervision";
 }
-<div class="alert alert-info">
-    <h1><strong>No</strong> cuenta con supervisiones activas, si quiere asignar una causa penal haga <strong><a href="/Causaspenalescl/index"> "click" aqui</a></strong>  </h1>
-</div>
+@if (ViewBag.EsInvitado == true)
+{
+    <div class="alert alert-info">
+        <h1><strong>No</strong> cuenta con supervisiones activas</h1>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h1><strong>No</strong> cuenta con supervisiones activas, si quiere asignar una causa penal haga <strong><a href="/Causaspenales/ListadeCausas"> "click" aqui</a></strong>  </h1>
+    </div>
+}
 <a asp-action="Index" class="btn btn-link">
     Regresar al listado completo
 </a>

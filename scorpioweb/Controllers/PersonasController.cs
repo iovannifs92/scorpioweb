@@ -480,6 +480,155 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -Index Prueba-
+
+        public async Task<IActionResult> Index2()
+        {
+            var nomsuper = User.Identity.Name.ToString();
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+           
+            
+            #region -Sacar USUARIOS ADMIN-
+
+
+            ViewBag.user = user;        
+            ViewBag.Admin = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    ViewBag.Admin = true;
+                }
+            }
+            #endregion
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion  
+
+            ViewBag.RolesUsuarios = nomsuper;
+     
+            return View("Index1", await _context.Persona.ToListAsync());
+        }
+
+
+
+        public async Task<IActionResult> GetPrueba(string sortOrder, string currentFilter, string Search, int? pageNumber, bool usuario)
+        {
+            #region -ListaUsuarios-            
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var nomsuper = User.Identity.Name.ToString();
+            var roles = await userManager.GetRolesAsync(user);
+            bool super = false;
+            bool admin = false;           
+            bool invitado = true;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "SupervisorMCSCP")
+                {
+                    super = true;
+                }
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "Masteradmin")
+                {
+                    admin = true;
+                }
+            }
+    
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "Masteradmin" || rol == "SupervisorMCSCP")
+                {
+                    // SE VUELVE FALSO SI EL USUARIO TIENE UN ROL DE MC Y SCP 
+                    invitado = false;
+                    break;
+
+                }
+            }
+            String users = user.ToString();
+            ViewBag.RolesUsuarios = users;
+            #endregion
+            List<Persona> listaSupervisados = new List<Persona>();
+            listaSupervisados = (from table in _context.Persona
+                                 select table).ToList();
+            listaSupervisados.Insert(0, new Persona { IdPersona = 0, Supervisor = "Selecciona" });
+            ViewBag.listaSupervisados = listaSupervisados;
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if (Search != null)
+            {
+                pageNumber = pageNumber;
+            }
+            else
+            {
+                Search = currentFilter;
+            }
+            
+            ViewData["CurrentFilter"] = Search;
+
+
+
+            var personas = from p in _context.Persona
+                           where p.Supervisor != null
+                           select p;
+
+            if (!String.IsNullOrEmpty(Search))
+            {
+                foreach (var item in Search.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(Search) ||
+                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(Search) ||
+                                                   p.Supervisor.Contains(Search) || (p.IdPersona.ToString()).Contains(Search));
+
+                }
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+                default:
+                    personas = personas.OrderByDescending(p => p.IdPersona);
+                    break;
+            }
+            
+            personas.OrderByDescending(p => p.IdPersona);
+           
+            //PARA VER SUPERVISADOS DEL USUARIO CON SESION INICIADA
+            if (usuario == true)
+            {
+                personas = personas.Where(p => p.Supervisor == nomsuper);
+            };
+
+            int pageSize = 10;
+            // Response.Headers.Add("Refresh", "5");
+            return Json(new
+            {
+                page = await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize),
+                totalPages = (personas.Count() + pageSize - 1) / pageSize,
+                admin,
+                super,
+                invitado,
+                nomsuper = nomsuper
+            });
+        }
+
+        #endregion
+
         #region -ListadoSupervisor-
         public async Task<IActionResult> ListadoSupervisor(
             string sortOrder,
@@ -3144,9 +3293,11 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+     
             var supervisiones = await _context.Supervision.Where(m => m.PersonaIdPersona == id).ToListAsync();
             if (supervisiones.Count == 0)
             {
+             
                 return RedirectToAction("SinSupervision");
             }
 
@@ -3302,8 +3453,26 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -SinSupervision-
-        public ActionResult SinSupervision()
+        public async Task <IActionResult> SinSupervision()
         {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool invitado = true;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "Masteradmin" || rol == "SupervisorMCSCP")
+                {
+                    // SE VUELVE FALSO SI EL USUARIO TIENE UN ROL DE MC Y SCP 
+                    invitado = false;
+                    break;
+
+                }
+            }
+
+
+            ViewBag.EsInvitado = invitado;
+           
             return View();
         }
         #endregion

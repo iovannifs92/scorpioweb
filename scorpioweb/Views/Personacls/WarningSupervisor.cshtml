@@ -49,13 +49,13 @@
                 }
                 else {
                     var date60 = Date.now();
-                    date60 += 1000 * 60 * 60 * 24 * 60;
+                    date60 += 1000 * 60 * 60 * 24 * 30;
                     var date5 = Date.now();
                     date5 += 1000 * 60 * 60 * 24 * 5;
                     if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < date60 && Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) > date5) {
                         row = row
                             + "<td>"
-                            + "    Informe en próximos 60 días"
+                            + "    Informe en próximos 30 días"
                             + "</td>";
                     }
                     else {
@@ -350,13 +350,13 @@
                                             }
                                             else {
                                                 var date60 = Date.now();
-                                                date60 += 1000 * 60 * 60 * 24 * 60;
+                                                date60 += 1000 * 60 * 60 * 24 * 30;
                                                 var date5 = Date.now();
                                                 date5 += 1000 * 60 * 60 * 24 * 5;
                                                 if (Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) < date60 && Date.parse(result.query[i].planeacionestrategicaclVM.informeInicial) > date5) {
                                                     row = row
                                                         + "<td>"
-                                                        + "    Informe en próximos 60 días"
+                                                        + "    Informe en próximos 30 días"
                                                         + "</td>";
                                                 }
                                                 else {

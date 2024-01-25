@@ -316,7 +316,7 @@ namespace scorpioweb.Models
             string usuario = user.ToString();
             DateTime fechaInforme = (DateTime.Today).AddDays(5);
             DateTime fechaControl = (DateTime.Today).AddDays(3);
-            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
+            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(30);
             DateTime fechaHoy = DateTime.Today;
             var fechaProcesal = DateTime.Now.AddMonths(-6);
             ViewBag.Warnings = 0;
@@ -745,6 +745,7 @@ namespace scorpioweb.Models
             var roles = await userManager.GetRolesAsync(user);
             bool super = false;
             bool admin = false;
+            bool invitado = true;
 
             foreach (var rol in roles)
             {
@@ -758,6 +759,17 @@ namespace scorpioweb.Models
                 if (rol == "AdminLC" || rol == "Masteradmin")
                 {
                     admin = true;
+                }
+            }
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC" || rol == "Masteradmin" || rol == "SupervisorLC")
+                {
+                    // SE VUELVE FALSO SI EL USUARIO TIENE UN ROL DE CONDICIONES EN LIBERTAD 
+                    invitado = false;
+                    break;
+
                 }
             }
 
@@ -823,6 +835,7 @@ namespace scorpioweb.Models
                 totalPages = (personas.Count() + pageSize - 1) / pageSize,
                 admin,
                 super,
+                invitado,
                 nomsuper = nomsuper
             });
         }
@@ -1301,8 +1314,26 @@ namespace scorpioweb.Models
         #endregion
 
         #region -SinSupervision-
-        public ActionResult SinSupervision()
+        public async Task <IActionResult> SinSupervision()
         {
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);       
+            var roles = await userManager.GetRolesAsync(user);
+            bool invitado = true;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC" || rol == "Masteradmin" || rol == "SupervisorLC")
+                {
+                    // SE VUELVE FALSO SI EL USUARIO TIENE UN ROL DE CONDICIONES EN LIBERTAD 
+                    invitado = false;
+                    break;
+
+                }
+            }
+
+            ViewBag.EsInvitado = invitado;
+
             return View();
         }
         #endregion

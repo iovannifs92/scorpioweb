@@ -97,14 +97,14 @@ namespace scorpioweb.Controllers
 
         private readonly List<SelectListItem> listaEstadosSupervision = new List<SelectListItem>
         {
-            new SelectListItem{ Text = "", Value = "" },
+            new SelectListItem{ Text = "Todos", Value = "" },
             new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
             new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
             new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" }
         };
         private readonly List<SelectListItem> listaBeneficios = new List<SelectListItem>
         {
-            new SelectListItem{ Text = "", Value = "" },
+            new SelectListItem{ Text = "Todos", Value = "" },
             new SelectListItem{ Text = "LIBERTAD ABSOLUTA", Value = "LIBERTAD ABSOLUTA" },
             new SelectListItem{ Text = "LIBERTAD ANTICIPADA", Value = "LIBERTAD ANTICIPADA" },
             new SelectListItem{ Text = "LIBERTAD CONDICIONADA", Value = "LIBERTAD CONDICIONADA" },
@@ -411,9 +411,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-     
-
-      
 
         #region Edits 
 
