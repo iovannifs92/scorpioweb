@@ -4352,49 +4352,23 @@ namespace scorpioweb.Models
         #region -Presentaciones periodicas-
         public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
         {
-            #region -ListaUsuarios-            
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            ViewBag.user = user;
-            var roles = await userManager.GetRolesAsync(user);
-            ViewBag.Admin = false;
-            ViewBag.Masteradmin = false;
-            ViewBag.Archivo = false;
-            ViewBag.Serviciosprevios = false;
-
-            foreach (var rol in roles)
-            {
-                if (rol == "AdminMCSCP")
-                {
-                    ViewBag.Admin = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "Masteradmin")
-                {
-                    ViewBag.Masteradmin = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "ArchivoMCSCP")
-                {
-                    ViewBag.Archivo = true;
-                }
-            }
-
-            foreach (var rol in roles)
-            {
-                if (rol == "Servicios previos")
-                {
-                    ViewBag.Serviciosprevios = true;
-                }
-            }
             if (id == null)
             {
                 return NotFound();
             }
-            #endregion
+           
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);      
+            ViewBag.Invitado = true;
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC" || rol == "Masteradmin" || rol == "SupervisorLC")
+                {
+                    ViewBag.Invitado = false;
+                    break;
+                }
+            }
+    
             List<Presentacionperiodicacl> lists = new List<Presentacionperiodicacl>();
 
             var queripersonasis = from p in _context.Personacl
@@ -4407,6 +4381,7 @@ namespace scorpioweb.Models
                                       registrohuellaVM = rh,
                                       personaVM = p
                                   };
+
             var maxfra = queripersonasis.OrderByDescending(u => u.presentacionperiodicaVM.FechaFirma);
 
             if (queripersonasis.Count() == 0)
