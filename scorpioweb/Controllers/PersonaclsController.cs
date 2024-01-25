@@ -4238,7 +4238,6 @@ namespace scorpioweb.Models
         }
         #endregion
 
-
         #region -Delete-
         public JsonResult antesdelete(Personacl personacl, Historialeliminacion historialeliminacion, string[] datoPersona)
         {
@@ -4706,6 +4705,7 @@ namespace scorpioweb.Models
 
         }
         #endregion
+
         #endregion
 
         #region -Existe-
