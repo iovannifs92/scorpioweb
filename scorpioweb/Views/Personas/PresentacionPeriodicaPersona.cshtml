@@ -5,6 +5,16 @@
     Layout = "/Views/Shared/_Layout.cshtml";
     }
 
+<script>
+    $(document).ready(function () {
+        var invitado = @Html.Raw(Json.Serialize(ViewBag.Invitado));
+
+        if (invitado === true) {
+            $('#BotonGuardar').hide(); // Using jQuery to hide the button
+            $('#ComentarioFirma').prop('readOnly', true); // Using jQuery to set textarea as read-only
+        }
+    });
+</script>
 
 
 
@@ -46,7 +56,7 @@
                             
                             <td>
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary" id="BotonGuardar">
                                     <i class="fa fa-save"></i>
                                     Guardar
                                 </button>

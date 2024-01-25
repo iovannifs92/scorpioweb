@@ -4,6 +4,18 @@
     ViewData["Title"] = "Presentaciones Periodicas";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var invitado = @Html.Raw(Json.Serialize(ViewBag.Invitado));
+
+        if (invitado === true) {
+            $('#BotonGuardar').hide(); // Using jQuery to hide the button
+            $('#ComentarioFirma').prop('readOnly', true); // Using jQuery to set textarea as read-only
+        }
+    });
+</script>
 
 
 
@@ -45,12 +57,14 @@
                     </div>
 
                 <td>
+
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="BotonGuardar">
                             <i class="fa fa-save"></i>
                             Guardar
                         </button>
                     </div>
+
                 </td>
                 </td>
                 </form>

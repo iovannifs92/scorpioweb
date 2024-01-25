@@ -56,14 +56,32 @@
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
                     }
-                    @if (User.IsInRole("Asistentes") || User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia"))
+                    @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE CONDICIONES EN LIBERTAD*@
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP"))
+                    {
+                        <li><a asp-area="" asp-controller="Personacls" asp-action="Index">Condiciones en Libertad</a></li>
+                    }
+
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia"))
                     {                        
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Asistentes"))
+                    @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE MC Y SCP*@
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Operativo"))
+                    {
+                        <li><a asp-area="" asp-controller="Personas" asp-action="Index2">MC y SCP</a></li>
+                    }
+                   
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") )
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
                     }
+                    @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE SERVICIOS PREVIOS AL JUICIO*@
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AuxiliarMCSCP"))
+                    {
+                        <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
+                    }
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Operativo"))
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>

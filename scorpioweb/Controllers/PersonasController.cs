@@ -3335,50 +3335,24 @@ namespace scorpioweb.Controllers
         #region -Presentaciones periodicas-
         public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
         {
-
-            #region -ListaUsuarios-            
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            ViewBag.user = user;
-            var roles = await userManager.GetRolesAsync(user);
-            ViewBag.Admin = false;
-            ViewBag.Masteradmin = false;
-            ViewBag.Archivo = false;
-            ViewBag.Serviciosprevios = false;
-
-            foreach (var rol in roles)
-            {
-                if (rol == "AdminMCSCP")
-                {
-                    ViewBag.Admin = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "Masteradmin")
-                {
-                    ViewBag.Masteradmin = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "ArchivoMCSCP")
-                {
-                    ViewBag.Archivo = true;
-                }
-            }
-
-            foreach (var rol in roles)
-            {
-                if (rol == "Servicios previos")
-                {
-                    ViewBag.Serviciosprevios = true;
-                }
-            }
             if (id == null)
             {
                 return NotFound();
             }
-            #endregion
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.Invitado = true;
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP" || rol == "Masteradmin" || rol == "SupervisorMCSCP")
+                {
+                    ViewBag.Invitado = false;
+                    break;
+                }
+            }
+           
+        
             List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>();
 
             var queripersonasis = from p in _context.Persona
