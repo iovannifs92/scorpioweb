@@ -57,7 +57,7 @@
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE CONDICIONES EN LIBERTAD*@
-                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP"))
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("Operativo"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Index">Condiciones en Libertad</a></li>
                     }

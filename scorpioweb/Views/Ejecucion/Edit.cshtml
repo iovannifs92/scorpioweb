@@ -253,7 +253,7 @@
                 <span asp-validation-for="CeAcumuladas" class="text-danger"></span>
             </div>
             <div class="form-group autocomplete">
-                <label asp-for="LugarInternamiento" class="control-label"></label>
+                <label class="control-label">Lugar de Internamiento</label>
                 <input asp-for="LugarInternamiento" class="form-control" />
                 <span asp-validation-for="LugarInternamiento" class="text-danger"></span>
             </div>
@@ -264,7 +264,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="control-label">Encargago</label>
+                <label class="control-label">Encargado</label>
                 <select class="form-control" name="Encargado" id="Encargado"
                         asp-items="@(new SelectList(ViewBag.ListaEjecucion, @ViewBag.ListaEjecucionEdit))">
                 </select>
