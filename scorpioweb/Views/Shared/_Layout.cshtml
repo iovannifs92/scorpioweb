@@ -77,7 +77,7 @@
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE SERVICIOS PREVIOS AL JUICIO*@
-                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AuxiliarMCSCP"))
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AuxiliarMCSCP"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
                     }
