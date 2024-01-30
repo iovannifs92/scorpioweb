@@ -369,7 +369,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,ClaveUnicaScorpio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones, FechaNacimiento, LnMunicipio, LnEstado")] Serviciospreviosjuicio serviciospreviosjuicio, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string CURSUsada)
+        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,ClaveUnicaScorpio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones, FechaNacimiento, LnMunicipio, LnEstado,LnPais")] Serviciospreviosjuicio serviciospreviosjuicio, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string CURSUsada)
         {
             int idAER = 0;
             serviciospreviosjuicio.Nombre = mg.normaliza(serviciospreviosjuicio.Nombre);
@@ -403,6 +403,7 @@ namespace scorpioweb.Controllers
             serviciospreviosjuicio.FechaCaptura = DateTime.Now;
             serviciospreviosjuicio.LnEstado = serviciospreviosjuicio.LnEstado;
             serviciospreviosjuicio.LnMunicipio = serviciospreviosjuicio.LnMunicipio;
+            serviciospreviosjuicio.LnPais = serviciospreviosjuicio.LnPais;
             serviciospreviosjuicio.FechaNacimiento = serviciospreviosjuicio.FechaNacimiento;
             if (CURSUsada != null)
             {
@@ -499,6 +500,25 @@ namespace scorpioweb.Controllers
 
             #region -Listas-
 
+            List<SelectListItem> ListaPais;
+            ListaPais = new List<SelectListItem>
+            {
+              new SelectListItem{ Text="México", Value="MEXICO"},
+              new SelectListItem{ Text="Estados Unidos", Value="ESTADOS UNIDOS"},
+              new SelectListItem{ Text="Canada", Value="CANADA"},
+              new SelectListItem{ Text="Colombia", Value="COLOMBIA"},
+              new SelectListItem{ Text="El Salvador", Value="EL SALVADOR"},
+              new SelectListItem{ Text="Guatemala", Value="GUATEMALA"},
+              new SelectListItem{ Text="Chile", Value="CHILE"},
+              new SelectListItem{ Text="Argentina", Value="ARGENTINA"},
+              new SelectListItem{ Text="Brasil", Value="BRASIL"},
+              new SelectListItem{ Text="Venezuela", Value="VENEZUELA"},
+              new SelectListItem{ Text="Puerto Rico", Value="PUERTO RICO"},
+              new SelectListItem{ Text="Otro", Value="OTRO"},
+            };
+
+            ViewBag.ListadoPais = ListaPais;
+            ViewBag.idPais = mg.BuscaId(ListaPais, serviciospreviosjuicio.LnPais);
 
             #region Lnestado
             List<Estados> listaEstados = new List<Estados>();
@@ -584,7 +604,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(IFormFile evidencia, [Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio, ClaveUnicaScorpio ,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,serviciospreviosjuicioIdserviciospreviosjuicio,FechaCaptura,Usuario,ClaveUnicaScorpio, FechaNacimiento, LnMunicipio, LnEstado")] Serviciospreviosjuicio serviciospreviosjuicio)
+        public async Task<IActionResult> Edit(IFormFile evidencia, [Bind("IdserviciosPreviosJuicio,Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio, ClaveUnicaScorpio ,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones,serviciospreviosjuicioIdserviciospreviosjuicio,FechaCaptura,Usuario,ClaveUnicaScorpio, FechaNacimiento, LnMunicipio, LnEstado,LnPais")] Serviciospreviosjuicio serviciospreviosjuicio)
         {
 
             if (ModelState.IsValid)
@@ -621,12 +641,17 @@ namespace scorpioweb.Controllers
                     serviciospreviosjuicio.FechaCaptura = serviciospreviosjuicio.FechaCaptura;
                     serviciospreviosjuicio.LnEstado = serviciospreviosjuicio.LnEstado;
                     serviciospreviosjuicio.LnMunicipio = serviciospreviosjuicio.LnMunicipio;
+                    serviciospreviosjuicio.LnPais = serviciospreviosjuicio.LnPais;
                     serviciospreviosjuicio.FechaNacimiento = serviciospreviosjuicio.FechaNacimiento;
                     serviciospreviosjuicio.ClaveUnicaScorpio = serviciospreviosjuicio.ClaveUnicaScorpio;
 
 
                     if (!(serviciospreviosjuicio.Paterno == null && serviciospreviosjuicio.Materno == null && serviciospreviosjuicio.FechaNacimiento == null && serviciospreviosjuicio.Sexo == null && serviciospreviosjuicio.LnEstado == null && serviciospreviosjuicio.Nombre == null))
                     {
+                        if (serviciospreviosjuicio.LnPais != "MEXICO")
+                        {
+                            serviciospreviosjuicio.LnEstado = "33";
+                        }
                         var curs = mg.sacaCurs(serviciospreviosjuicio.Paterno, serviciospreviosjuicio.Materno, serviciospreviosjuicio.FechaNacimiento, serviciospreviosjuicio.Sexo, serviciospreviosjuicio.LnEstado, serviciospreviosjuicio.Nombre);
                         serviciospreviosjuicio.ClaveUnicaScorpio = curs;
                     }

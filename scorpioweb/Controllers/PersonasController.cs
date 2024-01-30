@@ -4057,6 +4057,10 @@ namespace scorpioweb.Controllers
                 persona.ComIndigena = mg.normaliza(persona.ComIndigena);
                 persona.ComLgbtttiq = mg.normaliza(persona.ComLgbtttiq);
                 if (!(persona.Paterno == null && persona.Materno == null && persona.Nombre == null && persona.Genero == null && persona.Fnacimiento == null && persona.Lnestado == null)) {
+                    if(persona.Lnpais != "MEXICO")
+                    {
+                        persona.Lnestado = "33";
+                    }
                     var curs = mg.sacaCurs(persona.Paterno, persona.Materno, persona.Fnacimiento, persona.Genero, persona.Lnestado, persona.Nombre);
                     persona.ClaveUnicaScorpio = curs;
                     persona.Curp = curs + "*";

@@ -37,6 +37,7 @@ namespace scorpioweb.Models
         public string RutaAer { get; set; }
         public string Usuario { get; set; }
         public DateTime? FechaCaptura { get; set; }
+        public string LnPais { get; set; }
         public string LnEstado { get; set; }
         public string LnMunicipio { get; set; }
         public DateTime? FechaNacimiento { get; set; }

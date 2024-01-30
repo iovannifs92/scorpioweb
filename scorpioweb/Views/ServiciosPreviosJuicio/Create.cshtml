@@ -23,7 +23,7 @@
                 $('#lnMunicipio').html(items);
             });
         });
-        $('#lnPais').change(function () {
+        $('#LnPais').change(function () {
             var selectedCountry = $(this).children("option:selected").val();
             if (selectedCountry != "MEXICO") {
                 $("#lnEstado").val(0);
@@ -32,14 +32,14 @@
                 $("#lnMunicipio").val(0);
                 $("#Estado").css("display", "none");
                 $("#Municipio").css("display", "none");
-                $("#Pais, #Localidad").removeClass("col-md-3");
-                $("#Pais, #Localidad").addClass("col-md-6");
+                $("#Pais, #Localidad").removeClass("col-md-4");
+                $("#Pais, #Localidad").addClass("col-md-12");
             }
             else {
                 $("#Estado").css("display", "block");
                 $("#Municipio").css("display", "block");
-                $("#Pais, #Localidad").removeClass("col-md-6");
-                $("#Pais, #Localidad").addClass("col-md-3");
+                $("#Pais, #Localidad").removeClass("col-md-12");
+                $("#Pais, #Localidad").addClass("col-md-4");
             }
         });
         $('#RealizoEntrevista').change(function () {
@@ -161,13 +161,28 @@
         });
     });
 
+    var lnestado = "";
+    function extranjero() {
+        var LnPais = document.getElementById("LnPais").value;
+        if (LnPais != "MEXICO") {
+            lnestado = '33';
+            SacaCURS();
+        }
+    }
+
     function SacaCURS() {
         var nombre = document.getElementById("nombreee").value;
         var paterno = document.getElementById("paternoee").value;
         var materno = document.getElementById("maternoee").value;
         var genero = document.getElementById("Sexo").value;
-        var lnestado = document.getElementById("lnEstado").value;
+
         var Fnacimiento = document.getElementById("fNacimiento").value;
+        var LnPais = document.getElementById("LnPais").value;
+        if (LnPais != "MEXICO") {
+            lnestado = '33';
+        } else {
+            lnestado = document.getElementById("lnEstado").value;
+        }
         $.ajax({
             url: "/Api/cursJson",
             type: "POST",
@@ -179,7 +194,7 @@
             },
             success: function (response) {
                 document.getElementById("CURS").value = response.curs;
-                //document.getElementById("CURP").value = response.curs + "*";
+                document.getElementById("CURP").value = response.curs + "*";
             }
         });
     };
@@ -312,13 +327,30 @@
                     <label class="control-label">Fecha de nacimiento</label>
                     <input required id="fNacimiento" name="FechaNacimiento" type="date" class="form-control" />
                 </div>
-                <div class="form-group col-md-6" id="Estado">
+                <div class="form-group col-md-4" id="Pais">
+                    <label class="control-label">País</label>
+                <select class="form-control" name="LnPais" id="LnPais" onblur="extranjero()">
+                        <option value="MEXICO">México</option>
+                        <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                        <option value="CANADA">Canada</option>
+                        <option value="COLOMBIA">Colombia</option>
+                        <option value="EL SALVADOR">El Salvador</option>
+                        <option value="GUATEMALA">Guatemala</option>
+                        <option value="CHILE">Chile</option>
+                        <option value="ARGENTINA">Argentina</option>
+                        <option value="BRASIL">Brasil</option>
+                        <option value="VENEZUELA">Venezuela</option>
+                        <option value="PUERTO RICO">Puerto Rico</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4" id="Estado">
                     <label class="control-label">Estado</label>
                     <select class="form-control" name="LnEstado" id="lnEstado"
                             asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" onblur="SacaCURS()">
                     </select>
                 </div>
-                <div class="form-group col-md-6" id="Municipio">
+                <div class="form-group col-md-4" id="Municipio">
                     <label class="control-label">Municipio</label>
                     <select class="form-control" name="LnMunicipio" id="lnMunicipio"
                             asp-items="@(new SelectList(string.Empty,"Id","Municipio"))">

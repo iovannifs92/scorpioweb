@@ -1120,14 +1120,30 @@
     function btnclose() {
         $('#similitudModal').modal('toggle');
     }
+    var lnestado = "";
+    function extranjero() {
+        alert(1)
+        var lnPais = document.getElementById("lnPais").value;
+        if (lnPais != "MEXICO") {
+            lnestado = '33';
+           SacaCURS();
+        }
+    }
+
 
     function SacaCURS() {
         var nombre = document.getElementById("nombre").value;
         var paterno = document.getElementById("paterno").value;
         var materno = document.getElementById("materno").value;
         var genero = document.getElementById("sexo").value;
-        var lnestado = document.getElementById("lnEstado").value;
+        
         var Fnacimiento = document.getElementById("fNacimiento").value;
+        var lnPais = document.getElementById("lnPais").value;
+        if(lnPais != "MEXICO"){
+            lnestado = '33';
+        }else{
+            lnestado = document.getElementById("lnEstado").value;
+        }
         $.ajax({
             url: "/Api/cursJson",
             type: "POST",
@@ -1244,7 +1260,7 @@
                                 </div>
                                 <div class="form-group col-md-3" id="Pais">
                                     <label class="control-label">País</label>
-                                    <select class="form-control" name="lnPais" id="lnPais">
+                                    <select class="form-control" name="lnPais" id="lnPais" onblur="extranjero()">
                                         <option value="MEXICO">México</option>
                                         <option value="ESTADOS UNIDOS">Estados Unidos</option>
                                         <option value="CANADA">Canada</option>

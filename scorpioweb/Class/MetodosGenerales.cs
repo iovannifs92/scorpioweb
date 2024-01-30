@@ -266,7 +266,7 @@ namespace scorpioweb.Class
             else if (generoN == "N")
                 curs[10] = 'X';
             //https://es.wikipedia.org/wiki/Plantilla:Abreviaciones_de_los_estados_de_M%C3%A9xico
-            string[] abreviacionesEstados = { "**", "AG", "BC", "BS", "CM", "CO", "CL", "CS", "CH", "CX", "DG", "GT", "GR", "HG", "JC", "EM", "MI", "MO", "NA", "NL", "OA", "PU", "QT", "QR", "SL", "SI", "SO", "TB", "TM", "TL", "VE", "YU", "ZA" };
+            string[] abreviacionesEstados = { "**", "AG", "BC", "BS", "CM", "CO", "CL", "CS", "CH", "CX", "DG", "GT", "GR", "HG", "JC", "EM", "MI", "MO", "NA", "NL", "OA", "PU", "QT", "QR", "SL", "SI", "SO", "TB", "TM", "TL", "VE", "YU", "ZA", "EX" };
             curs.Insert(11, abreviacionesEstados[Int32.Parse(lnestado)]);
             for (i = 1; i < paternoN.Length; i++)
             {
