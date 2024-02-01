@@ -1396,7 +1396,7 @@ namespace scorpioweb.Controllers
             int idbitacora = _context.Bitacoracl.Max(p => p.IdBitacoracl) + 1;
 
             string currentUser = User.Identity.Name;
-            string file_name = "";
+            string file_name = null;
 
             if (files != null && files.Count > 0)
             {
@@ -1433,7 +1433,6 @@ namespace scorpioweb.Controllers
                     bitacoracl.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                     bitacoracl.FechaRegistro = DateTime.Now;
                     bitacoracl.BeneficiosclIdBeneficioscl = Int32.Parse(datosidBeneficio[i]);
-                    bitacoracl.RutaEvidencia = bitacoracl.RutaEvidencia;
 
                     var supervision = _context.Supervisioncl
                     .SingleOrDefault(m => m.IdSupervisioncl == bitacoracl.SupervisionclIdSupervisioncl);

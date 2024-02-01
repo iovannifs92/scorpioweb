@@ -90,9 +90,16 @@
                     {
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("OficialiaAsistente"))
                     {
-                        <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
+                        if (User.IsInRole("OficialiaAsistente"))
+                        {
+                            <li><a asp-area="" asp-controller="Oficialia" asp-action="EditRegistros">Oficialia</a></li>
+                        }else
+                        {
+                           <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>  
+                        }
+                       
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director"))
                     {

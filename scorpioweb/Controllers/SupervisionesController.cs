@@ -2331,7 +2331,7 @@ MetodosGenerales mg = new MetodosGenerales();
             int idbitacora = _context.Bitacora.Max(table => table.IdBitacora) + 1;
 
             string currentUser = User.Identity.Name;
-            string file_name = "";
+            string file_name = null;
 
             if (files != null && files.Count > 0)
             {
@@ -2368,7 +2368,7 @@ MetodosGenerales mg = new MetodosGenerales();
                     bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                     bitacora.FechaRegistro = DateTime.Now;
                     bitacora.FracionesImpuestasIdFracionesImpuestas = Int32.Parse(datosidFraccion[i]);
-                    bitacora.RutaEvidencia = file_name;
+                
                     var supervision = _context.Supervision
                     .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
 
@@ -2389,7 +2389,7 @@ MetodosGenerales mg = new MetodosGenerales();
                     bitacora.Texto = mg.normaliza(Texto);
                     bitacora.OficialiaIdOficialia = idOficialia != null ? siNumero(idOficialia) : 0;
                     bitacora.FechaRegistro = DateTime.Now;
-                    bitacora.RutaEvidencia = file_name;
+         
 
                     var supervision = _context.Supervision
                    .SingleOrDefault(m => m.IdSupervision == bitacora.SupervisionIdSupervision);
