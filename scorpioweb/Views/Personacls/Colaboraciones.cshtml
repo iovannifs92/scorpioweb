@@ -1,0 +1,66 @@
+﻿@model IEnumerable<scorpioweb.Models.PersonaclsViewModal>
+
+@{
+    ViewData["Title"] = "Colaboraciones";
+}
+
+<h2>Colaboraciones</h2>
+@if (ViewBag.WarningsUser > 0)
+{
+    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida: @ViewBag.WarningsUser</h3>
+    </a>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Municipio
+            </th>
+            <th>
+                Caso Especial
+            </th>
+            <th>
+                Detalles
+            </th>
+            <th>
+                Procesos
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaclVM.IdPersonaCl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personaclVM.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.municipiosVMDomicilio.Municipio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CasoEspecial)
+            </td>
+            <td>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.personaclVM.IdPersonaCl">
+                    <i class='fa fa-eye'></i> Detalles
+                </a>
+            </td>
+            <td>
+                <a class="btn btn-primary" asp-action="Procesos" asp-route-id="@item.personaclVM.IdPersonaCl">
+                    <i class='fa fa-cogs'></i> Procesos
+                </a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

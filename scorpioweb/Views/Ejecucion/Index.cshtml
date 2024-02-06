@@ -183,9 +183,9 @@
                         <a onclick="showModal('@Url.Action("Edit", "Ejecucion", new {id=@item.ejecucionVM.IdEjecucion}, Context.Request.Scheme)','Editar',null )" class="btn btn-success fa fa-pencil" title="Editar" style="margin-bottom:10px;"> Editar</a>
                             @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
                             {
-                            <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarEjecucion(@item.ejecucionVM.IdEjecucion)" style="margin-bottom:10px;">
-                                <i class="fa fa-trash"></i>
-                                </a>
+                              <a type="button" class="btn btn-danger" id="borrar" title="Borrar" onclick="borrarEjecucion(@item.ejecucionVM.IdEjecucion)" style="margin-bottom:10px;">
+                                    <i class="fa fa-trash"></i>
+                              </a>
                             }
                         }
                     </td>

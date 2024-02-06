@@ -1990,7 +1990,7 @@ namespace scorpioweb.Controllers
             string resolucion, string centropenitenciario, string ce,string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string CURS, string CURSUsada, string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
-            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente,
+            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente, string colaboracion,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
             string residenciaHabitual, int cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
             /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
@@ -2569,7 +2569,8 @@ namespace scorpioweb.Controllers
                     personacl.Candado = 0;
                     personacl.MotivoCandado = "NA";
                     personacl.Centropenitenciario = mg.normaliza(centropenitenciario);
-                    personacl.Sinocentropenitenciario = sinocentropenitenciario;
+                    personacl.Sinocentropenitenciario = sinocentropenitenciario; 
+                    personacl.Colaboracion = mg.normaliza(colaboracion);
                     if (CURSUsada != null)
                     {
                         personacl.ClaveUnicaScorpio = CURSUsada;
@@ -2587,7 +2588,7 @@ namespace scorpioweb.Controllers
                     var municipio = (from m in _context.Municipios
                                      where m.Id.ToString() == municipioD
                                      select m.Municipio).FirstOrDefault().ToString();
-                    personacl.Colaboracion = "NO";
+                   
                     //if (personacl.Capturista.EndsWith("\u0040dgepms.com") && estado == "Durango" && (municipio == "Gómez Palacio" || municipio == "Lerdo"))
                     //{
                     //    personacl.Colaboracion = "SI";

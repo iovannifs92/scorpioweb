@@ -202,7 +202,7 @@ namespace scorpioweb.Controllers
             ViewBag.flag = false;
 
             //JUZGADO 1
-            if (ViewBag.User == "irma.carrasco@dgepms.com" || ViewBag.User == "esthela.huitron@dgepms.com")
+            if (ViewBag.User == "isabel.almora@dgepms.com" || ViewBag.User == "esthela.huitron@dgepms.com" || ViewBag.User == "irma.carrasco@dgepms.com")
             {
                 ViewBag.J = "JUZGADO 1";
             }
@@ -212,7 +212,7 @@ namespace scorpioweb.Controllers
                 ViewBag.J = "JUZGADO 2";
             }
             //JUZGADO 3
-            if (ViewBag.User == "isabel.almora@dgepms.com" || ViewBag.User == "alma.gladiola@dgepms.com")
+            if ( ViewBag.User == "alma.gladiola@dgepms.com")
             {
                 ViewBag.J = "JUZGADO 3";
             }

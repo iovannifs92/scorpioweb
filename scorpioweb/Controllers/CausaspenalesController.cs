@@ -440,56 +440,103 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Asignacion-
-        public async Task<IActionResult> Asignacion(int? id, string cp)
+        public async Task<IActionResult> Asignacion(
+            int? id, 
+            string cp,
+            string currentFilter,
+            string searchString,
+            int? pageNumber)
         {
-            if (id == null)
+            if (searchString != null)
             {
-                return NotFound();
-            }
-
-            ViewBag.CausaPenal = cp;
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-
-            List<Persona> listaPersonas = new List<Persona>();
-            List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
-            List<Persona> personaVM = _context.Persona.ToList();
-            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
-
-            listaPersonasAsignadas = (
-                from personaCausaPenalTable in personaCausaPenalVM
-                where personaCausaPenalTable.CausaPenalIdCausaPenal == id
-                select personaCausaPenalTable
-                ).ToList();
-
-            if (await esAdmin())
-            {
-                listaPersonas = (
-                from personaTable in personaVM
-                where listaPersonasAsignadas.All(
-                    per => per.PersonaIdPersona != personaTable.IdPersona
-                    )
-                orderby personaTable.Paterno
-                select personaTable
-                ).ToList();
+                pageNumber = 1;
             }
             else
             {
-                listaPersonas = (
-                from personaTable in personaVM
-                where listaPersonasAsignadas.All(
-                    per => per.PersonaIdPersona != personaTable.IdPersona
-                    )
-                && personaTable.Supervisor == user.ToString()
-                orderby personaTable.Paterno
-                select personaTable
-                ).ToList();
+                searchString = currentFilter;
             }
 
-            ViewBag.personas = listaPersonas;
-            selectedPersona = new List<string>();
+            ViewBag.CausaPenal = cp;
+            ViewBag.idCausaPenal = id;
 
-            return View();
+            ViewData["CurrentFilter"] = searchString;
+
+
+            List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
+
+            var listaPersonasAsignadas = from personaCausaPenalTable in personaCausaPenalVM
+               where personaCausaPenalTable.CausaPenalIdCausaPenal == id
+               select personaCausaPenalTable;
+
+            var personas = from personaTable in _context.Persona
+                where listaPersonasAsignadas.All(per => per.PersonaIdPersona != personaTable.IdPersona) select personaTable;
+
+            personas = personas.OrderByDescending(p => p.IdPersona);
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                foreach (var item in searchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    personas = personas.Where(p => (mg.replaceSlashes(p.Paterno) + " " + mg.replaceSlashes(p.Materno) + " " + mg.replaceSlashes(p.Nombre)).Contains(mg.normaliza(searchString)) ||
+                                                   (mg.replaceSlashes(p.Nombre) + " " + mg.replaceSlashes(p.Paterno) + " " + mg.replaceSlashes(p.Materno)).Contains(mg.normaliza(searchString)) || 
+                                                   (p.IdPersona.ToString().Contains(searchString)));
+                }
+            }
+
+            int pageSize = 10;
+            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+        //public async Task<IActionResult> Asignacion(int? id, string cp)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    ViewBag.CausaPenal = cp;
+        //    var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+        //    List<Persona> listaPersonas = new List<Persona>();
+        //    List<Personacausapenal> listaPersonasAsignadas = new List<Personacausapenal>();
+        //    List<Persona> personaVM = _context.Persona.ToList();
+        //    List<Personacausapenal> personaCausaPenalVM = _context.Personacausapenal.ToList();
+
+        //    listaPersonasAsignadas = (
+        //        from personaCausaPenalTable in personaCausaPenalVM
+        //        where personaCausaPenalTable.CausaPenalIdCausaPenal == id
+        //        select personaCausaPenalTable
+        //        ).ToList();
+
+        //    if (await esAdmin())
+        //    {
+        //        listaPersonas = (
+        //        from personaTable in personaVM
+        //        where listaPersonasAsignadas.All(
+        //            per => per.PersonaIdPersona != personaTable.IdPersona
+        //            )
+        //        orderby personaTable.Paterno
+        //        select personaTable
+        //        ).ToList();
+        //    }
+        //    else
+        //    {
+        //        listaPersonas = (
+        //        from personaTable in personaVM
+        //        where listaPersonasAsignadas.All(
+        //            per => per.PersonaIdPersona != personaTable.IdPersona
+        //            )
+        //        && personaTable.Supervisor == user.ToString()
+        //        orderby personaTable.Paterno
+        //        select personaTable
+        //        ).ToList();
+        //    }
+
+        //    ViewBag.personas = listaPersonas;
+        //    selectedPersona = new List<string>();
+
+        //    return View();
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

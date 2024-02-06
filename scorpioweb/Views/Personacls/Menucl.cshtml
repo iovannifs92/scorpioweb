@@ -132,31 +132,22 @@
     }
 
 
-    @*@if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin") || @ViewBag.Usuario == "ana.valles@dgepms.com")
+    @if (User.IsInRole("AdminLC") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
-                    <a asp-controller="Personas" asp-action="Colaboraciones">
+                    <a asp-controller="Personacls" asp-action="Colaboraciones">
                         <img class="card-img-bottom" src="~/images/especiales.png" alt="Card image cap" style="padding-bottom:5%;">
                         Casos Especiales
                     </a>
                 </h4>
-                @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
-                {
-                    <p class="card-text">
-                        Resguardo Domiciliario, TTA, Colaboraciones
+                <p class="card-text">
+                    Colaboraciones, Mediadas de Seguridad
                     </p>
-                }
-                else
-                {
-                    <p class="card-text">
-                        Resguardo Domiciliario
-                    </p>
-                }
             </div>
         </div>
-    }*@
+    }
 
     @*@if (@ViewBag.Usuario == "esmeralda.vargas@dgepms.com")
     {

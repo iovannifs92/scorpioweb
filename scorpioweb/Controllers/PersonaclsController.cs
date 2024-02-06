@@ -105,42 +105,6 @@ namespace scorpioweb.Models
             new SelectListItem{ Text="Zona 6", Value="ZONA 6"},
             new SelectListItem{ Text="Zona 7", Value="ZONA 7"}
         };
-
-
-        private List<SelectListItem> listaUbicacionExpediente = new List<SelectListItem>
-        {
-            new SelectListItem{ Text="NA", Value="NA"},
-            new SelectListItem{ Text="MCSCP1-1", Value="MCSCP1-1"},
-            new SelectListItem{ Text="MCSCP1-2", Value="MCSCP1-2"},
-            new SelectListItem{ Text="MCSCP1-3", Value="MCSCP1-3"},
-            new SelectListItem{ Text="MCSCP1-4", Value="MCSCP1-4"},
-            new SelectListItem{ Text="MCSCP2-1", Value="MCSCP2-1"},
-            new SelectListItem{ Text="MCSCP2-2", Value="MCSCP2-2"},
-            new SelectListItem{ Text="MCSCP2-3", Value="MCSCP2-3"},
-            new SelectListItem{ Text="MCSCP2-4", Value="MCSCP2-4"},
-            new SelectListItem{ Text="MCSCP3-1", Value="MCSCP3-1"},
-            new SelectListItem{ Text="MCSCP3-2", Value="MCSCP3-2"},
-            new SelectListItem{ Text="MCSCP3-3", Value="MCSCP3-3"},
-            new SelectListItem{ Text="MCSCP3-4", Value="MCSCP3-4"},
-            new SelectListItem{ Text="MCSCP4-1", Value="MCSCP4-1"},
-            new SelectListItem{ Text="MCSCP4-2", Value="MCSCP4-2"},
-            new SelectListItem{ Text="MCSCP4-3", Value="MCSCP4-3"},
-            new SelectListItem{ Text="MCSCP4-4", Value="MCSCP4-4"},
-            new SelectListItem{ Text="MCSCP5-1", Value="MCSCP5-1"},
-            new SelectListItem{ Text="MCSCP5-2", Value="MCSCP5-2"},
-            new SelectListItem{ Text="MCSCP5-3", Value="MCSCP5-3"},
-            new SelectListItem{ Text="MCSCP5-4", Value="MCSCP5-4"},
-            new SelectListItem{ Text="MCSCP6-1", Value="MCSCP6-1"},
-            new SelectListItem{ Text="MCSCP6-2", Value="MCSCP6-2"},
-            new SelectListItem{ Text="MCSCP6-3", Value="MCSCP6-3"},
-            new SelectListItem{ Text="MCSCP6-4", Value="MCSCP6-4"},
-            new SelectListItem{ Text="MCSCP7-1", Value="MCSCP7-1"},
-            new SelectListItem{ Text="MCSCP7-2", Value="MCSCP7-2"},
-            new SelectListItem{ Text="MCSCP7-3", Value="MCSCP7-3"},
-            new SelectListItem{ Text="MCSCP7-4", Value="MCSCP7-4"},
-            new SelectListItem{ Text="PRESTAMO", Value="PRESTAMO"},
-            new SelectListItem{ Text="ARCHIVO", Value="ARCHIVO"}
-        };
         #endregion
 
         #region -Constructor-
@@ -1313,6 +1277,45 @@ namespace scorpioweb.Models
 
         #endregion
 
+        #region -Colaboraciones-
+        public IActionResult Colaboraciones()
+        {
+            var user = User.Identity.Name;
+
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+            var colaboraciones = (from persona in _context.Personacl
+                                  join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                                  join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                                  join supervision in _context.Supervisioncl on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+                                  join beneficios in _context.Beneficios on supervision.IdSupervisioncl equals beneficios.SupervisionclIdSupervisioncl
+                                  where /*beneficios.Tipo == "XIII" &&*/ supervision.EstadoSupervision == "VIGENTE" && beneficios.FiguraJudicial == "MEDIDA DE SEGURIDAD"
+                                  select new PersonaclsViewModal
+                                   {
+                                       personaclVM = persona,
+                                       municipiosVMDomicilio = municipio,
+                                       CasoEspecial = "Prision Domiciliaria"
+                                   }).Union
+                                 (from persona in _context.Personacl
+                                  join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                                  join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                                  where persona.Colaboracion == "SI"
+                                  select new PersonaclsViewModal
+                                  {
+                                      personaclVM = persona,
+                                      municipiosVMDomicilio = municipio,
+                                      CasoEspecial = "Colaboración con " + persona.UbicacionExpediente 
+                                  });
+
+            return View(colaboraciones);
+        }
+        #endregion
+
         #region -SinSupervision-
         public async Task <IActionResult> SinSupervision()
         {
@@ -1589,6 +1592,9 @@ namespace scorpioweb.Models
 
             ViewBag.listaOtroIdioma = listaNoSi;
             ViewBag.idOtroIdioma = BuscaId(listaNoSi, personacl.OtroIdioma);
+
+            ViewBag.listaColaboracion = listaNoSi;
+            ViewBag.idColaboracion = BuscaId(listaNoSi, personacl.Colaboracion);
 
             ViewBag.listaLeerEscribir = listaSiNo;
             ViewBag.idLeerEscribir = BuscaId(listaSiNo, personacl.LeerEscribir);
@@ -1908,6 +1914,8 @@ namespace scorpioweb.Models
                     personacl.EspecifiqueTraductor = mg.normaliza(personacl.EspecifiqueTraductor);
                     personacl.ComIndigena = mg.normaliza(personacl.ComIndigena);
                     personacl.ComLgbtttiq = mg.normaliza(personacl.ComLgbtttiq);
+                    personacl.Colaboracion = mg.normaliza(personacl.Colaboracion);
+                    personacl.UbicacionExpediente = mg.normaliza(personacl.UbicacionExpediente);
                     if (!(personacl.Paterno == null && personacl.Materno == null && personacl.Nombre == null && personacl.Genero == null && personacl.Fnacimiento == null && personacl.Lnestado == null))
                     {
                         var curs = mg.sacaCurs(personacl.Paterno, personacl.Materno, personacl.Fnacimiento, personacl.Genero, personacl.Lnestado, personacl.Nombre);
@@ -1922,7 +1930,6 @@ namespace scorpioweb.Models
                     personacl.ReferenciasPersonales = mg.normaliza(personacl.ReferenciasPersonales);
                     personacl.RutaFoto = mg.normaliza(personacl.RutaFoto);
                     personacl.Capturista = personacl.Capturista;
-                    personacl.UbicacionExpediente = mg.normaliza(personacl.UbicacionExpediente);
                     if (personacl.Candado == null) { personacl.Candado = 0; }
                     personacl.Candado = personacl.Candado;
                     personacl.MotivoCandado = mg.normaliza(personacl.MotivoCandado);
@@ -4744,9 +4751,6 @@ namespace scorpioweb.Models
             return _context.Saludfisicacl.Any(e => e.IdSaludFisicaCl == id);
         }
         #endregion
-
-
-
 
     }
 }
