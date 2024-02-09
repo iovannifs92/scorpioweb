@@ -2605,49 +2605,49 @@ MetodosGenerales mg = new MetodosGenerales();
         #region -Obtener Nombre Supervisor-
         public static string nombreSupervisor(string idSistema)
         {
-            string nombre = "";
+            string supervisor = "";
 
             switch (idSistema)
             {
                 case "ana.valles@dgepms.com":
-                    nombre = "LIC. ANA ISABEL VALLES FLORES";
+                    supervisor = "LIC. ANA ISABEL VALLES FLORES";
                     break;
                 case "carmen.gonzalez@dgepms.com":
-                    nombre = "OF. MARÍA DEL CARMEN GONZALEZ";
+                    supervisor = "OF. MARÍA DEL CARMEN GONZALEZ";
                     break;
                 case "mayra.gonzalez@dgepms.com":
-                    nombre = "LIC. MAYRA YUDITH GONZÁLEZ MARTÍNEZ";
+                    supervisor = "LIC. MAYRA YUDITH GONZÁLEZ MARTÍNEZ";
                     break;
                 case "stephany.garcia@dgepms.com":
-                    nombre = "LIC. STEPHANY GARCIA";
+                    supervisor = "LIC. STEPHANY GARCIA";
                     break;
                 case "victor.hernandez@dgepms.com":
-                    nombre = "LIC. VICTOR HERNANDEZ";
+                    supervisor = "LIC. VICTOR HERNANDEZ";
                     break;
                 case "enrique.martinez@dgepms.com":
-                    nombre = "LIC. ENRIQUE MARTINEZ";
+                    supervisor = "LIC. ENRIQUE MARTINEZ";
                     break;
                 case "diana.ontiveros@dgepms.com":
-                    nombre = "LIC. DIANA ONTIVEROS";
+                    supervisor = "LIC. DIANA ONTIVEROS";
                     break;
                 case "esmeralda.vargas@dgepms.com":
-                    nombre = "LIC. ESMERALDA VARGAS";
+                    supervisor = "LIC. ESMERALDA VARGAS";
                     break;
                 case "jesumartinez@dgepms.com":
-                    nombre = "LIC. JESU MARTINEZ";
+                    supervisor = "LIC. JESU MARTINEZ";
                     break;
                 case "diana.renteria@dgepms.com":
-                    nombre = "LIC. DIANA RENTERIA";
+                    supervisor = "LIC. DIANA RENTERIA";
                     break;
                 case "iovannifs92@gmail.com":
-                    nombre = "IOVANNI FERNÁNDEZ SÁNCHEZ";
+                    supervisor = "IOVANNI FERNÁNDEZ SÁNCHEZ";
                     break;
                 default:
-                    nombre = "SIN REGISTRO";
+                    supervisor = "SIN REGISTRO";
                     break;
             }
 
-            return nombre;
+            return supervisor;
         }
         #endregion
 

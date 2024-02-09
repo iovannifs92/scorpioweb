@@ -1815,7 +1815,15 @@ namespace scorpioweb.Controllers
 
             return Json(new SelectList(municipiosList, "Id", "Municipio"));
         }
+        public JsonResult GetMunicipioN(int EstadoId)
+        {
+            TempData["message"] = DateTime.Now;
+            List<Municipios> municipiosList = _context.Municipios
+                .Where(m => m.EstadosId == EstadoId)
+                .ToList();
 
+            return Json(municipiosList);
+        }
         public JsonResult GetMunicipioED(int EstadoId)
         {
             TempData["message"] = DateTime.Now;
