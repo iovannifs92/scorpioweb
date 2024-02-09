@@ -57,17 +57,17 @@
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE CONDICIONES EN LIBERTAD*@
-                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos"))
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Oficialia"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Index">Condiciones en Libertad</a></li>
                     }
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP") || User.IsInRole("Oficialia"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP"))
                     {                        
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE MC Y SCP*@
-                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo"))
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("Oficialia"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Index2">MC y SCP</a></li>
                     }
