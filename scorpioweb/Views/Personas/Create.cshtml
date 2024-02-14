@@ -16,8 +16,6 @@
     function validarEdad(input) {
         input.value = input.value.replace(/[^0-9]/g, '');
     }
-
-
     var tipo = 0;
     var listSustancia = new Array;
     var listFamiliarReferencia = new Array;
@@ -664,7 +662,7 @@
                 $("#empleadorJefe").css("display", "block");
                 $("#enteradoProceso").css("display", "block");
                 $("#sePuedeEnterar").css("display", "block");
-                $("#tiempoTrabajando").css("display", "block");
+                $("#tiempoTrabajandoT").css("display", "block");
                 $("#salarioT").css("display", "block");
                 $("#temporalidadSalarioT").css("display", "block");
                 $("#direccionTT").css("display", "block");
@@ -677,7 +675,7 @@
                 $("#empleadorJefe").css("display", "none");
                 $("#enteradoProceso").css("display", "none");
                 $("#sePuedeEnterar").css("display", "none");
-                $("#tiempoTrabajando").css("display", "none");
+                $("#tiempoTrabajandoT").css("display", "none");
                 $("#salarioT").css("display", "none");
                 $("#temporalidadSalarioT").css("display", "none");
                 $("#direccionTT").css("display", "none");
@@ -991,6 +989,7 @@
             }
         });
     }
+
     function formatDate(dateString) {
         if (dateString == null) {
             return "";
@@ -1002,6 +1001,7 @@
         var nuevaFecha = año + "-" + mes + "-" + dia;
         return nuevaFecha;
     };
+
     function traermuni(EstadoId,MuniId){
         var items = "";
         $("#lnMunicipio").empty();
@@ -1024,6 +1024,7 @@
             }
         }); 
     }
+
     function usarDatos(id, tabla) {
         document.getElementById("tabla").value = tabla;
         document.getElementById("idselecionado").value = id;
@@ -1049,9 +1050,8 @@
                 document.getElementById("fNacimiento").value = formatDate(response.lista[0].p.fnacimiento);
                 document.getElementById("lnPais").value = response.lista[0].p.lnpais;
                 document.getElementById("lnEstado").value = response.lista[0].p.lnestado;
-                //PARA TRAESR MUNICIPIO DEL AJAX
+                //PARA TRAER MUNICIPIO DEL AJAX
                 traermuni(response.lista[0].p.lnestado,response.lista[0].p.lnmunicipio);
-                ////////////////////
                 document.getElementById("lnLocalidad").value = response.lista[0].p.lnlocalidad;
                 document.getElementById("estadoCivil").value = response.lista[0].p.estadoCivil.toLowerCase();
                 document.getElementById("duracion").value = response.lista[0].p.duracion;
@@ -1070,7 +1070,8 @@
                 document.getElementById("nPersonasVive").value = response.lista[0].p.npersonasVive;
                 document.getElementById("propiedades").value = response.lista[0].p.propiedades.toLowerCase();
                 document.getElementById("CURP").value = response.lista[0].p.curp;
-                ////DATOS DOMICILIO
+
+                //DATOS DOMICILIO
                 document.getElementById("tipoDomicilio").value = response.lista[0].d.tipoDomicilio;
                 document.getElementById("calle").value = response.lista[0].d.calle;
                 document.getElementById("no").value = response.lista[0].d.no;
@@ -1084,7 +1085,7 @@
                 document.getElementById("referencias").value = response.lista[0].d.referencias;
                 document.getElementById("horario").value = response.lista[0].d.horario;
                 document.getElementById("observaciones").value = response.lista[0].d.observaciones;
-                ////DATOS ESCOLARIDAD
+                //DATOS ESCOLARIDAD
                 document.getElementById("estudia").value = response.lista[0].e.estudia;
                 document.getElementById("gradoEstudios").value = response.lista[0].e.gradoEstudios;
                 document.getElementById("institucionE").value = response.lista[0].e.institucionE;
@@ -1138,6 +1139,15 @@
                 document.getElementById("especifiqueServicioMedico").value = response.lista[0].s.especifiqueServicioMedico;
                 document.getElementById("institucionServicioMedico").value = response.lista[0].s.institucionServicioMedico;
                 document.getElementById("observacionesSalud").value = response.lista[0].s.observaciones;
+
+                var cambiar = confirm("¿Desea descargar la fotografia?");
+                if (cambiar == true) {
+                    if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true) {
+                        window.open("http://10.6.60.190/Fotoscl/" + response.lista[0].p.rutaFoto, "Imagen", "width=500, height=700")
+                    }else{
+                       window.open("http://10.6.60.190/Fotos/" + response.lista[0].p.rutaFoto, "Imagen", "width=500, height=700")
+                    }
+                }
             }
         });
         $("#similitudModal").modal("hide");
@@ -1148,14 +1158,12 @@
     }
     var lnestado = "";
     function extranjero() {
-        alert(1)
         var lnPais = document.getElementById("lnPais").value;
         if (lnPais != "MEXICO") {
             lnestado = '33';
            SacaCURS();
         }
     }
-
 
     function SacaCURS() {
         var nombre = document.getElementById("nombre").value;
@@ -1701,14 +1709,14 @@
                             <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Actualmente estudia?</label>
-                                    <select required class="form-control" name="estudia" id="estudia">
+                                    <select class="form-control" name="estudia" id="estudia">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-6" id="">
                                     <label class="control-label">Último grado de estudios</label>
-                                    <select required class="form-control" name="gradoEstudios" id="gradoEstudios">
+                                    <select class="form-control" name="gradoEstudios" id="gradoEstudios">
                                         <option value="PRIMARIA">Primaria</option>
                                         <option value="SECUNDARIA">Secundaria</option>
                                         <option value="BACHILLERATO">Bachillerato</option>
@@ -1752,7 +1760,7 @@
 
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Trabaja actualmente?</label>
-                                    <select required class="form-control" name="trabaja" id="trabaja">
+                                    <select class="form-control" name="trabaja" id="trabaja">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
@@ -1798,7 +1806,7 @@
                                 </div>
                                 <div class="form-group col-md-12" id="tiempoTrabajandoT" style="display:none">
                                     <label class="control-label">Tiempo</label>
-                                    <select required class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
+                                    <select class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
                                         <option value="MAS DE 10 AÑOS">Más de 10 años</option>
                                         <option value="ENTRE 2 Y 4 AÑOS">Entre 2 y 4 años</option>
                                         <option value="ENTRE 5 Y 9 AÑOS">Entre 5 y 9 años</option>
@@ -1868,7 +1876,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="control-label">¿Alguién se puede enterar de su proceso penal?</label>
-                                    <select required class="form-control" name="sePuedeEnterarAS" id="sePuedeEnterarAS">
+                                    <select class="form-control" name="sePuedeEnterarAS" id="sePuedeEnterarAS">
                                         <option value="NA">NA</option>
                                         <option value="SI">Si</option>
                                         <option value="NO">No</option>
@@ -1894,7 +1902,7 @@
                             <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Ha vivido en otro estado o país?</label>
-                                    <select required class="form-control" name="vividoFuera" id="vividoFuera">
+                                    <select class="form-control" name="vividoFuera" id="vividoFuera">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
@@ -1913,7 +1921,7 @@
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Viaja habitualmente a otros estados o países?</label>
-                                    <select required class="form-control" name="viajaHabitual" id="viajaHabitual">
+                                    <select class="form-control" name="viajaHabitual" id="viajaHabitual">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
@@ -1932,28 +1940,28 @@
                                 </div>
                                 <div class="form-group col-md-12">
                                     <label class="control-label">¿Cuenta con documentación oficial para entrar y salir de país?</label>
-                                    <select required class="form-control" name="documentacionSalirPais" id="documentacionSalirPais">
+                                    <select class="form-control" name="documentacionSalirPais" id="documentacionSalirPais">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12" id="pasaporteA" style="display:none">
                                     <label class="control-label">¿Cuenta con pasaporte?</label>
-                                    <select required class="form-control" name="pasaporte" id="pasaporte">
+                                    <select class="form-control" name="pasaporte" id="pasaporte">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12" id="visaA" style="display:none">
                                     <label class="control-label">¿Cuenta con visa?</label>
-                                    <select required class="form-control" name="visa" id="visa">
+                                    <select class="form-control" name="visa" id="visa">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label">¿Tiene familiares cercanos o amistades residiendo en otro estado o país con los que mantenga comunicación estrecha?</label>
-                                    <select required class="form-control" name="familiaresFuera" id="familiaresFuera">
+                                    <select class="form-control" name="familiaresFuera" id="familiaresFuera">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
@@ -1973,7 +1981,7 @@
                             <div id="collapse7" class="panel-collapse collapse" style="padding-top:1%;">
                                 <div class="form-group">
                                     <label class="control-label">¿Tiene alguna enfermedad crónica ó degerenativa que dificulte su comparecencia?</label>
-                                    <select required class="form-control" name="enfermedad" id="enfermedad">
+                                    <select class="form-control" name="enfermedad" id="enfermedad">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>
@@ -1984,7 +1992,7 @@
                                 </div>
                                 <div class="form-group" id="embarazo" style="display:none">
                                     <label class="control-label">¿Está embarazada o en período de lactancia?</label>
-                                    <select required class="form-control" name="embarazoLactancia" id="embarazoLactancia">
+                                    <select class="form-control" name="embarazoLactancia" id="embarazoLactancia">
                                         <option value="NO">No</option>
                                         <option value="SI">Si</option>
                                     </select>

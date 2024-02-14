@@ -15,13 +15,13 @@
                 <input required asp-for="Fecha" type="date" class="form-control" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
-           <div class="form-group col-md-4">
+            @*<div class="form-group col-md-4">
                 <label class="control-label">IdOficialias</label>
                 <select class="form-control" name="idoficialia" id="idoficialia"
                         asp-items="@(new SelectList(ViewBag.expoficialia, "Value"))">
                         <option value="NA">NA</option>
                 </select>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label class="control-label">Supervisado / Víctima</label>
                 <select class="form-control" name="tipoPersona" id="tipoPersona">

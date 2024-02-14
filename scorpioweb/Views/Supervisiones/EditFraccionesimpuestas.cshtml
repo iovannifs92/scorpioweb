@@ -77,7 +77,8 @@
     }
     var arr = [];
     function myFunction(id) {
-        var encontro = false;
+        
+    var encontro = false;
         var doble;
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] === id) {
@@ -91,6 +92,13 @@
         } else {
             arr.splice(doble, 1);
         }
+
+        if (arr.length == 0) {
+            document.getElementById("btnImprimirR").disabled = true;
+        } else {
+            document.getElementById("btnImprimirR").disabled = false;
+        }
+
     }
     $(document).ready(function () {
         $('#btnImprimirR').on("click", function (e) {
@@ -138,6 +146,10 @@
             }
         });
     };
+   
+    $(document).ready(function () {
+        document.getElementById("btnImprimirR").disabled = true;
+    });
 </script>
 <h2>Fracciónes Impuestas</h2>
 <div class="col-md-12">
@@ -257,7 +269,7 @@
             <i class="fa fa-plus"></i> Añadir Fracciones
         </button>
 
-        <a id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
+        <button id="btnImprimirR" name="btnImprimirR" class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</button>
     </div>
     <br />
 }

@@ -2191,27 +2191,27 @@ MetodosGenerales mg = new MetodosGenerales();
             ViewBag.idfraccionesimpuestas = idfraccionesimpuestas;
             #region -Select idOficialia
 
-            List<Bitacora> bitacorasvm = _context.Bitacora.ToList();
+            //List<Bitacora> bitacorasvm = _context.Bitacora.ToList();
 
-            var leftjoin = from o in _context.Oficialia
-                           join p in _context.Persona on o.UsuarioTurnar equals p.Supervisor
-                           join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-                           join b in bitacorasvm on o.IdOficialia equals b.OficialiaIdOficialia into temp
-                           from bo in temp.DefaultIfEmpty()
-                           select new ListaOficialiaBitacoraViewModel
-                           {
-                               oficialiavm = o,
-                               supervisionvm = s,
-                               personavm = p,
-                               bitacoravm = bo
-                           };
-            var wheres = (from bn in leftjoin
-                          where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
-                          group bn by bn.oficialiavm.IdOficialia into grp
-                          select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
+            //var leftjoin = from o in _context.Oficialia
+            //               join p in _context.Persona on o.UsuarioTurnar equals p.Supervisor
+            //               join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+            //               join b in bitacorasvm on o.IdOficialia equals b.OficialiaIdOficialia into temp
+            //               from bo in temp.DefaultIfEmpty()
+            //               select new ListaOficialiaBitacoraViewModel
+            //               {
+            //                   oficialiavm = o,
+            //                   supervisionvm = s,
+            //                   personavm = p,
+            //                   bitacoravm = bo
+            //               };
+            //var wheres = (from bn in leftjoin
+            //              where bn.oficialiavm.UsuarioTurnar == supervisor && bn.bitacoravm == null
+            //              group bn by bn.oficialiavm.IdOficialia into grp
+            //              select grp.OrderBy(bn => bn.oficialiavm.IdOficialia).FirstOrDefault()).ToList();
 
-            var select = (from wh in wheres
-                          select wh.oficialiavm.IdOficialia).ToList();
+            //var select = (from wh in wheres
+            //              select wh.oficialiavm.IdOficialia).ToList();
 
             var fracionesImpuestas = (from s in _context.Supervision
                                       join fi in _context.Fraccionesimpuestas on s.IdSupervision equals fi.SupervisionIdSupervision
@@ -2232,7 +2232,7 @@ MetodosGenerales mg = new MetodosGenerales();
             }
 
 
-            ViewBag.expoficialia = select;
+            //ViewBag.expoficialia = select;
             #endregion
 
             ViewBag.IdSupervisionGuardar = id;
@@ -3301,7 +3301,7 @@ MetodosGenerales mg = new MetodosGenerales();
 
             foreach (var rol in roles)
             {
-                if (rol == "AdminMCSCP" || rol == "AdminMCSCP")
+                if (rol == "AdminMCSCP" || rol == "Director" || rol == "Masteradmin")
                 {
                     flagCoordinador = true;
                 }

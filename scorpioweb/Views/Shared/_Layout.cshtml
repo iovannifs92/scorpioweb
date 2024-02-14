@@ -101,9 +101,15 @@
                         }
                        
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia"))
                     {
-                        <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
+                        if (User.IsInRole("Oficialia"))
+                        {
+                            <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecucion</a></li>
+                        }else{
+                            <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
+                        }
+
                     }
                     @if (User.IsInRole("Masteradmin"))
                     {
