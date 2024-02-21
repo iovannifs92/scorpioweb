@@ -13,6 +13,10 @@
 @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
 
 <script>
+  
+    var idSupervisionGuardar = "@ViewData["IdSupervisionGuardar"]";
+    localStorage.setItem("IdSupervisionGuardar", idSupervisionGuardar);
+    console.log("IdSupervisionGuardar recuperado:", idSupervisionGuardar);
     var arr = [];
     function condiciones(id) {
         var encontro = false;
@@ -67,7 +71,13 @@
 
 
     showModal = (url, title, id) => {
-        var idSupervision = document.getElementById("IdS").value;
+       
+        var idSupervisioncl = localStorage.getItem("IdSupervisionGuardar");
+
+    
+        if (!idSupervisioncl) {
+            idSupervisioncl = document.getElementById("IdS") ? document.getElementById("IdS").value : "";
+        }
         $.ajax({
             type: "GET",
             url: url + "?id=" + id,
@@ -78,7 +88,7 @@
             },
             traditional: true,
             data: {
-                datosBitacora: [idSupervision],
+                datosBitacora: [idSupervisioncl],
             },
             error: function (res) {
 
@@ -167,7 +177,7 @@
             <h4 style="text-align:center" class="blockquote text-center">@ViewBag.cp</h4>
     </div>
 </div>
-<input style="display:none" name="IdS" id="IdS" class="form-control" value="@ViewBag.IdSupervisionGuardar" />
+<input style="display:none" name="IdS" id="IdS" class="form-control" value="@ViewData["IdSupervisionGuardar"]" />
 
 <table class="table" style="text-align:center">
     <thead style="text-align:center">
@@ -239,9 +249,9 @@
                             <button type="submit" class="btn btn-danger">
                                 <i class="fa fa-trash"></i> Borrar
                             </button>
-                         @*   <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdBeneficios, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
+                            <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisioncl", new {id=@item.IdBeneficios, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp, IdSupervision= @ViewBag.IdSupervisionGuardar}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
                                 <i class="fa fa-plus"></i> Acciones de Supervisión
-                            </a>*@
+                            </a>
                         </form>
                     </td>
                 }
@@ -264,7 +274,7 @@
     <br />
 }
 <div>
-    <a asp-action="Supervision" asp-route-id="@ViewBag.IdSupervisionclGuardar" class="btn btn-link">Regresar</a>
+    <a asp-action="Supervision" asp-route-id="@ViewBag.IdSupervisionGuardar" class="btn btn-link">Regresar</a>
 </div>
 
 
@@ -278,7 +288,7 @@
             <div class="modal-body">
                 <div class="form-group" hidden>
                     <label class="control-label">Id Supervision</label>
-                    <input readonly name="IdSupervision" id="IdSupervision" class="form-control" value="@ViewBag.IdSupervisionclGuardar" />
+                    <input readonly name="IdSupervision" id="IdSupervision" class="form-control" value="@ViewBag.IdSupervisionGuardar" />
                 </div>
                 <div class="form-group col-md-12">
                     <label class="control-label">Beneficio</label>
