@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using scorpioweb.Class;
 using scorpioweb.Models;
+using SautinSoft.Document.MailMerging;
+using SautinSoft.Document;
+using DocumentFormat.OpenXml.Math;
 
 namespace scorpioweb.Controllers
 {
@@ -410,7 +413,6 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
-
 
         #region Edits 
 
@@ -1835,7 +1837,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #endregion -Edits-
+        #endregion -Edits-fViewBag.usuario
 
         #region -Actualizar Candado-
         public JsonResult LoockCandado(Personacl personacl, string[] datoCandado)
@@ -1976,6 +1978,281 @@ namespace scorpioweb.Controllers
 
         #endregion
 
+        #region -Obtener Nombre Supervisor-
+         Dictionary<string, string> diccionarioSupervisores = new Dictionary<string, string>
+            {
+                {"victor.morales@dgepms.com", "VICTOR MANUEL MORALES PEREZ"},
+                {"juanita.rojas@dgepms.com", "JUANITA ROJAS GARCIA"},
+                {"carmen.gonzalez@dgepms.com", "OF. MARIA DEL CARMEN GONZALEZ"},
+                {"ana.quinonez@dgepms.com", "LIC. ANA MARIA QUIÑONEZ"},
+                {"teresita.medina@dgepms.com", "TERESITA MEDINA"},
+                {"david.nevarez@dgepms.com", "DAVID IVAN NEVAREZ"},
+                {"amor.davalos@dgepms.com", "LIC. AMOR DAVALOS NAJERA"},
+                {"harled.ledesma@dgepms.com", "LIC. HARLE LEDESMA"},
+                {"andrea.valdez@dgepms.com", "LIC. ANDREA VALDEZ"}
+
+            };
+        #endregion
+
+        #region -Imprimir Reporte Supervision-
+        public void imprimirReporteSupervision(string[] datosidBeneficio)
+        {
+            #region -Definir variables-
+            #region -F1-
+            string No1 = string.Empty;
+            string TextoFraccion1 = string.Empty;
+            string Estatus1 = string.Empty;
+            string Actividades1 = string.Empty;
+            #endregion
+            #endregion
+
+            #region -Consultas y llenado de variables temporales-
+            int idSupervision = (from table in _context.Beneficios
+                                 where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[datosidBeneficio.Length - 1]))
+                                 select table.SupervisionclIdSupervisioncl).FirstOrDefault(); //Obtener IdSupervision
+
+            var tipo = from table in _context.Beneficios
+                       where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[datosidBeneficio.Length - 1]))
+                       select new
+                       {
+                           FechaImposicion = table.FechaInicio,
+                           FiguraJudicial = table.FiguraJudicial
+                       };
+
+
+
+            int idCP = (from table in _context.Supervisioncl
+                        where table.IdSupervisioncl == idSupervision
+                        select table.CausaPenalclIdCausaPenalcl).FirstOrDefault();
+
+            int idPersona = (from table in _context.Supervisioncl
+                             where table.IdSupervisioncl == idSupervision
+                             select table.PersonaclIdPersonacl).FirstOrDefault();
+
+            var persona = from table in _context.Personacl
+                          where table.IdPersonaCl == idPersona
+                          select new
+                          {
+                              Paterno = table.Paterno,
+                              Materno = table.Materno,
+                              Nombre = table.Nombre,
+                              Supervisor = table.Supervisor,
+                              ce = table.Ce,
+                              juzgado = table.Juzgado
+                          };
+
+            var causapenal = from table in _context.Causapenalcl
+                             where table.IdCausaPenalcl == idCP
+                             select new
+                             {
+                                 CausaPenal = table.CausaPenal,
+                                 Juez = table.Juez,
+                                 Distrito = table.Distrito
+                             };
+
+            var delitos = from table in _context.Delitocl
+                          where table.CausaPenalclIdCausaPenalcl == idCP
+                          select new
+                          {
+                              Delito = table.Tipo
+                          };
+
+            var presentacion = from registro in _context.Registrohuellacl
+                               join p in _context.Presentacionperiodicacl on registro.IdregistroHuellacl equals p.IdregistroHuellacl
+                               where registro.PersonaclIdPersonacl == idPersona
+                               select new
+                               {
+                                   fechaFirma = p.FechaFirma
+                               };
+
+
+            string inicio = "";
+
+            try
+            {
+                inicio = ((from table in _context.Supervisioncl
+                           where table.IdSupervisioncl == idSupervision
+                           select table.Inicio).FirstOrDefault()).Value.ToString("dd MMMM yyyy");
+            }
+            catch (System.InvalidOperationException e)
+            {
+                inicio = "xxxxxxxxxxxxxxxx-Sin fecha de inicio en Supervisión-xxxxxxxxxxxxxxxxxx";
+            }
+
+
+            string final = "";
+
+            try
+            {
+                final = ((from table in _context.Supervisioncl
+                          where table.IdSupervisioncl == idSupervision
+                          select table.Termino).FirstOrDefault()).Value.ToString("dd MMMM yyyy");
+            }
+            catch (System.InvalidOperationException e)
+            {
+                final = "-Sin fecha de termino en Supervisión-";
+            }
+
+            string cp = "";
+            string juzgado = "";
+            string ce = "";
+            string juez = "";
+            string fechaImposicion = "";
+            string figuraJudicial = "";
+            string fechaFinal = "";
+            string nombre = "";
+            string delito = "";
+            string supervisor = "";
+            string distrito = "";
+            string presentaciones = "";
+            string tipoInforme = "C";
+            string fechaAudienciars = "C";
+
+
+            Dictionary<string, string> diccionarioJuzgados = new Dictionary<string, string>
+            {
+                { "NA", "NA" },
+                { "JUZGADO 1", "J1" },
+                { "JUZGADO 2", "J2" },
+                { "JUZGADO 3", "J3" }
+            };
+
+            foreach (var p in persona)
+            {
+                nombre = p.Paterno + " " + p.Materno + " " + p.Nombre;
+                if (diccionarioSupervisores.ContainsKey(p.Supervisor))
+                {
+                    supervisor = diccionarioSupervisores[p.Supervisor];
+                }
+                else
+                {
+                    // Si no se encuentra en el diccionario, asignar el valor original
+                    supervisor = p.Supervisor.ToString();
+                }
+                ce = p.ce;
+                if (diccionarioJuzgados.ContainsKey(p.juzgado))
+                {
+                    juzgado = diccionarioJuzgados[p.juzgado];
+                }
+                else
+                {
+                    // Si no se encuentra en el diccionario, asignar el valor original
+                    juzgado = p.juzgado.ToString();
+                }
+
+
+            }
+
+            foreach (var c in causapenal)
+            {
+                cp = c.CausaPenal;
+                juez = c.Juez;
+                distrito = c.Distrito;
+            }
+
+            foreach (var d in delitos)
+            {
+                delito += d.Delito + " ";
+            }
+
+            foreach (var t in tipo)
+            {
+                fechaImposicion = t.FechaImposicion.Value.ToString("dd MMMM yyyy");
+                figuraJudicial = t.FiguraJudicial;
+            }
+
+            foreach (var p in presentacion)
+            {
+                presentaciones += p.fechaFirma.Value.ToString("dd MMMM yyyy") + " \n";
+            }
+            #endregion
+
+            #region -Define contenido de variables-
+            string actividadesfor = string.Empty;
+            List<object> fracciones = new List<object>();
+            bool presentacionesbool = false;
+
+            for (int i = 0; i < datosidBeneficio.Length; i++)
+            {
+                string tipoF = (from table in _context.Beneficios
+                                where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
+                                select table.Tipo).FirstOrDefault();
+
+                string estatusF = (from table in _context.Beneficios
+                                   where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
+                                   select table.Estado).FirstOrDefault();
+
+                var actividades = from ben in _context.Beneficios
+                                  join bitacora in _context.Bitacoracl on ben.IdBeneficios equals bitacora.BeneficiosclIdBeneficioscl
+                                  where ben.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
+                                  select new
+                                  {
+                                      actividades = bitacora.Texto,
+                                      fecha = bitacora.Fecha
+                                  };
+
+
+                if (!presentacionesbool && presentaciones != "")
+                {
+                    actividadesfor = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
+                    "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
+                    "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
+                    presentaciones;
+                    presentacionesbool = true;
+                }
+                else
+                {
+                    foreach (var a in actividades)
+                    {
+                        actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
+                    }
+                   
+                }
+
+                var nuevaFraccion = new
+                {
+                    No = 1 + i,
+                    TextoFraccion = tipoF,
+                    Estatus = estatusF,
+                    Actividades = actividadesfor
+                };
+                actividadesfor = "";
+                fracciones.Add(nuevaFraccion);
+            }
+            #endregion
+
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateCL.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\reporteSupervision.docx";
+
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+            
+            var dataSource = new
+            {
+                Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
+                fechaFinal = final,
+                //fechaAudienciars = fechaAudiencia,
+                CP = cp,
+                CE = ce,
+                Js = juzgado,
+                idPer = idPersona,
+                Juez = juez,
+                FechaImposicion = fechaImposicion,
+                FiguraJudicial = figuraJudicial,
+                Nombre = nombre,
+                Delito = delito,
+                Supervisor = supervisor,
+                Distrito = distrito,
+                Fraccion = fracciones.ToArray(),
+
+        };
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+            dc.MailMerge.Execute(dataSource);
+            dc.Save(resultPath);
+            //Response.Redirect("https://localhost:44359/Documentos/reporteSupervision.docx");
+        }
+        #endregion
 
         #region -VERIFICAR EXISTE-
         private bool SupervisionclExists(int id)

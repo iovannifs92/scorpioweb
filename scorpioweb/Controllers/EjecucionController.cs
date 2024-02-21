@@ -1813,9 +1813,9 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
-                        string file_name = idejecucion + "_" + eptermino.EpcausapenalIdepcausapenal + "_" + id + Path.GetExtension(archivo.FileName);
+                        string file_name = id + "_" + eptermino.EpcausapenalIdepcausapenal + "_" + idejecucion + Path.GetExtension(archivo.FileName);
                         eptermino.Urldocumento = file_name;
-                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Cierredecaso");
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "EvidenciaTermino");
 
                         if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
                         {

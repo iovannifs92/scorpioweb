@@ -85,34 +85,64 @@
             }
         })
     }
-    //$(document).ready(function () {
-    //    $('#btnImprimirR').on("click", function (e) {
-    //        e.preventDefault();
-    //        $.ajax({
-    //            type: "POST",
-    //            dataType: "json",
-    //            url: "/Supervisiones/imprimirReporteSupervision",
-    //            traditional: true,
-    //            data: {
-    //                datosidFraccion: arr,
-    //            },
-    //            success: function (response) {
-    //                if (response.success) {
-    //                    location.reload();
-    //                } else {
-    //                    alert(response.responseText);
-    //                }
-    //            },
-    //            error: function (response) {
-    //                alert("Informe Generado");
-    //                //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
-    //                //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
-    //                window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
-    //            }
-    //        });
 
-    //    });
-    //});
+
+    function myFunction(id) {
+        var encontro = false;
+        var doble;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+        if (encontro == false) {
+            arr.push(id);
+        } else {
+            arr.splice(doble, 1);
+        }
+        if (arr.length == 0) {
+            document.getElementById("btnImprimirR").disabled = true;
+        } else {
+            document.getElementById("btnImprimirR").disabled = false;
+        }
+    }
+
+    $(document).ready(function () {
+        $('#btnImprimirR').on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Supervisioncl/imprimirReporteSupervision",
+                traditional: true,
+                data: {
+                    datosidBeneficio: arr,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("Informe Generado");
+                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
+                    window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
+                    
+                    //window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
+                }
+            });
+
+        });
+    });
+
+
+    $(document).ready(function () {
+        document.getElementById("btnImprimirR").disabled = true;
+    });
 
     //function cambioestado(idf, value) {
     //    $.ajax({
@@ -198,7 +228,7 @@
         {
             <tr>
                 <td>
-                    <input disabled type="checkbox" id="myCheck" onclick="myFunction(@item.IdBeneficios)">
+                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdBeneficios)">
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.FiguraJudicial)
@@ -216,17 +246,16 @@
                     @if (item.FechaTermino != null)
                     {
                         @*@if (DateTime.Now < item.FechaTermino)
-                        {*@
-                            @item.FechaTermino.Value.ToString("dd MMMM yyyy")
+                {*@
+                        @item.FechaTermino.Value.ToString("dd MMMM yyyy")
                     }
                 </td>
                 <td>
                     @*<select class="form-control" name="Estado" id="Estado" style="font-size:9px" onchange="cambioestado(@item.IdBeneficios, value)"
-                            asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Text", "Text", item.Estado))">
-                    </select>*@
+                asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Text", "Text", item.Estado))">
+                </select>*@
                     @Html.DisplayFor(modelItem => item.Estado)
                 <td>
-                       
                 </td>
                 </td>
                 @if (ViewBag.usuario)
@@ -239,9 +268,9 @@
                             <button type="submit" class="btn btn-danger">
                                 <i class="fa fa-trash"></i> Borrar
                             </button>
-                         @*   <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdBeneficios, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
-                                <i class="fa fa-plus"></i> Acciones de Supervisión
-                            </a>*@
+                            @*   <a id="btnAccionesSupervision" onclick="showModal('@Url.Action("AddAccionSupervision", "Supervisiones", new {id=@item.IdBeneficios, nombre = @ViewBag.nombre, idpersona=@ViewBag.idpersona, supervisor=@ViewBag.supervisor, idcp=@ViewBag.idcp, cp=@ViewBag.cp}, Context.Request.Scheme)','Acciones de Supervisión',null)" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Acciones de Supervisión
+                    </a>*@
                         </form>
                     </td>
                 }
@@ -259,7 +288,7 @@
             <i class="fa fa-plus"></i> Añadir Beneficios
         </button>
 
-        <a id="btnImprimirR" name="btnImprimirR" disabled class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
+        <button id="btnImprimirR" name="btnImprimirR" disabled class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</button>
     </div>
     <br />
 }
@@ -285,22 +314,21 @@
                     <select required class="form-control" name="Beneficio" id="Beneficio"
                             asp-items="@(new SelectList(ViewBag.listaBeneficios, "Value", "Text"))">
                     </select>
-                </div> 
+                </div>
                 <div class="col-md-6">
-                    <label class="control-label">Condiciónes</label>
                     @foreach (var condicion in @ViewBag.condicionescl)
                     {
-               
+
                         <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="@condicion.Tipo" id="@condicion.IdCondiciones" onclick="condiciones(value)">
-                                <label class="form-check-label" for="@condicion.IdCondiciones"><p style="margin-left:30px"> @condicion.Tipo</p></label>
+                            <input class="form-check-input" type="checkbox" value="@condicion.Tipo" id="@condicion.IdCondiciones" onclick="condiciones(value)">
+                            <label class="form-check-label" for="@condicion.IdCondiciones"><p style="margin-left:30px"> @condicion.Tipo</p></label>
                         </div>
 
                     }
                 </div>
                 <div class="col-md-6">
                     <div>
-                        <label class="control-label">Agegar mas Condiciónes</label>
+                        <p>Agegar mas Condiciones</p>
                     </div>
                     <div>
                         <label class="control-label">Tipo</label>

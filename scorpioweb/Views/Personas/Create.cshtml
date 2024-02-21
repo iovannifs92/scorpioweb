@@ -1053,24 +1053,23 @@
                 //PARA TRAER MUNICIPIO DEL AJAX
                 traermuni(response.lista[0].p.lnestado,response.lista[0].p.lnmunicipio);
                 document.getElementById("lnLocalidad").value = response.lista[0].p.lnlocalidad;
-                document.getElementById("estadoCivil").value = response.lista[0].p.estadoCivil.toLowerCase();
+                document.getElementById("estadoCivil").value = response.lista[0].p.estadoCivil === null ? "soltero (a)" : response.lista[0].p.estadoCivil.toLowerCase();
                 document.getElementById("duracion").value = response.lista[0].p.duracion;
                 document.getElementById("especifiqueIdioma").value = response.lista[0].p.especifiqueIdioma;
-                document.getElementById("otroIdioma").value = response.lista[0].p.otroIdioma.toLowerCase();
-                document.getElementById("ComIndigena").value = response.lista[0].p.comIndigena.toLowerCase();
+                document.getElementById("otroIdioma").value = response.lista[0].p.otroIdioma === null ? "no" : response.lista[0].p.otroIdioma.toLowerCase();
+                document.getElementById("ComIndigena").value = response.lista[0].p.comIndigena  === null ? "no" : response.lista[0].p.comIndigena.toLowerCase();
                 document.getElementById("CURSUsada").value = response.lista[0].p.claveUnicaScorpio;
-                document.getElementById("ComLgbtttiq").value = response.lista[0].p.comLgbtttiq.toLowerCase();
-                document.getElementById("leerEscribir").value = response.lista[0].p.leerEscribir.toLowerCase();
-                document.getElementById("traductor").value = response.lista[0].p.traductor.toLowerCase();
+                document.getElementById("ComLgbtttiq").value = response.lista[0].p.comLgbtttiq === null ? "no" : response.lista[0].p.comLgbtttiq.toLowerCase();
+                document.getElementById("leerEscribir").value = response.lista[0].p.leerEscribir === null ? "si" : response.lista[0].p.leerEscribir.toLowerCase();
+                document.getElementById("traductor").value = response.lista[0].p.traductor === null ? "no" : response.lista[0].p.traductor.toLowerCase();
                 document.getElementById("especifiqueTraductor").value = response.lista[0].p.especifiqueTraductor;
                 document.getElementById("telefonoFijo").value = response.lista[0].p.telefonoFijo;
                 document.getElementById("celular").value = response.lista[0].p.celular;
-                document.getElementById("hijos").value = response.lista[0].p.hijos.toLowerCase();
+                document.getElementById("hijos").value = response.lista[0].p.hijos === null ? "no" : response.lista[0].p.hijos.toLowerCase();
                 document.getElementById("nHijos").value = response.lista[0].p.nhijos;
                 document.getElementById("nPersonasVive").value = response.lista[0].p.npersonasVive;
-                document.getElementById("propiedades").value = response.lista[0].p.propiedades.toLowerCase();
+                document.getElementById("propiedades").value = response.lista[0].p.propiedades === null ? "no" : response.lista[0].p.propiedades.toLowerCase();
                 document.getElementById("CURP").value = response.lista[0].p.curp;
-
                 //DATOS DOMICILIO
                 document.getElementById("tipoDomicilio").value = response.lista[0].d.tipoDomicilio;
                 document.getElementById("calle").value = response.lista[0].d.calle;
@@ -1079,8 +1078,8 @@
                 document.getElementById("paisD").value = response.lista[0].d.pais;
                 document.getElementById("estadoD").value = response.lista[0].d.estado;
                 document.getElementById("municipioD").value = response.lista[0].d.municipio;
-                document.getElementById("temporalidad").value = response.lista[0].d.temporalidad.toUpperCase();
-                document.getElementById("residenciaHabitual").value = response.lista[0].d.residenciaHabitual.toLowerCase();
+                document.getElementById("temporalidad").value = response.lista[0].d.temporalidad === null ? "MAS DE 10 AÑOS" : response.lista[0].d.temporalidad.toUpperCase();
+                document.getElementById("residenciaHabitual").value = response.lista[0].d.residenciaHabitual === null ? "no" : response.lista[0].d.residenciaHabitual.toLowerCase();
                 document.getElementById("cp").value = response.lista[0].d.cp;
                 document.getElementById("referencias").value = response.lista[0].d.referencias;
                 document.getElementById("horario").value = response.lista[0].d.horario;
