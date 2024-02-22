@@ -734,21 +734,17 @@ namespace scorpioweb.Controllers
         #region -Acciones de supervision-
         public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int? id, string idpersona, string[] datosBitacora, string supervisor, int idcp, string idSupervision)
         {
-
-
-
             
-
-            if (datosBitacora[0] == null)
+            int signo = idSupervision.IndexOf("?");
+            if (signo != -1)
             {
-                int signo = idSupervision.IndexOf("?");
 
+                idSupervision = idSupervision.Substring(0, signo);
+            }
 
-                if (signo != -1)
-                {
-
-                    idSupervision = idSupervision.Substring(0, signo);
-                }               
+            if (datosBitacora[0] == null || !datosBitacora[0].Equals(idSupervision))
+            {
+                         
                 datosBitacora[0] = idSupervision;
             }
                 int index = cp.IndexOf("?");
@@ -779,7 +775,7 @@ namespace scorpioweb.Controllers
                 SupervisionclIdSupervisioncl = Int32.Parse(idsupervision);
             }
 
-            var snbitacora = await _context.Bitacoracl.Where(m => m.SupervisionclIdSupervisioncl == SupervisionclIdSupervisioncl).ToListAsync();
+            var snbitacora = await _context.Bitacoracl.Where(m => m.BeneficiosclIdBeneficioscl == id).ToListAsync();
             if (snbitacora.Count == 0)
             {
                 
@@ -829,7 +825,7 @@ namespace scorpioweb.Controllers
             #endregion
 
             ViewData["tablaBiatacora"] = from Bitacora in bitacora
-                                         where Bitacora.SupervisionclIdSupervisioncl == SupervisionclIdSupervisioncl
+                                         where Bitacora.BeneficiosclIdBeneficioscl == id
                                          select new BitacoraclViewModal
                                          {
                                              bitacoraVM = Bitacora
@@ -841,7 +837,7 @@ namespace scorpioweb.Controllers
 
             ViewData["tienebitacora"] = from s in supervision
                                         join b in bitacora on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
-                                        join be in Beneficios on b.SupervisionclIdSupervisioncl equals be.SupervisionclIdSupervisioncl
+                                        join be in Beneficios on b.BeneficiosclIdBeneficioscl equals be.IdBeneficios
                                         where s.IdSupervisioncl == id
                                         select new BitacoraclViewModal
                                         {
@@ -1424,7 +1420,7 @@ namespace scorpioweb.Controllers
             ViewBag.idpersona = idpersona;
             ViewBag.idcp = idcp;
             ViewBag.supervisor = supervisor;
-            ViewBag.idfraccionesimpuestas = idfraccionesimpuestas;
+            ViewBag.BeneficiosclIdBeneficioscl = idfraccionesimpuestas;
 
             ViewBag.listaBitacoras = listaBitacoras;
 
@@ -1461,7 +1457,7 @@ namespace scorpioweb.Controllers
             ViewBag.supervisor = supervisor;
             ViewBag.idcp = idcp;
 
-            ViewBag.FracionesImpuestasIdFracionesImpuestas = id;
+            ViewBag.BeneficiosclIdBeneficioscl = id;
             ViewBag.IdSupervisionGuardar = SupervisionclIdSupervisioncl;
         
             #region -Select idOficialia
