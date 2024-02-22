@@ -1147,7 +1147,7 @@ MetodosGenerales mg = new MetodosGenerales();
 
             return Json(new { success = true, responseText = Convert.ToString(cp), idPersonas = Convert.ToString(supervision.IdSupervision) });
         }
-        #endregion -Update Update Persona supervision-
+        #endregion -Update Update Persona supervision-     
         #endregion
 
         #region -Supervision-
@@ -2278,7 +2278,6 @@ MetodosGenerales mg = new MetodosGenerales();
             var select = (from wh in wheres
                           select wh.oficialiavm.IdOficialia).ToList();
 
-            ViewBag.expoficialia = select;
             #endregion
 
 

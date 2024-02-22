@@ -8,65 +8,65 @@
 
 <script>
    
-    // function cambiofechas(ids, campo, value) {
-    //     var e = document.getElementById("EstadoSupervision");
-    //     var estados = e.value;
-    //     $.ajax({
-    //         type: "POST",
-    //         dataType: "json",
-    //         url: "/Supervisioncl/UpdatePersonasupervision",
-    //         traditional: true,
-    //         data: {
-    //             superid: ids,
-    //             campo: campo,
-    //             fecha: value,
-    //             estados: estados,
-    //         },
-    //         success: function (response) {
-    //         },
-    //         error: function (response) {
-    //             location.reload();
-    //         }
-    //     });
-    // };
+    function cambiofechas(ids, campo, value) {
+        var e = document.getElementById("EstadoSupervision");
+        var estados = e.value;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisioncl/UpdatePersonasupervision",
+            traditional: true,
+            data: {
+                superid: ids,
+                campo: campo,
+                fecha: value,
+                estados: estados,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
 
-    // function cambiofechainter(idpe, value) {
-    //     $.ajax({
-    //         type: "POST",
-    //         dataType: "json",
-    //         url: "/Supervisioncl/UpdatePersonasupervision",
-    //         traditional: true,
-    //         data: {
-    //             planeacionid: idpe,
-    //             intermedio: value,
-    //         },
-    //         success: function (response) {
-    //         },
-    //         error: function (response) {
-    //             location.reload();
-    //         }
-    //     });
-    // };
+    function cambiofechainter(idpe, value) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisioncl/UpdatePersonasupervision",
+            traditional: true,
+            data: {
+                planeacionid: idpe,
+                intermedio: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
 
-    // function cambioestado(ids, personaid, causapenalid, value) {
-    //     $.ajax({
-    //         type: "POST",
-    //         dataType: "json",
-    //         url: "/Supervisiones/UpdatePersonasupervision",
-    //         traditional: true,
-    //         data: {
-    //             superid: ids,
-    //             personaid: personaid,
-    //             causapenalid: causapenalid,
-    //             estados: value,
-    //         },
-    //         success: function (response) {
-    //         },
-    //         error: function (response) {
-    //             location.reload();
-    //         }
-    //     });
-    // };
+    function cambioestado(ids, personaid, causapenalid, value) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Supervisioncl/UpdatePersonasupervision",
+            traditional: true,
+            data: {
+                superid: ids,
+                personaid: personaid,
+                causapenalid: causapenalid,
+                estados: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
     $(document).ready(function () {
         $('#estadoSuper').change(function () {
             $('#formBusqueda').submit();
@@ -234,22 +234,25 @@
                 </td>
                 @*@if (@ViewBag.Admin == true|| @ViewBag.Masteradmin == true)
             {*@
-                @* <input name="IdSupervision" id="IdSupervisioncl" readonly style="display:none" value="@item.supervisionVM.IdSupervisioncl" />
-            <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategica" />*@
-                @*         <td>
-            <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Inicio" id="Inicio" class="form-control" asp-for="@item.supervisionVM.Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+            <input name="IdSupervision" id="IdSupervisioncl" readonly style="display:none" value="@item.supervisionVM.IdSupervisioncl" />
+            <input name="IdPlaneacionEstrategica" id="IdPlaneacionEstrategica" readonly style="display:none" value="@item.planeacionestrategicaVM.IdPlaneacionEstrategicacl" />
+            <td>
+                <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Inicio" id="Inicio" class="form-control" asp-for="@item.supervisionVM.Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" />
             </td>
             <td>
-            <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervisioncl, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
             </td>
             <td>
-            <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategicacl, value)" name="InformeSeguimiento" id="InformeSeguimiento" class="form-control" asp-for="@item.planeacionestrategicaVM.InformeSeguimiento" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategicacl, value)" name="InformeSeguimiento" id="InformeSeguimiento" class="form-control" asp-for="@item.planeacionestrategicaVM.InformeSeguimiento" asp-format="{0:yyyy-MM-ddTHH:mm}" />
             </td>
             <td>
-            <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervisioncl,@item.personaVM.IdPersonaCl, @item.causapenalVM.IdCausaPenalcl, value)"
-            asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
-            </select>
-            </td>*@
+                <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervisioncl,@item.personaVM.IdPersonaCl, @item.causapenalVM.IdCausaPenalcl, value)"
+                        asp-items="@(new SelectList(ViewBag.listaEstadoSupervision, "Text", "Text",item.supervisionVM.EstadoSupervision))">
+                </select>
+            </td>
+
+
+@* 
                 <td>
                     @Html.DisplayFor(modelItem => item.supervisionVM.Inicio)
                 </td>
@@ -261,7 +264,7 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.supervisionVM.EstadoSupervision)
-                </td>
+                </td> *@
                 <td>
                     @Html.DisplayFor(modelItem => item.personaVM.Supervisor)
                 </td>
