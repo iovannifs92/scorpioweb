@@ -88,7 +88,7 @@
     <div class="col-md-12">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input readonly name="IdBitacoracl" id="IdBitacoracl" class="form-control" style="display:none" />
-            <input readonly name="BeneficiosclIdBeneficioscl" id="BeneficiosclIdBeneficioscl" class="form-control" style="display:none" />
+             <input readonly name="BeneficiosclIdBeneficioscl" id="BeneficiosclIdBeneficioscl" class="form-control" style="display:none" value="@ViewBag.BeneficiosclIdBeneficioscl" />
             <div class="form-group col-md-6">
                 <label asp-for="Fecha" class="control-label"></label>
                 <input required asp-for="Fecha" name="Fecha" id="Fecha" type="date" class="form-control" />
@@ -141,7 +141,7 @@
             <div class="custom-file">
                 <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
             </div>
-            <input readonly name="IdSupervisioncl" id="IdSupervisioncl" class="form-control" style="display:none" />
+          <input readonly name="IdSupervisioncl" id="IdSupervisioncl" class="form-control" style="display:none" />
          <input readonly name="SupervisionclIdSupervisioncl" id="SupervisionclIdSupervisioncl" class="form-control" value="@ViewBag.IdSupervisionGuardar" style="display:none" />
             <br />
             <div class="form-group" style="padding-top:15PX">
