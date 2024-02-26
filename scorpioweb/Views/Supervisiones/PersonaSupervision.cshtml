@@ -233,7 +233,7 @@
                     <input style="font-size: 9px" onchange="cambiofechas(@item.supervisionVM.IdSupervision, name, value)" name="Termino" id="Termino" class="form-control" asp-for="@item.supervisionVM.Termino" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                 </td>
                 <td>
-                    <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategica, value)" name="FechaInforme" id="FechaInforme" class="form-control" asp-for="@item.planeacionestrategicaVM." asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                    <input style="font-size: 9px" onchange="cambiofechainter(@item.planeacionestrategicaVM.IdPlaneacionEstrategica, value)" name="FechaInforme" id="FechaInforme" class="form-control" asp-for="@item.planeacionestrategicaVM.FechaInforme" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                 </td>
                 <td>
                     <select class="form-control" name="EstadoSupervision" id="EstadoSupervision" style="font-size:9px" onchange="cambioestado(@item.supervisionVM.IdSupervision,@item.personaVM.IdPersona, @item.causapenalVM.IdCausaPenal, value)"
