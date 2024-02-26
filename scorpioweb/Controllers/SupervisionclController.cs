@@ -18,6 +18,7 @@ using scorpioweb.Models;
 using SautinSoft.Document.MailMerging;
 using SautinSoft.Document;
 using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Presentation;
 
 namespace scorpioweb.Controllers
 {
@@ -2302,7 +2303,11 @@ namespace scorpioweb.Controllers
 
                 string estatusF = (from table in _context.Beneficios
                                    where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
-                                   select table.Estado).FirstOrDefault();
+                                   select table.Estado).FirstOrDefault(); 
+                
+                string beneficio = (from table in _context.Beneficios
+                                   where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
+                                   select table.Tipo).FirstOrDefault();
 
                 var actividades = from ben in _context.Beneficios
                                   join bitacora in _context.Bitacoracl on ben.IdBeneficios equals bitacora.BeneficiosclIdBeneficioscl
@@ -2313,14 +2318,22 @@ namespace scorpioweb.Controllers
                                       fecha = bitacora.Fecha
                                   };
 
-
-                if (!presentacionesbool && presentaciones != "")
+                if (beneficio == "PRESENTACIÓN PERIÓDICA")
                 {
-                    actividadesfor = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
-                    "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
-                    "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
-                    presentaciones;
-                    presentacionesbool = true;
+                    if (presentaciones != "")
+                    {
+                        actividadesfor = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
+                        "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
+                        "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
+                        presentaciones;
+                    }
+                    else
+                    {
+                        foreach (var a in actividades)
+                        {
+                            actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
+                        }
+                    }
                 }
                 else
                 {
@@ -2328,7 +2341,6 @@ namespace scorpioweb.Controllers
                     {
                         actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
                     }
-                   
                 }
 
                 var nuevaFraccion = new

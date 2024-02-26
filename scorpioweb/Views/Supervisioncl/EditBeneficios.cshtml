@@ -71,10 +71,7 @@
 
 
     showModal = (url, title, id) => {
-       
         var idSupervisioncl = localStorage.getItem("IdSupervisionGuardar");
-
-    
         if (!idSupervisioncl) {
             idSupervisioncl = document.getElementById("IdS") ? document.getElementById("IdS").value : "";
         }
@@ -190,6 +187,17 @@
             }
         });
     };
+    //function beneficioC(condicion) {
+    //    $('input[type=checkbox]').prop('checked',false);
+    //    arr = 0;
+    //    if(condicion != "SUSPENSION CONDICIONAL CONDENA"){
+    //           $("#bscc").css("display", "none");
+    //           $("#otrosb").css("display", "block");
+    //    }else{
+    //           $("#bscc").css("display", "block");
+    //           $("#otrosb").css("display", "none");
+    //    }
+    //}
 </script>
 <h2>Beneficios</h2>
 <div class="col-md-12">
@@ -321,20 +329,45 @@
                 </div>
                 <div class="form-group col-md-12">
                     <label class="control-label">Beneficio</label>
-                    <select required class="form-control" name="Beneficio" id="Beneficio"
+                    <select required class="form-control" name="Beneficio" id="Beneficio" onchange="beneficioC(value)"
                             asp-items="@(new SelectList(ViewBag.listaBeneficios, "Value", "Text"))">
                     </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" id="otrosb">
                     @foreach (var condicion in @ViewBag.condicionescl)
                     {
-
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="@condicion.Tipo" id="@condicion.IdCondiciones" onclick="condiciones(value)">
                             <label class="form-check-label" for="@condicion.IdCondiciones"><p style="margin-left:30px"> @condicion.Tipo</p></label>
                         </div>
 
                     }
+                </div>
+                <div class="col-md-6" id="bscc" hidden>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f1" value="1">
+                        <label class="form-check-label" for="f1">I</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f2" value="option2">
+                        <label class="form-check-label" for="f2">II</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f3" value="option1">
+                        <label class="form-check-label" for="f3">III</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f4" value="option2">
+                        <label class="form-check-label" for="f4">IV</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f5" value="option2">
+                        <label class="form-check-label" for="f5">V</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="f6" value="option6">
+                        <label class="form-check-label" for="f6">VI</label>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <div>

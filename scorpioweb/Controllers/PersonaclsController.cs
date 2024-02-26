@@ -1294,7 +1294,7 @@ namespace scorpioweb.Models
                                   join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
                                   join supervision in _context.Supervisioncl on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
                                   join beneficios in _context.Beneficios on supervision.IdSupervisioncl equals beneficios.SupervisionclIdSupervisioncl
-                                  where /*beneficios.Tipo == "XIII" &&*/ supervision.EstadoSupervision == "VIGENTE" && beneficios.FiguraJudicial == "MEDIDA DE SEGURIDAD"
+                                  where /*beneficios.Tipo == "XIII" &&*/ supervision.EstadoSupervision == "VIGENTE" && beneficios.FiguraJudicial == "MEDIDA DE SEGURIDAD" && beneficios.FiguraJudicial == "SUSTITUCIÓN DE LA PRISION PREVENTIVA POR PRISION DOMICILIARIA"
                                   select new PersonaclsViewModal
                                    {
                                        personaclVM = persona,
