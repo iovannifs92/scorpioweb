@@ -158,7 +158,7 @@
     }
 
 
-    @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin") || @ViewBag.Usuario == "ana.valles@dgepms.com")
+    @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin") || @ViewBag.Usuario == "ana.valles@dgepms.com" || @ViewBag.Usuario == "yoena@dgepms.com")
     {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
@@ -174,12 +174,18 @@
                         Resguardo Domiciliario, TTA, Colaboraciones
                     </p>
                 }
-                else
+                else if (@ViewBag.Usuario == "ana.valles@dgepms.com")
                 {
                     <p class="card-text">
                         Resguardo Domiciliario
                     </p>
-                }                             
+                }
+                else if (@ViewBag.Usuario == "yoena@dgepms.com")
+                {
+                    <p class="card-text">
+                        TTA
+                    </p>
+                }
             </div>
         </div>
     }

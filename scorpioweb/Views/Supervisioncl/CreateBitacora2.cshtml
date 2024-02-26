@@ -32,19 +32,19 @@
             <div class="form-group">
                 <label class="control-label">Acción de Supervisión</label>
                 <select class="form-control" name="tipoVisita" id="tipoVisita">
-                    <option value="PRESENCIAL">Presencial</option>
-                    <option value="FIRMA PERIODICA">Firma Periódica</option>
-                    <option value="WHATSAPP">WhatsApp</option>
-                    <option value="TELEFONICA">Telefónica</option>
-                    <option value="INFORME">Informe de Supervisión</option>
-                    <option value="CORREO ELECTRONICO">Correo Electrónico</option>
-                    <option value="CITATORIO">Citatorio</option>
-                    <option value="VISITA DOMICILIAR">Visita Domiciliar</option>
-                    <option value="NOTIFICACION A VICTIMA">Notificación a Víctima</option>
+                    <option value="RESOLUCION">Resolucion</option>
+                    <option value="NOTIFICACION">Notificacion</option>
+                    <option value="VERIFICACION">Verificacion</option>
+                    <option value="INFORME INICIAL">Informe inicial</option>
+                    <option value="INFORME DE SUPERVISION">Informe de Supervisión</option>
+                    <option value="VISITA DOMICILIARIA">Visita domiciliaria</option>
+                    <option value="CITATORIO">Oficio de vigilancia</option>
+                    <option value="OFICIO DE VIGILANCIA">Visita Domiciliar</option>
+                    <option value="PLAN DE ESTRATEGIA">Plan de Estrategia</option>
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="Texto" class="control-label"></label>
+                <label asp-for="Texto" class="control-label">Texto que aparecera en el reporte:</label>
                 <textarea asp-for="Texto" class="form-control" cols="20" rows="5"></textarea>
                 <span asp-validation-for="Texto" class="text-danger"></span>
             </div>

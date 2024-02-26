@@ -175,7 +175,7 @@ namespace scorpioweb.Controllers
         private List<SelectListItem> listaBitacoras = new List<SelectListItem>
         {
             new SelectListItem{ Text = "", Value = "" },
-            new SelectListItem{ Text = "Resolucio", Value = "RESOLUCION" },
+            new SelectListItem{ Text = "Resolucion", Value = "RESOLUCION" },
             new SelectListItem { Text = "Notificacion", Value = "NOTIFICACION" },
             new SelectListItem { Text = "Verificacion", Value = "VERIFICACION" },
             new SelectListItem { Text = "Informe Inicial", Value = "INFORME INICIAL" },

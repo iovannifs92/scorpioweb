@@ -71,7 +71,7 @@ namespace scorpioweb.Controllers
         public static List<Asientofamiliar> referenciaspersonales;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        
+
         private List<SelectListItem> listaJuzgados = new List<SelectListItem>
         {
             new SelectListItem { Text = "NA", Value = "NA" },
@@ -162,7 +162,8 @@ namespace scorpioweb.Controllers
                 if (await userManager.IsInRoleAsync(u, "AdminMCSCP"))
                 {
                     listasupervisores.Add(u.ToString());
-                }if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
+                }
+                if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
                 {
                     listasupervisores.Add(u.ToString());
                 }
@@ -487,12 +488,12 @@ namespace scorpioweb.Controllers
             var nomsuper = User.Identity.Name.ToString();
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
-           
-            
+
+
             #region -Sacar USUARIOS ADMIN-
 
 
-            ViewBag.user = user;        
+            ViewBag.user = user;
             ViewBag.Admin = false;
 
             foreach (var rol in roles)
@@ -512,7 +513,7 @@ namespace scorpioweb.Controllers
             #endregion  
 
             ViewBag.RolesUsuarios = nomsuper;
-     
+
             return View("Index1", await _context.Persona.ToListAsync());
         }
 
@@ -526,7 +527,7 @@ namespace scorpioweb.Controllers
             var nomsuper = User.Identity.Name.ToString();
             var roles = await userManager.GetRolesAsync(user);
             bool super = false;
-            bool admin = false;           
+            bool admin = false;
             bool invitado = true;
 
             foreach (var rol in roles)
@@ -543,7 +544,7 @@ namespace scorpioweb.Controllers
                     admin = true;
                 }
             }
-    
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "Masteradmin" || rol == "SupervisorMCSCP")
@@ -575,7 +576,7 @@ namespace scorpioweb.Controllers
             {
                 Search = currentFilter;
             }
-            
+
             ViewData["CurrentFilter"] = Search;
 
 
@@ -605,9 +606,9 @@ namespace scorpioweb.Controllers
                     personas = personas.OrderByDescending(p => p.IdPersona);
                     break;
             }
-            
+
             personas.OrderByDescending(p => p.IdPersona);
-           
+
             //PARA VER SUPERVISADOS DEL USUARIO CON SESION INICIADA
             if (usuario == true)
             {
@@ -696,12 +697,15 @@ namespace scorpioweb.Controllers
         public IActionResult Colaboraciones()
         {
             var user = User.Identity.Name;
+        
 
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
                                    where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
                                    select a;
             ViewBag.WarningsUser = warningRespuesta.Count();
+            ViewBag.Usuario = user;
+
             #endregion
 
             var colaboraciones = (from persona in _context.Persona
@@ -715,30 +719,31 @@ namespace scorpioweb.Controllers
                                       municipiosVMDomicilio = municipio,
                                       CasoEspecial = "TTA"
                                   }).Union
-                                  (from persona in _context.Persona
-                                   join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
-                                   join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
-                                   join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona
-                                   join fraccion in _context.Fraccionesimpuestas on supervision.IdSupervision equals fraccion.SupervisionIdSupervision
-                                   where fraccion.Tipo == "XIII" && supervision.EstadoSupervision == "VIGENTE" && fraccion.FiguraJudicial == "MC"
-                                   select new PersonaViewModel
-                                   {
-                                       personaVM = persona,
-                                       municipiosVMDomicilio = municipio,
-                                       CasoEspecial = "Resguardo Domiciliario"
-                                   }).Union
-                                 (from persona in _context.Persona
-                                  join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
-                                  join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
-                                  where persona.Colaboracion == "SI"
-                                  select new PersonaViewModel
-                                  {
-                                      personaVM = persona,
-                                      municipiosVMDomicilio = municipio,
-                                      CasoEspecial = "Colaboración"
-                                  });
-
+                            (from persona in _context.Persona
+                             join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
+                             join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                             join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona
+                             join fraccion in _context.Fraccionesimpuestas on supervision.IdSupervision equals fraccion.SupervisionIdSupervision
+                             where fraccion.Tipo == "XIII" && supervision.EstadoSupervision == "VIGENTE" && fraccion.FiguraJudicial == "MC"
+                             select new PersonaViewModel
+                             {
+                                 personaVM = persona,
+                                 municipiosVMDomicilio = municipio,
+                                 CasoEspecial = "Resguardo Domiciliario"
+                             }).Union
+                           (from persona in _context.Persona
+                            join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
+                            join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                            where persona.Colaboracion == "SI"
+                            select new PersonaViewModel
+                            {
+                                personaVM = persona,
+                                municipiosVMDomicilio = municipio,
+                                CasoEspecial = "Colaboración"
+                            });
             return View(colaboraciones);
+
+
         }
         #endregion
 
@@ -828,7 +833,7 @@ namespace scorpioweb.Controllers
             List<Fraccionesimpuestas> fraccionesimpuestasVM = _context.Fraccionesimpuestas.ToList();
             List<Archivointernomcscp> archivointernomcscpsVM = _context.Archivointernomcscp.ToList();
             List<Personacausapenal> personacausapenalsVM = _context.Personacausapenal.ToList();
- 
+
 
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
@@ -843,7 +848,7 @@ namespace scorpioweb.Controllers
                               where a.TableName == "Supervision" && a.NewValues.Contains("en espera de respuesta")
                               group a by int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) into grp
                               select grp.OrderByDescending(a => a.Id).FirstOrDefault());
-  
+
             #endregion
 
             #region -Jointables-
@@ -957,22 +962,22 @@ namespace scorpioweb.Controllers
                         };
 
             var tableAudiot = from persona in personaVM
-                        join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-                        join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                        join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                        join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-                        join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-                        join audit in listaaudit on supervision.IdSupervision equals int.Parse(Regex.Replace(audit.PrimaryKey, @"[^0-9]", ""))
-                        select new PlaneacionWarningViewModel
-                        {
-                            personaVM = persona,
-                            supervisionVM = supervision,
-                            causapenalVM = causapenal,
-                            planeacionestrategicaVM = planeacion,
-                            auditVM = audit,
-                            fechaCmbio = audit.DateTime,
-                            municipiosVM = municipio
-                        };
+                              join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
+                              join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
+                              join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                              join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
+                              join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
+                              join audit in listaaudit on supervision.IdSupervision equals int.Parse(Regex.Replace(audit.PrimaryKey, @"[^0-9]", ""))
+                              select new PlaneacionWarningViewModel
+                              {
+                                  personaVM = persona,
+                                  supervisionVM = supervision,
+                                  causapenalVM = causapenal,
+                                  planeacionestrategicaVM = planeacion,
+                                  auditVM = audit,
+                                  fechaCmbio = audit.DateTime,
+                                  municipiosVM = municipio
+                              };
 
             if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
@@ -1554,12 +1559,12 @@ namespace scorpioweb.Controllers
 
             #region Sacar el nombre de estdo y municipio (NACIMIENTO)
             var LNE = from e in _context.Estados
-                       join p in _context.Persona on e.Id equals int.Parse(p.Lnestado)
-                       where p.IdPersona == id
-                       select new
-                       {
-                           e.Estado
-                       };
+                      join p in _context.Persona on e.Id equals int.Parse(p.Lnestado)
+                      where p.IdPersona == id
+                      select new
+                      {
+                          e.Estado
+                      };
 
             string selectem1 = LNE.FirstOrDefault().Estado.ToString();
             ViewBag.lnestado = selectem1.ToUpper();
@@ -1993,9 +1998,9 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos, 
+        public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
                                                 Personacl personacl, Domiciliocl domiciliocl, Estudioscl estudioscl, Trabajocl trabajocl, Actividadsocialcl actividadsocialcl, Abandonoestadocl abandonoEstadocl, Saludfisicacl saludfisicacl, Domiciliosecundariocl domiciliosecundariocl, Consumosustanciascl consumosustanciascl, Asientofamiliarcl asientoFamiliarcl, Familiaresforaneoscl familiaresForaneoscl, Expedienteunico expedienteunico,
-            string resolucion, string centropenitenciario, string ce,string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
+            string resolucion, string centropenitenciario, string ce, string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string CURS, string CURSUsada, string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente, string colaboracion,
@@ -2017,12 +2022,12 @@ namespace scorpioweb.Controllers
             string currentUser = User.Identity.Name;
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
-            bool esMCSCP = false; 
+            bool esMCSCP = false;
             bool esCL = false;
 
             foreach (var rol in roles)
-            { 
-                if(rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+            {
+                if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
                 {
                     esMCSCP = true;
                 }
@@ -2086,14 +2091,14 @@ namespace scorpioweb.Controllers
                     {
                         persona.ClaveUnicaScorpio = CURS;
                     }
-                    
+
 
                     var estado = (from e in _context.Estados
-                                    where e.Id.ToString() == estadoD
-                                    select e.Estado).FirstOrDefault().ToString();
+                                  where e.Id.ToString() == estadoD
+                                  select e.Estado).FirstOrDefault().ToString();
                     var municipio = (from m in _context.Municipios
-                                        where m.Id.ToString() == municipioD
-                                        select m.Municipio).FirstOrDefault().ToString();
+                                     where m.Id.ToString() == municipioD
+                                     select m.Municipio).FirstOrDefault().ToString();
                     persona.Colaboracion = "NO";
                     if (persona.Capturista.EndsWith("\u0040dgepms.com") && estado == "Durango" && (municipio == "Gómez Palacio" || municipio == "Lerdo"))
                     {
@@ -2128,7 +2133,7 @@ namespace scorpioweb.Controllers
 
                     List<Zonas> zonasList = new List<Zonas>();
                     zonasList = (from Zonas in _context.Zonas
-                                    select Zonas).ToList();
+                                 select Zonas).ToList();
 
                     domicilio.Zona = "SIN ZONA ASIGNADA";
                     int matches = 0;
@@ -2239,7 +2244,7 @@ namespace scorpioweb.Controllers
 
                     #region -IdPersona-
                     int idPersona = ((from table in _context.Persona
-                                        select table.IdPersona).Max()) + 1;
+                                      select table.IdPersona).Max()) + 1;
 
 
                     persona.IdPersona = idPersona;
@@ -2512,7 +2517,7 @@ namespace scorpioweb.Controllers
                                 query.Persona = idPersona.ToString();
                                 _context.SaveChanges();
                             }
-                        } 
+                        }
                     }
                     #endregion 
 
@@ -2577,7 +2582,7 @@ namespace scorpioweb.Controllers
                     personacl.Candado = 0;
                     personacl.MotivoCandado = "NA";
                     personacl.Centropenitenciario = mg.normaliza(centropenitenciario);
-                    personacl.Sinocentropenitenciario = sinocentropenitenciario; 
+                    personacl.Sinocentropenitenciario = sinocentropenitenciario;
                     personacl.Colaboracion = mg.normaliza(colaboracion);
                     if (CURSUsada != null)
                     {
@@ -2587,7 +2592,7 @@ namespace scorpioweb.Controllers
                     {
                         personacl.ClaveUnicaScorpio = CURS;
                     }
-                    personacl.Ruta = 0; 
+                    personacl.Ruta = 0;
                     personacl.Ce = ce;
 
                     var estado = (from e in _context.Estados
@@ -2596,7 +2601,7 @@ namespace scorpioweb.Controllers
                     var municipio = (from m in _context.Municipios
                                      where m.Id.ToString() == municipioD
                                      select m.Municipio).FirstOrDefault().ToString();
-                   
+
                     //if (personacl.Capturista.EndsWith("\u0040dgepms.com") && estado == "Durango" && (municipio == "Gómez Palacio" || municipio == "Lerdo"))
                     //{
                     //    personacl.Colaboracion = "SI";
@@ -2730,8 +2735,8 @@ namespace scorpioweb.Controllers
 
                     #region -IdDomicilio-  
                     int idDomiciliocl = ((from table in _context.Domiciliocl
-                                           select table.IdDomiciliocl).Max()) + 1;
-                   // int idDomiciliocl = _context.Domiciliocl.Select(item => (int?)item.IdDomicilioCl).Max() ?? 0 + 1;
+                                          select table.IdDomiciliocl).Max()) + 1;
+                    // int idDomiciliocl = _context.Domiciliocl.Select(item => (int?)item.IdDomicilioCl).Max() ?? 0 + 1;
                     domiciliocl.IdDomiciliocl = idDomiciliocl;
                     //domiciliosecundario.IdDomicilio = idDomicilio;
                     #endregion
@@ -2740,7 +2745,7 @@ namespace scorpioweb.Controllers
                     //int idPersonacl = _context.Personacl.Select(item => (int?)item.IdPersonaCl).Max() ?? 0 + 1;
                     int idPersonacl = ((from table in _context.Personacl
                                         select table.IdPersonaCl).Max()) + 1;
-                
+
                     personacl.IdPersonaCl = idPersonacl;
                     domiciliocl.PersonaclIdPersonacl = idPersonacl;
                     estudioscl.PersonaClIdPersonaCl = idPersonacl;
@@ -3302,11 +3307,11 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-     
+
             var supervisiones = await _context.Supervision.Where(m => m.PersonaIdPersona == id).ToListAsync();
             if (supervisiones.Count == 0)
             {
-             
+
                 return RedirectToAction("SinSupervision");
             }
 
@@ -3360,8 +3365,8 @@ namespace scorpioweb.Controllers
                     break;
                 }
             }
-           
-        
+
+
             List<PresentacionPeriodicaPersona> lists = new List<PresentacionPeriodicaPersona>();
 
             var queripersonasis = from p in _context.Persona
@@ -3402,7 +3407,7 @@ namespace scorpioweb.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> EditComentario(int id, int idpersona,  [Bind("IdpresentacionPeriodica,FechaFirma,ComentarioFirma,RegistroidHuella")] Presentacionperiodica presentacionperiodica)
+        public async Task<IActionResult> EditComentario(int id, int idpersona, [Bind("IdpresentacionPeriodica,FechaFirma,ComentarioFirma,RegistroidHuella")] Presentacionperiodica presentacionperiodica)
         {
             id = presentacionperiodica.IdpresentacionPeriodica;
             presentacionperiodica.RegistroidHuella = presentacionperiodica.RegistroidHuella;
@@ -3436,7 +3441,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -SinSupervision-
-        public async Task <IActionResult> SinSupervision()
+        public async Task<IActionResult> SinSupervision()
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -3455,7 +3460,7 @@ namespace scorpioweb.Controllers
 
 
             ViewBag.EsInvitado = invitado;
-           
+
             return View();
         }
         #endregion
@@ -3482,7 +3487,7 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> MenuEdicion(int? id)
         {
-       
+
             if (id == null)
             {
                 return NotFound();
@@ -3774,10 +3779,10 @@ namespace scorpioweb.Controllers
 
             ViewBag.idCentroPenitenciario = persona.Centropenitenciario;
             ViewBag.pais = persona.Lnpais;
-            
+
             ViewBag.idioma = persona.OtroIdioma;
             ViewBag.EspecifiqueIdioma = persona.EspecifiqueIdioma;
-           
+
             ViewBag.traductor = persona.Traductor;
             ViewBag.EspecifiqueTraductor = persona.EspecifiqueTraductor;
 
@@ -3852,7 +3857,7 @@ namespace scorpioweb.Controllers
             #region Consume sustancias
 
             ViewBag.listaConsumoSustancias = listaNoSi;
-           
+
             contadorSustancia = 0;
 
             List<SelectListItem> ListaSustancia;
@@ -3912,9 +3917,9 @@ namespace scorpioweb.Controllers
             ViewBag.ListaAsientoFamiliares = asientofamiliares;
             ViewBag.ListaAsientoReferencias = asientoreferencias;
             #endregion
-            
+
             #region Familiares
-           
+
             ViewBag.listaFamiliares = listaSiNo;
 
             contadorFamiliares = 0;
@@ -3987,7 +3992,7 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region Referencias
-            
+
             ViewBag.listaReferenciasPersonales = listaSiNo;
 
             contadorReferencias = 0;
@@ -4065,8 +4070,9 @@ namespace scorpioweb.Controllers
                 persona.EspecifiqueTraductor = mg.normaliza(persona.EspecifiqueTraductor);
                 persona.ComIndigena = mg.normaliza(persona.ComIndigena);
                 persona.ComLgbtttiq = mg.normaliza(persona.ComLgbtttiq);
-                if (!(persona.Paterno == null && persona.Materno == null && persona.Nombre == null && persona.Genero == null && persona.Fnacimiento == null && persona.Lnestado == null)) {
-                    if(persona.Lnpais != "MEXICO")
+                if (!(persona.Paterno == null && persona.Materno == null && persona.Nombre == null && persona.Genero == null && persona.Fnacimiento == null && persona.Lnestado == null))
+                {
+                    if (persona.Lnpais != "MEXICO")
                     {
                         persona.Lnestado = "33";
                     }
@@ -4085,7 +4091,7 @@ namespace scorpioweb.Controllers
                 persona.MotivoCandado = mg.normaliza(persona.MotivoCandado);
 
                 #region - sustancias agregadas -
-              
+
                 int idConsumoSustancias = ((from table in _context.Consumosustancias
                                             select table.IdConsumoSustancias).Max());
                 if (arraySustancias != null)
@@ -4110,7 +4116,7 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 #region - Sustancias editadas -
-                
+
                 if (arraySustanciasEditadas != null)
                 {
                     JArray sustancias = JArray.Parse(arraySustanciasEditadas);
@@ -4160,7 +4166,7 @@ namespace scorpioweb.Controllers
                 #endregion
 
                 #region -Familiares, referencias agregados-
-              
+
                 int idAsientoFamiliar = ((from table in _context.Asientofamiliar
                                           select table.IdAsientoFamiliar).Max());
                 if (arrayFamiliarReferencia != null)
@@ -4168,7 +4174,7 @@ namespace scorpioweb.Controllers
                     JArray familiarReferencia = JArray.Parse(arrayFamiliarReferencia);
                     for (int i = 0; i < familiarReferencia.Count; i = i + 14)
                     {
-                        Asientofamiliar asientoFamiliar = new Asientofamiliar();                        
+                        Asientofamiliar asientoFamiliar = new Asientofamiliar();
                         try
                         {
                             asientoFamiliar.IdAsientoFamiliar = ++idAsientoFamiliar;
@@ -4195,7 +4201,7 @@ namespace scorpioweb.Controllers
                                 persona.ReferenciasPersonales = "SI";
                             }
                             asientoFamiliar.PersonaIdPersona = id;
-                            
+
                             _context.Add(asientoFamiliar);
                             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                         }
@@ -4232,7 +4238,7 @@ namespace scorpioweb.Controllers
                         else
                         {
                             Asientofamiliar asientoFamiliar = new Asientofamiliar();
-                    
+
                             try
                             {
                                 asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
@@ -4251,9 +4257,9 @@ namespace scorpioweb.Controllers
                                 asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                                 asientoFamiliar.Tipo = "FAMILIAR";
                                 asientoFamiliar.PersonaIdPersona = id;
-                                
+
                                 var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
-                                
+
                                 _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
                                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             }
@@ -4267,14 +4273,14 @@ namespace scorpioweb.Controllers
                                 {
                                     throw;
                                 }
-                            }                          
+                            }
                         }
                     }
                 }
                 #endregion
 
                 #region -Referencias editadas-
-                
+
                 if (arrayReferenciasEditadas != null)
                 {
                     JArray familiarReferencia = JArray.Parse(arrayReferenciasEditadas);
@@ -4292,7 +4298,7 @@ namespace scorpioweb.Controllers
                         else
                         {
                             Asientofamiliar asientoFamiliar = new Asientofamiliar();
-                      
+
                             try
                             {
                                 asientoFamiliar.IdAsientoFamiliar = Int32.Parse(familiarReferencia[i + 13].ToString());
@@ -4311,9 +4317,9 @@ namespace scorpioweb.Controllers
                                 asientoFamiliar.Observaciones = mg.normaliza(familiarReferencia[i + 12].ToString());
                                 asientoFamiliar.Tipo = "REFERENCIA";
                                 asientoFamiliar.PersonaIdPersona = id;
-                                
+
                                 var oldAsientofamiliar = await _context.Asientofamiliar.FindAsync(asientoFamiliar.IdAsientoFamiliar);
-                                
+
                                 _context.Entry(oldAsientofamiliar).CurrentValues.SetValues(asientoFamiliar);
                                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             }
@@ -4331,8 +4337,8 @@ namespace scorpioweb.Controllers
                         }
                     }
                 }
-                #endregion              
-               
+                #endregion
+
                 try
                 {
                     var oldPersona = await _context.Persona.FindAsync(id);
@@ -6139,19 +6145,19 @@ namespace scorpioweb.Controllers
                                               };
                         break;
                     case "ESTADO PROCESAL":
-                    ViewDataAlertasVari =from t in tableAudiot
-                                         where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                                         select new PlaneacionWarningViewModel
-                                         {
-                                             personaVM = t.personaVM,
-                                             municipiosVM = t.municipiosVM,
-                                             supervisionVM = t.supervisionVM,
-                                             causapenalVM = t.causapenalVM,
-                                             planeacionestrategicaVM = t.planeacionestrategicaVM,
-                                             fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                                             tipoAdvertencia = "Estado Procesal",
-                                             auditVM = t.auditVM
-                                         };
+                        ViewDataAlertasVari = from t in tableAudiot
+                                              where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = t.personaVM,
+                                                  municipiosVM = t.municipiosVM,
+                                                  supervisionVM = t.supervisionVM,
+                                                  causapenalVM = t.causapenalVM,
+                                                  planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                                  fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                                  tipoAdvertencia = "Estado Procesal",
+                                                  auditVM = t.auditVM
+                                              };
                         break;
                 }
 
@@ -6274,18 +6280,18 @@ namespace scorpioweb.Controllers
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              }).Union
                                              (from t in tableAudiot
-                                                where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                                                select new PlaneacionWarningViewModel
-                                                {
-                                                    personaVM = t.personaVM,
-                                                    municipiosVM = t.municipiosVM,
-                                                    supervisionVM = t.supervisionVM,
-                                                    causapenalVM = t.causapenalVM,
-                                                    planeacionestrategicaVM = t.planeacionestrategicaVM,
-                                                    fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                                                    tipoAdvertencia = "Estado Procesal",
-                                                    auditVM = t.auditVM
-                                                });
+                                              where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = t.personaVM,
+                                                  municipiosVM = t.municipiosVM,
+                                                  supervisionVM = t.supervisionVM,
+                                                  causapenalVM = t.causapenalVM,
+                                                  planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                                  fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                                  tipoAdvertencia = "Estado Procesal",
+                                                  auditVM = t.auditVM
+                                              });
                         break;
                     //case "EXPEDIENTE FISICO EN RESGUARDO":
                     //    ViewData["alertas"] = archivo;
@@ -6382,18 +6388,18 @@ namespace scorpioweb.Controllers
                         break;
                     case "ESTADO PROCESAL":
                         ViewData["alertas"] = from t in tableAudiot
-                                               where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                                               select new PlaneacionWarningViewModel
-                                               {
-                                                   personaVM = t.personaVM,
-                                                   municipiosVM = t.municipiosVM,
-                                                   supervisionVM = t.supervisionVM,
-                                                   causapenalVM = t.causapenalVM,
-                                                   planeacionestrategicaVM = t.planeacionestrategicaVM,
-                                                   fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                                                   tipoAdvertencia = "Estado Procesal",
-                                                   auditVM = t.auditVM
-                                               };
+                                              where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                              select new PlaneacionWarningViewModel
+                                              {
+                                                  personaVM = t.personaVM,
+                                                  municipiosVM = t.municipiosVM,
+                                                  supervisionVM = t.supervisionVM,
+                                                  causapenalVM = t.causapenalVM,
+                                                  planeacionestrategicaVM = t.planeacionestrategicaVM,
+                                                  fraccionesimpuestasVM = t.fraccionesimpuestasVM,
+                                                  tipoAdvertencia = "Estado Procesal",
+                                                  auditVM = t.auditVM
+                                              };
                         break;
                 }
             }
@@ -7359,7 +7365,7 @@ namespace scorpioweb.Controllers
             ViewData["destacados"] = String.IsNullOrEmpty(sortOrder) ? "destacados" : "";
             ViewData["dependencia"] = sortOrder == "dependencia" ? "date_desc" : "dependencia";
 
-          
+
 
 
             var Contactos = from c in _context.Contactos
@@ -7400,7 +7406,7 @@ namespace scorpioweb.Controllers
             return View();
         }
         #endregion
-     
+
         #region -AddContacto-
         public IActionResult AddContacto()
         {
@@ -7418,7 +7424,7 @@ namespace scorpioweb.Controllers
         {
             try
             {
-         
+
                 contactos.Lugar = Lugar.ToUpper();
                 contactos.Dependencia = Dependencia.ToUpper();
                 contactos.Titular = Titular.ToUpper();
@@ -7442,7 +7448,7 @@ namespace scorpioweb.Controllers
 
         #region -EditContacto-
         public async Task<IActionResult> EditContacto(int? id)
-        
+
         {
             if (id == null)
             {
@@ -7507,7 +7513,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Delete Contacto-
-      
+
         public async Task<IActionResult> DeleteContacto(int? id)
         {
             if (id == null)
@@ -7781,9 +7787,9 @@ namespace scorpioweb.Controllers
                 {
                     esMCSCP = true;
                 }
-                if (rol == "AdminLC" || rol == "SupervisorLC") 
-                { 
-                        esCL = true;
+                if (rol == "AdminLC" || rol == "SupervisorLC")
+                {
+                    esCL = true;
                 }
             }
 
@@ -7900,7 +7906,7 @@ namespace scorpioweb.Controllers
 
             return View(libronegro);
         }
-       
+
         public async Task<IActionResult> libronegroedit(int? id)
         {
             if (id == null)
@@ -7974,8 +7980,8 @@ namespace scorpioweb.Controllers
         public void Toggle(int id)
         {
             var libronegro = (from ln in _context.Libronegro
-                          where ln.Idlibronegro == id
-                          select ln).FirstOrDefault();
+                              where ln.Idlibronegro == id
+                              select ln).FirstOrDefault();
             if (libronegro.Proceso == 0 || libronegro.Proceso == null)
             {
                 libronegro.Proceso = 1;
@@ -7989,9 +7995,9 @@ namespace scorpioweb.Controllers
         public void cambioS(int id, string value)
         {
             var libronegro = (from ln in _context.Libronegro
-                          where ln.Idlibronegro == id
-                          select ln).FirstOrDefault();
-                libronegro.Supervisor = value;
+                              where ln.Idlibronegro == id
+                              select ln).FirstOrDefault();
+            libronegro.Supervisor = value;
 
             _context.SaveChanges();
         }
