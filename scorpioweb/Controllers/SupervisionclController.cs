@@ -182,7 +182,7 @@ namespace scorpioweb.Controllers
             new SelectListItem { Text = "Visita Domiciliaria", Value = "VISITA DOMICILIARIA" },
             new SelectListItem { Text = "Oficio de Vigilancia", Value = "OFICIO DE VIGILANCIA" },
             new SelectListItem { Text = "Plan de Estrategia", Value = "PLAN DE ESTRATEGIA" }
-        }; 
+        };
         private List<SelectListItem> listaPersona = new List<SelectListItem>
         {
              new SelectListItem{ Text="Supervisado", Value="SUPERVISADO"},
@@ -200,12 +200,15 @@ namespace scorpioweb.Controllers
            string searchString,
            string estadoSuper,
            string figuraJudicial,
-           int? pageNumber
+           int? pageNumber,
+           DateTime FechaTermino1,
+           DateTime FechaTermino2
            )
 
         {
             #region
             #endregion
+    
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
@@ -256,15 +259,15 @@ namespace scorpioweb.Controllers
             List<Beneficios> BeneficiosVM = _context.Beneficios.ToList();
 
             List<Beneficios> queryBeneficios = (from b in BeneficiosVM
-                                                         group b by b.SupervisionclIdSupervisioncl into grp
-                                                         select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
+                                                group b by b.SupervisionclIdSupervisioncl into grp
+                                                select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
 
             List<Supervisioncl> querySupervisionSinBenefico = (from s in _context.Supervisioncl
-                                                             join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl into SupervisionFracciones
-                                                             from sf in SupervisionFracciones.DefaultIfEmpty()
-                                                             select new Supervisioncl
-                                                             {
-                                                             }).ToList();
+                                                               join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl into SupervisionFracciones
+                                                               from sf in SupervisionFracciones.DefaultIfEmpty()
+                                                               select new Supervisioncl
+                                                               {
+                                                               }).ToList();
 
 
             List<Cierredecasocl> queryFile = (from c in _context.Cierredecasocl
@@ -312,6 +315,10 @@ namespace scorpioweb.Controllers
             ViewData["EstadoS"] = estadoSuper;
             ViewData["FiguraJ"] = figuraJudicial;
 
+
+            ViewData["FechaTermino1"] = FechaTermino1.ToString().Equals(default(DateTime).ToString()) ? null : FechaTermino1.ToString("yyyy-MM-dd");
+            ViewData["FechaTermino2"] = FechaTermino2.ToString().Equals(default(DateTime).ToString()) ? null : FechaTermino2.ToString("yyyy-MM-dd");
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 filter = filter.Where(cl => (cl.personaVM.Paterno + " " + cl.personaVM.Materno + " " + cl.personaVM.Nombre).Contains(searchString) ||
@@ -338,6 +345,11 @@ namespace scorpioweb.Controllers
                 {
                     filter = filter.Where(cl => cl.beneficiosVM.FiguraJudicial == figuraJudicial);
                 }
+            }
+
+            if (FechaTermino1 != default(DateTime) && FechaTermino2 != default(DateTime))
+            {
+                filter = filter.Where(cl => cl.supervisionVM.Termino >= FechaTermino1 && cl.supervisionVM.Termino <= FechaTermino2);
             }
 
             switch (sortOrder)
@@ -438,7 +450,7 @@ namespace scorpioweb.Controllers
             ViewBag.idEstadoCumplimiento = mg.BuscaId(listaCumplimiento, supervisioncl.EstadoCumplimiento);
 
             ViewBag.listanosi = listaNoSiNa;
-            ViewBag.idTta = mg.BuscaId(listaNoSiNa,supervisioncl.Tta);
+            ViewBag.idTta = mg.BuscaId(listaNoSiNa, supervisioncl.Tta);
             #endregion
 
             return View(supervisioncl);
@@ -474,7 +486,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                  return RedirectToAction("Supervision/" + supervisioncl.IdSupervisioncl, "Supervisioncl");
+                return RedirectToAction("Supervision/" + supervisioncl.IdSupervisioncl, "Supervisioncl");
             }
             return RedirectToAction("Supervision/" + supervisioncl.IdSupervisioncl, "Supervisioncl");
         }
@@ -497,7 +509,7 @@ namespace scorpioweb.Controllers
             await PermisosEdicion(id);
             //var snbitacora = await _context.Bitacora.Where(m => m.SupervisionIdSupervision == id).ToListAsync();
 
-            List<Beneficios> beneficios= _context.Beneficios.ToList();
+            List<Beneficios> beneficios = _context.Beneficios.ToList();
             List<Bitacoracl> bitacora = _context.Bitacoracl.ToList();
             List<Supervisioncl> supervision = _context.Supervisioncl.ToList();
             List<Personacl> personas = _context.Personacl.ToList();
@@ -519,17 +531,17 @@ namespace scorpioweb.Controllers
 
 
             return View();
-        }   
+        }
         #endregion
         public ActionResult addCondicion(string tipo, Condicionescl condicionescl)
         {
             condicionescl.Tipo = mg.removeSpaces(mg.normaliza(tipo));
             _context.Add(condicionescl);
             _context.SaveChanges();
-            return Json(new { success = true});
+            return Json(new { success = true });
 
         }
-        public async Task<IActionResult> CrearCondicion(Beneficios beneficios, string[] datosBeneficios,string[] datosidCondiciones)
+        public async Task<IActionResult> CrearCondicion(Beneficios beneficios, string[] datosBeneficios, string[] datosidCondiciones)
         {
             for (int i = 0; i < datosidCondiciones.Length; i++)
             {
@@ -542,7 +554,7 @@ namespace scorpioweb.Controllers
 
                 _context.Add(beneficios);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-              
+
             }
             return View();
             //return RedirectToAction(nameof(Index));
@@ -609,7 +621,7 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -actualizacion de estado de supervision-
-            
+
             var empty2 = (from s in _context.Supervisioncl
                           where s.IdSupervisioncl == supervision.IdSupervisioncl
                           select s);
@@ -677,8 +689,8 @@ namespace scorpioweb.Controllers
 
             List<Condicionescl> condicionescl = _context.Condicionescl.ToList();
 
-            ViewBag.listacondicionescl = condicionescl.Select(c => c.Tipo );
-            ViewBag.idCondicionescl =  beneficios.Tipo;
+            ViewBag.listacondicionescl = condicionescl.Select(c => c.Tipo);
+            ViewBag.idCondicionescl = beneficios.Tipo;
 
             ViewBag.listaCumplimiento = listaCumplimiento;
             ViewBag.idCumplimiento = mg.BuscaId(listaCumplimiento, beneficios.Estado);
@@ -736,7 +748,7 @@ namespace scorpioweb.Controllers
         #region -Acciones de supervision-
         public async Task<IActionResult> AddAccionSupervision(string nombre, string cp, int? id, string idpersona, string[] datosBitacora, string supervisor, int idcp, string idSupervision)
         {
-            
+
             int signo = idSupervision.IndexOf("?");
             if (signo != -1)
             {
@@ -746,10 +758,10 @@ namespace scorpioweb.Controllers
 
             if (datosBitacora[0] == null || !datosBitacora[0].Equals(idSupervision))
             {
-                         
+
                 datosBitacora[0] = idSupervision;
             }
-                int index = cp.IndexOf("?");
+            int index = cp.IndexOf("?");
             if (index >= 0)
                 cp = cp.Substring(0, index);
 
@@ -769,7 +781,7 @@ namespace scorpioweb.Controllers
             List<Bitacoracl> bitacora = _context.Bitacoracl.ToList();
             List<Beneficios> Beneficios = _context.Beneficios.ToList();
             List<Supervisioncl> supervision = _context.Supervisioncl.ToList();
-          
+
             int SupervisionclIdSupervisioncl = 0;
             var idsupervision = datosBitacora[0];
             if (idsupervision != null)
@@ -780,13 +792,13 @@ namespace scorpioweb.Controllers
             var snbitacora = await _context.Bitacoracl.Where(m => m.BeneficiosclIdBeneficioscl == id).ToListAsync();
             if (snbitacora.Count == 0)
             {
-                
+
                 return RedirectToAction("CreateBitacora2", new { id, SupervisionclIdSupervisioncl, @nombre = Regex.Replace(nombre.Normalize(NormalizationForm.FormD), @"[^a-zA-z0-9 ]+", ""), @cp = cp, @idpersona = idpersona, @supervisor = supervisor, @idcp = idcp });
             }
 
 
             #region -Select idOficialia
-           
+
 
             var leftjoin = from o in _context.Oficialia
                            join p in _context.Personacl on o.UsuarioTurnar equals p.Supervisor
@@ -845,7 +857,7 @@ namespace scorpioweb.Controllers
                                         {
                                             bitacoraVM = b,
                                             supervisionVM = s,
-                                            beneficiosVM= be
+                                            beneficiosVM = be
                                         };
 
 
@@ -879,7 +891,7 @@ namespace scorpioweb.Controllers
             ViewBag.TipoVisita = ListaTipoVisita;
             #endregion
 
-            
+
             return View("AddAccionSupervisionCL");
         }
 
@@ -926,7 +938,7 @@ namespace scorpioweb.Controllers
                     _context.Entry(oldBitacora).CurrentValues.SetValues(bitacora);
 
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-              
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -1427,12 +1439,12 @@ namespace scorpioweb.Controllers
             ViewBag.listaBitacoras = listaBitacoras;
 
             var Beneficios = (from s in _context.Supervisioncl
-                                      join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
-                                      where b.SupervisionclIdSupervisioncl == id
-                                      select new BitacoraclViewModal
-                                      {
-                                          beneficiosVM = b
-                                      });
+                              join b in _context.Beneficios on s.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
+                              where b.SupervisionclIdSupervisioncl == id
+                              select new BitacoraclViewModal
+                              {
+                                  beneficiosVM = b
+                              });
 
 
             ViewBag.countFrac = null;
@@ -1461,7 +1473,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.BeneficiosclIdBeneficioscl = id;
             ViewBag.IdSupervisionGuardar = SupervisionclIdSupervisioncl;
-        
+
             #region -Select idOficialia
 
             List<Bitacoracl> bitacorasvm = _context.Bitacoracl.ToList();
@@ -1516,7 +1528,7 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> AgregarBitacora(Bitacoracl bitacoracl, string IdBitacoracl, DateTime Fecha, string tipoPersona,
         string tipoVisita, string Texto, string SupervisionclIdSupervisioncl, string BeneficiosclIdBeneficioscl, IList<IFormFile> files, string nombre, string cp, string idpersona, string idOficialia, string supervisor, string idcp, string[] datosidBeneficio)
         {
-      
+
             int idbitacora = _context.Bitacoracl.Max(p => p.IdBitacoracl) + 1;
 
             string currentUser = User.Identity.Name;
@@ -1606,7 +1618,7 @@ namespace scorpioweb.Controllers
 
 
         #endregion
-        public async Task<IActionResult> EditBitacora(int? id, string nombre, string cp, int idpersona, string supervisor, int idcp, int idSupervisioncl,int IdBeneficios)
+        public async Task<IActionResult> EditBitacora(int? id, string nombre, string cp, int idpersona, string supervisor, int idcp, int idSupervisioncl, int IdBeneficios)
         {
             //int index = cp.IndexOf("?");
             //if (index >= 0)
@@ -1983,7 +1995,7 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
             }
             var stadoc = (from p in _context.Personacl
-                          where p.IdPersonaCl ==personacl.IdPersonaCl
+                          where p.IdPersonaCl == personacl.IdPersonaCl
                           select p.Candado).FirstOrDefault();
             //return View();
 
@@ -2101,7 +2113,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Obtener Nombre Supervisor-
-         Dictionary<string, string> diccionarioSupervisores = new Dictionary<string, string>
+        Dictionary<string, string> diccionarioSupervisores = new Dictionary<string, string>
             {
                 {"victor.morales@dgepms.com", "VICTOR MANUEL MORALES PEREZ"},
                 {"juanita.rojas@dgepms.com", "JUANITA ROJAS GARCIA"},
@@ -2328,7 +2340,7 @@ namespace scorpioweb.Controllers
                     {
                         actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
                     }
-                   
+
                 }
 
                 var nuevaFraccion = new
@@ -2348,7 +2360,7 @@ namespace scorpioweb.Controllers
 
 
             DocumentCore dc = DocumentCore.Load(templatePath);
-            
+
             var dataSource = new
             {
                 Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
@@ -2367,7 +2379,7 @@ namespace scorpioweb.Controllers
                 Distrito = distrito,
                 Fraccion = fracciones.ToArray(),
 
-        };
+            };
 
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
             dc.MailMerge.Execute(dataSource);
@@ -2380,11 +2392,11 @@ namespace scorpioweb.Controllers
         private bool SupervisionclExists(int id)
         {
             return _context.Supervisioncl.Any(e => e.IdSupervisioncl == id);
-        }   
+        }
         private bool PlaneacionExists(int id)
         {
             return _context.Planeacionestrategicacl.Any(e => e.IdPlaneacionEstrategicacl == id);
-        } 
+        }
         private bool BeneficioExists(int id)
         {
             return _context.Planeacionestrategicacl.Any(e => e.IdPlaneacionEstrategicacl == id);
@@ -2392,7 +2404,7 @@ namespace scorpioweb.Controllers
         private bool CambiodeObligacionesclExists(int id)
         {
             return _context.Cambiodeobligacionescl.Any(e => e.IdCambiodeObligacionescl == id);
-        } 
+        }
         private bool CierredecasoclExists(int id)
         {
             return _context.Cierredecasocl.Any(e => e.IdCierreDeCasocl == id);
