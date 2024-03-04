@@ -19,6 +19,9 @@ using SautinSoft.Document.MailMerging;
 using SautinSoft.Document;
 using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Presentation;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Org.BouncyCastle.Crypto;
 
 namespace scorpioweb.Controllers
 {
@@ -120,6 +123,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "SUSTITUCIÓN POR CONFINAMIENTO", Value = "SUSTITUCIÓN POR CONFINAMIENTO" },
             new SelectListItem{ Text = "TRATAMIENTO PRELIBERACIONAL PREVIO A LA LIBERTAD ABSOLUTA", Value = "TRATAMIENTO PRELIBERACIONAL PREVIO A LA LIBERTAD ABSOLUTA" }
         };
+
         private readonly List<SelectListItem> listaSiNoNa = new List<SelectListItem>
         {
             new SelectListItem{ Text="Si", Value="SI"},
@@ -132,9 +136,15 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="NA", Value="NA"}
         };
-        private List<SelectListItem> listaFracciones = new List<SelectListItem>
+
+        List<string> listaCondiciones = new List<string>()
         {
-            new SelectListItem{ Text="XIV", Value="XIV"}
+            "I",
+            "II",
+            "III",
+            "IV",
+            "V",
+            "VI"
         };
 
         private List<SelectListItem> listaCumplimiento = new List<SelectListItem>
@@ -514,7 +524,7 @@ namespace scorpioweb.Controllers
             ViewData["IdSupervisionGuardar"] = id;
             ViewBag.IdSupervisionGuardar = id;
 
-            ViewBag.listaFracciones = listaFracciones;
+
             ViewBag.listaBeneficios = listaBeneficios;
             ViewBag.listaCumplimiento = listaCumplimiento;
 
@@ -532,19 +542,57 @@ namespace scorpioweb.Controllers
         }
         public async Task<IActionResult> CrearCondicion(Beneficios beneficios, string[] datosBeneficios,string[] datosidCondiciones)
         {
-            for (int i = 0; i < datosidCondiciones.Length; i++)
+            if (datosBeneficios[1] != "SUSPENSION CONDICIONAL CONDENA")
             {
-                beneficios.SupervisionclIdSupervisioncl = Int32.Parse(datosBeneficios[0]);
-                beneficios.FiguraJudicial = datosBeneficios[1];
-                beneficios.FechaInicio = mg.validateDatetime(datosBeneficios[2]);
-                beneficios.FechaTermino = mg.validateDatetime(datosBeneficios[3]);
-                beneficios.Estado = datosBeneficios[4];
-                beneficios.Tipo = datosidCondiciones[i];
+                for (int i = 0; i < datosidCondiciones.Length; i++)
+                {
+                    beneficios.SupervisionclIdSupervisioncl = Int32.Parse(datosBeneficios[0]);
+                    beneficios.FiguraJudicial = datosBeneficios[1];
+                    beneficios.FechaInicio = mg.validateDatetime(datosBeneficios[2]);
+                    beneficios.FechaTermino = mg.validateDatetime(datosBeneficios[3]);
+                    beneficios.Estado = datosBeneficios[4];
+                    beneficios.Tipo = datosidCondiciones[i];
 
-                _context.Add(beneficios);
-                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-              
+                    _context.Add(beneficios);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
+                }
             }
+            else
+            {
+                for (int i = 0; i < datosidCondiciones.Length ; i++)
+                {
+                    beneficios.SupervisionclIdSupervisioncl = Int32.Parse(datosBeneficios[0]);
+                    beneficios.FiguraJudicial = datosBeneficios[1];
+                    beneficios.FechaInicio = mg.validateDatetime(datosBeneficios[2]);
+                    beneficios.FechaTermino = mg.validateDatetime(datosBeneficios[3]);
+                    beneficios.Estado = datosBeneficios[4];
+                    switch (Int32.Parse(datosidCondiciones[i]))
+                    {
+                        case 0:
+                            beneficios.Tipo = "I";
+                            break;
+                        case 1:
+                            beneficios.Tipo = "II";
+                            break;
+                        case 2:
+                            beneficios.Tipo = "III";
+                            break;
+                        case 3:
+                            beneficios.Tipo = "IV";
+                            break;
+                        case 4:
+                            beneficios.Tipo = "V";
+                            break;
+                        case 5:
+                            beneficios.Tipo = "VI";
+                            break;
+                    }
+                    _context.Add(beneficios);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+                }
+            }
+            
             return View();
             //return RedirectToAction(nameof(Index));
         }
@@ -676,9 +724,25 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-            List<Condicionescl> condicionescl = _context.Condicionescl.ToList();
+            //List<Condicionescl> listacondiciones = _context.Condicionescl.ToList();
 
-            ViewBag.listacondicionescl = condicionescl.Select(c => c.Tipo );
+            var listacondiciones = (from p in _context.Condicionescl
+                                   select p.Tipo).ToList();
+
+
+            ViewBag.Figura = beneficios.FiguraJudicial;   
+                                   
+
+            if (beneficios.FiguraJudicial != "SUSPENSION CONDICIONAL CONDENA")
+            {
+                ViewBag.listacondicionescl = listacondiciones;
+                ViewBag.listacondicionescl2 = listaCondiciones;
+            }
+            else
+            {
+                ViewBag.listacondicionescl = listaCondiciones;
+                ViewBag.listacondicionescl2 = listacondiciones;
+            }
             ViewBag.idCondicionescl =  beneficios.Tipo;
 
             ViewBag.listaCumplimiento = listaCumplimiento;
@@ -2126,7 +2190,37 @@ namespace scorpioweb.Controllers
             string TextoFraccion1 = string.Empty;
             string Estatus1 = string.Empty;
             string Actividades1 = string.Empty;
-            #endregion
+            #endregion 
+            #region -F2-
+            string No2 = string.Empty;
+            string TextoFraccion2 = string.Empty;
+            string Estatus2 = string.Empty;
+            string Actividades2 = string.Empty;
+            #endregion 
+            #region -F3-
+            string No3 = string.Empty;
+            string TextoFraccion3 = string.Empty;
+            string Estatus3 = string.Empty;
+            string Actividades3 = string.Empty;
+            #endregion 
+            #region -F4-
+            string No4 = string.Empty;
+            string TextoFraccion4 = string.Empty;
+            string Estatus4 = string.Empty;
+            string Actividades4 = string.Empty;
+            #endregion 
+            #region -F5-
+            string No5 = string.Empty;
+            string TextoFraccion5 = string.Empty;
+            string Estatus5 = string.Empty;
+            string Actividades5 = string.Empty;
+            #endregion 
+            #region -F6-
+            string No6 = string.Empty;
+            string TextoFraccion6 = string.Empty;
+            string Estatus6 = string.Empty;
+            string Actividades6 = string.Empty;
+            #endregion 
             #endregion
 
             #region -Consultas y llenado de variables temporales-
@@ -2230,6 +2324,8 @@ namespace scorpioweb.Controllers
             string presentaciones = "";
             string tipoInforme = "C";
             string fechaAudienciars = "C";
+            string varfj = "";
+
 
 
             Dictionary<string, string> diccionarioJuzgados = new Dictionary<string, string>
@@ -2288,6 +2384,32 @@ namespace scorpioweb.Controllers
             {
                 presentaciones += p.fechaFirma.Value.ToString("dd MMMM yyyy") + " \n";
             }
+
+            #region -string tipo de Fracciones
+
+            Dictionary<string, string> reglas = new Dictionary<string, string>
+            {
+                { "I", "OBSERVAR BUENA CONDUCTA DURANTE EL TÉRMINO DE SUSPENSIÓN" },
+                { "II", "PRESENTARSE MENSUALMENTE ANTE LAS AUTORIDADES ENCARGADAS DE LA EJECUCIÓN DE PENAS Y MEDIDAS DE SEGURIDAD, LAS QUE LE OTORGARÁN EL SALVOCONDUCTO RESPECTIVO." },
+                { "III", "QUEDAR SUJETO A LA VIGILANCIA DE LA AUTORIDAD" },
+                { "IV", "PRESENTARSE ANTE LAS AUTORIDADES JUDICIALES O ANTES LAS ENCARGADAS DE LA EJECUCIÓN DE PENAS Y MEDIDAS DE SEGURIDAD CUANTAS VECES SEA REQUERIDO PARA ELLO." },
+                { "V", "COMUNICAR A LAS AUTORIDADES DEL ÓRGANO EJECUTOR DE PENAS SUS CAMBIOS DE DOMICILIO." },
+                { "VI", "NO AUSENTARSE DEL ESTADO SIN PREVIO PERMISO DE LAS AUTORIDADES ENCARGADAS DE LA EJECUCIÓN DE PENAS Y MEDIDAS DE SEGURIDAD." }
+            };
+
+           string ObtenerValor(Dictionary<string, string> diccionario, string clave)
+            {
+                if (diccionario.TryGetValue(clave, out string valor))
+                {
+                    return valor; // Devolver el valor del diccionario si la clave está presente
+                }
+                else
+                {
+                    return clave; // Devolver la clave (valor de entrada) si la clave no está presente
+                }
+            }
+            #endregion
+
             #endregion
 
             #region -Define contenido de variables-
@@ -2297,15 +2419,15 @@ namespace scorpioweb.Controllers
 
             for (int i = 0; i < datosidBeneficio.Length; i++)
             {
-                string tipoF = (from table in _context.Beneficios
-                                where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
-                                select table.Tipo).FirstOrDefault();
-
                 string estatusF = (from table in _context.Beneficios
                                    where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
-                                   select table.Estado).FirstOrDefault(); 
-                
-                string beneficio = (from table in _context.Beneficios
+                                   select table.Estado).FirstOrDefault();
+
+                string tipoF = (from table in _context.Beneficios
+                                   where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
+                                   select table.FiguraJudicial).FirstOrDefault();
+
+                string tipoB = (from table in _context.Beneficios
                                    where table.IdBeneficios == (Convert.ToInt32(datosidBeneficio[i]))
                                    select table.Tipo).FirstOrDefault();
 
@@ -2318,14 +2440,24 @@ namespace scorpioweb.Controllers
                                       fecha = bitacora.Fecha
                                   };
 
-                if (beneficio == "PRESENTACIÓN PERIÓDICA")
+                if (tipoF != "SUSPENSION CONDICIONAL CONDENA")
                 {
-                    if (presentaciones != "")
+                    if (tipoB == "PRESENTACIÓN PERIÓDICA")
                     {
-                        actividadesfor = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
-                        "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
-                        "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
-                        presentaciones;
+                        if (presentaciones != "")
+                        {
+                            actividadesfor = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
+                            "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
+                            "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
+                            presentaciones;
+                        }
+                        else
+                        {
+                            foreach (var a in actividades)
+                            {
+                                actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
+                            }
+                        }
                     }
                     else
                     {
@@ -2334,24 +2466,88 @@ namespace scorpioweb.Controllers
                             actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
                         }
                     }
-                }
-                else
-                {
-                    foreach (var a in actividades)
+                }else{
+                    switch (tipoB)
                     {
-                        actividadesfor += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
+                        case "I":
+                            No1 = "I";
+                            TextoFraccion1 = ObtenerValor(reglas, tipoB);
+                            Estatus1 = estatusF;
+                            foreach (var act in actividades)
+                            {
+                                Actividades1 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
+                            break;
+                        case "II":
+                            No2 = "II";
+                            TextoFraccion2 = ObtenerValor(reglas, tipoB);
+                            Estatus2 = estatusF;
+                            if (presentaciones != "")
+                            {
+                                Actividades2 = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
+                                "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
+                                "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
+                                presentaciones;
+                            }
+                            else
+                            {
+                                foreach (var a in actividades)
+                                {
+                                    Actividades2 += "CON FECHA " + a.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + a.actividades + " \n";
+                                }
+                            }
+                            break;
+                        case "III":
+                            No3 = "III";
+                            TextoFraccion3 = ObtenerValor(reglas, tipoB);
+                            Estatus3 = estatusF;
+                            foreach (var act in actividades)
+                            {
+                                Actividades3 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
+                            break;
+                        case "IV":
+                            No4 = "IV";
+                            TextoFraccion4 =ObtenerValor(reglas, tipoB);
+                            Estatus4 = estatusF;
+                            foreach (var act in actividades)
+                            {
+                                Actividades4 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
+                            break;
+                        case "V":
+                            No5 = "V";
+                            TextoFraccion5 = ObtenerValor(reglas, tipoB);
+                            Estatus5 = estatusF;
+                            foreach (var act in actividades)
+                            {
+                                Actividades5 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
+                            break;
+                        case "VI":
+                            No6 = "VI";
+                            TextoFraccion6 = ObtenerValor(reglas, tipoB);
+                            Estatus6 = estatusF;
+                            foreach (var act in actividades)
+                            {
+                                Actividades6 += "CON FECHA " + act.fecha.Value.ToString("dd MMMM yyyy").ToUpper() + " " + act.actividades + " \n";
+                            }
+                            break;
                     }
                 }
-
-                var nuevaFraccion = new
+                if(tipoF != "SUSPENSION CONDICIONAL CONDENA")
                 {
-                    No = 1 + i,
-                    TextoFraccion = tipoF,
-                    Estatus = estatusF,
-                    Actividades = actividadesfor
-                };
-                actividadesfor = "";
-                fracciones.Add(nuevaFraccion);
+                    var nuevaFraccion = new
+                    {
+                        No = 1 + i,
+                        TextoFraccion = ObtenerValor(reglas, tipoB),
+                        Estatus = estatusF,
+                        Actividades = actividadesfor
+                    };
+                    actividadesfor = "";
+                    fracciones.Add(nuevaFraccion);
+                }
+                
             }
             #endregion
 
@@ -2360,29 +2556,101 @@ namespace scorpioweb.Controllers
 
 
             DocumentCore dc = DocumentCore.Load(templatePath);
-            
-            var dataSource = new
+
+            if (figuraJudicial != "SUSPENSION CONDICIONAL CONDENA")
             {
-                Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
-                fechaFinal = final,
-                //fechaAudienciars = fechaAudiencia,
-                CP = cp,
-                CE = ce,
-                Js = juzgado,
-                idPer = idPersona,
-                Juez = juez,
-                FechaImposicion = fechaImposicion,
-                FiguraJudicial = figuraJudicial,
-                Nombre = nombre,
-                Delito = delito,
-                Supervisor = supervisor,
-                Distrito = distrito,
-                Fraccion = fracciones.ToArray(),
+                var dataSource = new
+                {
+                    Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
+                    fechaFinal = final,
+                    //fechaAudienciars = fechaAudiencia,
+                    CP = cp,
+                    CE = ce,
+                    Js = juzgado,
+                    idPer = idPersona,
+                    Juez = juez,
+                    FechaImposicion = fechaImposicion,
+                    FiguraJudicial = figuraJudicial,
+                    Nombre = nombre,
+                    Delito = delito,
+                    Supervisor = supervisor,
+                    Distrito = distrito,
+                    Fraccion = fracciones.ToArray(),
 
-        };
+                };
+                dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+                dc.MailMerge.Execute(dataSource);
+               
+            }
+            else
+            {
+                var dataSource = new
+                {
+                    Fecha = DateTime.Now.ToString("dd MMMM yyyy").ToUpper(),
+                    fechaFinal = final,
+                    //fechaAudienciars = fechaAudiencia,
+                    CP = cp,
+                    CE = ce,
+                    Js = juzgado,
+                    idPer = idPersona,
+                    Juez = juez,
+                    FechaImposicion = fechaImposicion,
+                    FiguraJudicial = figuraJudicial,
+                    Nombre = nombre,
+                    Delito = delito,
+                    Supervisor = supervisor,
+                    Distrito = distrito,
+                    Fraccion = new object[]
+                    {
+                        new
+                        {
+                            No=No1,
+                            TextoFraccion=TextoFraccion1,
+                            Estatus=Estatus1,
+                            Actividades=Actividades1
+                        },
+                        new
+                        {
+                            No=No2,
+                            TextoFraccion=TextoFraccion2,
+                            Estatus=Estatus2,
+                            Actividades=Actividades2
+                        },
+                        new
+                        {
+                            No=No3,
+                            TextoFraccion=TextoFraccion3,
+                            Estatus=Estatus3,
+                            Actividades=Actividades3
+                        },
+                        new
+                        {
+                            No=No4,
+                            TextoFraccion=TextoFraccion4,
+                            Estatus=Estatus4,
+                            Actividades=Actividades4
+                        },
+                        new
+                        {
+                            No=No5,
+                            TextoFraccion=TextoFraccion5,
+                            Estatus=Estatus5,
+                            Actividades=Actividades5
+                        },
+                        new
+                        {
+                            No=No6,
+                            TextoFraccion=TextoFraccion6,
+                            Estatus=Estatus6,
+                            Actividades=Actividades6
+                        },
 
-            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
-            dc.MailMerge.Execute(dataSource);
+                    },
+                };
+                dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+                dc.MailMerge.Execute(dataSource);
+
+            }
             dc.Save(resultPath);
             //Response.Redirect("https://localhost:44359/Documentos/reporteSupervision.docx");
         }

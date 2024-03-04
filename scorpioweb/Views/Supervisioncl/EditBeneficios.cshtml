@@ -187,17 +187,17 @@
             }
         });
     };
-    //function beneficioC(condicion) {
-    //    $('input[type=checkbox]').prop('checked',false);
-    //    arr = 0;
-    //    if(condicion != "SUSPENSION CONDICIONAL CONDENA"){
-    //           $("#bscc").css("display", "none");
-    //           $("#otrosb").css("display", "block");
-    //    }else{
-    //           $("#bscc").css("display", "block");
-    //           $("#otrosb").css("display", "none");
-    //    }
-    //}
+    function beneficioC(condicion) {
+        $('input[type=checkbox]').prop('checked',false);
+        arr.length = 0;
+        if(condicion != "SUSPENSION CONDICIONAL CONDENA"){
+               $("#bscc").css("display", "none");
+               $("#otrosb").css("display", "block");
+        }else{
+               $("#bscc").css("display", "block");
+               $("#otrosb").css("display", "none");
+        }
+    }
 </script>
 <h2>Beneficios</h2>
 <div class="col-md-12">
@@ -345,27 +345,27 @@
                 </div>
                 <div class="col-md-6" id="bscc" hidden>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f1" value="1">
+                        <input class="form-check-input" type="checkbox" id="f1" value="0" onclick="condiciones(value)">
                         <label class="form-check-label" for="f1">I</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f2" value="option2">
+                        <input class="form-check-input" type="checkbox" id="f2" value="1" onclick="condiciones(value)">
                         <label class="form-check-label" for="f2">II</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f3" value="option1">
+                        <input class="form-check-input" type="checkbox" id="f3" value="2" onclick="condiciones(value)">
                         <label class="form-check-label" for="f3">III</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f4" value="option2">
+                        <input class="form-check-input" type="checkbox" id="f4" value="3" onclick="condiciones(value)">
                         <label class="form-check-label" for="f4">IV</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f5" value="option2">
+                        <input class="form-check-input" type="checkbox" id="f5" value="4" onclick="condiciones(value)">
                         <label class="form-check-label" for="f5">V</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="f6" value="option6">
+                        <input class="form-check-input" type="checkbox" id="f6" value="5" onclick="condiciones(value)">
                         <label class="form-check-label" for="f6">VI</label>
                     </div>
                 </div>

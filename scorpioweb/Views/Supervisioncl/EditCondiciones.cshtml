@@ -3,15 +3,50 @@
 @{
     Layout = null;
 }
+
+<script>
+    function cambio(condicion) {
+        if ('@ViewBag.Figura' == "SUSPENSION CONDICIONAL CONDENA"){
+            if (condicion != "SUSPENSION CONDICIONAL CONDENA") {
+                $("#lista1").css("display", "none");
+                $("#lista2").css("display", "block");
+            } else {
+                $("#lista1").css("display", "block");
+                $("#lista2").css("display", "none");
+            }
+        }else{
+            if (condicion != "SUSPENSION CONDICIONAL CONDENA") {
+                $("#lista2").css("display", "none");
+                $("#lista1").css("display", "block");
+            } else {
+                $("#lista2").css("display", "block");
+                $("#lista1").css("display", "none");
+            }
+        }       
+    }
+</script>
+
 <div class="row">
     <div class="col-md-12">
         <form asp-action="EditCondiciones" asp-route-nombre="@ViewBag.nombre" asp-route-cp="@ViewBag.cp">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdBeneficios" />
             <div class="form-group">
-                <label class="control-label">Tipo de Fracción</label>
+                <label class="control-label">Beneficio</label>
+                <select class="form-control" name="FiguraJudicial" id="FiguraJudicial" onchange="cambio(value)"
+                        asp-items="@(new SelectList(ViewBag.listaBeneficios, "Value", "Text", @ViewBag.idFiguraJudicial))">
+                </select>
+            </div>
+            <div class="form-group" id="lista1" name="lista1">
+                <label class="control-label">Condicciones</label>
                 <select class="form-control" name="Tipo" id="Tipo"
-                        asp-items="@(new SelectList(ViewBag.listacondicionescl, ViewBag.idCondicionescl))">
+                        asp-items="@(new SelectList(ViewBag.listacondicionescl, @ViewBag.idCondicionescl))">
+                </select>
+            </div>
+            <div class="form-group" id="lista2" name="lista2" style="display:none">
+                <label class="control-label">Condicciones</label>
+                <select class="form-control" name="Tipo" id="Tipo"
+                        asp-items="@(new SelectList(ViewBag.listacondicionescl2, @ViewBag.idCondicionescl))">
                 </select>
             </div>
             <div class="form-group">
@@ -28,12 +63,6 @@
                 <label class="control-label">Estado</label>
                 <select class="form-control" name="Estado" id="Estado"
                         asp-items="@(new SelectList(ViewBag.listaCumplimiento, "Value", "Text", @ViewBag.idCumplimiento))">
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Figura Judicial</label>
-                <select class="form-control" name="FiguraJudicial" id="FiguraJudicial"
-                        asp-items="@(new SelectList(ViewBag.listaBeneficios, "Value", "Text", @ViewBag.idFiguraJudicial))">
                 </select>
             </div>
             <input type="hidden" asp-for="SupervisionclIdSupervisioncl" />
