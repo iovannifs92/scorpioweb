@@ -54,12 +54,20 @@ namespace scorpioweb.Models
         public string Sinocentropenitenciario { get; set; }
         public string Ce { get; set; }
         public string Juzgado { get; set; }
+        public string TratamientoAdicciones { get; set; }
+        public string CualTratamientoAdicciones { get; set; }
+        public string CuandoConsume { get; set; }
         public string NombreCompleto
         {
             get
             {
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
+        }
+
+        public static implicit operator Personacl(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

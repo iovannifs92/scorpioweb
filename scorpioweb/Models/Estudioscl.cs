@@ -14,7 +14,8 @@ namespace scorpioweb.Models
         public string Telefono { get; set; }
         public string Observaciones { get; set; }
         public int PersonaClIdPersonaCl { get; set; }
+        public string CursoAcademico { get; set; }
+        public string CualCursoAcademico { get; set; }
+        public string DeseaConcluirEstudios { get; set; }
     }
 }
-
-

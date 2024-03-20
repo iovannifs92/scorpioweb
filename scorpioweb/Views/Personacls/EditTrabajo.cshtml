@@ -40,6 +40,109 @@
             }
         });
 
+        $('#PropuestaLaboral').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualPropuestaT").css("display", "block");
+                $("#PropuestaLaboralT").removeClass("col-md-12");
+                $("#PropuestaLaboralT").addClass("col-md-6");
+            }
+            else {
+                $("#CualPropuestaT").css("display", "none");
+                $("#CualPropuesta").val("NA");
+                $("#PropuestaLaboralT").removeClass("col-md-6");
+                $("#PropuestaLaboralT").addClass("col-md-12");
+            }
+        });
+
+        $('#TrabajoCentro').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualTrabajoCentroT").css("display", "block");
+                $("#TrabajoCentroT").removeClass("col-md-12");
+                $("#TrabajoCentroT").addClass("col-md-6");
+            }
+            else {
+                $("#CualTrabajoCentroT").css("display", "none");
+                $("#CualTrabajoCentro").val("NA");
+                $("#TrabajoCentroT").removeClass("col-md-6");
+                $("#TrabajoCentroT").addClass("col-md-12");
+
+            }
+        });
+
+        $('#Capacitacion').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualCapacitacionT").css("display", "block");
+                $("#CapacitacionT").removeClass("col-md-12");
+                $("#CapacitacionT").addClass("col-md-6");
+            }
+            else {
+                $("#CualCapacitacionT").css("display", "none");
+                $("#CualCapacitacion").val("NA");
+                $("#CapacitacionT").removeClass("col-md-6");
+                $("#CapacitacionT").addClass("col-md-12");
+            }
+        });
+        
+        if ('@ViewBag.siNoCentro' === "SI") {
+            $("#AntesdeCentroT").css("display", "block");
+            $("#TrabajoCentroT").css("display", "block");
+        } else {
+            $("#AntesdeCentroT").css("display", "none");
+            $("#TrabajoCentroT").css("display", "none");
+            $("#CualTrabajoCentroT").css("display", "none");
+            $("#CualTrabajoCentro").val("NA");
+        }
+
+
+        //#region cualtratamiento
+        var ct = document.getElementById("TrabajoCentro")
+            if (ct.value == "SI") {
+                $("#CualTrabajoCentroT").css("display", "block");
+                $("#TrabajoCentroT").removeClass("col-md-12");
+                $("#TrabajoCentroT").addClass("col-md-6");
+            }
+            else {
+                $("#CualTrabajoCentroT").css("display", "none");
+                $("#CualTrabajoCentro").val("NA");
+                $("#TrabajoCentroT").removeClass("col-md-6");
+                $("#TrabajoCentroT").addClass("col-md-12");
+
+            }
+        //#endregion    
+        // 
+        //#region cualtratamiento
+        var ct = document.getElementById("PropuestaLaboral")
+            if (ct.value == "SI") {
+                $("#CualPropuestaT").css("display", "block");
+                $("#PropuestaLaboralT").removeClass("col-md-12");
+                $("#PropuestaLaboralT").addClass("col-md-6");
+            }
+            else {
+                $("#CualPropuestaT").css("display", "none");
+                $("#CualPropuesta").val("NA");
+                $("#PropuestaLaboralT").removeClass("col-md-6");
+                $("#PropuestaLaboralT").addClass("col-md-12");
+            }
+        //#endregion
+
+        // //#region cualtratamiento
+        var capa = document.getElementById("Capacitacion")
+            if (capa.value == "SI") {
+                $("#CualCapacitacionT").css("display", "block");
+                $("#CapacitacionT").removeClass("col-md-12");
+                $("#CapacitacionT").addClass("col-md-6");
+            }
+            else {
+                $("#CualCapacitacionT").css("display", "none");
+                $("#CualCapacitacion").val("NA");
+                $("#CapacitacionT").removeClass("col-md-6");
+                $("#CapacitacionT").addClass("col-md-12");
+            }
+        //#endregion
+
     });
 </script>
 
@@ -120,11 +223,7 @@
                     <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
-                <div class="form-group col-md-12" id="DivObservaciones">
-                    <label asp-for="Observaciones" class="control-label"></label>
-                    <input asp-for="Observaciones" class="form-control" />
-                    <span asp-validation-for="Observaciones" class="text-danger"></span>
-                </div>
+
             }
             else
             {
@@ -188,12 +287,58 @@
                     <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
-                <div class="form-group col-md-12" id="DivObservaciones">
-                    <label asp-for="Observaciones" class="control-label"></label>
-                    <input asp-for="Observaciones" class="form-control" />
-                    <span asp-validation-for="Observaciones" class="text-danger"></span>
-                </div>
+               
             }
+
+            <div class="form-group col-md-12" id="ConocimientoHabilidadT">
+                <label class="control-label">¿Cuales consideras que son tus mejores habilidades o conocimientos que te ayuden a generar un ingreso económico?</label>
+                <input asp-for="ConocimientoHabilidad" class="form-control" id="ConocimientoHabilidad" name="ConocimientoHabilidad" />
+                <span asp-validation-for="ConocimientoHabilidad" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="PropuestaLaboralT">
+                <label class="control-label">¿Cuentas con una propuesta laboral actualmente?</label>
+                <select class="form-control" name="PropuestaLaboral" id="PropuestaLaboral"
+                        asp-items="@(new SelectList(ViewBag.listaPropuestaLaboral, "Value", "Text", @ViewBag.idPropuestaLaboral))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" id="CualPropuestaT" style="display:none">
+                <label class="control-label">¿Donde?</label>
+                <input asp-for="CualPropuesta" class="form-control" id="CualPropuesta" name="CualPropuesta" />
+                <span asp-validation-for="CualPropuesta" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="AntesdeCentroT" style="display:none">
+                <label class="control-label">¿A que se dedicaba antes de ingresar al centro penitenciario?</label>
+                <input asp-for="AntesdeCentro" class="form-control" id="AntesdeCentro" name="AntesdeCentro" />
+                <span asp-validation-for="AntesdeCentro" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="TrabajoCentroT" style="display:none">
+                <label class="control-label">¿Realizo algún trabajo dentro del centro?</label>
+                <select class="form-control" name="TrabajoCentro" id="TrabajoCentro"
+                        asp-items="@(new SelectList(ViewBag.listaTrabajoCentro, "Value", "Text", @ViewBag.idTrabajoCentro))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" id="CualTrabajoCentroT" style="display:none">
+                <label class="control-label">¿Cual?</label>
+                <input asp-for="CualTrabajoCentro" class="form-control" id="CualTrabajoCentro" name="CualTrabajoCentro" />
+                <span asp-validation-for="CualTrabajoCentro" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="CapacitacionT">
+                <label class="control-label">¿Le gustaría recibir capacitación para algún empleo?</label>
+                <select class="form-control" name="Capacitacion" id="Capacitacion"
+                        asp-items="@(new SelectList(ViewBag.listaCapacitacion, "Value", "Text", @ViewBag.idCapacitacion))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" id="CualCapacitacionT" style="display:none">
+                <label class="control-label">¿Cual?</label>
+                <input asp-for="CualCapacitacion" class="form-control" id="CualCapacitacion" name="CualCapacitacion" />
+                <span asp-validation-for="CualCapacitacion" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="DivObservaciones">
+                <label asp-for="Observaciones" class="control-label"></label>
+                <input asp-for="Observaciones" class="form-control" />
+                <span asp-validation-for="Observaciones" class="text-danger"></span>
+            </div>
+
             <div class="col-md-12">
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">

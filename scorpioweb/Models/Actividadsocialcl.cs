@@ -14,5 +14,9 @@ namespace scorpioweb.Models
         public string Referencia { get; set; }
         public string Observaciones { get; set; }
         public int PersonaClIdPersonaCl { get; set; }
+        public string ActividadesDepCulCentro { get; set; }
+        public string CualActividadesDepCulCentro { get; set; }
+        public string DeseaDepCul { get; set; }
+        public string CualDeseaDepCul { get; set; }
     }
 }

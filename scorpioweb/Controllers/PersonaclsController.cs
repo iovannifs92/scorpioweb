@@ -1025,7 +1025,6 @@ namespace scorpioweb.Models
 
             #endregion
 
-
             if (personacl == null)
             {
                 return NotFound();
@@ -1616,6 +1615,9 @@ namespace scorpioweb.Models
 
             ViewBag.listaComlgbtttiq = listaNoSi;
             ViewBag.idComlgbtttiq = BuscaId(listaNoSi, personacl.ComLgbtttiq);
+            
+            ViewBag.listaTratamiento = listaNoSi;
+            ViewBag.idTratamiento = BuscaId(listaNoSi, personacl.TratamientoAdicciones);
 
             ViewBag.listaSinoCentroPenitenciario = listaNoSi;
             ViewBag.idSinoCentroPenitenciario = BuscaId(listaNoSi, personacl.Sinocentropenitenciario);
@@ -1888,7 +1890,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersonaCl,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,UltimaActualización,Supervisor,RutaFoto,Familiares,ReferenciasPersonales,Capturista,Candado,MotivoCandado,Colaboracion,UbicacionExpediente,ComLgbtttiq,ComIndigena,TieneResolucion,Juzgado,Ce")] Personacl personacl, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersonaCl,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,TratamientoAdicciones,CualTratamientoAdicciones,UltimaActualización,Supervisor,RutaFoto,Familiares,ReferenciasPersonales,Capturista,Candado,MotivoCandado,Colaboracion,UbicacionExpediente,ComLgbtttiq,ComIndigena,TieneResolucion,Juzgado,Ce")] Personacl personacl, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
         {
             if (id != personacl.IdPersonaCl)
             {
@@ -1933,6 +1935,8 @@ namespace scorpioweb.Models
                     if (personacl.Candado == null) { personacl.Candado = 0; }
                     personacl.Candado = personacl.Candado;
                     personacl.MotivoCandado = mg.normaliza(personacl.MotivoCandado);
+                    personacl.TratamientoAdicciones = mg.normaliza(personacl.TratamientoAdicciones);
+                    personacl.CualTratamientoAdicciones = mg.normaliza(personacl.CualTratamientoAdicciones);
 
                     #region -sustancias agregadas -
 
@@ -2667,6 +2671,11 @@ namespace scorpioweb.Models
                 return NotFound();
             }
             ViewData["Nombre"] = nombre;
+
+            var centro = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+
+            ViewBag.siNoCentro = centro.Sinocentropenitenciario;
+
             var estudioscl = await _context.Estudioscl.SingleOrDefaultAsync(m => m.PersonaClIdPersonaCl == id);
             if (estudioscl == null)
             {
@@ -2674,6 +2683,7 @@ namespace scorpioweb.Models
             }
 
             ViewBag.estudia = estudioscl.Estudia;
+            ViewBag.estudiaq = estudioscl.CualCursoAcademico;
 
             ViewBag.listaEstudia = listaNoSi;
             ViewBag.idEstudia = BuscaId(listaNoSi, estudioscl.Estudia);
@@ -2693,6 +2703,15 @@ namespace scorpioweb.Models
 
             ViewBag.listaGradoEstudios = ListaGradoEstudios;
             ViewBag.idGradoEstudios = BuscaId(ListaGradoEstudios, estudioscl.GradoEstudios);
+            #endregion
+
+
+            #region -PARA PERSONAS CENTRO-
+            ViewBag.listaCursoAcademico = listaNoSi;
+            ViewBag.idCursoAcademico = BuscaId(listaNoSi, estudioscl.CursoAcademico);
+
+            ViewBag.listaDeseaConcluirEstudios = listaNoSi;
+            ViewBag.idDeseaConcluirEstudios = BuscaId(listaNoSi, estudioscl.DeseaConcluirEstudios);
             #endregion
 
 
@@ -2727,7 +2746,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEscolaridad(int id, [Bind("IdEstudiosCl,Estudia,GradoEstudios,InstitucionE,Horario,Direccion,Telefono,Observaciones,PersonaClIdPersonaCl")] Estudioscl estudioscl)
+        public async Task<IActionResult> EditEscolaridad(int id, [Bind("IdEstudiosCl,Estudia,GradoEstudios,InstitucionE,Horario,Direccion,Telefono,CursoAcademico,CualCursoAcademico,DeseaConcluirEstudios,Observaciones,PersonaClIdPersonaCl")] Estudioscl estudioscl)
         {
             if (id != estudioscl.PersonaClIdPersonaCl)
             {
@@ -2739,6 +2758,9 @@ namespace scorpioweb.Models
                 try
                 {
                     estudioscl.Estudia = mg.normaliza(estudioscl.Estudia);
+                    estudioscl.CursoAcademico = mg.normaliza(estudioscl.CursoAcademico);
+                    estudioscl.CualCursoAcademico = mg.normaliza(estudioscl.CualCursoAcademico);
+                    estudioscl.DeseaConcluirEstudios = mg.normaliza(estudioscl.DeseaConcluirEstudios);
 
                     estudioscl.InstitucionE = estudioscl.Estudia.Equals("NO") ? "NA" : mg.normaliza(estudioscl.InstitucionE);
                     estudioscl.Horario = estudioscl.Estudia.Equals("NO") ? "NA" : mg.normaliza(estudioscl.Horario);
@@ -2780,6 +2802,12 @@ namespace scorpioweb.Models
                 return NotFound();
             }
             ViewData["Nombre"] = nombre;
+
+            var centro = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+
+            ViewBag.siNoCentro = centro.Sinocentropenitenciario;
+
+
             var trabajocl = await _context.Trabajocl.SingleOrDefaultAsync(m => m.PersonaClIdPersonaCl == id);
             if (trabajocl == null)
             {
@@ -2810,7 +2838,16 @@ namespace scorpioweb.Models
             #endregion
 
             ViewBag.listaEnteradoProceso = listaNoSiNA;
-            ViewBag.idEnteradoProceso = BuscaId(listaNoSiNA, trabajocl.EnteradoProceso);
+            ViewBag.idEnteradoProceso = BuscaId(listaNoSiNA, trabajocl.EnteradoProceso); 
+            
+            ViewBag.listaPropuestaLaboral = listaNoSi;
+            ViewBag.idPropuestaLaboral = BuscaId(listaNoSi, trabajocl.PropuestaLaboral); 
+            
+            ViewBag.listaTrabajoCentro = listaNoSi;
+            ViewBag.idTrabajoCentro = BuscaId(listaNoSi, trabajocl.TrabajoCentro);       
+            
+            ViewBag.listaCapacitacion = listaNoSi;
+            ViewBag.idCapacitacion = BuscaId(listaNoSi, trabajocl.Capacitacion);
 
             ViewBag.listasePuedeEnterarT = listaNoSiNA;
             ViewBag.idsePuedeEnterart = BuscaId(listaNoSiNA, trabajocl.SePuedeEnterar);
@@ -2857,7 +2894,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTrabajo(int id, [Bind("IdTrabajoCl,Trabaja,TipoOcupacion,Puesto,EmpledorJefe,EnteradoProceso,SePuedeEnterar,TiempoTrabajano,Salario,TemporalidadSalario,Direccion,Horario,Telefono,Observaciones,PersonaClIdPersonaCl")] Trabajocl trabajocl)
+        public async Task<IActionResult> EditTrabajo(int id, [Bind("IdTrabajoCl,Trabaja,TipoOcupacion,Puesto,EmpledorJefe,EnteradoProceso,SePuedeEnterar,TiempoTrabajano,Salario,TemporalidadSalario,Direccion,Horario,Telefono,ConocimientoHabilidad,PropuestaLaboral,CualPropuesta,AntesdeCentro,TrabajoCentro,CualTrabajoCentro,Capacitacion,CualCapacitacion,Observaciones,PersonaClIdPersonaCl")] Trabajocl trabajocl)
         {
             if (id != trabajocl.PersonaClIdPersonaCl)
             {
@@ -2870,6 +2907,14 @@ namespace scorpioweb.Models
             trabajocl.TemporalidadSalario = mg.normaliza(trabajocl.TemporalidadSalario);
             trabajocl.Direccion = mg.normaliza(trabajocl.Direccion);
             trabajocl.Horario = mg.normaliza(trabajocl.Horario);
+            trabajocl.ConocimientoHabilidad = mg.normaliza(trabajocl.ConocimientoHabilidad);
+            trabajocl.PropuestaLaboral = mg.normaliza(trabajocl.PropuestaLaboral);
+            trabajocl.CualPropuesta = mg.normaliza(trabajocl.CualPropuesta);
+            trabajocl.AntesdeCentro = mg.normaliza(trabajocl.AntesdeCentro);
+            trabajocl.TrabajoCentro = mg.normaliza(trabajocl.TrabajoCentro);
+            trabajocl.CualTrabajoCentro = mg.normaliza(trabajocl.CualTrabajoCentro);
+            trabajocl.Capacitacion = mg.normaliza(trabajocl.Capacitacion);
+            trabajocl.CualCapacitacion = mg.normaliza(trabajocl.CualCapacitacion);
             trabajocl.Observaciones = mg.normaliza(trabajocl.Observaciones);
 
             if (ModelState.IsValid)
@@ -2909,8 +2954,17 @@ namespace scorpioweb.Models
             ViewData["Nombre"] = nombre;
             var actividadsocialcl = await _context.Actividadsocialcl.SingleOrDefaultAsync(m => m.PersonaClIdPersonaCl == id);
 
+            var centro = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+            ViewBag.siNoCentro = centro.Sinocentropenitenciario;
+
             ViewBag.listasePuedeEnterarASr = listaNoSiNA;
-            ViewBag.idsePuedeEnterarAS = BuscaId(listaNoSiNA, actividadsocialcl.SePuedeEnterar);
+            ViewBag.idsePuedeEnterarAS = BuscaId(listaNoSiNA, actividadsocialcl.SePuedeEnterar);  
+           
+            ViewBag.listaActividadesDepCulCentro = listaNoSiNA;
+            ViewBag.idActividadesDepCulCentro = BuscaId(listaNoSiNA, actividadsocialcl.ActividadesDepCulCentro);  
+            
+            ViewBag.listaDeseaDepCul = listaNoSiNA;
+            ViewBag.idDeseaDepCul = BuscaId(listaNoSiNA, actividadsocialcl.DeseaDepCul);
 
             if (actividadsocialcl == null)
             {
@@ -2921,7 +2975,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditActividadesSociales(int id, [Bind("IdActividadSocialCl,TipoActividad,Horario,Lugar,Telefono,SePuedeEnterar,Referencia,Observaciones,PersonaClIdPersonaCl")] Actividadsocialcl actividadsocialcl)
+        public async Task<IActionResult> EditActividadesSociales(int id, [Bind("IdActividadSocialCl,TipoActividad,Horario,Lugar,Telefono,SePuedeEnterar,Referencia,Observaciones,DeseaDepCul,ActividadesDepCulCentro,CualActividadesDepCulCentro,CualDeseaDepCul,PersonaClIdPersonaCl")] Actividadsocialcl actividadsocialcl)
         {
             if (id != actividadsocialcl.PersonaClIdPersonaCl)
             {
@@ -2939,6 +2993,11 @@ namespace scorpioweb.Models
                     actividadsocialcl.Lugar = mg.normaliza(actividadsocialcl.Lugar);
                     actividadsocialcl.Referencia = mg.normaliza(actividadsocialcl.Referencia);
                     actividadsocialcl.Observaciones = mg.normaliza(actividadsocialcl.Observaciones);
+
+                    actividadsocialcl.DeseaDepCul = mg.normaliza(actividadsocialcl.DeseaDepCul);
+                    actividadsocialcl.ActividadesDepCulCentro = mg.normaliza(actividadsocialcl.ActividadesDepCulCentro);
+                    actividadsocialcl.CualActividadesDepCulCentro = mg.normaliza(actividadsocialcl.CualActividadesDepCulCentro);
+                    actividadsocialcl.CualDeseaDepCul = mg.normaliza(actividadsocialcl.CualDeseaDepCul);
 
                     var oldActividadsocialcl = await _context.Actividadsocialcl.FindAsync(actividadsocialcl.IdActividadSocialCl);
 

@@ -141,9 +141,28 @@
         var btnEditarSustancias = document.getElementById("btnEditarSustancias")
         if (consumoSustancias.value == "SI") {
             btnEditarSustancias.style.display = "block"
+            $("#DivTratamientoAdicciones").css("display", "block");
+
         }
         else {
             btnEditarSustancias.style.display = "none"
+            $("#DivTratamientoAdicciones").css("display", "none");
+            $("#DivCualTratamientoAdicciones").css("display", "none");
+
+        }
+        //#endregion
+        //#region cualtratamiento
+        var ct = document.getElementById("TratamientoAdicciones")
+        if (ct.value == "SI") {
+            $("#DivCualTratamientoAdicciones").css("display", "block");
+            $("#DivTratamientoAdicciones").removeClass("col-md-12");
+            $("#DivTratamientoAdicciones").addClass("col-md-6");
+        }
+        else {
+            $("#DivCualTratamientoAdicciones").css("display", "none");
+            $("#DivTratamientoAdicciones").removeClass("col-md-6");
+            $("#DivTratamientoAdicciones").addClass("col-md-12");
+
         }
         //#endregion
         //#region Editar Familiares
@@ -260,11 +279,30 @@
             var opcion = $(this).children("option:selected").val();
             if (opcion == "SI") {
                 $('#modalAgregarSustancias').modal('show')
+                $("#DivTratamientoAdicciones").css("display", "block");
             }
             else {
                 $('#modalAgregarSustancias').modal('hidden')
+                $("#DivTratamientoAdicciones").css("display", "none");
+
             }
         });
+        
+        $('#TratamientoAdicciones').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#DivCualTratamientoAdicciones").css("display", "block");
+                $("#DivTratamientoAdicciones").removeClass("col-md-12");
+                $("#DivTratamientoAdicciones").addClass("col-md-6");
+            }
+            else {
+                $("#DivCualTratamientoAdicciones").css("display", "none");
+                $("#CualTratamientoAdicciones").val("NA");
+                $("#DivTratamientoAdicciones").removeClass("col-md-6");
+                $("#DivTratamientoAdicciones").addClass("col-md-12");
+            }
+        });
+
         $("#Familiares").change(function () {
             var opcion = $(this).children("option:selected").val()
             document.getElementById("textoAFRAgregar").innerHTML = "Asiento Familiar"
@@ -827,7 +865,14 @@
                 }
             }
         });
+
+
+
     });
+
+
+
+
 
     //region Poner en "No" el dropdown si cancela en todos los modales
     $(document).ready(function () {
@@ -1114,7 +1159,6 @@
                 <input asp-for="Curp" class="form-control" />
                 <span asp-validation-for="Curp" class="text-danger"></span>
             </div>
-
             <div class="form-group col-md-9">
                 <label class="control-label">¿Consume Sustancias?</label>
                 <select class="form-control" name="ConsumoSustancias" id="consumoSustancias"
@@ -1132,6 +1176,17 @@
                     <i class="fa fa-pencil"></i>
                      Editar 
                 </button>
+            </div>
+            <div class="form-group col-md-12" id="DivTratamientoAdicciones" style="display:none">
+                <label class="control-label">¿Se encuentra en algún tratamiento contra las adicciones?</label>
+                <select class="form-control" name="TratamientoAdicciones" id="TratamientoAdicciones"
+                        asp-items="@(new SelectList(ViewBag.listaTratamiento, "Value", "Text", @ViewBag.idTratamiento))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" style="display:none" id="DivCualTratamientoAdicciones">
+                <label class="control-label">¿Cual Tratamiento?</label>
+                <input asp-for="CualTratamientoAdicciones" class="form-control" />
+                <span asp-validation-for="CualTratamientoAdicciones" class="text-danger"></span>
             </div>
             <div class="form-group col-md-9">
                 <label class="control-label">¿Tiene familiares?</label>
@@ -1519,4 +1574,3 @@
         </div>
     </div>
 </div>
-

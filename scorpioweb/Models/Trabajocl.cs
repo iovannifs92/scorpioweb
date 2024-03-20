@@ -20,5 +20,13 @@ namespace scorpioweb.Models
         public string Telefono { get; set; }
         public string Observaciones { get; set; }
         public int PersonaClIdPersonaCl { get; set; }
+        public string ConocimientoHabilidad { get; set; }
+        public string PropuestaLaboral { get; set; }
+        public string CualPropuesta { get; set; }
+        public string Capacitacion { get; set; }
+        public string CualCapacitacion { get; set; }
+        public string AntesdeCentro { get; set; }
+        public string TrabajoCentro { get; set; }
+        public string CualTrabajoCentro { get; set; }
     }
 }

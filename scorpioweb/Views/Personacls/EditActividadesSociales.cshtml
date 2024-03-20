@@ -5,6 +5,82 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+
+<script>
+    $(document).ready(function () {
+        $('#ActividadesDepCulCentro').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualActividadesDepCulCentroA").css("display", "block");
+                $("#ActividadesDepCulCentroA").removeClass("col-md-12");
+                $("#ActividadesDepCulCentroA").addClass("col-md-6");
+            }
+            else {
+                $("#CualActividadesDepCulCentroA").css("display", "none");
+                $("#CualActividadesDepCulCentro").val("NA");
+                $("#ActividadesDepCulCentroA").removeClass("col-md-6");
+                $("#ActividadesDepCulCentroA").addClass("col-md-12");
+
+            }
+        });
+        $('#DeseaDepCul').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualDeseaDepCulA").css("display", "block");
+                $("#DeseaDepCulA").removeClass("col-md-12");
+                $("#DeseaDepCulA").addClass("col-md-6");
+            }
+            else {
+                $("#CualDeseaDepCulA").css("display", "none");
+                $("#CualDeseaDepCul").val("NA");
+                $("#DeseaDepCulA").removeClass("col-md-6");
+                $("#DeseaDepCulA").addClass("col-md-12");
+            }
+        });
+
+        if ('@ViewBag.siNoCentro' === "SI") {
+            $("#ActividadesDepCulCentroA").css("display", "block");
+        } else {
+            $("#ActividadesDepCulCentroA").css("display", "none");
+            $("#CualActividadesDepCulCentroA").css("display", "none");
+            $("#CualActividadesDepCulCentro").val("NA");
+
+        };
+
+        //#region cualtratamiento
+        var ct = document.getElementById("DeseaDepCul")
+        if (ct.value == "SI") {
+            $("#CualDeseaDepCulA").css("display", "block");
+            $("#DeseaDepCulA").removeClass("col-md-12");
+            $("#DeseaDepCulA").addClass("col-md-6");
+        }
+        else {
+            $("#CualDeseaDepCulA").css("display", "none");
+            $("#CualDeseaDepCul").val("NA");
+            $("#DeseaDepCulA").removeClass("col-md-6");
+            $("#DeseaDepCulA").addClass("col-md-12");
+        }
+        //#endregion/
+
+        //#region cualtratamiento
+        var cv = document.getElementById("ActividadesDepCulCentro")
+        if (cv.value == "SI") {
+            $("#CualActividadesDepCulCentroA").css("display", "block");
+            $("#ActividadesDepCulCentroA").removeClass("col-md-12");
+            $("#ActividadesDepCulCentroA").addClass("col-md-6");
+        }
+        else {
+            $("#CualActividadesDepCulCentroA").css("display", "none");
+            $("#CualActividadesDepCulCentro").val("NA");
+            $("#ActividadesDepCulCentroA").removeClass("col-md-6");
+            $("#ActividadesDepCulCentroA").addClass("col-md-12");
+
+        }
+        //#endregion
+    });
+</script>
+
+
 <h2>Actividades Sociales</h2>
 <h3>@ViewData["Nombre"]</h3>
 <hr />
@@ -45,6 +121,30 @@
                 <input asp-for="Referencia" class="form-control" style="text-transform:uppercase" />
                 <span asp-validation-for="Referencia" class="text-danger"></span>
             </div>
+
+            <div class="form-group col-md-12" id="ActividadesDepCulCentroA" style="display:none">
+                <label class="control-label">¿Participo en actividades deportivas y/o culturales dentro?</label>
+                <select class="form-control" name="ActividadesDepCulCentro" id="ActividadesDepCulCentro"
+                        asp-items="@(new SelectList(ViewBag.listaActividadesDepCulCentro, "Value", "Text", @ViewBag.idActividadesDepCulCentro))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" id="CualActividadesDepCulCentroA" style="display:none">
+                <label class="control-label">Especificar actividad</label>
+                <input asp-for="CualActividadesDepCulCentro" class="form-control" id="CualActividadesDepCulCentro" name="CualActividadesDepCulCentro" />
+                <span asp-validation-for="CualActividadesDepCulCentro" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="DeseaDepCulA">
+                <label class="control-label">¿Le gustaria paricipar en actividades deportivas y/o culturales?</label>
+                <select class="form-control" name="DeseaDepCul" id="DeseaDepCul"
+                        asp-items="@(new SelectList(ViewBag.listaDeseaDepCul, "Value", "Text", @ViewBag.idDeseaDepCul))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" id="CualDeseaDepCulA" style="display:none">
+                <label class="control-label">Especificar actividad</label>
+                <input asp-for="CualDeseaDepCul" class="form-control"id="CualDeseaDepCul" name="CualDeseaDepCul" />
+                <span asp-validation-for="CualDeseaDepCul" class="text-danger"></span>
+            </div>
+
             <div class="form-group col-md-12">
                 <label asp-for="Observaciones" class="control-label"></label>
                 <input asp-for="Observaciones" class="form-control" style="text-transform:uppercase" />

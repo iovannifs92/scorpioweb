@@ -21,17 +21,10 @@
     var listFamiliarReferencia = new Array;
     var listDomSec = new Array;
     var listFamExtranjero = new Array;
+    var listaSimilitud = new Array;
       
     $(document).ready(function () {
         //#region centro penitenciario
-        $("#sinocentropenitenciario").change(function () {
-                if ($(this).val() === "SI") {
-                    $("#lugarInternamientoDiv").show();
-                } else {
-                    $("#lugarInternamientoDiv").hide();
-                    $("#centropenitenciario").val("NA");
-                }
-            });
              var centrosPenitenciarios = @Html.Raw(Json.Serialize(ViewBag.centrosPenitenciarios));
             $("#centropenitenciario").autocomplete({
                 source: centrosPenitenciarios
@@ -159,20 +152,7 @@
         //#endregion
 
         //#region -Modales-
-        $("#consumoSustancias").change(function () {
-            document.getElementById("sustancia").value = 'ALCOHOL';
-            document.getElementById("frecuenciaS").value = 'DIARIO';
-            document.getElementById("cantidadS").value = '';
-            document.getElementById("ultimoConsumo").value = '';
-            document.getElementById("observacionesConsumo").value = '';
-            var opcion = $(this).children("option:selected").val();
-            if (opcion == "SI") {
-                $('#modalConsumoSustancias').modal('show')
-            }
-            else {
-                $('#modalConsumoSustancias').modal('hidden')
-            }
-        });
+
         $("#cuentaDomicilioSecundario").change(function () {
             var opcion = $(this).children("option:selected").val();
             //alert("opcion: "+opcion);
@@ -478,7 +458,6 @@
             listFamExtranjero.push(observaciones);
 
 
-            alert(listFamExtranjero);
             $('#arrayFamExtranjero').val(JSON.stringify(listFamExtranjero));
             alert("Datos Guardados con éxito");
 
@@ -660,7 +639,7 @@
                 $("#tipoOcupacion").css("display", "block");
                 $("#puesto").css("display", "block");
                 $("#empleadorJefe").css("display", "block");
-                $("#enteradoProceso").css("display", "block");
+                $("#enteradoProcesoT").css("display", "block");
                 $("#sePuedeEnterar").css("display", "block");
                 $("#tiempoTrabajandoT").css("display", "block");
                 $("#salarioT").css("display", "block");
@@ -673,7 +652,7 @@
                 $("#tipoOcupacion").css("display", "none");
                 $("#puesto").css("display", "none");
                 $("#empleadorJefe").css("display", "none");
-                $("#enteradoProceso").css("display", "none");
+                $("#enteradoProcesoT").css("display", "none");
                 $("#sePuedeEnterar").css("display", "none");
                 $("#tiempoTrabajandoT").css("display", "none");
                 $("#salarioT").css("display", "none");
@@ -681,6 +660,160 @@
                 $("#direccionTT").css("display", "none");
                 $("#horarioTT").css("display", "none");
                 $("#telefonoTT").css("display", "none");
+            }
+        });
+        $('#consumoSustancias').change(function () {
+            document.getElementById("sustancia").value = 'ALCOHOL';
+            document.getElementById("frecuenciaS").value = 'DIARIO';
+            document.getElementById("cantidadS").value = '';
+            document.getElementById("ultimoConsumo").value = '';
+            document.getElementById("observacionesConsumo").value = '';
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $('#modalConsumoSustancias').modal('show')
+                $("#TratamientoAdiccionesA").css("display", "block");
+                $("#CuandoConsumeA").css("display", "block");
+            }
+            else {
+                $("#TratamientoAdiccionesA").css("display", "none");
+                $("#CualTratamientoAdiccionesA").css("display", "none");
+                $("#CualTratamientoAdicciones").val("NA");
+                 $("#CuandoConsumeA").css("display", "none");
+                $('#modalConsumoSustancias').modal('hidden')
+                $("#TratamientoAdiccionesA").css("display", "none");
+                $("#CualTratamientoAdiccionesA").css("display", "none");
+                $("#CualTratamientoAdicciones").val("NA");
+
+            }
+        });
+        $('#TratamientoAdicciones').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualTratamientoAdiccionesA").css("display", "block");
+                $("#TratamientoAdiccionesA").removeClass("col-md-12");
+                $("#TratamientoAdiccionesA").addClass("col-md-6");
+            }
+            else {
+                $("#CualTratamientoAdiccionesA").css("display", "none");
+                $("#CualTratamientoAdicciones").val("NA");
+                $("#TratamientoAdiccionesA").removeClass("col-md-6");
+                $("#TratamientoAdiccionesA").addClass("col-md-12");
+            }
+        });
+        $('#PropuestaLaboral').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualPropuestaT").css("display", "block");
+                $("#PropuestaLaboralT").removeClass("col-md-12");
+                $("#PropuestaLaboralT").addClass("col-md-6");
+            }
+            else {
+                $("#CualPropuestaT").css("display", "none"); 
+                $("#CualPropuesta").val("NA");
+                $("#PropuestaLaboralT").removeClass("col-md-6");
+                $("#PropuestaLaboralT").addClass("col-md-12");
+            }
+        });        
+        
+        $('#Capacitacion').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualCapacitacionT").css("display", "block");
+                $("#CapacitacionT").removeClass("col-md-12");
+                $("#CapacitacionT").addClass("col-md-6");
+            }
+            else {
+                $("#CualCapacitacionT").css("display", "none");
+                $("#CualCapacitacion").val("NA");
+                $("#CapacitacionT").removeClass("col-md-6");
+                $("#CapacitacionT").addClass("col-md-12");
+            }
+        });
+        $("#sinocentropenitenciario").change(function () {
+            if ($(this).val() === "SI") {
+                 $("#lugarInternamientoDiv").show();
+                $("#AntesdeCentroT").css("display", "block");
+                $("#TrabajoCentroT").css("display", "block");
+                $("#CursoAcademicoE").css("display", "block");
+                $("#ActividadesDepCulCentroA").css("display", "block");
+
+            } else {
+                $("#lugarInternamientoDiv").hide();
+                $("#centropenitenciario").val("NA");
+                $("#AntesdeCentroT").css("display", "none");
+                $("#TrabajoCentroT").css("display", "none");
+                $("#AntesdeCentro").val("NA");
+                $("#CursoAcademicoE").css("display", "none");
+                $("#CualCursoAcademicoE").css("display", "none");
+                $("#CualCursoAcademico").val("NA");
+                $("#CualTrabajoCentroT").css("display", "none");
+                $("#CualTrabajoCentro").val("NA"); 
+                $("#ActividadesDepCulCentroA").css("display", "none");
+                $("#CualActividadesDepCulCentroA").css("display", "none");
+                $("#CualActividadesDepCulCentro").val("NA");
+
+            }
+        });
+        $('#CursoAcademico').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualCursoAcademicoE").css("display", "block");
+                $("#CursoAcademicoE").removeClass("col-md-12");
+                $("#CursoAcademicoE").addClass("col-md-6");
+            }
+            else {
+                $("#CualCursoAcademicoE").css("display", "none");
+                $("#CursoAcademicoE").removeClass("col-md-6");
+                $("#CursoAcademicoE").addClass("col-md-12");
+                $("#CursoAcademico").val("NA");
+               
+            }
+        });
+
+
+        $('#TrabajoCentro').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualTrabajoCentroT").css("display", "block");
+                $("#TrabajoCentroT").removeClass("col-md-12");
+                $("#TrabajoCentroT").addClass("col-md-6");
+            }
+            else {
+                $("#CualTrabajoCentroT").css("display", "none");
+                $("#CualTrabajoCentro").val("NA");
+                $("#TrabajoCentroT").removeClass("col-md-6");
+                $("#TrabajoCentroT").addClass("col-md-12");
+               
+            }
+        });
+
+        $('#ActividadesDepCulCentro').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualActividadesDepCulCentroA").css("display", "block");
+                $("#ActividadesDepCulCentroA").removeClass("col-md-12");
+                $("#ActividadesDepCulCentroA").addClass("col-md-6");
+            }
+            else {
+                $("#CualActividadesDepCulCentroA").css("display", "none");
+                $("#CualActividadesDepCulCentro").val("NA");
+                $("#ActividadesDepCulCentroA").removeClass("col-md-6");
+                $("#ActividadesDepCulCentroA").addClass("col-md-12");
+               
+            }
+        });
+        $('#DeseaDepCul').change(function () {
+            var consume = $(this).children("option:selected").val();
+            if (consume == "SI") {
+                $("#CualDeseaDepCulA").css("display", "block");
+                $("#DeseaDepCulA").removeClass("col-md-12");
+                $("#DeseaDepCulA").addClass("col-md-6");
+            }
+            else {
+                $("#CualDeseaDepCulA").css("display", "none");
+                $("#CualDeseaDepCul").val("NA");
+                $("#DeseaDepCulA").removeClass("col-md-6");
+                $("#DeseaDepCulA").addClass("col-md-12");    
             }
         });
         //#endregion
@@ -696,6 +829,9 @@
             e.preventDefault();
             var consumoSustancias = document.getElementById('consumoSustancias');
             consumoSustancias.value = 'NO';
+            $("#TratamientoAdiccionesA").css("display", "none");
+            $("#CualTratamientoAdiccionesA").css("display", "none");
+            $("#CualTratamientoAdicciones").val("NA");
         });
         $('#btnCloseDS').on("click", function (e) {
             e.preventDefault();
@@ -944,7 +1080,6 @@
                 $('#tblSimilitud').html('');
                 var row = '';
                 if (response.lista.length == 0) {
-                    //alert("No se encontro ningún registro que coincida")
                     return;
                 }
                 for (let i = 0; i < response.lista.length; i++) {
@@ -954,6 +1089,7 @@
                         row = row + "<tr style='background-color: #FFF'>>"
                     }
                     row = row
+                        + "<td><input type='checkbox' onclick='unirCURS(\"" + response.lista[i].tabla + "\", " + response.lista[i].id + ")'></td>"
                         + "<td>" + response.lista[i].id + "</td>"
                         + "<td>" + response.lista[i].nombre + "</td>"
                         + "<td>" + response.lista[i].tabla + "</td>"
@@ -989,6 +1125,36 @@
             }
         });
     }
+
+    var arr = [];
+    function unirCURS(tabla, id) {
+        var encontro = false;
+        var index = -1;
+        // Busca si ya existe un objeto con el mismo id y tabla en la lista
+        for (var i = 0; i < listaSimilitud.length; i++) {
+            if (listaSimilitud[i].id === id && listaSimilitud[i].tabla === tabla) {
+                encontro = true;
+                index = i;
+                break;
+            }
+        }
+
+        // Si no se encuentra, se agrega el nuevo objeto a la lista
+        if (!encontro) {
+            listaSimilitud.push(id, tabla);
+            listaSimilitud.push(tabla);
+        } else { // Si se encuentra, se elimina del array
+            listaSimilitud.splice(index, 1);
+        }
+
+        // Convertir la lista a una cadena JSON
+        var datosJson = JSON.stringify(listaSimilitud);
+
+        // Asignar la cadena JSON al campo oculto en el formulario
+        document.getElementById("datosArray").value = datosJson;
+        alert(listaSimilitud)
+    }
+
 
     function formatDate(dateString) {
         if (dateString == null) {
@@ -1265,6 +1431,7 @@
                                     <input hidden name="arrayFamiliarReferencia" id="arrayFamiliarReferencia" type="text" />
                                     <input hidden name="arrayDomSec" id="arrayDomSec" type="text" />
                                     <input hidden name="arrayFamExtranjero" id="arrayFamExtranjero" type="text" />
+                                    <input hidden name="datosArray" id="datosArray" type="text"  />
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="control-label">Apellido paterno</label>
@@ -1437,6 +1604,27 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
+                                @if (ViewBag.UserCL == true)
+                                {
+                                    <div class="form-group col-md-12" style="display:none" id="TratamientoAdiccionesA">
+                                        <label class="control-label">¿Se encuentra en algún tratamiento contra las adicciones?</label>
+                                        <select class="form-control" name="TratamientoAdicciones" id="TratamientoAdicciones">
+                                            <option value="NO">No</option>
+                                            <option value="SI">Si</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6" style="display:none" id="CualTratamientoAdiccionesA">
+                                        <label class="control-label">¿Cual Tratamiento?</label>
+                                        <input name="CualTratamientoAdicciones" id="CualTratamientoAdicciones" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-12" style="display:none" id="CuandoConsumeA">
+                                        <label class="control-label">¿Cuando consume, llega a estado de ebriedad o desorientación ?</label>
+                                        <select class="form-control" name="CuandoConsume" id="CuandoConsume">
+                                            <option value="NO">No</option>
+                                            <option value="SI">Si</option>
+                                        </select>
+                                    </div>
+                                }
                                 <div class="form-group col-md-12">
                                     <label class="control-label">Añadir Familiares</label>
                                     <select class="form-control" name="Familiares" id="Familiares">
@@ -1451,7 +1639,6 @@
                                         <option value="SI">Si</option>
                                     </select>
                                 </div>
-                                
                             </div>
                         </div>
                         <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1741,7 +1928,27 @@
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" id="telefonoE" name="telefonoE" type="text" class="form-control" />
                                 </div>
-                                
+                                @if(ViewBag.UserCL == true)
+                                {
+                                <div class="form-group col-md-12" id="CursoAcademicoE" style="display:none">
+                                    <label class="control-label">¿Curso algún nivel académico dentro del centro?</label>
+                                    <select class="form-control" name="CursoAcademico" id="CursoAcademico">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="CualCursoAcademicoE" style="display:none">
+                                    <label class="control-label">¿Cual?</label>
+                                    <input maxlength="150" name="CualCursoAcademico" id="CualCursoAcademico" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-12" id="DeseaConcluirEstudiosE" >
+                                    <label class="control-label">¿Desea seguir con sus estudios?</label>
+                                    <select class="form-control" name="DeseaConcluirEstudios" id="DeseaConcluirEstudios">
+                                        <option value="NO">No</option>
+                                        <option value="SI">Si</option>
+                                    </select>
+                                </div>
+                                }
                                 <div class="form-group" style="padding-left:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="200" class="form-control" rows="2" name="observaciones" id="observacionesE"></textarea>
@@ -1803,7 +2010,7 @@
                                         <option value="NO">No</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-12" id="tiempoTrabajandoT" style="display:none">
+                                <div class="form-group col-md-6" id="tiempoTrabajandoT" style="display:none">
                                     <label class="control-label">Tiempo</label>
                                     <select class="form-control" name="tiempoTrabajando" id="tiempoTrabajando">
                                         <option value="MAS DE 10 AÑOS">Más de 10 años</option>
@@ -1830,24 +2037,67 @@
                                         <option value="MENSUAL">Mensual</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-12" id="direccionTT" style="display:none">
+                                <div class="form-group col-md-6" id="direccionTT" style="display:none">
                                     <label class="control-label">Dirección</label>
                                     <input maxlength="150" name="direccionT" id="direccionT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="horarioTT style="display:none">
+                                <div class="form-group col-md-6" id="horarioTT" style="display:none">
                                     <label class="control-label">Horario de trabajo</label>
                                     <input maxlength="100" name="horarioT" id="horarioT" type="text" class="form-control" />
                                 </div>
-                                <div class="form-group col-md-6" id="telefonoTT" style="display:none">
+                                <div class="form-group col-md-12" id="telefonoTT" style="display:none">
                                     <label class="control-label">Teléfono (10 dígitos)</label>
                                     <input maxlength="10" name="telefonoT" id="telefonoT" type="text" class="form-control" />
+                                </div>     
+                                @if (ViewBag.UserCL == true)
+                                {
+                                    <div class="form-group col-md-12" id="ConocimientoHabilidadT">
+                                        <label class="control-label">¿Cuales consideras que son tus mejores habilidades o conocimientos que te ayuden a generar un ingreso económico?</label>
+                                        <input maxlength="150" name="ConocimientoHabilidad" id="ConocimientoHabilidad" type="text" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-12" id="PropuestaLaboralT" >
+                                        <label class="control-label">¿Cuentas con una propuesta laboral actualmente?</label>
+                                        <select class="form-control" name="PropuestaLaboral" id="PropuestaLaboral">
+                                            <option value="NO">NO</option>
+                                            <option value="SI">SI</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6" id="CualPropuestaT" style="display:none">
+                                        <label class="control-label">¿Donde?</label>
+                                        <input maxlength="150" name="CualPropuesta" id="CualPropuesta" type="text" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-12" id="AntesdeCentroT" style="display:none">
+                                        <label class="control-label">¿A que se dedicaba antes de ingresar al centro penitenciario?</label>
+                                        <input maxlength="150" name="AntesdeCentro" id="AntesdeCentro" type="text" class="form-control" />
+                                    </div>     
+                                    <div class="form-group col-md-12" id="TrabajoCentroT" style="display:none">
+                                        <label class="control-label">¿Realizo algún trabajo dentro del centro?</label>
+                                        <select class="form-control" name="TrabajoCentro" id="TrabajoCentro">
+                                            <option value="NO">NO</option>
+                                            <option value="SI">SI</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6" id="CualTrabajoCentroT" style="display:none">
+                                        <label class="control-label">¿Cual?</label>
+                                        <input maxlength="150" name="CualTrabajoCentro" id="CualTrabajoCentro" type="text" class="form-control" />
+                                    </div>
+                                }
+                                <div class="form-group col-md-12" id="CapacitacionT" >
+                                    <label class="control-label">¿Le gustaría recibir capacitación para algún empleo?</label>
+                                    <select class="form-control" name="Capacitacion" id="Capacitacion">
+                                        <option value="NO">NO</option>
+                                        <option value="SI">SI</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" id="CualCapacitacionT" style="display:none">
+                                    <label class="control-label">¿Cual?</label>
+                                    <input maxlength="150" name="CualCapacitacion" id="CualCapacitacion" type="text" class="form-control" />
                                 </div>
                                 <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observaciones">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesT" id="observacionesT"></textarea>
                                     <small class="form-text text-muted">En caso de que no trabaje o que tenga un segundo trabajo anotarlo aquí</small>
                                 </div>
-
                             </div>
                         </div>
                         <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;">
@@ -1885,11 +2135,37 @@
                                     <label class="control-label">Especificar persona de referencia</label>
                                     <input maxlength="100" name="referenciaAS" id="referenciaAS" type="text" class="form-control" />
                                 </div>
+                                @if (ViewBag.UserCL == true)
+                                {
+                                    <div class="form-group col-md-12" id="ActividadesDepCulCentroA" style="display:none">
+                                        <label class="control-label">¿Participo en actividades deportivas y/o culturales dentro?</label>
+                                        <select class="form-control" name="ActividadesDepCulCentro" id="ActividadesDepCulCentro">
+                                            <option value="NO">No</option>
+                                            <option value="SI">Si</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6" id="CualActividadesDepCulCentroA" style="display:none">
+                                        <label class="control-label">Especificar actividad</label>
+                                        <input maxlength="100" name="CualActividadesDepCulCentro" id="CualActividadesDepCulCentro" type="text" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-12" id="DeseaDepCulA">
+                                        <label class="control-label">¿le gustaria paricipar en actividades deportivas y/o culturales?</label>
+                                        <select class="form-control" name="DeseaDepCul" id="DeseaDepCul">
+                                            <option value="NO">No</option>
+                                            <option value="SI">Si</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6" id="CualDeseaDepCulA" style="display:none">
+                                        <label class="control-label">Especificar actividad</label>
+                                    <input maxlength="100" name="CualDeseaDepCul" id="CualDeseaDepCul" type="text" class="form-control" />
+                                </div>
+                                }
                                 <div class="form-group" style="padding-left:15px;padding-right:15px;">
                                     <label class="control-label" for="observacionesAS">Observaciones</label>
                                     <textarea maxlength="300" class="form-control" rows="2" name="observacionesAS" id="observacionesAS"></textarea>
                                     <small class="form-text text-muted">En caso de tener alguna otra actividad mencionarlo aquí</small>
                                 </div>
+
                             </div>
                         </div>
                         <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
@@ -2053,6 +2329,7 @@
                 <div class="custom-file col-md-12" style="margin-bottom:20px">
                     <input required type="file" class="custom-file-input" id="fotografia" name="fotografia" accept="image/*" lang="es">
                 </div>
+
                 <div class="form-group col-xs-12" style="padding-left:0%">
                     <button class="btn btn-primary" id="btnSave" name="btnSave">
                         <i class="fa fa-save"></i> Guardar
@@ -2374,12 +2651,13 @@
                     <table class="table" name="" id="">
                         <thead>
                             <tr>
+                                <th>Unir</th>
                                 <th>Id</th>
                                 <th>Nombre</th>
                                 <th>Tabla</th>
                                 <th>Dato Extra</th>
                                 <th>Foto</th>
-                                <th></th>
+                                <th>Usar/Ver</th>
                             </tr>
                         </thead>
                         <tbody id="tblSimilitud">

@@ -2003,20 +2003,20 @@ namespace scorpioweb.Controllers
             string resolucion, string centropenitenciario, string ce, string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
             string lnEstado, string CURS, string CURSUsada, string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
-            string propiedades, string CURP, string consumoSustancias, string familiares, string referenciasPersonales, string ubicacionExpediente, string colaboracion,
+            string propiedades, string CURP, string consumoSustancias, string TratamientoAdicciones, string CualTratamientoAdicciones, string CuandoConsume, string familiares, string referenciasPersonales, string ubicacionExpediente, string colaboracion,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
             string residenciaHabitual, int cp, string referencias, string horario, string observaciones, string lat, string lng, string cuentaDomicilioSecundario,
             /*string motivoDS, string tipoDomicilioDS, string calleDS, string noDS, string nombreCFDS, string paisDDS, string estadoDDS, string municipioDDS, string temporalidadDS,*/
             string residenciaHabitualDS, string cpDS, string referenciasDS, string horarioDS, string observacionesDS,
-            string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE,
-            string trabaja, string tipoOcupacion, string puesto, string empleadorJefe, string enteradoProceso, string sePuedeEnterar, string tiempoTrabajando,
+            string estudia, string gradoEstudios, string institucionE, string horarioE, string direccionE, string telefonoE, string observacionesE, string CursoAcademico, string CualCursoAcademico, string DeseaConcluirEstudios,
+            string trabaja, string tipoOcupacion, string puesto, string empleadorJefe, string enteradoProceso, string sePuedeEnterar, string tiempoTrabajando, string PropuestaLaboral, string CualPropuesta, string Capacitacion, string CualCapacitacion, string AntesdeCentro, string TrabajoCentro, string CualTrabajoCentro,
             string salario, string temporalidadSalario, string direccionT, string horarioT, string telefonoT, string observacionesT,
-            string tipoActividad, string horarioAS, string lugarAS, string telefonoAS, string sePuedeEnterarAS, string referenciaAS, string observacionesAS,
+            string tipoActividad, string horarioAS, string lugarAS, string telefonoAS, string sePuedeEnterarAS, string referenciaAS, string observacionesAS, string ActividadesDepCulCentro, string CualActividadesDepCulCentro, string DeseaDepCul, string CualDeseaDepCul,
             string vividoFuera, string lugaresVivido, string tiempoVivido, string motivoVivido, string viajaHabitual, string lugaresViaje, string tiempoViaje,
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string inputAutocomplete)
+            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string inputAutocomplete, string datosArray)
         {
 
             string currentUser = User.Identity.Name;
@@ -2492,8 +2492,8 @@ namespace scorpioweb.Controllers
                             var_curs = CURSUsada;
                         }
 
-                        string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                        _context.Database.ExecuteSqlCommand(query);
+
+                        
                     }
                     else
                     {
@@ -2574,6 +2574,8 @@ namespace scorpioweb.Controllers
                     personacl.Propiedades = mg.normaliza(propiedades);
                     personacl.Curp = mg.normaliza(CURP);
                     personacl.ConsumoSustancias = mg.normaliza(consumoSustancias);
+                    personacl.TratamientoAdicciones = mg.normaliza(TratamientoAdicciones);
+                    personacl.CualTratamientoAdicciones = mg.normaliza(CualTratamientoAdicciones);
                     personacl.Familiares = mg.normaliza(familiares);
                     personacl.ReferenciasPersonales = mg.normaliza(referenciasPersonales);
                     personacl.UbicacionExpediente = mg.normaliza(ubicacionExpediente);
@@ -2582,6 +2584,7 @@ namespace scorpioweb.Controllers
                     personacl.Candado = 0;
                     personacl.MotivoCandado = "NA";
                     personacl.Centropenitenciario = mg.normaliza(centropenitenciario);
+                    personacl.CuandoConsume = mg.normaliza(CuandoConsume);
                     personacl.Sinocentropenitenciario = sinocentropenitenciario;
                     personacl.Colaboracion = mg.normaliza(colaboracion);
                     if (CURSUsada != null)
@@ -2677,6 +2680,10 @@ namespace scorpioweb.Controllers
                     estudioscl.Direccion = mg.normaliza(direccionE);
                     estudioscl.Telefono = telefonoE;
                     estudioscl.Observaciones = mg.normaliza(observacionesE);
+                    estudioscl.CualCursoAcademico = mg.normaliza(CualCursoAcademico);
+                    estudioscl.DeseaConcluirEstudios = mg.normaliza(DeseaConcluirEstudios);
+                    estudioscl.CursoAcademico = mg.normaliza(CursoAcademico);
+
                     #endregion
 
                     #region -Trabajo-
@@ -2692,6 +2699,13 @@ namespace scorpioweb.Controllers
                     trabajocl.Horario = mg.normaliza(horarioT);
                     trabajocl.Telefono = telefonoT;
                     trabajocl.Observaciones = mg.normaliza(observacionesT);
+                    trabajocl.PropuestaLaboral = mg.normaliza(PropuestaLaboral);
+                    trabajocl.CualPropuesta = mg.normaliza(CualPropuesta);
+                    trabajocl.Capacitacion = mg.normaliza(Capacitacion);
+                    trabajocl.CualCapacitacion = mg.normaliza(CualCapacitacion);
+                    trabajocl.AntesdeCentro = mg.normaliza(AntesdeCentro);
+                    trabajocl.TrabajoCentro = mg.normaliza(TrabajoCentro);
+                    trabajocl.CualTrabajoCentro = mg.normaliza(CualTrabajoCentro);
                     #endregion
 
                     #region -ActividadSocial-
@@ -2702,6 +2716,10 @@ namespace scorpioweb.Controllers
                     actividadsocialcl.SePuedeEnterar = sePuedeEnterarAS;
                     actividadsocialcl.Referencia = mg.normaliza(referenciaAS);
                     actividadsocialcl.Observaciones = mg.normaliza(observacionesAS);
+                    actividadsocialcl.ActividadesDepCulCentro = mg.normaliza(ActividadesDepCulCentro);
+                    actividadsocialcl.CualActividadesDepCulCentro = mg.normaliza(CualActividadesDepCulCentro);
+                    actividadsocialcl.DeseaDepCul = mg.normaliza(DeseaDepCul);
+                    actividadsocialcl.CualDeseaDepCul = mg.normaliza(CualDeseaDepCul);
                     #endregion
 
                     #region -AbandonoEstado-
@@ -2917,20 +2935,54 @@ namespace scorpioweb.Controllers
                     #endregion
 
                     #region -Expediente Unico-
+
+                    string var_tablanueva = "";
+                    string var_tablaSelect = "";
+                    string var_tablaCurs = "";
+                    int var_idnuevo = 0;
+                    int var_idSelect = 0;
+
                     if (idselecionado != null && tabla != null)
                     {
-                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
-                        string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                        string var_tablaCurs = "ClaveUnicaScorpio";
-                        int var_idnuevo = idPersonacl;
-                        int var_idSelect = Int32.Parse(idselecionado);
+                         var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
+                         var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                         var_tablaCurs = "ClaveUnicaScorpio";
+                         var_idnuevo = idPersonacl;
+                         var_idSelect = Int32.Parse(idselecionado);
                         string var_curs = CURS;
                         if (CURSUsada != null)
                         {
                             var_curs = CURSUsada;
                         }
+
                         string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                         _context.Database.ExecuteSqlCommand(query);
+
+                        if (datosArray != null)
+                        {
+                            JArray simiArr = JArray.Parse(datosArray);
+                            for (int i = 0; i < simiArr.Count; i = i + 2)
+                            {
+                                string var_idSelectt = "";
+                                var_idSelectt = simiArr[i].ToString();
+                                var_tablaSelect = mg.normaliza(simiArr[i + 1].ToString());
+                                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
+                                var_tablaCurs = "ClaveUnicaScorpio";
+                                var_idnuevo = idPersonacl;
+                                var_curs = CURS;
+                                if (CURSUsada != null)
+                                {
+                                    var_curs = CURSUsada;
+                                }
+
+                                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                                _context.Database.ExecuteSqlCommand(query2);
+
+                            }
+                        }
+
+                        //string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                        //_context.Database.ExecuteSqlCommand(query);
                     }
                     else
                     {
@@ -2956,7 +3008,7 @@ namespace scorpioweb.Controllers
                             }
                         }
                     }
-                    #endregion 
+                    #endregion
 
                     #region -Añadir a contexto-
                     _context.Add(personacl); //Sirve
@@ -2970,10 +3022,6 @@ namespace scorpioweb.Controllers
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                     return RedirectToAction("RegistroConfirmation/" + personacl.IdPersonaCl, "Personas");
                     #endregion
-
-
-
-
                 }
             }
             return View();

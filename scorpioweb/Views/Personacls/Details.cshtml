@@ -34,16 +34,43 @@
         rutaFoto = item.personaclVM.RutaFoto;
     }
 
+@*    @if (User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
+    {
+         <div class="table-responsive-lg">
+            <div class="container">
+                <div class="row" style="text-align:center; padding-top:1%">
+                    <img src="~/Fotoscl/@rutaFoto" class="img-thumbnail" width="200" height="200">
+                    <h2>@item.personaclVM.Paterno @item.personaclVM.Materno @item.personaclVM.Nombre</h2>
+                </div>
+                <div class="col-lg-3">
+                    <h4>Causa Penal: @item.personaclVM.Centropenitenciario </h4>
+                </div>
+                <div class="col-lg-3">
+                    <h4>Delito: @item.personaclVM.Centropenitenciario </h4>
+                </div>
+                <div class="col-lg-3">
+                    <h4>Beneficio: @item.personaclVM.Centropenitenciario </h4>
+                </div>
+                <div class="col-lg-3">
+                    <h4>Tiempo de Supervision: @item.personaclVM.Centropenitenciario </h4>
+                </div>
+            </div>
+            
+         </div>
 
+    }
+    else
+    {*@
     <div class="table-responsive-lg">
         <div class="container">
-
             <div class="row" style="text-align:center; padding-top:1%">
                 <img src="~/Fotoscl/@rutaFoto" class="img-thumbnail" width="200" height="200">
                 <h2>@item.personaclVM.Paterno @item.personaclVM.Materno @item.personaclVM.Nombre</h2>
+                @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminCL") || User.IsInRole("SupervisorLC"))
+                {
                 <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personacls", new { id = @item.personaclVM.IdPersonaCl, ruta="detalles" }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaclVM.IdPersonaCl)" class="btn btn-success">
                     <i class="fa fa-pencil"></i> Editar Foto
-                </a>
+                </a>}
             </div>
             <div class="panel-group">
                 <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
@@ -433,9 +460,10 @@
         </div>
     </div>
     break;
+  
 }
 <br />
-<div>
+<div class="col-lg-12">
     <a class="btn btn-link" asp-action="Index">
         Regresar a lista de usuarios
     </a>

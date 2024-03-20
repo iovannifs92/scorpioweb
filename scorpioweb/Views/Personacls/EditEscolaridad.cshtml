@@ -12,7 +12,6 @@
     $(document).ready(function () {      
         
         if (ActualmenteEstudia == "SI") {
-            $("#DivEstudiaSiNo").removeClass("col-md-3").addClass("col-md-12");
             $("#DivGradoEstudios").css("display", "block");         
             $("#DivInstitucionE").css("display", "block");
             $("#DivHorario").css("display", "block");
@@ -29,7 +28,6 @@
         $("#Estudia").change(function () {
             var dat = $(this).children("option:selected").val();
             if (dat == "SI") {
-
                 $("#DivGradoEstudios").css("display", "block");
                 $("#DivEstudiaSiNo").removeClass("col-md-3").addClass("col-md-12");
                 $("#DivInstitucionE").css("display", "block");
@@ -40,13 +38,51 @@
             }
             else {
                 $("#DivEstudiaSiNo").removeClass("col-md-12").addClass("col-md-3");
-              
                 $("#DivInstitucionE").css("display", "none");
                 $("#DivHorario").css("display", "none");
                 $("#DivDireccion").css("display", "none");
                 $("#DivTelefono").css("display", "none");
             }
         });
+
+        if ('@ViewBag.siNoCentro' == "SI"){
+            $("#CursoAcademicoE").css("display", "block");
+            $("#CualCursoAcademicoE").css("display", "block");
+            $("#CursoAcademicoE").removeClass("col-md-12").addClass("col-md-6");
+        }else{
+            $("#CursoAcademicoE").css("display", "none");
+            $("#CursoAcademicoE").removeClass("col-md-6").addClass("col-md-12");
+            $("#CualCursoAcademicoE").css("display", "none");
+            //$("#CualCursoAcademico").val("NA");
+        }
+
+        $("#CursoAcademico").change(function () {
+            if ($(this).val() === "SI") {
+                $("#CualCursoAcademicoE").css("display", "block");
+                $("#CursoAcademicoE").removeClass("col-md-12");
+                $("#CursoAcademicoE").addClass("col-md-6");
+            } else {
+                $("#CualCursoAcademicoE").css("display", "none");
+                $("#CursoAcademicoE").removeClass("col-md-6");
+                $("#CursoAcademicoE").addClass("col-md-12");
+                $("#CualCursoAcademico").val("NA");
+            }
+        });
+
+
+        //#region Cusro academico
+        var ct = document.getElementById("CursoAcademico")
+        if (ct.value == "SI") {
+            $("#CualCursoAcademicoE").css("display", "block");
+            $("#CursoAcademicoE").removeClass("col-md-12");
+            $("#CursoAcademicoE").addClass("col-md-6");
+        } else {
+            $("#CualCursoAcademicoE").css("display", "none");
+            $("#CursoAcademicoE").removeClass("col-md-6");
+            $("#CursoAcademicoE").addClass("col-md-12");
+
+        }
+        //#endregion
 
     });
 </script>
@@ -61,13 +97,13 @@
             <input type="hidden" asp-for="IdEstudiosCl" />
             <input type="hidden" asp-for="PersonaClIdPersonaCl">
             
-            <div class="form-group col-md-3" id="DivGradoEstudios">
+            <div class="form-group col-md-6" id="DivGradoEstudios">
                 <label class="control-label">Último grado de estudios</label>
                 <select class="form-control" name="GradoEstudios"
                         asp-items="@(new SelectList(ViewBag.listaGradoEstudios, "Value", "Text", @ViewBag.idGradoEstudios))">
                 </select>
             </div>
-            <div class="form-group col-md-3" id="DivEstudiaSiNo">
+            <div class="form-group col-md-6" id="DivEstudiaSiNo">
                 <label class="control-label">¿Actualmente estudia?</label>
                 <select class="form-control" name="Estudia" id="Estudia"
                         asp-items="@(new SelectList(ViewBag.listaEstudia, "Value", "Text", @ViewBag.idEstudia))">
@@ -96,6 +132,25 @@
                 <input asp-for="Telefono" type="tel" pattern="[0-9]{10}" maxlength="10" class="form-control" id="TelefonoText" />
                 <span asp-validation-for="Telefono" class="text-danger"></span>           
             </div>
+
+            <div class="form-group col-md-12" id="CursoAcademicoE" style="display:none">
+                <label class="control-label">¿Curso algún nivel académico dentro del centro?</label>
+                <select class="form-control" name="CursoAcademico" id="CursoAcademico"
+                        asp-items="@(new SelectList(ViewBag.listaCursoAcademico, "Value", "Text", @ViewBag.idCursoAcademico))">
+                </select>
+            </div>
+            <div class="form-group col-md-6" id="CualCursoAcademicoE" style="display:none">
+                <label class="control-label">¿Cual Curso?</label>
+                <input asp-for="CualCursoAcademico" type="text" class="form-control" name="CualCursoAcademico" id="CualCursoAcademico" />
+                <span asp-validation-for="CualCursoAcademico" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-12" id="DeseaConcluirEstudiosE">
+                <label class="control-label">¿Desea seguir con sus estudios?</label>
+                <select class="form-control" name="DeseaConcluirEstudios" id="DeseaConcluirEstudios"
+                        asp-items="@(new SelectList(ViewBag.listaDeseaConcluirEstudios, "Value", "Text", @ViewBag.idDeseaConcluirEstudios))">
+                </select>
+            </div>
+
             <div class="form-group col-md-12" id="DivObservaciones">
                 <label asp-for="Observaciones" class="control-label"></label>
                 <input asp-for="Observaciones" class="form-control" style="text-transform:uppercase" />
