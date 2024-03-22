@@ -9,6 +9,114 @@
 @* Necesario para los modales en el servidor *@
 <script src="~/js/jquery-1.11.1.min.js"></script>
 <script>
+
+
+    $(document).ready(function () {
+
+        if ($("#selectINE").val() == "NO") {
+            $("#divINE").css("display", "block");
+        }
+
+        if ($("#selectAsesoria").val() == "SI") {
+            $("#divAsesoria").css("display", "block");
+        }
+        $("#inputRelacionPH").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'RelacionPH');
+            }
+        });
+
+        $("#inputRelacionMPH").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'RelacionMPH');
+            }
+        });
+        $("#inputSienteEmocionalmente").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'SienteEmocionalmente');
+
+            }
+        });
+
+        $("#inputINE").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'INE');
+            }
+        });
+        $("#inputAsesoria").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'Asesoria');
+            }
+        });
+
+        $("#selectApoyoPsicologico").change(function () {
+            $("#selectApoyoPsicologico").blur(function () {
+                var inputValue = $(this).val();
+                if (inputValue != "") {
+                    AjaxVinculacion(inputValue, 'selectApoyoPsicologico');
+                }
+            });
+        });
+
+        $("#selectINE").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'selectINE');
+            }
+        });
+        $("#selectAsesoria").blur(function () {
+            var inputValue = $(this).val();
+            if (inputValue != "") {
+                AjaxVinculacion(inputValue, 'selectAsesoria');
+            }
+        });
+
+        $("#selectINE").change(function () {
+            if ($(this).val() === "NO") {
+                $("#divINE").css("display", "block");
+            } else {
+                $("#divINE").css("display", "none");
+                $("#inputINE").val("NA");
+            }
+        });
+
+
+        $("#selectAsesoria").change(function () {
+            if ($(this).val() === "SI") {
+                $("#divAsesoria").css("display", "block");
+
+            } else {
+                $("#divAsesoria").css("display", "none");
+                $("#inputAsesoria").val("NA");
+            }
+        });
+
+        function AjaxVinculacion(valor, NombreCampo) {
+            var idPersonaCL = document.getElementById("idPersonaCL").value;
+
+            $.ajax({
+                dataType: "json",
+                url: "/Personacls/PsicologiaVinculacion",
+                type: "POST",
+                data: { valor: valor, NombreCampo: NombreCampo, idPersonaCL: idPersonaCL },
+                success: function (response) {
+                    console.log("Response from server:", response);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
+        };
+    });
+
+
+
+
     showModal = (url, title, id) => {
         $.ajax({
             type: "GET",
@@ -19,11 +127,12 @@
                 $("#form-modal").modal('show');
             },
             error: function (res) {
-
+            
             }
         })
     }
 </script>
+
 
 @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaclsViewModal>)
 {
@@ -34,7 +143,7 @@
         rutaFoto = item.personaclVM.RutaFoto;
     }
 
-@*    @if (User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
+    @*    @if (User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
     {
          <div class="table-responsive-lg">
             <div class="container">
@@ -55,7 +164,7 @@
                     <h4>Tiempo de Supervision: @item.personaclVM.Centropenitenciario </h4>
                 </div>
             </div>
-            
+
          </div>
 
     }
@@ -65,14 +174,26 @@
         <div class="container">
             <div class="row" style="text-align:center; padding-top:1%">
                 <img src="~/Fotoscl/@rutaFoto" class="img-thumbnail" width="200" height="200">
+
                 <h2>@item.personaclVM.Paterno @item.personaclVM.Materno @item.personaclVM.Nombre</h2>
+                @if (!item.personaclVM.Alias.Equals("NA") && !item.personaclVM.Alias.Equals("") && User.IsInRole("Vinculacion"))
+                {
+                    <h3>Alias: @item.personaclVM.Alias</h3>
+                }
+                else
+                {
+                    <h3>Sin alias</h3>
+                }
+
                 @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminCL") || User.IsInRole("SupervisorLC"))
                 {
-                <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personacls", new { id = @item.personaclVM.IdPersonaCl, ruta="detalles" }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaclVM.IdPersonaCl)" class="btn btn-success">
-                    <i class="fa fa-pencil"></i> Editar Foto
-                </a>}
+                    <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personacls", new { id = @item.personaclVM.IdPersonaCl, ruta="detalles" }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaclVM.IdPersonaCl)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar Foto
+                    </a>
+                }
             </div>
             <div class="panel-group">
+
                 <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
                     <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
                         <h4 class="panel-title">
@@ -81,12 +202,15 @@
                     </div>
                     <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
                         <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloDG">Nombre del padre</td>
-                                <td style="background-color: white; color: black">@item.personaclVM.NombrePadre</td>
-                                <td class="estiloDG">Nombre de la madre</td>
-                                <td style="background-color: white; color: black">@item.personaclVM.NombreMadre</td>
-                            </tr>
+                            @if (!User.IsInRole("Vinculacion"))
+                            {
+                                <tr>
+                                    <td class="estiloDG">Nombre del padre</td>
+                                    <td style="background-color: white; color: black">@item.personaclVM.NombrePadre</td>
+                                    <td class="estiloDG">Nombre de la madre</td>
+                                    <td style="background-color: white; color: black">@item.personaclVM.NombreMadre</td>
+                                </tr>
+                            }
                             <tr>
                                 <td class="estiloDG">Género</td>
                                 <td style="background-color: white; color: black">@item.personaclVM.Genero</td>
@@ -99,84 +223,173 @@
                                 <td class="estiloDG">Lugar de nacimiento</td>
                                 <td style="background-color: white; color: black">@ViewBag.lnmunicipio, @ViewBag.lnestado, @item.personaclVM.Lnpais  </td>
                             </tr>
-                            <tr>
-                            </tr>
+                            @if (User.IsInRole("Vinculacion"))
+                            {
+                                <tr>
+                                    <td class="estiloDG">Nacionalidad</td>
+                                    <td style="background-color: white; color: black">@item.personaclVM.Lnpais</td>
+                                    <td class="estiloDG"> - - - - - - - - - - - </td>
+                                    <td style="background-color: white; color: black"></td>
+                                </tr>
+                            }
                             <tr>
                                 <td class="estiloDG" style="width:25%">Estado Civil</td>
                                 <td style="width:25%; background-color: white; color: black">@item.personaclVM.EstadoCivil</td>
-                                <td class="estiloDG" style="width:25%">Duración</td>
-                                <td style="width:25%; background-color: white; color: black">@item.personaclVM.Duracion</td>
+                                @if (item.personaclVM.EstadoCivil.Equals("SOLTERO(A)") || item.personaclVM.EstadoCivil.Equals("soltero (a)"))
+                                {
+                                    <td class="estiloDG" style="width:25%"> - - - - - - - - - - - </td>
+                                    <td style="width:25%; background-color: white; color: black"></td>
+                                }
+                                else
+                                {
+                                    <td class="estiloDG" style="width:25%">Duración</td>
+                                    <td style="width:25%; background-color: white; color: black">@item.personaclVM.Duracion</td>
+                                }
                             </tr>
                             <tr>
                                 <td class="estiloDG" style="width:25%">Habla otro idioma</td>
                                 <td style="width:25%; background-color: white; color: black">@item.personaclVM.OtroIdioma</td>
-                                <td class="estiloDG" style="width:25%">Especifique</td>
-                                <td style="width:25%; background-color: white; color: black">@item.personaclVM.EspecifiqueIdioma</td>
+                                @if (item.personaclVM.OtroIdioma.Equals("SI"))
+                                {
+                                    <td class="estiloDG" style="width:25%">Especifique</td>
+                                    <td style="width:25%; background-color: white; color: black">@item.personaclVM.EspecifiqueIdioma</td>
+                                }
+                                else
+                                {
+                                    <td class="estiloDG" style="width:25%"> - - - - - - - - - - - </td>
+                                    <td style="width:25%; background-color: white; color: black"></td>
+                                }
                             </tr>
                             <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Sabe Leer y escribir</td>
-                                <td colspan="3">@item.personaclVM.LeerEscribir</td>
+                                <td class="estiloDG" style="width:25%">Sabe Leer y escribir</td>
+                                <td style="width:25%; background-color: white; color: black">@item.personaclVM.LeerEscribir</td>
+
+                                <td class="estiloDG" style="width:25%"> - - - - - - - - - - - </td>
+                                <td style="width:25%; background-color: white; color: black"></td>
                             </tr>
                             <tr>
                                 <td class="estiloDG" style="width:25%">Requiere traductor</td>
                                 <td style="width:25%">@item.personaclVM.Traductor</td>
-                                <td class="estiloDG" style="width:25%">Especifique</td>
-                                <td style="width:25%">@item.personaclVM.EspecifiqueTraductor</td>
+                                @if (item.personaclVM.Traductor.Equals("SI"))
+                                {
+                                    <td class="estiloDG" style="width:25%">Especifique</td>
+                                    <td style="width:25%">@item.personaclVM.EspecifiqueTraductor</td>
+                                }
+                                else
+                                {
+                                    <td class="estiloDG" style="width:25%"> - - - - - - - - - - - </td>
+                                    <td style="width:25%; background-color: white; color: black"></td>
+                                }
                             </tr>
                             <tr>
                                 <td class="estiloDG" style="width:25%">Teléfono fijo</td>
-                                <td style="width:25%">@item.personaclVM.TelefonoFijo</td>
+                                <td style="width:25%">
+                                    <script>
+                                        var telefonoFijo = '@item.personaclVM.TelefonoFijo';
+                                        document.write(telefonoFijo ? telefonoFijo : 'No disponible');
+                                    </script>
+                                </td>
                                 <td class="estiloDG" style="width:25%">Celular</td>
-                                <td style="width:25%">@item.personaclVM.Celular</td>
+                                <td style="width:25%">
+                                    <script>
+                                        var telefonoCelular = '@item.personaclVM.Celular';
+                                        document.write(telefonoCelular ? telefonoCelular : 'No disponible');
+                                    </script>
+                                </td>
                             </tr>
-                            <tr>
-                                <td class="estiloDG" style="width:25%">Hijos</td>
-                                <td style="width:25%">@item.personaclVM.Hijos</td>
-                                <td class="estiloDG" style="width:25%">Cuantos</td>
-                                <td style="width:25%">@item.personaclVM.Nhijos</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Con cuantas personas vive</td>
-                                <td colspan="3">@item.personaclVM.NpersonasVive</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Cuenta con propiedades en otra localidad</td>
-                                <td colspan="3">@item.personaclVM.Propiedades</td>
-                            </tr>
+                            @if (!User.IsInRole("Vinculacion"))
+                            {
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Hijos</td>
+                                    <td style="width:25%">@item.personaclVM.Hijos</td>
+                                    <td class="estiloDG" style="width:25%">Cuantos</td>
+                                    <td style="width:25%">@item.personaclVM.Nhijos</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Con cuantas personas vive</td>
+                                    <td colspan="3">@item.personaclVM.NpersonasVive</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Cuenta con propiedades en otra localidad</td>
+                                    <td colspan="3">@item.personaclVM.Propiedades</td>
+                                </tr>
+                            }
+
                             <tr>
                                 <td class="estiloDG" colspan="1" style="width:25%">CURP</td>
                                 <td colspan="3">@item.personaclVM.Curp</td>
                             </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Consume sustancias o drogas</td>
-                                <td colspan="2">@item.personaclVM.ConsumoSustancias</td>
+
+                            @if (User.IsInRole("Vinculacion"))
+                            {
+                                <tr>
+                                    <td colspan="4">
+                                        <h4 style="text-align: center; font-weight:bold;">Consumo de sustancias</h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Consume sustancias o drogas</td>
+                                    <td style="width:25%">@item.personaclVM.ConsumoSustancias</td>
+                                    @if (@item.personaclVM.ConsumoSustancias == "SI")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalConsumoSustancias">Ver sustancias</a>
+                                        </td>
+                                    }
+                                </tr>
                                 @if (@item.personaclVM.ConsumoSustancias == "SI")
                                 {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalConsumoSustancias">Ver sustancias</a>
-                                    </td>
+                                    <tr>
+                                        <td class="estiloDG" style="width:25%">¿Lleva algun tratamiento contra las adicciones?</td>
+                                        <td style="width:25%">
+                                            <script>
+                                                var tratamientoAdicciones = '@item.personaclVM.TratamientoAdicciones'
+                                                document.write(tratamientoAdicciones ? tratamientoAdicciones : 'No disponible');
+                                            </script>
+                                        </td>
+                                        <td class="estiloDG" style="width:25%">¿Cuando consume, llega a un estado de embriaguez o desorientacion?</td>
+                                        <td style="width:25%">
+                                            <script>
+                                                var cuandoConsume = '@item.personaclVM.CuandoConsume'
+                                                document.write(cuandoConsume ? cuandoConsume : 'No disponible');
+                                            </script>
+                                        </td>
+                                    </tr>
                                 }
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Familiares</td>
-                                <td colspan="2">@ViewBag.Familiar</td>
-                                @if (ViewBag.Familiar != "0")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalFamiliares">Ver familiares</a>
-                                    </td>
-                                }
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Referencias</td>
-                                <td colspan="2">@ViewBag.Referencia</td>
-                                @if (ViewBag.Referencia != "0")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalReferencias">Ver referencias</a>
-                                    </td>
-                                }
-                            </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Consume sustancias o drogas</td>
+                                    <td style="width:25%">@item.personaclVM.ConsumoSustancias</td>
+                                    @if (@item.personaclVM.ConsumoSustancias == "SI")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalConsumoSustancias">Ver sustancias</a>
+                                        </td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Familiares</td>
+                                    <td colspan="2">@ViewBag.Familiar</td>
+                                    @if (ViewBag.Familiar != "0")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalFamiliares">Ver familiares</a>
+                                        </td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Referencias</td>
+                                    <td colspan="2">@ViewBag.Referencia</td>
+                                    @if (ViewBag.Referencia != "0")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalReferencias">Ver referencias</a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
                         </table>
                     </div>
                 </div>
@@ -189,20 +402,21 @@
                     </div>
                     <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
                         <table class="table table-bordered">
+
                             <tr>
                                 <td class="estiloDomicilio" colspan="1" style="width:25%">La propiedad es</td>
                                 <td colspan="3">@item.domicilioclVM.TipoDomicilio</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1">Dirección</td>
-                                <td colspan="2">@item.domicilioclVM.Calle @item.domicilioclVM.No, @item.domicilioclVM.NombreCf @item.domicilioclVM.Cp, @ViewBag.municipio, @ViewBag.estado, @item.domicilioclVM.Pais</td>
-                                <td colspan="1"><a href="https://www.google.com.mx/maps/place/ @item.domicilioclVM.Calle @item.domicilioclVM.No, @item.domicilioclVM.NombreCf, @ViewBag.municipio, @ViewBag.estado" target="_blank">Ir al Mapa</a></td>
                             </tr>
                             <tr>
                                 <td class="estiloDomicilio" style="width:25%">Tiempo viviendo en el domicilio</td>
                                 <td style="width:25%">@item.domicilioclVM.Temporalidad</td>
                                 <td class="estiloDomicilio" style="width:25%">Es su residencia habitual</td>
                                 <td style="width:25%">@item.domicilioclVM.ResidenciaHabitual</td>
+                            </tr>
+                            <tr>
+                                <td class="estiloDomicilio" colspan="1">Dirección</td>
+                                <td colspan="2">@item.domicilioclVM.Calle @item.domicilioclVM.No, @item.domicilioclVM.NombreCf @item.domicilioclVM.Cp, @ViewBag.municipio, @ViewBag.estado, @item.domicilioclVM.Pais</td>
+                                <td colspan="1"><a href="https://www.google.com.mx/maps/place/ @item.domicilioclVM.Calle @item.domicilioclVM.No, @item.domicilioclVM.NombreCf, @ViewBag.municipio, @ViewBag.estado" target="_blank">Ir al Mapa</a></td>
                             </tr>
                             <tr>
                                 <td class="estiloDomicilio" colspan="1" style="width:25%">Referencias del domicilio</td>
@@ -240,26 +454,54 @@
                     <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
                         <table class="table table-bordered">
                             <tr>
-                                <td class="estiloEstudios">Actualmente estudia</td>
-                                <td>@item.estudiosclVM.Estudia</td>
                                 <td class="estiloEstudios">Último grado de estudios</td>
-                                <td>@item.estudiosclVM.GradoEstudios</td>
+                                <td colspan="4">@item.estudiosclVM.GradoEstudios</td>
+
                             </tr>
+                            @if (item.estudiosclVM.Estudia.Equals("SI"))
+                            {
+                                <tr>
+                                    <td class="estiloEstudios">Actualmente estudia</td>
+                                    <td>@item.estudiosclVM.Estudia</td>
+                                    <td class="estiloEstudios">Institución</td>
+                                    <td>@item.estudiosclVM.InstitucionE</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloEstudios">Horarios</td>
+                                    <td>@item.estudiosclVM.Horario</td>
+                                    <td class="estiloEstudios">Dirección</td>
+                                    <td>@item.estudiosclVM.Direccion</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloEstudios">Teléfono</td>
+                                    <td>@item.estudiosclVM.Telefono</td>
+                                    <td class="estiloEstudios" style="width:25%">¿Desea concluir sus estudios?</td>
+                                    <td style="width:25%">
+                                        <script>
+                                            var deseaConcluirEstudios = '@item.estudiosclVM.DeseaConcluirEstudios'
+                                            document.write(deseaConcluirEstudios ? deseaConcluirEstudios : 'No disponible');
+                                        </script>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="estiloEstudios">Actualmente estudia</td>
+                                    <td style="width:25%">@item.estudiosclVM.Estudia</td>
+                                    <td class="estiloEstudios" style="width:25%">¿Desea concluir sus estudios?</td>
+                                    <td style="width:25%">
+                                        <script>
+                                            var deseaConcluirEstudios = '@item.estudiosclVM.DeseaConcluirEstudios'
+                                            document.write(deseaConcluirEstudios ? deseaConcluirEstudios : 'No disponible');
+                                        </script>
+                                    </td>
+                                </tr>
+                            }
+
                             <tr>
-                                <td class="estiloEstudios">Institución</td>
-                                <td>@item.estudiosclVM.InstitucionE</td>
-                                <td class="estiloEstudios">Horarios</td>
-                                <td>@item.estudiosclVM.Horario</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloEstudios">Dirección</td>
-                                <td>@item.estudiosclVM.Direccion</td>
-                                <td class="estiloEstudios">Teléfono</td>
-                                <td>@item.estudiosclVM.Telefono</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloEstudios" colspan="1" style="width:25%">Observaciones</td>
-                                <td colspan="3">@item.estudiosclVM.Observaciones</td>
+                                <td class="estiloEstudios" style="width:25%">Observaciones</td>
+                                <td colspan="4">@item.estudiosclVM.Observaciones</td>
                             </tr>
                         </table>
                     </div>
@@ -274,46 +516,151 @@
                     <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
                         <table class="table table-bordered">
                             <tr>
-                                <td class="estiloTrabajo">Trabaja actualmente</td>
-                                <td>@item.trabajoclVM.Trabaja</td>
-                                <td class="estiloTrabajo">Tipo de ocupación</td>
-                                <td>@item.trabajoclVM.TipoOcupacion</td>
+                                <td colspan="4">
+                                    <h4 style="text-align: center; font-weight:bold;">Actualmente</h4>
+                                </td>
                             </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Puesto</td>
-                                <td>@item.trabajoclVM.Puesto</td>
-                                <td class="estiloTrabajo">Empleador/Jefe inmediato</td>
-                                <td>@item.trabajoclVM.EmpledorJefe</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Enterado de proceso</td>
-                                <td>@item.trabajoclVM.EnteradoProceso</td>
-                                <td class="estiloTrabajo">Se puede enterar</td>
-                                <td>@item.trabajoclVM.SePuedeEnterar</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo" colspan="1" style="width:25%">Tiempo trabajando</td>
-                                <td colspan="3">@item.trabajoclVM.TiempoTrabajano</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Salario</td>
-                                <td>$@item.trabajoclVM.Salario</td>
-                                <td class="estiloTrabajo">Temporalidad de pago</td>
-                                <td>@item.trabajoclVM.TemporalidadSalario</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo" colspan="1" style="width:25%">Dirección del trabajo</td>
-                                <td colspan="3">@item.trabajoclVM.Direccion</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Horario</td>
-                                <td>@item.trabajoclVM.Horario</td>
-                                <td class="estiloTrabajo">Teléfono</td>
-                                <td>@item.trabajoclVM.Telefono</td>
-                            </tr>
+                            @if (item.trabajoclVM.Trabaja.Equals("SI"))
+                            {
+                                <tr>
+                                    <td class="estiloTrabajo">Trabaja actualmente</td>
+                                    <td>@item.trabajoclVM.Trabaja</td>
+                                    <td class="estiloTrabajo">Tipo de ocupación</td>
+                                    <td>@item.trabajoclVM.TipoOcupacion</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Puesto</td>
+                                    <td>@item.trabajoclVM.Puesto</td>
+                                    <td class="estiloTrabajo">Empleador/Jefe inmediato</td>
+                                    <td>@item.trabajoclVM.EmpledorJefe</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Enterado de proceso</td>
+                                    <td>@item.trabajoclVM.EnteradoProceso</td>
+                                    <td class="estiloTrabajo">Se puede enterar</td>
+                                    <td>@item.trabajoclVM.SePuedeEnterar</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo" colspan="1" style="width:25%">Tiempo trabajando</td>
+                                    <td style="width:25%">@item.trabajoclVM.TiempoTrabajano</td>
+                                    <td class="estiloTrabajo">Salario</td>
+                                    <td style="width:25%">$@item.trabajoclVM.Salario</td>
+                                </tr>
+                                <tr>
+
+                                    <td class="estiloTrabajo">Temporalidad de pago</td>
+                                    <td>@item.trabajoclVM.TemporalidadSalario</td>
+                                    <td class="estiloTrabajo"> - - - - - - - - - - - </td>
+                                    <td style="width:25%"></td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo" colspan="1" style="width:25%">Dirección del trabajo</td>
+                                    <td colspan="3">@item.trabajoclVM.Direccion</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Horario</td>
+                                    <td>@item.trabajoclVM.Horario</td>
+                                    <td class="estiloTrabajo">Teléfono</td>
+                                    <td>@item.trabajoclVM.Telefono</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="estiloTrabajo">Trabaja actualmente</td>
+                                    <td colspan="2">@item.trabajoclVM.Trabaja</td>
+                                </tr>
+                            }
                             <tr>
                                 <td class="estiloTrabajo" colspan="1" style="width:25%">Observaciones</td>
                                 <td colspan="3">@item.trabajoclVM.Observaciones</td>
+                            </tr>
+                            @if (item.personaclVM.Sinocentropenitenciario == "SI")
+                            {
+
+                                <tr>
+                                    <td colspan="4">
+                                        <h4 style="text-align: center; font-weight:bold;">Confinamiento</h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo" colspan="1" style="width:25%">Trabajo antes de entrar al centro penitenciario</td>
+                                    @if (item.trabajoclVM.AntesdeCentro != null)
+                                    {
+                                        <td colspan="3">@item.trabajoclVM.AntesdeCentro</td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="3">No disponible</td>
+                                    }
+                                </tr>
+
+                                @if (item.trabajoclVM.TrabajoCentro == "SI")
+                                {
+                                    <td class="estiloTrabajo">¿Realizo algun trabajo dentro del centro?</td>
+                                    <td style="width:25%">@item.trabajoclVM.TrabajoCentro</td>
+                                    <td class="estiloTrabajo" style="width:25%">¿Que trabajo?</td>
+                                    <td style="width:25%">@item.trabajoclVM.CualTrabajoCentro</td>
+                                }
+                                else
+                                {
+                                    <td class="estiloTrabajo">¿Realizo algun trabajo dentro del centro?</td>
+                                    <td colspan="3">@item.trabajoclVM.TrabajoCentro</td>
+                                }
+                            }
+                            <tr>
+                                <td colspan="4">
+                                    <h4 style="text-align: center; font-weight:bold;">Aptitudes laborales</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="estiloTrabajo">Habilidades con las que cuenta a la hora de generar ingresos</td>
+                                <td colspan="3">
+                                    <script>
+                                        var conocimientoHabilidad = '@item.trabajoclVM.ConocimientoHabilidad'
+                                        document.write(conocimientoHabilidad ? conocimientoHabilidad : 'No disponible');
+                                    </script>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="estiloTrabajo" style="width:25%">¿Cuenta con alguna propuesta laboral?</td>
+                                <td style="width:25%">
+                                    <script>
+                                        var propuestaLaboral = '@item.trabajoclVM.PropuestaLaboral'
+                                        document.write(propuestaLaboral ? propuestaLaboral : 'No disponible');
+                                    </script>
+                                </td>
+                                @if (item.trabajoclVM.PropuestaLaboral == "SI")
+                                {
+                                    <td class="estiloTrabajo" style="width:25%">¿Que propuesta?</td>
+                                    <td style="width:25%">@item.trabajoclVM.CualPropuesta</td>
+                                }
+                                else
+                                {
+                                    <td class="estiloTrabajo" style="width:25%"> - - - - - - - - - - - </td>
+                                    <td style="width:25%"></td>
+                                }
+
+                            </tr>
+                            <tr>
+                                <td class="estiloTrabajo" style="width:25%">¿Le gustaria capacitarce en algun oficio?</td>
+                                <td style="width:25%">
+                                    <script>
+                                        var propuestaLaboral = '@item.trabajoclVM.Capacitacion'
+                                        document.write(propuestaLaboral ? propuestaLaboral : 'No disponible');
+                                    </script>
+                                </td>
+                                @if (item.trabajoclVM.Capacitacion == "SI")
+                                {
+                                    <td class="estiloTrabajo" style="width:25%">¿En que le gustaria capacitarse?</td>
+                                    <td style="width:25%">@item.trabajoclVM.CualCapacitacion</td>
+                                }
+                                else
+                                {
+                                    <td class="estiloTrabajo" style="width:25%"> - - - - - - - - - - - </td>
+                                    <td style="width:25%"></td>
+
+                                }
                             </tr>
                         </table>
                     </div>
@@ -353,61 +700,64 @@
                     </div>
                 </div>
 
-                <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
-                    <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Abandono Estado</a>
-                        </h4>
+                @if (!User.IsInRole("Vinculacion"))
+                {
+                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
+                        <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Abandono Estado</a>
+                            </h4>
+                        </div>
+                        <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Ha vivido en otro estado o país</td>
+                                    <td>@item.abandonoEstadoclVM.VividoFuera</td>
+                                    <td class="estiloAbandonoEstado">Lugares</td>
+                                    <td>@item.abandonoEstadoclVM.LugaresVivido</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Cada cuanto tiempo viaja</td>
+                                    <td>@item.abandonoEstadoclVM.TiempoVivido</td>
+                                    <td class="estiloAbandonoEstado">Motivo</td>
+                                    <td>@item.abandonoEstadoclVM.MotivoVivido</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Viaja habitualmente</td>
+                                    <td>@item.abandonoEstadoclVM.ViajaHabitual</td>
+                                    <td class="estiloAbandonoEstado">Lugares</td>
+                                    <td>@item.abandonoEstadoclVM.LugaresViaje</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Tiempo</td>
+                                    <td>@item.abandonoEstadoclVM.TiempoViaje</td>
+                                    <td class="estiloAbandonoEstado">Motivo</td>
+                                    <td>@item.abandonoEstadoclVM.MotivoViaje</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Cuenta con documentacipon</td>
+                                    <td>@item.abandonoEstadoclVM.DocumentacionSalirPais</td>
+                                    <td class="estiloAbandonoEstado">Pasaporte</td>
+                                    <td>@item.abandonoEstadoclVM.Pasaporte</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado" colspan="1" style="width:25%">VISA</td>
+                                    <td colspan="3">@item.abandonoEstadoclVM.Visa</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado" colspan="2" style="width:25%">Tiene familiares en otro estado o país con los que tenga comunicación estrecha</td>
+                                    <td colspan="1">@item.abandonoEstadoclVM.FamiliaresFuera</td>
+                                    @if (@item.abandonoEstadoclVM.FamiliaresFuera == "SI")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalFamiliaresForaneos">Ver Familiares</a>
+                                        </td>
+                                    }
+                                </tr>
+                            </table>
+                        </div>
                     </div>
-                    <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloAbandonoEstado">Ha vivido en otro estado o país</td>
-                                <td>@item.abandonoEstadoclVM.VividoFuera</td>
-                                <td class="estiloAbandonoEstado">Lugares</td>
-                                <td>@item.abandonoEstadoclVM.LugaresVivido</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Cada cuanto tiempo viaja</td>
-                                <td>@item.abandonoEstadoclVM.TiempoVivido</td>
-                                <td class="estiloAbandonoEstado">Motivo</td>
-                                <td>@item.abandonoEstadoclVM.MotivoVivido</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Viaja habitualmente</td>
-                                <td>@item.abandonoEstadoclVM.ViajaHabitual</td>
-                                <td class="estiloAbandonoEstado">Lugares</td>
-                                <td>@item.abandonoEstadoclVM.LugaresViaje</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Tiempo</td>
-                                <td>@item.abandonoEstadoclVM.TiempoViaje</td>
-                                <td class="estiloAbandonoEstado">Motivo</td>
-                                <td>@item.abandonoEstadoclVM.MotivoViaje</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Cuenta con documentacipon</td>
-                                <td>@item.abandonoEstadoclVM.DocumentacionSalirPais</td>
-                                <td class="estiloAbandonoEstado">Pasaporte</td>
-                                <td>@item.abandonoEstadoclVM.Pasaporte</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado" colspan="1" style="width:25%">VISA</td>
-                                <td colspan="3">@item.abandonoEstadoclVM.Visa</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado" colspan="2" style="width:25%">Tiene familiares en otro estado o país con los que tenga comunicación estrecha</td>
-                                <td colspan="1">@item.abandonoEstadoclVM.FamiliaresFuera</td>
-                                @if (@item.abandonoEstadoclVM.FamiliaresFuera == "SI")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalFamiliaresForaneos">Ver Familiares</a>
-                                    </td>
-                                }
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+                }
 
                 <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
                     <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;" data-toggle="collapse" href="#collapse7" onclick="mostrar">
@@ -453,14 +803,88 @@
                         </table>
                     </div>
                 </div>
+
+                @if (User.IsInRole("Vinculacion"))
+                {
+                    <h4 style="text-align: center; font-weight:bold;">Edicion Vinculacion</h4>
+                    <div id="editComplementoVinculacion" class="panel panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#373435; border-color:#373435;" data-toggle="collapse" href="#collapse8" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Vinculacion</a>
+                            </h4>
+                        </div>
+                        <div id="collapse8" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <input id="idPersonaCL" value="@item.personaclVM.IdPersonaCl" style="display:none;" />
+                                <div class="form-group" colspan="4">
+                                    <h4 style="text-align: center; font-weight:bold;">Desarrollo psicosocial</h4>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Como es la relacion con su pareja e hijas/hijos?</label>
+                                    <input class="form-control" id="inputRelacionPH" value="@ViewBag.PsicologiaVinculacion.RParejahijo" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Como es la relacion con su madre, padre y/o hermanas/os?</label>
+                                    <input class="form-control" id="inputRelacionMPH" value="@ViewBag.PsicologiaVinculacion.RPadremadre" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Como se siente emocionalmente?</label>
+                                    <input class="form-control" id="inputSienteEmocionalmente" value="@ViewBag.PsicologiaVinculacion.Emocionalmente" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Necesita apoyo psicologico?</label>
+
+                                    <select class="form-control" id="selectApoyoPsicologico">
+                                        <option selected>@ViewBag.PsicologiaVinculacion.ApoyoPsicologica</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Cuenta con su credencial de elector (INE) vigente?</label>
+                                    <select class="form-control" id="selectINE">
+                                        <option selected>@ViewBag.PsicologiaVinculacion.IneVigente</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" style="display:none;" id="divINE">
+                                    <label class="control-label">¿Requiere apoyo para tramitarla?</label>                            
+                                    <select class="form-control" id="inputINE">
+                                        <option selected>@ViewBag.PsicologiaVinculacion.ApoyoTramite</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">¿Requiere asesoria juridica?</label>
+                                    <select class="form-control" id="selectAsesoria">
+                                        <option selected>@ViewBag.PsicologiaVinculacion.AsesoriaJuri</option>
+                                        <option value="SI">Si</option>
+                                        <option value="NO">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6" style="display:none;" id="divAsesoria">
+                                    <label class="control-label">¿Que tipo de asesoria juridica?</label>
+                                    <input class="form-control" id="inputAsesoria" placeholder="NA" value="@ViewBag.PsicologiaVinculacion.CualAsesoriaJuri" />
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+
+                }
+
+
             </div>
         </div>
+
         <div class="col-md-12">
-            <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaclVM.IdPersonaCl" ><i class="fa fa-print"></i> Imprimir</a>
+            <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaclVM.IdPersonaCl"><i class="fa fa-print"></i> Imprimir</a>
         </div>
     </div>
     break;
-  
+
 }
 <br />
 <div class="col-lg-12">
@@ -468,6 +892,7 @@
         Regresar a lista de usuarios
     </a>
 </div>
+
 
 <!-- Modal Consumo de sustancias -->
 <div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
