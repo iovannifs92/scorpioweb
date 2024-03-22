@@ -26,6 +26,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2013.Word;
+using Newtonsoft.Json;
 
 namespace scorpioweb.Controllers
 {
@@ -367,7 +368,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Juzgado,TieneceAcumuladas,CeAcumuladas,Usuario,LugarInternamiento,EstadoActual,Encargado,FechaCarga")] Ejecucion ejecucion, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS)
+        public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Juzgado,TieneceAcumuladas,CeAcumuladas,Usuario,LugarInternamiento,EstadoActual,Encargado,FechaCarga")] Ejecucion ejecucion, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string datosArray)
         {
             if (ModelState.IsValid)
             {
@@ -385,7 +386,7 @@ namespace scorpioweb.Controllers
                 ejecucion.FechaCarga = DateTime.Now;
                 if(ejecucion.Juzgado == "JUZGADO 1")
                 {
-                    ejecucion.Encargado = "mitzy.robles@dgepms.com";
+                    ejecucion.Encargado = "uriel.ortega@dgepms.com";
                 }
                 else if(ejecucion.Juzgado == "JUZGADO 2")
                 {
@@ -407,17 +408,46 @@ namespace scorpioweb.Controllers
 
 
                 #region -Expediente Unico-
+                string var_tablanueva = "";
+                string var_tablaSelect = "";
+                string var_tablaCurs = "";
+                int var_idnuevo = 0;
+                int var_idSelect = 0;
+                string var_curs = "";
                 if (idselecionado != null && tabla != null)
                 {
-                    string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
-                    string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                    string var_tablaCurs = "ClaveUnicaScorpio";
-                    int var_idnuevo = idE;
-                    int var_idSelect = Int32.Parse(idselecionado);
-                    string var_curs = CURS;
+                    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
+                    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                    var_tablaCurs = "ClaveUnicaScorpio";
+                    var_idnuevo = idE;
+                    var_idSelect = Int32.Parse(idselecionado);
+                    var_curs = CURS;
                     ejecucion.ClaveUnicaScorpio = CURS;
                     string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                     _context.Database.ExecuteSqlCommand(query);
+
+                    if (datosArray != null)
+                    {
+                        List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+
+                        // Proyectar la lista para obtener solo los valores de id y tabla
+                        var resultados = listaObjetos.Select(obj => new {
+                            id = obj["id"],
+                            tabla = obj["tabla"]
+                        });
+
+                        foreach (var resultado in resultados)
+                        {
+                            var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
+                            var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+                            var_tablaCurs = "ClaveUnicaScorpio";
+                            var_idnuevo = idE;
+                            var_idSelect = Int32.Parse(resultado.id);
+
+                            string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                            _context.Database.ExecuteSqlCommand(query2);
+                        }
+                    }
                 }
                 #endregion
 

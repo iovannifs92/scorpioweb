@@ -274,27 +274,70 @@ namespace scorpioweb.Controllers
         {
             var usuario = await userManager.FindByNameAsync(User.Identity.Name);
             String users = usuario.ToString();
-   
-
-
             string currentUser = User.Identity.Name;
-
-            causapenal.Cnpp = cnpp;
-            causapenal.Juez = mg.normaliza(juez);
-            causapenal.Distrito = distrito;
-            causapenal.Cambio = cambio;
-            causapenal.CausaPenal = mg.normaliza(cp);
-            causapenal.Fechacreacion = DateTime.Now;
-            causapenal.Usuario = users;
 
             if (cp == null)
             {
-                return Json(new { success = true, registrar = false });
+                return Json(new { success = false, registrar = false, mensaje = "La causa penal esta vacia!!" });
             }
             else
             {
                 if (ModelState.IsValid)
-                {         
+                {
+
+                    causapenal.Cnpp = cnpp;
+                    causapenal.Juez = mg.normaliza(juez);
+                    causapenal.Distrito = distrito;
+                    causapenal.Cambio = cambio;
+                    causapenal.CausaPenal = mg.normaliza(cp);
+                    causapenal.Fechacreacion = DateTime.Now;
+                    causapenal.Usuario = users;
+
+                    List<Causapenal> listaCP = new List<Causapenal>();
+                    List<Causapenal> CPVM = _context.Causapenal.ToList();
+                    listaCP = (
+                        from CPTable in CPVM
+                        select CPTable
+                        ).ToList();
+
+                    var numerosNuevos = cp.Split("/");
+
+
+                    var matches = "";
+                    for (int i = 0; i < listaCP.Count(); i++)
+                    {
+                        var numeros = listaCP[i].CausaPenal.Split("/");
+                        try
+                        {
+                            if (numerosNuevos.Length == numeros.Length)
+                            {
+                                int j = 0;
+                                for (; j < numeros.Length; j++)
+                                    if (Int32.Parse(numerosNuevos[j]) != Int32.Parse(numeros[j]))
+                                        break;
+                                if (j == numeros.Length)
+                                {
+                                    if (distrito == listaCP[i].Distrito && juez == listaCP[i].Juez)
+                                    {
+                                        matches += listaCP[i].CausaPenalCompleta + "\n";
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            var a = ex;
+                        }
+
+                    }
+
+                    if (matches.Length != 0)
+                    {
+                        return Json(new { success = false, registrar = false, mensaje = "La causa penal ya existe!!" });
+
+                    }
+
+
                     int idCausaPenal = ((from table in _context.Causapenal
                                          select table.IdCausaPenal).Max()) + 1;
                     causapenal.IdCausaPenal = idCausaPenal;

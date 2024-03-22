@@ -4,7 +4,9 @@
     Layout = null;
 }
 
-<script>    
+<script>
+
+    var listaSimilitud = new Array;
     function Create() {
         var id = document.getElementById("idarchivo").value;
         var nombre = document.getElementById("nombreee").value;
@@ -15,6 +17,7 @@
         var CURS = document.getElementById("CURS").value;
         var tabla = document.getElementById("tabla").value;
         var idselecionado = document.getElementById("idselecionado").value;
+        var datosArray = document.getElementById("datosArray").value;
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -27,9 +30,10 @@
                 am: am,
                 yo: yo,
                 condicion: condicion,
-                    CURS: CURS,
-                    tabla: tabla,
-                    idselecionado: idselecionado
+                CURS: CURS,
+                tabla: tabla,
+                idselecionado: idselecionado,
+                datosArray: datosArray
             },
             success: function (response) {
                  if (response.create == false) {
@@ -74,6 +78,7 @@
                     }
                     row = row
                         + "<tr>"
+                        + "<td><input type='checkbox' onclick='unirCURS(\"" + response.lista[i].tabla + "\", " + response.lista[i].id + ")'></td>"
                         + "<td>" + response.lista[i].id + "</td>"
                         + "<td>" + response.lista[i].nombre + "</td>"
                         + "<td>" + response.lista[i].tabla + "</td>"
@@ -107,6 +112,30 @@
         });
     };
 
+
+    function unirCURS(tabla, id) {
+        var encontro = false;
+        var index = -1;
+        // Busca si ya existe un objeto con el mismo id y tabla en la lista
+        for (var i = 0; i < listaSimilitud.length; i++) {
+            if (listaSimilitud[i].id === id && listaSimilitud[i].tabla === tabla) {
+                encontro = true;
+                index = i;
+                break;
+            }
+        }
+        // Si no se encuentra, se agrega el nuevo objeto a la lista
+        if (!encontro) {
+            listaSimilitud.push({ id, tabla });
+        } else { // Si se encuentra, se elimina del array
+            listaSimilitud.splice(index, 1);
+        }
+        // Convertir la lista a una cadena JSON
+        var datosJson = JSON.stringify(listaSimilitud);
+
+        // Asignar la cadena JSON al campo oculto en el formulario
+        document.getElementById("datosArray").value = datosJson;
+    }
 
     function buscarDatos(nombre) {
         //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor",
@@ -179,6 +208,7 @@
             <input readonly type="hidden" id="CURS" name="CURS" type="text" maxlength="18" class="form-control" />
             <input readonly type="hidden" id="tabla" name="tabla" type="text" maxlength="18" class="form-control" />
             <input readonly type="hidden" id="idselecionado" name="idselecionado" type="text" maxlength="18" class="form-control" />
+            <input hidden name="datosArray" id="datosArray" type="text" />
             <a type="button" class="btn btn-primary" id="Guardar" title="Guardar" onclick="Create()">
                  <i class="fa fa-save"></i> Guardar 
             </a>
@@ -203,6 +233,7 @@
                     <table class="table" name="" id="">
                         <thead>
                             <tr>
+                                <th>Unir</th>
                                 <th>Id</th>
                                 <th>Nombre</th>
                                 <th>Tabla</th>

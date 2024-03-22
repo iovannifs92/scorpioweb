@@ -6,6 +6,8 @@
 
 <script type="text/javascript">
 
+    var listaSimilitud = new Array;
+
     $(document).ready(function () {
         var items = "<option value='0'>Sin municipio</option>";
         $('#lnMunicipio').html(items);
@@ -226,6 +228,7 @@
                     }
                     row = row
                         + "<tr>"
+                        + "<td><input type='checkbox' onclick='unirCURS(\"" + response.lista[i].tabla + "\", " + response.lista[i].id + ")'></td>"
                         + "<td>" + response.lista[i].id + "</td>"
                         + "<td>" + response.lista[i].nombre + "</td>"
                         + "<td>" + response.lista[i].tabla + "</td>"
@@ -259,6 +262,29 @@
         });
     };
 
+
+    function unirCURS(tabla, id) {
+        var encontro = false;
+        var index = -1;
+        // Busca si ya existe un objeto con el mismo id y tabla en la lista
+        for (var i = 0; i < listaSimilitud.length; i++) {
+            if (listaSimilitud[i].id === id && listaSimilitud[i].tabla === tabla) {
+                encontro = true;
+                index = i;
+                break;
+            }
+        }
+        // Si no se encuentra, se agrega el nuevo objeto a la lista
+        if (!encontro) {
+            listaSimilitud.push({ id, tabla });
+        } else { // Si se encuentra, se elimina del array
+            listaSimilitud.splice(index, 1);
+        }
+        // Convertir la lista a una cadena JSON
+        var datosJson = JSON.stringify(listaSimilitud);
+        // Asignar la cadena JSON al campo oculto en el formulario
+        document.getElementById("datosArray").value = datosJson;
+    }
 
     function buscarDatos(nombre) {
         //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor", 
@@ -489,6 +515,7 @@
                 <input readonly type="hidden" id="CURSUsada" name="CURSUsada" type="text" class="form-control" />
                 <input readonly type="hidden" id="tabla" name="tabla" type="text" class="form-control" />
                 <input readonly type="hidden" id="idselecionado" name="idselecionado" type="text" class="form-control" />
+                <input hidden name="datosArray" id="datosArray" type="text" />
                 <div class="custom-file">
                     <label class="control-label">Reporte Técnico</label>
                     <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
@@ -517,6 +544,7 @@
                     <table class="table" name="" id="">
                         <thead>
                             <tr>
+                                <th>Unir</th>
                                 <th>Id</th>
                                 <th>Nombre</th>
                                 <th>Tabla</th>

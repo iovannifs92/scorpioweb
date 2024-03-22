@@ -15,5 +15,12 @@ namespace scorpioweb.Models
         public string CausaPenal { get; set; }
         public DateTime? Fechacreacion { get; set; }
         public string Usuario { get; set; }
+        public string CausaPenalCompleta
+        {
+            get
+            {
+                return this.CausaPenal + ", Distrito " + this.Distrito + ", " + this.Juez;
+            }
+        }
     }
 }

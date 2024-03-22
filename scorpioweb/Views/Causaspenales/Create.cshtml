@@ -113,63 +113,60 @@
             var distrito = document.getElementById("distrito").value;
             var cp = document.getElementById("cp").value;
 
-            var numerosNuevos = cp.split("/");
-            cpc = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.cp))');
-            matches = "";
-            for (let i = 0; i < cpc.length; i++)
-            {
-                var numeros = cpc[i].causaPenal.split("/");
-                if (numerosNuevos.length == numeros.length)
-                {
-                    let j = 0;
-                    for (; j < numeros.length; j++)
-                        if (parseInt(numerosNuevos[j]) != parseInt(numeros[j]))
-                            break;
-                    if (j == numeros.length)
-                    {
-                        if (distrito === cpc[i].distrito && juez === cpc[i].juez)
-                        {
-                            matches += cpc[i].causaPenalCompleta + "\n";
-                        }
-                    }
-                }
-            }
-            if (matches === "") {
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: "/Causaspenales/Create",
-                    traditional: true,
-                    data: {
-                        juez, Cambio, distrito, cp,
-                    },
-                    success: function (response) {
-                            if (response.registrar == false) {
-                                alert("Campo de Causa penal Vacio");
-                                return;
-                            }else{
-                                var msg = confirm("¿Desea seguir con la asignación?");
-                                if (msg == true) {
-                                    if (response.success) {
-                                        window.location.href = response.responseText;
-                                    } else {
-                                        alert(response.responseText);
-                                    }
+            //var numerosNuevos = cp.split("/");
+         
+            //cpc = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.cp))');
+            //matches = "";
+
+            //for (let i = 0; i < cpc.length; i++)
+            //{
+            //    var numeros = cpc[i].causaPenal.split("/");
+            //    if (numerosNuevos.length == numeros.length)
+            //    {
+            //        let j = 0;
+            //        for (; j < numeros.length; j++)
+            //            if (parseInt(numerosNuevos[j]) != parseInt(numeros[j]))
+            //                break;
+            //        if (j == numeros.length)
+            //        {
+            //            if (distrito === cpc[i].distrito && juez === cpc[i].juez)
+            //            {
+            //                matches += cpc[i].causaPenalCompleta + "\n";
+            //            }
+            //        }
+            //    }
+            //}
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Causaspenales/Create",
+                traditional: true,
+                data: {
+                    juez, Cambio, distrito, cp,
+                },
+                success: function (response) {
+                    if (response.success == false) {
+                            alert(response.mensaje);
+                            return;
+                        }else{
+                            var msg = confirm("¿Desea seguir con la asignación?");
+                            if (msg == true) {
+                                if (response.success) {
+                                    window.location.href = response.responseText;
                                 } else {
-                                    window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
+                                    alert(response.responseText);
                                 }
+                            } else {
+                                window.location.replace("http://10.6.60.190/Causaspenales/ListadeCausas");
                             }
-                    },
-                    error: function (response) {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                    }
-                });
-            }
-            else
-            {
-                matches = "Esta causa penal ya se encuentran dentro del sistema\n\n" + matches;
-                alert(matches);
-            }
+                        }
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                }
+            });
+           
         });
 
         function autocomplete(inp, arr) {

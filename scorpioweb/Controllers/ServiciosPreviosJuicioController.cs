@@ -18,6 +18,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using scorpioweb.Class;
 using F23.StringSimilarity;
+using Newtonsoft.Json;
 
 namespace scorpioweb.Controllers
 {
@@ -369,7 +370,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,ClaveUnicaScorpio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones, FechaNacimiento, LnMunicipio, LnEstado,LnPais")] Serviciospreviosjuicio serviciospreviosjuicio, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string CURSUsada)
+        public async Task<IActionResult> Create(IFormFile evidencia, [Bind("Nombre,Paterno,Materno,Sexo,Edad,Calle,Colonia,Domicilio,ClaveUnicaScorpio,Telefono,Papa,Mama,Ubicacion,Delito,UnidadInvestigacion,FechaDetencion,Situacion,RealizoEntrevista,TipoDetenido,Aer,Tamizaje,Rcomparesencia,Rvictima,Robstaculizacion,Recomendacion,Antecedentes,AntecedentesDatos,Observaciones, FechaNacimiento, LnMunicipio, LnEstado,LnPais")] Serviciospreviosjuicio serviciospreviosjuicio, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string CURSUsada, string datosArray)
         {
             int idAER = 0;
             serviciospreviosjuicio.Nombre = mg.normaliza(serviciospreviosjuicio.Nombre);
@@ -443,20 +444,54 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -Expediente Unico-
+
+            string var_tablanueva = "";
+            string var_tablaSelect = "";
+            string var_tablaCurs = "";
+            int var_idnuevo = 0;
+            int var_idSelect = 0;
+            string var_curs = "";
+
             if (idselecionado != null && tabla != null)
             {
-                string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("ServiciosPrevios"));
-                string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                string var_tablaCurs = "ClaveUnicaScorpio";
-                int var_idnuevo = idAER;
-                int var_idSelect = Int32.Parse(idselecionado);
-                string var_curs = CURS;
+                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("ServiciosPrevios"));
+                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                var_tablaCurs = "ClaveUnicaScorpio";
+                var_idnuevo = idAER;
+                var_idSelect = Int32.Parse(idselecionado);
+                var_curs = CURS;
                 if (CURSUsada != null)
                 {
                     var_curs = CURSUsada;
                 }
                 string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                 _context.Database.ExecuteSqlCommand(query);
+
+
+                if (datosArray != null)
+                {
+                    List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+
+                    // Proyectar la lista para obtener solo los valores de id y tabla
+                    var resultados = listaObjetos.Select(obj => new {
+                        id = obj["id"],
+                        tabla = obj["tabla"]
+                    });
+
+                    foreach (var resultado in resultados)
+                    {
+                        var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("ServiciosPrevios"));
+                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+                        var_tablaCurs = "ClaveUnicaScorpio";
+                        var_idnuevo = idAER;
+                        var_idSelect = Int32.Parse(resultado.id);
+
+                        string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                        _context.Database.ExecuteSqlCommand(query2);
+                    }
+                }
+
+
             }
             else
             {
@@ -477,6 +512,29 @@ namespace scorpioweb.Controllers
 
                     query.Serviciospreviosjuicio = idAER.ToString();
                     _context.SaveChanges();
+                }
+
+                if (datosArray != null)
+                {
+                    List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+
+                    // Proyectar la lista para obtener solo los valores de id y tabla
+                    var resultados = listaObjetos.Select(obj => new {
+                        id = obj["id"],
+                        tabla = obj["tabla"]
+                    });
+
+                    foreach (var resultado in resultados)
+                    {
+                        var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("ServiciosPrevios"));
+                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+                        var_tablaCurs = "ClaveUnicaScorpio";
+                        var_idnuevo = idAER;
+                        var_idSelect = Int32.Parse(resultado.id);
+
+                        string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                        _context.Database.ExecuteSqlCommand(query2);
+                    }
                 }
             }
             #endregion

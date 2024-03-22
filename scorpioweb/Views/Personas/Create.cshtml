@@ -1126,7 +1126,6 @@
         });
     }
 
-    var arr = [];
     function unirCURS(tabla, id) {
         var encontro = false;
         var index = -1;
@@ -1138,21 +1137,18 @@
                 break;
             }
         }
-
         // Si no se encuentra, se agrega el nuevo objeto a la lista
         if (!encontro) {
-            listaSimilitud.push(id, tabla);
-            listaSimilitud.push(tabla);
+            listaSimilitud.push({id, tabla});
         } else { // Si se encuentra, se elimina del array
             listaSimilitud.splice(index, 1);
         }
-
         // Convertir la lista a una cadena JSON
         var datosJson = JSON.stringify(listaSimilitud);
 
         // Asignar la cadena JSON al campo oculto en el formulario
         document.getElementById("datosArray").value = datosJson;
-        alert(listaSimilitud)
+
     }
 
 

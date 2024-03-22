@@ -17,6 +17,7 @@ using scorpioweb.Class;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using scorpioweb.Migrations.ApplicationDb;
+using Newtonsoft.Json;
 
 namespace scorpioweb.Models
 {
@@ -186,7 +187,7 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Create Persona Archivo-
-        public JsonResult Createadd(int id, string nombre, string ap, string am, string yo, string condicion, Archivo archivo, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS)
+        public JsonResult Createadd(int id, string nombre, string ap, string am, string yo, string condicion, Archivo archivo, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string datosArray)
         {
             bool create = false;
             var idExiste = (from a in _context.Archivo
@@ -207,22 +208,52 @@ namespace scorpioweb.Models
 
 
                     #region -Expediente Unico-
+
+                    string var_tablanueva = "";
+                    string var_tablaSelect = "";
+                    string var_tablaCurs = "";
+                    int var_idnuevo = 0;
+                    int var_idSelect = 0;
+                    string var_curs = "";
+
                     if (idselecionado != null && tabla != null)
                     {
-                        string var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
-                        string var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                        string var_tablaCurs = "ClaveUnicaScorpio";
-                        int var_idnuevo = id;
-                        int var_idSelect = Int32.Parse(idselecionado);
-                        string var_curs = CURS;
+                        var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
+                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                        var_tablaCurs = "ClaveUnicaScorpio";
+                        var_idnuevo = id;
+                        var_idSelect = Int32.Parse(idselecionado);
+                        var_curs = CURS;
                         archivo.ClaveUnicaScorpio = CURS;
 
-                        string query = $"CALL spInsertExpedienteUnicoPRUEBA('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                        string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
                         _context.Database.ExecuteSqlCommand(query);
+
+
+                        if (datosArray != null)
+                        {
+                            List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+
+                            // Proyectar la lista para obtener solo los valores de id y tabla
+                            var resultados = listaObjetos.Select(obj => new {
+                                id = obj["id"],
+                                tabla = obj["tabla"]
+                            });
+
+                            foreach (var resultado in resultados)
+                            {
+                                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
+                                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+                                var_tablaCurs = "ClaveUnicaScorpio";
+                                var_idnuevo = id;
+                                var_idSelect = Int32.Parse(resultado.id);
+
+                                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                                _context.Database.ExecuteSqlCommand(query2);
+                            }
+                        }
                     }
                     #endregion
-
-
 
                     _context.Add(archivo);
                     _context.SaveChanges();
