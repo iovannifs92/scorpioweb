@@ -89,7 +89,7 @@
                     if (result.super == true || result.admin == true || result.invitado == true) {
                         row = row
                             + "<tr valign='middle'>"
-                            + "<td>" + result.page[i].idPersonaCl + "</td>"
+                            + "<td><p onclick='alertaa(\"" + result.page[i].rutaFoto + "\")' class='btn'>" + result.page[i].idPersonaCl + "</p></td>"
                             + "<td>" + result.page[i].nombreCompleto + "</td>"
                             + "<td>" + result.page[i].supervisor + "</td>"
                             + "<th>" + date + "</th>";
@@ -336,3 +336,29 @@
     <button onclick="cambiarPagina(-1)" id="btnPrev" name="btnPrev" class="btn btn-default">Anterior</button>
     <button onclick="cambiarPagina(+1)" id="btnNext" name="btnNext" class="btn btn-default">Siguiente</button>
 </div>
+<div class="modal fade" id="modalfoto" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align:center; padding-left:250px">
+                <img id="myImg" src="" class="img-responsive" alt="Snow" style="width:100%;max-width:300px;">
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function alertaa(ruta) {
+        $("#myImg").attr("src", "/Fotoscl/" + ruta);
+        $('#modalfoto').modal('show')
+    }
+        //function closeAlert(ruta){
+        //    $('#modalfoto').modal('hide')
+        //}
+</script>

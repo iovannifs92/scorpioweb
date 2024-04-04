@@ -1409,41 +1409,68 @@ namespace scorpioweb.Models
     #endregion
 
     #region -Colaboraciones-
-    public IActionResult Colaboraciones()
+    public async Task<IActionResult> Colaboraciones()
     {
-        var user = User.Identity.Name;
+        var user = await userManager.FindByNameAsync(User.Identity.Name);
+        var roles = await userManager.GetRolesAsync(user);
+
+        ViewBag.UserAdmin = false;
+        ViewBag.user = user;
+
+        foreach (var rol in roles)
+        {
+            if (rol == "AdminLC" || rol == "Masteradmin")
+            {
+                ViewBag.UserAdmin = true;
+            }
+            if  (rol == "SupervisorLC")
+            {
+                ViewBag.UserCL = false;
+            }
+        }
+
+
+
+
 
         #region -Solicitud Atendida Archivo prestamo Digital-
         var warningRespuesta = from a in _context.Archivoprestamodigital
-                               where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
-                               select a;
+                            where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                            select a;
         ViewBag.WarningsUser = warningRespuesta.Count();
         #endregion
 
-        var colaboraciones = (from persona in _context.Personacl
-                              join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                              join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
-                              join supervision in _context.Supervisioncl on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                              join beneficios in _context.Beneficios on supervision.IdSupervisioncl equals beneficios.SupervisionclIdSupervisioncl
-                              where /*beneficios.Tipo == "XIII" &&*/ supervision.EstadoSupervision == "VIGENTE" && beneficios.FiguraJudicial == "MEDIDA DE SEGURIDAD" && beneficios.FiguraJudicial == "SUSTITUCIÓN DE LA PRISION PREVENTIVA POR PRISION DOMICILIARIA"
-                              select new PersonaclsViewModal
-                              {
-                                  personaclVM = persona,
-                                  municipiosVMDomicilio = municipio,
-                                  CasoEspecial = "Prision Domiciliaria"
-                              }).Union
-                             (from persona in _context.Personacl
-                              join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                              join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
-                              where persona.Colaboracion == "SI"
-                              select new PersonaclsViewModal
-                              {
-                                  personaclVM = persona,
-                                  municipiosVMDomicilio = municipio,
-                                  CasoEspecial = "Colaboración con " + persona.UbicacionExpediente
-                              });
 
-        return View(colaboraciones);
+      
+        var colaboraciones = (from persona in _context.Personacl
+                            join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                            join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                            join supervision in _context.Supervisioncl on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+                            join beneficios in _context.Beneficios on supervision.IdSupervisioncl equals beneficios.SupervisionclIdSupervisioncl
+                            where /*beneficios.Tipo == "XIII" &&*/ supervision.EstadoSupervision == "VIGENTE" && beneficios.FiguraJudicial == "MEDIDA DE SEGURIDAD" && beneficios.FiguraJudicial == "SUSTITUCIÓN DE LA PRISION PREVENTIVA POR PRISION DOMICILIARIA"
+                            select new PersonaclsViewModal
+                            {
+                                personaclVM = persona,
+                                municipiosVMDomicilio = municipio,
+                                CasoEspecial = "Prision Domiciliaria"
+                            }).Union
+                            (from persona in _context.Personacl
+                            join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                            join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                            where persona.Colaboracion == "SI"
+                            select new PersonaclsViewModal
+                            {
+                                personaclVM = persona,
+                                municipiosVMDomicilio = municipio,
+                                CasoEspecial = "Colaboración con " + persona.UbicacionExpediente
+                            });
+
+            if (ViewBag.UserCL == false)
+            {
+                colaboraciones = colaboraciones.Where(p => p.personaclVM.Supervisor == user.ToString());
+            }
+
+            return View(colaboraciones);
     }
     #endregion
 

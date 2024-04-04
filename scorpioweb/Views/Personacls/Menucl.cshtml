@@ -132,8 +132,8 @@
     }
 
 
-    @if (User.IsInRole("AdminLC") || User.IsInRole("Masteradmin"))
-    {
+    @*@if (User.IsInRole("AdminLC") || User.IsInRole("Masteradmin"))
+    {*@
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -147,7 +147,7 @@
                     </p>
             </div>
         </div>
-    }
+    
 
     @*@if (@ViewBag.Usuario == "esmeralda.vargas@dgepms.com")
     {

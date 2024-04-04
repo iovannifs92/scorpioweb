@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using scorpioweb.Class;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace scorpioweb.Controllers
 {
@@ -902,6 +903,12 @@ MetodosGenerales mg = new MetodosGenerales();
             List<Fraccionesimpuestas> queryFracciones = (from f in fraccionesimpuestasVM
                                                          group f by f.SupervisionIdSupervision into grp
                                                          select grp.OrderByDescending(f => f.IdFracciones).FirstOrDefault()).ToList();
+            
+            List<Delito> DelitoVM = _context.Delito.ToList();
+
+            List<Delito> queryDelito = (from f in DelitoVM
+                                        group f by f.CausaPenalIdCausaPenal into grp
+                                        select grp.OrderByDescending(f => f.IdDelito).FirstOrDefault()).ToList();
 
             List<Supervision> querySupervisionSinFraccion = (from s in _context.Supervision
                                                              join f in _context.Fraccionesimpuestas on s.IdSupervision equals f.SupervisionIdSupervision into SupervisionFracciones
@@ -909,7 +916,6 @@ MetodosGenerales mg = new MetodosGenerales();
                                                              select new Supervision
                                                              {
                                                              }).ToList();
-
 
             List<Cierredecaso> queryFile = (from c in _context.Cierredecaso
                                             join s in _context.Supervision on c.SupervisionIdSupervision equals s.IdSupervision
@@ -963,9 +969,33 @@ MetodosGenerales mg = new MetodosGenerales();
             };
             ViewBag.listaFiguraJudicial = listaFiguraJ;
 
+            //var filter = from p in _context.Persona
+            //             join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+            //             join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+            //             join d in queryDelito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal 
+            //             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
+            //             join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
+            //             join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
+            //             from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
+            //             select new SupervisionPyCP
+            //             {
+            //                 cierredecasoVM = c,
+            //                 personaVM = p,
+            //                 supervisionVM = s,
+            //                 causapenalVM = cp,
+            //                 delitoVM = dj,
+            //                 planeacionestrategicaVM = pe,
+            //                 fraccionesimpuestasVM = fraccion,
+            //                 tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
+            //             };
+
+
             var filter = from p in _context.Persona
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                          join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                         join d in queryDelito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal
+                         into delitoCausaPenal
+                         from delito in delitoCausaPenal.DefaultIfEmpty()
                          join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
                          join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
                          join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
@@ -974,13 +1004,15 @@ MetodosGenerales mg = new MetodosGenerales();
                          select new SupervisionPyCP
                          {
                              cierredecasoVM = c,
-                             personaVM = p,
+                             personaVM = p, 
                              supervisionVM = s,
                              causapenalVM = cp,
                              planeacionestrategicaVM = pe,
                              fraccionesimpuestasVM = fraccion,
+                             delitoVM = delito,
                              tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
                          };
+
 
             if (supervisor == false)
             {

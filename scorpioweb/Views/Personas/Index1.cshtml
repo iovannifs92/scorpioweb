@@ -10,10 +10,13 @@
 <script src="~/Documentos/script.js"></script>
 <script src="~/js/bootstrap4-toggle.js"></script>
 
-
 @{
     ViewBag.Title = "Supervisados MC y SCP";
 }
+
+<style>
+
+</style>
 
 <script>
     var page = 1;
@@ -89,7 +92,8 @@
                     if (result.super == true || result.admin == true || result.invitado == true) {
                         row = row
                             + "<tr valign='middle'>"
-                            + "<td>" + result.page[i].idPersona + "</td>"
+                            + "<td><p onclick='alertaa(\"" + result.page[i].rutaFoto + "\")' class='btn'>" + result.page[i].idPersona + "</p></td>"
+                            //+ "<td>" + result.page[i].idPersona + "</td>"
                             + "<td>" + result.page[i].nombreCompleto + "</td>"
                             + "<td>" + result.page[i].supervisor + "</td>"
                             + "<th>" + date + "</th>";
@@ -259,6 +263,7 @@
         return innerFunc;
     }
 
+
 </script>
 
 <h2>Supervisados MC y SCP</h2>
@@ -297,6 +302,9 @@
         Ver solo mis Supervisados
     </a>
 
+    <a id="desaperece" name="desaperece" style="display:none" class="btn btn-link">
+        Ver solo mis Supervisados
+    </a>
 </div>
 <br />
 <div class="row">
@@ -315,7 +323,6 @@
         </tbody>
     </table>
 </div>
-
 
 <script>
     var input = document.getElementById("Search");
@@ -341,3 +348,32 @@
     <button onclick="cambiarPagina(-1)" id="btnPrev" name="btnPrev" class="btn btn-default">Anterior</button>
     <button onclick="cambiarPagina(+1)" id="btnNext" name="btnNext" class="btn btn-default">Siguiente</button>
 </div>
+
+
+
+<div class="modal fade" id="modalfoto" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align:center; padding-left:250px">
+                <img id="myImg" src="" class="img-responsive" alt="Snow" style="width:100%;max-width:300px;">
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-close"></i>
+                    Cerrar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function alertaa(ruta){
+        $("#myImg").attr("src", "/Fotos/"+ ruta );
+        $('#modalfoto').modal('show')
+    }
+    //function closeAlert(ruta){
+    //    $('#modalfoto').modal('hide')
+    //}
+</script>

@@ -82,7 +82,7 @@
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
                     }
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Operativo"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Operativo") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC"))
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
                     }
