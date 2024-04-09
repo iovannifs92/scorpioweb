@@ -258,233 +258,220 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Index-
-        public async Task<IActionResult> Index(
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageNumber)
-        {
-            //para ver si la  persona tiene o no huella registrada
-            var queryhayhuella = from r in _context.Registrohuella
-                                 join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
-                                 group r by r.PersonaIdPersona into grup
-                                 select new
-                                 {
-                                     grup.Key,
-                                     Count = grup.Count()
-                                 };
+        #region -Index viejo-
+        //public async Task<IActionResult> Index(
+        //    string sortOrder,
+        //    string currentFilter,
+        //    string searchString,
+        //    int? pageNumber)
+        //{
+        //    //para ver si la  persona tiene o no huella registrada
+        //    var queryhayhuella = from r in _context.Registrohuella
+        //                         join p in _context.Presentacionperiodica on r.IdregistroHuella equals p.RegistroidHuella
+        //                         group r by r.PersonaIdPersona into grup
+        //                         select new
+        //                         {
+        //                             grup.Key,
+        //                             Count = grup.Count()
+        //                         };
 
-            foreach (var personaHuella in queryhayhuella)
-            {
-                if (personaHuella.Count >= 1)
-                {
-                    ViewBag.personaIdPersona = personaHuella.Key;
-                };
-            }
-            #region -ListaUsuarios-            
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
-            ViewBag.user = user;
-            var roles = await userManager.GetRolesAsync(user);
-            ViewBag.Admin = false;
-            ViewBag.Masteradmin = false;
-            ViewBag.Archivo = false;
-            ViewBag.Serviciosprevios = false;
+        //    foreach (var personaHuella in queryhayhuella)
+        //    {
+        //        if (personaHuella.Count >= 1)
+        //        {
+        //            ViewBag.personaIdPersona = personaHuella.Key;
+        //        };
+        //    }
+        //    #region -ListaUsuarios-            
+        //    var user = await userManager.FindByNameAsync(User.Identity.Name);
+        //    ViewBag.user = user;
+        //    var roles = await userManager.GetRolesAsync(user);
+        //    ViewBag.Admin = false;
+        //    ViewBag.Masteradmin = false;
+        //    ViewBag.Archivo = false;
+        //    ViewBag.Serviciosprevios = false;
 
-            foreach (var rol in roles)
-            {
-                if (rol == "AdminMCSCP")
-                {
-                    ViewBag.Admin = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "Masteradmin")
-                {
-                    ViewBag.Masteradmin = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "ArchivoMCSCP")
-                {
-                    ViewBag.Archivo = true;
-                }
-            }
+        //    foreach (var rol in roles)
+        //    {
+        //        if (rol == "AdminMCSCP")
+        //        {
+        //            ViewBag.Admin = true;
+        //        }
+        //    }
+        //    foreach (var rol in roles)
+        //    {
+        //        if (rol == "Masteradmin")
+        //        {
+        //            ViewBag.Masteradmin = true;
+        //        }
+        //    }
+        //    foreach (var rol in roles)
+        //    {
+        //        if (rol == "ArchivoMCSCP")
+        //        {
+        //            ViewBag.Archivo = true;
+        //        }
+        //    }
 
-            foreach (var rol in roles)
-            {
-                if (rol == "Servicios previos")
-                {
-                    ViewBag.Serviciosprevios = true;
-                }
-            }
-
-
-            List<string> rolUsuario = new List<string>();
-
-            for (int i = 0; i < roles.Count; i++)
-            {
-                rolUsuario.Add(roles[i]);
-            }
-
-            ViewBag.RolesUsuario = rolUsuario;
-            String users = user.ToString();
-            ViewBag.RolesUsuarios = users;
-            List<string> ListaUsuariosAdminMCSCP = new List<string>();
-            if (users == "esmeralda.vargas@dgepms.com")
-            {
-                ListaUsuariosAdminMCSCP.Add("Seleccione");
-                ListaUsuariosAdminMCSCP.Add("Expediente Concluido para Razón de Archivo");
-                foreach (var u in userManager.Users)
-                {
-                    if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
-                    {
-                        ListaUsuariosAdminMCSCP.Add(u.ToString());
-                    }
-                }
-            }
-            ViewBag.ListadoUsuariosAdminMCSCP = ListaUsuariosAdminMCSCP;
-
-            List<String> ListaUsuarios = new List<String>();
-
-            ListaUsuarios.Add("Sin Registro");
-            ListaUsuarios.Add("Archivo Interno");
-            ListaUsuarios.Add("Archivo General");
-            ListaUsuarios.Add("No Ubicado");
-            ListaUsuarios.Add("Dirección");
-            ListaUsuarios.Add("Coordinación Operativa");
-            ListaUsuarios.Add("Coordinación MC y SCP");
-            ListaUsuarios.Add("Expediente Concluido para Razón de Archivo");
-            foreach (var u in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
-                {
-                    ListaUsuarios.Add(u.ToString());
-                }
-            }
-            ViewBag.ListadoUsuarios = ListaUsuarios;
-            #endregion
-
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+        //    foreach (var rol in roles)
+        //    {
+        //        if (rol == "Servicios previos")
+        //        {
+        //            ViewBag.Serviciosprevios = true;
+        //        }
+        //    }
 
 
-            if (searchString != null)
-            {
-                pageNumber = 1;
-            }
-            else
-            {
-                searchString = currentFilter;
-            }
+        //    List<string> rolUsuario = new List<string>();
 
-            var usu = await userManager.FindByNameAsync(User.Identity.Name);
+        //    for (int i = 0; i < roles.Count; i++)
+        //    {
+        //        rolUsuario.Add(roles[i]);
+        //    }
 
-            #region -Solicitud Atendida Archivo prestamo Digital-
-            var warningRespuesta = from a in _context.Archivoprestamodigital
-                                   where a.EstadoPrestamo == 1 && usu.ToString().ToUpper() == a.Usuario.ToUpper()
-                                   select a;
-            ViewBag.WarningsUser = warningRespuesta.Count();
-            #endregion
+        //    ViewBag.RolesUsuario = rolUsuario;
+        //    String users = user.ToString();
+        //    ViewBag.RolesUsuarios = users;
+        //    List<string> ListaUsuariosAdminMCSCP = new List<string>();
+        //    if (users == "esmeralda.vargas@dgepms.com")
+        //    {
+        //        ListaUsuariosAdminMCSCP.Add("Seleccione");
+        //        ListaUsuariosAdminMCSCP.Add("Expediente Concluido para Razón de Archivo");
+        //        foreach (var u in userManager.Users)
+        //        {
+        //            if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
+        //            {
+        //                ListaUsuariosAdminMCSCP.Add(u.ToString());
+        //            }
+        //        }
+        //    }
+        //    ViewBag.ListadoUsuariosAdminMCSCP = ListaUsuariosAdminMCSCP;
 
-            #region -PROXIMO SUPERVISOR-
-            //// Obtén el último supervisor
-            //var ultimoSupervisor = _context.Persona
-            //                        .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
-            //                        .OrderByDescending(p => p.IdPersona)
-            //                        .Select(p => p.Supervisor)
-            //                        .FirstOrDefault();
-            //// Obtén la lista de usuarios y ordénala alfabéticamente
-            //List<SelectListItem> ListaSuper = new List<SelectListItem>();
-            //int j = 0;
-            //foreach (var usuarios in userManager.Users)
-            //{
-            //    if (await userManager.IsInRoleAsync(usuarios, "SupervisorMCSCP"))
-            //    {
-            //        ListaSuper.Add(new SelectListItem
-            //        {
-            //            Text = usuarios.ToString(),
-            //            Value = j.ToString()
-            //        });
-            //        j++;
-            //    }
-            //}
+        //    List<String> ListaUsuarios = new List<String>();
 
-            //// Ordena la lista alfabéticamente por el texto (nombre de usuario)
-            //ListaSuper = ListaSuper
-            //            .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
-            //            .OrderBy(item => item.Text)
-            //            .ToList();
+        //    ListaUsuarios.Add("Sin Registro");
+        //    ListaUsuarios.Add("Archivo Interno");
+        //    ListaUsuarios.Add("Archivo General");
+        //    ListaUsuarios.Add("No Ubicado");
+        //    ListaUsuarios.Add("Dirección");
+        //    ListaUsuarios.Add("Coordinación Operativa");
+        //    ListaUsuarios.Add("Coordinación MC y SCP");
+        //    ListaUsuarios.Add("Expediente Concluido para Razón de Archivo");
+        //    foreach (var u in userManager.Users)
+        //    {
+        //        if (await userManager.IsInRoleAsync(u, "SupervisorMCSCP"))
+        //        {
+        //            ListaUsuarios.Add(u.ToString());
+        //        }
+        //    }
+        //    ViewBag.ListadoUsuarios = ListaUsuarios;
+        //    #endregion
 
-            //var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
-
-            //if (siguienteSupervisor != null)
-            //{
-            //    var valorSiguienteSupervisor = siguienteSupervisor.Text;
-            //    ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
-            //}
-            //else
-            //{
-            //    ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
-            //}
-            #endregion
-
-            ViewData["CurrentFilter"] = searchString;
-
-            var personas = from p in _context.Persona
-                           where p.Supervisor != null
-                           select p;
+        //    ViewData["CurrentSort"] = sortOrder;
+        //    ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+        //    ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
 
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                foreach (var item in searchString.Split(new char[] { ' ' },
-                    StringSplitOptions.RemoveEmptyEntries))
-                {
-                    personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
-                                                   (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
-                                                   p.Supervisor.Contains(searchString));
-                }
-            }
+        //    if (searchString != null)
+        //    {
+        //        pageNumber = 1;
+        //    }
+        //    else
+        //    {
+        //        searchString = currentFilter;
+        //    }
 
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    personas = personas.OrderByDescending(p => p.IdPersona);
-                    break;
-                default:
-                    personas = personas.OrderByDescending(p => p.IdPersona);
-                    break;
-            }
+        //    var usu = await userManager.FindByNameAsync(User.Identity.Name);
 
-            int pageSize = 10;
-            ViewBag.totalPages = (personas.Count() + pageSize - 1) / pageSize;
+        //    #region -Solicitud Atendida Archivo prestamo Digital-
+        //    var warningRespuesta = from a in _context.Archivoprestamodigital
+        //                           where a.EstadoPrestamo == 1 && usu.ToString().ToUpper() == a.Usuario.ToUpper()
+        //                           select a;
+        //    ViewBag.WarningsUser = warningRespuesta.Count();
+        //    #endregion
 
-            //Response.Headers.Add("Refresh", "5");
-            return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
-            //return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
-        }
+        //    #region -PROXIMO SUPERVISOR-
+        //    //// Obtén el último supervisor
+        //    //var ultimoSupervisor = _context.Persona
+        //    //                        .Where(p => p.Supervisor != null && p.Supervisor != "" && p.Supervisor != "enrique.martinez@dgepms.com" && !p.Supervisor.EndsWith("@nortedgepms.com"))
+        //    //                        .OrderByDescending(p => p.IdPersona)
+        //    //                        .Select(p => p.Supervisor)
+        //    //                        .FirstOrDefault();
+        //    //// Obtén la lista de usuarios y ordénala alfabéticamente
+        //    //List<SelectListItem> ListaSuper = new List<SelectListItem>();
+        //    //int j = 0;
+        //    //foreach (var usuarios in userManager.Users)
+        //    //{
+        //    //    if (await userManager.IsInRoleAsync(usuarios, "SupervisorMCSCP"))
+        //    //    {
+        //    //        ListaSuper.Add(new SelectListItem
+        //    //        {
+        //    //            Text = usuarios.ToString(),
+        //    //            Value = j.ToString()
+        //    //        });
+        //    //        j++;
+        //    //    }
+        //    //}
+
+        //    //// Ordena la lista alfabéticamente por el texto (nombre de usuario)
+        //    //ListaSuper = ListaSuper
+        //    //            .Where(item => item.Text.EndsWith("@dgepms.com") && item.Text != "diana.renteria@dgepms.com" && item.Text != "enrique.martinez@dgepms.com")
+        //    //            .OrderBy(item => item.Text)
+        //    //            .ToList();
+
+        //    //var siguienteSupervisor = ListaSuper.FirstOrDefault(item => string.Compare(item.Text, ultimoSupervisor, true) > 0);
+
+        //    //if (siguienteSupervisor != null)
+        //    //{
+        //    //    var valorSiguienteSupervisor = siguienteSupervisor.Text;
+        //    //    ViewBag.sigueinteSuperviosor = valorSiguienteSupervisor;
+        //    //}
+        //    //else
+        //    //{
+        //    //    ViewBag.sigueinteSuperviosor = ListaSuper.OrderBy(p => p.Text).Select(p => p.Text).FirstOrDefault();
+        //    //}
+        //    #endregion
+
+        //    ViewData["CurrentFilter"] = searchString;
+
+        //    var personas = from p in _context.Persona
+        //                   where p.Supervisor != null
+        //                   select p;
 
 
-        Persona persona1;
-        List<Persona> personas1;
+        //    if (!String.IsNullOrEmpty(searchString))
+        //    {
+        //        foreach (var item in searchString.Split(new char[] { ' ' },
+        //            StringSplitOptions.RemoveEmptyEntries))
+        //        {
+        //            personas = personas.Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(searchString) ||
+        //                                           (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(searchString) ||
+        //                                           p.Supervisor.Contains(searchString));
+        //        }
+        //    }
 
-        public async Task<ActionResult> Personas()
-        {
-            Tuple<List<Persona>, Persona> tuple;
+        //    switch (sortOrder)
+        //    {
+        //        case "name_desc":
+        //            personas = personas.OrderByDescending(p => p.IdPersona);
+        //            break;
+        //        default:
+        //            personas = personas.OrderByDescending(p => p.IdPersona);
+        //            break;
+        //    }
 
-            tuple = new Tuple<List<Persona>, Persona>(personas1, persona1);
+        //    int pageSize = 10;
+        //    ViewBag.totalPages = (personas.Count() + pageSize - 1) / pageSize;
 
-            return View("PersonasDetails", tuple);
-        }
+        //    //Response.Headers.Add("Refresh", "5");
+        //    return View(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        //    //return Json(await PaginatedList<Persona>.CreateAsync(personas.AsNoTracking(), pageNumber ?? 1, pageSize));
+        //}
         #endregion
 
-        #region -Index Prueba-
+        #region -Index nuevo-
 
-        public async Task<IActionResult> Index2()
+        public async Task<IActionResult> Index()
         {
             var nomsuper = User.Identity.Name.ToString();
             var user = await userManager.FindByNameAsync(User.Identity.Name);
@@ -515,7 +502,7 @@ namespace scorpioweb.Controllers
 
             ViewBag.RolesUsuarios = nomsuper;
 
-            return View("Index1", await _context.Persona.ToListAsync());
+            return View("Index", await _context.Persona.ToListAsync());
         }
 
 
@@ -628,7 +615,17 @@ namespace scorpioweb.Controllers
                 nomsuper = nomsuper
             });
         }
+        Persona persona1;
+        List<Persona> personas1;
 
+        public async Task<ActionResult> Personas()
+        {
+            Tuple<List<Persona>, Persona> tuple;
+
+            tuple = new Tuple<List<Persona>, Persona>(personas1, persona1);
+
+            return View("PersonasDetails", tuple);
+        }
         #endregion
 
         #region -ListadoSupervisor-
@@ -6569,7 +6566,7 @@ namespace scorpioweb.Controllers
             if (antesDel.Any() || antesDel2.Any())
             {
                 borrar = false;
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar, nombre = nom });
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar, nombre = nom });
             }
             var stadoc = (from p in _context.Persona
                           where p.IdPersona == persona.IdPersona
@@ -6603,12 +6600,12 @@ namespace scorpioweb.Controllers
                 _context.Add(historialeliminacion);
                 _context.SaveChanges();
                 _context.Database.ExecuteSqlCommand("CALL spBorrarPersona(" + idpersona + ")");
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
             catch (Exception ex)
             {
                 borrar = false;
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar, error = ex });
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar, error = ex });
             }
             var stadoc = (from p in _context.Persona
                           where p.IdPersona == persona.IdPersona
