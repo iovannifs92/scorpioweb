@@ -1406,7 +1406,7 @@ namespace scorpioweb.Controllers
                     {
                         string file_name = cierredecasocl.IdCierreDeCasocl + "_" + cierredecasocl.SupervisionclIdSupervisioncl + "_" + supervision.PersonaclIdPersonacl + Path.GetExtension(archivo.FileName);
                         cierredecasocl.RutaArchivo = file_name;
-                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Cierredecaso");
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "CierredeCasocl");
 
                         if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
                         {
@@ -1764,7 +1764,7 @@ namespace scorpioweb.Controllers
                     {
                         string file_name = bitacoracl.IdBitacoracl + "_" + bitacoracl.SupervisionclIdSupervisioncl + "_" + supervision.PersonaIdPersona + Path.GetExtension(evidencia.FileName);
                         bitacoracl.RutaEvidencia = file_name;
-                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Evidenciacl");
+                        var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "EvidenciaCL");
 
                         if (System.IO.File.Exists(Path.Combine(uploads, file_name)))
                         {
