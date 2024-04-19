@@ -761,7 +761,6 @@ namespace scorpioweb.Models
             ViewData["CurrentFilter"] = Search;
 
             var personas = from p in _context.Personacl
-                           where p.Supervisor != null
                            select p;
 
             if (!String.IsNullOrEmpty(Search))
@@ -786,10 +785,18 @@ namespace scorpioweb.Models
                     break;
             }
             personas.OrderByDescending(p => p.IdPersonaCl);
+
             if (usuario == true)
             {
                 personas = personas.Where(p => p.Supervisor == nomsuper);
             };
+
+
+            if (admin == true)
+            {
+                personas = personas.Where(p => p.Supervisor != null);
+            };
+
 
             int pageSize = 10;
             // Response.Headers.Add("Refresh", "5");

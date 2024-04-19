@@ -1,0 +1,73 @@
+CASE 
+		WHEN var_UserRol = "MCYSCP" THEN
+			-- ENTRAMOS EN EL TRIGGER DE REGISTROHUELLA(MCYSCP)
+            IF EXISTS(SELECT personacl FROM registrohuella rh JOIN expedienteunico eu ON rh.personaIdPersona = eu.persona WHERE rh.personaIdPersona = var_IdPersona LIMIT 1) THEN
+				-- SACAMOS EL IDPERSONACL
+                SET @IdPersonacl = (SELECT personacl FROM registrohuella rh JOIN expedienteunico eu ON rh.personaIdPersona = eu.persona WHERE rh.personaIdPersona = var_IdPersona LIMIT 1);
+                -- SACAMOS EL IDREGISTROHUELLA
+                SET @IdRegistrohuellacl = (SELECT personaclIdPersonacl FROM registrohuellacl rh WHERE rh.personaclIdPersonacl = @IdPersonacl LIMIT 1);
+                -- ACTUALIZAMOS YA CON LOS DADOS ANTES OPTENIDOS
+                UPDATE registrohuellacl SET fingerPrint = var_Fingerprint
+				WHERE idregistroHuellacl = @IdRegistrohuellacl;
+			END IF;
+	WHEN var_UserRol = "CL" THEN 
+			-- ENTRAMOS EN EL TRIGGER DE REGISTROHUELLA(CL)
+			IF EXISTS(SELECT persona FROM registrohuellacl rh JOIN expedienteunico eu ON rh.personaclIdPersonacl = eu.personacl WHERE rh.personaclIdPersonacl = var_IdPersona LIMIT 1) THEN
+				-- SACAMOS EL IDPERSONACL
+                SET @IdPersona = (SELECT persona FROM registrohuellacl rh JOIN expedienteunico eu ON rh.personaclIdPersonacl = eu.personacl WHERE rh.personaclIdPersonacl = var_IdPersona LIMIT 1);
+                -- SACAMOS EL IDREGISTROHUELLA
+                SET @IdRegistrohuella = (SELECT personaclIdPersonacl FROM registrohuellacl rh WHERE rh.personaclIdPersonacl = @IdPersona LIMIT 1);
+                -- ACTUALIZAMOS YA CON LOS DADOS ANTES OPTENIDOS
+                UPDATE registrohuella SET fingerPrint = var_Fingerprint
+				WHERE idregistroHuella = @IdRegistrohuella;
+			END IF;
+	END CASE;
+
+
+
+CASE 
+		WHEN var_UserRol = "MCYSCP" THEN
+			-- ENTRAMOS EN EL TRIGGER DE REGISTROHUELLA(MCYSCP)
+            IF EXISTS(SELECT personacl FROM registrohuella rh JOIN expedienteunico eu ON rh.personaIdPersona = eu.persona WHERE rh.personaIdPersona = var_IdPersona LIMIT 1) THEN
+				/*-- SACAMOS EL IDPERSONACL
+                SET @IdPersonacl = (SELECT personacl FROM registrohuella rh JOIN expedienteunico eu ON rh.personaIdPersona = eu.persona WHERE rh.personaIdPersona = var_IdPersona LIMIT 1);
+                -- SACAMOS EL IDREGISTROHUELLA
+                SET @IdRegistrohuellacl = (SELECT personaclIdPersonacl FROM registrohuellacl rh WHERE rh.personaclIdPersonacl = @IdPersonacl LIMIT 1);
+                -- ACTUALIZAMOS YA CON LOS DADOS ANTES OPTENIDOS
+                UPDATE registrohuellacl SET fingerPrint = var_Fingerprint
+				WHERE idregistroHuellacl = @IdRegistrohuellacl;*/
+                INSERT INTO registrohuellacl
+				(fingerPrint,
+				personaclIdPersonacl,
+				supervisorH,
+				fechadeRegistro)
+				VALUES
+				(var_Fingerprint,
+				var_IdPersona,
+				"MCYSCP2",
+				now());
+			END IF;
+	WHEN var_UserRol = "CL" THEN 
+			-- ENTRAMOS EN EL TRIGGER DE REGISTROHUELLA(CL)
+			IF EXISTS(SELECT persona FROM registrohuellacl rh JOIN expedienteunico eu ON rh.personaclIdPersonacl = eu.personacl WHERE rh.personaclIdPersonacl = var_IdPersona LIMIT 1) THEN
+				/*-- SACAMOS EL IDPERSONACL
+                SET @IdPersona = (SELECT persona FROM registrohuellacl rh JOIN expedienteunico eu ON rh.personaclIdPersonacl = eu.personacl WHERE rh.personaclIdPersonacl = var_IdPersona LIMIT 1);
+                -- SACAMOS EL IDREGISTROHUELLA
+                SET @IdRegistrohuella = (SELECT personaclIdPersonacl FROM registrohuellacl rh WHERE rh.personaclIdPersonacl = @IdPersona LIMIT 1);
+                -- ACTUALIZAMOS YA CON LOS DADOS ANTES OPTENIDOS
+                UPDATE registrohuella SET fingerPrint = var_Fingerprint
+				WHERE idregistroHuella = @IdRegistrohuella;*/
+                INSERT INTO registrohuellacl
+			(fingerPrint,
+			personaclIdPersonacl,
+			supervisorH,
+			fechadeRegistro)
+			VALUES
+			(var_Fingerprint,
+			var_IdPersona,
+			"MCYSCP3",
+			now());
+			END IF;
+	END CASE;
+
+

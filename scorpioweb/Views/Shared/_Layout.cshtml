@@ -203,7 +203,7 @@
                 @*<p>&copy; 2019 - SCORPIO</p>*@
             </div>
 
-            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia") @*|| User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Coordinador")*@)
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia") || User.IsInRole("Operativo") @*|| User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Coordinador")*@)
             {
                 <div class="col-1 col-md-1" style="float:right">
                     <label for="victima" title="Buscar Nombre en victimas">Otro</label>
@@ -375,6 +375,10 @@
                         case 'MC Y SCP':
                             row = row
                                 + "<div class=\"col-md-3\"><a  href=/Personas/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
+                            break;
+                        case 'LIBERTAD CONDICIONADA':
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personacls/Procesos/" + response.busqueda[i].id + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
                             break;
                         case 'ARCHIVO':
                             row = row

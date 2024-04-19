@@ -530,6 +530,7 @@ namespace scorpioweb.Controllers
             bool super = false;
             bool admin = false;
             bool invitado = true;
+            bool bitacora = false;
 
             foreach (var rol in roles)
             {
@@ -556,6 +557,15 @@ namespace scorpioweb.Controllers
 
                 }
             }
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Servicios previos" || rol == "Operativo")
+                {
+                    bitacora = true;
+                }
+            }
+
             String users = user.ToString();
             ViewBag.RolesUsuarios = users;
             #endregion
@@ -625,6 +635,7 @@ namespace scorpioweb.Controllers
                 admin,
                 super,
                 invitado,
+                bitacora,
                 nomsuper = nomsuper
             });
         }
@@ -1059,7 +1070,7 @@ namespace scorpioweb.Controllers
                                              tipoAdvertencia = "Se paso el tiempo de la firma"
                                          }).Union
                                         (from t in tableAudiot
-                                         where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                         where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO" && t.supervisionVM.EstadoSupervision == "EN ESPERA DE RESPUESTA"
                                          select new PlaneacionWarningViewModel
                                          {
                                              personaVM = t.personaVM,
@@ -1180,7 +1191,7 @@ namespace scorpioweb.Controllers
                                          tipoAdvertencia = "Se paso el tiempo de la firma"
                                      }).Union
                                     (from t in tableAudiot
-                                     where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                     where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO" && t.supervisionVM.EstadoSupervision == "EN ESPERA DE RESPUESTA"
                                      select new PlaneacionWarningViewModel
                                      {
                                          personaVM = t.personaVM,
@@ -6152,7 +6163,7 @@ namespace scorpioweb.Controllers
                                             //(archivoadmin).Union
                                             (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
                                             (from t in tableAudiot
-                                             where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                             where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO" && t.supervisionVM.EstadoSupervision == "EN ESPERA DE RESPUESTA"
                                              select new PlaneacionWarningViewModel
                                              {
                                                  personaVM = t.personaVM,
@@ -6272,7 +6283,7 @@ namespace scorpioweb.Controllers
                         break;
                     case "ESTADO PROCESAL":
                         ViewDataAlertasVari = from t in tableAudiot
-                                              where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                              where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO" && t.supervisionVM.EstadoSupervision == "EN ESPERA DE RESPUESTA"
                                               select new PlaneacionWarningViewModel
                                               {
                                                   personaVM = t.personaVM,
@@ -6406,7 +6417,7 @@ namespace scorpioweb.Controllers
                                                  tipoAdvertencia = "Se paso el tiempo de la firma"
                                              }).Union
                                              (from t in tableAudiot
-                                              where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                              where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO" && t.supervisionVM.EstadoSupervision == "EN ESPERA DE RESPUESTA"
                                               select new PlaneacionWarningViewModel
                                               {
                                                   personaVM = t.personaVM,
@@ -6514,7 +6525,7 @@ namespace scorpioweb.Controllers
                         break;
                     case "ESTADO PROCESAL":
                         ViewData["alertas"] = from t in tableAudiot
-                                              where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
+                                              where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO" && t.supervisionVM.EstadoSupervision == "EN ESPERA DE RESPUESTA"
                                               select new PlaneacionWarningViewModel
                                               {
                                                   personaVM = t.personaVM,
@@ -7797,7 +7808,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador")
+                if (rol == "Masteradmin" || rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "Director" || rol == "Oficialia" || rol == "Coordinador" || rol == "AdminLC" || rol == "SupervisorLC")
                 {
                     var_flag = true;
                 }
