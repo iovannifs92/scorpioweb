@@ -42,8 +42,7 @@ using System.ComponentModel.DataAnnotations;
 using Syncfusion.EJ2.Navigations;
 using Syncfusion.EJ2.Linq;
 using Newtonsoft.Json;
-
-
+using Microsoft.AspNetCore.SignalR;
 
 namespace scorpioweb.Controllers
 {
@@ -175,13 +174,16 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Constructor-
+        public IHubContext<HubNotificacion> _hubContext;
+
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
-                                  RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+                                  RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, IHubContext<HubNotificacion> hubContext)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
+            _hubContext = hubContext;
 
         }
         #endregion

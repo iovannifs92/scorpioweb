@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Internal;
 using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.SignalR;
 using scorpioweb.Class;
-
 namespace scorpioweb
 {
     public class Startup
@@ -65,6 +64,7 @@ namespace scorpioweb
             //    options.ExpireTimeSpan = TimeSpan.FromMinutes(150);
             //    options.SlidingExpiration = true;
             //});
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,7 +93,10 @@ namespace scorpioweb
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
+            app.UseSignalR(rute =>
+            {
+                rute.MapHub<HubNotificacion>("/HubNotificacion");
+            });
             //Rotativa.AspNetCore.RotativaConfiguration.Setup(env, "..\\Rotativa\\Windows\\");
         }
 
