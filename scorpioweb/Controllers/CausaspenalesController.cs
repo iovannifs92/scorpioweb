@@ -440,13 +440,13 @@ namespace scorpioweb.Controllers
                 _context.Causapenal.Remove(causapenals);
                 _context.SaveChanges();
 
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
             catch (Exception ex)
             {
                 var error = ex; 
                 borrar = false;
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar});
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar});
             }
         }
 
@@ -1210,13 +1210,13 @@ namespace scorpioweb.Controllers
                 _context.Historialcp.Remove(causapenals);
                 _context.SaveChanges();
 
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
             catch (Exception ex)
             {
                 var error = ex;
                 borrar = false;
-                return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar = borrar });
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
         }
     }

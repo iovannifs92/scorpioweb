@@ -16,6 +16,10 @@ using MySql.Data.MySqlClient;
 using Microsoft.Extensions.WebEncoders;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using Microsoft.AspNetCore.Internal;
+using DocumentFormat.OpenXml.EMMA;
+using Microsoft.AspNetCore.SignalR;
+using scorpioweb.Class;
 
 namespace scorpioweb
 {
@@ -93,6 +97,5 @@ namespace scorpioweb
             //Rotativa.AspNetCore.RotativaConfiguration.Setup(env, "..\\Rotativa\\Windows\\");
         }
 
-        
     }
 }

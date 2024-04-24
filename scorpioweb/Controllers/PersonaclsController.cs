@@ -41,7 +41,7 @@ using ZXing.OneD;
 using System.ComponentModel.DataAnnotations;
 using Syncfusion.EJ2.Navigations;
 using Syncfusion.EJ2.Linq;
-
+using Microsoft.AspNetCore.SignalR;
 
 
 namespace scorpioweb.Models
@@ -115,6 +115,7 @@ namespace scorpioweb.Models
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
+
 
         }
         #endregion
