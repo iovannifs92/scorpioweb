@@ -123,6 +123,10 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personas/PresentacionPeriodicaPersona/" + result.page[i].idPersona + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                         }
+                        if (result.bitacora == true) {
+                            row = row
+                                + "<div class=\"col-md-3\"><a  href=/Personas/VistaBitacora/" + result.page[i].idPersona + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+                        }
                         //SI EL USUARIO NO ES INVITADO MUESTRA LOS CANDADOS
                         if (result.invitado == false) {
                             switch (result.page[i].candado) {

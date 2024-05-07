@@ -95,7 +95,7 @@ namespace scorpioweb
             });
             app.UseSignalR(rute =>
             {
-                rute.MapHub<HubNotificacion>("/HubNotificacion");
+                rute.MapHub<HubNotificacion>("/message");
             });
             //Rotativa.AspNetCore.RotativaConfiguration.Setup(env, "..\\Rotativa\\Windows\\");
         }

@@ -5,6 +5,36 @@
     <link href='~/fullcalendar/lib/main.css' rel='stylesheet' />
     <script src='~/fullcalendar/lib/main.js'></script>
     <script src='~/fullcalendar/lib/locales/es-us.js'></script>
+    
+    
+    <script src="~/lib/Microsoft/signalr.min.js"></script>
+    <script src="https://unpkg.com/rxjs@7/dist/bundles/rxjs.umd.min.js"></script>
+    <script>
+
+
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/message").build();
+
+        connection.start().then(function () {
+            console.log("Conexion exitosa SIGNAL R Message");
+        }).catch(function (err) {
+            console.log(err.message);
+        });
+
+        //connection.on("Recive", function (name, area) {
+        //    //let divnames = document.createElement("div");
+        //    //divnames.textContent = name + " " + area;
+        //    //document.getElementById("divname").appendChild(divnames);
+        //    //para alerta en signalR
+        //    alert(name + " " + area)
+        //});
+
+        connection.on("sendMessage", (message) => {
+            //console.log(message)
+            alert(message)
+        });
+
+    </script>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -69,7 +99,7 @@
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE MC Y SCP*@
                     @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("Oficialia"))
                     {
-                        <li><a asp-area="" asp-controller="Personas" asp-action="Index2">MC y SCP</a></li>
+                        <li><a asp-area="" asp-controller="Personas" asp-action="Index">MC y SCP</a></li>
                     }
                    
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo"))
@@ -114,6 +144,11 @@
                     @if (User.IsInRole("Masteradmin"))
                     {
                         <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administracion</a></li>
+                    }
+
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
+                    {
+                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="Index">Reinserción Social</a></li>
                     }
 
                 </ul>
@@ -222,6 +257,16 @@
                 </div>
             }
         </footer>
+    </div>
+
+
+    <div id="content1">
+
+
+    </div>
+    <div id="content2">
+
+
     </div>
 
 
@@ -443,3 +488,4 @@
         }
     }
 </script>
+

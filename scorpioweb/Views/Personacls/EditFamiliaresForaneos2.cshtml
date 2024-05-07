@@ -26,8 +26,6 @@
         var ent = document.getElementById("PuedeEnterarseFE");
         var PuedeEnterarse = ent.options[ent.selectedIndex].value;
         var Observaciones = document.getElementById("observacionesFE").value;
-        alert(1)
-
         $.ajax({
             type: "POST",
             dataType: "json",

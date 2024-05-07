@@ -174,19 +174,22 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Constructor-
-        public IHubContext<HubNotificacion> _hubContext;
+       
 
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
-                                  RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, IHubContext<HubNotificacion> hubContext)
+                                  RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
-            _hubContext = hubContext;
 
         }
         #endregion
+
+        
+
+
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
@@ -264,7 +267,7 @@ namespace scorpioweb.Controllers
         //public async Task<IActionResult> Index(
         //    string sortOrder,
         //    string currentFilter,
-        //    string searchString,
+        //    string searchString, 
         //    int? pageNumber)
         //{
         //    //para ver si la  persona tiene o no huella registrada
@@ -8035,6 +8038,7 @@ namespace scorpioweb.Controllers
 
                 _context.Add(libronegro);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction("libronegro", "Personas");
 
             }
@@ -8139,6 +8143,8 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
+
+        
     }
 
 }

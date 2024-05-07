@@ -1,16 +1,17 @@
-﻿using F23.StringSimilarity;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using F23.StringSimilarity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Crypto.Prng;
 using QRCoder;
 using SautinSoft.Document;
-
 using SautinSoft.Document.MailMerging;
 using scorpioweb.Class;
 using scorpioweb.Models;
@@ -31,16 +32,17 @@ namespace scorpioweb.Controllers
     public class Api : Controller
     {
         private readonly IHostingEnvironment _hostingEnvironment;
-
+        public IHubContext<HubNotificacion> _hubContext;
         private readonly penas2Context _context;
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
-        public Api(penas2Context context, IHostingEnvironment hostingEnvironment)
+        public Api(penas2Context context, IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;
+            _hubContext = hubContext;
         }
 
 
@@ -228,12 +230,6 @@ namespace scorpioweb.Controllers
 
         }
 
-
-
-        public void queryPrueba(string[] datosQuery)
-        {
-
-        }
 
         #region -testSimilitud-
         public JsonResult testSimilitud(string nombre, string paterno, string materno)
@@ -512,6 +508,17 @@ namespace scorpioweb.Controllers
         {
             var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);
             return Json(new { success = true, responseText = Convert.ToString(0), curs = curs }); ;
+        }
+        #endregion
+
+        #region Probando signalr
+        [HttpGet]
+        public async Task<IActionResult> send(string message)
+        {
+            //var user = User.Identity.Name;
+            //await _hubContext.Clients.All.SendAsync("sendMessage", message);
+            await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", message);
+            return Ok();
         }
         #endregion
     }

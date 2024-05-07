@@ -53,27 +53,33 @@
     </a>
 }*@
 
-<div id="persona">
+<div id="divname">
 
 </div>
 
-<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
-<script>
-    var cone = new signalR.HubConnectionBuilder().withUrl("/HubNotificacion").build();
+@*<script src="~/lib/Microsoft/dist/browser/signalr.js"></script>*@
+@*#region "SIGNALR"*@
+@*<script>
 
-    connection.start().then(function () {
+   var cone = new signalR.HubConnectionBuilder().withUrl("/HubNotificacion").build();
+
+    cone.start().then(function () {
         console.log("Conexion exitosa");
     }).catch(function (err) {
         console.log(err)
-    )
+    });
 
-    connection.on("Recive", function (name, area) {
+    cone.on("Recive", function (Nombre, Materno) {
         let divname = documet.createElement("div")
-        divname.textContent = name + " " + area;
-        documen.getelemetById("divname").appendChild(divname)
+        divname.textContent = Nombre + " " + Materno;
+        documen.getElementById("divnames").appendChild(divname)
     })
-</script>
 
+</script>*@
+
+
+
+@*#endregion*@
 
 <div class="card-group" style="padding-top:2%">
   
