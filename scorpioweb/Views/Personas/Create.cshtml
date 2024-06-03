@@ -22,7 +22,16 @@
     var listDomSec = new Array;
     var listFamExtranjero = new Array;
     var listaSimilitud = new Array;
-      
+
+    var var_tablanueva = "";
+    var var_tablaSelect = "";
+    var var_idnuevo = "";
+    var var_idSelect = "";
+    var var_curs = "";
+    var CURSUsada = "";
+
+
+
     $(document).ready(function () {
         //#region centro penitenciario
              var centrosPenitenciarios = @Html.Raw(Json.Serialize(ViewBag.centrosPenitenciarios));
@@ -882,6 +891,7 @@
                     return;
                 }
             }
+            SendExpedienteUnico();
             btnSubmit.click();
         });
     });
@@ -1067,7 +1077,6 @@
         var nombre = document.getElementById("nombre").value;
         var paterno = document.getElementById("paterno").value;
         var materno = materno;
-
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -1120,12 +1129,12 @@
                 $("#similitudModal").modal();
             },
             error: function (response) {
-                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
                 console.log(response);
             }
         });
     }
-
+    var datosJson = "";
     function unirCURS(tabla, id) {
         var encontro = false;
         var index = -1;
@@ -1144,14 +1153,8 @@
             listaSimilitud.splice(index, 1);
         }
         // Convertir la lista a una cadena JSON
-        var datosJson = JSON.stringify(listaSimilitud);
-
-        // Asignar la cadena JSON al campo oculto en el formulario
-        document.getElementById("datosArray").value = datosJson;
-
+        datosJson = JSON.stringify(listaSimilitud);
     }
-
-
     function formatDate(dateString) {
         if (dateString == null) {
             return "";
@@ -1191,8 +1194,9 @@
         //if (tabla != "MCYSCP" || tabala != "LibertadCondicionada") {
         //    //Recordando para que es 
         //}
-        document.getElementById("tabla").value = tabla;
-        document.getElementById("idselecionado").value = id;
+        var_tablaSelect = tabla;
+        var_idSelect = id;
+
         $.ajax({
             url: "/Api/Savcardatos",
             type: "POST",
@@ -1203,6 +1207,7 @@
                 id, tabla,
             },
             success: function(response){
+                CURSUsada = response.lista[0].p.claveUnicaScorpio;
                 //DATOS GENERALES            
                 document.getElementById("nombre").value = response.lista[0].p.nombre;
                 document.getElementById("paterno").value = response.lista[0].p.paterno;
@@ -1257,7 +1262,7 @@
                 document.getElementById("direccionE").value = response.lista[0].e.direccion;
                 document.getElementById("telefonoE").value = response.lista[0].e.telefono;
                 document.getElementById("observacionesE").value = response.lista[0].e.observaciones;
-                ////DATOS TRABAJO
+                ////DATOS TRABAJO4)
                 document.getElementById("trabaja").value = response.lista[0].t.trabaja;
                 document.getElementById("tipoOcupacion").value = response.lista[0].t.tipoOcupacion;
                 document.getElementById("puesto").value = response.lista[0].t.puesto;
@@ -1303,7 +1308,6 @@
                 document.getElementById("especifiqueServicioMedico").value = response.lista[0].s.especifiqueServicioMedico;
                 document.getElementById("institucionServicioMedico").value = response.lista[0].s.institucionServicioMedico;
                 document.getElementById("observacionesSalud").value = response.lista[0].s.observaciones;
-
                 var cambiar = confirm("¿Desea descargar la fotografia?");
                 if (cambiar == true) {
                     if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true) {
@@ -1317,8 +1321,13 @@
         $("#similitudModal").modal("hide");
     };
 
-    function btnclose() {
-        $('#similitudModal').modal('toggle');
+    function btnclose(){
+        if(listaSimilitud.length > 0){
+            alert("Selecciono registros, presione USAR a uno de ellos. Use los datos correctos")
+            return;
+        }else{
+            $('#similitudModal').modal('toggle');
+        }
     }
     var lnestado = "";
     function extranjero() {
@@ -1342,6 +1351,7 @@
         }else{
             lnestado = document.getElementById("lnEstado").value;
         }
+
         $.ajax({
             url: "/Api/cursJson",
             type: "POST",
@@ -1354,9 +1364,37 @@
             success: function(response){
                 document.getElementById("CURS").value = response.curs;
                 document.getElementById("CURP").value = response.curs + "*";
+                var_curs = response.curs;
             }
         }); 
     };
+
+
+    function SendExpedienteUnico(){
+        if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true) {
+            var_tablanueva = "MCYSCP"
+        }else if(@Html.Raw(Json.Serialize(ViewBag.UserCL)) == true){
+            var_tablanueva = "LibertadCondicionada"
+        }
+        //document.getElementById("CURS").value = var_curs;
+        //document.getElementById("CURSUsada").value = CURSUsada;
+        //document.getElementById("tabla").value = var_tablaSelect;
+        //document.getElementById("idselecionado").value = var_idSelect;
+        //document.getElementById("tablanueva").value = var_tablanueva;
+
+        $.ajax({
+            url: "/Api/expedienteUnico",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                var_tablaSelect, var_idSelect, var_curs, CURSUsada, var_tablanueva, datosJson
+            },
+            success: function(response){    
+            }
+        }); 
+    }
 
 </script>
 
@@ -2640,7 +2678,7 @@
                 <button type="button" hrf data-dismiss="modal">x</button>
             </div>*@
             <div class="modal-header float-center" style="background-color:#0078a7">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" style="background-color:#0078a7;border: none; text-align: left;" aria-label="Close" onclick="btnclose()">
                     <i class="fa fa-close"></i>
                 </button>
                 <h3 id="modal_body" style="text-align:center; color:#000">Similitud </h3>
@@ -2665,7 +2703,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary fa fa-close" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-secondary fa fa-close" onclick="btnclose()">Cerrar</button>
             </div>
         </div>
     </div>

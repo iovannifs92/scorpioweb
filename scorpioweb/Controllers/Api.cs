@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using F23.StringSimilarity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -9,12 +11,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto.Prng;
 using QRCoder;
 using SautinSoft.Document;
 using SautinSoft.Document.MailMerging;
 using scorpioweb.Class;
 using scorpioweb.Models;
+using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,6 +26,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,6 +34,10 @@ using System.Threading.Tasks;
 
 namespace scorpioweb.Controllers
 {
+    public class apis
+    {
+
+    }
     public class Api : Controller
     {
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -38,13 +47,13 @@ namespace scorpioweb.Controllers
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
+
         public Api(penas2Context context, IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;
             _hubContext = hubContext;
         }
-
 
         public void Imprimir(string id)
         {
@@ -521,5 +530,204 @@ namespace scorpioweb.Controllers
             return Ok();
         }
         #endregion
+
+        #region -SACA IDNUEVO-
+        public int sacaidNUEVO(string var_tablanueva)
+        {
+            int idnuevo = 0;
+
+            var bases = mg.cambioAbase(var_tablanueva);
+
+            switch (bases)
+            {
+                case "persona":
+                    idnuevo = ((from table in _context.Persona
+                                    select table.IdPersona).Max()) + 1;
+                    break;
+                case "ejecucion":
+                    idnuevo = ((from table in _context.Ejecucion
+                                select table.IdEjecucion).Max()) + 1;
+                    break;
+                case "serviciospreviosjuicio":
+                    idnuevo = ((from table in _context.Serviciospreviosjuicio 
+                                select table.IdserviciosPreviosJuicio).Max()) + 1;
+                    break;
+                case "prisionespreventivas":
+                    idnuevo = ((from table in _context.Prisionespreventivas 
+                                select table.Idprisionespreventivas).Max()) + 1;
+                    break;
+                //case "Vinculacion":
+                //    Console.WriteLine("vinculacion");
+                //    break;
+                case "oficialia":
+                    idnuevo = ((from table in _context.Oficialia 
+                                select table.IdOficialia).Max()) + 1;
+                    break;
+                case "personacl":
+                    idnuevo = ((from table in _context.Personacl 
+                                select table.IdPersonaCl).Max()) + 1;
+                    break;
+                //case "Adolecentes":
+                //    Console.WriteLine("adolecentess");
+                //    break;
+                //case "archivo":
+                //    idnuevo = ;
+                //    break;
+                default:
+                    Console.WriteLine("Palabra no encontrada");
+                    break;
+            }
+
+            return idnuevo;
+        }
+        #endregion
+
+        #region -INSERTAR EXPEDIENTE UNICO-
+        public async Task expedienteUnico(
+            Expedienteunico expedienteunico,
+            string var_tablanueva,
+            string var_tablaSelect,
+            int var_idnuevo,
+            int var_idSelect,
+            string var_curs,
+            string CURSUsada,
+            string datosJson)
+        {
+            string var_tablaCurs = "ClaveUnicaScorpio";
+
+            //var_idnuevo = sacaidNUEVO(var_tablanueva);
+            var_idnuevo = var_idnuevo == 0 ? sacaidNUEVO(var_tablanueva) : var_idnuevo;
+
+
+            var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces(var_tablanueva));
+       
+            #region -Borrar si hay  mas de un registro ebn CURS-
+            List<DeleteOrUpdateExpedienteUnico> listaExpedienteUnico = new List<DeleteOrUpdateExpedienteUnico>();
+
+            listaExpedienteUnico = _context.DeleteOrUpdateExpedienteUnico
+                                    .FromSql("CALL sp_DeleteOrUpdateExpedienteUnico('" + var_tablanueva + "', " + var_idnuevo + ")")
+                                    .ToList();
+             
+
+            while (listaExpedienteUnico.Count() > 1)
+            {
+                var curs = listaExpedienteUnico.First();
+                var exUnico = await _context.Expedienteunico.SingleOrDefaultAsync(m => m.IdexpedienteUnico == curs.idExpedienteUnico);
+                if (exUnico != null)
+                {
+                    _context.Expedienteunico.Remove(exUnico);
+                    await _context.SaveChangesAsync();
+                }
+                listaExpedienteUnico = _context.DeleteOrUpdateExpedienteUnico
+                                               .FromSql("CALL sp_DeleteOrUpdateExpedienteUnico('" + var_tablanueva + "', " + var_idnuevo + ")")
+                                               .ToList();
+
+                CURSUsada = exUnico.ClaveUnicaScorpio;
+            }
+            #endregion
+
+            if (var_tablaSelect != null || CURSUsada != null)
+            {
+                var_curs = CURSUsada;
+                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(var_tablaSelect));
+
+                string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                _context.Database.ExecuteSqlCommand(query);
+
+                if (datosJson != null)
+                {
+                    List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosJson);
+
+                    // Proyectar la lista para obtener solo los valores de id y tabla
+                    var resultados = listaObjetos.Select(obj => new {
+                        id = obj["id"],
+                        tabla = obj["tabla"]
+                    });
+
+                    foreach (var resultado in resultados)
+                    {
+                        var_idSelect = Int32.Parse(resultado.id);
+                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+
+                        string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                        _context.Database.ExecuteSqlCommand(query2);
+                    }
+                }
+            }
+            else
+            {
+
+                var_idSelect = (from eu in _context.Expedienteunico
+                                where eu.ClaveUnicaScorpio == var_curs
+                                select eu.IdexpedienteUnico).FirstOrDefault();
+                if (var_idSelect == 0)
+                {
+                    expedienteunico.ClaveUnicaScorpio = var_curs;
+                    expedienteunico.Persona = var_idnuevo.ToString();
+                    _context.Add(expedienteunico);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    string query3 = $"CALL spUpdateEU('{var_tablanueva}', {var_idnuevo}, {var_idSelect});";
+                    _context.Database.ExecuteSqlCommand(query3);
+                }
+            }
+
+        }
+        #endregion
+
+        #region -presentaciones perdiodicas-
+
+        public void ImprimirPP(int id)
+        {
+            var nombre = (from p in _context.Persona
+                         where p.IdPersona == id
+                         select new{
+                             personasVM = p,
+                         }).ToList();
+
+            //var ppp = (from p in _context.Persona
+            //           join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
+            //           join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
+            //           where p.IdPersona == id
+            //           select new
+            //           { 
+            //               pp.FechaFirma
+            //           });
+
+
+            IEnumerable<Presentacionperiodica> ppp = from p in _context.Persona
+                                                     join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
+                                                     join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
+                                                     where p.IdPersona == id
+                                                     select new Presentacionperiodica
+                                                     {
+                                                         FechaFirma = pp.FechaFirma
+                                                     };
+     
+ 
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templatePP.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\PP_" + nombre[0].personasVM.NombreCompleto +".docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            var dataSource = new[] { new {
+                ID = nombre[0].personasVM.IdPersona,
+                nombre = nombre[0].personasVM.NombreCompleto.ToUpper(),
+            } };
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+            dc.MailMerge.Execute(dataSource);
+            dc.MailMerge.Execute(ppp, "firmas");
+            dc.Save(resultPath);
+
+            Response.Redirect("https://localhost:44359/Documentos/PP_"+ nombre[0].personasVM.NombreCompleto + ".docx");
+            //Response.Redirect("http://10.6.60.190/Documentos/PresentacionesPeriodicas.docx");
+
+        }
+        #endregion
+
+
     }
 }

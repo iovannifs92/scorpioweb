@@ -400,56 +400,50 @@ namespace scorpioweb.Controllers
                 {
                     ejecucion.Encargado = "uriel.ortega@dgepms.com";
                 }
-                int
 
-                idE = ((from table in _context.Ejecucion
-                          select table.IdEjecucion).Max()) + 1;
+                //#region -Expediente Unico-
+                //string var_tablanueva = "";
+                //string var_tablaSelect = "";
+                //string var_tablaCurs = "";
+                //int var_idnuevo = 0;
+                //int var_idSelect = 0;
+                //string var_curs = "";
+                //if (idselecionado != null && tabla != null)
+                //{
+                //    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
+                //    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                //    var_tablaCurs = "ClaveUnicaScorpio";
+                //    var_idnuevo = idE;
+                //    var_idSelect = Int32.Parse(idselecionado);
+                //    var_curs = CURS;
+                //    ejecucion.ClaveUnicaScorpio = CURS;
+                //    string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                //    _context.Database.ExecuteSqlCommand(query);
 
+                //    if (datosArray != null)
+                //    {
+                //        List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
 
+                //        // Proyectar la lista para obtener solo los valores de id y tabla
+                //        var resultados = listaObjetos.Select(obj => new {
+                //            id = obj["id"],
+                //            tabla = obj["tabla"]
+                //        });
 
-                #region -Expediente Unico-
-                string var_tablanueva = "";
-                string var_tablaSelect = "";
-                string var_tablaCurs = "";
-                int var_idnuevo = 0;
-                int var_idSelect = 0;
-                string var_curs = "";
-                if (idselecionado != null && tabla != null)
-                {
-                    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
-                    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                    var_tablaCurs = "ClaveUnicaScorpio";
-                    var_idnuevo = idE;
-                    var_idSelect = Int32.Parse(idselecionado);
-                    var_curs = CURS;
-                    ejecucion.ClaveUnicaScorpio = CURS;
-                    string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                    _context.Database.ExecuteSqlCommand(query);
+                //        foreach (var resultado in resultados)
+                //        {
+                //            var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
+                //            var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+                //            var_tablaCurs = "ClaveUnicaScorpio";
+                //            var_idnuevo = idE;
+                //            var_idSelect = Int32.Parse(resultado.id);
 
-                    if (datosArray != null)
-                    {
-                        List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
-
-                        // Proyectar la lista para obtener solo los valores de id y tabla
-                        var resultados = listaObjetos.Select(obj => new {
-                            id = obj["id"],
-                            tabla = obj["tabla"]
-                        });
-
-                        foreach (var resultado in resultados)
-                        {
-                            var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Ejecucion"));
-                            var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                            var_tablaCurs = "ClaveUnicaScorpio";
-                            var_idnuevo = idE;
-                            var_idSelect = Int32.Parse(resultado.id);
-
-                            string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                            _context.Database.ExecuteSqlCommand(query2);
-                        }
-                    }
-                }
-                #endregion
+                //            string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                //            _context.Database.ExecuteSqlCommand(query2);
+                //        }
+                //    }
+                //}
+                //#endregion
 
                 _context.Add(ejecucion);
                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -680,6 +674,24 @@ namespace scorpioweb.Controllers
                 _context.Add(historialeliminacion);
                 _context.SaveChanges();
 
+                #region -Editar en expediente unico-
+                try
+                {
+                    var ideu = (from eu in _context.Expedienteunico
+                                where Int64.Parse(eu.Ejecucion) == id
+                                select eu.IdexpedienteUnico).FirstOrDefault();
+
+                    var queryb = (from s in _context.Expedienteunico
+                                 where s.IdexpedienteUnico == ideu
+                                 select s).FirstOrDefault();
+                    queryb.Ejecucion = null;
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                #endregion
 
                 var ejecuciondel = _context.Ejecucion.SingleOrDefault(m => m.IdEjecucion == id);
                 _context.Ejecucion.Remove(ejecuciondel);

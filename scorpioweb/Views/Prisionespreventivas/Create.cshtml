@@ -8,6 +8,15 @@
 
     var listaSimilitud = new Array;
 
+    var var_tablanueva = "";
+    var var_tablaSelect = "";
+    var var_idnuevo = "";
+    var var_idSelect = "";
+    var var_curs = "";
+    var CURSUsada = "";
+    var datosJson = "";
+
+
     $(document).ready(function () {
         function autocomplete(inp, arr) {
             var currentFocus;
@@ -153,7 +162,6 @@
 
 
     function unirCURS(tabla, id) {
-        alert("unir")
         var encontro = false;
         var index = -1;
         // Busca si ya existe un objeto con el mismo id y tabla en la lista
@@ -171,11 +179,7 @@
             listaSimilitud.splice(index, 1);
         }
         // Convertir la lista a una cadena JSON
-        var datosJson = JSON.stringify(listaSimilitud);
-
-        // Asignar la cadena JSON al campo oculto en el formulario
-        document.getElementById("datosArray").value = datosJson;
-        alert(listaSimilitud)
+        datosJson = JSON.stringify(listaSimilitud);
     }
 
 
@@ -189,6 +193,8 @@
     function usarDatos(id, tabla) {
         document.getElementById("tabla").value = tabla;
         document.getElementById("idselecionado").value = id;
+        var_tablaSelect = tabla;
+        var_idSelect = id;
         $.ajax({
             url: "/Api/Savcardatos",
             type: "POST",
@@ -199,6 +205,7 @@
                 id, tabla,
             },
             success: function(response){
+                CURSUsada = response.lista[0].p.claveUnicaScorpio;
                 document.getElementById("CURS").value = response.lista[0].p.claveUnicaScorpio;
                 //document.getElementById("paterno").value = response.lista[0].paterno;
                 //document.getElementById("materno").value = response.lista[0].materno;
@@ -211,9 +218,37 @@
     };
 
     function btnclose() {
-        $('#similitudModal').modal('toggle');
+        if (listaSimilitud.length > 0) {
+            alert("Selecciono registros, presione USAR a uno de ellos. Use los datos correctos")
+            return;
+        } else {
+            $('#similitudModal').modal('toggle');
+        }
     }
 
+    $(document).ready(function () {
+        $('#btnSave').on("click", function (e) {
+            e.preventDefault();
+            SendExpedienteUnico();
+            btnSubmit.click();
+        });
+    });
+
+    function SendExpedienteUnico() {
+        var_tablanueva = "PrisionPreventiva";
+        $.ajax({
+            url: "/Api/expedienteUnico",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                var_tablaSelect, var_idSelect, var_curs, CURSUsada, var_tablanueva, datosJson
+            },
+            success: function (response) {
+            }
+        });
+    }
 </script>
 
 <div class="row">
@@ -276,8 +311,9 @@
                 <label class="control-label">Archivo</label>
                 <input type="file" class="custom-file-input" id="archivo" name="archivo">
             </div>
-            <div class="form-group" style="padding-top:1%">
-                <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
+            <div class="form-group" style="padding-top:1%"> 
+                <button value="Guardar" class="btn btn-success" id="btnSave" name="btnSave"><i class="fa fa-save"></i> Guardar</button>
+                <button type="submit" value="Guardar" class="btn btn-success" id="btnSubmit" name="btnSubmit" style="display:none"><i class="fa fa-save"></i> Guardar</button>
             </div>
         </form>
     </div>

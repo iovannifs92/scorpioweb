@@ -2015,7 +2015,7 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
                                                 Personacl personacl, Domiciliocl domiciliocl, Estudioscl estudioscl, Trabajocl trabajocl, Actividadsocialcl actividadsocialcl, Abandonoestadocl abandonoEstadocl, Saludfisicacl saludfisicacl, Domiciliosecundariocl domiciliosecundariocl, Consumosustanciascl consumosustanciascl, Asientofamiliarcl asientoFamiliarcl, Familiaresforaneoscl familiaresForaneoscl, Expedienteunico expedienteunico,
             string resolucion, string centropenitenciario, string ce, string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
-            string lnEstado, string CURS, string CURSUsada, string tabla, string idselecionado, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
+            string lnEstado, string CURS, string CURSUsada, string tabla, int idselecionado,string tablanueva, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string TratamientoAdicciones, string CualTratamientoAdicciones, string CuandoConsume, string familiares, string referenciasPersonales, string ubicacionExpediente, string colaboracion,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
@@ -2030,7 +2030,7 @@ namespace scorpioweb.Controllers
             string motivoViaje, string documentaciónSalirPais, string pasaporte, string visa, string familiaresFuera,
             string enfermedad, string especifiqueEnfermedad, string embarazoLactancia, string tiempoEmbarazo, string tratamiento, string discapacidad, string especifiqueDiscapacidad,
             string servicioMedico, string especifiqueServicioMedico, string institucionServicioMedico, string observacionesSalud, string capturista,
-            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string inputAutocomplete, string datosArray)
+            IFormFile fotografia, string arraySustancias, string arrayFamiliarReferencia, string arrayDomSec, string arrayFamExtranjero, string inputAutocomplete, string idsSeleccionados)
         {
 
             string currentUser = User.Identity.Name;
@@ -2493,101 +2493,7 @@ namespace scorpioweb.Controllers
                     //#endregion
 
                     #region -Expediente Unico-
-
-                    string var_tablanueva = "";
-                    string var_tablaSelect = "";
-                    string var_tablaCurs = "";
-                    int var_idnuevo = 0;
-                    int var_idSelect = 0;
-                    string var_curs = "";
-
-                    if (idselecionado != null && tabla != null)
-                    {
-                        var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
-                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                        var_tablaCurs = "ClaveUnicaScorpio";
-                        var_idnuevo = idPersona;
-                        var_idSelect = Int32.Parse(idselecionado);
-                        var_curs = CURS;
-                        if (CURSUsada != null)
-                        {
-                            var_curs = CURSUsada;
-                        }
-
-                        string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                        _context.Database.ExecuteSqlCommand(query);
-
-                        if (datosArray != null)
-                        {
-                            List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
-
-                            // Proyectar la lista para obtener solo los valores de id y tabla
-                            var resultados = listaObjetos.Select(obj => new {
-                                id = obj["id"],
-                                tabla = obj["tabla"]
-                            });
-
-                            foreach (var resultado in resultados)
-                            {
-                                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
-                                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                                var_tablaCurs = "ClaveUnicaScorpio";
-                                var_idnuevo = idPersona;
-                                var_idSelect = Int32.Parse(resultado.id);
-
-                                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                                _context.Database.ExecuteSqlCommand(query2);
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        if (CURS != null)
-                        {
-                            var unica = (from eu in _context.Expedienteunico
-                                         where eu.ClaveUnicaScorpio == CURS
-                                         select eu.IdexpedienteUnico).FirstOrDefault();
-                            if (unica == 0)
-                            {
-                                expedienteunico.ClaveUnicaScorpio = CURS;
-                                expedienteunico.Persona = idPersona.ToString();
-                                _context.Add(expedienteunico);
-                            }
-                            else
-                            {
-                                var query = (from a in _context.Expedienteunico
-                                             where a.IdexpedienteUnico == unica
-                                             select a).FirstOrDefault();
-
-                                query.Persona = idPersona.ToString();
-                                _context.SaveChanges();
-                            }
-                            if (datosArray != null)
-                            {
-                                List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
-
-                                // Proyectar la lista para obtener solo los valores de id y tabla
-                                var resultados = listaObjetos.Select(obj => new {
-                                    id = obj["id"],
-                                    tabla = obj["tabla"]
-                                });
-
-                                foreach (var resultado in resultados)
-                                {
-                                    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
-                                    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                                    var_tablaCurs = "ClaveUnicaScorpio";
-                                    var_idnuevo = idPersona;
-                                    var_idSelect = Int32.Parse(resultado.id);
-
-                                    string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                                    _context.Database.ExecuteSqlCommand(query2);
-                                }
-                            }
-
-                        }
-                    }
+                    //TODO QUEDO EN API =)
                     #endregion 
 
                     #region -Añadir a contexto-
@@ -3004,101 +2910,7 @@ namespace scorpioweb.Controllers
                     #endregion
 
                     #region -Expediente Unico-
-
-                    string var_tablanueva = "";
-                    string var_tablaSelect = "";
-                    string var_tablaCurs = "";
-                    int var_idnuevo = 0;
-                    int var_idSelect = 0;
-                    string var_curs = "";
-
-                    if (idselecionado != null && tabla != null)
-                    {
-                         var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
-                         var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                         var_tablaCurs = "ClaveUnicaScorpio";
-                         var_idnuevo = idPersonacl;
-                         var_idSelect = Int32.Parse(idselecionado);
-                         var_curs = CURS;
-                        if (CURSUsada != null)
-                        {
-                            var_curs = CURSUsada;
-                        }
-
-                        string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                        _context.Database.ExecuteSqlCommand(query);
-
-                        if (datosArray != null)
-                        {
-                            List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
-
-                            // Proyectar la lista para obtener solo los valores de id y tabla
-                            var resultados = listaObjetos.Select(obj => new {
-                                id = obj["id"],
-                                tabla = obj["tabla"]
-                            });
-
-                            foreach (var resultado in resultados)
-                            {
-                                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
-                                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                                var_tablaCurs = "ClaveUnicaScorpio";
-                                var_idnuevo = idPersonacl;
-                                var_idSelect = Int32.Parse(resultado.id);
-
-                                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                                _context.Database.ExecuteSqlCommand(query2);
-                            }
-                         }
-
-                    }
-                    else
-                    {
-                        if (CURS != null)
-                        {
-                            var unica = (from eu in _context.Expedienteunico
-                                         where eu.ClaveUnicaScorpio == CURS
-                                         select eu.IdexpedienteUnico).FirstOrDefault();
-                            if (unica == 0)
-                            {
-                                expedienteunico.ClaveUnicaScorpio = CURS;
-                                expedienteunico.Personacl = idPersonacl.ToString();
-                                _context.Add(expedienteunico);
-                            }
-                            else
-                            {
-                                var query = (from a in _context.Expedienteunico
-                                             where a.IdexpedienteUnico == unica
-                                             select a).FirstOrDefault();
-
-                                query.Personacl = idPersonacl.ToString();
-                                _context.SaveChanges();
-                            }
-
-                            if (datosArray != null)
-                            {
-                                List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
-
-                                // Proyectar la lista para obtener solo los valores de id y tabla
-                                var resultados = listaObjetos.Select(obj => new {
-                                    id = obj["id"],
-                                    tabla = obj["tabla"]
-                                });
-
-                                foreach (var resultado in resultados)
-                                {
-                                    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("LibertadCondicionada"));
-                                    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                                    var_tablaCurs = "ClaveUnicaScorpio";
-                                    var_idnuevo = idPersonacl;
-                                    var_idSelect = Int32.Parse(resultado.id);
-
-                                    string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                                    _context.Database.ExecuteSqlCommand(query2);
-                                }
-                            }
-                        }
-                    }
+                    //TODO QUEDO EN API =)
                     #endregion
 
                     #region -Añadir a contexto-
@@ -4178,7 +3990,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
+        public async Task<IActionResult> Edit(int id, [Bind("IdPersona,TieneResolucion,Nombre,Paterno,Materno,NombrePadre,NombreMadre,Alias,Genero,Edad,Fnacimiento,Lnpais,Lnestado,Lnmunicipio,Lnlocalidad,EstadoCivil,Duracion,OtroIdioma,EspecifiqueIdioma,ComIndigena,ComLgbtttiq,DatosGeneralescol,LeerEscribir,Traductor,EspecifiqueTraductor,TelefonoFijo,Celular,Hijos,Nhijos,NpersonasVive,Propiedades,Curp,ConsumoSustancias,Familiares,ReferenciasPersonales,UltimaActualización,Supervisor,rutaFoto,Capturista,MotivoCandado,Candado,UbicacionExpediente")] Persona persona, Expedienteunico expedienteunico, string arraySustancias, string arraySustanciasEditadas, string arrayFamiliarReferencia, string arrayFamiliaresEditados, string arrayReferenciasEditadas, string centropenitenciario, string sinocentropenitenciario)
         {
 
             Domiciliosecundario domiciliosecundario = new Domiciliosecundario();
@@ -4480,6 +4292,17 @@ namespace scorpioweb.Controllers
 
                 try
                 {
+
+                    #region -Expediente Unico-
+                    expedienteunico.ClaveUnicaScorpio = persona.ClaveUnicaScorpio;
+                    expedienteunico.Persona = idPersona.ToString();
+                    _context.Add(expedienteunico);
+                    #endregion 
+
+
+
+
+
                     var oldPersona = await _context.Persona.FindAsync(id);
                     _context.Entry(oldPersona).CurrentValues.SetValues(persona);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);

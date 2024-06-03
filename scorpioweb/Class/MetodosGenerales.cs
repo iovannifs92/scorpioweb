@@ -13,6 +13,8 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace scorpioweb.Class
 {
@@ -183,7 +185,7 @@ namespace scorpioweb.Class
             string maternoN = normaliza(materno);
             string generoN = normaliza(genero);
             string nombreN = normaliza(nombre);
-      
+
             if ("Ñ".IndexOf(paternoN[0]) == 0)
             {
                 //for (int a = 0; a < paternoN.Length; a++)
@@ -213,7 +215,7 @@ namespace scorpioweb.Class
             string[] nombres = nombreN.Split(' '); // Divide el nombre en partes separadas por espacios
             if (nombres.Length > 1) // Si hay al menos dos partes en el nombre
             {
-                if (!(nombreN.Substring(0,5) == "MARIA" || nombreN == "MA" || nombreN == "MA." || nombreN.Substring(0, 4) == "JOSE" || nombreN == "J" || nombreN == "J."))
+                if (!(nombreN.Substring(0, 5) == "MARIA" || nombreN == "MA" || nombreN == "MA." || nombreN.Substring(0, 4) == "JOSE" || nombreN == "J" || nombreN == "J."))
                 {
                     curs[3] = nombres[0][0];
                 }
@@ -255,7 +257,7 @@ namespace scorpioweb.Class
             //}
 
 
-            var anexoDos = anexoDosCurp(curs.ToString().Substring(0,4));
+            var anexoDos = anexoDosCurp(curs.ToString().Substring(0, 4));
             curs.Insert(0, anexoDos);
             curs.Insert(4, fnacimiento.Value.ToString("yyMMdd"));
 
@@ -342,7 +344,7 @@ namespace scorpioweb.Class
 
         Dictionary<string, string> remplazoBases = new Dictionary<string, string>
         {
-            { "MCYSCP", "persona" },
+             { "MCYSCP", "persona" },
             { "Archivo", "archivo" },
             { "Ejecucion", "ejecucion" },
             { "ServiciosPrevios", "serviciospreviosjuicio" },
@@ -375,6 +377,103 @@ namespace scorpioweb.Class
 
             return resultado;
         }
+
+        //public async Task expedienteUnico(
+        //   string var_tablanueva,
+        //   string var_tablaSelect,
+        //   int var_idnuevo,
+        //   int var_idSelect,
+        //   string var_curs,
+        //   string CURSUsada,
+        //   string datosArray)
+        //{
+        //    string var_tablaCurs = "ClaveUnicaScorpio";
+
+        //    if (var_tablaSelect != null)
+        //    {
+        //        var_tablanueva = cambioAbase(RemoveWhiteSpaces(var_tablanueva));
+        //        var_tablaSelect = cambioAbase(RemoveWhiteSpaces(var_tablaSelect));
+        //        var_idnuevo = var_idnuevo;
+        //        var_idSelect = var_idSelect;
+        //        if (CURSUsada != null)
+        //        {
+        //            var_curs = CURSUsada;
+        //        }
+
+        //        string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+        //        _context.Database.ExecuteSqlCommand(query);
+
+        //        if (datosArray != null)
+        //        {
+        //            List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+
+        //            // Proyectar la lista para obtener solo los valores de id y tabla
+        //            var resultados = listaObjetos.Select(obj => new {
+        //                id = obj["id"],
+        //                tabla = obj["tabla"]
+        //            });
+
+        //            foreach (var resultado in resultados)
+        //            {
+        //                var_tablanueva = mg.cambioAbase(RemoveWhiteSpaces("MCYSCP"));
+        //                var_tablaSelect = mg.cambioAbase(mRemoveWhiteSpaces(resultado.tabla));
+        //                var_tablaCurs = "ClaveUnicaScorpio";
+        //                var_idnuevo = var_idnuevo;
+        //                var_idSelect = Int32.Parse(resultado.id);
+
+        //                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+        //                _context.Database.ExecuteSqlCommand(query2);
+        //            }
+        //        }
+
+        //    }
+        //    //else
+        //    //{
+        //    //    if (CURSUsada != null)
+        //    //    {
+        //    //        var unica = (from eu in _context.Expedienteunico
+        //    //                     where eu.ClaveUnicaScorpio == CURSUsada
+        //    //                     select eu.IdexpedienteUnico).FirstOrDefault();
+        //    //        if (unica == 0)
+        //    //        {
+        //    //            expedienteunico.ClaveUnicaScorpio = CURSUsada;
+        //    //            expedienteunico.Persona = var_idnuevo.ToString();
+        //    //            _context.Add(expedienteunico);
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            var query = (from a in _context.Expedienteunico
+        //    //                         where a.IdexpedienteUnico == unica
+        //    //                         select a).FirstOrDefault();
+
+        //    //            query.Persona = var_idnuevo.ToString();
+        //    //            _context.SaveChanges();
+        //    //        }
+        //    //        if (datosArray != null)
+        //    //        {
+        //    //            List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+
+        //    //            // Proyectar la lista para obtener solo los valores de id y tabla
+        //    //            var resultados = listaObjetos.Select(obj => new {
+        //    //                id = obj["id"],
+        //    //                tabla = obj["tabla"]
+        //    //            });
+
+        //    //            foreach (var resultado in resultados)
+        //    //            {
+        //    //                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("MCYSCP"));
+        //    //                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+        //    //                var_tablaCurs = "ClaveUnicaScorpio";
+        //    //                var_idnuevo = var_idnuevo;
+        //    //                var_idSelect = Int32.Parse(resultado.id);
+
+        //    //                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+        //    //                _context.Database.ExecuteSqlCommand(query2);
+        //    //            }
+        //    //        }
+        //    //    }
+        //    //}
+        //}
 
     }
 }

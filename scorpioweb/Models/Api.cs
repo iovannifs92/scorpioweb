@@ -8,6 +8,7 @@ namespace scorpioweb.Models
         public AerAdolescentesDetalles adolescentesDetallesVM { get; set; }
         public Fro froVM { get; set; }
         public FroAdolescentes froAdolescentesVM { get; set; }
+        public Presentacionperiodica presentacionperiodicaVM { get; set; }
     }
 
 }

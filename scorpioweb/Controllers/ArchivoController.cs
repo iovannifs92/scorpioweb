@@ -207,53 +207,53 @@ namespace scorpioweb.Models
                     archivo.CondicionEspecial = mg.removeSpaces(mg.normaliza(condicion));
 
 
-                    #region -Expediente Unico-
+                    //#region -Expediente Unico-
 
-                    string var_tablanueva = "";
-                    string var_tablaSelect = "";
-                    string var_tablaCurs = "";
-                    int var_idnuevo = 0;
-                    int var_idSelect = 0;
-                    string var_curs = "";
+                    //string var_tablanueva = "";
+                    //string var_tablaSelect = "";
+                    //string var_tablaCurs = "";
+                    //int var_idnuevo = 0;
+                    //int var_idSelect = 0;
+                    //string var_curs = "";
 
-                    if (idselecionado != null && tabla != null)
-                    {
-                        var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
-                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                        var_tablaCurs = "ClaveUnicaScorpio";
-                        var_idnuevo = id;
-                        var_idSelect = Int32.Parse(idselecionado);
-                        var_curs = CURS;
-                        archivo.ClaveUnicaScorpio = CURS;
+                    //if (idselecionado != null && tabla != null)
+                    //{
+                    //    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
+                    //    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+                    //    var_tablaCurs = "ClaveUnicaScorpio";
+                    //    var_idnuevo = id;
+                    //    var_idSelect = Int32.Parse(idselecionado);
+                    //    var_curs = CURS;
+                    //    archivo.ClaveUnicaScorpio = CURS;
 
-                        string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                        _context.Database.ExecuteSqlCommand(query);
+                    //    string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                    //    _context.Database.ExecuteSqlCommand(query);
 
 
-                        if (datosArray != null)
-                        {
-                            List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+                    //    if (datosArray != null)
+                    //    {
+                    //        List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
 
-                            // Proyectar la lista para obtener solo los valores de id y tabla
-                            var resultados = listaObjetos.Select(obj => new {
-                                id = obj["id"],
-                                tabla = obj["tabla"]
-                            });
+                    //        // Proyectar la lista para obtener solo los valores de id y tabla
+                    //        var resultados = listaObjetos.Select(obj => new {
+                    //            id = obj["id"],
+                    //            tabla = obj["tabla"]
+                    //        });
 
-                            foreach (var resultado in resultados)
-                            {
-                                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
-                                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                                var_tablaCurs = "ClaveUnicaScorpio";
-                                var_idnuevo = id;
-                                var_idSelect = Int32.Parse(resultado.id);
+                    //        foreach (var resultado in resultados)
+                    //        {
+                    //            var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("Archivo"));
+                    //            var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+                    //            var_tablaCurs = "ClaveUnicaScorpio";
+                    //            var_idnuevo = id;
+                    //            var_idSelect = Int32.Parse(resultado.id);
 
-                                string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                                _context.Database.ExecuteSqlCommand(query2);
-                            }
-                        }
-                    }
-                    #endregion
+                    //            string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+                    //            _context.Database.ExecuteSqlCommand(query2);
+                    //        }
+                    //    }
+                    //}
+                    //#endregion
 
                     _context.Add(archivo);
                     _context.SaveChanges();
@@ -351,6 +351,26 @@ namespace scorpioweb.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
+            #region -Editar en expediente unico-
+            try
+            {
+                var ideu = (from eu in _context.Expedienteunico
+                            where Int64.Parse(eu.Archivo) == id
+                            select eu.IdexpedienteUnico).FirstOrDefault();
+
+                var query = (from s in _context.Expedienteunico
+                             where s.IdexpedienteUnico == ideu
+                             select s).FirstOrDefault();
+                query.Archivo = null;
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            #endregion
+
             var archivo = await _context.Archivo.SingleOrDefaultAsync(m => m.IdArchivo == id);
             _context.Archivo.Remove(archivo);
             await _context.SaveChangesAsync();
@@ -399,6 +419,25 @@ namespace scorpioweb.Models
                 historialeliminacion.Supervisor = "NA";
                 _context.Add(historialeliminacion);
                 _context.SaveChanges();
+
+                #region -Editar en expediente unico-
+                try
+                {
+                    var ideu = (from eu in _context.Expedienteunico
+                                where Int64.Parse(eu.Archivo) == id
+                                select eu.IdexpedienteUnico).FirstOrDefault();
+
+                    var queryB = (from s in _context.Expedienteunico
+                                 where s.IdexpedienteUnico == ideu
+                                 select s).FirstOrDefault();
+                    queryB.Archivo = null;
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                }
+                #endregion
 
                 _context.Database.ExecuteSqlCommand("CALL spBorrarRegistroArchivo(" + id + ")");
                 return Json(new { success = true, responseText = Url.Action("index", "Personas"), borrar });

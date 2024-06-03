@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewData["Title"] = "Reinserción Social/Vinculacion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<script>   
+    function openFullScreenWindow() {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+
+        const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+    }
+</script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+@*@if (ViewBag.WarningsUser > 0)
+{
+    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
+        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida</h3>
+    </a>
+   
+}*@
+
+@*<script src="~/lib/Microsoft/dist/browser/signalr.js"></script>*@
+@*#region "SIGNALR"*@
+@*<script>
+
+   var cone = new signalR.HubConnectionBuilder().withUrl("/HubNotificacion").build();
+
+    cone.start().then(function () {
+        console.log("Conexion exitosa");
+    }).catch(function (err) {
+        console.log(err)
+    });
+
+    cone.on("Recive", function (Nombre, Materno) {
+        let divname = documet.createElement("div")
+        divname.textContent = Nombre + " " + Materno;
+        documen.getElementById("divnames").appendChild(divname)
+    })
+
+</script>*@
+@*#endregion*@
+<div>
+    <h1 style="font-family: cursive; text-align:center;">Reinserción Social/Vinculación</h1>
+</div>
+<div class="card-group" style="padding-top:2%">
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Reinsercion" asp-action="*">
+                    <img class="card-img-top" src="~/images/book.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas que ya cuentan con algun servicio de canalizacion" />
+                    Personas canalizadas
+                </a>
+            </h4>
+            <p class="card-text">
+                Personas que ya cuentan con algun servicio de canalizacion
+            </p>
+        </div>
+    </div>
+
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Reinsercion" asp-action="Index">
+                    <img class="card-img-top" src="~/images/care.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas Registradas en Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada">
+                    Personas por canalizar
+                </a>
+            </h4>
+            <p class="card-text">
+                Personas Registradas en Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada 
+            </p>
+        </div>
+    </div>
+</div>
+<div class="bg-light clearfix" id="seccionBotones">
+    <section class="buttons" style="padding-right: 1em;">
+        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
+    </section>
+</div>
+
+<style>
+    .buttons a {
+        text-decoration: none;
+        font-size: 28px;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;        
+        color: #f1f1f1;
+        border-radius: 50%;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+        transition: all .4s ease-in-out;
+    }
+
+    .buttons a:hover {
+        transform: scale(1.2);
+    }
+
+    #agenda {
+        background: #314652;
+        margin-left: 20px;
+    }
+
+    #calendario {
+        background: #00B812;
+        margin-left: 20px;
+    }
+
+    #mensajeSistema {
+        background: #0078A7;
+        margin-left: 20px;
+    } 
+    #libronegro {
+        background: #fff;
+        margin-left: 20px;
+    }
+
+    #seccionBotones{
+        padding-top: 1em;
+        
+    }
+
+</style>
+
+
+

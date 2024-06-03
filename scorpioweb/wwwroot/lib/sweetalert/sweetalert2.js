@@ -1377,7 +1377,7 @@
 
   var renderPopup = function renderPopup(instance, params) {
     var popup = getPopup(); // Width
-
+//    alert(1)
     applyNumericalStyle(popup, 'width', params.width); // Padding
 
     applyNumericalStyle(popup, 'padding', params.padding); // Background
@@ -1449,7 +1449,7 @@
     return getCancelButton() && getCancelButton().click();
   };
 
-  function fire() {
+    function fire() {
     var Swal = this;
 
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -13,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using scorpioweb.Class;
 using scorpioweb.Models;
+using Syncfusion.EJ2.Linq;
 
 namespace scorpioweb.Controllers
 {
@@ -44,10 +48,202 @@ namespace scorpioweb.Controllers
         #endregion
 
         // GET: Reinsercion
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string sortOrder,
+           string currentFilter,
+           string searchString,
+           string estadoSuper,
+           string figuraJudicial,
+           int? pageNumber)
         {
-            return View(await _context.Reinsercion.ToListAsync());
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            var query = (from t1 in (
+                        from p in _context.Persona
+                        select new ReinsercionMCYSCPLCCURSVM
+                        {
+                            IdTabla = p.IdPersona,
+                            Paterno = p.Paterno,
+                            Materno = p.Materno,
+                            Nombre = p.Nombre,
+                            ClaveUnica = p.ClaveUnicaScorpio,
+                            NomTabla = "MCYSCP"
+                        }).Concat(
+                            from pcl in _context.Personacl
+                            select new ReinsercionMCYSCPLCCURSVM
+                            {
+                                IdTabla = pcl.IdPersonaCl,
+                                Paterno = pcl.Paterno,
+                                Materno = pcl.Materno,
+                                Nombre = pcl.Nombre,
+                                ClaveUnica = pcl.ClaveUnicaScorpio,
+                                NomTabla = "CL"
+                            }
+                        )
+                         join ex in _context.Expedienteunico on t1.ClaveUnica equals ex.ClaveUnicaScorpio
+                         group t1 by new { t1.Paterno, t1.Materno, t1.Nombre, t1.ClaveUnica, t1.NomTabla } into g
+                         where g.Key.ClaveUnica != null
+                         select new ReinsercionMCYSCPLCCURSVM
+                         {
+                             IdTabla = g.Max(x => x.IdTabla),
+                             Paterno = g.Max(x => x.Paterno),
+                             Materno = g.Max(x => x.Materno),
+                             Nombre = g.Max(x => x.Nombre),
+                             ClaveUnica = g.Max(x => x.ClaveUnica),
+                             NomTabla = g.Key.NomTabla
+
+                         }
+                    );
+
+            var tamano = query.Count();
+
+            // Ejecutar la consulta
+
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["EstadoS"] = estadoSuper;
+            ViewData["FiguraJ"] = figuraJudicial;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(x => (x.Paterno + " " + x.Materno + " " + x.Nombre).Contains(searchString.ToUpper()) ||
+                                              (x.Nombre + " " + x.Paterno + " " + x.Materno).Contains(searchString.ToUpper()) ||
+                                              (x.IdTabla).ToString().Contains(searchString));
+            }
+
+            query.OrderBy(x => x.IdTabla);
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    query = query.OrderByDescending(x => x.Paterno);
+                    break;
+                case "causa_penal_desc":
+                    query = query.OrderByDescending(x => x.Materno);
+                    break;
+                case "estado_cumplimiento_desc":
+                    query = query.OrderByDescending(x => x.Nombre);
+                    break;
+                default:
+                    query = query.OrderByDescending(x => x.Materno);
+                    break;
+            }
+            int pageSize = 15;
+            return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
+
+        //// GET: Reinsercion
+        //public async Task<IActionResult> Reincercion(
+        //    string sortOrder,
+        //   string currentFilter,
+        //   string searchString,
+        //   string estadoSuper,
+        //   string figuraJudicial,
+        //   int? pageNumber)
+        //{
+
+        //    ViewData["CurrentSort"] = sortOrder;
+        //    ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+        //    ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+        //    ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+
+        //    if (searchString != null)
+        //    {
+        //        pageNumber = 1;
+        //    }
+        //    else
+        //    {
+        //        searchString = currentFilter;
+        //    }
+
+        //    var user = await userManager.FindByNameAsync(User.Identity.Name);
+        //    var roles = await userManager.GetRolesAsync(user);
+
+        //    var query = from r in _context.Reinsercion
+        //                join p in _context.Personacl on r.IdTabla equals p.IdPersonaCl
+        //                join d in _context.Domiciliocl on p.idPersonaCL equals d.PersonaclIdPersonacl
+        //                join e in _context.Estudioscl on p.idPersonaCL equals e.PersonaClIdPersonaCl
+        //                join t in _context.Trabajocl on p.idPersonaCL equals t.PersonaClIdPersonaCl
+        //                join a in _context.Actividadsocialcl on p.idPersonaCL equals a.PersonaClIdPersonaCl
+        //                join s in _context.Saludfisicacl on p.idPersonaCL equals s.PersonaClIdPersonaCl
+        //                join pv in _context.Psicologiavincu on p.idPersonaCL equals pv.PersonaClIdPersonaCl into pvGroup
+        //                from pv in pvGroup.DefaultIfEmpty()
+        //                join ex in _context.Expedienteunico on p.idPersonaCL equals ex.Personacl into exGroup
+        //                from ex in exGroup.DefaultIfEmpty()
+        //                join ep in _context.Ejecucion on ex.ejecucion equals ep.IdEjecucion into epGroup
+        //                from ep in epGroup.DefaultIfEmpty()
+        //                join epcp in _context.Epcausapenal on ep.idEjecucion equals epcp.EjecucionIdEjecucion into epcpGroup
+        //                from epcp in epcpGroup.DefaultIfEmpty()
+        //                join scl in _context.Supervisioncl on p.idPersonaCL equals scl.PersonaclIdPersonacl into sclGroup
+        //                from scl in sclGroup.DefaultIfEmpty()
+        //                join cpcl in _context.Causapenalcl on scl.CausaPenalcl_idCausaPenalcl equals cpcl.IdCausaPenalcl into cpclGroup
+        //                from cpcl in cpclGroup.DefaultIfEmpty()
+        //                join dcl in _context.Delitocl on cpcl.idCausaPenalcl equals dcl.CausaPenalclIdCausaPenalcl into dclGroup
+        //                from dcl in dclGroup.DefaultIfEmpty()
+        //                select new
+        //                {
+        //                    idPersonaCL = p.idPersonaCL,
+        //                    nombre = string.Concat(p.paterno, " ", p.materno, " ", p.nombre),
+        //                    cp = ep.ce ?? cpcl.CausaPenal,
+        //                    delito = epcp.delito ?? dcl.tipo,
+        //                    EstadoVinculacion = r.Estado,
+        //                    EstadoSupervision = scl.Estadosupervision
+        //                };
+
+        //    var result = query.ToList();
+
+        //    // Ejecutar la consulta
+
+
+        //    ViewData["CurrentFilter"] = searchString;
+        //    ViewData["EstadoS"] = estadoSuper;
+        //    ViewData["FiguraJ"] = figuraJudicial;
+
+        //    if (!String.IsNullOrEmpty(searchString))
+        //    {
+        //        query = query.Where(x => (x.Paterno + " " + x.Materno + " " + x.Nombre).Contains(searchString.ToUpper()) ||
+        //                                      (x.Nombre + " " + x.Paterno + " " + x.Materno).Contains(searchString.ToUpper()) ||
+        //                                      (x.IdTabla).ToString().Contains(searchString));
+        //    }
+
+        //    query.OrderBy(x => x.IdTabla);
+
+        //    switch (sortOrder)
+        //    {
+        //        case "name_desc":
+        //            query = query.OrderByDescending(x => x.Paterno);
+        //            break;
+        //        case "causa_penal_desc":
+        //            query = query.OrderByDescending(x => x.Materno);
+        //            break;
+        //        case "estado_cumplimiento_desc":
+        //            query = query.OrderByDescending(x => x.Nombre);
+        //            break;
+        //        default:
+        //            query = query.OrderByDescending(x => x.Materno);
+        //            break;
+        //    }
+        //    int pageSize = 15;
+        //    return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
+        //}
 
         // GET: Reinsercion/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -83,39 +279,34 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
+            List<Persona> listap = new List<Persona>();
+            List<Personacl> listapcl = new List<Personacl>();
+
             if (ModelState.IsValid)
             {
-                //Sacar info de su tabla 
-                //string tablaSeleccionada = reinsercion.Tabla; // Define la tabla seleccionada aquí
+                //Sacar info de su tabla
 
-                //IQueryable<Persona> consultaPersona = null;
+                List<object> miLista = new List<object>(); // Esta es una función hipotética que obtiene los datos
 
-                //if (tablaSeleccionada == "Persona")
-                //{
-                //    consultaPersona = _context.Persona
-                //        .Where(persona => persona.IdPersona == Int32.Parse(reinsercion.IdTabla));
-                //}
-                //else(tablaSeleccionada == "Personacl")
-                //{
-                //    consultaPersona = _context.Personacl
-                //        .Where(personacl => personacl.IdPersonaCl == Int32.Parse(reinsercion.IdTabla));
-                //}
+                var persona = _context.Persona
+                                   .SingleOrDefault(m => m.IdPersona == Int32.Parse(reinsercion.IdTabla));
 
-                //var info = consultaPersona.ToList();
+                 var personacl = _context.Personacl
+                                   .SingleOrDefault(m => m.IdPersonaCl == Int32.Parse(reinsercion.IdTabla));
+
 
                 _context.Add(reinsercion);
                 await _context.SaveChangesAsync();
-                //await _hubContext.Clients.All.SendAsync("Recive", libronegro.Nombre, libronegro.Materno);
-
+            
                 foreach (var rol in roles)
                 {
                     if (rol != "Vinculacion")
                     {
-                        await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", "Hay una nueva canalizacion"  );
+                        await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
+            } 
             return View(reinsercion);
         }
 
@@ -202,6 +393,10 @@ namespace scorpioweb.Controllers
         private bool ReinsercionExists(int id)
         {
             return _context.Reinsercion.Any(e => e.IdReinsercion == id);
+        }
+        public IActionResult MenuReinsercion()
+        {
+            return View();
         }
     }
 }

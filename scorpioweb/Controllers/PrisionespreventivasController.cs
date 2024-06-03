@@ -134,50 +134,47 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region -Expediente Unico-
+            //string var_tablanueva = "";
+            //string var_tablaSelect = "";
+            //string var_tablaCurs = "";
+            //int var_idnuevo = 0;
+            //int var_idSelect = 0;
+            //string var_curs = "";
+            //if (idselecionado != null && tabla != null)
+            //{
+            //    var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("PrisionPreventiva"));
+            //    var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
+            //    var_tablaCurs = "ClaveUnicaScorpio";
+            //    var_idnuevo = id;
+            //    var_idSelect = Int32.Parse(idselecionado);
+            //    var_curs = CURS;
 
-            string var_tablanueva = "";
-            string var_tablaSelect = "";
-            string var_tablaCurs = "";
-            int var_idnuevo = 0;
-            int var_idSelect = 0;
-            string var_curs = "";
-            if (idselecionado != null && tabla != null)
-            {
-                var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("PrisionPreventiva"));
-                var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(tabla));
-                var_tablaCurs = "ClaveUnicaScorpio";
-                var_idnuevo = id;
-                var_idSelect = Int32.Parse(idselecionado);
-                var_curs = CURS;
+            //    string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+            //    _context.Database.ExecuteSqlCommand(query);
 
-                string query = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                _context.Database.ExecuteSqlCommand(query);
+            //    if (datosArray != null)
+            //    {
+            //        List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
 
-                if (datosArray != null)
-                {
-                    List<Dictionary<string, string>> listaObjetos = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(datosArray);
+            //        // Proyectar la lista para obtener solo los valores de id y tabla
+            //        var resultados = listaObjetos.Select(obj => new {
+            //            id = obj["id"],
+            //            tabla = obj["tabla"]
+            //        });
 
-                    // Proyectar la lista para obtener solo los valores de id y tabla
-                    var resultados = listaObjetos.Select(obj => new {
-                        id = obj["id"],
-                        tabla = obj["tabla"]
-                    });
+            //        foreach (var resultado in resultados)
+            //        {
+            //            var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("PrisionPreventiva"));
+            //            var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
+            //            var_tablaCurs = "ClaveUnicaScorpio";
+            //            var_idnuevo = id;
+            //            var_idSelect = Int32.Parse(resultado.id);
 
-                    foreach (var resultado in resultados)
-                    {
-                        var_tablanueva = mg.cambioAbase(mg.RemoveWhiteSpaces("PrisionPreventiva"));
-                        var_tablaSelect = mg.cambioAbase(mg.RemoveWhiteSpaces(resultado.tabla));
-                        var_tablaCurs = "ClaveUnicaScorpio";
-                        var_idnuevo = id;
-                        var_idSelect = Int32.Parse(resultado.id);
-
-                        string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
-                        _context.Database.ExecuteSqlCommand(query2);
-                    }
-                }
-
-
-            }
+            //            string query2 = $"CALL spInsertExpedienteUnico('{var_tablanueva}', '{var_tablaSelect}', '{var_tablaCurs}', {var_idnuevo}, {var_idSelect},  '{var_curs}');";
+            //            _context.Database.ExecuteSqlCommand(query2);
+            //        }
+            //    }
+            //}
             #endregion
 
             _context.Add(prisionespreventivas);
@@ -355,6 +352,27 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            #region -Editar en expediente unico-
+            try
+            {
+                var ideu = (from eu in _context.Expedienteunico
+                            where Int64.Parse(eu.Prisionespreventivas) == id
+                            select eu.IdexpedienteUnico).FirstOrDefault();
+
+                var query = (from s in _context.Expedienteunico
+                             where s.IdexpedienteUnico == ideu
+                             select s).FirstOrDefault();
+                query.Prisionespreventivas = null;
+                _context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            #endregion
+
+
             var prisionespreventivas = await _context.Prisionespreventivas.SingleOrDefaultAsync(m => m.Idprisionespreventivas == id);
             _context.Prisionespreventivas.Remove(prisionespreventivas);
             await _context.SaveChangesAsync();

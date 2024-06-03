@@ -18,10 +18,10 @@
 
 
 
-    @foreach (var item in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
-        {
-        <h2>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h2>
-        break;
+        @foreach (var item in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
+            {
+            <h2>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h2>
+            break;
         }
 
         <table class="table">
@@ -65,9 +65,18 @@
                         </td>
                     </form>
                 </tr>
-                }
+            }
             </tbody>
         </table>
+        @foreach (var item in ViewData["joinTablasPresentacion"] as IEnumerable<scorpioweb.Models.PresentacionPeriodicaPersona>)
+        {
+            <div class="form-group">
+                <a type="button" title="Imprimir" asp-controller="Api" asp-action="ImprimirPP" asp-route-id="@item.personaVM.IdPersona">
+                    <i class="btn btn-info fa fa-print"> Imprimir</i>
+                </a>
+            </div>
+            break;
+        }
         <a asp-action="Index" class="btn btn-link">
             Regresar al listado completo
         </a>

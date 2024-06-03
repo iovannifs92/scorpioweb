@@ -7,7 +7,17 @@
 <script>
 
     var listaSimilitud = new Array;
+
+    var var_tablanueva = "";
+    var var_tablaSelect = "";
+    var var_idnuevo = "";
+    var var_idSelect = "";
+    var var_curs = "";
+    var CURSUsada = "";
+    var datosJson = "";
+
     function Create() {
+        SendExpedienteUnico();
         var id = document.getElementById("idarchivo").value;
         var nombre = document.getElementById("nombreee").value;
         var ap = document.getElementById("paternoee").value;
@@ -142,13 +152,14 @@
         //ESTE USA  window.parent.miFuncionEnPaginaPrincipal(nombre) PARA MANDARLO A LA PAGUINA PRINCIPAL;
         //alert()
         window.parent.miFuncionEnPaginaPrincipal(nombre);
-        alert(nombre)
     };
 
 
     function usarDatos(id, tabla) {
         document.getElementById("tabla").value = tabla;
         document.getElementById("idselecionado").value = id;
+        var_tablaSelect = tabla;
+        var_idSelect = id;
         $.ajax({
             url: "/Api/Savcardatos",
             type: "POST",
@@ -159,6 +170,7 @@
                 id, tabla,
             },
             success: function (response) {
+                CURSUsada = response.lista[0].p.claveUnicaScorpio;
                 document.getElementById("CURS").value = response.lista[0].p.claveUnicaScorpio;
                 //document.getElementById("paterno").value = response.lista[0].paterno;
                 //document.getElementById("materno").value = response.lista[0].materno;
@@ -171,7 +183,37 @@
     };
 
     function btnclose() {
-        $('#similitudModal').modal('toggle');
+        if (listaSimilitud.length > 0) {
+            alert("Selecciono registros, presione USAR a uno de ellos. Use los datos correctos")
+            return;
+        } else {
+            $('#similitudModal').modal('toggle');
+        }
+    }
+
+    //$(document).ready(function () {
+    //    $('#btnSave').on("click", function (e) {
+    //        e.preventDefault();
+    //        SendExpedienteUnico();
+    //        btnSubmit.click();
+    //    });
+    //});
+
+    function SendExpedienteUnico() {
+        var_tablanueva = "Archivo";
+        var_idnuevo = document.getElementById("idarchivo").value;
+        $.ajax({
+            url: "/Api/expedienteUnico",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                var_tablaSelect, var_idSelect, var_curs, CURSUsada, var_tablanueva, datosJson, var_idnuevo
+            },
+            success: function (response) {
+            }
+        });
     }
 
 </script>
