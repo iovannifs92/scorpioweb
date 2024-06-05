@@ -9,6 +9,7 @@ namespace scorpioweb.Models
         public string Tipo { get; set; }
         public string Terapeuta { get; set; }
         public DateTime? FechaCanalizacion { get; set; }
+        public string TiempoTerapia { get; set; }
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaTermino { get; set; }
         public DateTime? FechaTerapia { get; set; }

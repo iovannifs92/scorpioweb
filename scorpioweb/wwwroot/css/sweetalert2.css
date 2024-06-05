@@ -1,7 +1,7 @@
 .swal2-popup.swal2-toast {
   flex-direction: row;
   align-items: center;
-  width: 1000px;
+  width: auto;
   padding: 0.625em;
   overflow-y: hidden;
   background: #fff;

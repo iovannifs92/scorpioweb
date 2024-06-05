@@ -1,0 +1,354 @@
+﻿body {
+    margin: 0;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+h1 {
+    color: #333;
+    font-weight: 700;
+    margin-top: 130px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    line-height: 23px;
+}
+
+.process-wrapper {
+    margin: auto;
+    max-width: 1080px;
+}
+
+#ProgresionPasos li {
+    display: none;
+}
+
+    #ProgresionPasos li:first-child {
+        display: block;
+    }
+
+#progress-bar-container {
+    position: relative;
+    width: 90%;
+    margin: auto;
+    height: 100px;
+    margin-top: 65px;
+}
+
+    #progress-bar-container ul {
+        padding: 0;
+        margin: 0;
+        padding-top: 15px;
+        z-index: 100;
+        position: absolute;
+        width: 100%;
+        margin-top: -40px;
+    }
+
+    #progress-bar-container li {
+        list-style: none;
+        float: left;
+        width: 20%;
+        text-align: center;
+        color: #aaa;
+        text-transform: uppercase;
+        font-size: 5px;
+        font-weight: 600;
+        transition: all ease 0.2s;
+        vertical-align: bottom;
+        height: 70px;
+        position: relative;
+    }
+
+        #progress-bar-container li:before {
+            content: " ";
+            display: block;
+            margin: auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: solid 2px #aaa;
+            transition: all ease 0.3s;
+        }
+
+        #progress-bar-container li.active:before {
+            border: solid 2px #fff;
+            background: linear-gradient(to right, #0078a7 0%,#fff 100%);
+            color: #000;
+        }
+
+        #progress-bar-container li .step-inner {
+            margin-top: 1000px;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            font-size: 14px;
+        }
+
+        #progress-bar-container li.active {
+            color: #000;
+        }
+
+        #progress-bar-container li:after {
+            content: " ";
+            display: block;
+            width: 6px;
+            height: 6px;
+            background: #777;
+            margin: auto;
+            border: solid 7px #94b8b8;
+            border-radius: 50%;
+            margin-top: 48px;
+            box-shadow: 0 2px 13px -1px rgba(0,0,0,0.3);
+            transition: all ease 0.2s;
+        }
+
+
+    #progress-bar-container #line {
+        width: 80%;
+        margin: auto;
+        background: #eee;
+        height: 6px;
+        position: absolute;
+        left: 10%;
+        top: 57px;
+        z-index: 1;
+        border-radius: 50px;
+        transition: all ease 0.9s;
+    }
+
+    #progress-bar-container #line-progress {
+        content: " ";
+        width: 0%;
+        height: 100%;
+        background: #80aeab;
+        background: linear-gradient(to right, #80aeab 0%,#2ea3b7 100%);
+        position: absolute;
+        z-index: 2;
+        border-radius: 50px;
+        transition: all ease 0.9s;
+    }
+
+#progress-content-section {
+    width: 90%;
+    margin: auto;
+    background: #f3f3f3;
+    border-radius: 4px;
+}
+
+    #progress-content-section .section-content {
+        padding: 30px 40px;
+        text-align: center;
+        align-content: center;
+    }
+
+        #progress-content-section .section-content h2 {
+            font-size: 17px;
+            text-transform: uppercase;
+            color: #333;
+            letter-spacing: 1px;
+        }
+
+        #progress-content-section .section-content p {
+            font-size: 16px;
+            line-height: 1.8em;
+            color: #777;
+        }
+
+    #progress-content-section .section-content {
+        display: none;
+        animation: FadeInUp 700ms ease 1;
+        animation-fill-mode: forwards;
+        transform: translateY(15px);
+    }
+
+        #progress-content-section .section-content.active {
+            display: block;
+        }
+
+
+.botonSiguiente {
+    font-family: Lato;
+    font-weight: 300;
+    font-size: 17px;
+    color: #ffffff;
+    background-color: #0066CC;
+    padding: 10px 28px;
+    border: 2px solid #0066cc;
+    box-shadow: rgba(0, 0, 0, 0.42) 8px 3px 13px 5px;
+    border-radius: 12px;
+    transition: 217ms;
+    transform: translateY(0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .botonSiguiente:hover {
+        transition: 217ms;
+        padding: 10px 34px;
+        transform: translateY(-1px);
+        background-color: #fff;
+        color: #0066cc;
+        border: solid 2px #0066cc;
+    }
+
+#btnSiguienteTerapia {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #btnSiguienteTerapia.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+
+.botonVolver {
+    font-family: Lato;
+    font-weight: 300;
+    font-size: 17px;
+    color: #ffffff;
+    background-color: #d90404;
+    padding: 10px 28px;
+    border: solid #ad0202 2px;
+    box-shadow: rgba(0, 0, 0, 0.42) 8px 3px 13px 5px;
+    border-radius: 12px;
+    transition: 217ms;
+    transform: translateY(0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .botonVolver:hover {
+        transition: 217ms;
+        padding: 10px 34px;
+        transform: translateY(-1px);
+        background-color: #fff;
+        color: #d90404;
+        border: solid 2px #d90404;
+    }
+
+.botonFinalizar {
+    font-family: Lato;
+    font-weight: 300;
+    font-size: 17px;
+    color: #ffffff;
+    background-color: #0ACB18;
+    padding: 10px 28px;
+    border: 2px solid #0ACB18;
+    box-shadow: rgba(0, 0, 0, 0.42) 8px 3px 13px 5px;
+    border-radius: 12px;
+    transition: 217ms;
+    transform: translateY(0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .botonFinalizar:hover {
+        transition: 217ms;
+        padding: 10px 34px;
+        transform: translateY(-1px);
+        background-color: #fff;
+        color: #0ACB18;
+        border: solid 2px #0ACB18;
+    }
+
+
+.divBotones {
+    justify-content: center;
+}
+
+    .divBotones .step {
+        margin-left: 30px;
+    }
+
+
+.ContenidoPrincipalTarjeta {
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+
+.divCheckBoxesTerapia {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+    .divCheckBoxesTerapia label {
+        justify-content: center;
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+
+#divBotonPaso1 {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divBotonPaso1.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+#divInputOtroTipoTerapia {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divInputOtroTipoTerapia.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+#divInputOtroEje {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divInputOtroEje.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+#divInputObsevarciones {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divInputObsevarciones.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+.divCheckBoxesEjes {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+    .divCheckBoxesEjes label {
+        justify-content: center;
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+
+.labelCheckbox input[type="checkbox"] {
+    margin-left: 10px;
+}

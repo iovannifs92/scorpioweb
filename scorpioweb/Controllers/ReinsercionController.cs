@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
@@ -15,10 +16,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
+using Newtonsoft.Json;
 using scorpioweb.Class;
 using scorpioweb.Models;
 using Syncfusion.EJ2.Linq;
+
 
 namespace scorpioweb.Controllers
 {
@@ -30,7 +34,7 @@ namespace scorpioweb.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IHubContext<HubNotificacion> _hubContext;
         private readonly RoleManager<IdentityRole> roleManager;
-
+        MetodosGenerales mg = new MetodosGenerales();
         public ReinsercionController(penas2Context context, IHostingEnvironment hostingEnvironment,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, IHubContext<HubNotificacion> hubContext)
         {
@@ -41,13 +45,6 @@ namespace scorpioweb.Controllers
             _hubContext = hubContext;
 
         }
-
-        #region -FichaCanalización-
-        public IActionResult FichaCanalizacion()
-        {
-            return View();
-        }
-        #endregion
 
         // GET: Reinsercion
         public async Task<IActionResult> Index(
@@ -296,6 +293,9 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
+
+        #region - Crear Reinsercion -
+
         // GET: Reinsercion/Create
         public IActionResult Create()
         {
@@ -304,7 +304,7 @@ namespace scorpioweb.Controllers
 
         // POST: Reinsercion/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.   
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdReinsercion,IdTabla,Tabla,Lugar,Estado")] Reinsercion reinsercion)
@@ -324,13 +324,14 @@ namespace scorpioweb.Controllers
                 var persona = _context.Persona
                                    .SingleOrDefault(m => m.IdPersona == Int32.Parse(reinsercion.IdTabla));
 
-                 var personacl = _context.Personacl
-                                   .SingleOrDefault(m => m.IdPersonaCl == Int32.Parse(reinsercion.IdTabla));
+                var personacl = _context.Personacl
+                                  .SingleOrDefault(m => m.IdPersonaCl == Int32.Parse(reinsercion.IdTabla));
 
 
                 _context.Add(reinsercion);
                 await _context.SaveChangesAsync();
-            
+
+
                 foreach (var rol in roles)
                 {
                     if (rol != "Vinculacion")
@@ -339,9 +340,234 @@ namespace scorpioweb.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            } 
+            }
             return View(reinsercion);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearReinsercionPorSupervisor([FromBody] Reinsercion reinsercion)
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            if (ModelState.IsValid)
+            {            
+                foreach (var rol in roles)
+                {
+                    if (rol != "Vinculacion")
+                    {
+                        await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", "Hay una nueva canalizacion");
+                    }
+                }
+
+                int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
+
+                if (idReinsercionObtenido == 0)
+                    idReinsercionObtenido = await CrearIdReinsercionAsync(reinsercion);
+
+
+
+                return Json(new { success = true, responseText = "Datos creado exitosamente! ", viewUrl = Url.Action("FichaCanalizacion", "Reinsercion", new { idReinsercion = idReinsercionObtenido }) });
+            }
+            return Json(new { success = false, responseText = "Error en la validación de datos" });
+        }
+
+            #region - ID Reinsercion -
+            public async Task<int> ObtenerIdReinsercionAsync(string idTabla, string nombreTabla)
+            {
+                var idRegistroReinsercion = await _context.Reinsercion
+                    .Where(c => c.IdTabla == idTabla && c.Tabla == nombreTabla)
+                    .Select(c => c.IdReinsercion)
+                    .FirstOrDefaultAsync();
+
+                return idRegistroReinsercion;
+            }
+
+            [HttpPost]
+            public async Task<int> CrearIdReinsercionAsync(Reinsercion reinsercion)
+            {
+                _context.Add(reinsercion);
+                await _context.SaveChangesAsync();
+                int nuevoIdReinsercion = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
+
+                return nuevoIdReinsercion;
+            }
+            #endregion
+
+        #endregion
+
+
+        #region -FichaCanalización-
+
+        public IActionResult FichaCanalizacion(int idReinsercion)
+        {
+            var grupos = _context.Grupo.ToList();
+            ViewBag.Grupos = grupos;
+
+            var terapeutas = _context.Terapeutas.ToList();
+            ViewBag.Terapeutas = terapeutas;
+
+            ViewBag.idReinsercion = idReinsercion;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearFichaCanalizacion([FromBody] DatosFichaCanalizacion datosFichaCanalizacion)
+        {
+            if (datosFichaCanalizacion == null || datosFichaCanalizacion.Datos == null)
+                return Json(new { success = false, responseText = "Error en la validación de datos" });
+            try
+            {
+                int idRegistroCanalizacion = await ObtenerIdCanalizacionAsync(datosFichaCanalizacion.IdReinsercion, datosFichaCanalizacion.TipoCanalizacion);
+
+                if (idRegistroCanalizacion == 0)
+                {
+                    int idNuevoRegistroCanalizacion = await CrearRegistroCanalizacionAsync(datosFichaCanalizacion.IdReinsercion, datosFichaCanalizacion.TipoCanalizacion);
+
+                    if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
+                        await CrearTerapiaAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
+
+                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION"))
+                        await CrearEjesReinsercionAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
+                }
+                else
+                {
+                    if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
+                        await CrearTerapiaAsync(idRegistroCanalizacion, datosFichaCanalizacion.Datos);
+
+                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION"))
+                        await CrearEjesReinsercionAsync(idRegistroCanalizacion, datosFichaCanalizacion.Datos);
+                } 
+                return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = Url.Action("Index", "Personacls")});
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = $"Error al crear la ficha: {ex.Message}" });
+            }
+        }
+
+            #region - ID Canalizacion -
+            public async Task<int> ObtenerIdCanalizacionAsync(int idReinsercion, string tipoCanalizacion)
+            {
+
+                var idRegistroCanalizacion = await _context.Canalizacion
+                    .Where(c => c.ReincercionIdReincercion == idReinsercion && c.Tipo.Equals(tipoCanalizacion))
+                    .Select(c => c.IdCanalizacion)
+                    .FirstOrDefaultAsync();
+
+                return idRegistroCanalizacion;
+            }
+
+            [HttpPost]
+            public async Task<int> CrearRegistroCanalizacionAsync(int idReinsercion, string tipoCanalizacion)
+            {
+                Canalizacion canalizacion = new Canalizacion();
+                canalizacion.Tipo = tipoCanalizacion;
+                canalizacion.ReincercionIdReincercion = idReinsercion;
+
+                _context.Add(canalizacion);
+                await _context.SaveChangesAsync();
+
+                return await ObtenerIdCanalizacionAsync(idReinsercion, tipoCanalizacion);
+
+            }
+             #endregion
+
+            #region -Creacion de ficha por tipo- 
+
+            [HttpPost]
+            public async Task CrearTerapiaAsync(int idCanalizacion, object DatosTerapia)
+            {
+                using (IDbContextTransaction transaction = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var DatosTerapiaDeserializados = JsonConvert.DeserializeObject<TerapiaModel>(DatosTerapia.ToString());
+
+                        foreach (var terapia in DatosTerapiaDeserializados.TiposTerapiaSeleccionados)
+                        {
+                            Terapia FichaTerapia = new Terapia();
+
+                            if (terapia.Equals("OTRO"))
+                                FichaTerapia.Tipo = mg.normaliza(DatosTerapiaDeserializados.EspecificarOtraTerapia);
+                            else
+                                FichaTerapia.Tipo = terapia;
+
+                            FichaTerapia.Terapeuta = mg.normaliza(DatosTerapiaDeserializados.Terapeuta);
+                            FichaTerapia.FechaCanalizacion = DatosTerapiaDeserializados.FechaCanalizacion;
+                            FichaTerapia.FechaInicio = DatosTerapiaDeserializados.FechaInicio;
+                            FichaTerapia.TiempoTerapia = mg.normaliza(DatosTerapiaDeserializados.TiempoTerapia);
+                            FichaTerapia.FechaInicio = DatosTerapiaDeserializados.FechaInicio;
+                            FichaTerapia.FechaTermino = DatosTerapiaDeserializados.FechaTermino;
+                            FichaTerapia.PeriodicidadTerapia = mg.normaliza(DatosTerapiaDeserializados.PeriodicidadTerapia);
+                            FichaTerapia.Estado = mg.normaliza(DatosTerapiaDeserializados.Estado);
+
+                            if (DatosTerapiaDeserializados.Observaciones.Equals(""))
+                                FichaTerapia.Observaciones = "NA";
+                            else
+                                FichaTerapia.Observaciones = mg.normaliza(DatosTerapiaDeserializados.Observaciones);
+
+                            FichaTerapia.CanalizacionIdCanalizacion = idCanalizacion;
+                            FichaTerapia.GrupoIdGrupo = DatosTerapiaDeserializados.GrupoId;
+
+                            _context.Terapia.Add(FichaTerapia);
+                            _context.SaveChanges();
+                        }
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception("Error al crear los registros de EjesReinsercion", ex);
+                    }
+                }
+
+            }
+
+            [HttpPost]
+            public async Task CrearEjesReinsercionAsync(int idCanalizacion, object DatosEjesReinsercion)
+            {
+                using (IDbContextTransaction transaction = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var DatosEjesDeserializados = JsonConvert.DeserializeObject<EjesReinsercionModel>(DatosEjesReinsercion.ToString());
+
+                        foreach (var eje in DatosEjesDeserializados.EjesSeleccionados)
+                        {
+                            Ejesreinsercion ficha = new Ejesreinsercion();
+
+                            if (eje.Equals("OTRO"))
+                                ficha.Tipo = mg.normaliza(DatosEjesDeserializados.EspecificarOtroEje);
+                            else
+                                ficha.Tipo = eje;
+                            ficha.FechaCanalizacion = DatosEjesDeserializados.FechaCanalizacion;
+                            ficha.Lugar = mg.normaliza(DatosEjesDeserializados.Lugar);
+
+                            if (DatosEjesDeserializados.Observaciones.Equals(""))
+                                ficha.Observaciones = "NA";
+                            else
+                                ficha.Observaciones = mg.normaliza(DatosEjesDeserializados.Observaciones);
+
+                            ficha.Estado = mg.normaliza(DatosEjesDeserializados.Estado);
+                            ficha.CanalizacionIdCanalizacion = idCanalizacion;
+
+                            _context.Ejesreinsercion.Add(ficha);
+                            _context.SaveChanges();
+                        }
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception("Error al crear los registros de EjesReinsercion", ex);
+                    }
+                }
+            }
+            #endregion
+
+        #endregion
+
 
         // GET: Reinsercion/Edit/5
         public async Task<IActionResult> Edit(int? id)
