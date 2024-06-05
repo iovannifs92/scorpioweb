@@ -681,6 +681,7 @@ namespace scorpioweb.Controllers
 
         public void ImprimirPP(int id)
         {
+
             var nombre = (from p in _context.Persona
                          where p.IdPersona == id
                          select new{
@@ -708,7 +709,7 @@ namespace scorpioweb.Controllers
      
  
             string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templatePP.docx";
-            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\PP_" + nombre[0].personasVM.NombreCompleto +".docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\PresentacionesPeriodicas.docx";
 
             DocumentCore dc = DocumentCore.Load(templatePath);
 
@@ -722,8 +723,8 @@ namespace scorpioweb.Controllers
             dc.MailMerge.Execute(ppp, "firmas");
             dc.Save(resultPath);
 
-            Response.Redirect("https://localhost:44359/Documentos/PP_"+ nombre[0].personasVM.NombreCompleto + ".docx");
-            //Response.Redirect("http://10.6.60.190/Documentos/PresentacionesPeriodicas.docx");
+            //Response.Redirect("https://localhost:44359/Documentos/PresentacionesPeriodicas.docx");
+            Response.Redirect("http://10.6.60.190/Documentos/PresentacionesPeriodicas.docx");
 
         }
         #endregion

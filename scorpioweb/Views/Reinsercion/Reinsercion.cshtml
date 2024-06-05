@@ -14,10 +14,10 @@
     <title>Index</title>
 </head>
 <div>
-    <h1 style="font-family: cursive; text-align:center;">Personas por Canalizar</h1>
+    <h1 style="font-family: cursive; text-align:center;">Personas Canalizadas</h1>
 </div>
 <body>
-    <form asp-action="index" method="get">
+    <form asp-action="Reinsercion" method="get">
         <div class="form-actions no-color">
             <p>
                 Búsqueda: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
@@ -25,7 +25,7 @@
                     <i class="fa fa-search"></i>
                     Buscar
                 </button> |
-                <a asp-action="index">Regresar al listado completo</a>
+                <a asp-action="Reinsercion">Regresar al listado completo</a>
             </p>
         </div>
     </form>
@@ -36,13 +36,22 @@
                    IdTabla
                 </th>
                 <th>
-                   Nombre
+                   Nombre Completo
                 </th>
                 <th>
-                   ClaveUnica
+                   Causa penal
                 </th>
                 <th>
-                    Area
+                   Delito
+                </th>
+                <th>
+                    Estado de Vinculación
+                </th> 
+                <th>
+                    Tabla
+                </th>  
+                <th>
+                    Estado de Supervisión
                 </th>
             <th></th>
         </tr>
@@ -52,15 +61,18 @@
         {
             <tr>
                 <td>@item.IdTabla</td>
-                <td>@item.Paterno @item.Materno @item.Nombre</td>
-                <td>@item.ClaveUnica</td>
+                <td>@item.Nombre</td>
+                <td>@item.Causapenal</td>
+                <td>@item.Delito</td>
+                <td>@item.EstadoVinculacion</td>
                 <td>@item.NomTabla</td>
+                <td>@item.EstadoVinculacion</td>
                 <td>
-                    <a type="button" title="Canalizar" asp-action="Canaliza" asp-route-id="@item.IdTabla" asp-route-nomTabla="@item.NomTabla">
-                           <i class="btn btn-info fa fa-share"> Canalizar</i>
+                    <a type="button" title="Canalizar" asp-action="Canaliza" asp-route-id="@item.IdReinsercion" asp-route-nomTabla="@item.NomTabla">
+                           <i class="btn btn-success fa fa-eye"> Ver Canalizaciones</i>
                     </a>  
-                    <a type="button" title="Información" asp-action="Canaliza" asp-route-id="@item.IdTabla" asp-route-nomTabla="@item.NomTabla">
-                            <i class="btn btn-primary fa fa-file"> Mas informacion</i>
+                    <a type="button" title="Información" asp-action="Canaliza" asp-route-id="@item.IdReinsercion" asp-route-nomTabla="@item.NomTabla">
+                            <i class="btn btn-danger fa fa-trash"> Borrar</i>
                     </a>
                 </td>
             </tr>
@@ -72,18 +84,19 @@
         var prevDisabled = !Model.HasNextPage ? "disabled" : "";
         var nextDisabled = !Model.HasNextPage ? "disabled" : "";
     }
+
     <p>
         Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
     </p>
 
-    <a asp-action="Index"
+    <a asp-action="Reinsercion"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex - 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"
        class="btn btn-default @prevDisabled">
         Anterior
     </a>
-    <a asp-action="Index"
+    <a asp-action="Reinsercion"
        asp-route-sortOrder="@ViewData["CurrentSort"]"
        asp-route-pageNumber="@(Model.PageIndex + 1)"
        asp-route-currentFilter="@ViewData["CurrentFilter"]"

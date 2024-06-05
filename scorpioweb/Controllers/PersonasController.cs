@@ -4293,11 +4293,11 @@ namespace scorpioweb.Controllers
                 try
                 {
 
-                    #region -Expediente Unico-
-                    expedienteunico.ClaveUnicaScorpio = persona.ClaveUnicaScorpio;
-                    expedienteunico.Persona = idPersona.ToString();
-                    _context.Add(expedienteunico);
-                    #endregion 
+                    //#region -Expediente Unico-
+                    //expedienteunico.ClaveUnicaScorpio = persona.ClaveUnicaScorpio;
+                    //expedienteunico.Persona = idPersona.ToString();
+                    //_context.Add(expedienteunico);
+                    //#endregion 
 
 
 
