@@ -46,6 +46,7 @@ namespace scorpioweb.Controllers
 
         }
 
+        #region - index-
         // GET: Reinsercion
         public async Task<IActionResult> Index(
             string sortOrder,
@@ -274,7 +275,7 @@ namespace scorpioweb.Controllers
             int pageSize = 15;
             return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
-
+        #endregion
         // GET: Reinsercion/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -418,11 +419,11 @@ namespace scorpioweb.Controllers
                 return Json(new { success = false, responseText = "Error en la validación de datos" });
             try
             {
-                int idRegistroCanalizacion = await ObtenerIdCanalizacionAsync(datosFichaCanalizacion.IdReinsercion, datosFichaCanalizacion.TipoCanalizacion);
+                int idRegistroCanalizacion = await ObtenerIdCanalizacionAsync(datosFichaCanalizacion.IdReinsercion);
 
                 if (idRegistroCanalizacion == 0)
                 {
-                    int idNuevoRegistroCanalizacion = await CrearRegistroCanalizacionAsync(datosFichaCanalizacion.IdReinsercion, datosFichaCanalizacion.TipoCanalizacion);
+                    int idNuevoRegistroCanalizacion = await CrearRegistroCanalizacionAsync(datosFichaCanalizacion.IdReinsercion);
 
                     if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
                         await CrearTerapiaAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
@@ -447,11 +448,11 @@ namespace scorpioweb.Controllers
         }
 
             #region - ID Canalizacion -
-            public async Task<int> ObtenerIdCanalizacionAsync(int idReinsercion, string tipoCanalizacion)
+            public async Task<int> ObtenerIdCanalizacionAsync(int idReinsercion)
             {
 
                 var idRegistroCanalizacion = await _context.Canalizacion
-                    .Where(c => c.ReincercionIdReincercion == idReinsercion && c.Tipo.Equals(tipoCanalizacion))
+                    .Where(c => c.ReincercionIdReincercion == idReinsercion)
                     .Select(c => c.IdCanalizacion)
                     .FirstOrDefaultAsync();
 
@@ -459,16 +460,15 @@ namespace scorpioweb.Controllers
             }
 
             [HttpPost]
-            public async Task<int> CrearRegistroCanalizacionAsync(int idReinsercion, string tipoCanalizacion)
+            public async Task<int> CrearRegistroCanalizacionAsync(int idReinsercion)
             {
                 Canalizacion canalizacion = new Canalizacion();
-                canalizacion.Tipo = tipoCanalizacion;
                 canalizacion.ReincercionIdReincercion = idReinsercion;
 
                 _context.Add(canalizacion);
                 await _context.SaveChangesAsync();
 
-                return await ObtenerIdCanalizacionAsync(idReinsercion, tipoCanalizacion);
+                return await ObtenerIdCanalizacionAsync(idReinsercion);
 
             }
              #endregion
@@ -494,7 +494,7 @@ namespace scorpioweb.Controllers
                                 FichaTerapia.Tipo = terapia;
 
                             FichaTerapia.Terapeuta = mg.normaliza(DatosTerapiaDeserializados.Terapeuta);
-                            FichaTerapia.FechaCanalizacion = DatosTerapiaDeserializados.FechaCanalizacion;
+                            FichaTerapia.FechaCanalizacion = DateTime.Now;
                             FichaTerapia.FechaInicio = DatosTerapiaDeserializados.FechaInicio;
                             FichaTerapia.TiempoTerapia = mg.normaliza(DatosTerapiaDeserializados.TiempoTerapia);
                             FichaTerapia.FechaInicio = DatosTerapiaDeserializados.FechaInicio;
@@ -541,7 +541,7 @@ namespace scorpioweb.Controllers
                                 ficha.Tipo = mg.normaliza(DatosEjesDeserializados.EspecificarOtroEje);
                             else
                                 ficha.Tipo = eje;
-                            ficha.FechaCanalizacion = DatosEjesDeserializados.FechaCanalizacion;
+                            ficha.FechaCanalizacion = DateTime.Now;
                             ficha.Lugar = mg.normaliza(DatosEjesDeserializados.Lugar);
 
                             if (DatosEjesDeserializados.Observaciones.Equals(""))
@@ -564,10 +564,22 @@ namespace scorpioweb.Controllers
                     }
                 }
             }
-            #endregion
+        #endregion
 
         #endregion
 
+
+        #region - Ver canalizaciones -
+
+        public async Task<IActionResult> VerCanalizaciones()
+        {
+
+            return View();
+        }
+
+
+
+        #endregion
 
         // GET: Reinsercion/Edit/5
         public async Task<IActionResult> Edit(int? id)
