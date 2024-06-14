@@ -1691,6 +1691,22 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+ 
+            foreach (var rol in roles)
+            {
+                if(rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+                {
+                    ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
+                }
+                if (rol == "Vinculacion")
+                {
+                    ViewBag.ClaseParaDiv = "col-md-9";
+                }
+            }
+     
             return View();
         }
 

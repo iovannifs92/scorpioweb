@@ -3,7 +3,7 @@
     public class ReinsercionMCYSCPLCCURSVM
     {
         public int IdReinsercion { get; set; }
-        public int IdTabla { get; set; }
+        public string IdTabla { get; set; }
         public string Paterno { get; set; }
         public string Materno { get; set; }
         public string Nombre { get; set; }
@@ -13,6 +13,7 @@
         public string Delito { get; set; }
         public string EstadoVinculacion { get; set; }
         public string EstadoSupervision { get; set; }
+        public string IdCanalizacion { get; set; }
         public string NombreCompleto
         {
             get

@@ -2,12 +2,14 @@
 
 @{
     ViewBag.Title = "Detalles";
-    Layout = "/Views/Shared/_Layout.cshtml";
+    var layoutPath = ViewBag.Layout ?? null; // Default to null if ViewBag.Layout is not set
+    Layout = layoutPath;
 }
+
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
 
 @* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
+@*<script src="~/js/jquery-1.11.1.min.js"></script>*@
 <script>
     showModal = (url, title, id) => {
       $.ajax({
@@ -23,419 +25,422 @@
             }
         })
     }
+
 </script>
 
-@foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
-{
-    var rutaFoto = ((item.personaVM.Genero == ("M")) ? "hombre.png" : "mujer.png");
-    if (item.personaVM.rutaFoto != null)
-    {
-        rutaFoto = item.personaVM.rutaFoto;
-    }
-
-    <div class="table-responsive-lg">
-        <div class="container">
-            
-            <div class="row" style="text-align:center; padding-top:1%">
-                <img src="~/Fotos/@rutaFoto" class="img-thumbnail" width="200" height="200">
-                <h2>@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
-                <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personas", new { id = item.personaVM.IdPersona }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaVM.IdPersona)" class="btn btn-success">
-                    <i class="fa fa-pencil"></i> Editar Foto
-                </a>
-            </div>
-    
-            
-            <div class="panel-group">
-                <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
-                    <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Datos Generales</a>
-                        </h4>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloDG">Nombre del padre</td>
-                                <td style="background-color: white; color: black">@item.personaVM.NombrePadre</td>
-                                <td class="estiloDG">Nombre de la madre</td>
-                                <td style="background-color: white; color: black">@item.personaVM.NombreMadre</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG">Género</td>
-                                <td style="background-color: white; color: black">@item.personaVM.Genero</td>
-                                <td class="estiloDG">Edad</td>
-                                <td style="background-color: white; color: black">@item.personaVM.Edad</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG">Fecha de nacimiento</td>
-                                <td style="background-color: white; color: black">@item.personaVM.Fnacimiento</td>
-                                <td class="estiloDG">Lugar de nacimiento</td>
-                                <td style="background-color: white; color: black">@ViewBag.lnmunicipio, @ViewBag.lnestado, @item.personaVM.Lnpais  </td>
-                            </tr>
-                            <tr>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" style="width:25%">Estado Civil</td>
-                                <td style="width:25%; background-color: white; color: black">@item.personaVM.EstadoCivil</td>
-                                <td class="estiloDG" style="width:25%">Duración</td>
-                                <td style="width:25%; background-color: white; color: black">@item.personaVM.Duracion</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" style="width:25%">Habla otro idioma</td>
-                                <td style="width:25%; background-color: white; color: black">@item.personaVM.OtroIdioma</td>
-                                <td class="estiloDG" style="width:25%">Especifique</td>
-                                <td style="width:25%; background-color: white; color: black">@item.personaVM.EspecifiqueIdioma</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Sabe Leer y escribir</td>
-                                <td colspan="3">@item.personaVM.LeerEscribir</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" style="width:25%">Requiere traductor</td>
-                                <td style="width:25%">@item.personaVM.Traductor</td>
-                                <td class="estiloDG" style="width:25%">Especifique</td>
-                                <td style="width:25%">@item.personaVM.EspecifiqueTraductor</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" style="width:25%">Teléfono fijo</td>
-                                <td style="width:25%">@item.personaVM.TelefonoFijo</td>
-                                <td class="estiloDG" style="width:25%">Celular</td>
-                                <td style="width:25%">@item.personaVM.Celular</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" style="width:25%">Hijos</td>
-                                <td style="width:25%">@item.personaVM.Hijos</td>
-                                <td class="estiloDG" style="width:25%">Cuantos</td>
-                                <td style="width:25%">@item.personaVM.Nhijos</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Con cuantas personas vive</td>
-                                <td colspan="3">@item.personaVM.NpersonasVive</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Cuenta con propiedades en otra localidad</td>
-                                <td colspan="3">@item.personaVM.Propiedades</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">CURP</td>
-                                <td colspan="3">@item.personaVM.Curp</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Consume sustancias o drogas</td>
-                                <td colspan="2">@item.personaVM.ConsumoSustancias</td>
-                                @if (@item.personaVM.ConsumoSustancias == "SI")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalConsumoSustancias">Ver sustancias</a>
-                                    </td>
-                                }
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Familiares</td>
-                                <td colspan="2">@ViewBag.Familiar</td>
-                                @if (ViewBag.Familiar != "0")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalFamiliares">Ver familiares</a>
-                                    </td>
-                                }
-                            </tr>
-                            <tr>
-                                <td class="estiloDG" colspan="1" style="width:25%">Referencias</td>
-                                <td colspan="2">@ViewBag.Referencia</td>
-                                @if (ViewBag.Referencia != "0")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalReferencias">Ver referencias</a>
-                                    </td>
-                                }
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
-                    <div class="panel-heading" style="color:#fff; background-color:#415667; border-color:#415667;" data-toggle="collapse" href="#collapse2" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Domicilio</a>
-                        </h4>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1" style="width:25%">La propiedad es</td>
-                                <td colspan="3">@item.domicilioVM.TipoDomicilio</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1">Dirección</td>
-                                <td colspan="2">@item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf @item.domicilioVM.Cp, @ViewBag.municipio, @ViewBag.estado, @item.domicilioVM.Pais</td>
-                                <td colspan="1"><a href="https://www.google.com.mx/maps/place/ @item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf, @ViewBag.municipio, @ViewBag.estado" target="_blank">Ir al Mapa</a></td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" style="width:25%">Tiempo viviendo en el domicilio</td>
-                                <td style="width:25%">@item.domicilioVM.Temporalidad</td>
-                                <td class="estiloDomicilio" style="width:25%">Es su residencia habitual</td>
-                                <td style="width:25%">@item.domicilioVM.ResidenciaHabitual</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1" style="width:25%">Referencias del domicilio</td>
-                                <td colspan="3">@item.domicilioVM.Referencias</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1" style="width:25%">Días y horario en que se encuentra</td>
-                                <td colspan="3">@item.domicilioVM.Horario</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1" style="width:25%">Observaciones</td>
-                                <td colspan="3">@item.domicilioVM.Observaciones</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloDomicilio" colspan="1" style="width:25%">Cuenta con un domicilio secundario</td>
-                                <td colspan="2">@item.domicilioVM.DomcilioSecundario</td>
-                                @if (@item.domicilioVM.DomcilioSecundario == "SI")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalDomicilioSecundario">Ver domicilio Secundario</a>
-                                    </td>
-                                }
-                            </tr>
-
-                        </table>
-                    </div>
-                </div>
-                <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;">
-                    <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Escolaridad</a>
-                        </h4>
-                    </div>
-                    <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloEstudios">Actualmente estudia</td>
-                                <td>@item.estudiosVM.Estudia</td>
-                                <td class="estiloEstudios">Último grado de estudios</td>
-                                <td>@item.estudiosVM.GradoEstudios</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloEstudios">Institución</td>
-                                <td>@item.estudiosVM.InstitucionE</td>
-                                <td class="estiloEstudios">Horarios</td>
-                                <td>@item.estudiosVM.Horario</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloEstudios">Dirección</td>
-                                <td>@item.estudiosVM.Direccion</td>
-                                <td class="estiloEstudios">Teléfono</td>
-                                <td>@item.estudiosVM.Telefono</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloEstudios" colspan="1" style="width:25%">Observaciones</td>
-                                <td colspan="3">@item.estudiosVM.Observaciones</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;">
-                    <div class="panel-heading" style="color:#fff; background-color:#80AEAB; border-color:#80AEAB;" data-toggle="collapse" href="#collapse4" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Trabajo</a>
-                        </h4>
-                    </div>
-                    <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloTrabajo">Trabaja actualmente</td>
-                                <td>@item.trabajoVM.Trabaja</td>
-                                <td class="estiloTrabajo">Tipo de ocupación</td>
-                                <td>@item.trabajoVM.TipoOcupacion</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Puesto</td>
-                                <td>@item.trabajoVM.Puesto</td>
-                                <td class="estiloTrabajo">Empleador/Jefe inmediato</td>
-                                <td>@item.trabajoVM.EmpledorJefe</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Enterado de proceso</td>
-                                <td>@item.trabajoVM.EnteradoProceso</td>
-                                <td class="estiloTrabajo">Se puede enterar</td>
-                                <td>@item.trabajoVM.SePuedeEnterar</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo" colspan="1" style="width:25%">Tiempo trabajando</td>
-                                <td colspan="3">@item.trabajoVM.TiempoTrabajano</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Salario</td>
-                                <td>$@item.trabajoVM.Salario</td>
-                                <td class="estiloTrabajo">Temporalidad de pago</td>
-                                <td>@item.trabajoVM.TemporalidadSalario</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo" colspan="1" style="width:25%">Dirección del trabajo</td>
-                                <td colspan="3">@item.trabajoVM.Direccion</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo">Horario</td>
-                                <td>@item.trabajoVM.Horario</td>
-                                <td class="estiloTrabajo">Teléfono</td>
-                                <td>@item.trabajoVM.Telefono</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloTrabajo" colspan="1" style="width:25%">Observaciones</td>
-                                <td colspan="3">@item.trabajoVM.Observaciones</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;">
-                    <div class="panel-heading" style="color:#fff; background-color:#233460; border-color:#233460;" data-toggle="collapse" href="#collapse5" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Actividades Sociales</a>
-                        </h4>
-                    </div>
-                    <div id="collapse5" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloActividad">Tipo de actividad</td>
-                                <td>@item.actividadSocialVM.TipoActividad</td>
-                                <td class="estiloActividad">Horario</td>
-                                <td>@item.actividadSocialVM.Horario</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloActividad">Lugar</td>
-                                <td>@item.actividadSocialVM.Lugar</td>
-                                <td class="estiloActividad">Teléfono</td>
-                                <td>@item.actividadSocialVM.Telefono</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloActividad">Alguien se puede enterar de su proceso</td>
-                                <td>@item.actividadSocialVM.SePuedeEnterar</td>
-                                <td class="estiloActividad">Referencia</td>
-                                <td>@item.actividadSocialVM.Referencia</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloActividad" colspan="1" style="width:25%">Observaciones</td>
-                                <td colspan="3">@item.actividadSocialVM.Observaciones</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
-                    <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Abandono Estado</a>
-                        </h4>
-                    </div>
-                    <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="estiloAbandonoEstado">Ha vivido en otro estado o país</td>
-                                <td>@item.abandonoEstadoVM.VividoFuera</td>
-                                <td class="estiloAbandonoEstado">Lugares</td>
-                                <td>@item.abandonoEstadoVM.LugaresVivido</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Cada cuanto tiempo viaja</td>
-                                <td>@item.abandonoEstadoVM.TiempoVivido</td>
-                                <td class="estiloAbandonoEstado">Motivo</td>
-                                <td>@item.abandonoEstadoVM.MotivoVivido</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Viaja habitualmente</td>
-                                <td>@item.abandonoEstadoVM.ViajaHabitual</td>
-                                <td class="estiloAbandonoEstado">Lugares</td>
-                                <td>@item.abandonoEstadoVM.LugaresViaje</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Tiempo</td>
-                                <td>@item.abandonoEstadoVM.TiempoViaje</td>
-                                <td class="estiloAbandonoEstado">Motivo</td>
-                                <td>@item.abandonoEstadoVM.MotivoViaje</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado">Cuenta con documentacipon</td>
-                                <td>@item.abandonoEstadoVM.DocumentacionSalirPais</td>
-                                <td class="estiloAbandonoEstado">Pasaporte</td>
-                                <td>@item.abandonoEstadoVM.Pasaporte</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado" colspan="1" style="width:25%">VISA</td>
-                                <td colspan="3">@item.abandonoEstadoVM.Visa</td>
-                            </tr>
-                            <tr>
-                                <td class="estiloAbandonoEstado" colspan="2" style="width:25%">Tiene familiares en otro estado o país con los que tenga comunicación estrecha</td>
-                                <td colspan="1">@item.abandonoEstadoVM.FamiliaresFuera</td>
-                                @if (@item.abandonoEstadoVM.FamiliaresFuera == "SI")
-                                {
-                                    <td colspan="1">
-                                        <a data-toggle="modal" data-target="#modalFamiliaresForaneos">Ver Familiares</a>
-                                    </td>
-                                }
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
-                    <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;" data-toggle="collapse" href="#collapse7" onclick="mostrar">
-                        <h4 class="panel-title">
-                            <a>Salud</a>
-                        </h4>
-                    </div>
-                    <div id="collapse7" class="panel-collapse collapse" style="padding-top:1%;">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td class="
-                                    " colspan="1" style="width:25%">
-                                    Enfermedades
-                                </td>
-                                <td colspan="3">@item.saludFisicaVM.Enfermedad</td>
-                            </tr>
-                            <tr>
-                                <td class="estilosSalud">Especifique enfermedad</td>
-                                <td>@item.saludFisicaVM.EspecifiqueEnfermedad</td>
-                                <td class="estilosSalud">Tratamiento médico</td>
-                                <td>@item.saludFisicaVM.Tratamiento</td>
-                            </tr>
-                            <tr>
-                                <td class="estilosSalud">Discapacidad</td>
-                                <td>@item.saludFisicaVM.Discapacidad</td>
-                                <td class="estilosSalud">Especifique discapacidad</td>
-                                <td>@item.saludFisicaVM.EspecifiqueDiscapacidad</td>
-                            </tr>
-                            <tr>
-                                <td class="estilosSalud" colspan="1" style="width:25%">Servicio médico</td>
-                                <td colspan="3">@item.saludFisicaVM.ServicioMedico</td>
-                            </tr>
-                            <tr>
-                                <td class="estilosSalud">Tipo de servicio</td>
-                                <td>@item.saludFisicaVM.EspecifiqueServicioMedico</td>
-                                <td class="estilosSalud">Institución prestadora de servicio</td>
-                                <td>@item.saludFisicaVM.InstitucionServicioMedico</td>
-                            </tr>
-                            <tr>
-                                <td class="estilosSalud" colspan="1" style="width:25%">Observaciones</td>
-                                <td colspan="3">@item.saludFisicaVM.Observaciones</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12">
-            @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
-            <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaVM.IdPersona"><i class="fa fa-print"></i> Imprimir</a>
-        </div>
-    </div>
-    break;
-}
-<br />
 <div>
-    <a class="btn btn-link" asp-action="Index">
-        Regresar a lista de usuarios
-    </a>
-</div>
+    @foreach (var item in ViewData["joinTables"] as IEnumerable<scorpioweb.Models.PersonaViewModel>)
+    {
+        var rutaFoto = ((item.personaVM.Genero == ("M")) ? "hombre.png" : "mujer.png");
+        if (item.personaVM.rutaFoto != null)
+        {
+            rutaFoto = item.personaVM.rutaFoto;
+        }
 
+        <div class="table-responsive">
+            <div class="container">
+                <div class="row @ViewBag.ClaseParaDiv" style="text-align:center; padding-top:1%">
+                    <img src="~/Fotos/@rutaFoto" class="img-thumbnail" width="200" height="200">
+                    <h2>@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</h2>
+                    <a style="margin-top:1%" onclick="showModal('@Url.Action("EditFoto","Personas", new { id = item.personaVM.IdPersona }, Context.Request.Scheme)', 'Edita Fotografía', @item.personaVM.IdPersona)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar Foto
+                    </a>
+                </div>
+
+                <div class="panel-group @ViewBag.ClaseParaDiv">
+                    <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Datos Generales</a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloDG">Nombre del padre</td>
+                                    <td style="background-color: white; color: black">@item.personaVM.NombrePadre</td>
+                                    <td class="estiloDG">Nombre de la madre</td>
+                                    <td style="background-color: white; color: black">@item.personaVM.NombreMadre</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG">Género</td>
+                                    <td style="background-color: white; color: black">@item.personaVM.Genero</td>
+                                    <td class="estiloDG">Edad</td>
+                                    <td style="background-color: white; color: black">@item.personaVM.Edad</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG">Fecha de nacimiento</td>
+                                    <td style="background-color: white; color: black">@item.personaVM.Fnacimiento</td>
+                                    <td class="estiloDG">Lugar de nacimiento</td>
+                                    <td style="background-color: white; color: black">@ViewBag.lnmunicipio, @ViewBag.lnestado, @item.personaVM.Lnpais  </td>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Estado Civil</td>
+                                    <td style="width:25%; background-color: white; color: black">@item.personaVM.EstadoCivil</td>
+                                    <td class="estiloDG" style="width:25%">Duración</td>
+                                    <td style="width:25%; background-color: white; color: black">@item.personaVM.Duracion</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Habla otro idioma</td>
+                                    <td style="width:25%; background-color: white; color: black">@item.personaVM.OtroIdioma</td>
+                                    <td class="estiloDG" style="width:25%">Especifique</td>
+                                    <td style="width:25%; background-color: white; color: black">@item.personaVM.EspecifiqueIdioma</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Sabe Leer y escribir</td>
+                                    <td colspan="3">@item.personaVM.LeerEscribir</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Requiere traductor</td>
+                                    <td style="width:25%">@item.personaVM.Traductor</td>
+                                    <td class="estiloDG" style="width:25%">Especifique</td>
+                                    <td style="width:25%">@item.personaVM.EspecifiqueTraductor</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Teléfono fijo</td>
+                                    <td style="width:25%">@item.personaVM.TelefonoFijo</td>
+                                    <td class="estiloDG" style="width:25%">Celular</td>
+                                    <td style="width:25%">@item.personaVM.Celular</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" style="width:25%">Hijos</td>
+                                    <td style="width:25%">@item.personaVM.Hijos</td>
+                                    <td class="estiloDG" style="width:25%">Cuantos</td>
+                                    <td style="width:25%">@item.personaVM.Nhijos</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Con cuantas personas vive</td>
+                                    <td colspan="3">@item.personaVM.NpersonasVive</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Cuenta con propiedades en otra localidad</td>
+                                    <td colspan="3">@item.personaVM.Propiedades</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">CURP</td>
+                                    <td colspan="3">@item.personaVM.Curp</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Consume sustancias o drogas</td>
+                                    <td colspan="2">@item.personaVM.ConsumoSustancias</td>
+                                    @if (@item.personaVM.ConsumoSustancias == "SI")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalConsumoSustancias">Ver sustancias</a>
+                                        </td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Familiares</td>
+                                    <td colspan="2">@ViewBag.Familiar</td>
+                                    @if (ViewBag.Familiar != "0")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalFamiliares">Ver familiares</a>
+                                        </td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td class="estiloDG" colspan="1" style="width:25%">Referencias</td>
+                                    <td colspan="2">@ViewBag.Referencia</td>
+                                    @if (ViewBag.Referencia != "0")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalReferencias">Ver referencias</a>
+                                        </td>
+                                    }
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="datosDomicilio" class="panel panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#415667; border-color:#415667;" data-toggle="collapse" href="#collapse2" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Domicilio</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloDomicilio" colspan="1" style="width:25%">La propiedad es</td>
+                                    <td colspan="3">@item.domicilioVM.TipoDomicilio</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDomicilio" colspan="1">Dirección</td>
+                                    <td colspan="2">@item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf @item.domicilioVM.Cp, @ViewBag.municipio, @ViewBag.estado, @item.domicilioVM.Pais</td>
+                                    <td colspan="1"><a href="https://www.google.com.mx/maps/place/ @item.domicilioVM.Calle @item.domicilioVM.No, @item.domicilioVM.NombreCf, @ViewBag.municipio, @ViewBag.estado" target="_blank">Ir al Mapa</a></td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDomicilio" style="width:25%">Tiempo viviendo en el domicilio</td>
+                                    <td style="width:25%">@item.domicilioVM.Temporalidad</td>
+                                    <td class="estiloDomicilio" style="width:25%">Es su residencia habitual</td>
+                                    <td style="width:25%">@item.domicilioVM.ResidenciaHabitual</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDomicilio" colspan="1" style="width:25%">Referencias del domicilio</td>
+                                    <td colspan="3">@item.domicilioVM.Referencias</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDomicilio" colspan="1" style="width:25%">Días y horario en que se encuentra</td>
+                                    <td colspan="3">@item.domicilioVM.Horario</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDomicilio" colspan="1" style="width:25%">Observaciones</td>
+                                    <td colspan="3">@item.domicilioVM.Observaciones</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloDomicilio" colspan="1" style="width:25%">Cuenta con un domicilio secundario</td>
+                                    <td colspan="2">@item.domicilioVM.DomcilioSecundario</td>
+                                    @if (@item.domicilioVM.DomcilioSecundario == "SI")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalDomicilioSecundario">Ver domicilio Secundario</a>
+                                        </td>
+                                    }
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div id="datosEscolaridad" class="panel panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#848F95; border-color:#848F95;" data-toggle="collapse" href="#collapse3" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Escolaridad</a>
+                            </h4>
+                        </div>
+                        <div id="collapse3" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloEstudios">Actualmente estudia</td>
+                                    <td>@item.estudiosVM.Estudia</td>
+                                    <td class="estiloEstudios">Último grado de estudios</td>
+                                    <td>@item.estudiosVM.GradoEstudios</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloEstudios">Institución</td>
+                                    <td>@item.estudiosVM.InstitucionE</td>
+                                    <td class="estiloEstudios">Horarios</td>
+                                    <td>@item.estudiosVM.Horario</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloEstudios">Dirección</td>
+                                    <td>@item.estudiosVM.Direccion</td>
+                                    <td class="estiloEstudios">Teléfono</td>
+                                    <td>@item.estudiosVM.Telefono</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloEstudios" colspan="1" style="width:25%">Observaciones</td>
+                                    <td colspan="3">@item.estudiosVM.Observaciones</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="datosTrabajo" class="panel panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#80AEAB; border-color:#80AEAB;" data-toggle="collapse" href="#collapse4" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Trabajo</a>
+                            </h4>
+                        </div>
+                        <div id="collapse4" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloTrabajo">Trabaja actualmente</td>
+                                    <td>@item.trabajoVM.Trabaja</td>
+                                    <td class="estiloTrabajo">Tipo de ocupación</td>
+                                    <td>@item.trabajoVM.TipoOcupacion</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Puesto</td>
+                                    <td>@item.trabajoVM.Puesto</td>
+                                    <td class="estiloTrabajo">Empleador/Jefe inmediato</td>
+                                    <td>@item.trabajoVM.EmpledorJefe</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Enterado de proceso</td>
+                                    <td>@item.trabajoVM.EnteradoProceso</td>
+                                    <td class="estiloTrabajo">Se puede enterar</td>
+                                    <td>@item.trabajoVM.SePuedeEnterar</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo" colspan="1" style="width:25%">Tiempo trabajando</td>
+                                    <td colspan="3">@item.trabajoVM.TiempoTrabajano</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Salario</td>
+                                    <td>$@item.trabajoVM.Salario</td>
+                                    <td class="estiloTrabajo">Temporalidad de pago</td>
+                                    <td>@item.trabajoVM.TemporalidadSalario</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo" colspan="1" style="width:25%">Dirección del trabajo</td>
+                                    <td colspan="3">@item.trabajoVM.Direccion</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo">Horario</td>
+                                    <td>@item.trabajoVM.Horario</td>
+                                    <td class="estiloTrabajo">Teléfono</td>
+                                    <td>@item.trabajoVM.Telefono</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloTrabajo" colspan="1" style="width:25%">Observaciones</td>
+                                    <td colspan="3">@item.trabajoVM.Observaciones</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="datosSociales" class="panel panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#233460; border-color:#233460;" data-toggle="collapse" href="#collapse5" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Actividades Sociales</a>
+                            </h4>
+                        </div>
+                        <div id="collapse5" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloActividad">Tipo de actividad</td>
+                                    <td>@item.actividadSocialVM.TipoActividad</td>
+                                    <td class="estiloActividad">Horario</td>
+                                    <td>@item.actividadSocialVM.Horario</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloActividad">Lugar</td>
+                                    <td>@item.actividadSocialVM.Lugar</td>
+                                    <td class="estiloActividad">Teléfono</td>
+                                    <td>@item.actividadSocialVM.Telefono</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloActividad">Alguien se puede enterar de su proceso</td>
+                                    <td>@item.actividadSocialVM.SePuedeEnterar</td>
+                                    <td class="estiloActividad">Referencia</td>
+                                    <td>@item.actividadSocialVM.Referencia</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloActividad" colspan="1" style="width:25%">Observaciones</td>
+                                    <td colspan="3">@item.actividadSocialVM.Observaciones</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="datosAbandonoEstado" class="panel panel panel-primary" style="border-color:#000;">
+                        <div class="panel-heading" style="color:#000; background-color:#fff; border-color:#fff;" data-toggle="collapse" href="#collapse6" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Abandono Estado</a>
+                            </h4>
+                        </div>
+                        <div id="collapse6" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Ha vivido en otro estado o país</td>
+                                    <td>@item.abandonoEstadoVM.VividoFuera</td>
+                                    <td class="estiloAbandonoEstado">Lugares</td>
+                                    <td>@item.abandonoEstadoVM.LugaresVivido</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Cada cuanto tiempo viaja</td>
+                                    <td>@item.abandonoEstadoVM.TiempoVivido</td>
+                                    <td class="estiloAbandonoEstado">Motivo</td>
+                                    <td>@item.abandonoEstadoVM.MotivoVivido</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Viaja habitualmente</td>
+                                    <td>@item.abandonoEstadoVM.ViajaHabitual</td>
+                                    <td class="estiloAbandonoEstado">Lugares</td>
+                                    <td>@item.abandonoEstadoVM.LugaresViaje</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Tiempo</td>
+                                    <td>@item.abandonoEstadoVM.TiempoViaje</td>
+                                    <td class="estiloAbandonoEstado">Motivo</td>
+                                    <td>@item.abandonoEstadoVM.MotivoViaje</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado">Cuenta con documentacipon</td>
+                                    <td>@item.abandonoEstadoVM.DocumentacionSalirPais</td>
+                                    <td class="estiloAbandonoEstado">Pasaporte</td>
+                                    <td>@item.abandonoEstadoVM.Pasaporte</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado" colspan="1" style="width:25%">VISA</td>
+                                    <td colspan="3">@item.abandonoEstadoVM.Visa</td>
+                                </tr>
+                                <tr>
+                                    <td class="estiloAbandonoEstado" colspan="2" style="width:25%">Tiene familiares en otro estado o país con los que tenga comunicación estrecha</td>
+                                    <td colspan="1">@item.abandonoEstadoVM.FamiliaresFuera</td>
+                                    @if (@item.abandonoEstadoVM.FamiliaresFuera == "SI")
+                                    {
+                                        <td colspan="1">
+                                            <a data-toggle="modal" data-target="#modalFamiliaresForaneos">Ver Familiares</a>
+                                        </td>
+                                    }
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="datosSalud" class="panel panel panel-primary" style="border-color:#fff;">
+                        <div class="panel-heading" style="color:#fff; background-color:#3D7F99; border-color:#3D7F99;" data-toggle="collapse" href="#collapse7" onclick="mostrar">
+                            <h4 class="panel-title">
+                                <a>Salud</a>
+                            </h4>
+                        </div>
+                        <div id="collapse7" class="panel-collapse collapse" style="padding-top:1%;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td class="
+                                        " colspan="1" style="width:25%">
+                                        Enfermedades
+                                    </td>
+                                    <td colspan="3">@item.saludFisicaVM.Enfermedad</td>
+                                </tr>
+                                <tr>
+                                    <td class="estilosSalud">Especifique enfermedad</td>
+                                    <td>@item.saludFisicaVM.EspecifiqueEnfermedad</td>
+                                    <td class="estilosSalud">Tratamiento médico</td>
+                                    <td>@item.saludFisicaVM.Tratamiento</td>
+                                </tr>
+                                <tr>
+                                    <td class="estilosSalud">Discapacidad</td>
+                                    <td>@item.saludFisicaVM.Discapacidad</td>
+                                    <td class="estilosSalud">Especifique discapacidad</td>
+                                    <td>@item.saludFisicaVM.EspecifiqueDiscapacidad</td>
+                                </tr>
+                                <tr>
+                                    <td class="estilosSalud" colspan="1" style="width:25%">Servicio médico</td>
+                                    <td colspan="3">@item.saludFisicaVM.ServicioMedico</td>
+                                </tr>
+                                <tr>
+                                    <td class="estilosSalud">Tipo de servicio</td>
+                                    <td>@item.saludFisicaVM.EspecifiqueServicioMedico</td>
+                                    <td class="estilosSalud">Institución prestadora de servicio</td>
+                                    <td>@item.saludFisicaVM.InstitucionServicioMedico</td>
+                                </tr>
+                                <tr>
+                                    <td class="estilosSalud" colspan="1" style="width:25%">Observaciones</td>
+                                    <td colspan="3">@item.saludFisicaVM.Observaciones</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                @*<a asp-action="Delete" asp-route-id="@item.IdPersona">Delete</a>*@
+                <a class="btn btn-primary" asp-action="Imprimir" asp-route-id="@item.personaVM.IdPersona"><i class="fa fa-print"></i> Imprimir</a>
+            </div>
+        </div>
+        break;
+    }
+</div>
+<br />
+ @if (!User.IsInRole("Vinculacion"))
+{
+    <div>
+        <a class="btn btn-link" asp-action="Index">
+            Regresar a lista de usuarios
+        </a>
+    </div>
+}
 <!-- Modal Consumo de sustancias -->
 <div class="modal fade" id="modalConsumoSustancias" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

@@ -2,15 +2,17 @@
 
 @{
     ViewBag.Title = "Detalles";
-    Layout = "/Views/Shared/_Layout.cshtml";
+    var layoutPath = ViewBag.Layout ?? null; // Default to null if ViewBag.Layout is not set
+    Layout = layoutPath;
 }
+
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
 
-@* Necesario para los modales en el servidor *@
-<script src="~/js/jquery-1.11.1.min.js"></script>
+@*<link rel="stylesheet" type="text/css" href="~/css/tabla.css">
+*@
+@* Necesario para los modales en el servidor
+<script src="~/js/jquery-1.11.1.min.js"></script> *@
 <script>
-
-
     $(document).ready(function () {
 
         if ($("#selectINE").val() == "NO") {
@@ -114,9 +116,6 @@
         };
     });
 
-
-
-
     showModal = (url, title, id) => {
         $.ajax({
             type: "GET",
@@ -172,7 +171,7 @@
     {*@
     <div class="table-responsive-lg">
         <div class="container">
-            <div class="row" style="text-align:center; padding-top:1%">
+            <div class="row @ViewBag.ClaseParaDiv" style="text-align:center; padding-top:1%">
                 <img src="~/Fotoscl/@rutaFoto" class="img-thumbnail" width="200" height="200">
 
                 <h2>@item.personaclVM.Paterno @item.personaclVM.Materno @item.personaclVM.Nombre</h2>
@@ -192,8 +191,7 @@
                     </a>
                 }
             </div>
-            <div class="panel-group">
-
+            <div class="panel-group @ViewBag.ClaseParaDiv">
                 <div id="datosGenerales" class="panel panel-primary" style="border-color:#fff;">
                     <div class="panel-heading" style="color:#fff; background-color:#0078A7; border-color:#0078A7;" data-toggle="collapse" href="#collapse1" onclick="mostrar">
                         <h4 class="panel-title">
@@ -281,22 +279,24 @@
                                     <td style="width:25%; background-color: white; color: black"></td>
                                 }
                             </tr>
+
+
                             <tr>
+
                                 <td class="estiloDG" style="width:25%">Teléfono fijo</td>
                                 <td style="width:25%">
-                                    <script>
-                                        var telefonoFijo = '@item.personaclVM.TelefonoFijo';
-                                        document.write(telefonoFijo ? telefonoFijo : 'No disponible');
-                                    </script>
+                                    @(
+                                    string.IsNullOrEmpty(item.personaclVM.TelefonoFijo) ? "No disponible" : item.personaclVM.TelefonoFijo
+                                    )
                                 </td>
                                 <td class="estiloDG" style="width:25%">Celular</td>
                                 <td style="width:25%">
-                                    <script>
-                                        var telefonoCelular = '@item.personaclVM.Celular';
-                                        document.write(telefonoCelular ? telefonoCelular : 'No disponible');
-                                    </script>
+                                    @(
+                                    string.IsNullOrEmpty(item.personaclVM.Celular) ? "No disponible" : item.personaclVM.Celular
+                                    )
                                 </td>
                             </tr>
+
                             @if (!User.IsInRole("Vinculacion"))
                             {
                                 <tr>
@@ -342,17 +342,15 @@
                                     <tr>
                                         <td class="estiloDG" style="width:25%">¿Lleva algun tratamiento contra las adicciones?</td>
                                         <td style="width:25%">
-                                            <script>
-                                                var tratamientoAdicciones = '@item.personaclVM.TratamientoAdicciones'
-                                                document.write(tratamientoAdicciones ? tratamientoAdicciones : 'No disponible');
-                                            </script>
+                                            @(
+                                    string.IsNullOrEmpty(item.personaclVM.TratamientoAdicciones) ? "No disponible" : item.personaclVM.TratamientoAdicciones
+                                    )
                                         </td>
                                         <td class="estiloDG" style="width:25%">¿Cuando consume, llega a un estado de embriaguez o desorientacion?</td>
                                         <td style="width:25%">
-                                            <script>
-                                                var cuandoConsume = '@item.personaclVM.CuandoConsume'
-                                                document.write(cuandoConsume ? cuandoConsume : 'No disponible');
-                                            </script>
+                                            @(
+                                    string.IsNullOrEmpty(item.personaclVM.CuandoConsume) ? "No disponible" : item.personaclVM.CuandoConsume
+                                    )
                                         </td>
                                     </tr>
                                 }
@@ -477,10 +475,9 @@
                                     <td>@item.estudiosclVM.Telefono</td>
                                     <td class="estiloEstudios" style="width:25%">¿Desea concluir sus estudios?</td>
                                     <td style="width:25%">
-                                        <script>
-                                            var deseaConcluirEstudios = '@item.estudiosclVM.DeseaConcluirEstudios'
-                                            document.write(deseaConcluirEstudios ? deseaConcluirEstudios : 'No disponible');
-                                        </script>
+                                        @(
+                                    string.IsNullOrEmpty(item.estudiosclVM.DeseaConcluirEstudios) ? "No disponible" : item.estudiosclVM.DeseaConcluirEstudios
+                                    )
                                     </td>
                                 </tr>
                             }
@@ -491,10 +488,9 @@
                                     <td style="width:25%">@item.estudiosclVM.Estudia</td>
                                     <td class="estiloEstudios" style="width:25%">¿Desea concluir sus estudios?</td>
                                     <td style="width:25%">
-                                        <script>
-                                            var deseaConcluirEstudios = '@item.estudiosclVM.DeseaConcluirEstudios'
-                                            document.write(deseaConcluirEstudios ? deseaConcluirEstudios : 'No disponible');
-                                        </script>
+                                        @(
+                                    string.IsNullOrEmpty(item.estudiosclVM.DeseaConcluirEstudios) ? "No disponible" : item.estudiosclVM.DeseaConcluirEstudios
+                                    )
                                     </td>
                                 </tr>
                             }
@@ -616,19 +612,13 @@
                             <tr>
                                 <td class="estiloTrabajo">Habilidades con las que cuenta a la hora de generar ingresos</td>
                                 <td colspan="3">
-                                    <script>
-                                        var conocimientoHabilidad = '@item.trabajoclVM.ConocimientoHabilidad'
-                                        document.write(conocimientoHabilidad ? conocimientoHabilidad : 'No disponible');
-                                    </script>
+                                   @(string.IsNullOrEmpty(item.trabajoclVM.ConocimientoHabilidad) ? "No disponible" : item.trabajoclVM.ConocimientoHabilidad)
                                 </td>
                             </tr>
                             <tr>
                                 <td class="estiloTrabajo" style="width:25%">¿Cuenta con alguna propuesta laboral?</td>
                                 <td style="width:25%">
-                                    <script>
-                                        var propuestaLaboral = '@item.trabajoclVM.PropuestaLaboral'
-                                        document.write(propuestaLaboral ? propuestaLaboral : 'No disponible');
-                                    </script>
+                                     @(string.IsNullOrEmpty(item.trabajoclVM.PropuestaLaboral) ? "No disponible" : item.trabajoclVM.PropuestaLaboral)
                                 </td>
                                 @if (item.trabajoclVM.PropuestaLaboral == "SI")
                                 {
@@ -645,10 +635,7 @@
                             <tr>
                                 <td class="estiloTrabajo" style="width:25%">¿Le gustaria capacitarce en algun oficio?</td>
                                 <td style="width:25%">
-                                    <script>
-                                        var propuestaLaboral = '@item.trabajoclVM.Capacitacion'
-                                        document.write(propuestaLaboral ? propuestaLaboral : 'No disponible');
-                                    </script>
+                                     @(string.IsNullOrEmpty(item.trabajoclVM.Capacitacion) ? "No disponible" : item.trabajoclVM.Capacitacion)
                                 </td>
                                 @if (item.trabajoclVM.Capacitacion == "SI")
                                 {

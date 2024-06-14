@@ -898,7 +898,6 @@ namespace scorpioweb.Models
 
             #endregion
 
-
             #region -Jointables-
 
             ViewData["joinTables"] = from PersonaCLTable in personaclVM
@@ -929,7 +928,6 @@ namespace scorpioweb.Models
                                      };
 
             #endregion
-
 
             #region Sacar el nombre de estdo y municipio (NACIMIENTO)
 
@@ -1061,6 +1059,19 @@ namespace scorpioweb.Models
             if (personacl == null)
             {
                 return NotFound();
+            }
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC" || rol == "SupervisorLC")
+                {
+                    ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
+                }
+                if(rol == "Vinculacion"){
+                    ViewBag.ClaseParaDiv = "col-md-9";
+                }
             }
 
             return View(/*personacl*/);

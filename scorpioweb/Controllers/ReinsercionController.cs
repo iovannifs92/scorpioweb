@@ -78,22 +78,22 @@ namespace scorpioweb.Controllers
                         from p in _context.Persona
                         select new ReinsercionMCYSCPLCCURSVM
                         {
-                            IdTabla = p.IdPersona,
+                            IdTabla = p.IdPersona.ToString(),
                             Paterno = p.Paterno,
                             Materno = p.Materno,
                             Nombre = p.Nombre,
                             ClaveUnica = p.ClaveUnicaScorpio,
-                            NomTabla = "MCYSCP"
+                            NomTabla = "persona"
                         }).Concat(
                             from pcl in _context.Personacl
                             select new ReinsercionMCYSCPLCCURSVM
                             {
-                                IdTabla = pcl.IdPersonaCl,
+                                IdTabla = pcl.IdPersonaCl.ToString(),
                                 Paterno = pcl.Paterno,
                                 Materno = pcl.Materno,
                                 Nombre = pcl.Nombre,
                                 ClaveUnica = pcl.ClaveUnicaScorpio,
-                                NomTabla = "CL"
+                                NomTabla = "personacl"
                             }
                         )
                          join ex in _context.Expedienteunico on t1.ClaveUnica equals ex.ClaveUnicaScorpio
@@ -176,6 +176,10 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
+            List<Canalizacion> queryFracciones = (from f in _context.Canalizacion
+                                                        group f by f.ReincercionIdReincercion into grp
+                                                        select grp.OrderByDescending(f => f.IdCanalizacion).FirstOrDefault()).ToList();
+
             var query = (from r in _context.Reinsercion
                          join p in _context.Personacl on r.IdTabla equals p.IdPersonaCl.ToString()
                          join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl
@@ -197,52 +201,55 @@ namespace scorpioweb.Controllers
                          from cpcl in cpclGroup.DefaultIfEmpty()
                          join dcl in _context.Delitocl on cpcl.IdCausaPenalcl equals dcl.CausaPenalclIdCausaPenalcl into dclGroup
                          from dcl in dclGroup.DefaultIfEmpty()
+                         join cana in queryFracciones on r.IdReinsercion equals cana.ReincercionIdReincercion
+                         where r.Tabla == "personacl"
+                         group new { r.IdReinsercion, r.IdTabla, p.IdPersonaCl, p.Paterno, p.Materno, p.Nombre, r.Estado, scl.EstadoSupervision, ep.Ce, cpcl.CausaPenal, dcl.Tipo, epcp.Delito } by new { r.IdReinsercion, r.IdTabla } into g
                          select new ReinsercionMCYSCPLCCURSVM
                          {
-                             IdReinsercion = r.IdReinsercion,
-                             IdTabla = p.IdPersonaCl,
-                             Nombre = string.Concat(p.Paterno, " ", p.Materno, " ", p.Nombre),
-                             Causapenal = ep.Ce ?? cpcl.CausaPenal,
-                             Delito = epcp.Delito ?? dcl.Tipo,
-                             EstadoVinculacion = r.Estado,
+                             IdReinsercion = g.Key.IdReinsercion,
+                             IdTabla = g.Key.IdTabla,
+                             Nombre = string.Concat(g.FirstOrDefault().Paterno, " ", g.FirstOrDefault().Materno, " ", g.FirstOrDefault().Nombre),
+                             Causapenal = g.FirstOrDefault().CausaPenal ?? g.FirstOrDefault().CausaPenal,
+                             Delito = g.FirstOrDefault().Delito ?? g.FirstOrDefault().Tipo,
+                             EstadoVinculacion = g.FirstOrDefault().Estado,
                              NomTabla = "Libertad Condicionada",
-                             EstadoSupervision = scl.EstadoSupervision
-                         }).Concat(from r in _context.Reinsercion
-                        join p in _context.Persona on r.IdTabla equals p.IdPersona.ToString()
-                        join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona
-                        join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona
-                        join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona
-                        join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona
-                        join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona
-                        join ex in _context.Expedienteunico on p.IdPersona.ToString() equals ex.Personacl into exGroup
-                        from ex in exGroup.DefaultIfEmpty()
-                        join ep in _context.Ejecucion on ex.Ejecucion equals ep.IdEjecucion.ToString() into epGroup
-                        from ep in epGroup.DefaultIfEmpty()
-                        join epcp in _context.Epcausapenal on ep.IdEjecucion equals epcp.EjecucionIdEjecucion into epcpGroup
-                        from epcp in epcpGroup.DefaultIfEmpty()
-                        join scl in _context.Supervision on p.IdPersona equals scl.PersonaIdPersona into sclGroup
-                        from scl in sclGroup.DefaultIfEmpty()
-                        join cpcl in _context.Causapenal on scl.CausaPenalIdCausaPenal equals cpcl.IdCausaPenal into cpclGroup
-                        from cpcl in cpclGroup.DefaultIfEmpty()
-                        join dcl in _context.Delitocl on cpcl.IdCausaPenal equals dcl.CausaPenalclIdCausaPenalcl into dclGroup
-                        from dcl in dclGroup.DefaultIfEmpty()
-                        select new ReinsercionMCYSCPLCCURSVM
-                        {
-                            IdReinsercion = r.IdReinsercion,
-                            IdTabla = p.IdPersona,
-                            Nombre = string.Concat(p.Paterno, " ", p.Materno, " ", p.Nombre),
-                            Causapenal = ep.Ce ?? cpcl.CausaPenal,
-                            Delito = epcp.Delito ?? dcl.Tipo,
-                            EstadoVinculacion = r.Estado,
-                            NomTabla = "MCYSCP",
-                            EstadoSupervision = scl.EstadoSupervision
-                        });
+                             EstadoSupervision = g.FirstOrDefault().EstadoSupervision
+                         }).Union(
+                          from r in _context.Reinsercion
+                          join p in _context.Persona on r.IdTabla equals p.IdPersona.ToString()
+                          join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona
+                          join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona
+                          join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona
+                          join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona
+                          join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona
+                          join ex in _context.Expedienteunico on p.IdPersona.ToString() equals ex.Personacl into exGroup
+                          from ex in exGroup.DefaultIfEmpty()
+                          join ep in _context.Ejecucion on ex.Ejecucion equals ep.IdEjecucion.ToString() into epGroup
+                          from ep in epGroup.DefaultIfEmpty()
+                          join epcp in _context.Epcausapenal on ep.IdEjecucion equals epcp.EjecucionIdEjecucion into epcpGroup
+                          from epcp in epcpGroup.DefaultIfEmpty()
+                          join scl in _context.Supervision on p.IdPersona equals scl.PersonaIdPersona into sclGroup
+                          from scl in sclGroup.DefaultIfEmpty()
+                          join cpcl in _context.Causapenal on scl.CausaPenalIdCausaPenal equals cpcl.IdCausaPenal into cpclGroup
+                          from cpcl in cpclGroup.DefaultIfEmpty()
+                          join dcl in _context.Delitocl on cpcl.IdCausaPenal equals dcl.CausaPenalclIdCausaPenalcl into dclGroup
+                          from dcl in dclGroup.DefaultIfEmpty()
+                          where r.Tabla == "persona"
+                          group new { r.IdReinsercion, r.IdTabla, p.IdPersona, p.Paterno, p.Materno, p.Nombre, r.Estado, scl.EstadoSupervision, ep.Ce, cpcl.CausaPenal, dcl.Tipo, epcp.Delito } by new { r.IdReinsercion, r.IdTabla } into g
+                          select new ReinsercionMCYSCPLCCURSVM
+                          {
+                              IdReinsercion = g.Key.IdReinsercion,
+                              IdTabla = g.Key.IdTabla,
+                              Nombre = string.Concat(g.FirstOrDefault().Paterno, " ", g.FirstOrDefault().Materno, " ", g.FirstOrDefault().Nombre),
+                              Causapenal = g.FirstOrDefault().CausaPenal,
+                              Delito = g.FirstOrDefault().Tipo,
+                              EstadoVinculacion = g.FirstOrDefault().Estado,
+                              NomTabla = "MCYSCP",
+                              EstadoSupervision = g.FirstOrDefault().EstadoSupervision
+                          });
 
-    
+
             var result = query.ToList();
-
-            //Ejecutar la consulta
-
 
            ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
@@ -451,7 +458,7 @@ namespace scorpioweb.Controllers
             {
 
                 var idRegistroCanalizacion = await _context.Canalizacion
-                    .Where(c => c.ReincercionIdReincercion == idReinsercion && c.Tipo.Equals(tipoCanalizacion))
+                    .Where(c => c.ReincercionIdReincercion == idReinsercion)
                     .Select(c => c.IdCanalizacion)
                     .FirstOrDefaultAsync();
 
@@ -462,7 +469,6 @@ namespace scorpioweb.Controllers
             public async Task<int> CrearRegistroCanalizacionAsync(int idReinsercion, string tipoCanalizacion)
             {
                 Canalizacion canalizacion = new Canalizacion();
-                canalizacion.Tipo = tipoCanalizacion;
                 canalizacion.ReincercionIdReincercion = idReinsercion;
 
                 _context.Add(canalizacion);
@@ -513,7 +519,7 @@ namespace scorpioweb.Controllers
                             _context.Terapia.Add(FichaTerapia);
                             _context.SaveChanges();
                         }
-                        transaction.Commit();
+                        transaction.Commit();  
                     }
                     catch (Exception ex)
                     {
