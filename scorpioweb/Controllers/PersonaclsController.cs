@@ -314,14 +314,6 @@ namespace scorpioweb.Models
             List<Beneficios> queryBeneficios = (from b in beneficiosclVM
                                                 group b by b.SupervisionclIdSupervisioncl into grp
                                                 select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
-
-
-
-            //var listaaudit = (from a in _context.Audit
-            //                  join s in _context.Supervision on int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) equals s.IdSupervision
-            //                  where a.TableName == "Supervision" && a.NewValues.Contains("en espera de respuesta")
-            //                  group a by int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) into grp
-            //                  select grp.OrderByDescending(a => a.Id).FirstOrDefault());
             #endregion
 
             #region -Jointables-
@@ -428,21 +420,12 @@ namespace scorpioweb.Models
                             municipiosVM = municipio
                         };
 
+
             if (usuario == "andrea.valdez@dgepms.com" || flagMaster == true)
             {
                 var warningPlaneacion = (where).Union
                                                (sinResolucion).Union
                                                (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
-                                               //(from persona in personaVM
-                                               // join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                               // join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                               // where persona.Colaboracion == "SI"
-                                               // select new PlaneacionWarningViewModel
-                                               // {
-                                               //     personaVM = persona,
-                                               //     municipiosVM = municipio,
-                                               //     tipoAdvertencia = "Pendiente de asignación - colaboración"
-                                               // }).Union
                                                (from t in table
                                                 where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE"
                                                 orderby t.planeacionestrategicaclVM.InformeInicial
@@ -513,23 +496,7 @@ namespace scorpioweb.Models
                                                      beneficiosclVM = t.beneficiosclVM,
                                                      figuraJudicial = t.beneficiosclVM.FiguraJudicial,
                                                      tipoAdvertencia = "Se paso el tiempo de la firma"
-                                                 });//.Union
-                                                    //(where).Union
-                                                    //(archivoadmin).Union
-                                                    //(joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
-                                                    //(from t in tableAudiot
-                                                    // where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                                                    // select new PlaneacionWarningViewModel
-                                                    // {
-                                                    //     personaVM = t.personaVM,
-                                                    //     municipiosVM = t.municipiosVM,
-                                                    //     supervisionVM = t.supervisionVM,
-                                                    //     causapenalVM = t.causapenalVM,
-                                                    //     planeacionestrategicaVM = t.planeacionestrategicaVM,
-                                                    //     fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                                                    //     tipoAdvertencia = "Estado Procesal",
-                                                    //     auditVM = t.auditVM
-                                                    // });
+                                                 });
                 var warnings = Enumerable.Empty<PlaneacionclWarningViewModel>();
                 if (usuario == "andrea.valdez@dgepms.com" || flagMaster == true)
                 {
@@ -543,94 +510,82 @@ namespace scorpioweb.Models
             }
             else
             {
-                var warningPlaneacion = (where2).Union
-                                        (sinResolucion2).Union
-                                        //(archivo).Union
-                                        (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.personaclVM.Supervisor == usuario && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
-                                          (from t in table
-                                           where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE" && usuario == t.personaclVM.Supervisor
-                                           orderby t.planeacionestrategicaclVM.InformeInicial
-                                           select new PlaneacionclWarningViewModel
-                                           {
-                                               personaclVM = t.personaclVM,
-                                               supervisionclVM = t.supervisionclVM,
-                                               municipiosVM = t.municipiosVM,
-                                               causapenalclVM = t.causapenalclVM,
-                                               planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                               beneficiosclVM = t.beneficiosclVM,
-                                               figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                               tipoAdvertencia = "Informe fuera de tiempo"
-                                           }).Union
-                                          (from t in table
-                                           where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaControl && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA" && usuario == t.personaclVM.Supervisor
-                                           select new PlaneacionclWarningViewModel
-                                           {
-                                               personaclVM = t.personaclVM,
-                                               supervisionclVM = t.supervisionclVM,
-                                               municipiosVM = t.municipiosVM,
-                                               causapenalclVM = t.causapenalclVM,
-                                               planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                               beneficiosclVM = t.beneficiosclVM,
-                                               figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                               tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                           }).Union
-                                          (from t in table
-                                           where t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE" && usuario == t.personaclVM.Supervisor
-                                           orderby t.beneficiosclVM.FiguraJudicial
-                                           select new PlaneacionclWarningViewModel
-                                           {
-                                               personaclVM = t.personaclVM,
-                                               supervisionclVM = t.supervisionclVM,
-                                               municipiosVM = t.municipiosVM,
-                                               causapenalclVM = t.causapenalclVM,
-                                               planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                               beneficiosclVM = t.beneficiosclVM,
-                                               figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                               tipoAdvertencia = "Sin fecha de informe"
-                                           }).Union
-                                          (from persona in personaclVM
-                                           join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                                           join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                                           join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                           join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
-                                           join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
-                                           where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE" && usuario == persona.Supervisor
-                                           select new PlaneacionclWarningViewModel
-                                           {
-                                               personaclVM = persona,
-                                               supervisionclVM = supervision,
-                                               municipiosVM = municipio,
-                                               causapenalclVM = causapenal,
-                                               planeacionestrategicaclVM = planeacion,
-                                               tipoAdvertencia = "Sin periodicidad de firma"
-                                           }).Union
-                                          (from t in table
-                                           where t.personaclVM.Supervisor != null && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaclVM.FechaProximoContacto != null && t.planeacionestrategicaclVM.FechaProximoContacto < fechaHoy && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA" && usuario == t.personaclVM.Supervisor
-                                           orderby t.planeacionestrategicaclVM.FechaProximoContacto descending
-                                           select new PlaneacionclWarningViewModel
-                                           {
-                                               personaclVM = t.personaclVM,
-                                               supervisionclVM = t.supervisionclVM,
-                                               municipiosVM = t.municipiosVM,
-                                               causapenalclVM = t.causapenalclVM,
-                                               planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                               beneficiosclVM = t.beneficiosclVM,
-                                               figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                               tipoAdvertencia = "Se paso el tiempo de la firma"
-                                           });
-                //(from t in tableAudiot
-                // where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                // select new PlaneacionWarningViewModel
-                // {
-                //     personaVM = t.personaVM,
-                //     municipiosVM = t.municipiosVM,
-                //     supervisionVM = t.supervisionVM,
-                //     causapenalVM = t.causapenalVM,
-                //     planeacionestrategicaVM = t.planeacionestrategicaVM,
-                //     fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                //     tipoAdvertencia = "Estado Procesal",
-                //     auditVM = t.auditVM
-                // });
+                var warningPlaneacion= (where2).Union
+                                              (sinResolucion2).Union
+                                              //(archivo).Union
+                                              (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.personaclVM.Supervisor == usuario && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
+                                                (from t in table
+                                                 where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE"
+                                                 orderby t.planeacionestrategicaclVM.InformeInicial
+                                                 select new PlaneacionclWarningViewModel
+                                                 {
+                                                     personaclVM = t.personaclVM,
+                                                     supervisionclVM = t.supervisionclVM,
+                                                     municipiosVM = t.municipiosVM,
+                                                     causapenalclVM = t.causapenalclVM,
+                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                                                     beneficiosclVM = t.beneficiosclVM,
+                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+                                                     tipoAdvertencia = "Informe fuera de tiempo"
+                                                 }).Union
+                                                (from t in table
+                                                 where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaControl && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA"
+                                                 select new PlaneacionclWarningViewModel
+                                                 {
+                                                     personaclVM = t.personaclVM,
+                                                     supervisionclVM = t.supervisionclVM,
+                                                     municipiosVM = t.municipiosVM,
+                                                     causapenalclVM = t.causapenalclVM,
+                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                                                     beneficiosclVM = t.beneficiosclVM,
+                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+                                                     tipoAdvertencia = "Control de supervisión a 3 días o menos"
+                                                 }).Union
+                                                (from t in table
+                                                 where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE"
+                                                 orderby t.beneficiosclVM.FiguraJudicial
+                                                 select new PlaneacionclWarningViewModel
+                                                 {
+                                                     personaclVM = t.personaclVM,
+                                                     supervisionclVM = t.supervisionclVM,
+                                                     municipiosVM = t.municipiosVM,
+                                                     causapenalclVM = t.causapenalclVM,
+                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                                                     beneficiosclVM = t.beneficiosclVM,
+                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+                                                     tipoAdvertencia = "Sin fecha de informe"
+                                                 }).Union
+                                                (from persona in personaclVM
+                                                 join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+                                                 join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                                                 join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+                                                 join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
+                                                 join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
+                                                 where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+                                                 select new PlaneacionclWarningViewModel
+                                                 {
+                                                     personaclVM = persona,
+                                                     supervisionclVM = supervision,
+                                                     municipiosVM = municipio,
+                                                     causapenalclVM = causapenal,
+                                                     planeacionestrategicaclVM = planeacion,
+                                                     tipoAdvertencia = "Sin periodicidad de firma"
+                                                 }).Union
+                                                (from t in table
+                                                 where t.personaclVM.Supervisor == usuario && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaclVM.FechaProximoContacto != null && t.planeacionestrategicaclVM.FechaProximoContacto < fechaHoy && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA"
+                                                 orderby t.planeacionestrategicaclVM.FechaProximoContacto descending
+                                                 select new PlaneacionclWarningViewModel
+                                                 {
+                                                     personaclVM = t.personaclVM,
+                                                     supervisionclVM = t.supervisionclVM,
+                                                     municipiosVM = t.municipiosVM,
+                                                     causapenalclVM = t.causapenalclVM,
+                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                                                     beneficiosclVM = t.beneficiosclVM,
+                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+                                                     tipoAdvertencia = "Se paso el tiempo de la firma"
+                                                 });
+
                 ViewBag.Warnings = warningPlaneacion.Count();
             }
 
@@ -3882,7 +3837,7 @@ namespace scorpioweb.Models
             string usuario = user.ToString();
             DateTime fechaInforme = (DateTime.Today).AddDays(5);
             DateTime fechaControl = (DateTime.Today).AddDays(3);
-            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(60);
+            DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(30);
             DateTime fechaHoy = DateTime.Today;
             var fechaProcesal = DateTime.Now.AddMonths(-6);
 
@@ -3927,14 +3882,6 @@ namespace scorpioweb.Models
             List<Beneficios> queryBeneficios = (from b in beneficiosclVM
                                                 group b by b.SupervisionclIdSupervisioncl into grp
                                                 select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
-
-
-
-            //var listaaudit = (from a in _context.Audit
-            //                  join s in _context.Supervision on int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) equals s.IdSupervision
-            //                  where a.TableName == "Supervision" && a.NewValues.Contains("en espera de respuesta")
-            //                  group a by int.Parse(Regex.Replace(a.PrimaryKey, @"[^0-9]", "")) into grp
-            //                  select grp.OrderByDescending(a => a.Id).FirstOrDefault());
             #endregion
 
             #region -Jointables-
@@ -4042,26 +3989,6 @@ namespace scorpioweb.Models
                         };
 
 
-            //var tableAudiot = from persona in personaVM
-            //                  join supervision in supervisionVM on persona.IdPersona equals supervision.PersonaIdPersona
-            //                  join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-            //                  join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-            //                  join causapenal in causapenalVM on supervision.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal
-            //                  join planeacion in planeacionestrategicaVM on supervision.IdSupervision equals planeacion.SupervisionIdSupervision
-            //                  join fracciones in queryFracciones on supervision.IdSupervision equals fracciones.SupervisionIdSupervision
-            //                  join audit in listaaudit on supervision.IdSupervision equals int.Parse(Regex.Replace(audit.PrimaryKey, @"[^0-9]", ""))
-            //                  select new PlaneacionWarningViewModel
-            //                  {
-            //                      personaVM = persona,
-            //                      supervisionVM = supervision,
-            //                      causapenalVM = causapenal,
-            //                      planeacionestrategicaVM = planeacion,
-            //                      figuraJudicial = fracciones.FiguraJudicial,
-            //                      auditVM = audit,
-            //                      fechaCmbio = audit.DateTime,
-            //                      municipiosVM = municipio
-            //                  };
-
             if (usuario == "andrea.valdez@dgepms.com"/* || usuario == "janeth@nortedgepms.com"*/ || flagMaster == true)
             {
                 var ViewDataAlertasVari = Enumerable.Empty<PlaneacionclWarningViewModel>();
@@ -4071,17 +3998,7 @@ namespace scorpioweb.Models
                     case "TODOS":
                         ViewDataAlertasVari = (where).Union
                                                (sinResolucion).Union
-                                               (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
-                                               //(from persona in personaVM
-                                               // join domicilio in domicilioVM on persona.IdPersona equals domicilio.PersonaIdPersona
-                                               // join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                               // where persona.Colaboracion == "SI"
-                                               // select new PlaneacionWarningViewModel
-                                               // {
-                                               //     personaVM = persona,
-                                               //     municipiosVM = municipio,
-                                               //     tipoAdvertencia = "Pendiente de asignación - colaboración"
-                                               // }).Union
+                                               (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union                                             
                                                (from t in table
                                                 where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA"
                                                 orderby t.planeacionestrategicaclVM.InformeInicial
@@ -4152,23 +4069,7 @@ namespace scorpioweb.Models
                                                      beneficiosclVM = t.beneficiosclVM,
                                                      figuraJudicial = t.beneficiosclVM.FiguraJudicial,
                                                      tipoAdvertencia = "Se paso el tiempo de la firma"
-                                                 });//.Union
-                                                    //(where).Union
-                                                    //(archivoadmin).Union
-                                                    //(joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionVM.IdSupervision) && s.supervisionVM.EstadoSupervision == "VIGENTE")).Union
-                                                    //(from t in tableAudiot
-                                                    // where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                                                    // select new PlaneacionWarningViewModel
-                                                    // {
-                                                    //     personaVM = t.personaVM,
-                                                    //     municipiosVM = t.municipiosVM,
-                                                    //     supervisionVM = t.supervisionVM,
-                                                    //     causapenalVM = t.causapenalVM,
-                                                    //     planeacionestrategicaVM = t.planeacionestrategicaVM,
-                                                    //     fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                                                    //     tipoAdvertencia = "Estado Procesal",
-                                                    //     auditVM = t.auditVM
-                                                    // });
+                                                 });
                         break;
                     case "SIN RESOLUCION":
                         ViewDataAlertasVari = sinResolucion;
@@ -4272,31 +4173,11 @@ namespace scorpioweb.Models
                                                   tipoAdvertencia = "Pendiente de asignación - colaboración"
                                               };
                         break;
-                        //case "ESTADO PROCESAL":
-                        //    ViewDataAlertasVari = from t in tableAudiot
-                        //                          where t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                        //                          select new PlaneacionWarningViewModel
-                        //                          {
-                        //                              personaVM = t.personaVM,
-                        //                              municipiosVM = t.municipiosVM,
-                        //                              supervisionVM = t.supervisionVM,
-                        //                              causapenalVM = t.causapenalVM,
-                        //                              planeacionestrategicaVM = t.planeacionestrategicaVM,
-                        //                              fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                        //                              tipoAdvertencia = "Estado Procesal",
-                        //                              auditVM = t.auditVM
-                        //                          };
-                        //    break;
+                       
                 }
 
                 var warnings = Enumerable.Empty<PlaneacionclWarningViewModel>();
-                //if (usuario == "janeth@nortedgepms.com" || flagMaster == true)
-                //{
-                //    var filteredWarnings = from pwvm in ViewDataAlertasVari
-                //                           where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040nortedgepms.com")
-                //                           select pwvm;
-                //    warnings = warnings.Union(filteredWarnings);
-                //}
+             
                 if (usuario == "andrea.valdez@dgepms.com" || flagMaster == true)
                 {
                     var filteredWarnings = from pwvm in ViewDataAlertasVari
@@ -4307,15 +4188,11 @@ namespace scorpioweb.Models
                 ViewData["alertas"] = warnings;
             }
             else
-            {
-                //List<Archivointernomcscp> queryHistorialArchivo = (from a in _context.Archivointernomcscp
-                //                                                   group a by a.PersonaIdPersona into grp
-                //                                                   select grp.OrderByDescending(a => a.IdarchivoInternoMcscp).FirstOrDefault()).ToList();
-
+            {                
                 switch (currentFilter)
                 {
                     case "TODOS":
-                        ViewData["alertas"] = (where2).Union
+                       ViewData["alertas"] = (where2).Union
                                               (sinResolucion2).Union
                                               //(archivo).Union
                                               (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.personaclVM.Supervisor == usuario && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
@@ -4390,23 +4267,9 @@ namespace scorpioweb.Models
                                                      figuraJudicial = t.beneficiosclVM.FiguraJudicial,
                                                      tipoAdvertencia = "Se paso el tiempo de la firma"
                                                  });
-                        //(from t in tableAudiot
-                        // where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                        // select new PlaneacionWarningViewModel
-                        // {
-                        //     personaVM = t.personaVM,
-                        //     municipiosVM = t.municipiosVM,
-                        //     supervisionVM = t.supervisionVM,
-                        //     causapenalVM = t.causapenalVM,
-                        //     planeacionestrategicaVM = t.planeacionestrategicaVM,
-                        //     fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                        //     tipoAdvertencia = "Estado Procesal",
-                        //     auditVM = t.auditVM
-                        // });
+                      
                         break;
-                    //case "EXPEDIENTE FISICO EN RESGUARDO":
-                    //    ViewData["alertas"] = archivo;
-                    //    break;
+
                     case "SIN RESOLUCION":
                         ViewData["alertas"] = sinResolucion2;
                         break;
@@ -4496,22 +4359,7 @@ namespace scorpioweb.Models
                                                   planeacionestrategicaclVM = t.planeacionestrategicaclVM,
                                                   tipoAdvertencia = "Se paso el tiempo de la firma"
                                               };
-                        break;
-                        //case "ESTADO PROCESAL":
-                        //    ViewData["alertas"] = from t in tableAudiot
-                        //                          where t.personaVM.Supervisor == usuario && t.personaVM.Supervisor != null && t.auditVM.DateTime < fechaProcesal && t.supervisionVM.EstadoSupervision != "CONCLUIDO"
-                        //                          select new PlaneacionWarningViewModel
-                        //                          {
-                        //                              personaVM = t.personaVM,
-                        //                              municipiosVM = t.municipiosVM,
-                        //                              supervisionVM = t.supervisionVM,
-                        //                              causapenalVM = t.causapenalVM,
-                        //                              planeacionestrategicaVM = t.planeacionestrategicaVM,
-                        //                              fraccionesimpuestasVM = t.fraccionesimpuestasVM,
-                        //                              tipoAdvertencia = "Estado Procesal",
-                        //                              auditVM = t.auditVM
-                        //                          };
-                        //    break;
+                        break;                       
                 }
             }
             #endregion
