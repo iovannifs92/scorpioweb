@@ -97,8 +97,8 @@
                 <td>@item.NomTabla</td>
                 <td>@item.EstadoVinculacion</td>
                 <td>
-                    <a type="button" title="Canalizar" asp-action="Canaliza" asp-route-id="@item.IdReinsercion" asp-route-nomTabla="@item.NomTabla">
-                           <i class="btn btn-success fa fa-eye"> Ver Canalizaciones</i>
+                    <a type="button" title="Menu Supervision" asp-action="Menusupervision" asp-route-id="@item.IdReinsercion">
+                            <i class="btn btn-success fa fa-cogs"> Supervisión</i>
                     </a>  
                     <a type="button" title="Información" asp-action="Canaliza" asp-route-id="@item.IdReinsercion" asp-route-nomTabla="@item.NomTabla">
                             <i style="margin-top:10px" class="btn btn-danger fa fa-trash"> Borrar</i>
@@ -136,6 +136,7 @@
     <div style="margin-top:20px">
         <a asp-action="MenuReinsercion">Regresar a Menu</a>
     </div>
+
    
 
 </body>

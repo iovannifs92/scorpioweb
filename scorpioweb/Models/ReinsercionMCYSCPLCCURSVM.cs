@@ -7,6 +7,7 @@
         public string Paterno { get; set; }
         public string Materno { get; set; }
         public string Nombre { get; set; }
+        public string Supervisor { get; set; }
         public string ClaveUnica { get; set; }
         public string NomTabla { get; set; }
         public string Causapenal { get; set; }

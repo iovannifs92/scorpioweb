@@ -75,42 +75,76 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
-            var query = (from t1 in (
-                        from p in _context.Persona
-                        select new ReinsercionMCYSCPLCCURSVM
-                        {
-                            IdTabla = p.IdPersona.ToString(),
-                            Paterno = p.Paterno,
-                            Materno = p.Materno,
-                            Nombre = p.Nombre,
-                            ClaveUnica = p.ClaveUnicaScorpio,
-                            NomTabla = "persona"
-                        }).Concat(
-                            from pcl in _context.Personacl
-                            select new ReinsercionMCYSCPLCCURSVM
-                            {
-                                IdTabla = pcl.IdPersonaCl.ToString(),
-                                Paterno = pcl.Paterno,
-                                Materno = pcl.Materno,
-                                Nombre = pcl.Nombre,
-                                ClaveUnica = pcl.ClaveUnicaScorpio,
-                                NomTabla = "personacl"
-                            }
-                        )
-                         join ex in _context.Expedienteunico on t1.ClaveUnica equals ex.ClaveUnicaScorpio
-                         group t1 by new { t1.Paterno, t1.Materno, t1.Nombre, t1.ClaveUnica, t1.NomTabla } into g
-                         where g.Key.ClaveUnica != null
-                         select new ReinsercionMCYSCPLCCURSVM
-                         {
-                             IdTabla = g.Max(x => x.IdTabla),
-                             Paterno = g.Max(x => x.Paterno),
-                             Materno = g.Max(x => x.Materno),
-                             Nombre = g.Max(x => x.Nombre),
-                             ClaveUnica = g.Max(x => x.ClaveUnica),
-                             NomTabla = g.Key.NomTabla
+            var fechaActualizacionLimite = new DateTime(2023, 12, 30, 0, 0, 0);
 
-                         }
-                    );
+            var query = (from persona in _context.Persona
+                        //join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
+                        //join estudios in _context.Estudios on persona.IdPersona equals estudios.PersonaIdPersona
+                        //join trabajo in _context.Trabajo on persona.IdPersona equals trabajo.PersonaIdPersona
+                        //join actividadsocial in _context.Actividadsocial on persona.IdPersona equals actividadsocial.PersonaIdPersona
+                        //join saludfisica in _context.Saludfisica on persona.IdPersona equals saludfisica.PersonaIdPersona
+                        join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona into s_join
+                        from s in s_join.DefaultIfEmpty()
+                        join causapenal in _context.Causapenal on s.CausaPenalIdCausaPenal equals causapenal.IdCausaPenal into cp_join
+                        from cp in cp_join.DefaultIfEmpty()
+                        join delito in _context.Delito on cp.IdCausaPenal equals delito.CausaPenalIdCausaPenal into dd_join
+                        from dd in dd_join.DefaultIfEmpty()
+                        where (s.EstadoSupervision == null || s.EstadoSupervision != "CONCLUIDO") && persona.Supervisor.Contains("@dgepms.com") && persona.UltimaActualización >= fechaActualizacionLimite
+                        group new ReinsercionMCYSCPLCCURSVM
+                        {
+                            IdTabla = persona.IdPersona.ToString(),
+                            Nombre = persona.Paterno + " " + persona.Materno + " " + persona.Nombre,
+                            Causapenal = cp.CausaPenal,
+                            Delito = dd.Tipo,
+                            NomTabla = "MCySCP",
+                            //EstadoSupervision = s.EstadoSupervision,
+                            //ClaveUnica = persona.ClaveUnicaScorpio,
+                            Supervisor = persona.Supervisor
+                        } by new { persona.IdPersona, persona.Paterno, persona.Materno, persona.Nombre } into g
+                        select g.FirstOrDefault()
+                    ).Union(from personacl in _context.Personacl
+                            //join domiciliocl in _context.Domiciliocl on personacl.IdPersonaCl equals domiciliocl.PersonaclIdPersonacl
+                            //join estudioscl in _context.Estudioscl on personacl.IdPersonaCl equals estudioscl.PersonaClIdPersonaCl
+                            //join trabajocl in _context.Trabajocl on personacl.IdPersonaCl equals trabajocl.PersonaClIdPersonaCl
+                            //join actividadsocialcl in _context.Actividadsocialcl on personacl.IdPersonaCl equals actividadsocialcl.PersonaClIdPersonaCl
+                            //join saludfisicacl in _context.Saludfisicacl on personacl.IdPersonaCl equals saludfisicacl.PersonaClIdPersonaCl
+                            join supervisioncl in _context.Supervisioncl on personacl.IdPersonaCl equals supervisioncl.PersonaclIdPersonacl into scl_join
+                            from scl in scl_join.DefaultIfEmpty()
+                            join causapenalcl in _context.Causapenalcl on scl.CausaPenalclIdCausaPenalcl equals causapenalcl.IdCausaPenalcl into cpcl_join
+                            from cpcl in cpcl_join.DefaultIfEmpty()
+                            join delitocl in _context.Delitocl on cpcl.IdCausaPenalcl equals delitocl.CausaPenalclIdCausaPenalcl into dcl_join
+                            from dcl in dcl_join.DefaultIfEmpty()
+                            join expedienteunico in _context.Expedienteunico on personacl.IdPersonaCl.ToString() equals expedienteunico.Persona into ex_join
+                            from ex in ex_join.DefaultIfEmpty()
+                            join ejecucion in _context.Ejecucion on ex.Ejecucion equals ejecucion.IdEjecucion.ToString() into ep_join
+                            from ep in ep_join.DefaultIfEmpty()
+                            join epcausapenal in _context.Epcausapenal on ep.IdEjecucion equals epcausapenal.EjecucionIdEjecucion into epcp_join
+                            from epcp in epcp_join.DefaultIfEmpty()
+                            where (scl.EstadoSupervision == null || scl.EstadoSupervision != "CONCLUIDO") && personacl.Supervisor.Contains("@dgepms.com")
+                            group new ReinsercionMCYSCPLCCURSVM
+                            {
+                                IdTabla = personacl.IdPersonaCl.ToString(),
+                                Nombre = personacl.Paterno + " " + personacl.Materno + " " + personacl.Nombre,
+                                Causapenal = epcp.Causapenal ?? cpcl.CausaPenal,
+                                Delito = epcp.Delito ?? dcl.Tipo,
+                                NomTabla = "Libertad Condicionada",
+                                //EstadoSupervision = scl.EstadoSupervision,
+                                //ClaveUnica = personacl.ClaveUnicaScorpio,
+                                Supervisor = personacl.Supervisor
+                            } by new { personacl.IdPersonaCl, personacl.Paterno, personacl.Materno, personacl.Nombre } into g
+                            select g.FirstOrDefault()
+                    ).Where(t1 => !_context.Reinsercion.Any(r => (r.Tabla == "persona" && r.IdTabla == t1.IdTabla.ToString())))
+                    .Select(t1 => new ReinsercionMCYSCPLCCURSVM
+                    {
+                        IdTabla = t1.IdTabla,
+                        Nombre =  t1.Nombre,
+                        Causapenal = t1.Causapenal,
+                        Delito = t1.Delito,
+                        NomTabla = t1.NomTabla,
+                        //EstadoSupervision = t1.EstadoSupervision,
+                        //ClaveUnica = t1.ClaveUnica,
+                        Supervisor = t1.Supervisor
+                    });
 
             var tamano = query.Count();
 
@@ -250,24 +284,24 @@ namespace scorpioweb.Controllers
                           });
 
 
-            var result = query.ToList();
+           var result = query.ToList();
 
            ViewData["CurrentFilter"] = searchString;
-            ViewData["EstadoS"] = estadoSuper;
-            ViewData["FiguraJ"] = figuraJudicial;
+           ViewData["EstadoS"] = estadoSuper;
+           ViewData["FiguraJ"] = figuraJudicial;
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                query = query.Where(x => (x.Nombre).Contains(searchString.ToUpper()) ||
-                                              (x.IdTabla).ToString().Contains(searchString));
-            }
+           if (!String.IsNullOrEmpty(searchString))
+           {
+               query = query.Where(x => (x.Nombre).Contains(searchString.ToUpper()) ||
+                                             (x.IdTabla).ToString().Contains(searchString));
+           }
 
-            query.OrderBy(x => x.IdTabla);
+           query.OrderBy(x => x.IdTabla);
 
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    query = query.OrderByDescending(x => x.Nombre);
+           switch (sortOrder)
+           {
+               case "name_desc":
+                   query = query.OrderByDescending(x => x.Nombre);
                     break;
                 case "causa_penal_desc":
                     query = query.OrderByDescending(x => x.Nombre);
@@ -278,9 +312,9 @@ namespace scorpioweb.Controllers
                 default:
                     query = query.OrderByDescending(x => x.Nombre);
                     break;
-            }
-            int pageSize = 15;
-            return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
+           }
+           int pageSize = 15;
+           return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
         // GET: Reinsercion/Details/5
@@ -574,13 +608,10 @@ namespace scorpioweb.Controllers
         #endregion
 
         #endregion
-
-
         #region - Ver canalizaciones -
 
         public async Task<IActionResult> VerCanalizaciones()
         {
-
             return View();
         }
 
@@ -676,5 +707,82 @@ namespace scorpioweb.Controllers
         {
             return View();
         }
+
+        #region -Menu Supervision-
+        public async Task<IActionResult> Menusupervision(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+
+            //var user = await userManager.FindByNameAsync(User.Identity.Name);
+            //#region -Solicitud Atendida Archivo prestamo Digital-
+            //var warningRespuesta = from a in _context.Archivoprestamodigital
+            //                       where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+            //                       select a;
+            //ViewBag.WarningsUser = warningRespuesta.Count();
+            //#endregion
+
+
+            var Reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == id);
+            if (Reinsercion == null)
+            {
+                return NotFound();
+            }
+
+
+            List<Reinsercion> reinsercionVM = _context.Reinsercion.ToList();
+            List<Canalizacion> canalizacionVM = _context.Canalizacion.ToList();
+            List<Terapia> terapialVM = _context.Terapia.ToList();
+            List<Ejesreinsercion> ejesreinsercionVM = _context.Ejesreinsercion.ToList();
+            List<Oficioscanalizacion> oficioscanalizacionVM = _context.Oficioscanalizacion.ToList();
+
+            List<Persona> personaVM = _context.Persona.ToList();
+            List<Personacl> personacls = _context.Personacl.ToList();
+
+            //List<Jornadas> JornadasVM = _context.Jornadas.ToList();
+
+            #region -Jointables-
+            var ES = from reinsercion in reinsercionVM
+                                               
+                                                where reinsercion.IdReinsercion == id
+                                                select new 
+                                                {
+                                                    reinsercionVM = reinsercion
+                                                };
+
+
+            ViewData["reincercion"] = from reinsercion in reinsercionVM
+                                      where reinsercion.IdReinsercion == id
+                                      select new ReinsercionVM
+                                      {
+                                          reinsercionVM = reinsercion
+                                      };
+
+            var ESh = from reinsercion in reinsercionVM
+                                                join canalizacion in canalizacionVM on reinsercion.IdReinsercion equals canalizacion.IdCanalizacion
+                                                join terapia in terapialVM on reinsercion.IdReinsercion equals terapia.CanalizacionIdCanalizacion
+                                                join ejesreincercion in ejesreinsercionVM on reinsercion.IdReinsercion equals ejesreincercion.CanalizacionIdCanalizacion
+                                                join oficioscanalizacion in oficioscanalizacionVM on reinsercion.IdReinsercion equals oficioscanalizacion.CanalizacionIdCanalizacion
+                                                where reinsercion.IdReinsercion == id
+                                                select new ReinsercionVM
+                                                {
+                                                    reinsercionVM = reinsercion,
+                                                    canalizacionVM = canalizacion,
+                                                    terapiaVM = terapia,
+                                                    ejesreinsercionVM = ejesreincercion,
+                                                    oficioscanalizacionVM = oficioscanalizacion
+                                                };
+            #endregion
+
+            return View();
+        }
+        #endregion
+
+
+
+
     }
 }

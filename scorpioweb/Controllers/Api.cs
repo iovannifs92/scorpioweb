@@ -697,6 +697,8 @@ namespace scorpioweb.Controllers
             //               pp.FechaFirma
             //           });
 
+            DateTime now = DateTime.Now;
+            string fecha = now.ToString("dddd',' dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
 
             IEnumerable<Presentacionperiodica> ppp = from p in _context.Persona
                                                      join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
@@ -716,6 +718,7 @@ namespace scorpioweb.Controllers
             var dataSource = new[] { new {
                 ID = nombre[0].personasVM.IdPersona,
                 nombre = nombre[0].personasVM.NombreCompleto.ToUpper(),
+                fecha = fecha,
             } };
 
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;

@@ -126,10 +126,16 @@
                    Nombre
                 </th>
                 <th>
-                   ClaveUnica
+                    Causa Penal
+                </th>
+                <th>
+                    Delito
                 </th>
                 <th>
                     Area
+                </th>
+                <th>
+                   Supervisor
                 </th>
             <th></th>
         </tr>
@@ -140,8 +146,10 @@
             <tr>
                 <td>@item.IdTabla</td>
                 <td>@item.Paterno @item.Materno @item.Nombre</td>
-                <td>@item.ClaveUnica</td>
+                <td>@item.Causapenal</td>
+                <td>@item.Delito</td>
                 <td>@item.NomTabla</td>
+                <td>@item.Supervisor</td>
                 <td>
                         <a type="button" title="Canalizar" onclick="AlertCanalizacion(@item.IdTabla,'@item.NomTabla')">
                            <i class="btn btn-info fa fa-share"> Canalizar</i>
