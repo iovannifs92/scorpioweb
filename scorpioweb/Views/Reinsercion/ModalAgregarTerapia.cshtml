@@ -1,0 +1,177 @@
+﻿@model scorpioweb.Models.Terapia
+
+@{
+    Layout = null;
+}
+
+<form id="terapiaForm">
+    <input id="idReinsercion" value="@ViewBag.idReinsercion" type="hidden" />
+    <input id="idCanalizacion" value="@ViewBag.idCanalizacion" type="hidden" />
+    <div class="form-group">
+        <label>Tipo de terapia</label>
+        <select required class="form-control" id="selectTipoTerapia" name="TipoTerapia">
+            <option selected disabled>Seleccione una opción</option>
+            <option value="VIOLENCIA">Violencia</option>
+            <option value="ADICCIONES">Adicciones</option>
+            <option value="VIVIR SIN GOLPES">Vivir sin golpes</option>
+            <option value="OTRO">Otros</option>
+        </select>
+    </div>
+    <div style="display:none;" class="form-group" id="DivOtraTerapia">
+        <label class="control-label">Especifique el tipó de terapia</label>
+        <input oninput="this.value = this.value.toUpperCase()" required id="InputOtraTerapia" name="OtraTerapia" type="text" class="form-control" />
+    </div>
+
+    <div class="form-group col-md-6">
+        <label>Periodicidad de la terapia</label>
+        <select required class="form-control" id="selectPeriodicidadTerapia" name="PeriodicidadTerapia">
+            <option selected disabled>Seleccione una opción</option>
+            <option value="SEMANAL">Semanal</option>
+            <option value="MENSUAL">Mensual</option>
+        </select>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label class="control-label">Fecha de inicio</label>
+        <input required id="fInicioTerapia" name="fInicioTerapia" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group col-md-6">
+        <label class="control-label">Fecha de término</label>
+        <input required id="fTerminoTerapia" name="fTerminoTerapia" type="date" class="form-control" />
+    </div>
+
+    @{
+        var grupos = ViewBag.Grupos as List<Grupo>;
+    }
+    <div class="form-group col-md-6">
+        <label class="control-label">Seleccione un grupo</label>
+        <select required class="form-control" id="selectGrupo" name="GrupoId">
+            <option selected disabled>Seleccione una opción</option>
+            @if (grupos != null)
+            {
+                @foreach (var grupo in grupos)
+                {
+                    <option value="@grupo.IdGrupo">@grupo.NombreGrupo - Horario: @grupo.Horario</option>
+                }
+            }
+        </select>
+    </div>
+
+    @{
+        var terapeutas = ViewBag.Terapeutas as List<Terapeutas>;
+    }
+    <div class="form-group col-md-6">
+        <label class="control-label">Asigne un terapeuta:</label>
+        <select required class="form-control" id="selectTerapeuta" name="TerapeutaId">
+            <option selected disabled>Seleccione una opción</option>
+            <option value="PENDIENTE">Pendiente por asignar</option>
+            @if (terapeutas != null)
+            {
+                @foreach (var terapeuta in terapeutas)
+                {
+                    <option value="@terapeuta.IdTerapeutas">@terapeuta.Nombre @terapeuta.Paterno @terapeuta.Materno - Tipo de terapia: @terapeuta.TipoTerapia</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="form-group col-md-6">
+        <label class="control-label">Observaciones</label>
+        <input required oninput="this.value = this.value.toUpperCase()" id="InputObservacionesTerapia" name="Observaciones" type="text" placeholder="Sin observaciones" class="form-control" />
+    </div>
+
+    <div class="form-group col-md-6">
+        <button type="button" onclick="guardarTerapia()" class="btn btn-primary"> <i class="fa fa-save" style="margin-right:5px;"></i>Guardar</button>
+    </div>
+</form>
+
+<script>
+
+
+
+    $(document).ready(function () {
+        $('#selectTipoTerapia').change(function () {
+            var target = $(this).find(":selected").val();
+            if(target == 'OTRO')
+                $('#DivOtraTerapia').css("display", "block");
+            else
+                $('#DivOtraTerapia').css("display", "none");
+        });
+    });
+
+    function guardarTerapia() {
+        var idCanalizacion = $('#idCanalizacion').val();
+        var idReinsercion = $('#idReinsercion').val();   
+        var tipo = $("#selectTipoTerapia").val()
+        if (tipo == 'OTRO')
+            tipo = $('#InputOtraTerapia').val();
+
+        var formData = {
+            Tipo: tipo,
+            Terapeuta: $("#selectTerapeuta").val(),
+            FechaInicio: $("#fInicioTerapia").val(),
+            FechaTermino: $("#fTerminoTerapia").val(),
+            FechaTerapia: $("#fInicioTerapia").val(), // AL CREAR ES LA MISMA QUE EL INICIO DE LAS TERAPIAS
+            PeriodicidadTerapia: $("#selectPeriodicidadTerapia").val(),
+            Estado: "ACTIVO", // PUEDE CAMBIAR DESPUES
+            Observaciones: $("#InputObservacionesTerapia").val(),
+            CanalizacionIdCanalizacion: idCanalizacion, 
+            GrupoIdGrupo: $("#selectGrupo").val()
+        };
+
+
+        $.ajax({
+            url: '/Reinsercion/ModalCrearTerapia?idReinsercion=' + idReinsercion,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                console.log("Response received:", response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Terapia guardada exitosamente!',
+                        showConfirmButton: false,
+                        timer: 1200,
+                        customClass: {
+                            popup: 'my-custom-popup',
+                            content: 'my-custom-content'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error: ' + response.message,
+                        customClass: {
+                            popup: 'my-custom-popup',
+                            content: 'my-custom-content'
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                var errorMessage = "Error al procesar la solicitud.";
+
+                // Verificar si hay un mensaje de error específico en la respuesta JSON
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: "error",
+                    title: "ERROR",
+                    text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+                    footer: errorMessage,
+                    customClass: {
+                        popup: 'my-custom-popup',
+                        content: 'my-custom-content'
+                    }
+                });
+            }
+        });
+    };
+</script>
