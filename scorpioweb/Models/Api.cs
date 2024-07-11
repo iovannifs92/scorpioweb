@@ -9,6 +9,11 @@ namespace scorpioweb.Models
         public Fro froVM { get; set; }
         public FroAdolescentes froAdolescentesVM { get; set; }
         public Presentacionperiodica presentacionperiodicaVM { get; set; }
+        public Terapia terapiaVM { get; set; }
+        public Reinsercion reinsercionVM { get; set; }
+        public Canalizacion canalizacionVM { get; set; }
+
+
     }
 
 }

@@ -1,0 +1,153 @@
+﻿@{
+    ViewData["Title"] = "Oficios de Canalizacion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var ParaOficios = ViewData["ParaOficios"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
+}
+
+
+<style>
+    .separar {
+        margin-top: 10px;
+    }
+        .my-toast {
+        font-size: 35px;
+    }
+
+    .my-toast-content {
+        padding: 40px;
+    }
+
+    .swal2-popup {
+        font-size: 1.6rem;
+        max-width: 800px;
+    }
+
+</style>
+
+<script>
+    var idselect = 0;
+    var tabla = "";
+    var tipo = "";
+
+    $( document ).ready(function() {
+        CambioLista(document.getElementById("Servicio").value);
+    });
+    function CambioLista(tabla) {
+        var listaServicios = @Html.Raw(Json.Serialize(ViewBag.listaServicios));
+        var select = document.getElementById('Servicio');
+        idselect = listaServicios[parseInt(select.selectedIndex)].id
+
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/Reinsercion/ListaPorTipo",
+            data: { tabla: tabla },
+            success: function (data) {
+                var opcionesDropdown = $('#tipo');
+                opcionesDropdown.empty();
+                opcionesDropdown.append('<option value="">Seleccione una opción</option>');
+                $.each(data, function (index, item) {
+                    opcionesDropdown.append('<option value="' + item + '">' + item + '</option>');
+                });
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+
+    }
+    
+    function InformesVinculacion() {
+        valdar();
+        var_idCanalizacion = document.getElementById("idCanalizacion").value;
+        tipo = document.getElementById("tipo").value;
+        $.ajax({
+            url: "/Api/InformesVinculacion",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                var_idCanalizacion,tipo,tabla,idselect,  
+            },
+            success: function (response) {
+                onclick("")
+            }
+        });
+    }
+
+    function valdar(){
+         if(document.getElementById("tipo").selectedIndex == 0){
+             Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Seleccione el tipo de reporte",
+                });
+                return;
+         } 
+    }
+   
+</script>
+
+<body>
+    <h1 style="text-align:center" class="blockquote text-center">Oficios de Canalización</h1>
+    <div style="margin-block:30px">
+        <div style="text-align:right;">
+            <button type="button" style="margin-top:6px;" class="btn btn-primary fa fa-plus" title="Add Ejes de Reincercion" data-toggle="modal" data-target="#form-modal">Add Ejes de Reincercion
+        </div>
+    </div>
+    <input readonly style="display:none" name="idCanalizacion" id="idCanalizacion" type="text" class="form-control" value="@ViewBag.idCanalizacion" />
+</body>
+
+
+<div style="margin-top:20px">
+    <a asp-action="Menusupervision" asp-controller="Reinsercion" @*asp-route-id="@id"*@>Regresar a Menu</a>
+</div>
+
+@****************ZONA DE MODAL***************@
+<div class="modal fade" id="form-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="overflow-y: scroll; background-color: rgba(0, 0, 0, 0.5)" data-backdrop="false" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#000;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Crear Oficio</h5>
+            </div>
+            <div class="modal-body">
+               @* <form asp-action="CreateOficiosCanalizacion">*@
+                    <div class="col-md-12 separar">
+                      @*  <label class="control-label">Seleccionar Servicio para reporte </label>
+                        <select class="form-control" name="Servicio" id="Servicio" style="font-size: 15px" onchange="CambioLista(value)"
+                                asp-items="@(new SelectList(ViewBag.listaServicios, "tabla", "Tipo", "Id"))">
+                        </select>*@
+                        <label class="control-label">Seleccionar Servicio para reporte </label>
+                        <select class="form-control" name="Servicio" id="Servicio" style="font-size: 15px" onchange="CambioLista(value)"
+                                asp-items="@(new SelectList(ViewBag.listaServicios, "tabla", "Tipo", "Id"))">
+                        </select>
+                    </div>
+                    <div class="col-md-12 separar">
+                        <label class="control-label">Tipo de reporte </label>
+                        <select class="form-control" name="tipo" id="tipo" style="font-size: 15px">
+                            <option value="">Seleccione una opción</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 separar">
+                        <label class="control-label">Observaciones </label>
+                        <textarea required name="ejesObs" id="ejesObs" type="text" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-12 separar">
+                        <button onclick="InformesVinculacion()" class="btn btn-primary fa fa-save"> Guardar</button>
+                        @*<button style="display:none" type="submit" class="btn btn-primary fa fa-save"> Guardar</button>*@
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+                    </div>
+               @* </form>*@
+            </div>
+        </div>
+    </div>
+</div>

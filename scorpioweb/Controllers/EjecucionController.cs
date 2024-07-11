@@ -203,17 +203,17 @@ namespace scorpioweb.Controllers
             ViewBag.flag = false;
 
             //JUZGADO 1
-            if (ViewBag.User == "isabel.almora@dgepms.com" || ViewBag.User == "stephany.garcia@dgepms.com")
+            if (ViewBag.User == "julissa.gonzalez@dgepms.com" || ViewBag.User == "diana.ontiveros@dgepms.com")
             {
                 ViewBag.J = "JUZGADO 1";
             }
             //JUZGADO 2
-            if (ViewBag.User == "esthela.huitron@dgepms.com")
+            if (ViewBag.User == "esthela.huitron@dgepms.com" || ViewBag.User == "stephany.garcia@dgepms.com")
             {
                 ViewBag.J = "JUZGADO 2";
             }
             //JUZGADO 3
-            if ( ViewBag.User == "alma.gladiola@dgepms.com")
+            if ( ViewBag.User == "alma.gladiola@dgepms.com" || ViewBag.User == "isabel.almora@dgepms.com")
             {
                 ViewBag.J = "JUZGADO 3";
             }
@@ -386,7 +386,7 @@ namespace scorpioweb.Controllers
                 ejecucion.FechaCarga = DateTime.Now;
                 if(ejecucion.Juzgado == "JUZGADO 1")
                 {
-                    ejecucion.Encargado = "uriel.ortega@dgepms.com";
+                    ejecucion.Encargado = "julissa.gonzalez@dgepms.com";
                 }
                 else if(ejecucion.Juzgado == "JUZGADO 2")
                 {
@@ -1997,7 +1997,7 @@ namespace scorpioweb.Controllers
             //                                               select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
 
             var filter = from o in _context.Oficialia
-                         where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar == "uriel.ortega@dgepms.com"
+                         where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar != "uriel.ortega@dgepms.com"
                          select o;
 
             ViewData["CurrentFilter"] = searchString;

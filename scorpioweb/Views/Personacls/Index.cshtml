@@ -171,7 +171,7 @@
                             row = row
                                 + "<div class=\"col-md-3\"><a href=/Personacls/MenuEdicion/" + result.page[i].idPersonaCl + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
                             row = row
-                                + "<div class=\"col-md-3\"><a onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: -20px; margin-right: 5px;' class='btn btn-warning'><i class='fa fa-users'></i> Canalizar</a></div>";
+                                + "<div class=\"col-md-3\"><button onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: -20px; margin-right: 5px;' class='btn btn-warning fa fa-users' disabled> Canalizar</button></div>";
                       
                             if (result.canalizados.includes(result.page[i].idPersonaCl)) {                        
                                 row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";
@@ -186,7 +186,7 @@
                             row = row
                                 + "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
                             row = row
-                                + "<div class=\"col-md-3\"><a onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: 5px; margin-right: 20em;' class='btn btn-warning'><i class='fa fa-users'></i> Canalizar</a></div>";
+                                + "<div class=\"col-md-3\"><button onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: 5px; margin-right: 20em;' class='btn btn-warning fa fa-users' disabled> Canalizar</button></div>";
 
                             if (result.canalizados.includes(result.page[i].idPersonaCl)) {
                                 row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";

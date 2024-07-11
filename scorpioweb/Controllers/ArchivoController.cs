@@ -543,7 +543,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,ArcchivoIdArchivo")] Archivoregistro archivoregistro, Archivo archivo, int archivoIdArchivo, IFormFile archivoFile)
+        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,Otro,ArcchivoIdArchivo")] Archivoregistro archivoregistro, Archivo archivo, int archivoIdArchivo, IFormFile archivoFile)
         {
             if (ModelState.IsValid)
             {
@@ -559,6 +559,7 @@ namespace scorpioweb.Models
                 archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
                 archivoregistro.Envia = mg.normaliza(archivoregistro.Envia);
                 archivoregistro.ArchivoIdArchivo = archivoIdArchivo;
+                archivoregistro.Otro = archivoregistro.Otro;
 
                 if (archivoFile == null)
                 {
@@ -634,7 +635,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
+        public async Task<IActionResult> EditArchivo(int id, [Bind("IdArchivoRegistro,CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Otro,ArcchivoIdArchivoo")] Archivoregistro archivoregistro, int archivoIdArchivo, IFormFile archivoFile)
         {
 
             if (id != archivoregistro.IdArchivoRegistro)
@@ -656,6 +657,7 @@ namespace scorpioweb.Models
                 archivoregistro.FechaAcuerdo = archivoregistro.FechaAcuerdo;
                 archivoregistro.Observaciones = mg.normaliza(archivoregistro.Observaciones);
                 archivoregistro.CarpetaEjecucion = mg.normaliza(archivoregistro.CarpetaEjecucion);
+                archivoregistro.Otro = mg.normaliza(archivoregistro.Otro);
 
 
                 if (archivoFile == null)

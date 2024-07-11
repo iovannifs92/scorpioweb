@@ -1,4 +1,6 @@
-﻿namespace scorpioweb.Models
+﻿using System;
+
+namespace scorpioweb.Models
 {
     public class ReinsercionMCYSCPLCCURSVM
     {
@@ -22,5 +24,7 @@
                 return this.Paterno + " " + this.Materno + " " + this.Nombre;
             }
         }
+        public string tabla { get; set; }
+        public DateTime fecharegistro { get; set; }
     }
 }

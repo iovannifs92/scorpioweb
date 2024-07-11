@@ -151,13 +151,13 @@
                 <td>@item.NomTabla</td>
                 <td>@item.Supervisor</td>
                 <td>
-                        <a type="button" title="Canalizar" onclick="AlertCanalizacion(@item.IdTabla,'@item.NomTabla')">
-                           <i class="btn btn-info fa fa-share"> Canalizar</i>
-                        </a>  
+                    <button type="button" class="btn btn-info fa fa-share" title="Canalizar" onclick="AlertCanalizacion(@item.IdTabla,'@item.NomTabla')">
+                        Canalizar
+                    </button>  
                 @*    <a type="button" title="Información" onclick="showModal('@Url.Action("Details", "/" +item.NomTabla + "s")','Detalles',@item.IdTabla )">
                             <i class="btn btn-primary fa fa-file"> Mas informacion</i>
                     </a>*@
-                        <a onclick="showModal('@Url.Action("Details", item.NomTabla + "s", new {id=item.IdTabla}, Context.Request.Scheme)','Detalles Generales',null )" class="btn btn-primary fa fa-eye" title="Datos Generales"> Datos Generales</a>
+                        <a onclick="showModal('@Url.Action("Details", item.tabla + "s", new {id=item.IdTabla}, Context.Request.Scheme)','Detalles Generales',null )" class="btn btn-primary fa fa-eye" title="Datos Generales" style="margin-top:6px"> Datos Generales</a>
                 </td>
             </tr>
         }

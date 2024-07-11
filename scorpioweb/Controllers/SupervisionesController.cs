@@ -2653,7 +2653,7 @@ MetodosGenerales mg = new MetodosGenerales();
                     supervisor = "LIC. STEPHANY GARCIA";
                     break;
                 case "victor.hernandez@dgepms.com":
-                    supervisor = "LIC. VICTOR HERNANDEZ";
+                    supervisor = "LIC. VICTOR HERNANDEZ SALAS";
                     break;
                 case "enrique.martinez@dgepms.com":
                     supervisor = "LIC. ENRIQUE MARTINEZ";
@@ -2662,16 +2662,40 @@ MetodosGenerales mg = new MetodosGenerales();
                     supervisor = "LIC. DIANA ONTIVEROS";
                     break;
                 case "esmeralda.vargas@dgepms.com":
-                    supervisor = "LIC. ESMERALDA VARGAS";
+                    supervisor = "LIC. ANA ESMERALDA VARGAS ALVARADO";
                     break;
                 case "jesumartinez@dgepms.com":
-                    supervisor = "LIC. JESU MARTINEZ";
+                    supervisor = "LIC. MARÍA DE JESÚS MARTÍNEZ SÁNCHEZ";
                     break;
-                case "diana.renteria@dgepms.com":
-                    supervisor = "LIC. DIANA RENTERIA";
+                case "yoena@dgepms.com":
+                    supervisor = "LIC. SANDRA YOENA ONTIVEROS PACHECO";
                     break;
-                case "iovannifs92@gmail.com":
-                    supervisor = "IOVANNI FERNÁNDEZ SÁNCHEZ";
+                case "samuel@nortedgepms.com":
+                    supervisor = "LIC. SAMUEL ONTIVEROS PACHECO";
+                    break;
+                case "javier.alvarez@nortedgepms.com":
+                    supervisor = "LIC. JAVIER ALVAREZ";
+                    break;
+                case "karen.favila@nortedgepms.com":
+                    supervisor = "LIC. KAREN FAVILA";
+                    break;
+                case "andrea.cortez@dgepms.com":
+                    supervisor = "LIC. ANDREA KARINA CORTEZ ARELLANO";
+                    break;
+                case "jorge.gonzalez@dgepms.com":
+                    supervisor = "LIC. JORGE ARMANDO GONZALEZ ÁVILA";
+                    break;
+                case "gabriela@nortedgepms.com":
+                    supervisor = "LIC. GABRIELA";
+                    break;
+                case "mitzy.robles@dgepms.com":
+                    supervisor = "LIC. MITZY CITLALLI ROBLES ALVARADO";
+                    break;
+                case "maira@nortedgepms.com":
+                    supervisor = "LIC. MAIRA";
+                    break;
+                case "teresita.medina@dgepms.com":
+                    supervisor = "LIC. TERESITA MEDINA";
                     break;
                 default:
                     supervisor = "SIN REGISTRO";
@@ -2901,7 +2925,7 @@ MetodosGenerales mg = new MetodosGenerales();
 
             foreach (var d in delitos)
             {
-                delito += d.Delito + " ";
+                delito += d.Delito + ", ";
             }
 
             foreach (var t in tipo)

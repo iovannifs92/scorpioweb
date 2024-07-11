@@ -97,11 +97,12 @@
                 <td>@item.NomTabla</td>
                 <td>@item.EstadoVinculacion</td>
                 <td>
-                    <a type="button" title="Menu Supervision" asp-action="Menusupervision" asp-route-id="@item.IdReinsercion">
-                            <i class="btn btn-success fa fa-cogs"> Supervisión</i>
+                    <a type="button" title="Menu Supervision" class="btn btn-success fa fa-cogs"  asp-action="Menusupervision" asp-route-id="@item.IdReinsercion">
+                        Supervisión
                     </a>  
-                    <a type="button" title="Información" asp-action="Canaliza" asp-route-id="@item.IdReinsercion" asp-route-nomTabla="@item.NomTabla">
-                            <i style="margin-top:10px" class="btn btn-danger fa fa-trash"> Borrar</i>
+
+                    <a type="button" title="Borrar" style="margin-top:10px" class="btn btn-danger fa fa-trash" asp-action="Delete" asp-route-id="@item.IdReinsercion">
+                        Borrar
                     </a>
                 </td>
             </tr>

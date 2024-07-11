@@ -54,7 +54,7 @@ namespace scorpioweb.Controllers
             _context = context;
             _hubContext = hubContext;
         }
-
+        #region -Imprimir evaluacion de riesgo-
         public void Imprimir(string id)
         {
             var persona = _context.Adolescentes
@@ -238,7 +238,7 @@ namespace scorpioweb.Controllers
             #endregion
 
         }
-
+        #endregion
 
         #region -testSimilitud-
         public JsonResult testSimilitud(string nombre, string paterno, string materno)
@@ -677,7 +677,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -presentaciones perdiodicas-
+        #region -Presentaciones perdiodicas-
 
         public void ImprimirPP(int id)
         {
@@ -728,6 +728,17 @@ namespace scorpioweb.Controllers
 
             //Response.Redirect("https://localhost:44359/Documentos/PresentacionesPeriodicas.docx");
             Response.Redirect("http://10.6.60.190/Documentos/PresentacionesPeriodicas.docx");
+
+        }
+        #endregion
+
+        #region -Generar Informe-
+        public void InformesVinculacion(string var_idCanalizacion, string tipo, string tabla, string idselect)
+        {
+            var idcanalizacion = var_idCanalizacion;
+            string tipoInforme = tipo;
+            string tablaSelecionada = tabla;
+            var idtipo = idselect;
 
         }
         #endregion

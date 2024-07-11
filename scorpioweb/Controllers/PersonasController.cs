@@ -7510,7 +7510,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Imprimir Reporte Supervision-
+        #region -Imprimir Contactos-
         public JsonResult imprimirContactos(Contactos contactos)
         {
             //List<Contactos> lista = new List<Contactos>();

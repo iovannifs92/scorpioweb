@@ -1,0 +1,469 @@
+﻿@model IEnumerable<scorpioweb.Models.ReinsercionVM>
+
+@{
+    ViewData["Title"] = "Ejes de Reincercion";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var ejesReinsercion = ViewData["EjesReinsercion"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
+}
+
+<style>
+    .separar {
+        margin-top: 10px;
+    }
+    /* Estilos personalizados */
+    .custom-success {
+        background-color: #44BBA4;
+        color: #000;
+    }
+
+    .custom-success th, .custom-success td {
+            border-color: #44BBA4;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font: 16px Arial;
+    }
+
+    /*the container must be positioned relative:*/
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
+
+    input {
+        border: 2px solid #f2f2f2;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+        input[type=text] {
+            width: 100%;
+        }
+
+        input[type=submit] {
+            background-color: DodgerBlue;
+            color: #f2f2f2;
+            cursor: pointer;
+        }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+    }
+
+    /*when hovering an item:*/
+    .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+    }
+
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #f2f2f2;
+    }
+
+
+    .my-toast {
+        font-size: 35px;
+    }
+
+    .my-toast-content {
+        padding: 40px;
+    }
+
+    .swal2-popup {
+        font-size: 1.6rem;
+        max-width: 800px;
+    }
+
+</style>
+
+
+<script>
+    function retraso(url, delay) {
+        setTimeout(function () {
+            window.location.href = url;
+        }, delay);
+    }
+    //region Borrar EjeReinsercion
+    function BorrarGeneral(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Estas seguro de borrar?",
+            text: "Los cambios no se podran revertir",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Si, borrar!",
+            cancelButtonText: "No, cancelar!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                BorrarEje(id)
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelado",
+                    text: "Uff! Cancelado con exito  :)",
+                    icon: "error"
+                });
+            }
+        });
+    }
+
+    function BorrarEje(id) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Reinsercion/BorrarEje",
+            traditional: true,
+            data: {
+                id
+            },
+            success: function (response) {
+                if (response.borrar == true) {
+                    Swal.fire({
+                        title: "Borrado!",
+                        text: "Tu registro ha sido borrado",
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            retraso(response.viewUrl, 70);
+                        } else {
+                            retraso(response.viewUrl, 70);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error al Borrar",
+                        text: "Contacte con el administrador del sistema " + response.error,
+                        icon: "error"
+                    });
+
+                    //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+
+            }
+        });
+    }
+    //Endregion Borrar EjeReinsercion
+
+    //Region Editar Ejes
+    function EditEjes(idEje, name, valor) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Reinsercion/EditEjes",
+            traditional: true,
+            data: {
+                idEje: idEje,
+                Campo: name,
+                Valor: valor
+            },
+            success: function (response) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Datos guardados con exito",
+                    
+                });
+
+            },
+            error: function (response) {
+                console.error('Error al editar', response);
+                location.reload();
+            }
+        });
+    }
+    //Endregion
+
+    //Region Guardar EjeReinsercion
+    function GuardarEje() {
+        var ejesSelect = new Array;
+        ejesSelect.push(document.getElementById("ejesSelect").value);
+        var ejesLugar = document.getElementById("ejesLugar").value;
+        var ejesObs = document.getElementById("ejesObs").value;
+        var idReinsercion = document.getElementById('IdReinsercion').value;
+        var estado = 'ACTIVO';
+        var datosFichaCanalizacion = { TipoCanalizacion: 'EJESREINSERCION', idReinsercion: idReinsercion, datos: null };
+        datosFichaCanalizacion.datos = {
+            EjesSeleccionados: ejesSelect,
+            EspecificarOtroEje: "",
+            Observaciones: ejesObs,
+            Lugar: ejesLugar,
+            Estado: estado,
+            FechaCanalizacion: new Date()
+        };
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            async: true,
+            url: "/Reinsercion/CrearFichaCanalizacion",
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(datosFichaCanalizacion),
+            success: function (response) {
+                if (response.success == true) {
+                    Swal.fire({
+                        title: "Guardado",
+                        text: "Tu registro se ha guardado",
+                        icon: "success"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            retraso(response.viewUrl, 70);
+                        } else {
+                            retraso(response.viewUrl, 70);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error al Borrar",
+                        text: "Contacte con el administrador del sistema " + response.error,
+                        icon: "error"
+                    });
+
+                    //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
+                }
+            },
+            error: function (response) {
+                alert(response.error);
+
+            }
+        });
+    }
+    //Endregion Guardar EjeReinsercion
+    $(document).ready(function () {
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function (e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+
+            inp.addEventListener("keydown", function (e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+
+                    currentFocus++;
+
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+
+                    currentFocus--;
+
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            function addActive(x) {
+
+                if (!x) return false;
+
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+
+        //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
+        var ejes = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.listaEjes))');
+        autocomplete(document.getElementById("ejesSelect"), ejes);
+        var lugar = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.listaLugar))');
+        autocomplete(document.getElementById("ejesLugar"), lugar);
+    });
+</script>
+
+
+@{
+    var id = 0;
+}
+
+<body>
+    <h1 style="text-align:center" class="blockquote text-center">Ejes de Reincercion</h1>
+    <div style="margin-block:30px">
+        <div style="text-align:right;">
+            <button type="button" style="margin-top:6px;" class="btn btn-primary fa fa-plus" title="Add Ejes de Reincercion" data-toggle="modal" data-target="#form-modal">Add Ejes de Reincercion
+        </div>
+    </div>
+    <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
+
+    <form asp-action="Create" enctype="multipart/form-data" id="form">
+        <div class="container sub-page form">
+            <div class="container">
+                @foreach (var item in ejesReinsercion)
+                {
+                var panelId = "collapse" + item.ejesreinsercionVM.IdejesReinsercion; // Asignar un ID único a cada panel colapsable
+                    <div class="panel-group">
+                        <div id="datosSalud" class="panel panel panel-primary" style="border-color:#000;">
+                            <div style="color:#000; background-color:#44BBA4; text-align:right; padding-right:30px; padding-top:10px">
+                                <a class="button fa fa-trash" style="font-size:30px;color:black" onclick="BorrarGeneral(@item.ejesreinsercionVM.IdejesReinsercion)" title="Borrar Servicio de Reinsercion"></a>
+                            </div>
+                            <div class="panel-heading" style="color:#000; background-color:#44BBA4; border-color:#44BBA4;" data-toggle="collapse" href="#@panelId" onclick="mostrar">
+                              
+                                <h4 class="panel-title">
+                                        <p text style="margin-bottom:unset; text-align:center">@item.ejesreinsercionVM.Tipo</p>
+                                </h4>
+                            </div>
+                            <div id="@panelId" class="panel-collapse collapse" style="padding-top:1%;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr style="color:#000">
+                                            <th>Fecha de Canalizacion</th>
+                                            <th>Lugar</th>
+                                            <th>Estado</th>
+                                            <th>Observaciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion,name, value)" style="font-size: 15px" name="FechaCanalizacion" id="FechaCanalizacion" class="form-control" asp-for="@item.ejesreinsercionVM.FechaCanalizacion" asp-format="{0:yyyy-MM-ddTHH:mm}" /></td>
+                                            <td>
+                                                <select onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion, name, value)" class="form-control" name="Lugar" id="Lugar" style="font-size: 15px"
+                                                        asp-items="@(new SelectList(ViewBag.listaLugar, item.ejesreinsercionVM.Lugar))">
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion, name, value)" class="form-control" name="Estado" id="Estado" style="font-size: 15px"
+                                                        asp-items="@(new SelectList(ViewBag.listaEstadoRe, "Value", "Text", item.ejesreinsercionVM.Estado))">
+                                                </select>
+
+                                            </td>
+                                            <td><input onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion, name, value)" type="text" class="form-control" name="Observaciones" value="@item.ejesreinsercionVM.Observaciones" /></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    id = item.reinsercionVM.IdReinsercion;
+                }
+            </div>
+        </div>
+    </form>
+</body>
+
+<div style="margin-top:20px">
+    <a asp-action="Menusupervision" asp-controller="Reinsercion" asp-route-id="@id">Regresar a Menu</a>
+</div>
+
+@****************ZONA DE MODAL***************@
+<div class="modal fade" id="form-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style="overflow-y: scroll; background-color: rgba(0, 0, 0, 0.5)" data-backdrop="false" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#000;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+                <h5 class="modal-title" style="font-size: 30px; color:#fff;">Agregar Servicio de Reinserción</h5>
+            </div>
+            <div class="modal-body">
+                    <div class="col-md-12 separar autocomplete">
+                        <label class="control-label">Tipo de Eje</label>
+                        <input required name="ejesSelect" id="ejesSelect" type="text" class="form-control" />
+                    </div>
+                    <div class="col-md-12 separar autocomplete">
+                        <label class="control-label">Lugar</label>
+                        <input required name="ejesLugar" id="ejesLugar" type="text" class="form-control" />
+                    </div>
+                    <div class="col-md-12 separar">
+                        <label class="control-label">Observaciones </label>
+                        <input required name="ejesObs" id="ejesObs" type="text" class="form-control" />
+                    </div>
+      
+                <div class="col-md-12 separar">
+                    <button onclick="GuardarEje()" class="btn btn-primary fa fa-save"> Guardar</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
