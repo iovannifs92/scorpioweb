@@ -674,6 +674,8 @@ namespace scorpioweb.Controllers
                             ficha.Tipo = eje;
                         ficha.FechaCanalizacion = DateTime.Now;
                         ficha.Lugar = mg.normaliza(DatosEjesDeserializados.Lugar);
+                        ficha.Monitoreo = DatosEjesDeserializados.Monitoreo;
+                        ficha.FechaProgramada = DatosEjesDeserializados.FechaProgramada;
 
                         if (DatosEjesDeserializados.Observaciones.Equals(""))
                             ficha.Observaciones = "NA";

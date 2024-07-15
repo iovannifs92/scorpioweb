@@ -26,5 +26,8 @@ namespace scorpioweb.Models
         }
         public string tabla { get; set; }
         public DateTime fecharegistro { get; set; }
+        public string fechan { get; set; }
+        public string telefono { get; set; }
+        public string curp { get; set; }
     }
 }

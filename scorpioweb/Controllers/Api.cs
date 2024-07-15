@@ -733,14 +733,143 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Generar Informe-
-        public void InformesVinculacion(string var_idCanalizacion, string tipo, string tabla, string idselect)
+        public void InformesVinculacion(string var_idCanalizacion, string tipo, string tabla, string idselect, bool aucencia)
         {
+            #region -Zona de variebles-
+            ReinsercionMCYSCPLCCURSVM infopersona = null;
+            ReinsercionMCYSCPLCCURSVM infoVinculacion = null;
             var idcanalizacion = var_idCanalizacion;
             string tipoInforme = tipo;
             string tablaSelecionada = tabla;
             var idtipo = idselect;
 
-        }
+            string idtabla = string.Empty;
+            string tablaorigen = string.Empty;
+            int idReinsercion = 0;
+
+            string nombreCompleto = string.Empty;
+            int edad = 0;
+            string telefono = string.Empty;
+            string curp = string.Empty;
+
+
+
+            #endregion
+
+            #region -Recoplicion de datos-
+            var datosReincercion = from c in _context.Canalizacion
+                                   join r in _context.Reinsercion on c.ReincercionIdReincercion equals r.IdReinsercion
+                                   where c.IdCanalizacion == Int32.Parse(idcanalizacion)
+                                   select new
+                                   {
+                                       r.IdTabla,
+                                       r.Tabla,
+                                       r.IdReinsercion
+                                   };
+
+
+            switch (tablaSelecionada)
+            {
+                case "Terapia":
+                    
+                    break;
+
+                case "Otro":
+                    infoVinculacion = (from table in _context.Persona
+                                       where table.IdPersona == Int32.Parse(idtabla)
+                                       select new ReinsercionMCYSCPLCCURSVM
+                                       {
+                                           Paterno = table.Paterno,
+                                           Materno = table.Materno,
+                                           Nombre = table.Nombre,
+                                           Supervisor = table.Supervisor,
+                                           fechan = table.Fnacimiento.ToString(),
+                                           telefono = table.Celular.ToString(),
+                                           curp = table.Curp,
+                                       }).First();
+                    break;
+            }
+                    var datosVinculacion = from c in _context.Canalizacion
+                                   join r in _context.Reinsercion on c.ReincercionIdReincercion equals r.IdReinsercion
+                                   where c.IdCanalizacion == Int32.Parse(idcanalizacion)
+                                   select new
+                                   {
+                                       r.IdTabla,
+                                       r.Tabla,
+                                       r.IdReinsercion
+                                   };
+
+            foreach (var p in datosReincercion)
+            {
+                idtabla = p.IdTabla;
+                tablaorigen = p.Tabla;
+                idReinsercion = p.IdReinsercion;
+            }
+
+            switch (tablaorigen)
+            {
+                case "persona":
+                    infopersona = (from table in _context.Persona
+                                  where table.IdPersona == Int32.Parse(idtabla)
+                                  select new ReinsercionMCYSCPLCCURSVM
+                                  {
+                                      Paterno = table.Paterno,
+                                      Materno = table.Materno,
+                                      Nombre = table.Nombre,
+                                      Supervisor = table.Supervisor,
+                                      fechan = table.Fnacimiento.ToString(),
+                                      telefono = table.Celular.ToString(),
+                                      curp = table.Curp,
+                                  }).First();
+                    break;
+                case "personacl":
+                    infopersona = (from table in _context.Personacl
+                                  where table.IdPersonaCl == Int32.Parse(idtabla)
+                                  select new ReinsercionMCYSCPLCCURSVM
+                                  {
+                                      Paterno = table.Paterno,
+                                      Materno = table.Materno,
+                                      Nombre = table.Nombre,
+                                      Supervisor = table.Supervisor,
+                                      fechan = table.Fnacimiento.ToString(),
+                                      telefono = table.Celular.ToString(),
+                                      curp = table.Curp,
+                                  }).First();
+                    break;
+                case "Externados":
+                    infopersona = (from table in _context.Externados
+                                  where table.Idexternados == Int32.Parse(idtabla)
+                                  select new ReinsercionMCYSCPLCCURSVM
+                                  {
+                                      Paterno = table.APaterno,
+                                      Materno = table.AMaterno,
+                                      Nombre = table.Nombre,
+                                      fechan = table.FechaNacimiento.ToString(),
+                                      telefono = table.Telefono.ToString(),
+                                      curp = table.Curp
+                                  }).First();
+                    break;
+            }
+            #endregion
+
+            #region -Asignacion de valores-
+            nombreCompleto = infopersona.NombreCompleto;
+            edad = mg.CalcularEdad(DateTime.Parse(infopersona.fechan));
+            telefono = infopersona.telefono;
+            curp = infopersona.curp;
+            #endregion
+
+            if (tablaSelecionada == "Terapia")
+            {
+
+            }
+            else if(tablaSelecionada == "Otro")
+            {
+
+            }
+
+
+        }   
         #endregion
 
 

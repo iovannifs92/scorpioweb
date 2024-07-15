@@ -159,6 +159,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "Beneficio", Value = "BENEFICIO" },
             new SelectListItem{ Text = "Orden de Aprhensión", Value = "ORDEN DE APREHENSIÓN" },
             new SelectListItem{ Text = "Resolición", Value = "RESOLUCION" },
+            new SelectListItem{ Text = "Revocación", Value = "REVOCACION" },
             new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL" }
         };
 

@@ -378,6 +378,20 @@ namespace scorpioweb.Class
             return resultado;
         }
 
+        public int CalcularEdad(DateTime fechaNacimiento)
+        {
+            DateTime fechaActual = DateTime.Today;
+            int edad = fechaActual.Year - fechaNacimiento.Year;
+
+            // Ajusta la edad si la fecha de nacimiento no ha ocurrido todavía este año
+            if (fechaNacimiento > fechaActual.AddYears(-edad))
+            {
+                edad--;
+            }
+
+            return edad;
+        }
+
         //public async Task expedienteUnico(
         //   string var_tablanueva,
         //   string var_tablaSelect,

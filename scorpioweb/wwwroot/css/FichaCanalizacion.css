@@ -334,6 +334,42 @@ h1 {
         visibility: visible;
     }
 
+
+#divInputLugar {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divInputLugar.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+
+#divInputMonitoreo {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divInputMonitoreo.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+#divInputFechaProgramada {
+    transition: visibility 1.0s, opacity 1.0s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+    #divInputFechaProgramada.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+
 .divCheckBoxesEjes {
     margin-top: 20px;
     margin-bottom: 10px;

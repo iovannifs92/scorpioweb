@@ -71,6 +71,21 @@
                         <span class="input-group-text" style="font-weight:bold;">Especifique el tipo de servicio: </span>
                         <input id="InputOtroEje" type="text" class="form-control">
                     </div>
+
+                    <div id="divInputLugar" class="form-group">
+                        <label class="control-label">Lugar de Canalizacion</label>
+                        <input required id="InputLugarEjes" type="text" placeholder="DGEPMS" class="form-control" />
+                    </div>
+
+                    <div id="divInputMonitoreo" class="form-group">
+                        <label class="control-label">Monitoreo</label>
+                        <input required id="InputMonitoreoEjes" type="date" class="form-control" />
+                    </div>
+                     <div id="divInputFechaProgramada" class="form-group">
+                        <label class="control-label">Fecha de Programada </label>
+                        <input required id="InputFechaProgramada" type="date" class="form-control" />
+                    </div>
+
                     <div id="divInputObsevarciones" class="form-group">
                         <label class="control-label">Observaciones</label>
                         <input required id="InputObservacionesEjes" type="text" placeholder="Sin observaciones" class="form-control" />
@@ -83,7 +98,7 @@
             </div>
 
 
-            @*TERAPIA*@+
+            @*TERAPIA*@
 
             <div class="section-content TerapiaPaso2">
                 <div class="ContenidoPrincipalTarjeta">
@@ -198,7 +213,8 @@
             var divBotonPaso1 = document.getElementById('divBotonPaso1');
             var idReinsercion = document.getElementById('IdReinsercion').value;
             var tipoCanalizacion = document.getElementById('selectTipoCanalizacion');
-            var lugar = "DGEPMS";//PUEDE CAMBIAR HASTA FUTURAS INSTRUCCIONES
+            //var monitoreo = document.getElementById('InputMonitoreoEjes');
+            //var fechaprogramada = document.getElementById('InputFechaProgramada');
             var estado = "ACTIVO";//PUEDE CAMBIAR HASTA FUTURAS INSTRUCCIONES
 
             $(document).on('click', '.step', function () {
@@ -229,15 +245,32 @@
             var inputOtroEje = document.getElementById('InputOtroEje');
 
             var divInputObsevarciones = document.getElementById('divInputObsevarciones');
-            var inputObservacionesEjes = document.getElementById('InputObservacionesEjes');
+            var inputObservacionesEjes = document.getElementById('InputObservacionesEjes'); 
+            
+            var divInputLugar = document.getElementById('divInputLugar');
+            var inputLugarEjes = document.getElementById('InputLugarEjes');
+
+            var divInputMonitoreo = document.getElementById('divInputMonitoreo');
+            var inputMonitoreoEjes = document.getElementById('InputMonitoreoEjes');
+            
+            var divInputFechaProgramada = document.getElementById('divInputFechaProgramada');
+            var inputFechaProgramada = document.getElementById('InputFechaProgramada');
 
             checkboxesEjes.forEach(function (checkbox) {
                 checkbox.addEventListener('change', function () {
                     var algunCheckboxSeleccionado = Array.from(checkboxesEjes).some(c => c.checked);
-                    if (algunCheckboxSeleccionado)
+                    if (algunCheckboxSeleccionado){
                         divInputObsevarciones.classList.add('visible');
-                    else
+                        divInputLugar.classList.add('visible');
+                        divInputMonitoreo.classList.add('visible');
+                        divInputFechaProgramada.classList.add('visible');
+                    }else{
                         divInputObsevarciones.classList.remove('visible');
+                        divInputLugar.classList.remove('visible');
+                        divInputMonitoreo.classList.remove('visible');
+                        divInputFechaProgramada.classList.remove('visible');
+                    }
+                        
                 });
             });
 
@@ -481,7 +514,9 @@
                         EjesSeleccionados: ejesSeleccionados,
                         EspecificarOtroEje: inputOtroEje.value,
                         Observaciones: inputObservacionesEjes.value,
-                        Lugar: lugar,
+                        Lugar: inputLugarEjes.value,
+                        Monitoreo: inputMonitoreoEjes.value,
+                        Fechaprogramada: inputFechaProgramada.value,
                         Estado: estado,
                         FechaCanalizacion: new Date()
                     };

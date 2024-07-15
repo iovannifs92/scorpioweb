@@ -31,10 +31,11 @@
     var idselect = 0;
     var tabla = "";
     var tipo = "";
-
     $( document ).ready(function() {
+        tabla = document.getElementById("Servicio").value;
         CambioLista(document.getElementById("Servicio").value);
     });
+
     function CambioLista(tabla) {
         var listaServicios = @Html.Raw(Json.Serialize(ViewBag.listaServicios));
         var select = document.getElementById('Servicio');
