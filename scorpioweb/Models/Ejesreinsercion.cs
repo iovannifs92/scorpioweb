@@ -8,6 +8,8 @@ namespace scorpioweb.Models
         public int IdejesReinsercion { get; set; }
         public string Tipo { get; set; }
         public DateTime? FechaCanalizacion { get; set; }
+        public DateTime? Monitoreo { get; set; }
+        public DateTime? FechaProgramada { get; set; }
         public string Lugar { get; set; }
         public string Observaciones { get; set; }
         public string Estado { get; set; }
