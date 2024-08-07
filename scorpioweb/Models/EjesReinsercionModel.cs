@@ -14,7 +14,5 @@ namespace scorpioweb.Models
         public DateTime Monitoreo { get; set; }
         public DateTime FechaProgramada { get; set; }
         public int CanalizacionId { get; set; }
-        public DateTime Monitoreo { get; set; }
-        public DateTime FechaProgramada { get; set; }
     }
 }

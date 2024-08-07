@@ -13,8 +13,6 @@ namespace scorpioweb.Models
         public string Lugar { get; set; }
         public string Observaciones { get; set; }
         public string Estado { get; set; }
-        public DateTime? Monitoreo { get; set; }
-        public DateTime? FechaProgramada { get; set; }
         public int CanalizacionIdCanalizacion { get; set; }
     }
 }
