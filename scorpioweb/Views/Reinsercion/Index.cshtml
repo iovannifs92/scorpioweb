@@ -5,7 +5,33 @@
     ViewData["Title"] = "Personas por canalizar";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .TituloPrincipal {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 1rem 40rem;
+        width: 100%;
+        max-width: fit-content;
+        margin-inline: auto;
+        position: relative;
+        top: 5px;
 
+    }
+    .TituloPrincipal h1{
+            clear: both;
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+    }
+        .TituloPrincipal button {
+            position: absolute;
+            bottom: 15px;
+            right: 0;
+            padding: 10px 16px;
+        }
+
+</style>
 <script>
 
     function AlertCanalizacion(IdPersona, tabla) {
@@ -84,7 +110,7 @@
             //    datosBitacora: [IdFracciones],
             //},
             error: function (res) {
-          
+
             }
         })
     }
@@ -100,8 +126,14 @@
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
 </head>
-<div>
-    <h1 style="font-family: cursive; text-align:center;">Personas por Canalizar</h1>
+<div class="TituloPrincipal">
+    <div class="header">
+        <h1 style="font-family: cursive; text-align:center;">Personas por Canalizar</h1>
+        <button class="btn btn-primary"
+                onclick="showModal('@Url.Action("ModalAgregarExternado", "Reinsercion")', 'Nuevo Externado',null)">
+            <i class="fa fa-plus"></i> Añadir Externado
+        </button>
+    </div>
 </div>
 <body>
     <form asp-action="index" method="get">
@@ -116,52 +148,53 @@
             </p>
         </div>
     </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                IdTabla
-            </th>
-            <th>
-                Nombre
-            </th>
-            <th>
-                Causa Penal
-            </th>
-            <th>
-                Delito
-            </th>
-            <th>
-                Area
-            </th>
-            <th>
-                Supervisor
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td>@item.IdTabla</td>
-                <td>@item.Paterno @item.Materno @item.Nombre</td>
-                <td>@item.Causapenal</td>
-                <td>@item.Delito</td>
-                <td>@item.NomTabla</td>
-                <td>@item.Supervisor</td>
-                <td>
-                    <button type="button" class="btn btn-info fa fa-share" title="Canalizar" onclick="AlertCanalizacion(@item.IdTabla,'@item.NomTabla')">
-                        Canalizar
-                    </button>  
-                @*    <a type="button" title="Información" onclick="showModal('@Url.Action("Details", "/" +item.NomTabla + "s")','Detalles',@item.IdTabla )">
-                            <i class="btn btn-primary fa fa-file"> Mas informacion</i>
+                <th>
+                    IdTabla
+                </th>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Causa Penal
+                </th>
+                <th>
+                    Delito
+                </th>
+                <th>
+                    Area
+                </th>
+                <th>
+                    Supervisor
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.IdTabla</td>
+                    <td>@item.Paterno @item.Materno @item.Nombre</td>
+                    <td>@item.Causapenal</td>
+                    <td>@item.Delito</td>
+                    <td>@item.NomTabla</td>
+                    <td>@item.Supervisor</td>
+                    <td>
+                        <button type="button" class="btn btn-info fa fa-share" title="Canalizar" onclick="AlertCanalizacion(@item.IdTabla,'@item.NomTabla')">
+                            Canalizar
+                        </button>
+                        @*    <a type="button" title="Información" onclick="showModal('@Url.Action("Details", "/" +item.NomTabla + "s")','Detalles',@item.IdTabla )">
+                    <i class="btn btn-primary fa fa-file"> Mas informacion</i>
                     </a>*@
                         <a onclick="showModal('@Url.Action("Details", item.tabla + "s", new {id=item.IdTabla}, Context.Request.Scheme)','Detalles Generales',null )" class="btn btn-primary fa fa-eye" title="Datos Generales" style="margin-top:6px"> Datos Generales</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
     @{
         var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
@@ -190,7 +223,7 @@
     <div style="margin-top:20px">
         <a asp-action="MenuReinsercion">Regresar a Menu</a>
     </div>
-   
+
 
 </body>
 </html>

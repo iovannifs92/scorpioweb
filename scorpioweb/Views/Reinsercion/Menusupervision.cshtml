@@ -10,51 +10,54 @@
 <link rel="stylesheet" type="text/css" href="~/css/tabla.css">
 <style>
     #Jornadas {
-    background-color: #EC7DAF;
-    color: #fff;
-    border-color: #fff;
+        background-color: #EC7DAF;
+        color: #fff;
+        border-color: #fff;
     }
-    #Jornadas:hover {
-        background-color: #FF3B93;
-    }
+
+        #Jornadas:hover {
+            background-color: #FF3B93;
+        }
 
     #Sreincercion {
-    background-color: #BF7FEC;
-    color: #fff;
-    border-color: #fff;
+        background-color: #BF7FEC;
+        color: #fff;
+        border-color: #fff;
     }
 
-    #Sreincercion:hover {
-    background-color: #AE3DFF;
-    }
+        #Sreincercion:hover {
+            background-color: #AE3DFF;
+        }
 
     #s {
-    background-color: #95ECDD;
-    color: #fff;
-    border-color: #fff;
+        background-color: #95ECDD;
+        color: #fff;
+        border-color: #fff;
     }
-    #s:hover {
-        background-color: #55FFE2;
-    }
+
+        #s:hover {
+            background-color: #55FFE2;
+        }
 
     #Informes {
-    background-color: #ECD099;
-    color: #fff;
-    border-color: #fff;
+        background-color: #ECD099;
+        color: #fff;
+        border-color: #fff;
     }
 
-    #Informes:hover {
-    background-color: #FEC859;
-    }
+        #Informes:hover {
+            background-color: #FEC859;
+        }
 
     #aer {
-    background-color: #B0DF69;
-    color: #fff;
-    border-color: #fff;
+        background-color: #B0DF69;
+        color: #fff;
+        border-color: #fff;
     }
-    #aer:hover {
-        background-color: #A7FD2A;
-    }
+
+        #aer:hover {
+            background-color: #A7FD2A;
+        }
 </style>
 
 @*<script>
@@ -112,32 +115,43 @@
 
 <h1 style="text-align:center">Supervision Canalización</h1>
 
-@foreach (var item in ViewData["reincercion"] as IEnumerable<scorpioweb.Models.ReinsercionVM>)
+@if (ViewBag.TieneAlgunaCanalizacion > 0)
 {
-    //El color de el boton se define con el Id
-    <div class="container col-md-12">
-        <br>
-        <div class="row">
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="Terapias" asp-route-id="@item.reinsercionVM.IdReinsercion" id="Terapias" class="btn btn-primary btn-lg btn-block btn-huge">Terapias</a>
+    @foreach (var item in ViewData["reincercion"] as IEnumerable<scorpioweb.Models.ReinsercionVM>)
+    {
+        //El color de el boton se define con el Id
+        <div class="container col-md-12">
+            <br>
+            <div class="row">
+                <div class="col-md-6" style="padding-top:3%;">
+                    <a asp-action="Terapias" asp-route-id="@item.reinsercionVM.IdReinsercion" id="Terapias" class="btn btn-primary btn-lg btn-block btn-huge">Terapias</a>
+                </div>
+                <div class="col-md-6" style="padding-top:3%;">
+                    <a asp-action="EjesReinsercion" asp-route-id="@item.reinsercionVM.IdReinsercion" id="Sreincercion" class="btn btn-primary btn-lg btn-block btn-huge">Servicios de Reincercion</a>
+                </div>
             </div>
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EjesReinsercion" asp-route-id="@item.reinsercionVM.IdReinsercion" id="Sreincercion" class="btn btn-primary btn-lg btn-block btn-huge">Servicios de Reincercion</a>
+            <div class="row">
+                <div class="col-md-6" style="padding-top:3%;">
+                    <a asp-action="EditPlaneacionestrategica" asp-route-id="@item.reinsercionVM.IdReinsercion" id="Jornadas" class="btn btn-primary btn-lg btn-block btn-huge">Jornadas</a>
+                </div>
+                <div class="col-md-6" style="padding-top:3%;">
+                    <a asp-action="OficiosCanalizacion" asp-route-id="@item.canalizacionVM.IdCanalizacion" id="Informes" class="btn btn-primary btn-lg btn-block btn-huge">Oficios de Vinculacion</a>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="EditPlaneacionestrategica" asp-route-id="@item.reinsercionVM.IdReinsercion" id="Jornadas" class="btn btn-primary btn-lg btn-block btn-huge">Jornadas</a>
-            </div>
-            <div class="col-md-6" style="padding-top:3%;">
-                <a asp-action="OficiosCanalizacion" asp-route-id="@item.canalizacionVM.IdCanalizacion" id="Informes" class="btn btn-primary btn-lg btn-block btn-huge">Oficios de Vinculacion</a>
-            </div>
+        break;
+    }
+}
+else
+{
+    <h2 style="text-align:center;">Sin canalizaciones!</h2>
+    <div class="container col-md-10">
+        <br>
+        <div class="col-md-6" style="padding-top:3%; padding-bottom: 3%;left:35%;">
+            <a asp-controller="Reinsercion" asp-action="FichaCanalizacion" asp-route-id="@ViewBag.IdReinsercion" class="btn btn-primary btn-lg btn-block btn-huge">Canalizar</a>
         </div>
     </div>
-    break;
 }
-
-
 <br />
 <div class=col-md-6 style="margin-top: 20px">
     <a style="" asp-action="Reinsercion">Regresar al Listado</a>

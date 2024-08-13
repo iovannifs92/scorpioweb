@@ -1,0 +1,597 @@
+﻿@{
+    Layout = null;
+}
+<style>
+    /* Personaliza el tamaño de la alerta */
+    .swal2-popup {
+        font-size: 1.6rem; /* Ajusta el tamaño de fuente */
+        width: 600px !important; /* Ajusta el ancho */
+        height: auto !important; /* Ajusta la altura automáticamente */
+    }
+
+    #EntrevistaRestante {
+        display: none;
+    }
+    /*the container must be positioned relative:*/
+    .autocomplete {
+        position: relative;
+        display: inline-block;
+    }
+
+    input[type=submit] {
+        background-color: DodgerBlue;
+        color: #f2f2f2;
+        cursor: pointer;
+    }
+
+    .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+    }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
+
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #f2f2f2;
+    }
+
+    #similitudModal .modal-dialog {
+        width: 85%;
+        /* Aumenta la altura del modal */
+        max-width: 900px;
+    }
+
+    #similitudModal .modal-header {
+        background-color: #0078a7;
+        color: #fff;
+    }
+
+    #similitudModal .modal-content {
+        border: none;
+        border-radius: 5px;
+        * Ajusta la altura del contenido del modal */
+    }
+
+    #similitudModal .modal-body {
+        overflow-y: auto;
+        max-height: 85vh; /* Aumenta la altura del cuerpo del modal */
+    }
+</style>
+
+<form id="ExternadoForm">
+    <input readonly id="CURS" name="CURS" type="hidden" class="form-control" />
+    <div class="form-group col-md-4">
+        <label class="control-label">Nombre</label>
+        <input oninput="this.value = this.value.toUpperCase()" required id="InputNombre" type="text" class="form-control" />
+    </div>
+    <div class="form-group col-md-4">
+        <label class="control-label">Apellido Paterno</label>
+        <input oninput="this.value = this.value.toUpperCase()" required id="InputPaterno" type="text" class="form-control" />
+    </div>
+    <div class="form-group col-md-4">
+        <label class="control-label">Apellido Materno</label>
+        <input oninput="this.value = this.value.toUpperCase()" required id="InputMaterno" type="text" class="form-control" onblur="BuscarSimilitud(value)" />
+    </div>
+    <div id="EntrevistaRestante">
+        <div class="form-group col-md-6">
+            <label class="control-label">Fecha de nacimiento</label>
+            <input required type="date" id="FechaNacimiento" class="form-control" />
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">Edad</label>
+            <input required id="Edad" type="number" pattern="[0-9]*" maxlength="3" inputmode="numeric" placeholder="Ingresa la edad" class="form-control" />
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">Genero</label>
+            <select required class="form-control" id="SelectGenero">
+                <option selected disabled>Seleccione una opción</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">País de Nacimiento</label>
+            <select required class="form-control" id="SelectLnPais" onblur="extranjero()">
+                <option value="MEXICO">México</option>
+                <option value="ESTADOS UNIDOS">Estados Unidos</option>
+                <option value="CANADA">Canada</option>
+                <option value="COLOMBIA">Colombia</option>
+                <option value="EL SALVADOR">El Salvador</option>
+                <option value="GUATEMALA">Guatemala</option>
+                <option value="CHILE">Chile</option>
+                <option value="ARGENTINA">Argentina</option>
+                <option value="BRASIL">Brasil</option>
+                <option value="VENEZUELA">Venezuela</option>
+                <option value="PUERTO RICO">Puerto Rico</option>
+                <option value="OTRO">Otro</option>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">Estado de Nacimiento</label>
+            <select requiered class="form-control" id="SelectLnEstado"
+                    asp-items="@(new SelectList(ViewBag.ListadoEstados, "Id","Estado"))" onblur="SacaCURS()">
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">CURP</label>
+            <input required id="CURP" type="text" placeholder="Ingresa la CURP" class="form-control" />
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">Telefono</label>
+            <input required id="InputTelefono" type="tel" pattern="[0-9]*" maxlength="10" inputmode="numeric" placeholder="Escribe solo numeros" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-6">
+            <label class="control-label">Causa penal</label>
+            <input required id="CausaPenal" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-6 autocomplete">
+            <label class="control-label">Delito</label>
+            <input required name="tipoD" id="tipoD" type="text" maxlength="150" class="form-control" />
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label">Observaciones</label>
+            <input placeholder="NA" id="InputObservaciones" type="text" class="form-control" />
+        </div>
+        <div class="form-group">
+            <button type="button" id="btnGuardarExternado" class="btn btn-primary" onclick="GuardarExternado()">
+                <i class="fa fa-save"></i> Guardar
+            </button>
+        </div>
+    </div>
+
+</form>
+
+
+<div id="similitudModal" class="modal fade" tabindex="10" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:75%; max-width:900px;background-color:#fff;">
+        <div class="modal-content">
+            <div class="modal-header float-center" style="background-color:#0078a7">
+                <button type="button" style="background-color:#0078a7;border: none; text-align: left;" aria-label="Close" onclick="closeModalSimilitud()">
+                    <i class="fa fa-close"></i>
+                </button>
+                <h3 id="modal_body" style="text-align:center; color:#000">Similitud </h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table class="table" name="" id="">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Tabla</th>
+                                <th>Dato Extra</th>
+                                <th>Foto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSimilitud">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary fa fa-close" onclick="closeModalSimilitud()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var EncontroSimilitud = false;
+    var var_curs = "";
+    //catalogo de delitos para el autocomplete
+    var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+    autocomplete(document.getElementById("tipoD"), catalogo);
+
+    function GuardarExternado() {
+        var datosExternado = {
+            Nombre: document.getElementById('InputNombre').value,
+            APaterno: document.getElementById('InputPaterno').value,
+            AMaterno: document.getElementById('InputMaterno').value, // Aquí estaba duplicado
+            Telefono: document.getElementById('InputTelefono').value,
+            LnEstado: document.getElementById('SelectLnEstado').value,
+            FechaNacimiento: document.getElementById('FechaNacimiento').value,
+            Sexo: document.getElementById('SelectGenero').value,
+            CausaPenal: document.getElementById('CausaPenal').value,
+            Delito: document.getElementById('tipoD').value,
+            Observaciones: document.getElementById('InputObservaciones').value,
+            Edad: document.getElementById('Edad').value,
+            ClaveUnicaScorpio: document.getElementById('CURS').value,
+            Curp: document.getElementById('CURP').value
+        };
+
+        console.log(datosExternado);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Reinsercion/CrearExternado',
+            data: JSON.stringify(datosExternado),
+            contentType: 'application/json', // Asegurarse de que el tipo de contenido esté configurado
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Supervisado Externado creado Exitosamente!',
+                        icon: 'success',
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            
+                            // Canalizar(response.idTabla, response.tabla, response.nombrePersona);
+                            var datos = {
+                                IdTabla: response.idTabla,
+                                Tabla: response.tabla,
+                                Lugar: "DGEPMS",
+                                Estado: "ACTIVO"
+                            };
+                            AjaxCrearReinsercion(datos);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error al guardar externado',
+                        icon: 'error',
+                        text: response.message,
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    });
+                }
+            },
+            error: function (response) {
+                Swal.fire({
+                    title: 'Error al guardar externado',
+                    icon: 'error',
+                    text: response.message,
+                    allowOutsideClick: false,
+                    customClass: {
+                        popup: 'swal2-popup'
+                    }
+                });
+            }
+        });
+    }
+
+
+    function autocomplete(inp, arr) {
+        var currentFocus;
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value;
+            closeAllLists();
+            if (!val) { return false; }
+            currentFocus = -1;
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            this.parentNode.appendChild(a);
+            for (i = 0; i < arr.length; i++) {
+                if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.addEventListener("click", function (e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                currentFocus++;
+                addActive(x);
+            } else if (e.keyCode == 38) { //up
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("autocomplete-active");
+        }
+
+        function removeActive(x) {
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+
+        function closeAllLists(elmnt) {
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+
+    function BuscarSimilitud(materno) {
+        var nombre = document.getElementById("InputNombre").value;
+        var paterno = document.getElementById("InputPaterno").value;
+
+        if (nombre === "" || paterno === "" || materno === "") {
+            Swal.fire({
+                title: 'Faltan datos del nombre!',
+                icon: 'error',
+                text: 'Por favor llena la informacion faltante',
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            });
+            return;
+        }
+        else {
+            Swal.fire({
+                title: 'Buscando similitud...',
+                text: 'Por favor espera',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'swal2-popup'
+                },
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Api/testSimilitud",
+                traditional: true,
+                data: {
+                    nombre, paterno, materno,
+                },
+                success: function (response) {
+                    $('#tblSimilitud').html('');
+                    Swal.close();// se encontro similitud, se cierra la alerta de buscando
+                    if (response.lista.length == 0) {
+                        //similitud no encontrada
+                        Swal.fire({
+                            title: 'Similitud no encontrada',
+                            icon: 'error',
+                            text: 'Continua con la entrevista por favor',
+                            customClass: {
+                                popup: 'swal2-popup'
+                            }
+                        });
+                        mostrarEntrevistaRestante(2000);
+                        return;
+                    }
+                    var row = '';
+                    for (let i = 0; i < response.lista.length; i++) {
+                        if (response.lista[i].tabla === "MCYSCP" || response.lista[i].tabla === "LibertadCondicionada" || response.lista[i].tabla === "Externados") {
+                            row += "<tr style='background-color: " + (response.lista[i].clave != null ? '#F7F2E7' : '#FFF') + "'>";
+                            // row += "<td><input type='checkbox' onclick='unirCURS(\"" + response.lista[i].tabla + "\", " + response.lista[i].id + ")'></td>";
+                            row += "<td>" + response.lista[i].id + "</td>";
+                            row += "<td>" + response.lista[i].nombre + "</td>";
+                            row += "<td>" + response.lista[i].tabla + "</td>";
+                            row += "<td>" + response.lista[i].dato + "</td>";
+                            row += "<td>" + (response.lista[i].foto != 'NA' ? "<img src='/" + response.lista[i].foto + "' class='img-thumbnail' width='200' height='200'>" : '') + "</td>";
+                            row += "<td>";
+                            if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true && response.lista[i].tabla == "MCYSCP") {
+                                row += "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href='/Personas/Details/" + response.lista[i].id + "' class='btn btn-success' ><i class='fa fa-eye'></i> Ver</a ></div>";
+                            } else if (@Html.Raw(Json.Serialize(ViewBag.UserCL)) == true && response.lista[i].tabla == "LibertadCondicionada") {
+                                row += "";
+                            } else {
+                                row += "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-right:5px;' onclick='Canalizar(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\", \"" + response.lista[i].nombre + "\")' class='btn btn-primary' ><i class='fa fa-share'></i> Canalizar</a ></div>";
+                            }
+                            row += "</td>";
+                            row += "</tr>";
+                        }
+                    }
+                    if (row != '') {
+                        $('#tblSimilitud').append(row);
+                    }
+                    EncontroSimilitud = true;//se utiliza si se quiere cerrar el modal de similitud
+                    mostrarEntrevistaRestante(2000);
+                    $("#similitudModal").modal('show');
+                },
+                error: function (response) {
+                    Swal.close();//cierra la alerta de buscando
+                    Swal.fire({
+                        title: 'Error al buscar similitud',
+                        icon: 'error',
+                        text: 'Contacte con el administrador del sistema; Metodo:testSimilitud() ,Mensaje: ' + response.error,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    });
+                    console.log(response);
+                    mostrarEntrevistaRestante(2000);
+                }
+            });
+        }
+    }
+    function Canalizar(IdPersona, tabla, nombre) {
+        alert(tabla)
+
+        if (tabla === 'MCYSCP')
+            tabla = 'persona';
+        else if (tabla === 'LibertadCondicionada')
+            tabla = 'personacl';
+
+        alert(tabla)
+        Swal.fire({
+            title: "¿Deseas canalizar a la persona " + nombre + " con id:" + IdPersona,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si"
+        }).then((result) => {
+            console.log("SweetAlert2 result:", result);
+            if (result.isConfirmed) {
+                var datos = {
+                    IdTabla: IdPersona,
+                    Tabla: tabla,
+                    Lugar: "DGEPMS",
+                    Estado: "ACTIVO"
+                };
+                AjaxCrearReinsercion(datos);
+            }
+        });
+
+    }
+
+    function AjaxCrearReinsercion(datos) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            async: true,
+            url: "/Reinsercion/CrearReinsercionPorSupervisor",
+            traditional: true,
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(datos),
+            success: function (response) {
+                console.log('Respuesta del controlador:', response);
+                sweetAlertAjax(true, response.responseText);
+
+                setTimeout(function () {
+                    window.location.href = response.viewUrl;
+                }, 1700);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error al enviar datos al controlador:', status, error);
+                sweetAlertAjax(false, error);
+            }
+        });
+    }
+    function sweetAlertAjax(isSuccess, respuestaAjax, callback) {
+        if (isSuccess) {
+            Swal.fire({
+                icon: "success",
+                title: "Persona canalizada!",
+                text: respuestaAjax,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+        else {
+            Swal.fire({
+                icon: "error",
+                title: "la persona no ha sido canalizada!",
+                text: "Comuniquese con el administrador del sistema, Error: " + respuestaAjax
+            });
+        }
+    }
+
+
+    function closeModalSimilitud() {
+        if (EncontroSimilitud) {
+            // se encontraron similitudes con el nombre
+            // pregunta antes de cerrar si se verifico que la persona
+            // no coincide con los registros mostrados
+
+            Swal.fire({
+                icon: 'question',
+                title: '¿Encontraste una similitud?',
+                text: '¡Verifica que el usuario no se encuentre en la búsqueda de la similitud!',
+                showCancelButton: true,
+                confirmButtonText: "Cerrar",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#similitudModal').modal('hide');
+                }
+            });
+        } else {
+            $('#similitudModal').modal('hide');
+        }
+    }
+
+    function formatDate(dateString) {
+        if (dateString == null) {
+            return "";
+        }
+        var fechaObjeto = new Date(dateString);
+        var año = fechaObjeto.getFullYear();
+        var mes = ("0" + (fechaObjeto.getMonth() + 1)).slice(-2);
+        var dia = ("0" + fechaObjeto.getDate()).slice(-2);
+        var nuevaFecha = año + "-" + mes + "-" + dia;
+        return nuevaFecha;
+    };
+
+    function SacaCURS() {
+
+        var nombre = document.getElementById("InputNombre").value;
+        var paterno = document.getElementById("InputPaterno").value;
+        var materno = document.getElementById("InputMaterno").value;
+        var genero = document.getElementById("SelectGenero").value;
+        var Fnacimiento = document.getElementById("FechaNacimiento").value;
+        var lnPais = document.getElementById("SelectLnPais").value;
+
+        if (lnPais != "MEXICO") {
+            lnestado = '33';
+        } else {
+            lnestado = document.getElementById("SelectLnEstado").value;
+        }
+
+        $.ajax({
+            url: "/Api/cursJson",
+            type: "POST",
+            dataType: "json",
+            cache: false,
+            traditional: true,
+            data: {
+                paterno, materno, Fnacimiento, genero, lnestado, nombre,
+            },
+            success: function (response) {
+                document.getElementById("CURS").value = response.curs;
+                document.getElementById("CURP").value = response.curs + "*";
+                var_curs = response.curs;
+            }
+        });
+    };
+
+    function mostrarEntrevistaRestante(delayEnviado) {
+        var delay = 0;
+        $("#EntrevistaRestante").each(function () {
+            $(this).delay(delay).fadeIn(delayEnviado);
+            delay += delayEnviado;
+        });
+    }
+</script>

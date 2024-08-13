@@ -21,7 +21,9 @@ using Microsoft.Data.Edm.Library.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Remotion.Linq.Clauses;
 using Remotion.Linq.Utilities;
 using scorpioweb.Class;
 using scorpioweb.Migrations.ApplicationDb;
@@ -88,9 +90,6 @@ namespace scorpioweb.Controllers
         };
         #endregion
 
-
-
-
         #region - index-
         // GET: Reinsercion
         public async Task<IActionResult> Index(
@@ -149,11 +148,11 @@ namespace scorpioweb.Controllers
                         } by new { persona.IdPersona, persona.Paterno, persona.Materno, persona.Nombre } into g
                         select g.FirstOrDefault()
                     ).Union(from personacl in _context.Personacl
-                            //join domiciliocl in _context.Domiciliocl on personacl.IdPersonaCl equals domiciliocl.PersonaclIdPersonacl
-                            //join estudioscl in _context.Estudioscl on personacl.IdPersonaCl equals estudioscl.PersonaClIdPersonaCl
-                            //join trabajocl in _context.Trabajocl on personacl.IdPersonaCl equals trabajocl.PersonaClIdPersonaCl
-                            //join actividadsocialcl in _context.Actividadsocialcl on personacl.IdPersonaCl equals actividadsocialcl.PersonaClIdPersonaCl
-                            //join saludfisicacl in _context.Saludfisicacl on personacl.IdPersonaCl equals saludfisicacl.PersonaClIdPersonaCl
+                                //join domiciliocl in _context.Domiciliocl on personacl.IdPersonaCl equals domiciliocl.PersonaclIdPersonacl
+                                //join estudioscl in _context.Estudioscl on personacl.IdPersonaCl equals estudioscl.PersonaClIdPersonaCl
+                                //join trabajocl in _context.Trabajocl on personacl.IdPersonaCl equals trabajocl.PersonaClIdPersonaCl
+                                //join actividadsocialcl in _context.Actividadsocialcl on personacl.IdPersonaCl equals actividadsocialcl.PersonaClIdPersonaCl
+                                //join saludfisicacl in _context.Saludfisicacl on personacl.IdPersonaCl equals saludfisicacl.PersonaClIdPersonaCl
                             join supervisioncl in _context.Supervisioncl on personacl.IdPersonaCl equals supervisioncl.PersonaclIdPersonacl into scl_join
                             from scl in scl_join.DefaultIfEmpty()
                             join causapenalcl in _context.Causapenalcl on scl.CausaPenalclIdCausaPenalcl equals causapenalcl.IdCausaPenalcl into cpcl_join
@@ -327,7 +326,24 @@ namespace scorpioweb.Controllers
                               EstadoVinculacion = g.FirstOrDefault().Estado,
                               NomTabla = "MCYSCP",
                               EstadoSupervision = g.FirstOrDefault().EstadoSupervision
+                          }).Union(
+                          from r in _context.Reinsercion
+                          join e in _context.Externados on Int32.Parse(r.IdTabla) equals e.Idexternados
+                          where r.Tabla == "externados" || r.Tabla == "EXTERNADOS"
+                          select new ReinsercionMCYSCPLCCURSVM
+                          {
+                              IdReinsercion = r.IdReinsercion,
+                              IdTabla = r.IdTabla,
+                              Nombre = string.Concat(e.APaterno, " ", e.AMaterno, " ", e.Nombre),
+                              Causapenal = e.CausaPenal,
+                              Delito = e.Delito,
+                              EstadoVinculacion = r.Estado,
+                              NomTabla = "Externados",
+                              EstadoSupervision = "Sin supervision"
                           });
+            
+
+
 
 
             var result = query.ToList();
@@ -381,6 +397,74 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
+        #region -Añadir Externado-
+        public IActionResult ModalAgregarExternado()
+        {
+            List<Estados> listaEstados = new List<Estados>();
+            listaEstados = (from table in _context.Estados
+                            select table).ToList();
+            ViewBag.ListadoEstados = listaEstados;
+
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearExternado([FromBody] Externados externado)
+        {
+            // VERIFICACION DE DATOS 
+            if (externado == null)            
+                return Json(new { success = false, message = "Datos de externado vacíos! método: CrearExternado" });       
+            else if (string.IsNullOrEmpty(externado.Nombre) || string.IsNullOrEmpty(externado.APaterno) || string.IsNullOrEmpty(externado.AMaterno))
+                return Json(new { success = false, message = "Nombre(s) o apellidos de la persona vacios!" });
+
+            else if (string.IsNullOrEmpty(externado.FechaNacimiento))
+                return Json(new { success = false, message = "Fecha de nacimiento vacia!" });
+
+            else if (externado.Edad == 0)
+                return Json(new { success = false, message = "Verifica la edad!" });
+
+            else if (externado.Sexo.Equals("Seleccione una opción"))
+                return Json(new { success = false, message = "Selecciona un genero!" });
+
+            else if (externado.LnEstado.Equals("0"))
+                return Json(new { success = false, message = "Elige un estado de nacimiento!" });
+
+            else if (string.IsNullOrEmpty(externado.ClaveUnicaScorpio) || string.IsNullOrEmpty(externado.Curp))
+                return Json(new { success = false, message = "CURP vacia!" });
+
+            else if (string.IsNullOrEmpty(externado.CausaPenal))
+                return Json(new { success = false, message = "Causa penal vacia!" });
+
+            else if (string.IsNullOrEmpty(externado.Delito))
+                return Json(new { success = false, message = "Delito vacio!" });
+
+            try
+            {
+                if (string.IsNullOrEmpty(externado.Observaciones))
+                    externado.Observaciones = "NA";
+                _context.Externados.Add(externado);
+                await _context.SaveChangesAsync();
+
+                var ultimoRegistro = await _context.Externados.OrderByDescending(e => e.Idexternados).FirstOrDefaultAsync();
+
+                string IdGenerado = ultimoRegistro.Idexternados.ToString();
+                string NombreTabla = "externados";
+                string NombreCompleto = ultimoRegistro.Nombre + " " + ultimoRegistro.APaterno + " " + ultimoRegistro.AMaterno;
+
+                return Json(new { success = true, message = "Externado creado exitosamente!", idTabla = IdGenerado, tabla = NombreTabla, nombrePersona = NombreCompleto });
+            }
+            catch (DbUpdateException ex)
+            {
+                return Json(new { error = true, message = "ERROR" + ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = true, message = "ERROR GENERAL: " + ex.Message });
+            }
+        }
+
+        #endregion
 
         #region - Crear Reinsercion -
 
@@ -484,18 +568,23 @@ namespace scorpioweb.Controllers
 
         #endregion
 
-
         #region -FichaCanalización-
 
-        public IActionResult FichaCanalizacion(int idReinsercion)
+        public IActionResult FichaCanalizacion(int idReinsercion, int? id)
         {
+            
+            
             var grupos = _context.Grupo.ToList();
             ViewBag.Grupos = grupos;
 
             var terapeutas = _context.Terapeutas.ToList();
             ViewBag.Terapeutas = terapeutas;
 
-            ViewBag.idReinsercion = idReinsercion;
+            if (idReinsercion == 0)
+                ViewBag.idReinsercion = id;
+            else
+                ViewBag.idReinsercion = idReinsercion;
+
             return View();
         }
 
@@ -538,7 +627,7 @@ namespace scorpioweb.Controllers
                     if (rol == "Vinculacion")
                     {
                         var viewUrl = string.Empty;
-                         borrar = true; 
+                        borrar = true;
 
                         //viewUrl = Url.Action("EjesReinsercion", "Reinsercion", new { id = datosFichaCanalizacion.IdReinsercion });
 
@@ -557,7 +646,7 @@ namespace scorpioweb.Controllers
                 }
 
 
-                return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = Url.Action("Index", "Personacls")});
+                return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = Url.Action("Index", "Personacls") });
             }
             catch (Exception ex)
             {
@@ -1012,34 +1101,62 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
-        // GET: Reinsercion/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        #region -Borrar Registro de Reinsercion-
+
+        [HttpPost]
+        public async Task<JsonResult> BorrarRegistroReinsercion(int idReinsercion)
         {
-            if (id == null)
+            if(idReinsercion == 0)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error, idReinsercion vacio, metodo: BorrarRegistroReinsercion, vista:Reinsercion" });
+
             }
 
-            var reinsercion = await _context.Reinsercion
-                .SingleOrDefaultAsync(m => m.IdReinsercion == id);
-            if (reinsercion == null)
+            // EL idcanalizacion solo puede existir si ya se creo una ficha de canalizacion
+            var TieneCanalizaciones = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == idReinsercion).Select(m => m.IdCanalizacion).CountAsync();
+
+            if (TieneCanalizaciones > 0)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error, no se puede borrar el registro por que este ya cuenta con una canalizacion!" });
             }
+            var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == idReinsercion);
 
-            return View(reinsercion);
-        }
-
-        // POST: Reinsercion/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == id);
             _context.Reinsercion.Remove(reinsercion);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+             await _context.SaveChangesAsync();
+            
+            return Json(new { success = true, message = "Borrado con exito!"});
         }
+
+        #endregion
+
+        // GET: Reinsercion/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var reinsercion = await _context.Reinsercion
+        //        .SingleOrDefaultAsync(m => m.IdReinsercion == id);
+        //    if (reinsercion == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(reinsercion);
+        //}
+
+        //// POST: Reinsercion/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == id);
+        //    _context.Reinsercion.Remove(reinsercion);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool ReinsercionExists(int id)
         {
@@ -1069,10 +1186,13 @@ namespace scorpioweb.Controllers
 
 
             var Reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == id);
+            ViewBag.IdReinsercion = Reinsercion.IdReinsercion;
+
             if (Reinsercion == null)
             {
                 return NotFound();
             }
+
 
 
             List<Reinsercion> reinsercionVM = _context.Reinsercion.ToList();
@@ -1088,12 +1208,12 @@ namespace scorpioweb.Controllers
 
             #region -Jointables-
             var ES = from reinsercion in reinsercionVM
-                                               
-                                                where reinsercion.IdReinsercion == id
-                                                select new 
-                                                {
-                                                    reinsercionVM = reinsercion
-                                                };
+
+                     where reinsercion.IdReinsercion == id
+                     select new
+                     {
+                         reinsercionVM = reinsercion
+                     };
 
 
             ViewData["reincercion"] = from reinsercion in reinsercionVM
@@ -1103,7 +1223,7 @@ namespace scorpioweb.Controllers
                                       {
                                           reinsercionVM = reinsercion,
                                           canalizacionVM = canalizacion
-                                          
+
                                       };
 
             var ESh = from reinsercion in reinsercionVM
@@ -1120,8 +1240,9 @@ namespace scorpioweb.Controllers
                           ejesreinsercionVM = ejesreincercion,
                           oficioscanalizacionVM = oficioscanalizacion
                       };
-            #endregion
 
+            ViewBag.TieneAlgunaCanalizacion = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == id).Select(m => m.IdCanalizacion).FirstOrDefaultAsync();
+            #endregion
             return View();
         }
         #endregion
@@ -1135,9 +1256,9 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
-          
 
-            var reincercion = (from canalizacion in _context.Canalizacion 
+
+            var reincercion = (from canalizacion in _context.Canalizacion
                                where canalizacion.ReincercionIdReincercion == id
                                select new
                                {
@@ -1182,12 +1303,12 @@ namespace scorpioweb.Controllers
             }
 
             ViewBag.listaEjes = from e in _context.Ejesreinsercion
-                                       group e by e.Tipo into grupo
-                                       select grupo.Key; 
-            
+                                group e by e.Tipo into grupo
+                                select grupo.Key;
+
             ViewBag.listaLugar = from e in _context.Ejesreinsercion
-                                       group e by e.Lugar into grupo
-                                       select grupo.Key;
+                                 group e by e.Lugar into grupo
+                                 select grupo.Key;
 
             ViewBag.idCanalizacion = id;
             ViewBag.idReinsercion = idReinsercion;
@@ -1197,7 +1318,7 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-     
+
         #region -Editar Ejes de reinaercion-
         [HttpPost]
         public ActionResult EditEjes(int idEje, string Campo, string Valor)
@@ -1208,7 +1329,7 @@ namespace scorpioweb.Controllers
             switch (Campo)
             {
                 case "FechaCanalizacion":
-                    
+
                     ejes.FechaCanalizacion = DateTime.Parse(Valor);
                     break;
                 case "Lugar":
@@ -1225,17 +1346,18 @@ namespace scorpioweb.Controllers
             }
 
             try
-            {  
+            {
                 _context.SaveChanges();
                 return Json(new { success = true });
-              
-            }catch(Exception ex)
+
+            }
+            catch (Exception ex)
             {
                 return Json(new { success = true, error = ex });
             }
 
-            
-            
+
+
         }
         #endregion
 
@@ -1245,13 +1367,13 @@ namespace scorpioweb.Controllers
             var borrar = false;
 
             var reincercion = (from reinsercion in _context.Reinsercion
-                     join canalizacion in _context.Canalizacion on reinsercion.IdReinsercion equals canalizacion.ReincercionIdReincercion
-                     join ejesreinsercion in _context.Ejesreinsercion on canalizacion.IdCanalizacion equals ejesreinsercion.CanalizacionIdCanalizacion
-                     where ejesreinsercion.IdejesReinsercion == id
-                     select new
-                     {
-                         reinsercion.IdReinsercion,
-                     }).FirstOrDefault();
+                               join canalizacion in _context.Canalizacion on reinsercion.IdReinsercion equals canalizacion.ReincercionIdReincercion
+                               join ejesreinsercion in _context.Ejesreinsercion on canalizacion.IdCanalizacion equals ejesreinsercion.CanalizacionIdCanalizacion
+                               where ejesreinsercion.IdejesReinsercion == id
+                               select new
+                               {
+                                   reinsercion.IdReinsercion,
+                               }).FirstOrDefault();
             string viewUrl = string.Empty;
 
             viewUrl = Url.Action("EjesReinsercion/" + reincercion.IdReinsercion, "Reinsercion");
@@ -1316,35 +1438,39 @@ namespace scorpioweb.Controllers
 
 
             ViewData["ParaOficios"] = (from c in _context.Canalizacion
-                              join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion into terapiaGroup
-                              from t in terapiaGroup.DefaultIfEmpty()
-                              join e in _context.Ejesreinsercion on c.IdCanalizacion equals e.CanalizacionIdCanalizacion into ejesGroup
-                              from e in ejesGroup.DefaultIfEmpty()
-                              where c.IdCanalizacion == id
-                              select new ReinsercionVM
-                              {
-                                  canalizacionVM = c,
-                                  terapiaVM = t,
-                                  ejesreinsercionVM = e
-                              }).ToList();
+                                       join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion into terapiaGroup
+                                       from t in terapiaGroup.DefaultIfEmpty()
+                                       join e in _context.Ejesreinsercion on c.IdCanalizacion equals e.CanalizacionIdCanalizacion into ejesGroup
+                                       from e in ejesGroup.DefaultIfEmpty()
+                                       where c.IdCanalizacion == id
+                                       select new ReinsercionVM
+                                       {
+                                           canalizacionVM = c,
+                                           terapiaVM = t,
+                                           ejesreinsercionVM = e
+                                       }).ToList();
 
 
 
             ViewBag.listaServicios = (from c in _context.Canalizacion
-                         join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
-                         where c.IdCanalizacion == id
-                         select new { 
-                             Id = t.IdTerapia, 
-                             Tipo = t.Tipo, 
-                             tabla = "Terapia" })
+                                      join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                      where c.IdCanalizacion == id
+                                      select new
+                                      {
+                                          Id = t.IdTerapia,
+                                          Tipo = t.Tipo,
+                                          tabla = "Terapia"
+                                      })
                         .Union(
                             from c in _context.Canalizacion
                             join e in _context.Ejesreinsercion on c.IdCanalizacion equals e.CanalizacionIdCanalizacion
                             where c.IdCanalizacion == id
-                            select new { 
-                                Id = e.IdejesReinsercion, 
-                                Tipo = e.Tipo, 
-                                tabla = "Otro" }
+                            select new
+                            {
+                                Id = e.IdejesReinsercion,
+                                Tipo = e.Tipo,
+                                tabla = "Otro"
+                            }
                         ).ToList();
 
             return View();

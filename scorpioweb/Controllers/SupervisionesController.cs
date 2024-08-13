@@ -1597,7 +1597,7 @@ MetodosGenerales mg = new MetodosGenerales();
 
                         if (hayOficio.ToList().Count() != 0)
                         {
-                            await _hubContext.Clients.Group("seCerrocaso").SendAsync("alertCierreCaso", "Realizar cancelaciones correspondientes de " + persona.NombreCompleto + "de MCYSCP.");
+                            await _hubContext.Clients.Group("seCerrocaso").SendAsync("alertCierreCaso", "Realizar cancelaciones correspondientes de " + persona.NombreCompleto + " de MCYSCP.");
                         }
 
                         var datos = hayOficio.First();

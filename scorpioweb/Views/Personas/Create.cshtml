@@ -1207,6 +1207,7 @@
                 id, tabla,
             },
             success: function(response){
+                //alert(response.success);
                 CURSUsada = response.lista[0].p.claveUnicaScorpio;
                 //DATOS GENERALES            
                 document.getElementById("nombre").value = response.lista[0].p.nombre;
