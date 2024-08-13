@@ -1,12 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Oficios de Canalizacion";
     Layout = "/Views/Shared/_Layout.cshtml";
+    var ParaOficios = ViewData["OficiosCanalizacion"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
 }
-
-@{
-    var ParaOficios = ViewData["ParaOficios"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
-}
-
 
 <style>
     .separar {
@@ -36,23 +32,29 @@
         CambioLista(document.getElementById("Servicio").value);
     });
 
+    function retraso(url, delay) {
+        setTimeout(function () {
+            window.location.href = url;
+        }, delay);
+    }
+
     function CambioLista(tabla) {
         var listaServicios = @Html.Raw(Json.Serialize(ViewBag.listaServicios));
         var select = document.getElementById('Servicio');
-        idselect = listaServicios[parseInt(select.selectedIndex)].id
-
+        idselect = listaServicios[parseInt(select.selectedIndex)].id;
         $.ajax({
             type: "GET",
             dataType: "json",
             url: "/Reinsercion/ListaPorTipo",
             data: { tabla: tabla },
             success: function (data) {
-                var opcionesDropdown = $('#tipo');
+                var opcionesDropdown = $('#TipoArchivo');
                 opcionesDropdown.empty();
                 opcionesDropdown.append('<option value="">Seleccione una opción</option>');
                 $.each(data, function (index, item) {
                     opcionesDropdown.append('<option value="' + item + '">' + item + '</option>');
                 });
+                
             },
             error: function (error) {
                 console.error(error);
@@ -62,9 +64,24 @@
     }
     
     function InformesVinculacion() {
+        var listaServicios = @Html.Raw(Json.Serialize(ViewBag.listaServicios));
+        var select = document.getElementById('Servicio');
+        var save = document.getElementById('btnsave');
+        idselect = listaServicios[parseInt(select.selectedIndex)].id;
+        tabla = select.value;
+        var chboxmenor = document.getElementById('menor');
+        var chboxausencia = document.getElementById('ausencia');
+        var menor = false;
+        var ausencia = false;
+        if (chboxmenor.checked) 
+            menor = true;
+        if (chboxausencia.checked) 
+            ausencia = true;
         valdar();
-        var_idCanalizacion = document.getElementById("idCanalizacion").value;
-        tipo = document.getElementById("tipo").value;
+        var_idCanalizacion = document.getElementById("CanalizacionIdCanalizacion").value;
+        Observaciones = document.getElementById("Observaciones").value;
+        tipo = document.getElementById("TipoArchivo").value;
+        
         $.ajax({
             url: "/Api/InformesVinculacion",
             type: "POST",
@@ -72,16 +89,26 @@
             cache: false,
             traditional: true,
             data: {
-                var_idCanalizacion,tipo,tabla,idselect,  
+                var_idCanalizacion, tipo, tabla, idselect, menor, ausencia, Observaciones
             },
             success: function (response) {
-                onclick("")
+                Swal.fire("Reporte creado con exito!!", "Presione el Clip para descragar el reporte", "success");
+                setTimeout(function () {
+                    window.location.href = response.viewUrl;
+                }, 1700);
+            },
+            error: function (response) {
+                Swal.fire({
+                    title: "Error al extraer datos",
+                    text: "Contacte con el administrador del sistema " + response.error,
+                    icon: "error"
+                });
             }
         });
     }
 
     function valdar(){
-         if(document.getElementById("tipo").selectedIndex == 0){
+        if (document.getElementById("TipoArchivo").selectedIndex == 0) {
              Swal.fire({
                   icon: "error",
                   title: "Oops...",
@@ -100,7 +127,35 @@
             <button type="button" style="margin-top:6px;" class="btn btn-primary fa fa-plus" title="Add Ejes de Reincercion" data-toggle="modal" data-target="#form-modal">Add Ejes de Reincercion
         </div>
     </div>
-    <input readonly style="display:none" name="idCanalizacion" id="idCanalizacion" type="text" class="form-control" value="@ViewBag.idCanalizacion" />
+    <input readonly style="display:none" name="CanalizacionIdCanalizacion" id="CanalizacionIdCanalizacion" type="text" class="form-control" value="@ViewBag.idCanalizacion" />
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Tipo de Informe</th>
+                <th scope="col">Fecha de Creacion</th>
+                <th scope="col">Observaciones</th>
+                <th scope="col">Archivo</th>
+            </tr>
+        </thead>
+    @foreach (var item in ParaOficios)
+    {
+        <tbody>
+            <tr>
+                <th>@item.oficioscanalizacionVM.TipoArchivo</th>
+                <td>@item.oficioscanalizacionVM.FechaArchivo.Value.ToString("dd-MMMM-yyyy")</td>
+                <td>@item.oficioscanalizacionVM.Observaciones</td>
+                <td>
+                @if (item.oficioscanalizacionVM.RutaArchivo != null)
+                {
+                    <a style="font-size: x-large;" href="~/Vin/@item.oficioscanalizacionVM.RutaArchivo" target="_blank">
+                        <i class="fa fa-paperclip fa-9x"></i>
+                    </a>
+                }
+                </td>
+            </tr>
+        </tbody>
+    }
+    </table>
 </body>
 
 
@@ -119,12 +174,8 @@
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;">Crear Oficio</h5>
             </div>
             <div class="modal-body">
-               @* <form asp-action="CreateOficiosCanalizacion">*@
+                @*<form asp-action="OficiosCanalizacion">*@
                     <div class="col-md-12 separar">
-                      @*  <label class="control-label">Seleccionar Servicio para reporte </label>
-                        <select class="form-control" name="Servicio" id="Servicio" style="font-size: 15px" onchange="CambioLista(value)"
-                                asp-items="@(new SelectList(ViewBag.listaServicios, "tabla", "Tipo", "Id"))">
-                        </select>*@
                         <label class="control-label">Seleccionar Servicio para reporte </label>
                         <select class="form-control" name="Servicio" id="Servicio" style="font-size: 15px" onchange="CambioLista(value)"
                                 asp-items="@(new SelectList(ViewBag.listaServicios, "tabla", "Tipo", "Id"))">
@@ -132,22 +183,30 @@
                     </div>
                     <div class="col-md-12 separar">
                         <label class="control-label">Tipo de reporte </label>
-                        <select class="form-control" name="tipo" id="tipo" style="font-size: 15px">
+                        <select class="form-control" name="TipoArchivo" id="TipoArchivo" style="font-size: 15px">
                             <option value="">Seleccione una opción</option>
                         </select>
                     </div>
                     <div class="col-md-12 separar">
                         <label class="control-label">Observaciones </label>
-                        <textarea required name="ejesObs" id="ejesObs" type="text" class="form-control"></textarea>
+                        <textarea required name="Observaciones" id="Observaciones" type="text" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-12 separar">
+                        <input class="control-label form-check-input" type="checkbox" value="" id="menor" name="menor">
+                        <label class="control-label form-check-label" style="margin-left:30px;"> Menor</label>
+                    </div>
+                    <div class="col-md-12 separar">
+                    <input class="control-label form-check-input" type="checkbox" value="" id="ausencia" name="ausencia">
+                    <label class="control-label form-check-label" style="margin-left:30px"> Ausencia</label>
                     </div>
                     <div class="col-md-12 separar">
                         <button onclick="InformesVinculacion()" class="btn btn-primary fa fa-save"> Guardar</button>
-                        @*<button style="display:none" type="submit" class="btn btn-primary fa fa-save"> Guardar</button>*@
+                        <button style="display:none" type="submit" class="btn btn-primary fa fa-save" name="btnsave" id="btnsave"></button>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
                     </div>
-               @* </form>*@
+              @* </form>*@
             </div>
         </div>
     </div>

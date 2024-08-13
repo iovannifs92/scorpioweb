@@ -23,6 +23,11 @@ using scorpioweb.Class;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using Microsoft.AspNetCore.SignalR;
+using scorpioweb.Migrations.ApplicationDb;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace scorpioweb.Controllers
 {
@@ -33,12 +38,14 @@ namespace scorpioweb.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        private readonly IHubContext<HubNotificacion> _hubContext;
+        public SupervisionesController(penas2Context context, IHostingEnvironment hostingEnvironment, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, IHubContext<HubNotificacion> hubContext)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
+            _hubContext = hubContext;
         }
         #endregion
 
@@ -1183,7 +1190,7 @@ MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
         #region -Supervision-
-        public async Task<IActionResult> Supervision(int? id)
+        public async Task<IActionResult> Supervision(int? id, int idpersona)
         {
             if (id == null)
             {
@@ -1210,12 +1217,40 @@ MetodosGenerales mg = new MetodosGenerales();
             List<Supervision> SupervisionVM = _context.Supervision.ToList();
             List<Causapenal> causaPenalVM = _context.Causapenal.ToList();
             List<Persona> personaVM = _context.Persona.ToList();
+            List<Reinsercion> reinsercionVM = _context.Reinsercion.ToList();
+            List<Canalizacion> canalizacionVM = _context.Canalizacion.ToList();
+            List<Oficioscanalizacion> oficioscanalizacionVM = _context.Oficioscanalizacion.ToList();
+
+            #region -Oficios Vinculacion-
+            var hayOficio = (from p in _context.Persona
+                             join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                             join r in _context.Reinsercion on p.IdPersona equals Int32.Parse(r.IdTabla) into pr
+                             from reinsercion in pr.DefaultIfEmpty()
+                             join c in _context.Canalizacion on reinsercion.IdReinsercion equals c.ReincercionIdReincercion into rc
+                             from canalizacion in rc.DefaultIfEmpty()
+                             join o in _context.Oficioscanalizacion on canalizacion.IdCanalizacion equals o.CanalizacionIdCanalizacion into co
+                             from oficios in co.DefaultIfEmpty()
+                             where p.IdPersona == idpersona && reinsercion.Tabla == "persona"
+                             select new
+                             {
+                                 Persona = p,
+                                 Supervision = s,
+                                 Reinsercion = reinsercion,
+                                 Canalizacion = canalizacion,
+                                 OficiosCanalizacion = oficios
+                             }).ToList();
+            
+            ViewBag.hayoficio = hayOficio.Count();
+            
+            
+            #endregion
+            
+
             #region -Jointables-
             ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
                                                 join personatable in personaVM on supervisiontable.PersonaIdPersona equals personatable.IdPersona
                                                 join causapenaltable in causaPenalVM on supervisiontable.CausaPenalIdCausaPenal equals causapenaltable.IdCausaPenal
                                                 where supervisiontable.IdSupervision == id
-
                                                 select new SupervisionPyCP
                                                 {
                                                     causapenalVM = causapenaltable,
@@ -1502,9 +1537,14 @@ MetodosGenerales mg = new MetodosGenerales();
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCierredecaso(int id, [Bind("IdCierreDeCaso,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionIdSupervision")] Cierredecaso cierredecaso, IFormFile archivo)
         {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
 
             var supervision = _context.Supervision
                .SingleOrDefault(m => m.IdSupervision == cierredecaso.SupervisionIdSupervision);
+            
+            var persona = _context.Persona
+               .SingleOrDefault(m => m.IdPersona == supervision.PersonaIdPersona);
 
             if (id != cierredecaso.SupervisionIdSupervision)
             {
@@ -1540,6 +1580,40 @@ MetodosGenerales mg = new MetodosGenerales();
 
                     _context.Entry(oldcierredecaso).CurrentValues.SetValues(cierredecaso);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                    #region -Existe en reincercion-
+                    if(cierredecaso.SeCerroCaso == "SI")
+                    {
+                        var hayOficio = (from p in _context.Persona
+                                     join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                                     join r in _context.Reinsercion on p.IdPersona equals Int32.Parse(r.IdTabla)
+                                     where p.IdPersona == persona.IdPersona && r.Tabla == "persona"
+                                     select new
+                                     {
+                                         Persona = p,
+                                         Supervision = s,
+                                         Reinsercion = r,
+                                     });
+
+                        if (hayOficio.ToList().Count() != 0)
+                        {
+                            await _hubContext.Clients.Group("seCerrocaso").SendAsync("alertCierreCaso", "Realizar cancelaciones correspondientes de " + persona.NombreCompleto + "de MCYSCP.");
+                        }
+
+                        var datos = hayOficio.First();
+                        
+                        //PENDIENTES 
+                        //#region -Cambiar Estado Supervision Vinculacion-
+                        //var query = (from s in _context.Reinsercion
+                        //             where s.IdReinsercion == datos.Reinsercion.IdReinsercion
+                        //             select s).FirstOrDefault();
+                        //query.Estado = "CONCLUIDO";
+                        //_context.SaveChanges();
+                        //#endregion
+                    }
+                
+                    #endregion
+
                     //_context.Update(cierredecaso);
                     //await _context.SaveChangesAsync();
                 }
@@ -1554,7 +1628,7 @@ MetodosGenerales mg = new MetodosGenerales();
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/" + cierredecaso.SupervisionIdSupervision, "Supervisiones");
+                return RedirectToAction("Supervision/" + cierredecaso.SupervisionIdSupervision, "Supervisiones", new { idpersona = persona.IdPersona});
             }
             return View(cierredecaso);
         }
@@ -3446,6 +3520,37 @@ MetodosGenerales mg = new MetodosGenerales();
 
 
             return Json(new { success = true, responseText = Convert.ToString(fi), idPersonas = Convert.ToString(fraccionesimpuestas.IdFracciones) });
+        }
+        #endregion
+
+        #region -Vinculacion-
+
+        public IActionResult Vinculacion(int idpersona)
+        {
+            ViewData["Oficios"] = (from p in _context.Persona
+                           join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
+                           join r in _context.Reinsercion on p.IdPersona equals Int32.Parse(r.IdTabla) into pr
+                           from reinsercion in pr.DefaultIfEmpty()
+                           join c in _context.Canalizacion on reinsercion.IdReinsercion equals c.ReincercionIdReincercion into rc
+                           from canalizacion in rc.DefaultIfEmpty()
+                           join o in _context.Oficioscanalizacion on canalizacion.IdCanalizacion equals o.CanalizacionIdCanalizacion 
+                           where p.IdPersona == idpersona && reinsercion.Tabla == "persona"
+                           select new ReinsercionVM
+                           {
+                               personaVM = p,
+                               supervisionVM = s,
+                               reinsercionVM = reinsercion,
+                               canalizacionVM = canalizacion,
+                               oficioscanalizacionVM = o
+                           }).ToList();
+
+            //return Json(new
+            //{
+            //    success = true,
+
+            //    query = ViewData["alertas"]
+            //});
+            return View();
         }
         #endregion
     }

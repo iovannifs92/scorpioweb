@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using F23.StringSimilarity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -733,11 +734,16 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Generar Informe-
-        public void InformesVinculacion(string var_idCanalizacion, string tipo, string tabla, string idselect, bool aucencia)
+        public JsonResult InformesVinculacion(int var_idCanalizacion, string tipo, string tabla, string idselect, bool ausencia, bool menor,string Observaciones, Oficioscanalizacion oficioscanalizacion)
         {
             #region -Zona de variebles-
+            string resultPath = string.Empty;
+            string templatePath = string.Empty;
+            string viewUrl = string.Empty;
+            string file_name = string.Empty;
+
             ReinsercionMCYSCPLCCURSVM infopersona = null;
-            ReinsercionMCYSCPLCCURSVM infoVinculacion = null;
+            ReinsercionVM infoVinculacion = null;
             var idcanalizacion = var_idCanalizacion;
             string tipoInforme = tipo;
             string tablaSelecionada = tabla;
@@ -752,14 +758,38 @@ namespace scorpioweb.Controllers
             string telefono = string.Empty;
             string curp = string.Empty;
 
+            string lugareje = string.Empty;
+            string fechahora = string.Empty;
 
+            #endregion
 
+            #region -Guardar Datos Informe-
+            try
+            {
+
+                int idoficio = _context.Oficioscanalizacion.Max(u => u.IdoficiosCanalizacion)+ 1;
+
+                oficioscanalizacion.TipoArchivo = mg.normaliza(tipo);
+                oficioscanalizacion.FechaArchivo = DateTime.Now;
+                oficioscanalizacion.Observaciones = mg.normaliza(Observaciones);
+                oficioscanalizacion.CanalizacionIdCanalizacion = idcanalizacion;
+                file_name = idoficio + "_" +idcanalizacion +"_"+ nombreCompleto.ToUpper() + "_" + tipoInforme.ToUpper() + ".docx";
+                oficioscanalizacion.RutaArchivo = file_name;
+
+                _context.Oficioscanalizacion.Add(oficioscanalizacion);
+                _context.SaveChanges();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { viewUrl = viewUrl, success = false, error = ex });
+            }
             #endregion
 
             #region -Recoplicion de datos-
             var datosReincercion = from c in _context.Canalizacion
                                    join r in _context.Reinsercion on c.ReincercionIdReincercion equals r.IdReinsercion
-                                   where c.IdCanalizacion == Int32.Parse(idcanalizacion)
+                                   where c.IdCanalizacion == idcanalizacion
                                    select new
                                    {
                                        r.IdTabla,
@@ -771,27 +801,27 @@ namespace scorpioweb.Controllers
             switch (tablaSelecionada)
             {
                 case "Terapia":
-                    
+                    infoVinculacion = (from t in _context.Terapia
+                                       where t.IdTerapia == Int32.Parse(idselect)
+                                       select new ReinsercionVM
+                                       {
+                                           terapiaVM = t
+                                       }).First();
                     break;
 
                 case "Otro":
-                    infoVinculacion = (from table in _context.Persona
-                                       where table.IdPersona == Int32.Parse(idtabla)
-                                       select new ReinsercionMCYSCPLCCURSVM
+                    infoVinculacion = (from e in _context.Ejesreinsercion
+                                       where e.IdejesReinsercion == Int32.Parse(idselect)
+                                       select new ReinsercionVM
                                        {
-                                           Paterno = table.Paterno,
-                                           Materno = table.Materno,
-                                           Nombre = table.Nombre,
-                                           Supervisor = table.Supervisor,
-                                           fechan = table.Fnacimiento.ToString(),
-                                           telefono = table.Celular.ToString(),
-                                           curp = table.Curp,
+                                          ejesreinsercionVM = e
                                        }).First();
                     break;
             }
-                    var datosVinculacion = from c in _context.Canalizacion
+                    
+            var datosVinculacion = from c in _context.Canalizacion
                                    join r in _context.Reinsercion on c.ReincercionIdReincercion equals r.IdReinsercion
-                                   where c.IdCanalizacion == Int32.Parse(idcanalizacion)
+                                   where c.IdCanalizacion == idcanalizacion
                                    select new
                                    {
                                        r.IdTabla,
@@ -818,7 +848,7 @@ namespace scorpioweb.Controllers
                                       Nombre = table.Nombre,
                                       Supervisor = table.Supervisor,
                                       fechan = table.Fnacimiento.ToString(),
-                                      telefono = table.Celular.ToString(),
+                                      telefono = table.Celular,
                                       curp = table.Curp,
                                   }).First();
                     break;
@@ -857,19 +887,113 @@ namespace scorpioweb.Controllers
             edad = mg.CalcularEdad(DateTime.Parse(infopersona.fechan));
             telefono = infopersona.telefono;
             curp = infopersona.curp;
+
+            lugareje = infoVinculacion.ejesreinsercionVM.Lugar;
+            fechahora = infoVinculacion.ejesreinsercionVM.FechaProgramada.ToString();
+
+            var txtMenor = "Yo doy mi consentimiento para que se me realice el estudio de antidoping y me comprometo a acudir puntualmente a mi cita.";
+            var txtMenor2 = "Tramite basado en el art.71 fracc VI en relación al articulo 102 fracc. V de la Ley Nacional del Sistema Integral de Justicia Penal para Adolescentes.";
+            var txtaucencia = "Firma por ausencia justificada Lts. Alma Carolina Gaxiola Rocha en calidad de Coordinadora del Area de Vinculación y bajo los términos de lo dispuesto por el numeral 12 del Reglamento Interior de la S.S.P.";
+
             #endregion
 
             if (tablaSelecionada == "Terapia")
             {
-
+                switch (tipoInforme.ToUpper())
+                {
+                    case "INFORME ALTA":
+                        // Lógica para "Informe Alta"
+                        Console.WriteLine("Procesando Informe Alta");
+                        break;
+                    case "INFORME":
+                        // Lógica para "Informe"
+                        Console.WriteLine("Procesando Informe");
+                        break;
+                    case "INFORME DE ASISTENCIA":
+                        // Lógica para "Informe de Asistencia"
+                        Console.WriteLine("Procesando Informe de Asistencia");
+                        break;
+                    default:
+                        Console.WriteLine("Seleccione una opción válida");
+                        break;
+                }
             }
             else if(tablaSelecionada == "Otro")
             {
+                switch (tipoInforme.ToUpper())
+                {
+                    case "SOLICITUD DE INFORME":
+                        // Lógica para "Solicitud de Informe"
+                        Console.WriteLine("Procesando Solicitud de Informe");
+                        break;
+                    case "CANCELACIÓN DE VINCULACIÓN":
+                        // Lógica para "Cancelación de Vinculación"
+                        Console.WriteLine("Procesando Cancelación de Vinculación");
+                        break;
+                    case "FICHA DE ANTIDOPING":
 
+                        #region -Folio ficha antidoping-
+                        var filio = GenerarFolio(tipoInforme);
+                        #endregion
+
+
+                        templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateFichaAntidoping.docx";
+                        resultPath = this._hostingEnvironment.WebRootPath + "\\Vin\\"+ file_name;
+
+                        DocumentCore dc = DocumentCore.Load(templatePath);
+                        var datosFicha = new[] { new {
+                            fecha = DateTime.Now,
+                            folio = filio,
+                            nombre = nombreCompleto,
+                            lugar = lugareje,
+                            fechacita = fechahora,
+                            telefono = telefono,
+                            inecurp = curp,
+                            aucencia = ausencia ? txtaucencia : "",
+                            menor = menor ? txtMenor: "",
+                            menor2 = menor ? txtMenor2: ""
+                        }};
+
+                        dc.MailMerge.Execute(datosFicha);
+                        dc.Save(resultPath);
+
+                        viewUrl = Url.Action("OficiosCanalizacion/" + idcanalizacion, "Reinsercion");
+
+                        return Json(new { viewUrl = viewUrl, success = true });
+                    case "RESULTADO DE ANTIDOPING":
+                        // Lógica para "Resultado de Antidoping"
+                        Console.WriteLine("Procesando Resultado de Antidoping");
+                        break;
+                    case "OFICIO ANTIDOPING":
+                        // Lógica para "Oficio Antidoping"
+                        Console.WriteLine("Procesando Oficio Antidoping");
+                        break;
+                    default:
+                        Console.WriteLine("Seleccione una opción válida");
+                        break;
+                }
             }
+            return Json(new { viewUrl = viewUrl, success = true });
+        }
 
+        public string GenerarFolio(string tipoArchivo)
+        {
+            DateTime ahora = DateTime.Now;
 
-        }   
+            // Filtrar los archivos del tipo especificado y del mes y año actual
+            var archivosDelMes = _context.Oficioscanalizacion
+                .Where(a => a.FechaArchivo.Value.Month == ahora.Month && a.FechaArchivo.Value.Year == ahora.Year && a.TipoArchivo == tipoArchivo)
+                .ToList();
+
+            // Obtener el número consecutivo
+            int numeroConsecutivo = archivosDelMes.Count;
+
+            // Generar el folio
+            string folio = $"{numeroConsecutivo:D3}-{ahora.Month:D2}-{ahora.Day:D2}";
+
+            return folio;
+        }
+
         #endregion
 
 

@@ -281,7 +281,8 @@
                     </a>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-success" id="edicion" title="Edición" href="/Supervisiones/Supervision/@item.supervisionVM.IdSupervision">
+                    <a type="button" class="btn btn-success" id="edicion" title="Edición" asp-action="Supervision"  asp-route-id="@item.supervisionVM.IdSupervision" asp-route-idpersona ="@item.personaVM.IdPersona">
+                        
                         <i class="fa fa-pencil"></i>
                     </a>
                 </td>

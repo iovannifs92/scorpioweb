@@ -4,6 +4,55 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
+
+<style>
+
+
+    .buttons a {
+        text-decoration: none;
+        font-size: 28px;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        color: #f1f1f1;
+        border-radius: 50%;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+        transition: all .4s ease-in-out;
+    }
+
+    .buttons a:hover {
+        transform: scale(1.2);
+    }
+
+    #agenda {
+        background: #314652;
+        margin-left: 20px;
+    }
+
+    #calendario {
+        background: #00B812;
+        margin-left: 20px;
+    }
+
+    #mensajeSistema {
+        background: #0078A7;
+        margin-left: 20px;
+    }
+
+    #libronegro {
+        background: #fff;
+        margin-left: 20px;
+    }
+
+    #seccionBotones {
+        padding-top: 1em;
+    }
+
+</style>
+
+
+
 <script>   
     function openFullScreenWindow() {
         const screenWidth = window.screen.availWidth;
@@ -14,6 +63,8 @@
 </script>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
 
 @*@if (ViewBag.WarningsUser > 0)
 {
@@ -80,50 +131,5 @@
         <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
     </section>
 </div>
-
-<style>
-    .buttons a {
-        text-decoration: none;
-        font-size: 28px;
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        text-align: center;        
-        color: #f1f1f1;
-        border-radius: 50%;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
-        transition: all .4s ease-in-out;
-    }
-
-    .buttons a:hover {
-        transform: scale(1.2);
-    }
-
-    #agenda {
-        background: #314652;
-        margin-left: 20px;
-    }
-
-    #calendario {
-        background: #00B812;
-        margin-left: 20px;
-    }
-
-    #mensajeSistema {
-        background: #0078A7;
-        margin-left: 20px;
-    } 
-    #libronegro {
-        background: #fff;
-        margin-left: 20px;
-    }
-
-    #seccionBotones{
-        padding-top: 1em;
-        
-    }
-
-</style>
-
 
 

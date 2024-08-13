@@ -273,6 +273,9 @@
             }
         });
     }
+
+
+
     //Endregion Guardar EjeReinsercion
     $(document).ready(function () {
         function autocomplete(inp, arr) {
@@ -357,7 +360,32 @@
         autocomplete(document.getElementById("ejesSelect"), ejes);
         var lugar = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.listaLugar))');
         autocomplete(document.getElementById("ejesLugar"), lugar);
+
     });
+
+    const ListaDinamicaEstados = {
+        "TERAPIA": ["ACTIVO", "ALTA(CONCLUIDO)", "BAJA", "ESPERA", "TERMINO"], 
+        "JORNADA": ["ACTIVO", "CANCELADO", "CONCLUIDO", "CUMPLIO", "EN ESPERA"], 
+        "EDUCATIVA": ["ACTIVO", "CANCELADO", "CERTIFICADO", "EN ESPERA"], 
+        "LABORAL": ["ACTIVO", "CANCELADO", "CONCLUIDO", "CONTRATADO", "EN ESPERA"], 
+        "EXTRAORDINARIOS": ["ACTIVO", "CANCELADO", "CONCLUIDO", "EN ESPERA", "SATISFACTORIO"],
+        "ANTIDOPING":["CONCLUIDO", "EN TRÁMITE", "NO REALIZADO"],
+    };
+
+    function obtenerListaEstados(tipo) {
+
+        const listaEstados = ListaDinamicaEstados[tipo];
+
+        // Si el tipo existe, devolver la lista de estados correspondientes
+        if (listaEstados) {
+            return listaEstados;
+        } else {
+            // Si el tipo no existe, devolver las opciones "VIGENTE" y "CONCLUIDO"
+            return ["VIGENTE", "CONCLUIDO"];
+        }
+        
+       //return ListaDinamicaEstados[tipo] || [];
+    }
 </script>
 
 
@@ -372,23 +400,25 @@
             <button type="button" style="margin-top:6px;" class="btn btn-primary fa fa-plus" title="Add Ejes de Reincercion" data-toggle="modal" data-target="#form-modal">Add Ejes de Reincercion
         </div>
     </div>
+   @*<select id="Estado_130" name="miSelect"></select>*@
     <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
-
     <form asp-action="Create" enctype="multipart/form-data" id="form">
         <div class="container sub-page form">
             <div class="container">
                 @foreach (var item in ejesReinsercion)
                 {
-                var panelId = "collapse" + item.ejesreinsercionVM.IdejesReinsercion; // Asignar un ID único a cada panel colapsable
+                    var panelId = "collapse" + item.ejesreinsercionVM.IdejesReinsercion; // ID único para cada panel colapsable
+                    var estadoSelectId = "Estado_" + item.ejesreinsercionVM.IdejesReinsercion; // ID único para el select de estados
+
+
                     <div class="panel-group">
                         <div id="datosSalud" class="panel panel panel-primary" style="border-color:#000;">
                             <div style="color:#000; background-color:#44BBA4; text-align:right; padding-right:30px; padding-top:10px">
                                 <a class="button fa fa-trash" style="font-size:30px;color:black" onclick="BorrarGeneral(@item.ejesreinsercionVM.IdejesReinsercion)" title="Borrar Servicio de Reinsercion"></a>
                             </div>
                             <div class="panel-heading" style="color:#000; background-color:#44BBA4; border-color:#44BBA4;" data-toggle="collapse" href="#@panelId" onclick="mostrar">
-                              
                                 <h4 class="panel-title">
-                                        <p text style="margin-bottom:unset; text-align:center">@item.ejesreinsercionVM.Tipo</p>
+                                    <p id="tipo" name="tipo" text style="margin-bottom:unset; text-align:center">@item.ejesreinsercionVM.Tipo</p>
                                 </h4>
                             </div>
                             <div id="@panelId" class="panel-collapse collapse" style="padding-top:1%;">
@@ -410,10 +440,9 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <select onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion, name, value)" class="form-control" name="Estado" id="Estado" style="font-size: 15px"
-                                                        asp-items="@(new SelectList(ViewBag.listaEstadoRe, "Value", "Text", item.ejesreinsercionVM.Estado))">
+                                                <select onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion, name, value)" class="form-control" name="Estado" id="@estadoSelectId" style="font-size: 15px">
+                                                    <option selected>@item.ejesreinsercionVM.Estado</option>
                                                 </select>
-
                                             </td>
                                             <td><input onchange="EditEjes(@item.ejesreinsercionVM.IdejesReinsercion, name, value)" type="text" class="form-control" name="Observaciones" value="@item.ejesreinsercionVM.Observaciones" /></td>
                                         </tr>
@@ -422,7 +451,18 @@
                             </div>
                         </div>
                     </div>
-                    id = item.reinsercionVM.IdReinsercion;
+
+                    <script type="text/javascript">
+                            $(document).ready(function () {
+                                const tipo = "@item.ejesreinsercionVM.Tipo";
+                                const listaEstados = obtenerListaEstados(tipo);
+                                const selectId = "@estadoSelectId"; @*// Usamos el ID único generado*@
+                                if (listaEstados.length != 0) {
+                                    console.log(listaEstados);
+                                    agregarEstadosASelect(selectId, listaEstados);
+                                }
+                            });
+                    </script>
                 }
             </div>
         </div>
@@ -467,3 +507,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function agregarEstadosASelect(selectId, listaEstados) {
+        var select = document.getElementById(selectId); // Selecciona el select por su ID único
+        listaEstados.forEach(estado => {
+            const option = document.createElement('option');
+            option.value = estado;
+            option.textContent = estado;
+            select.appendChild(option);
+        });
+    }
+
+</script>

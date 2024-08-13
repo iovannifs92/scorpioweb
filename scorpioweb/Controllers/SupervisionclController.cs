@@ -22,6 +22,8 @@ using DocumentFormat.OpenXml.Presentation;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Org.BouncyCastle.Crypto;
+using Microsoft.AspNetCore.SignalR;
+using scorpioweb.Migrations.ApplicationDb;
 
 namespace scorpioweb.Controllers
 {
@@ -31,12 +33,14 @@ namespace scorpioweb.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public SupervisionclController(penas2Context context, IHostingEnvironment hostingEnvironment, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        private readonly IHubContext<HubNotificacion> _hubContext;
+        public SupervisionclController(penas2Context context, IHostingEnvironment hostingEnvironment, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, IHubContext<HubNotificacion> hubContext)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
             this.roleManager = roleManager;
             this.userManager = userManager;
+            _hubContext = hubContext;
         }
         #endregion  
         private readonly penas2Context _context;
@@ -395,7 +399,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Supervision-
-        public async Task<IActionResult> Supervision(int? id)
+        public async Task<IActionResult> Supervision(int? id, int idpersona)
         {
             if (id == null)
             {
@@ -422,6 +426,33 @@ namespace scorpioweb.Controllers
             List<Supervisioncl> SupervisionVM = _context.Supervisioncl.ToList();
             List<Causapenalcl> causaPenalVM = _context.Causapenalcl.ToList();
             List<Personacl> personaVM = _context.Personacl.ToList();
+
+            #region -Oficios Vinculacion-
+            var hayOficio = (from p in _context.Personacl
+                             join s in _context.Supervisioncl on p.IdPersonaCl equals s.PersonaclIdPersonacl
+                             join r in _context.Reinsercion on p.IdPersonaCl equals Int32.Parse(r.IdTabla) into pr
+                             from reinsercion in pr.DefaultIfEmpty()
+                             join c in _context.Canalizacion on reinsercion.IdReinsercion equals c.ReincercionIdReincercion into rc
+                             from canalizacion in rc.DefaultIfEmpty()
+                             join o in _context.Oficioscanalizacion on canalizacion.IdCanalizacion equals o.CanalizacionIdCanalizacion into co
+                             from oficios in co.DefaultIfEmpty()
+                             where p.IdPersonaCl == idpersona && reinsercion.Tabla == "personacl"
+                             select new
+                             {
+                                 Persona = p,
+                                 Supervision = s,
+                                 Reinsercion = reinsercion,
+                                 Canalizacion = canalizacion,
+                                 OficiosCanalizacion = oficios
+                             }).ToList();
+
+            ViewBag.hayoficio = hayOficio.Count();
+
+
+            #endregion
+
+
+
             #region -Jointables-
             ViewData["joinTablesSupervision"] = from supervisiontable in SupervisionVM
                                                 join personatable in personaVM on supervisiontable.PersonaclIdPersonacl equals personatable.IdPersonaCl
@@ -1385,6 +1416,9 @@ namespace scorpioweb.Controllers
             var supervision = _context.Supervisioncl
                .SingleOrDefault(m => m.IdSupervisioncl == cierredecasocl.SupervisionclIdSupervisioncl);
 
+            var personacl = _context.Personacl
+              .SingleOrDefault(m => m.IdPersonaCl == supervision.PersonaclIdPersonacl);
+
             if (id != cierredecasocl.SupervisionclIdSupervisioncl)
             {
                 return NotFound();
@@ -1421,8 +1455,50 @@ namespace scorpioweb.Controllers
                         stream.Close();
                     }
 
+                    var user = await userManager.FindByNameAsync(User.Identity.Name);
+                    var roles = await userManager.GetRolesAsync(user);
+
+
                     _context.Entry(oldcierredecaso).CurrentValues.SetValues(cierredecasocl);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                    #region -Existe en reincercion-
+                    if (cierredecasocl.SeCerroCaso == "SI")
+                    {
+                        var hayOficio = (from p in _context.Personacl
+                                         join s in _context.Supervisioncl on p.IdPersonaCl equals s.PersonaclIdPersonacl
+                                         join r in _context.Reinsercion on p.IdPersonaCl equals Int32.Parse(r.IdTabla)
+                                         where p.IdPersonaCl == personacl.IdPersonaCl && r.Tabla == "personacl"
+                                         select new
+                                         {
+                                             Persona = p,
+                                             Supervision = s,
+                                             Reinsercion = r,
+                                         });
+
+                        if (hayOficio.ToList().Count() != 0)
+                        {
+                            await _hubContext.Clients.Group("seCerrocaso").SendAsync("alertCierreCaso", "Realizar cancelaciones correspondientes de " + personacl.NombreCompleto + " de Libertad Condicionada.");
+                        }
+
+                        var datos = hayOficio.First();
+
+                        //PENDIENTES 
+                        //#region -Cambiar Estado Supervision Vinculacion-
+                        //var query = (from s in _context.Reinsercion
+                        //             where s.IdReinsercion == datos.Reinsercion.IdReinsercion
+                        //             select s).FirstOrDefault();
+                        //query.Estado = "CONCLUIDO";
+                        //_context.SaveChanges();
+                        //#endregion
+                    }
+
+                    #endregion
+
+
+
+
+
                     //_context.Update(cierredecaso);
                     //await _context.SaveChangesAsync();
                 }
@@ -1437,7 +1513,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Supervision/" + cierredecasocl.SupervisionclIdSupervisioncl, "Supervisioncl");
+                return RedirectToAction("Supervision/" + cierredecasocl.SupervisionclIdSupervisioncl, "Supervisioncl", new { idpersona = personacl.IdPersonaCl});
             }
             return View(cierredecasocl);
         }
@@ -2668,6 +2744,39 @@ namespace scorpioweb.Controllers
             //Response.Redirect("https://localhost:44359/Documentos/reporteSupervision.docx");
         }
         #endregion
+        #region -Vinculacion-
+
+        public IActionResult Vinculacion(int idpersona)
+        {
+            ViewData["Oficios"] = (from p in _context.Personacl
+                                   join s in _context.Supervisioncl on p.IdPersonaCl equals s.PersonaclIdPersonacl
+                                   join r in _context.Reinsercion on p.IdPersonaCl equals Int32.Parse(r.IdTabla) into pr
+                                   from reinsercion in pr.DefaultIfEmpty()
+                                   join c in _context.Canalizacion on reinsercion.IdReinsercion equals c.ReincercionIdReincercion into rc
+                                   from canalizacion in rc.DefaultIfEmpty()
+                                   join o in _context.Oficioscanalizacion on canalizacion.IdCanalizacion equals o.CanalizacionIdCanalizacion
+                                   where p.IdPersonaCl == idpersona && reinsercion.Tabla == "personacl"
+                                   select new ReinsercionVM
+                                   {
+                                       personaclVM = p,
+                                       SupervisionclVM = s,
+                                       reinsercionVM = reinsercion,
+                                       canalizacionVM = canalizacion,
+                                       oficioscanalizacionVM = o
+                                   }).ToList();
+
+            //return Json(new
+            //{
+            //    success = true,
+
+            //    query = ViewData["alertas"]
+            //});
+            return View();
+        }
+        #endregion
+
+
+
 
         #region -VERIFICAR EXISTE-
         private bool SupervisionclExists(int id)

@@ -1,0 +1,69 @@
+﻿@model IEnumerable<scorpioweb.Models.ReinsercionVM>
+
+@{
+    ViewData["Title"] = "AlertasCL";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<script src="~/js/jquery-1.11.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var idpersona = 4787; // El id de la persona que deseas buscar
+        $.ajax({
+            url: "/Supervisiones/Oficios,
+            type: 'GET',
+            data: { idpersona: idpersona },
+            success: function(result) {
+                for (let i = 0; i < result.query.length; i++) {
+                    alert(result.query.length)
+                }
+            },
+            error: function () {
+                alert('Error al obtener los datos');
+            }
+        });
+    });
+
+</script>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Oficios</title>
+</head>
+<body>
+    <div class="row">
+        <table class="table table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th><a>Nombre</a></th>
+                    <th>Tipo de Archivo</th>
+                    <th>Fecha de Achivo</th>
+                    <th>Observaciones</th>
+                    <th>Archivo</th>
+                </tr>
+            </thead>
+            <tbody id="tblOficios">
+            @foreach (var item in ViewData["Oficios"] as IEnumerable<scorpioweb.Models.ReinsercionVM>)
+            {
+                 <tr>
+                    <td>@item.personaclVM.NombreCompleto</td>
+                    <td>@item.oficioscanalizacionVM.TipoArchivo</td>
+                    <td>@item.oficioscanalizacionVM.FechaArchivo</td>
+                    <td>@item.oficioscanalizacionVM.Observaciones</td>
+                    <td>
+                        <a style="font-size: x-large;" href="~/Vin/@Html.DisplayFor(modelItem => item.oficioscanalizacionVM.RutaArchivo)" target="_blank">
+                            <i class="fa fa-paperclip fa-9x"></i>
+                        </a>
+                    </td>
+                 </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</body>
+
+
+</html>

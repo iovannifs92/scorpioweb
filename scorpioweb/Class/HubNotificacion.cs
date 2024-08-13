@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using scorpioweb.Models;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,6 @@ namespace scorpioweb.Class
 
         private async Task AddToGroupBasedOnRole(string role)
         {
-
             switch (role)
             {
                 case "Masteradmin":
@@ -67,7 +67,7 @@ namespace scorpioweb.Class
                     await Groups.AddToGroupAsync(Context.ConnectionId, "MCYSCP");
                     break;
                 case "Vinculacion":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Canalizacion");
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "seCerrocaso");
                     await Groups.AddToGroupAsync(Context.ConnectionId, "nuevaCanalizacion");
                     break;
                 case "Administrador":

@@ -8,7 +8,9 @@
         public Ejesreinsercion ejesreinsercionVM { get; set; }
         public Oficioscanalizacion oficioscanalizacionVM { get; set; }
         public Persona personaVM { get; set; }
-        public Personacl personacVM { get; set; }
+        public Personacl personaclVM { get; set; }
+        public Supervision supervisionVM{ get; set; }
+        public Supervisioncl SupervisionclVM{ get; set; }
 
     }
 }

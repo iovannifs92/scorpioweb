@@ -73,9 +73,9 @@ namespace scorpioweb.Controllers
 
         Dictionary<string, List<string>> ListaDinamicaEstados = new Dictionary<string, List<string>>
         {
-            { "Terapia", new List<string> { "Activo", "Concluido", "Baja", "Espera", "Termino" } },
+            { "Terapia", new List<string> { "Activo", "Alta(Concluido)", "Baja", "Espera", "Termino" } },
             { "Jornada", new List<string> { "Activo", "Cancelado", "Concluido", "Cumplió", "En espera" } },
-            { "Educativo", new List<string> { "Activo", "Cancelado", "Certificado", "En espera" } },
+            { "Educativa", new List<string> { "Activo", "Cancelado", "Certificado", "En espera" } },
             { "Laboral", new List<string> { "Activo", "Cancelado", "Concluido", "Contratado", "En espera" } },
             { "Extraordinarios", new List<string> { "Activo", "Cancelado", "Concluido", "En espera", "Satisfactorio" } },
             { "Antidoping", new List<string> { "Concluido", "En trámite", "No realizado" } }
@@ -134,7 +134,7 @@ namespace scorpioweb.Controllers
                         from cp in cp_join.DefaultIfEmpty()
                         join delito in _context.Delito on cp.IdCausaPenal equals delito.CausaPenalIdCausaPenal into dd_join
                         from dd in dd_join.DefaultIfEmpty()
-                        where (s.EstadoSupervision == null || s.EstadoSupervision != "CONCLUIDO") && persona.Supervisor.Contains("@dgepms.com") && persona.UltimaActualización >= fechaActualizacionLimite
+                        where (s.EstadoSupervision == null || s.EstadoSupervision != "CONCLUIDO") 
                         group new ReinsercionMCYSCPLCCURSVM
                         {
                             IdTabla = persona.IdPersona.ToString(),
@@ -142,6 +142,7 @@ namespace scorpioweb.Controllers
                             Causapenal = cp.CausaPenal,
                             Delito = dd.Tipo,
                             NomTabla = "MCySCP",
+                            tabla = "persona",
                             //EstadoSupervision = s.EstadoSupervision,
                             //ClaveUnica = persona.ClaveUnicaScorpio,
                             Supervisor = persona.Supervisor
@@ -165,7 +166,7 @@ namespace scorpioweb.Controllers
                             from ep in ep_join.DefaultIfEmpty()
                             join epcausapenal in _context.Epcausapenal on ep.IdEjecucion equals epcausapenal.EjecucionIdEjecucion into epcp_join
                             from epcp in epcp_join.DefaultIfEmpty()
-                            where (scl.EstadoSupervision == null || scl.EstadoSupervision != "CONCLUIDO") && personacl.Supervisor.Contains("@dgepms.com")
+                            where (scl.EstadoSupervision == null || scl.EstadoSupervision != "CONCLUIDO")
                             group new ReinsercionMCYSCPLCCURSVM
                             {
                                 IdTabla = personacl.IdPersonaCl.ToString(),
@@ -173,23 +174,25 @@ namespace scorpioweb.Controllers
                                 Causapenal = epcp.Causapenal ?? cpcl.CausaPenal,
                                 Delito = epcp.Delito ?? dcl.Tipo,
                                 NomTabla = "Libertad Condicionada",
+                                tabla = "personacl",
                                 //EstadoSupervision = scl.EstadoSupervision,
                                 //ClaveUnica = personacl.ClaveUnicaScorpio,
                                 Supervisor = personacl.Supervisor
                             } by new { personacl.IdPersonaCl, personacl.Paterno, personacl.Materno, personacl.Nombre } into g
                             select g.FirstOrDefault()
-                    ).Where(t1 => !_context.Reinsercion.Any(r => (r.Tabla == "persona" && r.IdTabla == t1.IdTabla.ToString())))
-                    .Select(t1 => new ReinsercionMCYSCPLCCURSVM
-                    {
-                        IdTabla = t1.IdTabla,
-                        Nombre =  t1.Nombre,
-                        Causapenal = t1.Causapenal,
-                        Delito = t1.Delito,
-                        NomTabla = t1.NomTabla,
-                        //EstadoSupervision = t1.EstadoSupervision,
-                        //ClaveUnica = t1.ClaveUnica,
-                        Supervisor = t1.Supervisor
-                    });
+                            ).Where(t1 => !_context.Reinsercion.Any(r => (r.Tabla == "persona" && r.IdTabla == t1.IdTabla.ToString()))).OrderBy(r => r.NombreCompleto)
+                            .Select(t1 => new ReinsercionMCYSCPLCCURSVM
+                            {
+                                IdTabla = t1.IdTabla,
+                                Nombre = t1.Nombre,
+                                Causapenal = t1.Causapenal,
+                                Delito = t1.Delito,
+                                NomTabla = t1.NomTabla,
+                                tabla = t1.tabla,
+                                //EstadoSupervision = t1.EstadoSupervision,
+                                //ClaveUnica = t1.ClaveUnica,
+                                Supervisor = t1.Supervisor
+                            });
 
             var tamano = query.Count();
 
@@ -674,7 +677,6 @@ namespace scorpioweb.Controllers
                             ficha.Tipo = eje;
                         ficha.FechaCanalizacion = DateTime.Now;
                         ficha.Lugar = mg.normaliza(DatosEjesDeserializados.Lugar);
-                        ficha.Monitoreo = DatosEjesDeserializados.Monitoreo;
                         ficha.FechaProgramada = DatosEjesDeserializados.FechaProgramada;
 
                         if (DatosEjesDeserializados.Observaciones.Equals(""))
@@ -1145,16 +1147,18 @@ namespace scorpioweb.Controllers
             ViewBag.idReinsercion = id;
             ViewBag.IdCanalizacion = reincercion.IdCanalizacion;
 
-            ViewData["EjesReinsercion"] = from r in _context.Reinsercion
-                                          join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion
-                                          join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion
-                                          where r.IdReinsercion == id
-                                          select new ReinsercionVM
-                                          {
-                                              ejesreinsercionVM = er,
-                                              canalizacionVM = c,
-                                              reinsercionVM = r
-                                          };
+            var datosreincercion  = from r in _context.Reinsercion
+                                join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion
+                                join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion
+                                where r.IdReinsercion == id
+                                select new ReinsercionVM
+                                {
+                                    ejesreinsercionVM = er,
+                                    canalizacionVM = c,
+                                    reinsercionVM = r
+                                };
+
+            ViewData["EjesReinsercion"] = datosreincercion;
 
 
             ViewBag.listaEjes = from e in _context.Ejesreinsercion
@@ -1271,10 +1275,45 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        public JsonResult GetEstadosPorServicio(string tipoServicio)
+        {
+            var ListaDinamicaEstados = new Dictionary<string, List<string>>
+            {
+                { "Terapia", new List<string> { "Activo", "Alta(Concluido)", "Baja", "Espera", "Termino" } },
+                { "Jornada", new List<string> { "Activo", "Cancelado", "Concluido", "Cumplió", "En espera" } },
+                { "Educativa", new List<string> { "Activo", "Cancelado", "Certificado", "En espera" } },
+                { "Laboral", new List<string> { "Activo", "Cancelado", "Concluido", "Contratado", "En espera" } },
+                { "Extraordinarios", new List<string> { "Activo", "Cancelado", "Concluido", "En espera", "Satisfactorio" } },
+                { "Antidoping", new List<string> { "Concluido", "En trámite", "No realizado" } }
+            };
+
+            if (ListaDinamicaEstados.ContainsKey(tipoServicio))
+            {
+                return Json(ListaDinamicaEstados[tipoServicio]);
+            }
+            
+            return Json(new List<string>());
+        }
+
+
+
         #region -OficiosCanalizacion-
         public IActionResult OficiosCanalizacion(int? id, int idReinsercion)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             ViewBag.idCanalizacion = id;
+
+            ViewData["OficiosCanalizacion"] = from o in _context.Oficioscanalizacion
+                                          where o.CanalizacionIdCanalizacion == id
+                                          select new ReinsercionVM
+                                          {
+                                              oficioscanalizacionVM = o
+                                          };
+
 
             ViewData["ParaOficios"] = (from c in _context.Canalizacion
                               join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion into terapiaGroup
@@ -1288,6 +1327,7 @@ namespace scorpioweb.Controllers
                                   terapiaVM = t,
                                   ejesreinsercionVM = e
                               }).ToList();
+
 
 
             ViewBag.listaServicios = (from c in _context.Canalizacion
@@ -1307,7 +1347,6 @@ namespace scorpioweb.Controllers
                                 tabla = "Otro" }
                         ).ToList();
 
-
             return View();
         }
         [HttpPost]
@@ -1315,54 +1354,11 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> OficiosCanalizacion([Bind("IdoficiosCanalizacion,TipoArchivo,FechaArchivo,RutaArchivo,Observaciones,CanalizacionIdCanalizacion")] Oficioscanalizacion oficioscanalizacion)
         {
 
-            oficioscanalizacion.IdoficiosCanalizacion = oficioscanalizacion.IdoficiosCanalizacion;
-            oficioscanalizacion.TipoArchivo = mg.normaliza(mg.removeSpaces(oficioscanalizacion.TipoArchivo));
-            oficioscanalizacion.FechaArchivo = oficioscanalizacion.FechaArchivo;
-            oficioscanalizacion.RutaArchivo = mg.normaliza(mg.removeSpaces(oficioscanalizacion.RutaArchivo));
-            oficioscanalizacion.Observaciones = mg.normaliza(mg.removeSpaces(oficioscanalizacion.Observaciones));
+            oficioscanalizacion.TipoArchivo = mg.normaliza(oficioscanalizacion.TipoArchivo);
+            oficioscanalizacion.FechaArchivo = DateTime.Now;
+            oficioscanalizacion.Observaciones = mg.normaliza(oficioscanalizacion.Observaciones);
             oficioscanalizacion.CanalizacionIdCanalizacion = oficioscanalizacion.CanalizacionIdCanalizacion;
 
-           
-
-
-            //switch (oficioscanalizacion.TipoArchivo)
-            //{
-            //    case "INFORME ALTA":
-            //        // Lógica para "Informe Alta"
-            //        Console.WriteLine("Procesando Informe Alta");
-            //        break;
-            //    case "INFORME":
-            //        // Lógica para "Informe"
-            //        Console.WriteLine("Procesando Informe");
-            //        break;
-            //    case "INFORME DE ASISTENCIA":
-            //        // Lógica para "Informe de Asistencia"
-            //        Console.WriteLine("Procesando Informe de Asistencia");
-            //        break;
-            //    case "SOLICITUD DE INFORME":
-            //        // Lógica para "Solicitud de Informe"
-            //        Console.WriteLine("Procesando Solicitud de Informe");
-            //        break;
-            //    case "CANCELACIÓN DE VINCULACIÓN":
-            //        // Lógica para "Cancelación de Vinculación"
-            //        Console.WriteLine("Procesando Cancelación de Vinculación");
-            //        break;
-            //    case "FICHA DE ANTIDOPING":
-            //        // Lógica para "Ficha de Antidoping"
-            //        Console.WriteLine("Procesando Ficha de Antidoping");
-            //        break;
-            //    case "RESULTADO DE ANTIDOPING":
-            //        // Lógica para "Resultado de Antidoping"
-            //        Console.WriteLine("Procesando Resultado de Antidoping");
-            //        break;
-            //    case "OFICIO ANTIDOPING":
-            //        // Lógica para "Oficio Antidoping"
-            //        Console.WriteLine("Procesando Oficio Antidoping");
-            //        break;
-            //    default:
-            //        Console.WriteLine("Seleccione una opción válida");
-            //        break;
-            //}
 
             return View(oficioscanalizacion);
         }
@@ -1384,6 +1380,24 @@ namespace scorpioweb.Controllers
             }
         }
         #endregion
+
+
+        //#region ListaSeugunCaso2
+
+        //[HttpGet]
+        //public IActionResult ListaPorEstados(string tipo)
+        //{
+        //    if (ListaDinamicaEstados.ContainsKey(tipo))
+        //    {
+        //        var lista = ListaDinamicaEstados[tipo];
+        //        return Json(lista);
+        //    }
+        //    else
+        //    {
+        //        return Json(new List<string>());
+        //    }
+        //}
+        //#endregion
 
     }
 }

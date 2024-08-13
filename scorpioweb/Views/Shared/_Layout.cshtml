@@ -43,6 +43,28 @@
                 toast: true,
                 position: "top-end",
                 showConfirmButton: false,
+                timer: 3000,
+                customClass: {
+                    popup: 'swal2-popup'
+                },
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: message
+            });
+        });
+        
+        connection.on("alertCierreCaso", (message) => {
+            var audio = new Audio('Audio/Notifiacion1.mp3');
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
                 timer: 60000,
                 timerProgressBar: true,
                 didOpen: (toast) => {
@@ -51,9 +73,10 @@
                 }
             });
             Toast.fire({
-                icon: "Nueva Canalización",
-                title: message 
+                icon: "success",
+                title: message
             });
+            audio.play();
         });
     </script>
 
@@ -507,4 +530,24 @@
         }
     }
 </script>
+<style>
+    .separar {
+        margin-top: 10px;
+    }
+
+    .my-toast {
+        font-size: 35px;
+    }
+
+    .my-toast-content {
+        padding: 40px;
+    }
+
+    .swal2-popup {
+        font-size: 1.6rem;
+        max-width: 1000px;
+    }
+
+</style>
+
 
