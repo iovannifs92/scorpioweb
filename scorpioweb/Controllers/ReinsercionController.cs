@@ -1490,6 +1490,57 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -Psicologia- 
+
+        public async Task<IActionResult> Psicologia()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+
+            //var result = (from p in _context.Persona
+            //              join r in _context.Reinsercion on p.IdPersona equals r.IdTabla into pr
+            //              from r in pr.DefaultIfEmpty()
+            //              join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+            //              from c in cr.DefaultIfEmpty()
+            //              join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+            //              join g in _context.Grupo on t.Grupo_idGrupo equals g.IdGrupo
+            //              where g.IdGrupo == 10
+            //                    && t.FechaTerapia == new DateTime(2024, 8, 30, 0, 0, 0)
+            //                    && t.Estado == "Activo"
+            //              orderby p.Nombre + " " + p.Paterno + " " + p.Materno
+            //              select new
+            //              {
+            //                  IdPersona = p.IdPersona,
+            //                  NombreCompleto = p.Nombre + " " + p.Paterno + " " + p.Materno,
+            //                  Horario = g.Horario
+            //              }).ToList();
+
+
+            //ViewData["GurupoAsistencia"] = from p in _context.Persona
+            //                               join r in _context.Reinsercion on p.IdPersona equals r.IdTabla into pr
+            //                               from r in pr.DefaultIfEmpty()
+            //                               join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+            //                               from c in cr.DefaultIfEmpty()
+            //                               join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+            //                               join g in _context.Grupo on t.Grupo_idGrupo equals g.IdGrupo
+            //                               where g.IdGrupo == 10 && t.FechaTerapia == new DateTime(2024, 8, 30, 0, 0, 0) && t.Estado == "Activo"
+            //                               orderby p.Nombre + " " + p.Paterno + " " + p.Materno
+            //                               select new ReinsercionVM
+            //                               {
+            //                                   personaVM = p,
+            //                                   reinsercionVM = r,
+            //                                   canalizacionVM = c,
+            //                                   terapiaVM = t,
+            //                               };
+
+
+
+            return View();
+        }
+        #endregion
+
+
         #region ListaSeugunCaso
 
         [HttpGet]

@@ -10,5 +10,6 @@ namespace scorpioweb.Models
         public string Paterno { get; set; }
         public string Materno { get; set; }
         public string TipoTerapia { get; set; }
+        public string Username { get; set; }
     }
 }
