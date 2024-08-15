@@ -31,6 +31,7 @@ using scorpioweb.Models;
 using Syncfusion.EJ2.Linq;
 
 
+
 namespace scorpioweb.Controllers
 {
     [Authorize]
@@ -379,7 +380,7 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
-        // GET: Reinsercion/Details/5
+   
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -572,19 +573,29 @@ namespace scorpioweb.Controllers
 
         public IActionResult FichaCanalizacion(int idReinsercion, int? id)
         {
-            
-            
-            var grupos = _context.Grupo.ToList();
-            ViewBag.Grupos = grupos;
+            if (idReinsercion == 0 && (id == null || id == 0))
+            {
+                return BadRequest("Id Reinsercion vacio!");
+            }
 
-            var terapeutas = _context.Terapeutas.ToList();
-            ViewBag.Terapeutas = terapeutas;
 
             if (idReinsercion == 0)
                 ViewBag.idReinsercion = id;
             else
                 ViewBag.idReinsercion = idReinsercion;
 
+            int idX = ViewBag.idReinsercion;
+            var existeIdReinsercion = _context.Reinsercion.Where(m=> m.IdReinsercion == idX).FirstOrDefault();
+            if(existeIdReinsercion == null)
+            {
+                return BadRequest("Id Reinsercion no existe en tabla reinsercion!");
+            }
+            var grupos = _context.Grupo.ToList();
+            ViewBag.Grupos = grupos;
+
+            var terapeutas = _context.Terapeutas.ToList();
+            ViewBag.Terapeutas = terapeutas;     
+       
             return View();
         }
 
@@ -609,7 +620,7 @@ namespace scorpioweb.Controllers
                     if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
                         await CrearTerapiaAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
 
-                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION"))
+                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION") || datosFichaCanalizacion.TipoCanalizacion.Equals("JORNADA"))
                         await CrearEjesReinsercionAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
                 }
                 else
@@ -617,7 +628,7 @@ namespace scorpioweb.Controllers
                     if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
                         await CrearTerapiaAsync(idRegistroCanalizacion, datosFichaCanalizacion.Datos);
 
-                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION"))
+                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION") || datosFichaCanalizacion.TipoCanalizacion.Equals("JORNADA"))
                         await CrearEjesReinsercionAsync(idRegistroCanalizacion, datosFichaCanalizacion.Datos);
                 }
                 bool borrar = false;
@@ -632,9 +643,22 @@ namespace scorpioweb.Controllers
                         //viewUrl = Url.Action("EjesReinsercion", "Reinsercion", new { id = datosFichaCanalizacion.IdReinsercion });
 
                         //string viewUrl = string.Empty;
-
-                        viewUrl = Url.Action("EjesReinsercion/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
-
+                        switch (datosFichaCanalizacion.TipoCanalizacion)
+                        {
+                            case "EJESREINSERCION":
+                                viewUrl = Url.Action("EjesReinsercion/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                                break;
+                            case "TERAPIA":
+                                viewUrl = Url.Action("Terapias/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                                break;
+                            case"JORNADA":
+                                     viewUrl = Url.Action("Jornadas/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                                break;
+                            default:
+                                 viewUrl = Url.Action("Reinsercion", "Reinsercion");
+                                break;
+                        }
+                      
                         return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = viewUrl, id = datosFichaCanalizacion.IdReinsercion });
 
                         //return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl});
@@ -650,8 +674,8 @@ namespace scorpioweb.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, responseText = $"Error al crear la ficha: {ex.Message}" });
-            }
+                return Json(new { success = false, responseText = $"Error al crear la ficha: {ex.InnerException}" });
+            }     
         }
 
         #region - ID Canalizacion -
@@ -766,14 +790,17 @@ namespace scorpioweb.Controllers
                             ficha.Tipo = eje;
                         ficha.FechaCanalizacion = DateTime.Now;
                         ficha.Lugar = mg.normaliza(DatosEjesDeserializados.Lugar);
+                        ficha.Area = mg.normaliza(DatosEjesDeserializados.Area);
+                        ficha.FechaLimite = DatosEjesDeserializados.FechaLimite;
                         ficha.FechaProgramada = DatosEjesDeserializados.FechaProgramada;
-
+                        ficha.HorasJornada = mg.normaliza(DatosEjesDeserializados.HorasJornadas);
+                        ficha.NoHoraJornada = DatosEjesDeserializados.NoHoraJornada;
                         if (DatosEjesDeserializados.Observaciones.Equals(""))
                             ficha.Observaciones = "NA";
                         else
                             ficha.Observaciones = mg.normaliza(DatosEjesDeserializados.Observaciones);
 
-                        ficha.Estado = mg.normaliza(DatosEjesDeserializados.Estado);
+                        ficha.Estado = mg.normaliza(DatosEjesDeserializados.Estado);                     
                         ficha.CanalizacionIdCanalizacion = idCanalizacion;
 
                         _context.Ejesreinsercion.Add(ficha);
@@ -1050,7 +1077,7 @@ namespace scorpioweb.Controllers
 
 
         #endregion
-        // GET: Reinsercion/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -1066,9 +1093,6 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
-        // POST: Reinsercion/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdReinsercion,IdTabla,Tabla,Lugar,Estado")] Reinsercion reinsercion)
@@ -1101,62 +1125,8 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
-        #region -Borrar Registro de Reinsercion-
+ 
 
-        [HttpPost]
-        public async Task<JsonResult> BorrarRegistroReinsercion(int idReinsercion)
-        {
-            if(idReinsercion == 0)
-            {
-                return Json(new { success = false, message = "Error, idReinsercion vacio, metodo: BorrarRegistroReinsercion, vista:Reinsercion" });
-
-            }
-
-            // EL idcanalizacion solo puede existir si ya se creo una ficha de canalizacion
-            var TieneCanalizaciones = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == idReinsercion).Select(m => m.IdCanalizacion).CountAsync();
-
-            if (TieneCanalizaciones > 0)
-            {
-                return Json(new { success = false, message = "Error, no se puede borrar el registro por que este ya cuenta con una canalizacion!" });
-            }
-            var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == idReinsercion);
-
-            _context.Reinsercion.Remove(reinsercion);
-             await _context.SaveChangesAsync();
-            
-            return Json(new { success = true, message = "Borrado con exito!"});
-        }
-
-        #endregion
-
-        // GET: Reinsercion/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var reinsercion = await _context.Reinsercion
-        //        .SingleOrDefaultAsync(m => m.IdReinsercion == id);
-        //    if (reinsercion == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(reinsercion);
-        //}
-
-        //// POST: Reinsercion/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == id);
-        //    _context.Reinsercion.Remove(reinsercion);
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
 
         private bool ReinsercionExists(int id)
         {
@@ -1247,6 +1217,34 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -Borrar Registro de Reinsercion-
+
+        [HttpPost]
+        public async Task<JsonResult> BorrarRegistroReinsercion(int idReinsercion)
+        {
+            if (idReinsercion == 0)
+            {
+                return Json(new { success = false, message = "Error, idReinsercion vacio, metodo: BorrarRegistroReinsercion, vista:Reinsercion" });
+
+            }
+
+            // EL idcanalizacion solo puede existir si ya se creo una ficha de canalizacion
+            var TieneCanalizaciones = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == idReinsercion).Select(m => m.IdCanalizacion).CountAsync();
+
+            if (TieneCanalizaciones > 0)
+            {
+                return Json(new { success = false, message = "Error, no se puede borrar el registro por que este ya cuenta con una canalizacion!" });
+            }
+            var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == idReinsercion);
+
+            _context.Reinsercion.Remove(reinsercion);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Borrado con exito!" });
+        }
+
+        #endregion
+
         #region -EjesReincercion-
         public async Task<IActionResult> EjesReinsercion(int? id)
         {
@@ -1271,7 +1269,7 @@ namespace scorpioweb.Controllers
             var datosreincercion  = from r in _context.Reinsercion
                                 join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion
                                 join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion
-                                where r.IdReinsercion == id
+                                where r.IdReinsercion == id && er.Tipo != "JORNADA"
                                 select new ReinsercionVM
                                 {
                                     ejesreinsercionVM = er,
@@ -1317,7 +1315,6 @@ namespace scorpioweb.Controllers
             return View(id);
         }
         #endregion
-
 
         #region -Editar Ejes de reinaercion-
         [HttpPost]
@@ -1576,5 +1573,46 @@ namespace scorpioweb.Controllers
         //}
         //#endregion
 
+        #region -Jornadas -
+        public async Task<IActionResult> Jornadas(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+            if (id == 0)
+            {
+                return BadRequest("id no valido!");
+            }
+
+            int idCanalizacion = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == id).Select(m => m.IdCanalizacion).FirstAsync();
+
+            var jornadas = await(from j in _context.Ejesreinsercion
+                                 where j.CanalizacionIdCanalizacion == idCanalizacion && j.Tipo.Equals("JORNADA")
+                                 select j).ToListAsync();
+
+            var monitoreos = await (from mo in _context.Monitoreo
+                                    join j in jornadas on mo.IdEjeReinsercion equals j.IdejesReinsercion
+                                    select mo).ToListAsync();
+
+            var jornadasMonitoreos = jornadas.Select(j => new JornadasMonitoreoViewModel
+            {
+                Jornadas = j,
+                Monitoreos = monitoreos.Where(mo => mo.IdEjeReinsercion == j.IdejesReinsercion).ToList()
+            }).ToList();
+
+            //var x = await(from j in _context.Ejesreinsercion
+            //        join mo in _context.Monitoreo on j.IdejesReinsercion equals mo.IdEjeReinsercion
+            //        where j.CanalizacionIdCanalizacion == idCanalizacion && j.Tipo.Equals("JORNADA")
+            //        select new JornadasMonitoreoViewModel
+            //        {
+            //            Jornadas = j,
+            //            Monitoreos = mo
+            //        }).ToListAsync();
+
+            return View(jornadasMonitoreos);
+        }
+        #endregion
     }
 }

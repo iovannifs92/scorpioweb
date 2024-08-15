@@ -31,6 +31,7 @@
                             <option selected disabled>Selecciona una opción</option>
                             <option value="TERAPIA">Terapia</option>
                             <option value="EJESREINSERCION">Ejes de reinsercion</option>
+                            <option value="JORNADA">Jornadas</option>
                         </select>
                     </div>
                 </div>
@@ -76,16 +77,10 @@
                         <label class="control-label">Lugar de Canalizacion</label>
                         <input required id="InputLugarEjes" type="text" placeholder="DGEPMS" class="form-control" />
                     </div>
-
-                    <div id="divInputMonitoreo" class="form-group">
-                        <label class="control-label">Monitoreo</label>
-                        <input required id="InputMonitoreoEjes" type="date" class="form-control" />
-                    </div>
-                     <div id="divInputFechaProgramada" class="form-group">
-                        <label class="control-label">Fecha de Programada </label>
+                    <div id="divInputFechaProgramada" class="form-group">
+                        <label class="control-label">Fecha Programada </label>
                         <input required id="InputFechaProgramada" type="date" class="form-control" />
                     </div>
-
                     <div id="divInputObsevarciones" class="form-group">
                         <label class="control-label">Observaciones</label>
                         <input required id="InputObservacionesEjes" type="text" placeholder="Sin observaciones" class="form-control" />
@@ -141,12 +136,12 @@
             <div class="section-content TerapiaPaso3">
                 <div class="ContenidoPrincipalTarjeta">
                     <h2>Datos de la terapia</h2>
-                   @*
-                       SE COMENTO POR QUE EL TIEMPO TOTAL DE  TERAPIA SE VA A OBTENER EN EL CONTROLADOR
+                    @*
+                    SE COMENTO POR QUE EL TIEMPO TOTAL DE  TERAPIA SE VA A OBTENER EN EL CONTROLADOR
 
                     <div class="form-group col-md-6">
-                        <label class="control-label">Tiempo total de la terapia</label>
-                        <input  id="tiempoTerapia" type="text" class="form-control" />
+                    <label class="control-label">Tiempo total de la terapia</label>
+                    <input  id="tiempoTerapia" type="text" class="form-control" />
                     </div> *@
                     <div class="form-group col-md-6">
                         <label class="control-label">Periodicidad de la terapia</label>
@@ -202,12 +197,56 @@
                     <button id="btnFinalizarTerapia" class="step botonFinalizar fa fa-check">  Finalizar ficha</button>
                 </div>
             </div>
+
+            @*JORNADAS*@
+            <div class="section-content JornadasPaso2">
+                <h2>Describe el tipo de jornada</h2>
+                <div class="ContenidoPrincipalTarjeta">
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Selecciona horas o jornadas</label>
+                        <select requiered class="form-control" id="selectHorasJornadas">
+                            <option selected disabled>Seleccione una opción</option>
+                            <option value="HORAS">HORAS</option>
+                            <option value="JORNADAS">JORNADAS</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Cantidad de horas o jornadas</label>
+                        <input required id="cantidadHorasJornadas" type="number" placeholder="Escribe cantidad" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Lugar de las jornadas:</label>
+                        <input required oninput="this.value = this.value.toUpperCase()" id="inputLugarJornadas" type="text" placeholder="Escribe el lugar" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Area de las jornadas:</label>
+                        <input required oninput="this.value = this.value.toUpperCase()" id="inputAreaJornadas" type="text" placeholder="Escribe el area" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Fecha en la que se presenta</label>
+                        <input required id="fProgramadaJornadas" type="date" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label">Fecha estimada de termino</label>
+                        <input required id="fLimiteJornadas" type="date" class="form-control" />
+                    </div>            
+                    <div class="form-group col-md-12">
+                        <label class="control-label">Observaciones</label>
+                        <input required oninput="this.value = this.value.toUpperCase()" id="inputObservacionesJornadas" type="text" placeholder="Sin observaciones" class="form-control" />
+                    </div>
+                </div>
+                <div class="divBotones">
+                    <button class="step botonVolver fa fa-arrow-left" data-value3=".step01" data-value2=".tipoCanalizacion" data-value="0%">   Volver</button>
+                    <button id="btnFinalizarJornadas" class="step botonFinalizar fa fa-check">  Finalizar ficha</button>
+                </div>
+            </div>
+
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src='~/lib/sweetalert/sweetalert2.js'></script>
-    <script >
+    <script>
         $(document).ready(function () {
 
             var divBotonPaso1 = document.getElementById('divBotonPaso1');
@@ -233,6 +272,8 @@
                     generarPasosTerapia();
                 else if (tipoCanalizacion.value === "EJESREINSERCION")
                     generarPasosEjesReinsercion();
+                else if (tipoCanalizacion.value === "JORNADA")
+                    generarPasosJornadas();
             });
 
 
@@ -245,32 +286,32 @@
             var inputOtroEje = document.getElementById('InputOtroEje');
 
             var divInputObsevarciones = document.getElementById('divInputObsevarciones');
-            var inputObservacionesEjes = document.getElementById('InputObservacionesEjes'); 
-            
+            var inputObservacionesEjes = document.getElementById('InputObservacionesEjes');
+
             var divInputLugar = document.getElementById('divInputLugar');
             var inputLugarEjes = document.getElementById('InputLugarEjes');
 
-            var divInputMonitoreo = document.getElementById('divInputMonitoreo');
-            var inputMonitoreoEjes = document.getElementById('InputMonitoreoEjes');
-            
+          
+         
+
             var divInputFechaProgramada = document.getElementById('divInputFechaProgramada');
             var inputFechaProgramada = document.getElementById('InputFechaProgramada');
 
             checkboxesEjes.forEach(function (checkbox) {
                 checkbox.addEventListener('change', function () {
                     var algunCheckboxSeleccionado = Array.from(checkboxesEjes).some(c => c.checked);
-                    if (algunCheckboxSeleccionado){
+                    if (algunCheckboxSeleccionado) {
                         divInputObsevarciones.classList.add('visible');
                         divInputLugar.classList.add('visible');
-                        divInputMonitoreo.classList.add('visible');
+
                         divInputFechaProgramada.classList.add('visible');
-                    }else{
+                    } else {
                         divInputObsevarciones.classList.remove('visible');
                         divInputLugar.classList.remove('visible');
-                        divInputMonitoreo.classList.remove('visible');
+
                         divInputFechaProgramada.classList.remove('visible');
                     }
-                        
+
                 });
             });
 
@@ -396,43 +437,97 @@
                 verificarCampos(campos);
             });
 
+
+            // Variables para Jornadas
+            var selectHorasJornadas = document.getElementById('selectHorasJornadas');
+            var cantidadHorasJornadas = document.getElementById('cantidadHorasJornadas');
+            var inputLugarJornadas = document.getElementById('inputLugarJornadas');
+            var inputAreaJornadas = document.getElementById('inputAreaJornadas');
+            var fLimiteJornadas = document.getElementById('fLimiteJornadas');
+            var fProgramadaJornadas = document.getElementById('fProgramadaJornadas');
+            var inputObservacionesJornadas = document.getElementById('inputObservacionesJornadas');
+          
+            $("#btnFinalizarJornadas").on('click', function () {
+                var todoVerificado = VerificarCamposJornadas();
+                if (todoVerificado)
+                    SweetAlertFinalizarFicha();
+                else
+                    SweetAlert("Error", "Selecciona un tipo de servico o especifica el servicio", "error");
+            });
+
+            function VerificarCamposJornadas() {
+                // Obtener los valores de los campos
+                var horasJornadas = selectHorasJornadas.value.trim();
+                var cantidadHoras = cantidadHorasJornadas.value.trim();
+                var lugarJornadas = inputLugarJornadas.value.trim();
+                var areaJornadas = inputAreaJornadas.value.trim();
+                var fechaLimite = fLimiteJornadas.value.trim();
+                var fechaProgramada = fLimiteJornadas.value.trim();
+                var observacionesJornadas = inputObservacionesJornadas.value.trim();
+
+                // Verificar que todos los campos obligatorios no estén vacíos
+                if (horasJornadas === "" || cantidadHoras === "" || lugarJornadas === "" || areaJornadas === "" || fechaLimite === "") {
+                    return false; // Si algún campo está vacío, la verificación falla
+                }
+
+                return true; // Si todos los campos están llenos, la verificación es exitosa
+            }
+
             function generarPasosTerapia() {
 
                 $("#divBotonPaso1").html(`
-                                     <button  class="step botonSiguiente fa fa-arrow-right" data-value3=".step04" data-value2=".TerapiaPaso2" data-value="50%" style="margin-right: 20px;">  Siguiente</button>
-                                `);
+                                                     <button  class="step botonSiguiente fa fa-arrow-right" data-value3=".step04" data-value2=".TerapiaPaso2" data-value="50%" style="margin-right: 20px;">  Siguiente</button>
+                                                `);
                 $("#ProgresionPasos").html(`
-                                     <li class="step01 active">
-                                         <div class="step-inner">Terapia</div>
-                                     </li>
-                                     <li  class="step02" style="list-style: none; visibility: hidden;"></li>
-                                     <li class="step03">
-                                         <div class="step-inner">Tipo de terapia</div>
-                                     </li>
-                                     <li class="step04" style="list-style: none; visibility: hidden;">
-                                     </li>
-                                     <li class="step05">
-                                         <div class="step-inner">Datos de terapia</div>
-                                     </li>
-                                `);
+                                                     <li class="step01 active">
+                                                         <div class="step-inner">Terapia</div>
+                                                     </li>
+                                                     <li  class="step02" style="list-style: none; visibility: hidden;"></li>
+                                                     <li class="step03">
+                                                         <div class="step-inner">Tipo de terapia</div>
+                                                     </li>
+                                                     <li class="step04" style="list-style: none; visibility: hidden;">
+                                                     </li>
+                                                     <li class="step05">
+                                                         <div class="step-inner">Datos de terapia</div>
+                                                     </li>
+                                                `);
                 mostrarPasosAnimacion(250);
             }
 
             function generarPasosEjesReinsercion() {
                 $("#divBotonPaso1").html(`
-                                   <button  class="step botonSiguiente fa fa-arrow-right" data-value3=".step05" data-value2=".EjesPaso2" data-value="100%" style="margin-right: 20px;">  Siguiente</button>
-                                `);
+                                                   <button  class="step botonSiguiente fa fa-arrow-right" data-value3=".step05" data-value2=".EjesPaso2" data-value="100%" style="margin-right: 20px;">  Siguiente</button>
+                                                `);
                 $("#ProgresionPasos").html(`
-                                    <li class="step01 active">
-                                        <div class="step-inner">Ejes de reinsercion</div>
-                                    </li>
-                                    <li  class="step02" style="list-style: none; visibility: hidden;"></li>
-                                    <li  class="step03" style="list-style: none; visibility: hidden;"></li>
-                                    <li  class="step04" style="list-style: none; visibility: hidden;"></li>
-                                    <li class="step05">
-                                       <div class="step-inner">Servicios de vinculacion</div>
-                                    </li>
-                                `);
+                                                    <li class="step01 active">
+                                                        <div class="step-inner">Ejes de reinsercion</div>
+                                                    </li>
+                                                    <li  class="step02" style="list-style: none; visibility: hidden;"></li>
+                                                    <li  class="step03" style="list-style: none; visibility: hidden;"></li>
+                                                    <li  class="step04" style="list-style: none; visibility: hidden;"></li>
+                                                    <li class="step05">
+                                                       <div class="step-inner">Servicios de vinculacion</div>
+                                                    </li>
+                                                `);
+                mostrarPasosAnimacion(120);
+            }
+
+            function generarPasosJornadas() {
+                $("#divBotonPaso1").html(`
+                                                           <button  class="step botonSiguiente fa fa-arrow-right" data-value3=".step05" data-value2=".JornadasPaso2" data-value="100%" style="margin-right: 20px;">  Siguiente</button>
+                                                        `);
+                $("#ProgresionPasos").html(`
+                                                            <li class="step01 active">
+                                                                <div class="step-inner">Jornadas</div>
+                                                            </li>
+                                                            <li  class="step02" style="list-style: none; visibility: hidden;"></li>
+                                                            <li  class="step03" style="list-style: none; visibility: hidden;"></li>
+                                                            <li  class="step04" style="list-style: none; visibility: hidden;"></li>
+                                                            <li class="step05">
+                                                               <div class="step-inner">Datos Jornada</div>
+                                                            </li>
+                                                        `);
                 mostrarPasosAnimacion(120);
             }
 
@@ -483,7 +578,7 @@
                 //variable que se llena para el modelo DatosFichaCanalizacion
 
                 var datosFichaCanalizacion = { TipoCanalizacion: tipoCanalizacion.value, IdReinsercion: idReinsercion, datos: null };
-
+          
                 if (tipoCanalizacion.value === "TERAPIA") {
                     var tiposTerapiaSeleccionados = Array.from(checkboxesTerapia)
                         .filter(checkbox => checkbox.checked)
@@ -515,13 +610,33 @@
                         EspecificarOtroEje: inputOtroEje.value,
                         Observaciones: inputObservacionesEjes.value,
                         Lugar: inputLugarEjes.value,
-                        Monitoreo: inputMonitoreoEjes.value,
-                        Fechaprogramada: inputFechaProgramada.value,
+                        Area: "NA",
+                        FechaProgramada: inputFechaProgramada.value,
+                        HorasJornadas: "NA",
+                        NoHoraJornada: 0,
                         Estado: estado,
                         FechaCanalizacion: new Date()
                     };
                 }
-
+                else if (tipoCanalizacion.value === "JORNADA") {
+               
+                    var ejesSeleccionados = ["JORNADA"];
+                    datosFichaCanalizacion.datos = {
+                        EjesSeleccionados: ejesSeleccionados,
+                        EspecificarOtroEje: "",
+                        Observaciones: inputObservacionesJornadas.value,
+                        Lugar: inputLugarJornadas.value,
+                        Area: inputAreaJornadas.value,
+                        FechaProgramada: fProgramadaJornadas.value,
+                        Estado: estado,
+                        FechaCanalizacion: new Date(),
+                        FechaLimite: fLimiteJornadas.value,
+                        HorasJornadas: selectHorasJornadas.value,
+                        NoHoraJornada: cantidadHorasJornadas.value
+                    };
+                    alert("HOLA");
+                }
+                alert("2");
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -530,12 +645,18 @@
                     contentType: 'application/json; charset=utf-8',
                     data: JSON.stringify(datosFichaCanalizacion),
                     success: function (response) {
-                        //PENDIENTE: POSIBLEMENTE DEBE DE REDIRIGIR A OTRA VISTA
-                        Swal.fire("Éxito", response.responseText, "success");
+                        if (response.success) {
+                            //PENDIENTE: POSIBLEMENTE DEBE DE REDIRIGIR A OTRA VISTA
+                            Swal.fire("Éxito", response.responseText, "success");
 
-                        setTimeout(function () {
-                            window.location.href = response.viewUrl;
-                        }, 1700);
+                            setTimeout(function () {
+                                window.location.href = response.viewUrl;
+                            }, 1700);
+                        }
+                        else{
+                            Swal.fire("Error", response.responseText, "error");
+                        }
+                     
                     },
                     error: function (xhr, status, error) {
                         console.error('Error al enviar datos al controlador:', status, error);

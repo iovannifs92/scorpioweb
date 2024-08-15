@@ -1,0 +1,445 @@
+﻿@model IEnumerable<scorpioweb.Models.JornadasMonitoreoViewModel>
+@{
+    ViewBag.Title = "Jornadas";
+
+}
+<style>
+    .TituloPrincipal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 40rem;
+        width: 100%;
+        max-width: fit-content;
+        margin-inline: auto;
+        position: relative;
+        top: 5px;
+    }
+
+        .TituloPrincipal h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .TituloPrincipal .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .TituloPrincipal button {
+            position: absolute;
+            bottom: 15px;
+            right: 0;
+            padding: 10px 16px;
+        }
+
+    .panelJornada {
+        appearance: none;
+        background-color: #44BBA4;
+        border: 2px solid #957D95;
+        border-radius: 0px;
+        box-sizing: border-box;
+        color: #000000;
+        cursor: pointer;
+        display: inline-block;
+        font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+        font-size: 20px;
+        font-weight: 800;
+        line-height: normal;
+        margin: 0;
+        min-height: 60px;
+        min-width: 0;
+        outline: none;
+        padding: 12px 20px;
+        text-align: center;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 300ms cubic-bezier(.50, 2, 0.32, 1);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        width: 100%;
+        will-change: transform;
+    }
+
+        .panelJornada:disabled {
+            pointer-events: none;
+        }
+
+        .panelJornada:hover {
+            box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+            transform: translateY(-2px);
+        }
+
+        .panelJornada:active {
+            box-shadow: none;
+            transform: translateY(0);
+        }
+
+        .panelJornada a {
+            position: absolute;
+            bottom: 0.8rem;
+            right: 4rem;
+            padding: 10px 16px;
+        }
+
+
+    .mi-tabla-bordes {
+        border: .3rem solid black;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        .mi-tabla-bordes thead {
+            border-bottom: .3rem solid black;
+        }
+
+            .mi-tabla-bordes thead tr {
+                border-bottom: .3rem solid black;
+            }
+
+        .mi-tabla-bordes th,
+        .mi-tabla-bordes td {
+            padding: 8px;
+            text-align: left;
+            align-content: center;
+            border: 2rem solid black;
+        }
+
+        .mi-tabla-bordes td {
+            border: 1px solid black;
+        }
+
+        .mi-tabla-bordes .Titulo {
+            text-align: right;
+            background-color: lightgray;
+            font-weight: 700;
+        }
+
+    .my-toast {
+        font-size: 35px;
+    }
+
+    .my-toast-content {
+        padding: 40px;
+    }
+
+    .swal2-popup {
+        font-size: 1.6rem;
+        max-width: 800px;
+    }
+</style>
+
+<div class="TituloPrincipal">
+    <div class="header">
+        <h1>Jornadas</h1>
+        <button class="btn btn-primary"
+        @* onclick="showModal('@Url.Action("ModalAgregarTerapia", "Reinsercion")', 'Nueva Terapia', '@ViewBag.idReinsercion')" *@>
+            <i class="fa fa-plus"></i> Añadir jornada
+        </button>
+    </div>
+</div>
+@foreach (var jornada in Model.GroupBy(t => t.Jornadas.IdejesReinsercion))
+{
+    <div style="padding-top: 20px;">
+        <div class="container">
+            <div class="panel-group">
+                <div class="panel" style="border-color:#fff;">
+                    <div class="panel-heading panelJornada" data-toggle="collapse" href="#collapse1_@jornada.Key">
+                        <h2 class="panel-title">
+                            Id jornada: @jornada.Key  <br />Lugar: @jornada.First().Jornadas.Lugar
+                        </h2>
+                        <a type="button" onclick="deleteJornada(event)">
+                            <i style="font-size:30px; color: red;" title="Borrar terapia" class="fa fa-trash"></i>
+                        </a>
+                    </div>
+
+                    <div id="collapse1_@jornada.Key" class="panel-collapse collapse" style="padding-top: 1%;">
+                        <input style="display:none;" id="idJornada_@jornada.Key" value="@jornada.First().Jornadas.IdejesReinsercion" />
+                        <table class="table table-bordered mi-tabla-bordes">
+                            <thead>
+                                <tr>
+                                    <th colspan="6" style="text-align: center; font-weight: 700;background-color:#d8e4f2;">
+                                        <h3>Datos completos de la jornada:</h3>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="Titulo">Id jornada:</td>
+                                    <td>@jornada.First().Jornadas.IdejesReinsercion</td>
+                                    <td class="Titulo">Lugar de la jornada:</td>
+                                    <td><input type="text" class="form-control" value="@jornada.First().Jornadas.Lugar" id="Lugar_@jornada.Key"></td>
+                                    <td class="Titulo">Area de la jornada:</td>
+                                    <td><input type="text" class="form-control" value="@jornada.First().Jornadas.Area" id="Area_@jornada.Key"></td>
+            
+                                </tr>
+                                <tr>
+                                    <td class="Titulo">Fecha de canalizacion:</td>
+                                    <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaCanalizacion)" id="FechaCanalizacion_@jornada.Key"></td>
+                                    <td class="Titulo">Fecha programada:</td>
+                                    <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaProgramada)" id="FechaProgramada_@jornada.Key"></td>
+                                    <td class="Titulo">Fecha limite:</td>
+                                    <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaLimite)" id="FechaLimite_@jornada.Key"></td>
+                                </tr>
+                                <tr>          
+                                    <td class="Titulo">Estado:</td>
+                                    <td>
+                                        <select class="form-control" id="Estado_@jornada.Key">
+                                            <option value="@jornada.First().Jornadas.Estado">@jornada.First().Jornadas.Estado</option>
+                                            @if (jornada.First().Jornadas.Estado != "ACTIVO")
+                                            {
+                                                <option value="ACTIVO">ACTIVO</option>
+                                            }
+                                            @if (jornada.First().Jornadas.Estado != "CUMPLIO")
+                                            {
+                                                <option value="CUMPLIO">CUMPLIO</option>
+                                            }
+                                            @if (jornada.First().Jornadas.Estado != "CANCELADO")
+                                            {
+                                                <option value="CANCELADO">CANCELADO</option>
+                                            }
+                                            @if (jornada.First().Jornadas.Estado != "ESPERA")
+                                            {
+                                                <option value="ESPERA">ESPERA</option>
+                                            }
+                                        @if (jornada.First().Jornadas.Estado != "CONCLUIDO")
+                                            {
+                                                <option value="CONCLUIDO">CONCLUIDO</option>
+                                            }
+                                        </select>
+                                    </td>                             
+                                    <td class="Titulo">Horas / Jornadas:</td>
+                                    <td>
+                                        <select class="form-control" id="HorasJornada_@jornada.Key">
+                                            <option value="@jornada.First().Jornadas.HorasJornada">@jornada.First().Jornadas.HorasJornada</option>
+                                            @if (jornada.First().Jornadas.HorasJornada.Equals("HORAS"))
+                                            {
+                                                <option value="JORNADAS">JORNADAS</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="JORNADAS">JORNADAS</option>
+                                            }
+
+                                        </select>
+                                         
+                                      </td>
+                                    <td class="Titulo">Cantidad de horas/jornadas:</td>
+                                    <td><input type="text" class="form-control" value="@jornada.First().Jornadas.NoHoraJornada" id="NoHoraJornada_@jornada.Key"></td>
+                                </tr>
+                                <tr>
+          
+                                    <td class="Titulo">Observaciones:</td>
+                                    <td colspan="5"><input type="text" class="form-control" value="@jornada.First().Jornadas.Observaciones" id="Observaciones_@jornada.Key"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table style="margin-top:2rem;" class="table table-bordered mi-tabla-bordes">
+                            <thead>
+                                <tr>
+                                    <th colspan="6" style="text-align: center; font-weight: 700; background-color:#d8e4f2;;">
+                                        <h3>Monitoreos:</h3>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>Id Monitoreo</th>
+                                    <th>Comentario</th>
+                                    <th>Fecha</th>
+                                    <th>Metodo verificacion</th>
+                                    <th>idEjesReinsercion</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var monitoreo in Model.SelectMany(m=>m.Monitoreos))
+                                {                                    
+                                    <tr >
+                                        <td>@monitoreo.Idmonitoreo</td>
+                                        <td>@monitoreo.Comentario</td>
+                                        <td>@monitoreo.fecha</td>
+                                        <td>@monitoreo.</td>
+                                        <td>@monitoreo.TerapiaIdTerapia</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        var id = $('#idJornada').val();
+        var isProcessing = false;
+        
+        $('.panel-heading').click(function () {
+            var target = $(this).attr('href');
+            $('.panel-collapse').not(target).collapse('hide');
+        });
+
+        function handleBlurOrChange(event, nombreCampo) {
+            if (isProcessing) return;
+            isProcessing = true;
+            var idTerapia = $(event.target).attr('id').split('_')[1];
+            var inputValue = $(event.target).val();
+            AjaxActualizarTerapia(idTerapia, inputValue, nombreCampo);
+            setTimeout(function () {
+                isProcessing = false;
+            }, 300);
+        }
+
+        $('select[id^="Estado_"]').change(function (event) {
+            handleBlurOrChange(event, 'Estado');
+        });
+
+        $('input[id^="FechaCanalizacion_"]').blur(function (event) {
+            handleBlurOrChange(event, 'FechaCanalizacion');
+        });
+
+      
+      
+    });
+    // function AjaxActualizarJornada(idJornada, valor, nombreCampo) {
+
+    //     $.ajax({
+    //         dataType: "json",
+    //         url: "/Reinsercion/ActualizarJornada",
+    //         type: "POST",
+    //         data: { idTerapia: idTerapia, valor: valor, NombreCampo: nombreCampo },
+    //         success: function (response) {
+    //             var Toast = Swal.mixin({
+    //                 toast: true,
+    //                 position: "top-end",
+    //                 showConfirmButton: false,
+    //                 timer: 2500,
+    //                 didOpen: (toast) => {
+    //                     toast.addEventListener('mouseenter', Swal.stopTimer);
+    //                     toast.addEventListener('mouseleave', Swal.resumeTimer);
+    //                 }
+    //             });
+    //             Toast.fire({
+    //                 icon: "success",
+    //                 title: "Éxito: " + response.message,
+    //                 customClass: {
+    //                     popup: 'my-toast',
+    //                     content: 'my-toast-content'
+    //                 }
+    //             });
+
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error("Error:", error);
+    //             var errorMessage = "Error al procesar la solicitud.";
+
+    //             // Verificar si hay un mensaje de error específico en la respuesta JSON
+    //             if (xhr.responseJSON && xhr.responseJSON.message) {
+    //                 errorMessage = xhr.responseJSON.message;
+    //             }
+    //             Swal.fire({
+    //                 icon: "error",
+    //                 title: "ERROR",
+    //                 text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+    //                 footer: errorMessage, // Mostrar el mensaje específico del servidor como pie de página
+    //                 customClass: {
+    //                     popup: 'my-custom-popup',
+    //                     content: 'my-custom-content'
+    //                 }
+    //             });
+    //         }
+    //     });
+
+    // };
+
+
+    // function deleteJornada(event, idTerapia) {
+    //     event.stopPropagation(); // Evita que el botón colapse el panel
+    //     // Aquí puedes agregar la lógica para eliminar la terapia
+
+    //     Swal.fire({
+    //         title: "¿Deseas eliminar la terapia con id:" + idTerapia + "?",
+    //         text: "No podras revertir esto!",
+    //         icon: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonColor: "#3085d6",
+    //         cancelButtonColor: "#d33",
+    //         confirmButtonText: "Si, eliminar",
+    //         cancelButtonText: "Cancelar"
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             $.ajax({
+    //                 url: '/Reinsercion/EliminarTerapia',
+    //                 type: 'POST',
+    //                 data: { idTerapia: idTerapia },
+    //                 success: function (response) {
+    //                     if (response.success) {
+    //                         Swal.fire({
+    //                             icon: 'success',
+    //                             title: '¡Terapia eliminada exitosamente!',
+    //                             showConfirmButton: false,
+    //                             timer: 1200,
+    //                             customClass: {
+    //                                 popup: 'my-custom-popup',
+    //                                 content: 'my-custom-content'
+    //                             }
+    //                         }).then(() => {
+    //                             location.reload();
+    //                         });
+    //                     } else {
+    //                         Swal.fire({
+    //                             icon: 'error',
+    //                             title: 'Error',
+    //                             text: 'Error: ' + response.message,
+    //                             customClass: {
+    //                                 popup: 'my-custom-popup',
+    //                                 content: 'my-custom-content'
+    //                             }
+    //                         });
+    //                     }
+    //                 },
+    //                 error: function (error) {
+    //                     console.error("Error:", error);
+    //                     var errorMessage = "Error al procesar la solicitud.";
+
+    //                     // Verificar si hay un mensaje de error específico en la respuesta JSON
+    //                     if (xhr.responseJSON && xhr.responseJSON.message) {
+    //                         errorMessage = xhr.responseJSON.message;
+    //                     }
+    //                     Swal.fire({
+    //                         icon: "error",
+    //                         title: "ERROR",
+    //                         text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+    //                         footer: errorMessage,
+    //                         customClass: {
+    //                             popup: 'my-custom-popup',
+    //                             content: 'my-custom-content'
+    //                         }
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //     });
+    // }
+
+
+
+    // showModal = (url, title, id) => {
+    //     $.ajax({
+    //         type: "GET",
+    //         url: url + "?idReinsercion=" + id,
+    //         success: function (res) {
+    //             $("#form-modal .modal-body").html(res);
+    //             $("#form-modal .modal-title").html(title);
+    //             $("#form-modal").modal('show');
+    //             $("#form-modal").find(".modal-dialog").removeClass("modal-lg modal-sm").addClass("modal-lg");
+    //         },
+    //         error: function (res) {
+
+    //         }
+    //     })
+    // };
+</script>
