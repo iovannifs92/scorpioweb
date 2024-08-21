@@ -126,320 +126,584 @@
         padding: 40px;
     }
 
+    /* Personaliza el tamaño de la alerta */
     .swal2-popup {
-        font-size: 1.6rem;
-        max-width: 800px;
+        font-size: 1.6rem; /* Ajusta el tamaño de fuente */
+        width: 600px !important; /* Ajusta el ancho */
+        height: auto !important; /* Ajusta la altura automáticamente */
     }
 </style>
 
-<div class="TituloPrincipal">
-    <div class="header">
-        <h1>Jornadas</h1>
-        <button class="btn btn-primary"
-        @* onclick="showModal('@Url.Action("ModalAgregarTerapia", "Reinsercion")', 'Nueva Terapia', '@ViewBag.idReinsercion')" *@>
-            <i class="fa fa-plus"></i> Añadir jornada
-        </button>
-    </div>
-</div>
-@foreach (var jornada in Model.GroupBy(t => t.Jornadas.IdejesReinsercion))
+<input type="text" style="display:none;" value="@ViewBag.idCanalizacion" id="IdCanalizacion" />
+
+@if (Model.Any())
 {
-    <div style="padding-top: 20px;">
-        <div class="container">
-            <div class="panel-group">
-                <div class="panel" style="border-color:#fff;">
-                    <div class="panel-heading panelJornada" data-toggle="collapse" href="#collapse1_@jornada.Key">
-                        <h2 class="panel-title">
-                            Id jornada: @jornada.Key  <br />Lugar: @jornada.First().Jornadas.Lugar
-                        </h2>
-                        <a type="button" onclick="deleteJornada(event)">
-                            <i style="font-size:30px; color: red;" title="Borrar terapia" class="fa fa-trash"></i>
-                        </a>
-                    </div>
+    <div class="TituloPrincipal">
+        <div class="header">
+            <h1>Jornadas</h1>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#ModalJornada">
+                <i class="fa fa-plus"></i> Añadir jornada
+            </button>
+        </div>
+    </div>
+    @foreach (var jornada in Model.GroupBy(t => t.Jornadas.IdejesReinsercion))
+    {
+        <div style="padding-top: 20px;">
+            <div class="container">
+                <div class="panel-group">
+                    <div class="panel" style="border-color:#fff;">
+                        <div class="panel-heading panelJornada" data-toggle="collapse" href="#collapse1_@jornada.Key">
+                            <h2 class="panel-title">
+                                Id jornada: @jornada.Key  <br />Lugar: @jornada.First().Jornadas.Lugar
+                            </h2>
+                            <a type="button" onclick="BorrarJornada(event,@jornada.Key)">
+                                <i style="font-size:30px; color: red;" title="Borrar Jornada" class="fa fa-trash"></i>
+                            </a>
+                        </div>
 
-                    <div id="collapse1_@jornada.Key" class="panel-collapse collapse" style="padding-top: 1%;">
-                        <input style="display:none;" id="idJornada_@jornada.Key" value="@jornada.First().Jornadas.IdejesReinsercion" />
-                        <table class="table table-bordered mi-tabla-bordes">
-                            <thead>
-                                <tr>
-                                    <th colspan="6" style="text-align: center; font-weight: 700;background-color:#d8e4f2;">
-                                        <h3>Datos completos de la jornada:</h3>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="Titulo">Id jornada:</td>
-                                    <td>@jornada.First().Jornadas.IdejesReinsercion</td>
-                                    <td class="Titulo">Lugar de la jornada:</td>
-                                    <td><input type="text" class="form-control" value="@jornada.First().Jornadas.Lugar" id="Lugar_@jornada.Key"></td>
-                                    <td class="Titulo">Area de la jornada:</td>
-                                    <td><input type="text" class="form-control" value="@jornada.First().Jornadas.Area" id="Area_@jornada.Key"></td>
-            
-                                </tr>
-                                <tr>
-                                    <td class="Titulo">Fecha de canalizacion:</td>
-                                    <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaCanalizacion)" id="FechaCanalizacion_@jornada.Key"></td>
-                                    <td class="Titulo">Fecha programada:</td>
-                                    <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaProgramada)" id="FechaProgramada_@jornada.Key"></td>
-                                    <td class="Titulo">Fecha limite:</td>
-                                    <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaLimite)" id="FechaLimite_@jornada.Key"></td>
-                                </tr>
-                                <tr>          
-                                    <td class="Titulo">Estado:</td>
-                                    <td>
-                                        <select class="form-control" id="Estado_@jornada.Key">
-                                            <option value="@jornada.First().Jornadas.Estado">@jornada.First().Jornadas.Estado</option>
-                                            @if (jornada.First().Jornadas.Estado != "ACTIVO")
-                                            {
-                                                <option value="ACTIVO">ACTIVO</option>
-                                            }
-                                            @if (jornada.First().Jornadas.Estado != "CUMPLIO")
-                                            {
-                                                <option value="CUMPLIO">CUMPLIO</option>
-                                            }
-                                            @if (jornada.First().Jornadas.Estado != "CANCELADO")
-                                            {
-                                                <option value="CANCELADO">CANCELADO</option>
-                                            }
-                                            @if (jornada.First().Jornadas.Estado != "ESPERA")
-                                            {
-                                                <option value="ESPERA">ESPERA</option>
-                                            }
-                                        @if (jornada.First().Jornadas.Estado != "CONCLUIDO")
-                                            {
-                                                <option value="CONCLUIDO">CONCLUIDO</option>
-                                            }
-                                        </select>
-                                    </td>                             
-                                    <td class="Titulo">Horas / Jornadas:</td>
-                                    <td>
-                                        <select class="form-control" id="HorasJornada_@jornada.Key">
-                                            <option value="@jornada.First().Jornadas.HorasJornada">@jornada.First().Jornadas.HorasJornada</option>
-                                            @if (jornada.First().Jornadas.HorasJornada.Equals("HORAS"))
-                                            {
-                                                <option value="JORNADAS">JORNADAS</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="JORNADAS">JORNADAS</option>
-                                            }
+                        <div id="collapse1_@jornada.Key" class="panel-collapse collapse" style="padding-top: 1%;">
+                            @{
+                                var jornadaKey = jornada.Key; // Make sure 'jornada' is correctly defined in your Razor context
+                            }
+                            <input style="display:none;" id="idJornada_@(jornada.Key)" value="@jornada.First().Jornadas.IdejesReinsercion" />
 
-                                        </select>
-                                         
-                                      </td>
-                                    <td class="Titulo">Cantidad de horas/jornadas:</td>
-                                    <td><input type="text" class="form-control" value="@jornada.First().Jornadas.NoHoraJornada" id="NoHoraJornada_@jornada.Key"></td>
-                                </tr>
-                                <tr>
-          
-                                    <td class="Titulo">Observaciones:</td>
-                                    <td colspan="5"><input type="text" class="form-control" value="@jornada.First().Jornadas.Observaciones" id="Observaciones_@jornada.Key"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table style="margin-top:2rem;" class="table table-bordered mi-tabla-bordes">
-                            <thead>
-                                <tr>
-                                    <th colspan="6" style="text-align: center; font-weight: 700; background-color:#d8e4f2;;">
-                                        <h3>Monitoreos:</h3>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th>Id Monitoreo</th>
-                                    <th>Comentario</th>
-                                    <th>Fecha</th>
-                                    <th>Metodo verificacion</th>
-                                    <th>idEjesReinsercion</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var monitoreo in Model.SelectMany(m=>m.Monitoreos))
-                                {                                    
-                                    <tr >
-                                        <td>@monitoreo.Idmonitoreo</td>
-                                        <td>@monitoreo.Comentario</td>
-                                        <td>@monitoreo.fecha</td>
-                                        <td>@monitoreo.</td>
-                                        <td>@monitoreo.TerapiaIdTerapia</td>
+                            <table class="table table-bordered mi-tabla-bordes">
+                                <thead>
+                                    <tr>
+                                        <th colspan="6" style="text-align: center; font-weight: 700;background-color:#d8e4f2;">
+                                            <h3>Datos completos de la jornada: </h3>
+                                        </th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="Titulo">Id jornada:</td>
+                                        <td>@jornada.First().Jornadas.IdejesReinsercion</td>
+                                        <td class="Titulo">Lugar de la jornada:</td>
+                                        <td><input type="text" class="form-control" value="@jornada.First().Jornadas.Lugar" id="Lugar_@jornada.Key"></td>
+                                        <td class="Titulo">Area de la jornada:</td>
+                                        <td><input type="text" class="form-control" value="@jornada.First().Jornadas.Area" id="Area_@jornada.Key"></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="Titulo">Fecha de canalizacion:</td>
+                                        <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaCanalizacion)" id="FechaCanalizacion_@jornada.Key"></td>
+                                        <td class="Titulo">Fecha programada:</td>
+                                        <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaProgramada)" id="FechaProgramada_@jornada.Key"></td>
+                                        <td class="Titulo">Fecha limite:</td>
+                                        <td><input type="date" class="form-control" value="@String.Format("{0:yyyy-MM-dd}", jornada.First().Jornadas.FechaLimite)" id="FechaLimite_@jornada.Key"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="Titulo">Estado:</td>
+                                        <td>
+                                            <select class="form-control" id="Estado_@jornada.Key">
+                                                <option value="@jornada.First().Jornadas.Estado">@jornada.First().Jornadas.Estado</option>
+                                                @if (jornada.First().Jornadas.Estado != "ACTIVO")
+                                                {
+                                                    <option value="ACTIVO">ACTIVO</option>
+                                                }
+                                                @if (jornada.First().Jornadas.Estado != "CUMPLIO")
+                                                {
+                                                    <option value="CUMPLIO">CUMPLIO</option>
+                                                }
+                                                @if (jornada.First().Jornadas.Estado != "CANCELADO")
+                                                {
+                                                    <option value="CANCELADO">CANCELADO</option>
+                                                }
+                                                @if (jornada.First().Jornadas.Estado != "ESPERA")
+                                                {
+                                                    <option value="ESPERA">ESPERA</option>
+                                                }
+                                                @if (jornada.First().Jornadas.Estado != "CONCLUIDO")
+                                                {
+                                                    <option value="CONCLUIDO">CONCLUIDO</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td class="Titulo">Horas / Jornadas:</td>
+                                        <td>
+                                            <select class="form-control" id="HorasJornada_@jornada.Key">
+                                                <option value="@jornada.First().Jornadas.HorasJornada">@jornada.First().Jornadas.HorasJornada</option>
+                                                @if (jornada.First().Jornadas.HorasJornada.Equals("HORAS"))
+                                                {
+                                                    <option value="JORNADAS">JORNADAS</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="JORNADAS">JORNADAS</option>
+                                                }
+
+                                            </select>
+
+                                        </td>
+                                        <td class="Titulo">Cantidad de horas/jornadas:</td>
+                                        <td><input type="text" class="form-control" value="@jornada.First().Jornadas.NoHoraJornada" id="NoHoraJornada_@jornada.Key"></td>
+                                    </tr>
+                                    <tr>
+
+                                        <td class="Titulo">Observaciones:</td>
+                                        <td colspan="5"><input type="text" class="form-control" value="@jornada.First().Jornadas.Observaciones" id="Observaciones_@jornada.Key"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table style="margin-top:2rem;" class="table table-bordered mi-tabla-bordes">
+                                <thead>
+                                    <tr>
+                                        <th colspan="6" style="text-align: center; font-weight: 700; background-color:#d8e4f2;;">
+                                            <div class="TituloPrincipal">
+                                                <div class="header">
+                                                    <h3>Monitoreos</h3>
+                                                    <button class="btn btn-primary" type="button" onclick="abrirModalMonitoreo(@jornadaKey)">
+                                                        <i class="fa fa-plus"></i> Añadir monitoreo
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>Id Monitoreo</th>
+                                        <th>Comentario</th>
+                                        <th>Fecha</th>
+                                        <th>Metodo verificacion</th>
+                                        <th>idEjesReinsercion</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.SelectMany(m => m.Monitoreos).Any(m => m.IdEjeReinsercion == jornada.Key))
+                                    {
+                                        @foreach (var monitoreo in Model.SelectMany(m => m.Monitoreos).Where(m => m.IdEjeReinsercion == jornada.Key))
+                                        {
+                                            <tr>
+                                                <td>@monitoreo.Idmonitoreo</td>
+                                                <td>@monitoreo.Comentario</td>
+                                                <td>@monitoreo.Fecha</td>
+                                                <td>@monitoreo.MetodoVerificacion</td>
+                                                <td>@monitoreo.IdEjeReinsercion</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr style="background-color:#db635a;;">
+                                            <td></td>
+                                            <td>Sin monitoreos</td>
+                                            <td>Sin monitoreos</td>
+                                            <td>Sin monitoreos</td>
+                                            <td>Sin monitoreos</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    }
+
+}
+else
+{
+    <div class="TituloPrincipal">
+        <div class="header">
+            <h1>Sin jornadas registradas</h1>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#ModalJornada">
+                <i class="fa fa-plus"></i> Añadir jornada
+            </button>
+        </div>
     </div>
 }
 
+
+<!-- Modal añadir JORNADA -->
+<div class="modal fade" id="ModalJornada" tabindex="-1" role="dialog" aria-labelledby="ModalJornada" style="overflow-y: scroll; background-color: rgba(0, 0, 0, 0.5)" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" id="exampleModalLabel" style="font-size: 30px; color:#fff;">Añadir Jornada</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-md-12">
+                    <label class="control-label">Estado de la jornada:</label>
+                    <select class="form-control" id="selectEstadoJornadasModal">
+                        <option value="ACTIVO">ACTIVO</option>
+                        <option value="CUMPLIO">CUMPLIO</option>
+                        <option value="CANCELADO">CANCELADO</option>
+                        <option value="ESPERA">ESPERA</option>
+                        <option value="CONCLUIDO">CONCLUIDO</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Selecciona horas o jornadas</label>
+                    <select requiered class="form-control" id="selectHorasJornadasModal">
+                        <option selected disabled>Seleccione una opción</option>
+                        <option value="HORAS">HORAS</option>
+                        <option value="JORNADAS">JORNADAS</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Cantidad de horas o jornadas</label>
+                    <input required id="cantidadHorasJornadasModal" type="number" placeholder="Escribe cantidad" class="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Lugar de las jornadas:</label>
+                    <input required oninput="this.value = this.value.toUpperCase()" id="inputLugarJornadasModal" type="text" placeholder="Escribe el lugar" class="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Area de las jornadas:</label>
+                    <input required oninput="this.value = this.value.toUpperCase()" id="inputAreaJornadasModal" type="text" placeholder="Escribe el area" class="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Fecha en la que se presenta</label>
+                    <input required id="fProgramadaJornadasModal" type="date" class="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Fecha estimada de termino</label>
+                    <input required id="fLimiteJornadasModal" type="date" class="form-control" />
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label class="control-label">Observaciones</label>
+                    <input required oninput="this.value = this.value.toUpperCase()" id="inputObservacionesJornadasModal" type="text" placeholder="Sin observaciones" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarJornada()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal monitoreo -->
+<div class="modal fade" id="ModalMonitoreo" tabindex="-1" role="dialog" aria-labelledby="ModalMonitoreo" style="overflow-y: scroll; background-color: rgba(0, 0, 0, 0.5)" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" id="exampleModalLabel" style="font-size: 30px; color:#fff;">Añadir Monitoreo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <input type="text" style="display:none;" id="idJornadaModalMonitoreo" />
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-md-6">
+                    <label class="control-label">Comentario:</label>
+                    <input required placeholder="Escribe aqui" type="text" oninput="this.value = this.value.toUpperCase()" id="ComentarioMonitoreo" class="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Metodo de verificacion:</label>
+                    <input required placeholder="Escribe aqui" type="text" oninput="this.value = this.value.toUpperCase()" id="MetodoVerificacionMonitoreo" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" onclick="GuardarMonitoreo()" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
+
         var id = $('#idJornada').val();
         var isProcessing = false;
-        
+
         $('.panel-heading').click(function () {
             var target = $(this).attr('href');
             $('.panel-collapse').not(target).collapse('hide');
         });
 
+
         function handleBlurOrChange(event, nombreCampo) {
             if (isProcessing) return;
             isProcessing = true;
-            var idTerapia = $(event.target).attr('id').split('_')[1];
+
+            var idJornada = $(event.target).attr('id').split('_')[1];
             var inputValue = $(event.target).val();
-            AjaxActualizarTerapia(idTerapia, inputValue, nombreCampo);
+     
+            AjaxActualizarJornada(idJornada, inputValue, nombreCampo);
             setTimeout(function () {
                 isProcessing = false;
             }, 300);
         }
 
-        $('select[id^="Estado_"]').change(function (event) {
-            handleBlurOrChange(event, 'Estado');
+
+        $('input[id^="Lugar_"]').change(function (event) {
+            handleBlurOrChange(event, 'Lugar');
+        });
+        $('input[id^="Area_"]').change(function (event) {
+            handleBlurOrChange(event, 'Area');
         });
 
         $('input[id^="FechaCanalizacion_"]').blur(function (event) {
             handleBlurOrChange(event, 'FechaCanalizacion');
         });
+        $('input[id^="FechaProgramada_"]').blur(function (event) {
+            handleBlurOrChange(event, 'FechaProgramada');
+        });
+        $('input[id^="FechaLimite_"]').blur(function (event) {
+            handleBlurOrChange(event, 'FechaLimite');
+        });
+        $('select[id^="Estado_"]').blur(function (event) {
+            handleBlurOrChange(event, 'Estado');
+        });
+        $('select[id^="HorasJornada_"]').blur(function (event) {
+            handleBlurOrChange(event, 'HorasJornada');
+        });
+        $('input[id^="NoHoraJornada_"]').blur(function (event) {
+            handleBlurOrChange(event, 'NoHoraJornada');
+        });
+        $('input[id^="Observaciones_"]').blur(function (event) {
+            handleBlurOrChange(event, 'Observaciones');
+        });
 
-      
-      
     });
-    // function AjaxActualizarJornada(idJornada, valor, nombreCampo) {
 
-    //     $.ajax({
-    //         dataType: "json",
-    //         url: "/Reinsercion/ActualizarJornada",
-    //         type: "POST",
-    //         data: { idTerapia: idTerapia, valor: valor, NombreCampo: nombreCampo },
-    //         success: function (response) {
-    //             var Toast = Swal.mixin({
-    //                 toast: true,
-    //                 position: "top-end",
-    //                 showConfirmButton: false,
-    //                 timer: 2500,
-    //                 didOpen: (toast) => {
-    //                     toast.addEventListener('mouseenter', Swal.stopTimer);
-    //                     toast.addEventListener('mouseleave', Swal.resumeTimer);
-    //                 }
-    //             });
-    //             Toast.fire({
-    //                 icon: "success",
-    //                 title: "Éxito: " + response.message,
-    //                 customClass: {
-    //                     popup: 'my-toast',
-    //                     content: 'my-toast-content'
-    //                 }
-    //             });
+    function AjaxActualizarJornada(idJornada, valor, nombreCampo) {
 
-    //         },
-    //         error: function (xhr, status, error) {
-    //             console.error("Error:", error);
-    //             var errorMessage = "Error al procesar la solicitud.";
+        $.ajax({
+            dataType: "json",
+            url: "/Reinsercion/ActualizarJornada",
+            type: "POST",
+            data: { idJornada: idJornada, valor: valor, NombreCampo: nombreCampo },
+            success: function (response) {
+                var Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 2500,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: "Éxito: " + response.message,
+                    customClass: {
+                        popup: 'my-toast',
+                        content: 'my-toast-content'
+                    }
+                });
 
-    //             // Verificar si hay un mensaje de error específico en la respuesta JSON
-    //             if (xhr.responseJSON && xhr.responseJSON.message) {
-    //                 errorMessage = xhr.responseJSON.message;
-    //             }
-    //             Swal.fire({
-    //                 icon: "error",
-    //                 title: "ERROR",
-    //                 text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
-    //                 footer: errorMessage, // Mostrar el mensaje específico del servidor como pie de página
-    //                 customClass: {
-    //                     popup: 'my-custom-popup',
-    //                     content: 'my-custom-content'
-    //                 }
-    //             });
-    //         }
-    //     });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                var errorMessage = "Error al procesar la solicitud.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: "error",
+                    title: "ERROR",
+                    text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+                    footer: errorMessage, 
+                    customClass: {
+                        popup: 'my-custom-popup',
+                        content: 'my-custom-content'
+                    }
+                });
+            }
+        });
+    }
 
-    // };
+    function guardarJornada() {
+
+        var datosJornada = {
+            FechaCanalizacion: new Date(),
+            Tipo: "JORNADA",
+            HorasJornada: document.getElementById('selectHorasJornadasModal')?.value || '',
+            NoHoraJornada: document.getElementById('cantidadHorasJornadasModal')?.value || '',
+            Lugar: document.getElementById('inputLugarJornadasModal')?.value || '',
+            Area: document.getElementById('inputAreaJornadasModal')?.value || '',
+            Observaciones: document.getElementById('inputObservacionJornadasModal')?.value || '',
+            Estado: document.getElementById('selectEstadoJornadasModal')?.value || '',
+            FechaLimite: new Date(document.getElementById('fLimiteJornadasModal')?.value),
+            FechaProgramada: new Date(document.getElementById('fProgramadaJornadasModal')?.value),
+            CanalizacionIdCanalizacion: document.getElementById('IdCanalizacion').value
+        };
+
+        $.ajax({
+            url: '/Reinsercion/CrearJornada',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(datosJornada),
+            success: function (response) {
+                console.log("Response received:", response);
+                if (response.success) {
+                    $('#ModalJornada').modal('toggle');
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1300,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+
+                } else {
+                    $('#ModalJornada').modal('toggle');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Comuníquese con el administrador del sistema.Error: ' + response.message,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                var errorMessage = "Error al procesar la solicitud.";
+
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: "error",
+                    title: "ERROR",
+                    text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+                    footer: errorMessage,
+                    customClass: {
+                        popup: 'my-custom-popup',
+                        content: 'my-custom-content'
+                    }
+                });
+            }
+        });
+
+    }
+
+    function abrirModalMonitoreo(idJornada) {
+        $('#idJornadaModalMonitoreo').val(idJornada);
+        $('#ModalMonitoreo').modal('show');
+
+    }
+
+    function GuardarMonitoreo() {
+
+        var datosMonitoreo = {
+            Comentario: $('#ComentarioMonitoreo').val(),
+            Fecha: new Date(),
+            MetodoVerificacion: $('#MetodoVerificacionMonitoreo').val(),
+            IdEjeReinsercion: $('#idJornadaModalMonitoreo').val()
+        };
+
+        var idJornada = $('#idJornadaModalMonitoreo').val();
 
 
-    // function deleteJornada(event, idTerapia) {
-    //     event.stopPropagation(); // Evita que el botón colapse el panel
-    //     // Aquí puedes agregar la lógica para eliminar la terapia
+        $.ajax({
+            url: '/Reinsercion/CrearMonitoreo',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(datosMonitoreo),
+            success: function (response) {
+                console.log("Response received:", response);
+                if (response.success) {
+                    $('#ModalMonitoreo').modal('toggle');
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1300,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
 
-    //     Swal.fire({
-    //         title: "¿Deseas eliminar la terapia con id:" + idTerapia + "?",
-    //         text: "No podras revertir esto!",
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonColor: "#3085d6",
-    //         cancelButtonColor: "#d33",
-    //         confirmButtonText: "Si, eliminar",
-    //         cancelButtonText: "Cancelar"
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             $.ajax({
-    //                 url: '/Reinsercion/EliminarTerapia',
-    //                 type: 'POST',
-    //                 data: { idTerapia: idTerapia },
-    //                 success: function (response) {
-    //                     if (response.success) {
-    //                         Swal.fire({
-    //                             icon: 'success',
-    //                             title: '¡Terapia eliminada exitosamente!',
-    //                             showConfirmButton: false,
-    //                             timer: 1200,
-    //                             customClass: {
-    //                                 popup: 'my-custom-popup',
-    //                                 content: 'my-custom-content'
-    //                             }
-    //                         }).then(() => {
-    //                             location.reload();
-    //                         });
-    //                     } else {
-    //                         Swal.fire({
-    //                             icon: 'error',
-    //                             title: 'Error',
-    //                             text: 'Error: ' + response.message,
-    //                             customClass: {
-    //                                 popup: 'my-custom-popup',
-    //                                 content: 'my-custom-content'
-    //                             }
-    //                         });
-    //                     }
-    //                 },
-    //                 error: function (error) {
-    //                     console.error("Error:", error);
-    //                     var errorMessage = "Error al procesar la solicitud.";
+                } else {
+                    $('#ModalMonitoreo').modal('toggle');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Comuníquese con el administrador del sistema.Error: ' + response.message,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                var errorMessage = "Error al procesar la solicitud.";
 
-    //                     // Verificar si hay un mensaje de error específico en la respuesta JSON
-    //                     if (xhr.responseJSON && xhr.responseJSON.message) {
-    //                         errorMessage = xhr.responseJSON.message;
-    //                     }
-    //                     Swal.fire({
-    //                         icon: "error",
-    //                         title: "ERROR",
-    //                         text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
-    //                         footer: errorMessage,
-    //                         customClass: {
-    //                             popup: 'my-custom-popup',
-    //                             content: 'my-custom-content'
-    //                         }
-    //                     });
-    //                 }
-    //             });
-    //         }
-    //     });
-    // }
+                // Verificar si hay un mensaje de error específico en la respuesta JSON
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: "error",
+                    title: "ERROR",
+                    text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+                    footer: errorMessage,
+                    customClass: {
+                        popup: 'my-custom-popup',
+                        content: 'my-custom-content'
+                    }
+                });
+            }
+        });
+    }
 
+    function BorrarJornada(event, id) {
+        event.stopPropagation();
+        Swal.fire({
+            title: "¿Deseas eliminar la jornada con id:" + id + "?",
+            text: "No podras revertir esto!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Reinsercion/BorrarEje",
+                    traditional: true,
+                    data: { id },
+                    success: function (response) {
+                        if (response.borrar == true) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: "Borrado!",
+                                text: "Tu registro ha sido borrado",
+                                showConfirmButton: false,
+                                timer: 1300,
+                                customClass: {
+                                    popup: 'swal2-popup'
+                                }
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error al Borrar",
+                                text: "Contacte con el administrador del sistema:\n" + response.message,
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function (response) {
+                        alert(response.error);
+                    }
+                });
+            }
+        });
+    }
 
-
-    // showModal = (url, title, id) => {
-    //     $.ajax({
-    //         type: "GET",
-    //         url: url + "?idReinsercion=" + id,
-    //         success: function (res) {
-    //             $("#form-modal .modal-body").html(res);
-    //             $("#form-modal .modal-title").html(title);
-    //             $("#form-modal").modal('show');
-    //             $("#form-modal").find(".modal-dialog").removeClass("modal-lg modal-sm").addClass("modal-lg");
-    //         },
-    //         error: function (res) {
-
-    //         }
-    //     })
-    // };
 </script>

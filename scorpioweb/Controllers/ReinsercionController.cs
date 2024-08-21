@@ -29,6 +29,8 @@ using scorpioweb.Class;
 using scorpioweb.Migrations.ApplicationDb;
 using scorpioweb.Models;
 using Syncfusion.EJ2.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 
 
@@ -1125,17 +1127,38 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
- 
-
-
         private bool ReinsercionExists(int id)
         {
             return _context.Reinsercion.Any(e => e.IdReinsercion == id);
         }
-        public IActionResult MenuReinsercion()
+
+        #region -Menu Reinsercion-
+        public async Task<IActionResult> MenuReinsercion()
         {
+            DateTime fechaActual = DateTime.Now;
+            DateTime unMesAnterior = DateTime.Now.AddDays(-30);
+            ViewBag.AlertasCount = await(from persona in _context.Persona
+                                join supervicionMC in _context.Supervision on persona.IdPersona equals supervicionMC.PersonaIdPersona
+                                join cierreDeCasoMC in _context.Cierredecaso on supervicionMC.IdSupervision equals cierreDeCasoMC.SupervisionIdSupervision
+                                where cierreDeCasoMC.SeCerroCaso.Equals("SI") &&
+                                (cierreDeCasoMC.FechaAprobacion >= unMesAnterior && cierreDeCasoMC.FechaAprobacion <= fechaActual)
+                                select new
+                                {
+                                 IdTabla = persona.IdPersona
+                                }).Union(
+                               from personaCL in _context.Personacl
+                               join supervisionCL in _context.Supervisioncl on personaCL.IdPersonaCl equals supervisionCL.PersonaclIdPersonacl
+                               join cierreDeCasoCL in _context.Cierredecasocl on supervisionCL.IdSupervisioncl equals cierreDeCasoCL.SupervisionclIdSupervisioncl
+                               where cierreDeCasoCL.SeCerroCaso.Equals("SI") &&
+                               (cierreDeCasoCL.FechaAprobacion >= unMesAnterior && cierreDeCasoCL.FechaAprobacion <= fechaActual)
+                               select new 
+                               {
+                                   IdTabla = personaCL.IdPersonaCl
+                               }).CountAsync();
             return View();
         }
+
+        #endregion
 
         #region -Menu Supervision-
         public async Task<IActionResult> Menusupervision(int? id)
@@ -1266,15 +1289,18 @@ namespace scorpioweb.Controllers
             ViewBag.idReinsercion = id;
             ViewBag.IdCanalizacion = reincercion.IdCanalizacion;
 
+
             var datosreincercion  = from r in _context.Reinsercion
                                 join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion
-                                join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion
+                                join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion                               
                                 where r.IdReinsercion == id && er.Tipo != "JORNADA"
                                 select new ReinsercionVM
                                 {
                                     ejesreinsercionVM = er,
                                     canalizacionVM = c,
-                                    reinsercionVM = r
+                                    reinsercionVM = r,
+                                    Monitoreos = _context.Monitoreo.Where(mo => mo.IdEjeReinsercion == er.IdejesReinsercion).ToList()
+
                                 };
 
             ViewData["EjesReinsercion"] = datosreincercion;
@@ -1359,7 +1385,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Borrar Eje Reinsercion-
-        public JsonResult BorrarEje(int id)
+        public async Task<JsonResult> BorrarEje(int id)
         {
             var borrar = false;
 
@@ -1374,7 +1400,12 @@ namespace scorpioweb.Controllers
             string viewUrl = string.Empty;
 
             viewUrl = Url.Action("EjesReinsercion/" + reincercion.IdReinsercion, "Reinsercion");
+            var TieneMonitoreos = await _context.Monitoreo.Where(m => m.IdEjeReinsercion == id).ToListAsync();
+            if(TieneMonitoreos.Count() > 0)
+            {
 
+                return Json(new { borrar, message = "El id Cuenta con monitoreos! no se puede borrar"});
+            }
 
             try
             {
@@ -1413,8 +1444,6 @@ namespace scorpioweb.Controllers
             
             return Json(new List<string>());
         }
-
-
 
         #region -OficiosCanalizacion-
         public IActionResult OficiosCanalizacion(int? id, int idReinsercion)
@@ -1537,7 +1566,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
         #region ListaSeugunCaso
 
         [HttpGet]
@@ -1555,6 +1583,21 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region Monitoreo
+
+        [HttpPost]
+        public async Task<JsonResult> CrearMonitoreo([FromBody] Monitoreo monitoreo)
+        {
+            if (monitoreo == null)
+                return Json(new { success = false, message = "Datos de monitoreo nulos!" });
+            if (monitoreo.IdEjeReinsercion == 0)
+                return Json(new { success = false, message = "idEjesReinsercion vacio!" });
+           monitoreo.Fecha = DateTime.Now;
+           await _context.Monitoreo.AddAsync(monitoreo);
+           await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Monitoreo agregado con exito!" });
+        }
+        #endregion
 
         //#region ListaSeugunCaso2
 
@@ -1602,17 +1645,222 @@ namespace scorpioweb.Controllers
                 Monitoreos = monitoreos.Where(mo => mo.IdEjeReinsercion == j.IdejesReinsercion).ToList()
             }).ToList();
 
-            //var x = await(from j in _context.Ejesreinsercion
-            //        join mo in _context.Monitoreo on j.IdejesReinsercion equals mo.IdEjeReinsercion
-            //        where j.CanalizacionIdCanalizacion == idCanalizacion && j.Tipo.Equals("JORNADA")
-            //        select new JornadasMonitoreoViewModel
-            //        {
-            //            Jornadas = j,
-            //            Monitoreos = mo
-            //        }).ToListAsync();
-
+            ViewBag.idCanalizacion = idCanalizacion;
+        
             return View(jornadasMonitoreos);
         }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearJornada([FromBody] Ejesreinsercion ejesReinsercion)
+        {
+            if (ejesReinsercion == null)
+                return Json(new { success = false, message = "Datos de la jornada vacíos!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Tipo))
+                return Json(new { success = false, message = "Error en tipo!" });
+            if (ejesReinsercion.CanalizacionIdCanalizacion == 0)
+                return Json(new { success = false, message = "Error en idCanalizacion!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Estado))
+                return Json(new { success = false, message = "Selecciona el estado de la jornada!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.HorasJornada))
+                return Json(new { success = false, message = "Selecciona horas o jornadas!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.NoHoraJornada))
+                return Json(new { success = false, message = "Especifica la cantidad de horas o jornadas!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Lugar))
+                return Json(new { success = false, message = "Lugar vacío!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Area))
+                return Json(new { success = false, message = "Área vacía!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Estado))
+                return Json(new { success = false, message = "Estado vacío!" });
+
+            if (ejesReinsercion.FechaProgramada == null || ejesReinsercion.FechaProgramada == DateTime.MinValue)
+                return Json(new { success = false, message = "Fecha Programada vacía!" });
+
+            try
+            {
+                ejesReinsercion.FechaCanalizacion = DateTime.Now;
+                if (string.IsNullOrEmpty(ejesReinsercion.Observaciones))
+                    ejesReinsercion.Observaciones = "NA";
+                await _context.Ejesreinsercion.AddAsync(ejesReinsercion);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Jornada creada con éxito!" });
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log error (ejemplo: _logger.LogError(ex, "Error al actualizar la base de datos"))
+                return Json(new { success = false, message = "Hubo un error al guardar la jornada. Comunicarse con el administrador del sistema." });
+            }
+            catch (Exception ex)
+            {
+                // Log error (ejemplo: _logger.LogError(ex, "Error general"))
+                return Json(new { success = false, message = "Ocurrió un error inesperado. Comunicarse con el administrador del sistema" });
+            }
+        }
+        [HttpPost]
+        public async Task<JsonResult> ActualizarJornada(int idJornada, string valor, string NombreCampo, Ejesreinsercion jornada)
+        {
+
+            if (idJornada == 0)
+                return Json(new { success = false, message = "IdJornada vacio." });
+
+            jornada = await _context.Ejesreinsercion.SingleOrDefaultAsync(c => c.IdejesReinsercion == idJornada);
+
+            if (jornada == null)
+                return Json(new { success = false, message = "IdJornada no encontrado." });
+
+            if(string.IsNullOrEmpty(NombreCampo))
+                return Json(new { success = false, message = "Nombre del campo vacio." });
+
+            if (string.IsNullOrEmpty(valor))
+                return Json(new { success = false, message = "valor del campo vacio." });
+
+            else
+            {
+                switch (NombreCampo)
+                {
+                    case "Lugar":
+                        jornada.Lugar = mg.normaliza(valor);
+                        break;
+                    case "Area":
+                        jornada.Area = mg.normaliza(valor);
+                        break;
+
+                    case "FechaCanalizacion":
+                        DateTime? fechaCanalizacion = ConvertirAFecha(valor);
+                        if (fechaCanalizacion.HasValue)
+                            jornada.FechaCanalizacion = fechaCanalizacion.Value;
+                        else
+                            return Json(new { success = false, message = "Formato de fecha no válido para FechaCanalizacion." });
+                        break;
+
+                    case "FechaProgramada":
+                        DateTime? fechaProgramada = ConvertirAFecha(valor);
+                        if (fechaProgramada.HasValue)
+                            jornada.FechaProgramada = fechaProgramada.Value;
+                        else
+                            return Json(new { success = false, message = "Formato de fecha no válido para FechaInicioTerapia." });
+                        break;
+
+                    case "FechaLimite":
+                        DateTime? fechaLimite = ConvertirAFecha(valor);
+                        if (fechaLimite.HasValue) 
+                            jornada.FechaLimite = fechaLimite.Value;
+                        else
+                            return Json(new { success = false, message = "Formato de fecha no válido para FechaTerminoTerapia." });
+                        break;
+
+                    case "Estado":
+                        jornada.Estado = mg.normaliza(valor);
+                        break;
+
+                    case "HorasJornada":
+                        jornada.HorasJornada = mg.normaliza(valor);
+                        break;
+
+                    case "NoHoraJornada":
+                        jornada.NoHoraJornada = mg.normaliza(valor);
+                        break;
+
+                    case "Observaciones":
+                        jornada.Observaciones = mg.normaliza(valor);
+                        break; 
+
+                    default:
+                        return Json(new { success = false, message = "Campo no válido." });
+                }
+
+                _context.Ejesreinsercion.Update(jornada);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Jornada actualizada correctamente." });
+            }
+        }
         #endregion
+
+
+        #region -Alertas-
+        public async Task<IActionResult> AlertasReinsercion(int? page,string searchString,string selectSearch)
+        {
+            if (!string.IsNullOrEmpty(selectSearch) && selectSearch.Equals("TODOS")) 
+                searchString = null;
+            
+            ViewBag.CurrentSelectSearch = selectSearch;
+            ViewBag.CurrentSearchString = searchString;
+            DateTime fechaActual = DateTime.Now;
+            DateTime unMesAnterior = DateTime.Now.AddDays(-30);
+
+            if (searchString != null && (page == 0 || page == null))
+            {
+                page = 1;
+            }
+          
+
+            // LA QUERY VA A CRECER CONFORME SE VAYAN AGREGANDO MAS ALERTAS
+            var query = (from persona in _context.Persona
+                         join supervicionMC in _context.Supervision on persona.IdPersona equals supervicionMC.PersonaIdPersona
+                         join cierreDeCasoMC in _context.Cierredecaso on supervicionMC.IdSupervision equals cierreDeCasoMC.SupervisionIdSupervision
+                         where cierreDeCasoMC.SeCerroCaso.Equals("SI") &&
+                         (cierreDeCasoMC.FechaAprobacion >= unMesAnterior && cierreDeCasoMC.FechaAprobacion <= fechaActual)
+                         select new AlertasReinsercionViewModel
+                         {
+                             IdTabla = persona.IdPersona,
+                             Nombre = $"{persona.Nombre} {persona.Paterno} {persona.Materno}",
+                             Area = "MC Y SCP",
+                             TipoAlerta = "Caso cerrado",
+                             CierreCasoMC = cierreDeCasoMC
+                         }).Union(
+                       from personaCL in _context.Personacl
+                       join supervisionCL in _context.Supervisioncl on personaCL.IdPersonaCl equals supervisionCL.PersonaclIdPersonacl
+                       join cierreDeCasoCL in _context.Cierredecasocl on supervisionCL.IdSupervisioncl equals cierreDeCasoCL.SupervisionclIdSupervisioncl
+                       where cierreDeCasoCL.SeCerroCaso.Equals("SI") &&
+                       (cierreDeCasoCL.FechaAprobacion >= unMesAnterior && cierreDeCasoCL.FechaAprobacion <= fechaActual)
+                       select new AlertasReinsercionViewModel
+                       {
+                           IdTabla = personaCL.IdPersonaCl,
+                           Nombre = $"{personaCL.Nombre} {personaCL.Paterno} {personaCL.Materno}",
+                           Area = "CL",
+                           TipoAlerta = "Caso cerrado",
+                           CierreCasoCL = cierreDeCasoCL
+                       });
+
+            
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(s => s.Nombre.Contains(searchString.ToUpper()));
+            }
+            switch (selectSearch)
+            {
+                case "TODOS":
+                    query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.IdTabla);
+                    break;
+                case "MCYSCP":
+                    query = query.Where(m => m.Area == "MC Y SCP");
+                    break;
+                case "CL":
+                    query = query.Where(m => m.Area == "CL");
+                    break;              
+                case "CASOCERRADO":
+                    query = query.Where(m => m.CierreCasoMC.SeCerroCaso.Equals("SI") && m.CierreCasoCL.SeCerroCaso.Equals("SI"));
+                    break;
+                default:
+                    query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.IdTabla);
+                    break;
+            }
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+                     
+            var paginatedList = await PaginatedList<AlertasReinsercionViewModel>.CreateAsync(query.AsNoTracking(), pageNumber,pageSize);
+
+            return View(paginatedList);
+        }
+        #endregion
+
     }
 }

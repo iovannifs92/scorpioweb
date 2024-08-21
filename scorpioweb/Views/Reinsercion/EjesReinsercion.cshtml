@@ -10,6 +10,37 @@
 }
 
 <style>
+    .TituloPrincipal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 40rem;
+        width: 100%;
+        max-width: fit-content;
+        margin-inline: auto;
+        position: relative;
+        top: 5px;
+    }
+
+        .TituloPrincipal h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .TituloPrincipal .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .TituloPrincipal button {
+            position: absolute;
+            bottom: 15px;
+            right: 0;
+            padding: 10px 16px;
+        }
+
     .separar {
         margin-top: 10px;
     }
@@ -19,9 +50,9 @@
         color: #000;
     }
 
-    .custom-success th, .custom-success td {
+        .custom-success th, .custom-success td {
             border-color: #44BBA4;
-    }
+        }
 
     * {
         box-sizing: border-box;
@@ -66,17 +97,17 @@
         right: 0;
     }
 
-    .autocomplete-items div {
-        padding: 10px;
-        cursor: pointer;
-        background-color: #fff;
-        border-bottom: 1px solid #d4d4d4;
-    }
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
 
-    /*when hovering an item:*/
-    .autocomplete-items div:hover {
-        background-color: #e9e9e9;
-    }
+            /*when hovering an item:*/
+            .autocomplete-items div:hover {
+                background-color: #e9e9e9;
+            }
 
     /*when navigating through the items using the arrow keys:*/
     .autocomplete-active {
@@ -165,7 +196,7 @@
                 } else {
                     Swal.fire({
                         title: "Error al Borrar",
-                        text: "Contacte con el administrador del sistema " + response.error,
+                        text: "Contacte con el administrador del sistema:\n" + response.message,
                         icon: "error"
                     });
 
@@ -207,7 +238,7 @@
                 Toast.fire({
                     icon: "success",
                     title: "Datos guardados con exito",
-                    
+
                 });
 
             },
@@ -364,12 +395,12 @@
     });
 
     const ListaDinamicaEstados = {
-        "TERAPIA": ["ACTIVO", "ALTA(CONCLUIDO)", "BAJA", "ESPERA", "TERMINO"], 
-        "JORNADA": ["ACTIVO", "CANCELADO", "CONCLUIDO", "CUMPLIO", "EN ESPERA"], 
-        "EDUCATIVA": ["ACTIVO", "CANCELADO", "CERTIFICADO", "EN ESPERA"], 
-        "LABORAL": ["ACTIVO", "CANCELADO", "CONCLUIDO", "CONTRATADO", "EN ESPERA"], 
+        "TERAPIA": ["ACTIVO", "ALTA(CONCLUIDO)", "BAJA", "ESPERA", "TERMINO"],
+        "JORNADA": ["ACTIVO", "CANCELADO", "CONCLUIDO", "CUMPLIO", "EN ESPERA"],
+        "EDUCATIVA": ["ACTIVO", "CANCELADO", "CERTIFICADO", "EN ESPERA"],
+        "LABORAL": ["ACTIVO", "CANCELADO", "CONCLUIDO", "CONTRATADO", "EN ESPERA"],
         "EXTRAORDINARIOS": ["ACTIVO", "CANCELADO", "CONCLUIDO", "EN ESPERA", "SATISFACTORIO"],
-        "ANTIDOPING":["CONCLUIDO", "EN TRÁMITE", "NO REALIZADO"],
+        "ANTIDOPING": ["CONCLUIDO", "EN TRÁMITE", "NO REALIZADO"],
     };
 
     function obtenerListaEstados(tipo) {
@@ -383,8 +414,8 @@
             // Si el tipo no existe, devolver las opciones "VIGENTE" y "CONCLUIDO"
             return ["VIGENTE", "CONCLUIDO"];
         }
-        
-       //return ListaDinamicaEstados[tipo] || [];
+
+        //return ListaDinamicaEstados[tipo] || [];
     }
 </script>
 
@@ -400,7 +431,7 @@
             <button type="button" style="margin-top:6px;" class="btn btn-primary fa fa-plus" title="Add Ejes de Reincercion" data-toggle="modal" data-target="#form-modal">Add Ejes de Reincercion
         </div>
     </div>
-   @*<select id="Estado_130" name="miSelect"></select>*@
+    @*<select id="Estado_130" name="miSelect"></select>*@
     <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
     <form asp-action="Create" enctype="multipart/form-data" id="form">
         <div class="container sub-page form">
@@ -409,7 +440,7 @@
                 {
                     var panelId = "collapse" + item.ejesreinsercionVM.IdejesReinsercion; // ID único para cada panel colapsable
                     var estadoSelectId = "Estado_" + item.ejesreinsercionVM.IdejesReinsercion; // ID único para el select de estados
-
+                    var idEjes = item.ejesreinsercionVM.IdejesReinsercion;
 
                     <div class="panel-group">
                         <div id="datosSalud" class="panel panel panel-primary" style="border-color:#000;">
@@ -421,6 +452,7 @@
                                     <p id="tipo" name="tipo" text style="margin-bottom:unset; text-align:center">@item.ejesreinsercionVM.Tipo</p>
                                 </h4>
                             </div>
+
                             <div id="@panelId" class="panel-collapse collapse" style="padding-top:1%;">
                                 <table class="table table-hover">
                                     <thead>
@@ -448,20 +480,69 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <table style="margin-top:2rem;" class="table table-bordered mi-tabla-bordes">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="6" style="text-align: center; font-weight: 700; background-color:#d8e4f2;;">
+                                                <div class="TituloPrincipal">
+                                                    <div class="header">
+                                                        <h3>Monitoreos</h3>
+                                                        <button class="btn btn-primary" type="button"
+                                                                onclick="abrirModalMonitoreo(@item.ejesreinsercionVM.IdejesReinsercion)">
+                                                            <i class="fa fa-plus"></i> Añadir monitoreo
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Id Monitoreo</th>
+                                            <th>Comentario</th>
+                                            <th>Fecha</th>
+                                            <th>Metodo verificacion</th>
+                                            <th>idEjesReinsercion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ejesReinsercion.SelectMany(m => m.Monitoreos).Any(mon => mon.IdEjeReinsercion == idEjes))
+                                        {
+                                            @foreach (var monitoreo in ejesReinsercion.Where(m => m.Monitoreos.Any(mon => mon.IdEjeReinsercion == idEjes)).SelectMany(m => m.Monitoreos))
+                                            {
+                                                <tr>
+                                                    <td>@monitoreo.Idmonitoreo</td>
+                                                    <td>@monitoreo.Comentario</td>
+                                                    <td>@monitoreo.Fecha</td>
+                                                    <td>@monitoreo.MetodoVerificacion</td>
+                                                    <td>@monitoreo.IdEjeReinsercion</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr style="background-color:#db635a;;">
+                                                <td></td>
+                                                <td>Sin monitoreos</td>
+                                                <td>Sin monitoreos</td>
+                                                <td>Sin monitoreos</td>
+                                                <td>Sin monitoreos</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
 
                     <script type="text/javascript">
-                            $(document).ready(function () {
-                                const tipo = "@item.ejesreinsercionVM.Tipo";
-                                const listaEstados = obtenerListaEstados(tipo);
-                                const selectId = "@estadoSelectId"; @*// Usamos el ID único generado*@
-                                if (listaEstados.length != 0) {
-                                    console.log(listaEstados);
-                                    agregarEstadosASelect(selectId, listaEstados);
-                                }
-                            });
+                        $(document).ready(function () {
+                            const tipo = "@item.ejesreinsercionVM.Tipo";
+                            const listaEstados = obtenerListaEstados(tipo);
+                            const selectId = "@estadoSelectId"; @*// Usamos el ID único generado*@
+                                                                                if (listaEstados.length != 0) {
+                                console.log(listaEstados);
+                                agregarEstadosASelect(selectId, listaEstados);
+                            }
+                        });
                     </script>
                 }
             </div>
@@ -484,25 +565,54 @@
                 <h5 class="modal-title" style="font-size: 30px; color:#fff;">Agregar Servicio de Reinserción</h5>
             </div>
             <div class="modal-body">
-                    <div class="col-md-12 separar autocomplete">
-                        <label class="control-label">Tipo de Eje</label>
-                        <input required name="ejesSelect" id="ejesSelect" type="text" class="form-control" />
-                    </div>
-                    <div class="col-md-12 separar autocomplete">
-                        <label class="control-label">Lugar</label>
-                        <input required name="ejesLugar" id="ejesLugar" type="text" class="form-control" />
-                    </div>
-                    <div class="col-md-12 separar">
-                        <label class="control-label">Observaciones </label>
-                        <input required name="ejesObs" id="ejesObs" type="text" class="form-control" />
-                    </div>
-      
+                <div class="col-md-12 separar autocomplete">
+                    <label class="control-label">Tipo de Eje</label>
+                    <input required name="ejesSelect" id="ejesSelect" type="text" class="form-control" />
+                </div>
+                <div class="col-md-12 separar autocomplete">
+                    <label class="control-label">Lugar</label>
+                    <input required name="ejesLugar" id="ejesLugar" type="text" class="form-control" />
+                </div>
+                <div class="col-md-12 separar">
+                    <label class="control-label">Observaciones </label>
+                    <input required name="ejesObs" id="ejesObs" type="text" class="form-control" />
+                </div>
+
                 <div class="col-md-12 separar">
                     <button onclick="GuardarEje()" class="btn btn-primary fa fa-save"> Guardar</button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal monitoreo -->
+<div class="modal fade" id="ModalMonitoreo" tabindex="-1" role="dialog" aria-labelledby="ModalMonitoreo" style="overflow-y: scroll; background-color: rgba(0, 0, 0, 0.5)" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#0078A7;">
+                <h5 class="modal-title" id="exampleModalLabel" style="font-size: 30px; color:#fff;">Añadir Monitoreo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <input type="text" style="display:none;"  id="idEjeModalMonitoreo" />
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-md-6">
+                    <label class="control-label">Comentario:</label>
+                    <input required placeholder="Escribe aqui" type="text" oninput="this.value = this.value.toUpperCase()" id="ComentarioMonitoreo" class="form-control" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label">Metodo de verificacion:</label>
+                    <input required placeholder="Escribe aqui" type="text" oninput="this.value = this.value.toUpperCase()" id="MetodoVerificacionMonitoreo" class="form-control" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" onclick="GuardarMonitoreo()" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
@@ -518,5 +628,81 @@
             select.appendChild(option);
         });
     }
+
+    function abrirModalMonitoreo(idEjes) {
+
+        $('#idEjeModalMonitoreo').val(idEjes);
+        $('#ModalMonitoreo').modal('show');
+
+
+    }
+
+    function GuardarMonitoreo() {
+
+        var datosMonitoreo = {
+            Comentario: $('#ComentarioMonitoreo').val(),
+            Fecha: new Date(),
+            MetodoVerificacion: $('#MetodoVerificacionMonitoreo').val(),
+            IdEjeReinsercion: $('#idEjeModalMonitoreo').val()
+        };
+
+        var idJornada = $('#idEjeModalMonitoreo').val();
+
+
+        $.ajax({
+            url: '/Reinsercion/CrearMonitoreo',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(datosMonitoreo),
+            success: function (response) {
+                console.log("Response received:", response);
+                if (response.success) {
+                    $('#ModalMonitoreo').modal('toggle');
+                    Swal.fire({
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 1300,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+
+                } else {
+                    $('#ModalMonitoreo').modal('toggle');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Comuníquese con el administrador del sistema.Error: ' + response.message,
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                var errorMessage = "Error al procesar la solicitud.";
+
+                // Verificar si hay un mensaje de error específico en la respuesta JSON
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: "error",
+                    title: "ERROR",
+                    text: "Hubo un problema al procesar la solicitud. Comuníquese con el administrador del sistema.",
+                    footer: errorMessage,
+                    customClass: {
+                        popup: 'my-custom-popup',
+                        content: 'my-custom-content'
+                    }
+                });
+            }
+        });
+    }
+
 
 </script>

@@ -1,0 +1,135 @@
+﻿@model PaginatedList<scorpioweb.Models.AlertasReinsercionViewModel>
+@{
+    ViewData["Tittle"] = "Alertas";
+
+}
+<style>
+    .top-content h2 {
+        margin-left: 50px;
+    }
+
+    .row-items {
+        display: flex;
+        justify-content: space-between 2px;
+        padding: 5px 30px;
+    }
+
+    .item {
+        padding: 5px 10px;
+        margin: 0 5px;
+    }
+</style>
+
+<div class="text-center" style="padding-top:1%">
+    <img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+    <br />
+    <h2>Alertas</h2>
+</div>
+
+<div class="top-content">
+    @using (Html.BeginForm("AlertasReinsercion", "Reinsercion", FormMethod.Get))
+    {
+        <div class="row-items">
+            <div class="item">
+                <p >
+                    Buscar por nombre: @Html.TextBox("SearchString", ViewBag.CurrentSearchString as string)
+                    <input type="submit" value="Search" />
+                </p>
+            </div>
+            <div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
+            <div class="item">
+                <select class="form-control form-select-lg mb-3" onchange="this.form.submit()" @Html.TextBox("selectSearch", ViewBag.CurrentSelectSearch as string)>
+                    <option selected value="@ViewBag.CurrentSelectSearch">@ViewBag.CurrentSelectSearch</option>
+                    <option value="TODOS">Todas las alertas</option>
+                    <option value="MCYSCP">Usuarios MC Y SCP</option>
+                    <option value="CL">Usuarios Libertad condicionada</option>
+                    <option value="CASOCERRADO">Caso cerrado</option>
+                </select>
+            </div>
+            <div class="item"><a asp-action="AlertasReinsercion">Regresar al listado completo</a></div>
+        </div>
+
+    }
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>idPersona</th>
+            <th>Nombre completo</th>
+            <th>Area</th>
+            <th>Tipo alerta</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.IdTabla</td>
+                <td>@item.Nombre</td>
+                @if (item.Area.Equals("CL"))
+                {
+                    <td>Libertad condicionada</td>
+                }
+                else
+                {
+                    <td>@item.Area</td>
+                }
+                @if (item.TipoAlerta.Equals("Caso cerrado"))
+                {
+                    <td>Se cerro caso este mes</td>
+                }
+                else
+                {
+                    <td>@item.TipoAlerta</td>
+                }
+                 
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-action="AlertasReinsercion"
+                   asp-route-page="@(Model.PageIndex - 1)"
+                   asp-route-selectSearch="@ViewBag.CurrentSelectSearch"
+                   asp-route-searchString="@ViewBag.CurrentSearchString">
+                    Anterior
+                </a>
+            </li>
+        }
+
+        @for (var i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-action="AlertasReinsercion"
+                   asp-route-page="@i"
+                   asp-route-selectSearch="@ViewBag.CurrentSelectSearch"
+                   asp-route-searchString="@ViewBag.CurrentSearchString">
+                    @i
+                </a>
+            </li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-action="AlertasReinsercion"
+                   asp-route-page="@(Model.PageIndex + 1)"
+                   asp-route-selectSearch="@ViewBag.CurrentSelectSearch"
+                   asp-route-searchString="@ViewBag.CurrentSearchString">
+                    Siguiente
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

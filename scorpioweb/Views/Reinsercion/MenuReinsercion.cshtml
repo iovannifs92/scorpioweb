@@ -1,13 +1,10 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Vinculacion";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 
 <style>
-
-
     .buttons a {
         text-decoration: none;
         font-size: 28px;
@@ -21,9 +18,9 @@
         transition: all .4s ease-in-out;
     }
 
-    .buttons a:hover {
-        transform: scale(1.2);
-    }
+        .buttons a:hover {
+            transform: scale(1.2);
+        }
 
     #agenda {
         background: #314652;
@@ -51,9 +48,7 @@
 
 </style>
 
-
-
-<script>   
+<script>
     function openFullScreenWindow() {
         const screenWidth = window.screen.availWidth;
         const screenHeight = window.screen.availHeight;
@@ -64,14 +59,12 @@
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
-
 @*@if (ViewBag.WarningsUser > 0)
 {
     <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
         <h3 style="text-align:right; color:blue">Tu solicitud fue atendida</h3>
     </a>
-   
+
 }*@
 
 @*<script src="~/lib/Microsoft/dist/browser/signalr.js"></script>*@
@@ -97,9 +90,9 @@
 <div>
     <h1 style="font-family: cursive; text-align:center;">🤗 Vinculación 🤗</h1>
 </div>
-@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
-{
-    <div class="card-group" style="padding-top:2%">
+<div class="card-group" style="padding-top:2%">
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
+    {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -113,7 +106,6 @@
                 </p>
             </div>
         </div>
-
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -127,11 +119,9 @@
                 </p>
             </div>
         </div>
-    </div>
-}
-@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
-{
-    <div class="card-group" style="padding-top:2%">
+    }
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
+    {
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
@@ -145,9 +135,25 @@
                 </p>
             </div>
         </div>
-    </div>
-}
+    }
 
+    @if (ViewBag.AlertasCount != 0)
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Reinsercion" asp-action="AlertasReinsercion">
+                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Alertas <span class="badge" style="background-color:red"> @ViewBag.AlertasCount</span>
+                    </a>
+                </h4>
+                <p class="card-text">
+                    Usuarios con o sin supervision que requieren atencion de manera inmediata
+                </p>
+            </div>
+        </div>
+    }
+</div>
 <div class="bg-light clearfix" id="seccionBotones">
     <section class="buttons" style="padding-right: 1em;">
         <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
