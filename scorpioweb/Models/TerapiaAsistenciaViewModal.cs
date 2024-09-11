@@ -33,6 +33,17 @@ namespace scorpioweb.Models
         public string ObservacionesAsistencia { get; set; }
         public string Asistio { get; set; }
         public int TerapiaIdTerapia { get; set; }
+
+        //DATOS PERSONA 
+        public int idpersona { get; set; }
+        public string nombre { get; set; }
+        public string cp { get; set; }
+        public string tabla { get; set; }  
+        public string rutaFoto { get; set; }  
+
+
+
+
     }
 
 

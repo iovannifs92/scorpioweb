@@ -1,0 +1,113 @@
+﻿@model IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>
+
+@{
+    ViewData["Title"] = "Psicologia";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var gruposAsistencias = ViewData["grupo"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
+    var gruposPsicologia = ViewData["Psicologia"] as IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>;
+}
+
+
+<body>
+    <div class="col-md-12">
+        <h1 style="text-align:center" class="blockquote text-center">Psicologia</h1>
+    </div> 
+    <div class="col-md-12">
+        <h5 style="text-align:center" class="blockquote text-center">Grupos por dia y por Psicologo</h5>
+    </div>
+    <form asp-action="Psicologia">
+            <div class="col-md-12" style="text-align:center">
+                <label>Fecha de terapia</label>
+            </div>
+            <br />
+            <div class="col-md-12" style="text-align:center">
+                <div class="col-md-8" style="text-align:right">
+                    <input type="date" name="FechaTerapia" id="FechaTerapia" class="form-control" value="@ViewData["DiaTerapia"]" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                </div>
+                <div class="col-md-4" style="text-align:left">
+                    <button id="BuscarTerapias" onclick="BuscarTerapias()" type="submit" class="btn btn-default btn-sm">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+
+            </div>
+    </form>
+ 
+    @*<select id="Estado_130" name="miSelect"></select>*@
+    <div class="col-md-12" style="text-align:center">
+        <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
+        <form enctype="multipart/form-data" id="form" style="margin-top:50px">
+            <div class="container sub-page form">
+                <div class="container">
+                    @foreach (var item in gruposAsistencias.GroupBy(Ga => Ga.grupoVM.IdGrupo))
+                    {
+                        var panelId = "collapse" + @item.First().grupoVM.IdGrupo; // ID único para cada panel colapsable
+
+                        <div class="panel-group">
+                            <div id="datosSalud" class="panel panel panel-primary" style="border-color:#000;">
+                              @*  <div style="color:#000; background-color:#44BBA4; text-align:right; padding-right:30px; padding-top:10px">
+                                    <a class="button fa fa-trash" style="font-size:30px;color:black" onclick="BorrarGeneral(@item.ejesreinsercionVM.IdejesReinsercion)" title="Borrar Servicio de Reinsercion"></a>
+                                </div>*@
+                                <div class="panel-heading" style="color:#000; background-color:#44BBA4; border-color:#44BBA4;" data-toggle="collapse" href="#@panelId" onclick="mostrar">
+                                    <h4 class="panel-title">
+                                        <p id="tipo" name="tipo" text style="margin-bottom:unset; text-align:center">@item.First().grupoVM.NombreGrupo</p>
+                                        <p id="tipo" name="tipo" text style="margin-bottom:unset; text-align:center">@item.First().grupoVM.Dia</p>
+                                        <p id="tipo" name="tipo" text style="margin-bottom:unset; text-align:center">@item.First().grupoVM.Horario</p>
+
+                                    </h4>
+                                </div>
+                                <div id="@panelId" class="panel-collapse collapse" style="padding-top:1%;">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr style="color:#000">
+                                                <th>ID</th>
+                                                <th>Nombre</th>
+                                                <th>Tabla</th>
+                                                <th>Causa penal </th>
+                                                <th>Feha Canalizacion</th>
+                                                <th>Terapia</th>
+                                                <th>Numero de asistencias</th>
+                                            </tr>
+                                        </thead>
+                                        @foreach (var grupos in gruposPsicologia.Where(g => g.IdGrupo == item.First().grupoVM.IdGrupo).GroupBy(g => g.idpersona))
+                                        {
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        @grupos.First().idpersona
+                                                    </td>
+                                                    <td>
+                                                        @grupos.First().nombre
+                                                    </td> 
+                                                    <td>
+                                                        @grupos.First().tabla
+                                                    </td>
+                                                    <td>
+                                                        @grupos.First().cp
+                                                    </td>
+                                                    <td>
+                                                        @grupos.First().FechaCanalizacion
+                                                    </td> 
+                                                    <td>
+                                                        @grupos.First().Tipo
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+<div style="margin-top:20px">
+    <a asp-action="MenuPsicologia" asp-controller="Reinsercion">Regresar a Menu</a>
+</div>

@@ -1,0 +1,504 @@
+﻿@model IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>
+
+@{
+    ViewData["Title"] = "Psicologia";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var Listadia = ViewData["Listadia"] as IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>;
+}
+
+
+<style>
+    ate this bootstrap snippet, You can copy and paste the following css code inside a page with bootstrap 4.5.0 included, to get the result that you can see in the preview selection
+
+    body {
+        background-color: #f8f9fa !important
+    }
+
+    .p-4 {
+        padding: 1.5rem !important;
+    }
+
+    .mb-0, .my-0 {
+        margin-bottom: 0 !important;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+    }
+    /* user-dashboard-info-box */
+    .user-dashboard-info-box .candidates-list .thumb {
+        margin-right: 0px;
+    }
+
+        .user-dashboard-info-box .candidates-list .thumb img {
+            width: 80px;
+            height: 80px;
+            -o-object-fit: cover;
+            object-fit: cover;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+
+    .user-dashboard-info-box .title {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding: 30px 0;
+    }
+
+    .user-dashboard-info-box .candidates-list td {
+        vertical-align: middle;
+    }
+
+    .user-dashboard-info-box td li {
+        margin: 0 4px;
+    }
+
+    .user-dashboard-info-box .table thead th {
+        border-bottom: none;
+    }
+
+    .table.manage-candidates-top th {
+        border: 0;
+    }
+
+    .user-dashboard-info-box .candidate-list-favourite-time .candidate-list-favourite {
+        margin-bottom: 10px;
+    }
+
+    .table.manage-candidates-top {
+        min-width: 650px;
+    }
+
+    .user-dashboard-info-box .candidate-list-details ul {
+        color: #969696;
+    }
+
+    /* Candidate List */
+    .candidate-list {
+        background: #ffffff;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        border-bottom: 1px solid #eeeeee;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding: 20px;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .candidate-list:hover {
+            -webkit-box-shadow: 0px 0px 34px 4px rgba(33, 37, 41, 0.06);
+            box-shadow: 0px 0px 34px 4px rgba(33, 37, 41, 0.06);
+            position: relative;
+            z-index: 99;
+        }
+
+            .candidate-list:hover a.candidate-list-favourite {
+                color: #e74c3c;
+                -webkit-box-shadow: -1px 4px 10px 1px rgba(24, 111, 201, 0.1);
+                box-shadow: -1px 4px 10px 1px rgba(24, 111, 201, 0.1);
+            }
+
+        .candidate-list .candidate-list-image {
+            margin-right: 25px;
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 80px;
+            flex: 0 0 80px;
+            border: none;
+        }
+
+            .candidate-list .candidate-list-image img {
+                width: 80px;
+                height: 80px;
+                -o-object-fit: cover;
+                object-fit: cover;
+            }
+
+/*    .candidate-list-title {
+        margin-bottom: 5px;
+    }*/
+
+    .candidate-list-details ul {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        margin-bottom: 0px;
+    }
+
+        .candidate-list-details ul li {
+            margin: 5px 10px 5px 0px;
+            font-size: 13px;
+        }
+
+    .candidate-list .candidate-list-favourite-time {
+        margin-left: auto;
+        text-align: center;
+        font-size: 13px;
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 90px;
+        flex: 0 0 90px;
+    }
+
+        .candidate-list .candidate-list-favourite-time span {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .candidate-list .candidate-list-favourite-time .candidate-list-favourite {
+            display: inline-block;
+            position: relative;
+            height: 40px;
+            width: 40px;
+            line-height: 40px;
+            border: 1px solid #eeeeee;
+            border-radius: 100%;
+            text-align: center;
+            -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #646f79;
+        }
+
+            .candidate-list .candidate-list-favourite-time .candidate-list-favourite:hover {
+                background: #ffffff;
+                color: #e74c3c;
+            }
+
+    .candidate-banner .candidate-list:hover {
+        position: inherit;
+        -webkit-box-shadow: inherit;
+        box-shadow: inherit;
+        z-index: inherit;
+    }
+
+    .bg-white {
+        background-color: #ffffff !important;
+    }
+
+    .p-4 {
+        padding: 1.5rem !important;
+    }
+
+    .mb-0, .my-0 {
+        margin-bottom: 0 !important;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+    }
+
+    .user-dashboard-info-box .candidates-list .thumb {
+        margin-right: 0px;
+    }
+</style>
+
+
+<script type="text/javascript">
+    var arr = [];
+    function myFunction(id, idcheck) {
+        if (!document.getElementById(idcheck).checked) {
+            // Crear el nuevo input
+            var newInput = document.createElement("input");
+            newInput.type = "text";  // El tipo del input que deseas crear
+            newInput.id = "input_" + id;  // Crear un id único para el input
+            newInput.placeholder = "Escribe el motivo de no asistencia"
+            // Insertar el nuevo input en el DOM
+            var container = document.getElementById("inputContainer_" + id);
+            container.appendChild(newInput);
+        } else {
+            var inputToRemove = document.getElementById("input_" + id);
+            if (inputToRemove) {
+                inputToRemove.remove();
+            }
+        }
+
+        var encontro = false;
+        var doble;
+        var input = document.getElementById("input_" + id).value;
+        var idinput = "input_"+id;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+
+        if (encontro == false) {
+            arr.push(id, idinput);
+        } else {
+            arr.splice(doble, 1);
+        }
+    }
+
+    function guardarAsis() {
+        for (var i = 0; i < arr.length; i += 2) {
+            var id = arr[i];         
+            var inputId = arr[i + 1];   
+            var inputValue = document.getElementById(inputId)?.value || "";
+            arr[i + 1] = inputValue;
+        }
+        var arra = "hola"
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            async: true,
+            url: "/Reinsercion/Asistencia",
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(arr),
+            success: function (response) {
+
+                //if (response.success == true) {
+                //    Swal.fire({
+                //        title: "Guardado",
+                //        text: "Tu registro se ha guardado",
+                //        icon: "success"
+                //    }).then((result) => {
+                //        if (result.isConfirmed) {
+                //            retraso(response.viewUrl, 70);
+                //        } else {
+                //            retraso(response.viewUrl, 70);
+                //        }
+                //    });
+                //} else {
+                //    Swal.fire({
+                //        title: "Error al Borrar",
+                //        text: "Contacte con el administrador del sistema " + response.error,
+                //        icon: "error"
+                //    });
+
+                //    //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
+                //}
+            },
+            error: function (response) {
+                alert(response.error);
+
+            }
+        });
+        alert("array "+arr)
+
+    }
+
+</script>
+
+
+<body>
+    <div class="col-md-12">
+        <h1 style="text-align:center" class="blockquote text-center">Psicologia</h1>
+    </div>
+    <div class="col-md-12">
+        <h5 style="text-align:center" class="blockquote text-center">Grupos por dia y por Psicologo</h5>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                 <div class="user-dashboard-info-box table-responsive mb-0 bg-white p-4 shadow-sm">
+                        <table class="table manage-candidates-top mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="display: inline-block; padding: 5px;">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Listadia.GroupBy(g => g.idpersona))
+                                 {
+                                    <tr class="candidates-list">
+                                        <td  class="title">
+                                        <div class="thumb col-12 col-md-6 d-none d-md-block">
+                                                <img class="img-fluid" src="~/@item.First().rutaFoto" alt="">
+                                            </div>
+                                            <div class="candidate-list-details">
+                                                <div class="candidate-list-info">
+                                                    <div class="candidate-list-title">
+                                                        <h5 class="mb-0">@item.First().nombre</h5>
+                                                    </div>
+                                                    <div class="candidate-list-option">
+                                                        <ul class="list-unstyled">
+                                                            <li><i class="fas fa-filter pr-1"></i>@item.First().cp</li>
+                                                            <li><i class="fas fa-map-marker-alt pr-1"></i>@item.First().tabla</li>
+                                                        </ul>
+                                                    </div>
+                                                <input checked type="checkbox" id="checkbox_@item.First().IdTerapia" onclick="myFunction(@item.First().IdTerapia, id)">
+                                                <div id="inputContainer_@item.First().IdTerapia"></div>
+                                                    @*<div class="checkbox-wrapper-@item.First().IdTerapia">
+                                                        <input type="checkbox" id="_checkbox-@item.First().IdTerapia" checked>
+                                                        <label for="_checkbox-@item.First().IdTerapia">
+                                                            <div class="tick_mark"></div>
+                                                        </label>
+                                                    </div>*@
+                  
+                                                <div style="margin-top:20px" id="justification-container"></div>
+                                                </div>
+                                               
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    <button id="btnSave" name="btnSave" onclick="guardarAsis(1)" class="btn btn-info fa fa-save"><i class="fa fa-file-text-o"></i> Guardar Asistencias</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<div style="margin-top:20px">
+    <a asp-action="grupoAsistencia" asp-controller="Reinsercion">Regresar a Menu</a>
+</div>
+
+ <style>
+    .checkbox-wrapper-26 * {
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+
+    .checkbox-wrapper-26 input[type="checkbox"] {
+        display: none;
+    }
+
+    .checkbox-wrapper-26 label {
+        --size: 50px;
+        --shadow: calc(var(--size) * .07) calc(var(--size) * .1);
+        position: relative;
+        display: block;
+        width: var(--size);
+        height: var(--size);
+        margin: 0 auto;
+        background-color: #f72414;
+        border-radius: 50%;
+        box-shadow: 0 var(--shadow) #ffbeb8;
+        cursor: pointer;
+        transition: 0.2s ease transform, 0.2s ease background-color, 0.2s ease box-shadow;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+        .checkbox-wrapper-26 label:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 0;
+            left: 0;
+            width: calc(var(--size) * .7);
+            height: calc(var(--size) * .7);
+            margin: 0 auto;
+            background-color: #fff;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            box-shadow: inset 0 var(--shadow) #ffbeb8;
+            transition: 0.2s ease width, 0.2s ease height;
+        }
+
+        .checkbox-wrapper-26 label:hover:before {
+            width: calc(var(--size) * .55);
+            height: calc(var(--size) * .55);
+            box-shadow: inset 0 var(--shadow) #ff9d96;
+        }
+
+        .checkbox-wrapper-26 label:active {
+            transform: scale(0.9);
+        }
+
+    .checkbox-wrapper-26 .tick_mark {
+        position: absolute;
+        top: -1px;
+        right: 0;
+        left: calc(var(--size) * -.05);
+        width: calc(var(--size) * .6);
+        height: calc(var(--size) * .6);
+        margin: 0 auto;
+        margin-left: calc(var(--size) * .14);
+        transform: rotateZ(-40deg);
+    }
+
+        .checkbox-wrapper-26 .tick_mark:before,
+        .checkbox-wrapper-26 .tick_mark:after {
+            content: "";
+            position: absolute;
+            background-color: #fff;
+            border-radius: 2px;
+            opacity: 0;
+            transition: 0.2s ease transform, 0.2s ease opacity;
+        }
+
+        .checkbox-wrapper-26 .tick_mark:before {
+            left: 0;
+            bottom: 0;
+            width: calc(var(--size) * .1);
+            height: calc(var(--size) * .3);
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.23);
+            transform: translateY(calc(var(--size) * -.68));
+        }
+
+        .checkbox-wrapper-26 .tick_mark:after {
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: calc(var(--size) * .1);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.23);
+            transform: translateX(calc(var(--size) * .78));
+        }
+
+    .checkbox-wrapper-26 input[type="checkbox"]:checked + label {
+        background-color: #07d410;
+        box-shadow: 0 var(--shadow) #92ff97;
+    }
+
+        .checkbox-wrapper-26 input[type="checkbox"]:checked + label:before {
+            width: 0;
+            height: 0;
+        }
+
+        .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:before,
+        .checkbox-wrapper-26 input[type="checkbox"]:checked + label .tick_mark:after {
+            transform: translate(0);
+            opacity: 1;
+        }
+</style>
+<script>
+    // Selecciona el checkbox y el contenedor donde se añadirá el input
+    const checkbox = document.getElementById('_checkbox-26');
+    const container = document.getElementById('justification-container');
+    $(document).ready(function () {
+        checkbox.addEventListener('change', function () {
+        // Si el checkbox NO está activado (desmarcado), creamos el input
+        if (!this.checked) {
+            // Verificar si ya existe el input antes de crearlo
+            if (!document.getElementById('justificacion')) {
+                // Crear el input de justificación
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = 'justificacion';
+                input.id = 'justificacion';
+                input.placeholder = 'Escribe tu justificación';
+
+                // Añadir el input al contenedor
+                container.appendChild(input);
+            }
+        } else {
+            // Si se marca, eliminar el input de justificación si existe
+            const existingInput = document.getElementById('justificacion');
+            if (existingInput) {
+                container.removeChild(existingInput);
+            }
+        }
+    });
+    });
+            // Escuchar el evento de cambio en el checkbox
+
+</script>

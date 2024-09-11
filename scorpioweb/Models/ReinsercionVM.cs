@@ -11,6 +11,8 @@
         public Personacl personaclVM { get; set; }
         public Supervision supervisionVM{ get; set; }
         public Supervisioncl SupervisionclVM{ get; set; }
+        public Causapenal causapenalVM { get; set; }
+        public Causapenalcl causapenalclVM { get; set; }
         public Grupo grupoVM { get; set; }    
         public Asistencia asistenciaVM { get; set;}
         public Terapeutas terapeutasVM { get; set;}

@@ -194,9 +194,9 @@
                     {
                         <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuReinsercion">Vinculación</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
                     {
-                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuReinsercion">Psicologia</a></li>
+                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicologia</a></li>
                     }
 
                 </ul>

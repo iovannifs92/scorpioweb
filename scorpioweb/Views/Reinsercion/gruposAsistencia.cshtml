@@ -1,0 +1,109 @@
+﻿@model IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>
+
+@{
+    ViewData["Title"] = "Psicologia";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var gruposAsistencias = ViewData["grupo"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
+}
+
+<style>
+    #Jornadas {
+        background-color: #EC7DAF;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #Jornadas:hover {
+            background-color: #FF3B93;
+        }
+
+    #Sreincercion {
+        background-color: #BF7FEC;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #Sreincercion:hover {
+            background-color: #AE3DFF;
+        }
+
+    #s {
+        background-color: #95ECDD;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #s:hover {
+            background-color: #55FFE2;
+        }
+
+    #Informes {
+        background-color: #ECD099;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #Informes:hover {
+            background-color: #FEC859;
+        }
+
+    #aer {
+        background-color: #B0DF69;
+        color: #fff;
+        border-color: #fff;
+    }
+
+        #aer:hover {
+            background-color: #A7FD2A;
+        }
+</style>
+
+
+
+<body>
+    <div class="col-md-12">
+        <h1 style="text-align:center" class="blockquote text-center">Psicologia</h1>
+    </div>
+    <div class="col-md-12">
+        <h5 style="text-align:center" class="blockquote text-center">Grupos por dia y por Psicologo</h5>
+    </div>
+    
+
+    @*<select id="Estado_130" name="miSelect"></select>*@
+    <div class="col-md-12" style="text-align:center">
+        <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
+        <form enctype="multipart/form-data" id="form" style="margin-top:50px">
+            <div class="container sub-page form">
+                <div class="container col-md-12">
+                    @{
+                        var colores = new List<string> { "#B0DF69", "#EC7DAF", "#BF7FEC", "#ECD099", "#847fdf", "#328793" };
+                        int contador = 0;
+                    }
+                    @foreach (var item in gruposAsistencias.GroupBy(Ga => Ga.grupoVM.IdGrupo))
+                    {
+                        var menuId = "menu" + @item.First().grupoVM.IdGrupo; // ID único para cada panel colapsable
+                        var color = colores[contador % colores.Count]; // Selecciona el color basado en el índice
+                        contador++; // Incrementa el contador
+
+                        <div class="row" id="@menuId">
+                            <div class="col-md-12" style="padding-top:3%;">
+                                <a asp-action="ListaDia" asp-route-idgrupo="@item.First().grupoVM.IdGrupo" class="btn btn-primary btn-lg btn-block btn-huge" style="background-color:@color;">
+                                    @item.First().grupoVM.NombreGrupo <br />
+                                    @item.First().grupoVM.Dia <br />
+                                    @item.First().grupoVM.Horario
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+<div style="margin-top:20px">
+    <a asp-action="grupoAsistencia" asp-controller="Reinsercion">Regresar a Menu</a>
+</div>

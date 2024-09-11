@@ -98,57 +98,36 @@
     <h1 style="font-family: cursive; text-align:center;">🤗 Vinculación 🤗</h1>
 </div>
 <div class="card-group" style="padding-top:2%">
-@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
-{ 
 
-    <div class="col-sm-3 col-md-3 card text-center">
-        <div class="card-body">
-            <h4 class="card-title">
-                <a asp-controller="Reinsercion" asp-action="Reinsercion">
-                    <img class="card-img-top" src="~/images/care.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas que ya cuentan con algun servicio de canalizacion" />
-                    Personas canalizadas
-                </a>
-            </h4>
-            <p class="card-text">
-                Personas que ya cuentan con algun servicio de canalizacion
-            </p>
-        </div>
+<div class="col-sm-3 col-md-3 card text-center">
+    <div class="card-body">
+        <h4 class="card-title">
+            <a asp-controller="Reinsercion" asp-action="Psicologia">
+                <img class="card-img-top" src="~/images/heart.png" alt="Card image cap" style="padding-bottom:5%;" title="Psicologia. Supervisados por dia" />
+                Psicologia
+            </a>
+        </h4>
+        <p class="card-text">
+            Grupos, listas y asistencias
+        </p>
     </div>
+</div>
 
-    <div class="col-sm-3 col-md-3 card text-center">
-        <div class="card-body">
-            <h4 class="card-title">
-                <a asp-controller="Reinsercion" asp-action="Index">
-                    <img class="card-img-top" src="~/images/book.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas externadas ó registradas en las áreas de Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada">
-                    Personas por canalizar
-                </a>
-            </h4>
-            <p class="card-text">
-                Canalizar personas externadas ó registradas en las áreas de Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada.
-            </p>
-        </div>
+<div class="col-sm-3 col-md-3 card text-center">
+    <div class="card-body">
+        <h4 class="card-title">
+            <a asp-controller="Reinsercion" asp-action="gruposAsistencia">
+                <img class="card-img-top" src="~/images/customer.png" alt="Card image cap" style="padding-bottom:5%;" title="Tearapia, listas y asistencias" />
+                Terapia
+            </a>
+        </h4>
+        <p class="card-text">
+            Grupos, listas y asistencias
+        </p>
     </div>
- 
-}
-@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
-{
+</div>
 
-    <div class="col-sm-3 col-md-3 card text-center">
-        <div class="card-body">
-            <h4 class="card-title">
-                <a asp-controller="Reinsercion" asp-action="Psicologia">
-                    <img class="card-img-top" src="~/images/heart.png" alt="Card image cap" style="padding-bottom:5%;" title="Psicologia. Grupos, listas y asistencias" />
-                    Psicologia
-                </a>
-            </h4>
-            <p class="card-text">
-                Grupos, listas y asistencias
-            </p>
-        </div>
-    </div>
-
-
-}  
+  
 </div>
 <div class="bg-light clearfix" id="seccionBotones">
     <section class="buttons" style="padding-right: 1em;">

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.EMMA;
@@ -1492,51 +1493,221 @@ namespace scorpioweb.Controllers
 
         #region -Psicologia- 
 
-        public async Task<IActionResult> Psicologia()
+        public IActionResult MenuPsicologia()
+        {
+            return View();
+        }
+
+
+        public async Task<IActionResult> Psicologia(DateTime FechaTerapia)
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+            FechaTerapia = FechaTerapia == default(DateTime) ? DateTime.Now.Date : FechaTerapia;
+
+            ViewData["FechaTerapia"] = FechaTerapia.ToString("yyyy-MM-dd");
+
+
+            ViewData["grupo"] = from g in _context.Grupo
+                         join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                         where tp.Username == user.UserName.ToString()
+                         select new ReinsercionVM
+                         {
+                             grupoVM = g,
+                             terapeutasVM = tp
+                         };
+
+            //((item.personaVM.Genero == ("M")) ? "hombre.png" : "mujer.png");
+
+            ViewData["Psicologia"] = (from e in _context.Externados
+                                      join r in _context.Reinsercion on e.Idexternados equals Int32.Parse(r.IdTabla) into pr
+                                      from r in pr.DefaultIfEmpty()
+                                      join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+                                      from c in cr.DefaultIfEmpty()
+                                      join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                      join g in _context.Grupo on t.GrupoIdGrupo equals g.IdGrupo
+                                      join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                      join a in _context.Asistencia on t.IdTerapia equals a.TerapiaIdTerapia into at
+                                      from a in at.DefaultIfEmpty()
+                                      where tp.Username == user.UserName.ToString() && r.Tabla == "externados" && t.FechaTerapia == FechaTerapia
+                                      orderby e.Nombre + " " + e.APaterno + " " + e.AMaterno
+                                      select new TerapiaAsistenciaViewModal
+                                      {
+                                          idpersona = e.Idexternados,
+                                          nombre = e.Nombre + " " + e.APaterno + " " + e.AMaterno,
+                                          cp = e.CausaPenal,
+                                          FechaCanalizacion = t.FechaCanalizacion,
+                                          Tipo = t.Tipo,
+                                          IdGrupo = g.IdGrupo,
+                                          tabla = "Externados",
+                                          rutaFoto = e.Sexo == "M" ? "Fotos/hombre.png" : "Fotos/mujer.png"
+                                      }).Union(from p in _context.Persona
+                                               join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into sg
+                                               from s in sg.DefaultIfEmpty()
+                                               join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                                               join r in _context.Reinsercion on p.IdPersona equals Int32.Parse(r.IdTabla) into pr
+                                               from r in pr.DefaultIfEmpty()
+                                               join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+                                               from c in cr.DefaultIfEmpty()
+                                               join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                               join g in _context.Grupo on t.GrupoIdGrupo equals g.IdGrupo
+                                               join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                               join a in _context.Asistencia on t.IdTerapia equals a.TerapiaIdTerapia into at
+                                               from a in at.DefaultIfEmpty()
+                                               where tp.Username == user.UserName.ToString() && r.Tabla == "persona" && t.FechaTerapia == FechaTerapia
+                                               orderby p.Nombre + " " + p.Paterno + " " + p.Materno
+                                               select new TerapiaAsistenciaViewModal
+                                               {
+                                                   idpersona = p.IdPersona,
+                                                   nombre = p.NombreCompleto,
+                                                   cp = cp.CausaPenal,
+                                                   FechaCanalizacion = t.FechaCanalizacion,
+                                                   Tipo = t.Tipo,
+                                                   IdGrupo = g.IdGrupo,
+                                                   tabla = "MCYSCP",
+                                                   rutaFoto = "Fotos/"+p.rutaFoto
+                                               }).Union(from p in _context.Personacl
+                                                        join s in _context.Supervisioncl on p.IdPersonaCl equals s.PersonaclIdPersonacl into sg
+                                                        from s in sg.DefaultIfEmpty()
+                                                        join cp in _context.Causapenalcl on s.IdSupervisioncl equals cp.IdCausaPenalcl
+                                                        join r in _context.Reinsercion on p.IdPersonaCl equals Int32.Parse(r.IdTabla) into pr
+                                                        from r in pr.DefaultIfEmpty()
+                                                        join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+                                                        from c in cr.DefaultIfEmpty()
+                                                        join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                                        join g in _context.Grupo on t.GrupoIdGrupo equals g.IdGrupo
+                                                        join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                                        join a in _context.Asistencia on t.IdTerapia equals a.TerapiaIdTerapia into at
+                                                        from a in at.DefaultIfEmpty()
+                                                        where tp.Username == user.UserName.ToString() && r.Tabla == "personacl" && t.FechaTerapia == FechaTerapia
+                                                        orderby p.Nombre + " " + p.Paterno + " " + p.Materno
+                                                        select new TerapiaAsistenciaViewModal
+                                                        {
+                                                            idpersona = p.IdPersonaCl,
+                                                            nombre = p.NombreCompleto,
+                                                            cp = cp.CausaPenal,
+                                                            FechaCanalizacion = t.FechaCanalizacion,
+                                                            Tipo = t.Tipo,
+                                                            IdGrupo = g.IdGrupo,
+                                                            tabla = "Libertad Condicionada",
+                                                            rutaFoto = "Fotoscl/"+p.RutaFoto
+                                                        });
+
+
+            return View();
+        }
+
+        public async Task<IActionResult> gruposAsistencia()
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
 
-            //var result = (from p in _context.Persona
-            //              join r in _context.Reinsercion on p.IdPersona equals r.IdTabla into pr
-            //              from r in pr.DefaultIfEmpty()
-            //              join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
-            //              from c in cr.DefaultIfEmpty()
-            //              join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
-            //              join g in _context.Grupo on t.Grupo_idGrupo equals g.IdGrupo
-            //              where g.IdGrupo == 10
-            //                    && t.FechaTerapia == new DateTime(2024, 8, 30, 0, 0, 0)
-            //                    && t.Estado == "Activo"
-            //              orderby p.Nombre + " " + p.Paterno + " " + p.Materno
-            //              select new
-            //              {
-            //                  IdPersona = p.IdPersona,
-            //                  NombreCompleto = p.Nombre + " " + p.Paterno + " " + p.Materno,
-            //                  Horario = g.Horario
-            //              }).ToList();
-
-
-            //ViewData["GurupoAsistencia"] = from p in _context.Persona
-            //                               join r in _context.Reinsercion on p.IdPersona equals r.IdTabla into pr
-            //                               from r in pr.DefaultIfEmpty()
-            //                               join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
-            //                               from c in cr.DefaultIfEmpty()
-            //                               join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
-            //                               join g in _context.Grupo on t.Grupo_idGrupo equals g.IdGrupo
-            //                               where g.IdGrupo == 10 && t.FechaTerapia == new DateTime(2024, 8, 30, 0, 0, 0) && t.Estado == "Activo"
-            //                               orderby p.Nombre + " " + p.Paterno + " " + p.Materno
-            //                               select new ReinsercionVM
-            //                               {
-            //                                   personaVM = p,
-            //                                   reinsercionVM = r,
-            //                                   canalizacionVM = c,
-            //                                   terapiaVM = t,
-            //                               };
-
+            ViewData["grupo"] = from g in _context.Grupo
+                                join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                where tp.Username == "madai.soto@dgepms.com"
+                                select new ReinsercionVM
+                                {
+                                    grupoVM = g,
+                                    terapeutasVM = tp
+                                };
 
 
             return View();
+        }
+
+        public IActionResult ListaDia(int idgrupo)
+        {
+
+
+            ViewData["Listadia"] = (from e in _context.Externados
+                                      join r in _context.Reinsercion on e.Idexternados equals Int32.Parse(r.IdTabla) into pr
+                                      from r in pr.DefaultIfEmpty()
+                                      join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+                                      from c in cr.DefaultIfEmpty()
+                                      join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                      join g in _context.Grupo on t.GrupoIdGrupo equals g.IdGrupo
+                                      join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                      join a in _context.Asistencia on t.IdTerapia equals a.TerapiaIdTerapia into at
+                                      from a in at.DefaultIfEmpty()
+                                      where g.IdGrupo  == idgrupo && t.FechaTerapia == DateTime.Parse("2024-08-30 00:00:00")
+                                      orderby e.Nombre + " " + e.APaterno + " " + e.AMaterno
+                                      select new TerapiaAsistenciaViewModal
+                                      {
+                                          idpersona = e.Idexternados,
+                                          nombre = e.Nombre + " " + e.APaterno + " " + e.AMaterno,
+                                          cp = e.CausaPenal,
+                                          FechaCanalizacion = t.FechaCanalizacion,
+                                          IdTerapia = t.IdTerapia,
+                                          Tipo = t.Tipo,
+                                          IdGrupo = g.IdGrupo,
+                                          tabla = "Externados",
+                                          rutaFoto = e.Sexo == "M" ? "Fotos/hombre.png" : "Fotos/mujer.png"
+                                      }).Union(from p in _context.Persona
+                                               join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona into sg
+                                               from s in sg.DefaultIfEmpty()
+                                               join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                                               join r in _context.Reinsercion on p.IdPersona equals Int32.Parse(r.IdTabla) into pr
+                                               from r in pr.DefaultIfEmpty()
+                                               join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+                                               from c in cr.DefaultIfEmpty()
+                                               join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                               join g in _context.Grupo on t.GrupoIdGrupo equals g.IdGrupo
+                                               join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                               join a in _context.Asistencia on t.IdTerapia equals a.TerapiaIdTerapia into at
+                                               from a in at.DefaultIfEmpty()
+                                               where g.IdGrupo == idgrupo && t.FechaTerapia == DateTime.Parse("2024-08-30 00:00:00")
+                                               orderby p.Nombre + " " + p.Paterno + " " + p.Materno
+                                               select new TerapiaAsistenciaViewModal
+                                               {
+                                                   idpersona = p.IdPersona,
+                                                   nombre = p.NombreCompleto,
+                                                   cp = cp.CausaPenal,
+                                                   FechaCanalizacion = t.FechaCanalizacion,
+                                                   IdTerapia = t.IdTerapia,
+                                                   Tipo = t.Tipo,
+                                                   IdGrupo = g.IdGrupo,
+                                                   tabla = "MCYSCP",
+                                                   rutaFoto = "Fotos/" + p.rutaFoto
+                                               }).Union(from p in _context.Personacl
+                                                        join s in _context.Supervisioncl on p.IdPersonaCl equals s.PersonaclIdPersonacl into sg
+                                                        from s in sg.DefaultIfEmpty()
+                                                        join cp in _context.Causapenalcl on s.IdSupervisioncl equals cp.IdCausaPenalcl
+                                                        join r in _context.Reinsercion on p.IdPersonaCl equals Int32.Parse(r.IdTabla) into pr
+                                                        from r in pr.DefaultIfEmpty()
+                                                        join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion into cr
+                                                        from c in cr.DefaultIfEmpty()
+                                                        join t in _context.Terapia on c.IdCanalizacion equals t.CanalizacionIdCanalizacion
+                                                        join g in _context.Grupo on t.GrupoIdGrupo equals g.IdGrupo
+                                                        join tp in _context.Terapeutas on Int32.Parse(g.Idterapeuta) equals tp.IdTerapeutas
+                                                        join a in _context.Asistencia on t.IdTerapia equals a.TerapiaIdTerapia into at
+                                                        from a in at.DefaultIfEmpty()
+                                                        where g.IdGrupo == idgrupo && t.FechaTerapia == DateTime.Parse("2024-08-30 00:00:00")
+                                                        orderby p.Nombre + " " + p.Paterno + " " + p.Materno
+                                                        select new TerapiaAsistenciaViewModal
+                                                        {
+                                                            idpersona = p.IdPersonaCl,
+                                                            nombre = p.NombreCompleto,
+                                                            cp = cp.CausaPenal,
+                                                            FechaCanalizacion = t.FechaCanalizacion,
+                                                            IdTerapia = t.IdTerapia,
+                                                            Tipo = t.Tipo,
+                                                            IdGrupo = g.IdGrupo,
+                                                            tabla = "Libertad Condicionada",
+                                                            rutaFoto = "Fotoscl/" + p.RutaFoto
+                                                        });
+
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<JsonResult> Asistencia(string arra)
+        {
+
+
+            return Json(new { success = true, responseText = Convert.ToString(""), idPersonas = Convert.ToString(2) });
         }
         #endregion
 
@@ -1558,6 +1729,9 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+
+
+      
 
         //#region ListaSeugunCaso2
 
