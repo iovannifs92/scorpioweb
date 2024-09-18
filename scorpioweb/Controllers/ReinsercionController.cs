@@ -30,6 +30,9 @@ using scorpioweb.Class;
 using scorpioweb.Migrations.ApplicationDb;
 using scorpioweb.Models;
 using Syncfusion.EJ2.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
+
 
 
 namespace scorpioweb.Controllers
@@ -380,7 +383,7 @@ namespace scorpioweb.Controllers
             return View(await PaginatedList<ReinsercionMCYSCPLCCURSVM>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
         #endregion
-        // GET: Reinsercion/Details/5
+   
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -573,19 +576,29 @@ namespace scorpioweb.Controllers
 
         public IActionResult FichaCanalizacion(int idReinsercion, int? id)
         {
-            
-            
-            var grupos = _context.Grupo.ToList();
-            ViewBag.Grupos = grupos;
+            if (idReinsercion == 0 && (id == null || id == 0))
+            {
+                return BadRequest("Id Reinsercion vacio!");
+            }
 
-            var terapeutas = _context.Terapeutas.ToList();
-            ViewBag.Terapeutas = terapeutas;
 
             if (idReinsercion == 0)
                 ViewBag.idReinsercion = id;
             else
                 ViewBag.idReinsercion = idReinsercion;
 
+            int idX = ViewBag.idReinsercion;
+            var existeIdReinsercion = _context.Reinsercion.Where(m=> m.IdReinsercion == idX).FirstOrDefault();
+            if(existeIdReinsercion == null)
+            {
+                return BadRequest("Id Reinsercion no existe en tabla reinsercion!");
+            }
+            var grupos = _context.Grupo.ToList();
+            ViewBag.Grupos = grupos;
+
+            var terapeutas = _context.Terapeutas.ToList();
+            ViewBag.Terapeutas = terapeutas;     
+       
             return View();
         }
 
@@ -610,7 +623,7 @@ namespace scorpioweb.Controllers
                     if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
                         await CrearTerapiaAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
 
-                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION"))
+                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION") || datosFichaCanalizacion.TipoCanalizacion.Equals("JORNADA"))
                         await CrearEjesReinsercionAsync(idNuevoRegistroCanalizacion, datosFichaCanalizacion.Datos);
                 }
                 else
@@ -618,7 +631,7 @@ namespace scorpioweb.Controllers
                     if (datosFichaCanalizacion.TipoCanalizacion.Equals("TERAPIA"))
                         await CrearTerapiaAsync(idRegistroCanalizacion, datosFichaCanalizacion.Datos);
 
-                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION"))
+                    else if (datosFichaCanalizacion.TipoCanalizacion.Equals("EJESREINSERCION") || datosFichaCanalizacion.TipoCanalizacion.Equals("JORNADA"))
                         await CrearEjesReinsercionAsync(idRegistroCanalizacion, datosFichaCanalizacion.Datos);
                 }
                 bool borrar = false;
@@ -633,9 +646,22 @@ namespace scorpioweb.Controllers
                         //viewUrl = Url.Action("EjesReinsercion", "Reinsercion", new { id = datosFichaCanalizacion.IdReinsercion });
 
                         //string viewUrl = string.Empty;
-
-                        viewUrl = Url.Action("EjesReinsercion/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
-
+                        switch (datosFichaCanalizacion.TipoCanalizacion)
+                        {
+                            case "EJESREINSERCION":
+                                viewUrl = Url.Action("EjesReinsercion/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                                break;
+                            case "TERAPIA":
+                                viewUrl = Url.Action("Terapias/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                                break;
+                            case"JORNADA":
+                                     viewUrl = Url.Action("Jornadas/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                                break;
+                            default:
+                                 viewUrl = Url.Action("Reinsercion", "Reinsercion");
+                                break;
+                        }
+                      
                         return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = viewUrl, id = datosFichaCanalizacion.IdReinsercion });
 
                         //return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl});
@@ -651,8 +677,8 @@ namespace scorpioweb.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, responseText = $"Error al crear la ficha: {ex.Message}" });
-            }
+                return Json(new { success = false, responseText = $"Error al crear la ficha: {ex.InnerException}" });
+            }     
         }
 
         #region - ID Canalizacion -
@@ -767,14 +793,17 @@ namespace scorpioweb.Controllers
                             ficha.Tipo = eje;
                         ficha.FechaCanalizacion = DateTime.Now;
                         ficha.Lugar = mg.normaliza(DatosEjesDeserializados.Lugar);
+                        ficha.Area = mg.normaliza(DatosEjesDeserializados.Area);
+                        ficha.FechaLimite = DatosEjesDeserializados.FechaLimite;
                         ficha.FechaProgramada = DatosEjesDeserializados.FechaProgramada;
-
+                        ficha.HorasJornada = mg.normaliza(DatosEjesDeserializados.HorasJornadas);
+                        ficha.NoHoraJornada = DatosEjesDeserializados.NoHoraJornada;
                         if (DatosEjesDeserializados.Observaciones.Equals(""))
                             ficha.Observaciones = "NA";
                         else
                             ficha.Observaciones = mg.normaliza(DatosEjesDeserializados.Observaciones);
 
-                        ficha.Estado = mg.normaliza(DatosEjesDeserializados.Estado);
+                        ficha.Estado = mg.normaliza(DatosEjesDeserializados.Estado);                     
                         ficha.CanalizacionIdCanalizacion = idCanalizacion;
 
                         _context.Ejesreinsercion.Add(ficha);
@@ -1051,7 +1080,7 @@ namespace scorpioweb.Controllers
 
 
         #endregion
-        // GET: Reinsercion/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -1067,9 +1096,6 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
-        // POST: Reinsercion/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdReinsercion,IdTabla,Tabla,Lugar,Estado")] Reinsercion reinsercion)
@@ -1102,71 +1128,38 @@ namespace scorpioweb.Controllers
             return View(reinsercion);
         }
 
-        #region -Borrar Registro de Reinsercion-
-
-        [HttpPost]
-        public async Task<JsonResult> BorrarRegistroReinsercion(int idReinsercion)
-        {
-            if(idReinsercion == 0)
-            {
-                return Json(new { success = false, message = "Error, idReinsercion vacio, metodo: BorrarRegistroReinsercion, vista:Reinsercion" });
-
-            }
-
-            // EL idcanalizacion solo puede existir si ya se creo una ficha de canalizacion
-            var TieneCanalizaciones = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == idReinsercion).Select(m => m.IdCanalizacion).CountAsync();
-
-            if (TieneCanalizaciones > 0)
-            {
-                return Json(new { success = false, message = "Error, no se puede borrar el registro por que este ya cuenta con una canalizacion!" });
-            }
-            var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == idReinsercion);
-
-            _context.Reinsercion.Remove(reinsercion);
-             await _context.SaveChangesAsync();
-            
-            return Json(new { success = true, message = "Borrado con exito!"});
-        }
-
-        #endregion
-
-        // GET: Reinsercion/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var reinsercion = await _context.Reinsercion
-        //        .SingleOrDefaultAsync(m => m.IdReinsercion == id);
-        //    if (reinsercion == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(reinsercion);
-        //}
-
-        //// POST: Reinsercion/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == id);
-        //    _context.Reinsercion.Remove(reinsercion);
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
-
         private bool ReinsercionExists(int id)
         {
             return _context.Reinsercion.Any(e => e.IdReinsercion == id);
         }
-        public IActionResult MenuReinsercion()
+
+        #region -Menu Reinsercion-
+        public async Task<IActionResult> MenuReinsercion()
         {
+            DateTime fechaActual = DateTime.Now;
+            DateTime unMesAnterior = DateTime.Now.AddDays(-30);
+            ViewBag.AlertasCount = await(from persona in _context.Persona
+                                join supervicionMC in _context.Supervision on persona.IdPersona equals supervicionMC.PersonaIdPersona
+                                join cierreDeCasoMC in _context.Cierredecaso on supervicionMC.IdSupervision equals cierreDeCasoMC.SupervisionIdSupervision
+                                where cierreDeCasoMC.SeCerroCaso.Equals("SI") &&
+                                (cierreDeCasoMC.FechaAprobacion >= unMesAnterior && cierreDeCasoMC.FechaAprobacion <= fechaActual)
+                                select new
+                                {
+                                 IdTabla = persona.IdPersona
+                                }).Union(
+                               from personaCL in _context.Personacl
+                               join supervisionCL in _context.Supervisioncl on personaCL.IdPersonaCl equals supervisionCL.PersonaclIdPersonacl
+                               join cierreDeCasoCL in _context.Cierredecasocl on supervisionCL.IdSupervisioncl equals cierreDeCasoCL.SupervisionclIdSupervisioncl
+                               where cierreDeCasoCL.SeCerroCaso.Equals("SI") &&
+                               (cierreDeCasoCL.FechaAprobacion >= unMesAnterior && cierreDeCasoCL.FechaAprobacion <= fechaActual)
+                               select new 
+                               {
+                                   IdTabla = personaCL.IdPersonaCl
+                               }).CountAsync();
             return View();
         }
+
+        #endregion
 
         #region -Menu Supervision-
         public async Task<IActionResult> Menusupervision(int? id)
@@ -1248,6 +1241,34 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region -Borrar Registro de Reinsercion-
+
+        [HttpPost]
+        public async Task<JsonResult> BorrarRegistroReinsercion(int idReinsercion)
+        {
+            if (idReinsercion == 0)
+            {
+                return Json(new { success = false, message = "Error, idReinsercion vacio, metodo: BorrarRegistroReinsercion, vista:Reinsercion" });
+
+            }
+
+            // EL idcanalizacion solo puede existir si ya se creo una ficha de canalizacion
+            var TieneCanalizaciones = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == idReinsercion).Select(m => m.IdCanalizacion).CountAsync();
+
+            if (TieneCanalizaciones > 0)
+            {
+                return Json(new { success = false, message = "Error, no se puede borrar el registro por que este ya cuenta con una canalizacion!" });
+            }
+            var reinsercion = await _context.Reinsercion.SingleOrDefaultAsync(m => m.IdReinsercion == idReinsercion);
+
+            _context.Reinsercion.Remove(reinsercion);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Borrado con exito!" });
+        }
+
+        #endregion
+
         #region -EjesReincercion-
         public async Task<IActionResult> EjesReinsercion(int? id)
         {
@@ -1269,15 +1290,18 @@ namespace scorpioweb.Controllers
             ViewBag.idReinsercion = id;
             ViewBag.IdCanalizacion = reincercion.IdCanalizacion;
 
+
             var datosreincercion  = from r in _context.Reinsercion
                                 join c in _context.Canalizacion on r.IdReinsercion equals c.ReincercionIdReincercion
-                                join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion
-                                where r.IdReinsercion == id
+                                join er in _context.Ejesreinsercion on c.IdCanalizacion equals er.CanalizacionIdCanalizacion                               
+                                where r.IdReinsercion == id && er.Tipo != "JORNADA"
                                 select new ReinsercionVM
                                 {
                                     ejesreinsercionVM = er,
                                     canalizacionVM = c,
-                                    reinsercionVM = r
+                                    reinsercionVM = r,
+                                    Monitoreos = _context.Monitoreo.Where(mo => mo.IdEjeReinsercion == er.IdejesReinsercion).ToList()
+
                                 };
 
             ViewData["EjesReinsercion"] = datosreincercion;
@@ -1318,7 +1342,6 @@ namespace scorpioweb.Controllers
             return View(id);
         }
         #endregion
-
 
         #region -Editar Ejes de reinaercion-
         [HttpPost]
@@ -1363,7 +1386,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Borrar Eje Reinsercion-
-        public JsonResult BorrarEje(int id)
+        public async Task<JsonResult> BorrarEje(int id)
         {
             var borrar = false;
 
@@ -1378,7 +1401,12 @@ namespace scorpioweb.Controllers
             string viewUrl = string.Empty;
 
             viewUrl = Url.Action("EjesReinsercion/" + reincercion.IdReinsercion, "Reinsercion");
+            var TieneMonitoreos = await _context.Monitoreo.Where(m => m.IdEjeReinsercion == id).ToListAsync();
+            if(TieneMonitoreos.Count() > 0)
+            {
 
+                return Json(new { borrar, message = "El id Cuenta con monitoreos! no se puede borrar"});
+            }
 
             try
             {
@@ -1417,8 +1445,6 @@ namespace scorpioweb.Controllers
             
             return Json(new List<string>());
         }
-
-
 
         #region -OficiosCanalizacion-
         public IActionResult OficiosCanalizacion(int? id, int idReinsercion)
@@ -1711,7 +1737,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
         #region ListaSeugunCaso
 
         [HttpGet]
@@ -1729,6 +1754,21 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+        #region Monitoreo
+
+        [HttpPost]
+        public async Task<JsonResult> CrearMonitoreo([FromBody] Monitoreo monitoreo)
+        {
+            if (monitoreo == null)
+                return Json(new { success = false, message = "Datos de monitoreo nulos!" });
+            if (monitoreo.IdEjeReinsercion == 0)
+                return Json(new { success = false, message = "idEjesReinsercion vacio!" });
+           monitoreo.Fecha = DateTime.Now;
+           await _context.Monitoreo.AddAsync(monitoreo);
+           await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Monitoreo agregado con exito!" });
+        }
+        #endregion
 
 
       
@@ -1749,6 +1789,252 @@ namespace scorpioweb.Controllers
         //    }
         //}
         //#endregion
+
+        #region -Jornadas -
+        public async Task<IActionResult> Jornadas(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+            if (id == 0)
+            {
+                return BadRequest("id no valido!");
+            }
+
+            int idCanalizacion = await _context.Canalizacion.Where(m => m.ReincercionIdReincercion == id).Select(m => m.IdCanalizacion).FirstAsync();
+
+            var jornadas = await(from j in _context.Ejesreinsercion
+                                 where j.CanalizacionIdCanalizacion == idCanalizacion && j.Tipo.Equals("JORNADA")
+                                 select j).ToListAsync();
+
+            var monitoreos = await (from mo in _context.Monitoreo
+                                    join j in jornadas on mo.IdEjeReinsercion equals j.IdejesReinsercion
+                                    select mo).ToListAsync();
+
+            var jornadasMonitoreos = jornadas.Select(j => new JornadasMonitoreoViewModel
+            {
+                Jornadas = j,
+                Monitoreos = monitoreos.Where(mo => mo.IdEjeReinsercion == j.IdejesReinsercion).ToList()
+            }).ToList();
+
+            ViewBag.idCanalizacion = idCanalizacion;
+        
+            return View(jornadasMonitoreos);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> CrearJornada([FromBody] Ejesreinsercion ejesReinsercion)
+        {
+            if (ejesReinsercion == null)
+                return Json(new { success = false, message = "Datos de la jornada vacíos!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Tipo))
+                return Json(new { success = false, message = "Error en tipo!" });
+            if (ejesReinsercion.CanalizacionIdCanalizacion == 0)
+                return Json(new { success = false, message = "Error en idCanalizacion!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Estado))
+                return Json(new { success = false, message = "Selecciona el estado de la jornada!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.HorasJornada))
+                return Json(new { success = false, message = "Selecciona horas o jornadas!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.NoHoraJornada))
+                return Json(new { success = false, message = "Especifica la cantidad de horas o jornadas!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Lugar))
+                return Json(new { success = false, message = "Lugar vacío!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Area))
+                return Json(new { success = false, message = "Área vacía!" });
+
+            if (string.IsNullOrEmpty(ejesReinsercion.Estado))
+                return Json(new { success = false, message = "Estado vacío!" });
+
+            if (ejesReinsercion.FechaProgramada == null || ejesReinsercion.FechaProgramada == DateTime.MinValue)
+                return Json(new { success = false, message = "Fecha Programada vacía!" });
+
+            try
+            {
+                ejesReinsercion.FechaCanalizacion = DateTime.Now;
+                if (string.IsNullOrEmpty(ejesReinsercion.Observaciones))
+                    ejesReinsercion.Observaciones = "NA";
+                await _context.Ejesreinsercion.AddAsync(ejesReinsercion);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Jornada creada con éxito!" });
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log error (ejemplo: _logger.LogError(ex, "Error al actualizar la base de datos"))
+                return Json(new { success = false, message = "Hubo un error al guardar la jornada. Comunicarse con el administrador del sistema." });
+            }
+            catch (Exception ex)
+            {
+                // Log error (ejemplo: _logger.LogError(ex, "Error general"))
+                return Json(new { success = false, message = "Ocurrió un error inesperado. Comunicarse con el administrador del sistema" });
+            }
+        }
+        [HttpPost]
+        public async Task<JsonResult> ActualizarJornada(int idJornada, string valor, string NombreCampo, Ejesreinsercion jornada)
+        {
+
+            if (idJornada == 0)
+                return Json(new { success = false, message = "IdJornada vacio." });
+
+            jornada = await _context.Ejesreinsercion.SingleOrDefaultAsync(c => c.IdejesReinsercion == idJornada);
+
+            if (jornada == null)
+                return Json(new { success = false, message = "IdJornada no encontrado." });
+
+            if(string.IsNullOrEmpty(NombreCampo))
+                return Json(new { success = false, message = "Nombre del campo vacio." });
+
+            if (string.IsNullOrEmpty(valor))
+                return Json(new { success = false, message = "valor del campo vacio." });
+
+            else
+            {
+                switch (NombreCampo)
+                {
+                    case "Lugar":
+                        jornada.Lugar = mg.normaliza(valor);
+                        break;
+                    case "Area":
+                        jornada.Area = mg.normaliza(valor);
+                        break;
+
+                    case "FechaCanalizacion":
+                        DateTime? fechaCanalizacion = ConvertirAFecha(valor);
+                        if (fechaCanalizacion.HasValue)
+                            jornada.FechaCanalizacion = fechaCanalizacion.Value;
+                        else
+                            return Json(new { success = false, message = "Formato de fecha no válido para FechaCanalizacion." });
+                        break;
+
+                    case "FechaProgramada":
+                        DateTime? fechaProgramada = ConvertirAFecha(valor);
+                        if (fechaProgramada.HasValue)
+                            jornada.FechaProgramada = fechaProgramada.Value;
+                        else
+                            return Json(new { success = false, message = "Formato de fecha no válido para FechaInicioTerapia." });
+                        break;
+
+                    case "FechaLimite":
+                        DateTime? fechaLimite = ConvertirAFecha(valor);
+                        if (fechaLimite.HasValue) 
+                            jornada.FechaLimite = fechaLimite.Value;
+                        else
+                            return Json(new { success = false, message = "Formato de fecha no válido para FechaTerminoTerapia." });
+                        break;
+
+                    case "Estado":
+                        jornada.Estado = mg.normaliza(valor);
+                        break;
+
+                    case "HorasJornada":
+                        jornada.HorasJornada = mg.normaliza(valor);
+                        break;
+
+                    case "NoHoraJornada":
+                        jornada.NoHoraJornada = mg.normaliza(valor);
+                        break;
+
+                    case "Observaciones":
+                        jornada.Observaciones = mg.normaliza(valor);
+                        break; 
+
+                    default:
+                        return Json(new { success = false, message = "Campo no válido." });
+                }
+
+                _context.Ejesreinsercion.Update(jornada);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Jornada actualizada correctamente." });
+            }
+        }
+        #endregion
+
+
+        #region -Alertas-
+        public async Task<IActionResult> AlertasReinsercion(int? page,string searchString,string selectSearch)
+        {
+            if (!string.IsNullOrEmpty(selectSearch) && selectSearch.Equals("TODOS")) 
+                searchString = null;
+            
+            ViewBag.CurrentSelectSearch = selectSearch;
+            ViewBag.CurrentSearchString = searchString;
+            DateTime fechaActual = DateTime.Now;
+            DateTime unMesAnterior = DateTime.Now.AddDays(-30);
+
+            if (searchString != null && (page == 0 || page == null))
+            {
+                page = 1;
+            }
+          
+
+            // LA QUERY VA A CRECER CONFORME SE VAYAN AGREGANDO MAS ALERTAS
+            var query = (from persona in _context.Persona
+                         join supervicionMC in _context.Supervision on persona.IdPersona equals supervicionMC.PersonaIdPersona
+                         join cierreDeCasoMC in _context.Cierredecaso on supervicionMC.IdSupervision equals cierreDeCasoMC.SupervisionIdSupervision
+                         where cierreDeCasoMC.SeCerroCaso.Equals("SI") &&
+                         (cierreDeCasoMC.FechaAprobacion >= unMesAnterior && cierreDeCasoMC.FechaAprobacion <= fechaActual)
+                         select new AlertasReinsercionViewModel
+                         {
+                             IdTabla = persona.IdPersona,
+                             Nombre = $"{persona.Nombre} {persona.Paterno} {persona.Materno}",
+                             Area = "MC Y SCP",
+                             TipoAlerta = "Caso cerrado",
+                             CierreCasoMC = cierreDeCasoMC
+                         }).Union(
+                       from personaCL in _context.Personacl
+                       join supervisionCL in _context.Supervisioncl on personaCL.IdPersonaCl equals supervisionCL.PersonaclIdPersonacl
+                       join cierreDeCasoCL in _context.Cierredecasocl on supervisionCL.IdSupervisioncl equals cierreDeCasoCL.SupervisionclIdSupervisioncl
+                       where cierreDeCasoCL.SeCerroCaso.Equals("SI") &&
+                       (cierreDeCasoCL.FechaAprobacion >= unMesAnterior && cierreDeCasoCL.FechaAprobacion <= fechaActual)
+                       select new AlertasReinsercionViewModel
+                       {
+                           IdTabla = personaCL.IdPersonaCl,
+                           Nombre = $"{personaCL.Nombre} {personaCL.Paterno} {personaCL.Materno}",
+                           Area = "CL",
+                           TipoAlerta = "Caso cerrado",
+                           CierreCasoCL = cierreDeCasoCL
+                       });
+
+            
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(s => s.Nombre.Contains(searchString.ToUpper()));
+            }
+            switch (selectSearch)
+            {
+                case "TODOS":
+                    query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.IdTabla);
+                    break;
+                case "MCYSCP":
+                    query = query.Where(m => m.Area == "MC Y SCP");
+                    break;
+                case "CL":
+                    query = query.Where(m => m.Area == "CL");
+                    break;              
+                case "CASOCERRADO":
+                    query = query.Where(m => m.CierreCasoMC.SeCerroCaso.Equals("SI") && m.CierreCasoCL.SeCerroCaso.Equals("SI"));
+                    break;
+                default:
+                    query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.IdTabla);
+                    break;
+            }
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+                     
+            var paginatedList = await PaginatedList<AlertasReinsercionViewModel>.CreateAsync(query.AsNoTracking(), pageNumber,pageSize);
+
+            return View(paginatedList);
+        }
+        #endregion
 
     }
 }

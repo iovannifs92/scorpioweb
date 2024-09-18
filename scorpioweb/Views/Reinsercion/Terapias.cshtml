@@ -177,21 +177,28 @@
                                         <td>@terapia.First().Tipo</td>
                                         <td class="Titulo">Estado:</td>
                                         <td>
-                                            @*PENDIENTE DE CAMBIAR PROBABLEMENTE SEA UNA LISTA*@
+                                       
                                             <select class="form-control" id="Estado_@terapia.Key">
                                                 <option value="@terapia.First().Estado">@terapia.First().Estado</option>
-                                                @if (terapia.First().PeriodiciadTerapia == "ACTIVO")
-                                                {
-                                                    <option value="INACTIVO">INACTIVO</option>
-                                                }
-                                                else if (terapia.First().PeriodiciadTerapia == "INACTIVO")
+                                                @if (terapia.First().Estado != "ACTIVO")
                                                 {
                                                     <option value="ACTIVO">ACTIVO</option>
                                                 }
-                                                else
+                                                @if (terapia.First().Estado != "ESPERA")
                                                 {
-                                                    <option value="ACTIVO">ACTIVO</option>
-                                                    <option value="INACTIVO">INACTIVO</option>
+                                                    <option value="ESPERA">ESPERA</option>
+                                                }
+                                                @if (terapia.First().Estado != "ALTA")
+                                                {
+                                                    <option value="ALTA">ALTA (CONCLUIDO)</option>
+                                                }
+                                                @if (terapia.First().Estado != "TERMINO")
+                                                {
+                                                    <option value="TERMINO">TERMINO</option>
+                                                }
+                                                @if (terapia.First().Estado != "BAJA")
+                                                {
+                                                    <option value="BAJA">BAJA</option>
                                                 }
                                             </select>
                                         </td>

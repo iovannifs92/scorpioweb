@@ -1,4 +1,6 @@
-﻿namespace scorpioweb.Models
+﻿using System.Collections.Generic;
+
+namespace scorpioweb.Models
 {
     public class ReinsercionVM
     {
@@ -16,6 +18,7 @@
         public Grupo grupoVM { get; set; }    
         public Asistencia asistenciaVM { get; set;}
         public Terapeutas terapeutasVM { get; set;}
+        public List<Monitoreo> Monitoreos { get; set; }
 
     }
 }
