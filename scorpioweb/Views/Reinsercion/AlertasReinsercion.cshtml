@@ -1,7 +1,7 @@
 ﻿@model PaginatedList<scorpioweb.Models.AlertasReinsercionViewModel>
-@{
-    ViewData["Tittle"] = "Alertas";
 
+@{
+    ViewData["Title"] = "Alertas reinsercion";
 }
 <style>
     .top-content h2 {
@@ -60,6 +60,7 @@
             <th>Nombre completo</th>
             <th>Area</th>
             <th>Tipo alerta</th>
+            <th>Fecha de cierre</th>
         </tr>
     </thead>
     <tbody>
@@ -80,10 +81,19 @@
                 @if (item.TipoAlerta.Equals("Caso cerrado"))
                 {
                     <td>Se cerro caso este mes</td>
+                    @if (item.Area.Equals("CL"))
+                    {
+                        <td>@item.CierreCasoCL.FechaAprobacion</td>
+                    }
+                    else
+                    {
+                        <td>@item.CierreCasoMC.FechaAprobacion</td>
+                    }
                 }
                 else
                 {
                     <td>@item.TipoAlerta</td>
+                    <td>--------</td>
                 }
                  
             </tr>
@@ -133,3 +143,7 @@
         }
     </ul>
 </nav>
+
+<div style="margin-top:20px">
+    <a asp-action="MenuReinsercion">Regresar a Menu</a>
+</div>

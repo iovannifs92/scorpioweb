@@ -402,7 +402,7 @@ namespace scorpioweb.Controllers
         }
 
         #region -Añadir Externado-
-        public IActionResult ModalAgregarExternado()
+        public IActionResult AgregarExternado()
         {
             List<Estados> listaEstados = new List<Estados>();
             listaEstados = (from table in _context.Estados
@@ -414,48 +414,37 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> CrearExternado([FromBody] Externados externado)
+        public async Task<IActionResult> CrearExternado(Externados externado)
         {
             // VERIFICACION DE DATOS 
-            if (externado == null)            
-                return Json(new { success = false, message = "Datos de externado vacíos! método: CrearExternado" });       
+            if (externado == null)
+                return Json(new { success = false, message = "Datos de externado vacíos! método: CrearExternado" });
             else if (string.IsNullOrEmpty(externado.Nombre) || string.IsNullOrEmpty(externado.APaterno) || string.IsNullOrEmpty(externado.AMaterno))
                 return Json(new { success = false, message = "Nombre(s) o apellidos de la persona vacios!" });
-
             else if (string.IsNullOrEmpty(externado.FechaNacimiento))
                 return Json(new { success = false, message = "Fecha de nacimiento vacia!" });
-
             else if (externado.Edad == 0)
                 return Json(new { success = false, message = "Verifica la edad!" });
-
             else if (externado.Sexo.Equals("Seleccione una opción"))
                 return Json(new { success = false, message = "Selecciona un genero!" });
-
             else if (externado.LnEstado.Equals("0"))
                 return Json(new { success = false, message = "Elige un estado de nacimiento!" });
-
             else if (string.IsNullOrEmpty(externado.ClaveUnicaScorpio) || string.IsNullOrEmpty(externado.Curp))
                 return Json(new { success = false, message = "CURP vacia!" });
-
             else if (string.IsNullOrEmpty(externado.CausaPenal))
                 return Json(new { success = false, message = "Causa penal vacia!" });
-
             else if (string.IsNullOrEmpty(externado.Delito))
                 return Json(new { success = false, message = "Delito vacio!" });
-
             try
             {
                 if (string.IsNullOrEmpty(externado.Observaciones))
                     externado.Observaciones = "NA";
                 _context.Externados.Add(externado);
                 await _context.SaveChangesAsync();
-
-                var ultimoRegistro = await _context.Externados.OrderByDescending(e => e.Idexternados).FirstOrDefaultAsync();
-
-                string IdGenerado = ultimoRegistro.Idexternados.ToString();
+                int IdUltimoRegistro = await _context.Externados.OrderByDescending(e=> e.Idexternados).Select(e=>e.Idexternados).FirstOrDefaultAsync();
+                string IdGenerado = IdUltimoRegistro.ToString();
                 string NombreTabla = "externados";
-                string NombreCompleto = ultimoRegistro.Nombre + " " + ultimoRegistro.APaterno + " " + ultimoRegistro.AMaterno;
-
+                string NombreCompleto = await _context.Externados.OrderByDescending(e => e.Idexternados).Select(e => e.Nombre + e.APaterno + e.AMaterno).FirstOrDefaultAsync();
                 return Json(new { success = true, message = "Externado creado exitosamente!", idTabla = IdGenerado, tabla = NombreTabla, nombrePersona = NombreCompleto });
             }
             catch (DbUpdateException ex)
@@ -1988,7 +1977,8 @@ namespace scorpioweb.Controllers
                              Nombre = $"{persona.Nombre} {persona.Paterno} {persona.Materno}",
                              Area = "MC Y SCP",
                              TipoAlerta = "Caso cerrado",
-                             CierreCasoMC = cierreDeCasoMC
+                             CierreCasoMC = cierreDeCasoMC,
+                             FechaAprobacion = cierreDeCasoMC.FechaAprobacion
                          }).Union(
                        from personaCL in _context.Personacl
                        join supervisionCL in _context.Supervisioncl on personaCL.IdPersonaCl equals supervisionCL.PersonaclIdPersonacl
@@ -2001,18 +1991,21 @@ namespace scorpioweb.Controllers
                            Nombre = $"{personaCL.Nombre} {personaCL.Paterno} {personaCL.Materno}",
                            Area = "CL",
                            TipoAlerta = "Caso cerrado",
-                           CierreCasoCL = cierreDeCasoCL
+                           CierreCasoCL = cierreDeCasoCL,
+                           FechaAprobacion = cierreDeCasoCL.FechaAprobacion
                        });
 
+            
             
             if (!String.IsNullOrEmpty(searchString))
             {
                 query = query.Where(s => s.Nombre.Contains(searchString.ToUpper()));
+            
             }
             switch (selectSearch)
             {
                 case "TODOS":
-                    query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.IdTabla);
+                    query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.FechaAprobacion);
                     break;
                 case "MCYSCP":
                     query = query.Where(m => m.Area == "MC Y SCP");
@@ -2021,7 +2014,10 @@ namespace scorpioweb.Controllers
                     query = query.Where(m => m.Area == "CL");
                     break;              
                 case "CASOCERRADO":
-                    query = query.Where(m => m.CierreCasoMC.SeCerroCaso.Equals("SI") && m.CierreCasoCL.SeCerroCaso.Equals("SI"));
+                    query = query.Where(m =>
+                        (m.Area == "MC Y SCP" && m.CierreCasoMC != null && m.CierreCasoMC.SeCerroCaso.Equals("SI")) ||
+                        (m.Area == "CL" && m.CierreCasoCL != null && m.CierreCasoCL.SeCerroCaso.Equals("SI"))
+                    );
                     break;
                 default:
                     query = query.OrderByDescending(m => m.Area == "CL").ThenBy(m => m.IdTabla);

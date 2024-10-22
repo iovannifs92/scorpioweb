@@ -1,24 +1,38 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html>
 <head>
     @*Fullcallendar*@
     <link href='~/fullcalendar/lib/main.css' rel='stylesheet' />
     <script src='~/fullcalendar/lib/main.js'></script>
     <script src='~/fullcalendar/lib/locales/es-us.js'></script>
-
-
-
     <script src='~/lib/sweetalert/sweetalert2.js'></script>
     <link rel="stylesheet" href="~/css/sweetalert2.css">
-   
-
-
-
     <script src="~/lib/Microsoft/signalr.min.js"></script>
     <script src="https://unpkg.com/rxjs@7/dist/bundles/rxjs.umd.min.js"></script>
-
-
     <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            var pages = document.getElementById("navbar-items");
+            var numberOfChildren = pages.getElementsByTagName('li').length;
+            if (numberOfChildren > 6) {
+
+                ReacomodateNavBar();
+            }
+
+        });
+        function ReacomodateNavBar() {
+            var LIdropDown = document.getElementById('dropdownLI').style.display = '';
+            var sourceUl = document.getElementById('navbar-items');
+            var destinationUl = document.getElementById('dropdown-menu');
+            var lis = sourceUl.getElementsByTagName('li');
+            var lisArray = Array.from(lis);
+            lisArray.slice(5).forEach(function (li) {
+                destinationUl.appendChild(li);
+            });
+            
+
+        }
         var connection = new signalR.HubConnectionBuilder().withUrl("/message").build();
 
         connection.start().then(function () {
@@ -58,7 +72,7 @@
                 title: message
             });
         });
-        
+
         connection.on("alertCierreCaso", (message) => {
             var audio = new Audio('Audio/Notifiacion1.mp3');
             const Toast = Swal.mixin({
@@ -79,7 +93,6 @@
             audio.play();
         });
     </script>
-
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
@@ -107,7 +120,28 @@
     @*<script src="~/js/jquery-1.11.1.min.js"></script>*@
     <script src="~/js/jquerylocalvalidate.js"></script>
 </head>
+<style>
+    .separar {
+        margin-top: 10px;
+    }
+
+    .my-toast {
+        font-size: 35px;
+    }
+
+    .my-toast-content {
+        padding: 40px;
+    }
+
+    .swal2-popup {
+        font-size: 1.6rem;
+        max-width: 1000px;
+    }
+
+</style>
+
 <body>
+
     <nav class="navbar navbar-inverse navbar-fixed-top" , id="header">
         <div class="container">
             <div class="navbar-header">
@@ -120,12 +154,12 @@
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand" style="padding: 15px 15px;">SCORPIO</a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    
+                <ul class="nav navbar-nav" id="navbar-items">
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminCL") || User.IsInRole("SupervisorLC"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Create">Entrevista</a></li>
-                    }                 
+                    }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
@@ -137,7 +171,7 @@
                     }
 
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP"))
-                    {                        
+                    {
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE MC Y SCP*@
@@ -145,7 +179,7 @@
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Index">MC y SCP</a></li>
                     }
-                   
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
@@ -169,18 +203,21 @@
                         if (User.IsInRole("OficialiaAsistente"))
                         {
                             <li><a asp-area="" asp-controller="Oficialia" asp-action="EditRegistros">Oficialia</a></li>
-                        }else
-                        {
-                           <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>  
                         }
-                       
+                        else
+                        {
+                            <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
+                        }
+
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia"))
                     {
                         if (User.IsInRole("Oficialia"))
                         {
                             <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecucion</a></li>
-                        }else{
+                        }
+                        else
+                        {
                             <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
                         }
 
@@ -198,7 +235,11 @@
                     {
                         <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicologia</a></li>
                     }
-
+                    <li class="nav-item dropdown more-dropdown" id="dropdownLI" style="display:none;">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Más <span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="dropdown-menu">
+                        </ul>
+                    </li>
                 </ul>
 
                 @await Html.PartialAsync("_LoginPartial")
@@ -207,7 +248,6 @@
         </div>
     </nav>
 
-   
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -277,7 +317,6 @@
         </div>
     }
 
-
     <div class="container body-content">
         @RenderBody()
 
@@ -295,7 +334,7 @@
                     <input id="victima" name="victima" type="checkbox" onclick="validate()" title="Buscar Nombre en victimas"></input>
                     <button type="submit" id="buscar" class="form-control" name="buscar" onclick="Buscar()"><i class="fa fa-search"></i></button>
                     <button type="submit" id="buscarConcat" class="form-control" name="buscarConcat" onclick="BuscarConcat()" style="display:none"><i class="fa fa-search"></i></button>
-                    <button onclick="mostraralerta()">alertaaaaa</button>
+                    @*       <button onclick="mostraralerta()">alertaaaaa</button> *@
                 </div>
                 <div id="nombre" class="col-3 col-md-3" style="float:right">
                     <input type="text" class="form-control" id="Nombre" name="Nombre" onkeypress="return soloLetras(event)" placeholder="Nombre...">
@@ -349,9 +388,8 @@
     <ejs-scripts></ejs-scripts>
 </body>
 </html>
-
-
 <script>
+ 
     let esVictima = false;
     function validate() {
         if (document.getElementById('victima').checked) {
@@ -418,8 +456,6 @@
             }
         });
     };
-
-
 
     function Buscar() {
         var paterno = document.getElementById("Paterno").value.toUpperCase();
@@ -508,12 +544,11 @@
     };
 
     function pasarvalor(nombre) {
-        //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor", 
+        //PASO EL VALOR DESDE LA TABLA DE EL MODAL "testsimilitud",A LA FUNCIUON "pasarvalor",
         //ESTE USA  window.parent.miFuncionEnPaginaPrincipal(nombre) PARA MANDARLO A LA PAGUINA PRINCIPAL; + "<div class=\"col-md-3\"><a  onclick='pasarvalor(\"" + response.busqueda[i].id + "\")' style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Ir</a ></div>";
 
         window.parent.miFuncionEnPaginaPrincipal(nombre);
     };
-
 
     function soloLetras(e) {
         var key = e.keyCode || e.which,
@@ -534,24 +569,3 @@
         }
     }
 </script>
-<style>
-    .separar {
-        margin-top: 10px;
-    }
-
-    .my-toast {
-        font-size: 35px;
-    }
-
-    .my-toast-content {
-        padding: 40px;
-    }
-
-    .swal2-popup {
-        font-size: 1.6rem;
-        max-width: 1000px;
-    }
-
-</style>
-
-

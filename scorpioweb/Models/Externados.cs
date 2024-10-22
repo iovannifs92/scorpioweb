@@ -9,7 +9,7 @@ namespace scorpioweb.Models
         public string Nombre { get; set; }
         public string APaterno { get; set; }
         public string AMaterno { get; set; }
-        public int? Telefono { get; set; }
+        public string Telefono { get; set; }
         public string LnEstado { get; set; }
         public string FechaNacimiento { get; set; }
         public string Sexo { get; set; }

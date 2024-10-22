@@ -1,4 +1,6 @@
-﻿namespace scorpioweb.Models
+﻿using System;
+
+namespace scorpioweb.Models
 {
     public class AlertasReinsercionViewModel
     {
@@ -7,6 +9,8 @@
         public string Nombre { get; set; }
         public string Area { get; set; }
         public string TipoAlerta { get; set; }
+
+        public DateTime? FechaAprobacion {  get; set; }
         public Cierredecaso CierreCasoMC { get; set; }    
         public Cierredecasocl CierreCasoCL { get; set; }
 
