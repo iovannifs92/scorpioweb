@@ -595,7 +595,7 @@ namespace scorpioweb.Controllers
         public async Task<JsonResult> CrearFichaCanalizacion([FromBody] DatosFichaCanalizacion datosFichaCanalizacion)
         {
             await Task.Delay(1000);
-
+            var viewUrl = string.Empty;
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
@@ -629,7 +629,7 @@ namespace scorpioweb.Controllers
                 {
                     if (rol == "Vinculacion")
                     {
-                        var viewUrl = string.Empty;
+
                         borrar = true;
 
                         //viewUrl = Url.Action("EjesReinsercion", "Reinsercion", new { id = datosFichaCanalizacion.IdReinsercion });
@@ -643,26 +643,30 @@ namespace scorpioweb.Controllers
                             case "TERAPIA":
                                 viewUrl = Url.Action("Terapias/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
                                 break;
-                            case"JORNADA":
-                                     viewUrl = Url.Action("Jornadas/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
+                            case "JORNADA":
+                                viewUrl = Url.Action("Jornadas/" + datosFichaCanalizacion.IdReinsercion, "Reinsercion");
                                 break;
                             default:
-                                 viewUrl = Url.Action("Reinsercion", "Reinsercion");
+                                viewUrl = Url.Action("Reinsercion", "Reinsercion");
                                 break;
                         }
-                      
+
                         return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = viewUrl, id = datosFichaCanalizacion.IdReinsercion });
 
                         //return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl});
                     }
-                    else if (rol == "SupervisorLC")
+                    else if (rol.ToUpper().Contains("Cl"))
                     {
-                        return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = Url.Action("Index", "Personacls") });
+                        viewUrl = Url.Action("Index", "Personacls");
                     }
+                    else if (rol.ToUpper().Contains("MCSCP")) {
+                        viewUrl = Url.Action("Index", "Personas");
+                    }
+
                 }
 
 
-                return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = Url.Action("Index", "Personacls") });
+                return Json(new { success = true, responseText = "Ficha creada exitosamente!", viewUrl = viewUrl});
             }
             catch (Exception ex)
             {

@@ -2954,6 +2954,7 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
             bool escl = false;
             bool esmcyscp = false;
+            
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
@@ -2965,6 +2966,8 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
+                        ViewBag.ControllerName = "Personas";
+                        ViewBag.NombreTabla = "persona";
                         ViewBag.nombreRegistrado = persona.NombreCompleto;
                         ViewBag.idRegistrado = persona.IdPersona;
                         ViewBag.esmcyscp = esmcyscp = true;
@@ -2979,6 +2982,8 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
+                        ViewBag.ControllerName = "Personascls";
+                        ViewBag.NombreTabla = "personacl";
                         ViewBag.nombreRegistrado = persona.NombreCompleto;
                         ViewBag.idRegistrado = persona.IdPersonaCl;
                         ViewBag.escl = escl = true;
