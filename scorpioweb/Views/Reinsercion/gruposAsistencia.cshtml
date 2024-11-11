@@ -1,12 +1,15 @@
 ﻿@model IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>
 
 @{
-    ViewData["Title"] = "Psicologia";
+    ViewData["Title"] = "Psicologia ~ Grupos";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 @{
-    var gruposAsistencias = ViewData["grupo"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
+    var gruposAsistencias = ViewData["grupos"] as IEnumerable<scorpioweb.Models.ReinsercionVM>;
+     var sdfgsdf = ViewData["NumeroAsistentes"];
+    var Terapeutas = ViewData["Terapeutas"] as IEnumerable<scorpioweb.Models.Terapeutas>;
+
 }
 
 <style>
@@ -59,51 +62,110 @@
         #aer:hover {
             background-color: #A7FD2A;
         }
+
+    .top-content h2 {
+        margin-left: 50px;
+    }
+
+    .row-items {
+        display: flex;
+        justify-content: space-between 2px;
+        padding: 5px 30px;
+    }
+
+    .item {
+        padding: 5px 10px;
+        margin: 0 5px;
+    }
 </style>
 
 
-
 <body>
-    <div class="col-md-12">
-        <h1 style="text-align:center" class="blockquote text-center">Psicologia</h1>
+    <div class=" text-center col-md-12" style="padding-top:1%">
+        <img src="~/images/informacion.png" class="rounded" alt="..." style="max-width:10%">
     </div>
-    <div class="col-md-12">
-        <h5 style="text-align:center" class="blockquote text-center">Grupos por dia y por Psicologo</h5>
+    <div class="col-md-12" >
+        <h2 style="text-align:center" class="blockquote text-center">Grupos por dia y por Psicologo</h2>  
+              
     </div>
-    
 
-    @*<select id="Estado_130" name="miSelect"></select>*@
-    <div class="col-md-12" style="text-align:center">
-        <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
-        <form enctype="multipart/form-data" id="form" style="margin-top:50px">
-            <div class="container sub-page form">
-                <div class="container col-md-12">
-                    @{
-                        var colores = new List<string> { "#B0DF69", "#EC7DAF", "#BF7FEC", "#ECD099", "#847fdf", "#328793" };
-                        int contador = 0;
-                    }
-                    @foreach (var item in gruposAsistencias.GroupBy(Ga => Ga.grupoVM.IdGrupo))
-                    {
-                        var menuId = "menu" + @item.First().grupoVM.IdGrupo; // ID único para cada panel colapsable
-                        var color = colores[contador % colores.Count]; // Selecciona el color basado en el índice
-                        contador++; // Incrementa el contador
-
-                        <div class="row" id="@menuId">
-                            <div class="col-md-12" style="padding-top:3%;">
-                                <a asp-action="ListaDia" asp-route-idgrupo="@item.First().grupoVM.IdGrupo" class="btn btn-primary btn-lg btn-block btn-huge" style="background-color:@color;">
-                                    @item.First().grupoVM.NombreGrupo <br />
-                                    @item.First().grupoVM.Dia <br />
-                                    @item.First().grupoVM.Horario
-                                </a>
-                            </div>
-                        </div>
-                    }
+    @using (Html.BeginForm("gruposAsistencia", "Reinsercion", FormMethod.Get))
+    {
+        <div class="top-content" style="margin-left:20%; margin-right:15%;">
+         
+            <div class="row-items">
+                <div class="item">
+                    <h5 style="font-weight:600;">Dia:</h5>
                 </div>
+                <div class="item">
+                    <select class="form-control form-select-lg mb-3" onchange="this.form.submit();" @Html.TextBox("Dia", ViewBag.DiaSeleccionado as string)>
+                        <option value="@ViewBag.DiaSeleccionado">@ViewBag.DiaSeleccionado</option>
+                        <option value="TODOS">TODOS</option>
+                        <option value="LUNES">LUNES</option>
+                        <option value="MARTES">MARTES</option>
+                        <option value="MIERCOLES">MIERCOLES</option>
+                        <option value="JUEVES">JUEVES</option>
+                        <option value="VIERNES">VIERNES</option>
+                        <option value="SABADO">SABADO</option>
+                    </select>
+                </div>
+                <div class="item"><h5 style="font-weight:600;">Psicolog&#64:</h5></div>
+                <div class="item">
+                    <select class="form-control form-select-lg mb-3" onchange="this.form.submit();" @Html.TextBox("IdPsicologo", ViewBag.IdPsicologoSeleccionado as string)>
+                        <option selected value="@ViewBag.IdPsicologoSeleccionado">@ViewBag.NombrePsicologoSeleccionado</option>
+
+                        <option value="TODOS">TODOS</option>
+                        @foreach (var terapeuta in Terapeutas)
+                        {
+                            <option value="@terapeuta.IdTerapeutas">@terapeuta.Nombre @terapeuta.Paterno @terapeuta.Materno</option>
+
+                        }
+                    </select>
+                </div>
+                @*<i class="fa fa-search btn btn-light">
+            <input type="submit" style="padding:10px 10px;" value="Buscar" />
+        </i>*@
+                <a asp-action="MenuPsicologia" asp-controller="Reinsercion">Regresar a Menu psicologia</a>
             </div>
-        </form>
-    </div>
+        </div>
+    }
+   
+        
+<div class="col-md-12" style="text-align:center">
+    <input readonly style="display:none" name="IdReinsercion" id="IdReinsercion" type="text" class="form-control" value="@ViewBag.idReinsercion" />
+    <hr style="border:1px solid black;"/>
+    <form enctype="multipart/form-data" id="form" style="margin-left:-2.5%;margin-bottom:100px;">
+        <div class="container sub-page form">
+            <div class="container col-md-12">
+                @{
+                    var colores = new List<string> { "#B0DF69", "#EC7DAF", "#BF7FEC", "#ECD099", "#847fdf", "#328793" };
+                    int contador = 0;
+
+                }
+
+                @foreach (var item in gruposAsistencias.GroupBy(Ga => Ga.grupoVM.IdGrupo))
+                {
+                    var menuId = "menu" + @item.First().grupoVM.IdGrupo; // ID único para cada panel colapsable
+                    var color = colores[contador % colores.Count]; // Selecciona el color basado en el índice
+                    contador++; // Incrementa el contador
+                    foreach(var grupo in NumeroAsistentes) {
+                     
+                    }
+
+                    <div class="row" id="@menuId">
+                        <div class="col-md-12" style="padding-top:3%;">
+                            <a asp-action="ListaDia" asp-route-idgrupo="@item.First().grupoVM.IdGrupo" asp-route-NombreGrupo="@item.First().grupoVM.NombreGrupo"
+                               class="btn btn-primary btn-lg btn-block btn-huge" style="background-color:@color;color:black;">
+                                @item.First().grupoVM.NombreGrupo ~~ @item.First().terapeutasVM.Nombre @item.First().terapeutasVM.Paterno @item.First().terapeutasVM.Materno <br />
+                                @item.First().grupoVM.Dia  ~~  Numero asistentes:<br />
+                                @item.First().grupoVM.Horario
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </form>
+</div>
 </body>
 
-<div style="margin-top:20px">
-    <a asp-action="grupoAsistencia" asp-controller="Reinsercion">Regresar a Menu</a>
-</div>

@@ -240,9 +240,17 @@
                                         <td colspan="5">
                                             @{
                                                 var terapeutas = ViewBag.Terapeutas as List<Terapeutas>;
+                                                var nombreTerapeuta = string.Empty;
+                                                foreach(var terapeuta in terapeutas)
+                                                {
+                                                    if(terapeuta.IdTerapeutas.ToString() == terapia.First().Terapeuta)
+                                                    {
+                                                        nombreTerapeuta = $"{terapeuta.Nombre} {terapeuta.Paterno} {terapeuta.Materno}";
+                                                    }
+                                                }
                                             }
                                             <select requiered class="form-control" id="selectTerapeuta_@terapia.Key">
-                                                <option value="@terapia.First().Terapeuta">Actual: @terapia.First().Terapeuta</option>
+                                                <option value="@terapia.First().Terapeuta">Actual: @nombreTerapeuta</option>
                                                 <option style="background-color:#d1d0cd;" disabled>Terapeutas disponibles por elegir:</option>
                                                 @foreach (var terapeuta in terapeutas)
                                                 {
@@ -258,11 +266,11 @@
                                                 @{
                                                     var grupos = ViewBag.Grupos as List<Grupo>;
                                                 }
-                                                <option value="@terapia.First().IdGrupo">Actual: @terapia.First().NombreGrupo ~ @terapia.First().HorarioGrupo</option>
+                                                <option value="@terapia.First().IdGrupo">Actual: @terapia.First().Dia ~ @terapia.First().HorarioGrupo</option>
                                                 <option style="background-color:#d1d0cd;" disabled>Grupos disponibles por elegir:</option>
                                                 @foreach (var grupo in grupos)
                                                 {
-                                                    <option value="@grupo.IdGrupo">@grupo.NombreGrupo - Horario: @grupo.Horario</option>
+                                                    <option value="@grupo.IdGrupo">@grupo.Dia - Horario: @grupo.Horario</option>
                                                 }
                                             </select>
                                         </td>
@@ -329,6 +337,11 @@ else
     </div>
 }
 
+
+<div style="margin:20px;">
+    <a asp-controller="Reinsercion" asp-action="Menusupervision" asp-route-id="@ViewBag.idReinsercion">Volver a menu supervision</a>
+
+</div>
 <script>
     $(document).ready(function () {
         var id = $('#idReinsercion').val();

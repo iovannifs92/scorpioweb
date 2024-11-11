@@ -29,5 +29,7 @@ namespace scorpioweb.Models
         public string fechan { get; set; }
         public string telefono { get; set; }
         public string curp { get; set; }
+
+        public string Vinculacion { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<scorpioweb.Models.TerapiaAsistenciaViewModal>
 
 @{
-    ViewData["Title"] = "Psicologia";
+    ViewData["Title"] = "Psicologia ~~ Asistencia";
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,8 +11,7 @@
 
 
 <style>
-    ate this bootstrap snippet, You can copy and paste the following css code inside a page with bootstrap 4.5.0 included, to get the result that you can see in the preview selection
-
+    
     body {
         background-color: #f8f9fa !important
     }
@@ -202,166 +201,6 @@
     .user-dashboard-info-box .candidates-list .thumb {
         margin-right: 0px;
     }
-</style>
-
-
-<script type="text/javascript">
-    var arr = [];
-    function myFunction(id, idcheck) {
-        if (!document.getElementById(idcheck).checked) {
-            // Crear el nuevo input
-            var newInput = document.createElement("input");
-            newInput.type = "text";  // El tipo del input que deseas crear
-            newInput.id = "input_" + id;  // Crear un id único para el input
-            newInput.placeholder = "Escribe el motivo de no asistencia"
-            // Insertar el nuevo input en el DOM
-            var container = document.getElementById("inputContainer_" + id);
-            container.appendChild(newInput);
-        } else {
-            var inputToRemove = document.getElementById("input_" + id);
-            if (inputToRemove) {
-                inputToRemove.remove();
-            }
-        }
-
-        var encontro = false;
-        var doble;
-        var input = document.getElementById("input_" + id).value;
-        var idinput = "input_"+id;
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] === id) {
-                encontro = true;
-                doble = i;
-                break;
-            }
-        }
-
-        if (encontro == false) {
-            arr.push(id, idinput);
-        } else {
-            arr.splice(doble, 1);
-        }
-    }
-
-    function guardarAsis() {
-        for (var i = 0; i < arr.length; i += 2) {
-            var id = arr[i];         
-            var inputId = arr[i + 1];   
-            var inputValue = document.getElementById(inputId)?.value || "";
-            arr[i + 1] = inputValue;
-        }
-        var arra = "hola"
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            async: true,
-            url: "/Reinsercion/Asistencia",
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(arr),
-            success: function (response) {
-
-                //if (response.success == true) {
-                //    Swal.fire({
-                //        title: "Guardado",
-                //        text: "Tu registro se ha guardado",
-                //        icon: "success"
-                //    }).then((result) => {
-                //        if (result.isConfirmed) {
-                //            retraso(response.viewUrl, 70);
-                //        } else {
-                //            retraso(response.viewUrl, 70);
-                //        }
-                //    });
-                //} else {
-                //    Swal.fire({
-                //        title: "Error al Borrar",
-                //        text: "Contacte con el administrador del sistema " + response.error,
-                //        icon: "error"
-                //    });
-
-                //    //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
-                //}
-            },
-            error: function (response) {
-                alert(response.error);
-
-            }
-        });
-        alert("array "+arr)
-
-    }
-
-</script>
-
-
-<body>
-    <div class="col-md-12">
-        <h1 style="text-align:center" class="blockquote text-center">Psicologia</h1>
-    </div>
-    <div class="col-md-12">
-        <h5 style="text-align:center" class="blockquote text-center">Grupos por dia y por Psicologo</h5>
-    </div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
-    
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                 <div class="user-dashboard-info-box table-responsive mb-0 bg-white p-4 shadow-sm">
-                        <table class="table manage-candidates-top mb-0">
-                            <thead>
-                                <tr>
-                                    <th style="display: inline-block; padding: 5px;">Nombre</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Listadia.GroupBy(g => g.idpersona))
-                                 {
-                                    <tr class="candidates-list">
-                                        <td  class="title">
-                                        <div class="thumb col-12 col-md-6 d-none d-md-block">
-                                                <img class="img-fluid" src="~/@item.First().rutaFoto" alt="">
-                                            </div>
-                                            <div class="candidate-list-details">
-                                                <div class="candidate-list-info">
-                                                    <div class="candidate-list-title">
-                                                        <h5 class="mb-0">@item.First().nombre</h5>
-                                                    </div>
-                                                    <div class="candidate-list-option">
-                                                        <ul class="list-unstyled">
-                                                            <li><i class="fas fa-filter pr-1"></i>@item.First().cp</li>
-                                                            <li><i class="fas fa-map-marker-alt pr-1"></i>@item.First().tabla</li>
-                                                        </ul>
-                                                    </div>
-                                                <input checked type="checkbox" id="checkbox_@item.First().IdTerapia" onclick="myFunction(@item.First().IdTerapia, id)">
-                                                <div id="inputContainer_@item.First().IdTerapia"></div>
-                                                    @*<div class="checkbox-wrapper-@item.First().IdTerapia">
-                                                        <input type="checkbox" id="_checkbox-@item.First().IdTerapia" checked>
-                                                        <label for="_checkbox-@item.First().IdTerapia">
-                                                            <div class="tick_mark"></div>
-                                                        </label>
-                                                    </div>*@
-                  
-                                                <div style="margin-top:20px" id="justification-container"></div>
-                                                </div>
-                                               
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    <button id="btnSave" name="btnSave" onclick="guardarAsis(1)" class="btn btn-info fa fa-save"><i class="fa fa-file-text-o"></i> Guardar Asistencias</button>
-                    </div>
-            </div>
-        </div>
-    </div>
-</body>
-
-<div style="margin-top:20px">
-    <a asp-action="grupoAsistencia" asp-controller="Reinsercion">Regresar a Menu</a>
-</div>
-
- <style>
     .checkbox-wrapper-26 * {
         -webkit-tap-highlight-color: transparent;
         outline: none;
@@ -470,6 +309,74 @@
             opacity: 1;
         }
 </style>
+
+<body>
+    <div class="col-md-12">
+        <h2 style="text-align:center" class="blockquote text-center">Lista de personas activas del grupo:</h2>
+    </div>
+    <div class="col-md-12">
+        <h4 style="text-align:center" class="blockquote text-center">@ViewBag.NombreGrupo</h4>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                 <div class="user-dashboard-info-box table-responsive mb-0 bg-white p-4 shadow-sm">
+                        <table class="table manage-candidates-top mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="display: inline-block; padding: 5px;">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Listadia.GroupBy(g => g.idpersona))
+                                 {
+                                    <tr class="candidates-list">
+                                        <td  class="title">
+                                        <div class="thumb col-12 col-md-6 d-none d-md-block">
+                                                <img class="img-fluid" src="~/@item.First().rutaFoto" alt="">
+                                            </div>
+                                            <div class="candidate-list-details">
+                                                <div class="candidate-list-info">
+                                                    <div class="candidate-list-title">
+                                                        <h5 class="mb-0">@item.First().nombre</h5>
+                                                    </div>
+                                                    <div class="candidate-list-option">
+                                                        <ul class="list-unstyled">
+                                                            <li><i class="fas fa-filter pr-1"></i>@item.First().cp</li>
+                                                            <li><i class="fas fa-map-marker-alt pr-1"></i>@item.First().tabla</li>
+                                                        </ul>
+                                                    </div>
+                                                <input checked type="checkbox" id="checkbox_@item.First().IdTerapia" onclick="myFunction(@item.First().IdTerapia, id)">
+                                                <div id="inputContainer_@item.First().IdTerapia"></div>
+                                                    @*<div class="checkbox-wrapper-@item.First().IdTerapia">
+                                                        <input type="checkbox" id="_checkbox-@item.First().IdTerapia" checked>
+                                                        <label for="_checkbox-@item.First().IdTerapia">
+                                                            <div class="tick_mark"></div>
+                                                        </label>
+                                                    </div>*@
+                  
+                                                <div style="margin-top:20px" id="justification-container"></div>
+                                                </div>
+                                               
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    <button id="btnSave" name="btnSave" onclick="guardarAsis(1)" class="btn btn-info fa fa-save"><i class="fa fa-file-text-o"></i> Guardar Asistencias</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<div style="margin-top:20px">
+    <a asp-action="grupoAsistencia" asp-controller="Reinsercion">Regresar a Menu</a>
+</div>
+
 <script>
     // Selecciona el checkbox y el contenedor donde se añadirá el input
     const checkbox = document.getElementById('_checkbox-26');
@@ -499,6 +406,91 @@
         }
     });
     });
-            // Escuchar el evento de cambio en el checkbox
+
+    var arr = [];
+    function myFunction(id, idcheck) {
+        if (!document.getElementById(idcheck).checked) {
+            // Crear el nuevo input
+            var newInput = document.createElement("input");
+            newInput.type = "text";  // El tipo del input que deseas crear
+            newInput.id = "input_" + id;  // Crear un id único para el input
+            newInput.placeholder = "Escribe el motivo de no asistencia"
+            // Insertar el nuevo input en el DOM
+            var container = document.getElementById("inputContainer_" + id);
+            container.appendChild(newInput);
+        } else {
+            var inputToRemove = document.getElementById("input_" + id);
+            if (inputToRemove) {
+                inputToRemove.remove();
+            }
+        }
+
+        var encontro = false;
+        var doble;
+        var input = document.getElementById("input_" + id).value;
+        var idinput = "input_" + id;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === id) {
+                encontro = true;
+                doble = i;
+                break;
+            }
+        }
+
+        if (encontro == false) {
+            arr.push(id, idinput);
+        } else {
+            arr.splice(doble, 1);
+        }
+    }
+
+    function guardarAsis() {
+        for (var i = 0; i < arr.length; i += 2) {
+            var id = arr[i];
+            var inputId = arr[i + 1];
+            var inputValue = document.getElementById(inputId)?.value || "";
+            arr[i + 1] = inputValue;
+        }
+        var arra = "hola"
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            async: true,
+            url: "/Reinsercion/Asistencia",
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(arr),
+            success: function (response) {
+
+                //if (response.success == true) {
+                //    Swal.fire({
+                //        title: "Guardado",
+                //        text: "Tu registro se ha guardado",
+                //        icon: "success"
+                //    }).then((result) => {
+                //        if (result.isConfirmed) {
+                //            retraso(response.viewUrl, 70);
+                //        } else {
+                //            retraso(response.viewUrl, 70);
+                //        }
+                //    });
+                //} else {
+                //    Swal.fire({
+                //        title: "Error al Borrar",
+                //        text: "Contacte con el administrador del sistema " + response.error,
+                //        icon: "error"
+                //    });
+
+                //    //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
+                //}
+            },
+            error: function (response) {
+                alert(response.error);
+
+            }
+        });
+        alert("array " + arr)
+
+    }
+
 
 </script>

@@ -1510,7 +1510,7 @@ namespace scorpioweb.Controllers
         #region -Detalles-
 
         // GET: Personas/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id,string Vinculacion)
         {
             if (id == null)
             {
@@ -1695,18 +1695,28 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
 
  
-            foreach (var rol in roles)
+            //foreach (var rol in roles)
+            //{
+            //    if(rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
+            //    {
+            //        ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
+            //        break;
+            //    }
+            //    if (rol == "Vinculacion")
+            //    {
+            //        ViewBag.ClaseParaDiv = "col-md-9";
+            //        break;
+            //    }
+            //}
+            if(!string.IsNullOrEmpty(Vinculacion) && Vinculacion.Contains("1"))
+                ViewBag.ClaseParaDiv = "col-md-9";
+            else
             {
-                if(rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
-                {
-                    ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
-                }
-                if (rol == "Vinculacion")
-                {
-                    ViewBag.ClaseParaDiv = "col-md-9";
-                }
+                ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
             }
-     
+
+
+
             return View();
         }
 

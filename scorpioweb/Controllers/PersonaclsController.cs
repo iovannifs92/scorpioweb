@@ -812,7 +812,7 @@ namespace scorpioweb.Models
 
         #region -Detalles-
         // GET: Personacls/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id,string Vinculacion)
         {
             if (id == null)
             {
@@ -1018,17 +1018,23 @@ namespace scorpioweb.Models
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
-            foreach (var rol in roles)
-            {
-                if (rol == "AdminLC" || rol == "SupervisorLC")
-                {
-                    ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
-                }
-                if(rol == "Vinculacion"){
-                    ViewBag.ClaseParaDiv = "col-md-9";
-                }
-            }
+            //foreach (var rol in roles)
+            //{
+            //    if (rol == "AdminLC" || rol == "SupervisorLC")
+            //    {
+            //        ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
+            //    }
+            //    if(rol == "Vinculacion"){
+            //        ViewBag.ClaseParaDiv = "col-md-9";
+            //    }
+            //}
 
+            if (!string.IsNullOrEmpty(Vinculacion) && Vinculacion.Contains("1"))
+                ViewBag.ClaseParaDiv = "col-md-9";
+            else
+            {
+                ViewBag.Layout = "/Views/Shared/_Layout.cshtml";
+            }
             return View(/*personacl*/);
         }
         #endregion

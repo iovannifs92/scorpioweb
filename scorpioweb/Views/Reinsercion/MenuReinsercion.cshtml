@@ -133,22 +133,7 @@
             </div>
         </div>
     }
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
-    {
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Reinsercion" asp-action="Psicologia">
-                        <img class="card-img-top" src="~/images/heart.png" alt="Card image cap" style="padding-bottom:5%;" title="Psicologia. Grupos, listas y asistencias" />
-                        Psicologia
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Grupos, listas y asistencias
-                </p>
-            </div>
-        </div>
-    }
+
 
     @if (ViewBag.AlertasCount != 0)
     {
@@ -162,6 +147,23 @@
                 </h4>
                 <p class="card-text">
                     Usuarios que terminaron su supervision hace no mas de un mes.
+                </p>
+            </div>
+        </div>
+    }
+
+    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Reinsercion" asp-action="MenuPsicologia">
+                        <img class="card-img-top" src="~/images/MenuPsicologia.png" alt="Card image cap" style="padding-bottom:5%;" title="Psicologia. Grupos, listas y asistencias" />
+                        Menu Psicologia
+                    </a>
+                </h4>
+                <p class="card-text">
+                    Dirigirse al menu de psicologia
                 </p>
             </div>
         </div>

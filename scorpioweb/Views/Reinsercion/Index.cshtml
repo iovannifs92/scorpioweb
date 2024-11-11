@@ -185,7 +185,8 @@
                         @*    <a type="button" title="Información" onclick="showModal('@Url.Action("Details", "/" +item.NomTabla + "s")','Detalles',@item.IdTabla )">
                     <i class="btn btn-primary fa fa-file"> Mas informacion</i>
                     </a>*@
-                        <a onclick="showModal('@Url.Action("Details", item.tabla + "s", new {id=item.IdTabla}, Context.Request.Scheme)','Detalles Generales',null )" class="btn btn-primary fa fa-eye" title="Datos Generales" style="margin-top:6px"> Datos Generales</a>
+                    
+                        <a onclick="showModal('@Url.Action("Details", item.tabla + "s", new {id=item.IdTabla,Vinculacion=item.Vinculacion}, Context.Request.Scheme)','Detalles Generales',null )" class="btn btn-primary fa fa-eye" title="Datos Generales" style="margin-top:6px"> Datos Generales</a>
                     </td>
                 </tr>
             }

@@ -19,10 +19,11 @@ namespace scorpioweb.Models
         public string Estado { get; set; }
         public string Observaciones { get; set; }
         public int CanalizacionIdCanalizacion { get; set; }
-       
+
         //DATOS DE GRUPO
         public int IdGrupo { get; set; }
         public string NombreGrupo { get; set; }
+        public string Dia {  get; set; }
         public string HorarioGrupo { get; set; }
 
         //DATOS DE ASISTENCIA
