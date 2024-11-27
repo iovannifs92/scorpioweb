@@ -32,6 +32,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+
 
 namespace scorpioweb.Controllers
 {
@@ -43,17 +45,19 @@ namespace scorpioweb.Controllers
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         public IHubContext<HubNotificacion> _hubContext;
+        private readonly ILogger _Logger;
         private readonly penas2Context _context;
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
-        public Api(penas2Context context, IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext)
+        public Api(penas2Context context, IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext, ILogger<Api> logger)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;
             _hubContext = hubContext;
+            _Logger = logger;
         }
         #region -Imprimir evaluacion de riesgo-
         public void Imprimir(string id)
@@ -802,8 +806,14 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
 
             }
+            catch (DbUpdateException ex)
+            {
+                _Logger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()};");
+                return Json(new { viewUrl = viewUrl, success = false, error = ex });
+            }          
             catch (Exception ex)
             {
+                _Logger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()};");
                 return Json(new { viewUrl = viewUrl, success = false, error = ex });
             }
             #endregion

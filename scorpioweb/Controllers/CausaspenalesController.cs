@@ -14,6 +14,8 @@ using F23.StringSimilarity;
 using Newtonsoft.Json.Linq;
 using scorpioweb.Class;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Extensions.Logging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace scorpioweb.Controllers
 {
@@ -22,6 +24,7 @@ namespace scorpioweb.Controllers
     {
         #region -Variables Globales-.
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ILogger _Logger;
         public static List<string> selectedPersona = new List<string>();
         public static List<List<string>> datosDelitos = new List<List<string>>();
         private readonly penas2Context _context;
@@ -36,11 +39,12 @@ namespace scorpioweb.Controllers
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
-       
 
-        public CausaspenalesController(penas2Context context,RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+
+        public CausaspenalesController(penas2Context context, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ILogger<CausaspenalesController> logger)
         {
             _context = context;
+            _Logger = logger;
             this.userManager = userManager;
         }
 
@@ -284,6 +288,7 @@ namespace scorpioweb.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                  
 
                     causapenal.Cnpp = cnpp;
                     causapenal.Juez = mg.normaliza(juez);
@@ -326,6 +331,7 @@ namespace scorpioweb.Controllers
                         }
                         catch (Exception ex)
                         {
+                            _Logger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User:{usuario.ToString()}");
                             var a = ex;
                         }
 
@@ -442,8 +448,24 @@ namespace scorpioweb.Controllers
 
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
+
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _Logger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()}");
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
+            }
+            catch (DbUpdateException ex)
+            {
+                _Logger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()}");
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
+            }  
             catch (Exception ex)
             {
+                _Logger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()}");
                 var error = ex; 
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar});
@@ -1080,28 +1102,30 @@ namespace scorpioweb.Controllers
                     }
                     #endregion
                     var oldCausa = await _context.Causapenal.FindAsync(id);
-             
-                        if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
-                        {
-                            historialcp.Cnpp = oldCausa.Cnpp;
-                            historialcp.Juez = mg.normaliza(oldCausa.Juez);
-                            historialcp.Distrito = oldCausa.Distrito;
-                            historialcp.Cambio = oldCausa.Cambio;
-                            historialcp.Causapenal = mg.normaliza(oldCausa.CausaPenal);
-                            historialcp.FechaModificacion = DateTime.Now;
-                            historialcp.CausapenalIdCausapenal = id;
 
-                            _context.Add(historialcp);
-                            await _context.SaveChangesAsync(null, 1);
-                        }
-                    
+                    if (oldCausa.CausaPenal != causa.CausaPenal || oldCausa.Juez != causa.Juez || oldCausa.Distrito != causa.Distrito)
+                    {
+                        historialcp.Cnpp = oldCausa.Cnpp;
+                        historialcp.Juez = mg.normaliza(oldCausa.Juez);
+                        historialcp.Distrito = oldCausa.Distrito;
+                        historialcp.Cambio = oldCausa.Cambio;
+                        historialcp.Causapenal = mg.normaliza(oldCausa.CausaPenal);
+                        historialcp.FechaModificacion = DateTime.Now;
+                        historialcp.CausapenalIdCausapenal = id;
+
+                        _context.Add(historialcp);
+                        await _context.SaveChangesAsync(null, 1);
+                    }
+
 
 
                     _context.Entry(oldCausa).CurrentValues.SetValues(causa);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
+                    _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {currentUser}");
+
                     if (!DelitolExists(causa.IdCausaPenal))
                     {
                         return NotFound();
@@ -1110,6 +1134,14 @@ namespace scorpioweb.Controllers
                     {
                         throw;
                     }
+                }
+                catch(DbUpdateException ex)
+                {
+                    _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {currentUser}");
+                }
+                catch (Exception ex) 
+                {
+                    _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {currentUser}");
                 }
 
                 return Json(new { success = true, responseText = Url.Action("ListadeCausas", "Causaspenales", new { @id = id }) });
@@ -1148,6 +1180,7 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
                 try
                 {
                     delito.Tipo = mg.normaliza(delito.Tipo);
@@ -1160,8 +1193,9 @@ namespace scorpioweb.Controllers
                     //_context.Update(delito);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
+                    _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {user.ToString()}");
                     if (!CausapenalExists(delito.IdDelito))
                     {
                         return NotFound();
@@ -1170,6 +1204,14 @@ namespace scorpioweb.Controllers
                     {
                         throw;
                     }
+                }
+                catch(DbUpdateException ex)
+                {
+                    _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {user.ToString()}");
+                }
+                catch(Exception ex)
+                {
+                    _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {user.ToString()}");
                 }
                 return RedirectToAction("EditCausas", "Causaspenales", new { @id = idcausa });
             }
@@ -1203,6 +1245,7 @@ namespace scorpioweb.Controllers
             var query = (from c in _context.Historialcp
                          where c.IdHistorialcp == id
                          select c).FirstOrDefault();
+            
             try
             {
                 borrar = true;
@@ -1212,8 +1255,24 @@ namespace scorpioweb.Controllers
 
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
+            catch(DbUpdateConcurrencyException ex)
+            {
+                _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {User.Identity.Name.ToString()}");
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
+
+            }
+            catch(DbUpdateException ex)
+            {
+                _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {User.Identity.Name.ToString()}");
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
+            }
             catch (Exception ex)
             {
+                _Logger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {User.Identity.Name.ToString()}");
                 var error = ex;
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
