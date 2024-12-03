@@ -212,7 +212,7 @@
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia"))
                     {
-                        if (User.IsInRole("Oficialia"))
+                        if (User.IsInRole("Oficialia") || User.IsInRole("OficialiaAsistente"))
                         {
                             <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecucion</a></li>
                         }
