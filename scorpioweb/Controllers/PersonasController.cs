@@ -43,7 +43,6 @@ using Syncfusion.EJ2.Navigations;
 using Syncfusion.EJ2.Linq;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MySql.Data.MySqlClient;
 using System.Data.Common;
@@ -59,7 +58,6 @@ namespace scorpioweb.Controllers
         #region -Variables Globales-
         //To get content root path of the project
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ILogger _Looger;
         private readonly penas2Context _context;
         public static int contadorSustancia;
         public static int contadorFamiliares;
@@ -181,22 +179,22 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Constructor-
-       
+
 
         public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager
-            ,ILogger<PersonasController> logger)
+            )
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
-            _Looger = logger;
+
             this.roleManager = roleManager;
             this.userManager = userManager;
 
         }
         #endregion
 
-        
+
 
 
 
@@ -487,11 +485,11 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> Index()
         {
-         
+
             var nomsuper = User.Identity.Name.ToString();
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
-       
+
 
             #region -Sacar USUARIOS ADMIN-
 
@@ -721,7 +719,7 @@ namespace scorpioweb.Controllers
         public IActionResult Colaboraciones()
         {
             var user = User.Identity.Name;
-        
+
 
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
@@ -1330,8 +1328,7 @@ namespace scorpioweb.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-               
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};"); 
+
                 if (!PersonaExists(persona.IdPersona))
                 {
                     return NotFound();
@@ -1341,14 +1338,7 @@ namespace scorpioweb.Controllers
                     throw;
                 }
             }
-            catch(DbUpdateException ex)
-            {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-            }
-            catch(Exception ex)
-            {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-            }
+
             return RedirectToAction("MenuMCSCP");
         }
 
@@ -1515,7 +1505,7 @@ namespace scorpioweb.Controllers
             catch (DbUpdateConcurrencyException ex)
             {
 
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+
                 if (!PersonaExists(persona.IdPersona))
                 {
                     return NotFound();
@@ -1525,13 +1515,7 @@ namespace scorpioweb.Controllers
                     throw;
                 }
             }
-            catch (DbUpdateException ex) {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-            }
-            catch(Exception ex)
-            {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-            }
+
             return RedirectToAction("Reasignacion");
         }
 
@@ -1540,7 +1524,7 @@ namespace scorpioweb.Controllers
         #region -Detalles-
 
         // GET: Personas/Details/5
-        public async Task<IActionResult> Details(int? id,string Vinculacion)
+        public async Task<IActionResult> Details(int? id, string Vinculacion)
         {
             if (id == null)
             {
@@ -1724,7 +1708,7 @@ namespace scorpioweb.Controllers
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
- 
+
             //foreach (var rol in roles)
             //{
             //    if(rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
@@ -1738,7 +1722,7 @@ namespace scorpioweb.Controllers
             //        break;
             //    }
             //}
-            if(!string.IsNullOrEmpty(Vinculacion) && Vinculacion.Contains("1"))
+            if (!string.IsNullOrEmpty(Vinculacion) && Vinculacion.Contains("1"))
                 ViewBag.ClaseParaDiv = "col-md-9";
             else
             {
@@ -2071,7 +2055,7 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Create(Persona persona, Domicilio domicilio, Estudios estudios, Trabajo trabajo, Actividadsocial actividadsocial, Abandonoestado abandonoEstado, Saludfisica saludfisica, Domiciliosecundario domiciliosecundario, Consumosustancias consumosustanciasBD, Asientofamiliar asientoFamiliar, Familiaresforaneos familiaresForaneos,
                                                 Personacl personacl, Domiciliocl domiciliocl, Estudioscl estudioscl, Trabajocl trabajocl, Actividadsocialcl actividadsocialcl, Abandonoestadocl abandonoEstadocl, Saludfisicacl saludfisicacl, Domiciliosecundariocl domiciliosecundariocl, Consumosustanciascl consumosustanciascl, Asientofamiliarcl asientoFamiliarcl, Familiaresforaneoscl familiaresForaneoscl, Expedienteunico expedienteunico,
             string resolucion, string centropenitenciario, string ce, string Juzgado, string sinocentropenitenciario, string nombre, string paterno, string materno, string nombrePadre, string nombreMadre, string alias, string sexo, int edad, DateTime fNacimiento, string lnPais,
-            string lnEstado, string CURS, string CURSUsada, string tabla, int idselecionado,string tablanueva, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
+            string lnEstado, string CURS, string CURSUsada, string tabla, int idselecionado, string tablanueva, string lnMunicipio, string lnLocalidad, string estadoCivil, string duracion, string otroIdioma, string comIndigena, string comLGBTTTIQ, string especifiqueIdioma,
             string leerEscribir, string traductor, string especifiqueTraductor, string telefonoFijo, string celular, string hijos, int nHijos, int nPersonasVive,
             string propiedades, string CURP, string consumoSustancias, string TratamientoAdicciones, string CualTratamientoAdicciones, string CuandoConsume, string familiares, string referenciasPersonales, string ubicacionExpediente, string colaboracion,
             string tipoDomicilio, string calle, string no, string nombreCF, string paisD, string estadoD, string municipioD, string temporalidad, string zona,
@@ -2550,33 +2534,20 @@ namespace scorpioweb.Controllers
 
                     #region -Expediente Unico-
                     //TODO QUEDO EN API =)
-                    #endregion 
+                    #endregion
 
                     #region -Añadir a contexto-
-                    try
-                    {
-                        _context.Add(persona);
-                        _context.Add(domicilio);
-                        // _context.Add(domiciliosecundario);
-                        _context.Add(estudios);
-                        _context.Add(trabajo);
-                        _context.Add(actividadsocial);
-                        _context.Add(abandonoEstado);
-                        _context.Add(saludfisica);
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-                    }
-                    catch (DbUpdateException ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
-                    catch (DBConcurrencyException ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
-                    catch (Exception ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
+
+                    _context.Add(persona);
+                    _context.Add(domicilio);
+                    // _context.Add(domiciliosecundario);
+                    _context.Add(estudios);
+                    _context.Add(trabajo);
+                    _context.Add(actividadsocial);
+                    _context.Add(abandonoEstado);
+                    _context.Add(saludfisica);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
                     return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
                     #endregion
 
@@ -2984,31 +2955,19 @@ namespace scorpioweb.Controllers
                     #endregion
 
                     #region -Añadir a contexto-
-                    try
-                    {
-                        _context.Add(personacl); //Sirve
-                        _context.Add(domiciliocl);
-                        // _context.Add(domiciliosecundario);
-                        _context.Add(estudioscl);
-                        _context.Add(trabajocl); //Sirve
-                        _context.Add(actividadsocialcl);
-                        _context.Add(abandonoEstadocl);
-                        _context.Add(saludfisicacl); //Sirve 
-                        await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
 
-                    }
-                    catch(DbUpdateException ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
-                    catch (DBConcurrencyException ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
-                    catch (Exception ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
+                    _context.Add(personacl); //Sirve
+                    _context.Add(domiciliocl);
+                    // _context.Add(domiciliosecundario);
+                    _context.Add(estudioscl);
+                    _context.Add(trabajocl); //Sirve
+                    _context.Add(actividadsocialcl);
+                    _context.Add(abandonoEstadocl);
+                    _context.Add(saludfisicacl); //Sirve 
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
+
+
+
                     return RedirectToAction("RegistroConfirmation/" + personacl.IdPersonaCl, "Personas");
                     #endregion
                 }
@@ -3024,7 +2983,7 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
             bool escl = false;
             bool esmcyscp = false;
-            
+
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
@@ -3469,8 +3428,6 @@ namespace scorpioweb.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
                 if (!PresentacionExists(presentacionperiodica.IdpresentacionPeriodica))
                 {
                     return NotFound();
@@ -3480,14 +3437,7 @@ namespace scorpioweb.Controllers
                     throw;
                 }
             }
-            catch(DbUpdateException ex)
-            {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-            }
-            catch(Exception ex)
-            {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-            }
+    
             return RedirectToAction("PresentacionPeriodicaPersona/" + idpersona);
         }
         #endregion
@@ -3615,8 +3565,8 @@ namespace scorpioweb.Controllers
                     }
                     catch (DbUpdateConcurrencyException ex)
                     {
-                        
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+
+                       
                         if (!PersonaExists(query.IdPersona))
                         {
                             return NotFound();
@@ -3626,14 +3576,7 @@ namespace scorpioweb.Controllers
                             throw;
                         }
                     }
-                    catch(DbUpdateException ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
-                    catch(Exception ex)
-                    {
-                        _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    }
+               
                 }
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "Fotos");
                 var stream = new FileStream(Path.Combine(uploads, file_name), FileMode.Create, FileAccess.ReadWrite);
@@ -4214,8 +4157,8 @@ namespace scorpioweb.Controllers
                             }
                             catch (DbUpdateConcurrencyException ex)
                             {
-                                
-                                _Looger.LogError($"Exception message: {ex.Message}; InnerException: {ex.InnerException}; User: {user};");
+
+                               
                                 if (!PersonaExists(consumosustanciasBD.PersonaIdPersona))
                                 {
                                     return NotFound();
@@ -4273,7 +4216,7 @@ namespace scorpioweb.Controllers
                         catch (DbUpdateConcurrencyException ex)
                         {
 
-                            _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                          
                             if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
                             {
                                 return NotFound();
@@ -4283,14 +4226,7 @@ namespace scorpioweb.Controllers
                                 throw;
                             }
                         }
-                        catch(DbUpdateException ex)
-                        {
-                            _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                        }
-                        catch(Exception ex)
-                        {
-                            _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                        }
+                      
                     }
                 }
                 #endregion
@@ -4341,7 +4277,6 @@ namespace scorpioweb.Controllers
                             catch (DbUpdateConcurrencyException ex)
                             {
 
-                                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
                                 if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
                                 {
                                     return NotFound();
@@ -4351,14 +4286,7 @@ namespace scorpioweb.Controllers
                                     throw;
                                 }
                             }
-                            catch(DbUpdateException ex)
-                            {
-                                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                            }
-                            catch(Exception ex)
-                            {
-                                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                            }
+                         
                         }
                     }
                 }
@@ -4409,8 +4337,7 @@ namespace scorpioweb.Controllers
                                 await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
                             }
                             catch (DbUpdateConcurrencyException ex)
-                            { 
-                                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                            {
                                 if (!PersonaExists(asientoFamiliar.PersonaIdPersona))
                                 {
                                     return NotFound();
@@ -4420,14 +4347,7 @@ namespace scorpioweb.Controllers
                                     throw;
                                 }
                             }
-                            catch(DbUpdateException ex)
-                            {
-                                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                            }
-                            catch(Exception ex)
-                            {
-                                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                            }
+                         
                         }
                     }
                 }
@@ -4447,8 +4367,7 @@ namespace scorpioweb.Controllers
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
                 }
                 catch (DbUpdateConcurrencyException ex)
-                { 
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                {
                     if (!PersonaExists(persona.IdPersona))
                     {
                         return NotFound();
@@ -4458,14 +4377,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+            
                 return RedirectToAction("MenuEdicion/" + persona.IdPersona, "Personas");
             }
             return View(persona);
@@ -4710,7 +4622,6 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
                     if (!PersonaExists(domicilio.PersonaIdPersona))
                     {
                         return NotFound();
@@ -4720,14 +4631,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+              
                 return RedirectToAction("MenuEdicion/" + domicilio.PersonaIdPersona, "Personas");
             }
             return View(domicilio);
@@ -4903,8 +4807,8 @@ namespace scorpioweb.Controllers
                     //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException ex)
-                { 
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                {
+                   
                     //if (!DomiciliosecundarioExists(domiciliosecundario.IdDomicilioSecundario))
                     //{
                     //    return NotFound();
@@ -4914,14 +4818,7 @@ namespace scorpioweb.Controllers
                     //    throw;
                     //}
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+                
                 return RedirectToAction("EditDomicilio/" + idPersona, "Personas", new { nombre = nombre });
             }
             return View();
@@ -5084,7 +4981,7 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};"); 
+                   
                     if (!PersonaExists(estudios.PersonaIdPersona))
                     {
                         return NotFound();
@@ -5094,14 +4991,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+            
                 return RedirectToAction("MenuEdicion/" + estudios.PersonaIdPersona, "Personas");
             }
             return View(estudios);
@@ -5221,7 +5111,6 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
                     if (!PersonaExists(trabajo.PersonaIdPersona))
                     {
                         return NotFound();
@@ -5231,14 +5120,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+               
                 return RedirectToAction("MenuEdicion/" + trabajo.PersonaIdPersona, "Personas");
             }
             return View(trabajo);
@@ -5297,8 +5179,7 @@ namespace scorpioweb.Controllers
                 catch (DbUpdateConcurrencyException ex)
                 {
 
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                    if (!PersonaExists(actividadsocial.PersonaIdPersona))
+                     if (!PersonaExists(actividadsocial.PersonaIdPersona))
                     {
                         return NotFound();
                     }
@@ -5307,13 +5188,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch (DbUpdateException ex) {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+              
                 return RedirectToAction("MenuEdicion/" + actividadsocial.PersonaIdPersona, "Personas");
             }
             return View(actividadsocial);
@@ -5393,7 +5268,7 @@ namespace scorpioweb.Controllers
                 catch (DbUpdateConcurrencyException ex)
                 {
 
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                    
                     if (!PersonaExists(abandonoestado.PersonaIdPersona))
                     {
                         return NotFound();
@@ -5403,14 +5278,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+            
                 return RedirectToAction("MenuEdicion/" + abandonoestado.PersonaIdPersona, "Personas");
             }
             return View(abandonoestado);
@@ -5690,16 +5558,9 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                  
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+              
                 return RedirectToAction("EditAbandonoEstado/" + familiaresforaneos.PersonaIdPersona, "Personas");
             }
             return View(familiaresforaneos);
@@ -5865,7 +5726,7 @@ namespace scorpioweb.Controllers
                 catch (DbUpdateConcurrencyException ex)
                 {
 
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                   
                     if (!PersonaExists(saludfisica.PersonaIdPersona))
                     {
                         return NotFound();
@@ -5875,14 +5736,7 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+               
                 return RedirectToAction("MenuEdicion/" + saludfisica.PersonaIdPersona, "Personas");
             }
             return View(saludfisica);
@@ -6672,22 +6526,22 @@ namespace scorpioweb.Controllers
                 _context.Database.ExecuteSqlCommand("CALL spBorrarPersona(" + idpersona + ")");
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar });
             }
-            catch(DbException ex)
+            catch (DbException ex)
             {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar, error = ex });
             }
-            catch(DbUpdateException ex)
+            catch (DbUpdateException ex)
             {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+             
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar, error = ex });
             }
             catch (Exception ex)
             {
 
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                
                 borrar = false;
                 return Json(new { success = true, responseText = Url.Action("Index", "Personas"), borrar = borrar, error = ex });
             }
@@ -7644,19 +7498,19 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
 
             }
-            catch(DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException ex)
             {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+               
                 return Json(new { success = false, responseText = ex });
             }
             catch (DbUpdateException ex)
             {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+              
                 return Json(new { success = false, responseText = ex });
             }
-            catch ( Exception ex)
+            catch (Exception ex)
             {
-                _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+               
                 return Json(new { success = false, responseText = ex });
             }
 
@@ -7697,7 +7551,7 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
-                var user =  await userManager.FindByNameAsync(User.Identity.Name);
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
                 try
                 {
 
@@ -7716,7 +7570,7 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                
                     if (!ContactoExists(contactos.Idcontactos))
                     {
                         return NotFound();
@@ -7726,12 +7580,13 @@ namespace scorpioweb.Controllers
                         throw;
                     }
                 }
-                catch(DbUpdateException ex)
+                catch (DbUpdateException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                    
                 }
-                catch(Exception ex) {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                catch (Exception ex)
+                {
+                    
                 }
             }
             //return RedirectToAction("EditContacto/" + contactos.Idcontactos, "Personas");
@@ -8190,16 +8045,9 @@ namespace scorpioweb.Controllers
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
+                   
                 }
-                catch(DbUpdateException ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
-                catch(Exception ex)
-                {
-                    _Looger.LogError($"Exception message: {ex.Message.ToString()}; InnerException: {ex.InnerException.ToString()}; User: {user.ToString()};");
-                }
+              
                 return RedirectToAction("libronegro", "Personas");
             }
             return View(libronegro);
@@ -8240,7 +8088,7 @@ namespace scorpioweb.Controllers
 
         #endregion
 
-        
+
     }
 
 }
