@@ -1522,12 +1522,20 @@ namespace scorpioweb.Controllers
         #region -Bitacora-
         public async Task<IActionResult> ListaBitacora(int? id, string nombre, string cp, string idpersona, string idcp, string supervisor)
         {
-            ViewBag.nombre = nombre;
-            ViewBag.cp = cp;
-            ViewBag.idpersona = idpersona;
-            ViewBag.supervisor = supervisor;
-            ViewBag.idcp = idcp;
+            if(id == null && string.IsNullOrEmpty(idpersona))
+            {
+                return NotFound();
+            }
+            int idBusqueda;
+            if(id == null && !string.IsNullOrEmpty(idpersona))
+                //SOLICITUD PROVIENE DEL BOTON BITACORA EN EL INDEX
+                idBusqueda = int.Parse(idpersona);
 
+
+            if (id != null && string.IsNullOrEmpty(idpersona))
+                //SOLICITUD PROVIENE DEL INDEX DE SUPERVISIONCL
+                idBusqueda = int.Parse(id);
+            
             var supervision = _context.Supervisioncl
             .SingleOrDefault(m => m.IdSupervisioncl == id);
 
@@ -1543,6 +1551,8 @@ namespace scorpioweb.Controllers
             //                 join b in _context.Bitacora on o.IdOficialia equals b.IdOficialia
             //                 where _cp.IdCausaPenal == cpp.IdCausaPenal);
 
+            
+            
             await PermisosEdicion(id);
 
 
@@ -1561,7 +1571,11 @@ namespace scorpioweb.Controllers
                                              };
 
             ViewBag.IdSupervisionGuardar = id;
-
+            ViewBag.nombre = nombre;
+            ViewBag.cp = cp;
+            ViewBag.idpersona = idpersona;
+            ViewBag.supervisor = supervisor;
+            ViewBag.idcp = idcp;
 
             return View();
         }
