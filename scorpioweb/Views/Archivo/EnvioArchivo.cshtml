@@ -1,0 +1,253 @@
+﻿@model IEnumerable<scorpioweb.Models.Envioarchivo>
+
+@{
+    ViewData["Title"] = "EnvioArchivo";
+}
+
+
+<script>
+
+    function recibido(id) {
+        $.ajax({
+            type: "POST",
+            url: "/archivo/recibido",
+            traditional: true,
+            data: {
+                id,
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                Console.Message(response);
+            }
+        });
+    }
+
+    function revisado(id) {
+        $.ajax({
+            type: "POST",
+            url: "/Archivo/revisado",
+            traditional: true,
+            data: {
+                id,
+            },
+            error: function (response) {
+                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                Console.Message(response);
+            }
+        });
+    }
+    function actualizarIdArchivo(id) {
+        var idarchivo = document.getElementById("idarchivo_" + id).value;
+        $.ajax({
+            type: "POST",
+            url: "/Archivo/ActualizarIdArchivo",
+            data: {
+                id: id,
+                idarchivo: idarchivo
+            },
+            success: function () {
+                console.log("Idarchivo actualizado");
+            },
+            error: function () {
+                alert("Error al actualizar idarchivo");
+            }
+        });
+    }
+    function actualizarObservaciones(id) {
+        var observaciones = document.getElementById("observaciones_" + id).value;
+        $.ajax({
+            type: "POST",
+            url: "/Archivo/ActualizarObservaciones",
+            data: {
+                id: id,
+                observaciones: observaciones
+            },
+            success: function () {
+                console.log("Observaciones actualizadas");
+            },
+            error: function () {
+                alert("Error al actualizar observaciones");
+            }
+        });
+    }
+    
+</script>
+
+
+<h2>Envio Archivo</h2>
+@*
+<p>
+    <a asp-action="Create"></a>
+</p>
+*@
+
+<form asp-action="Envioarchivo" method="get" class="mb-4">
+    <div class="row g-3 align-items-end">
+        <!-- Búsqueda por nombre o Id -->
+        <div class="col-md-4">
+            <label for="SearchString" class="form-label">Nombre o Id</label>
+            <input type="text"
+                   id="SearchString"
+                   name="SearchString"
+                   class="form-control"
+                   placeholder="Buscar..."
+                   value="@(ViewData["currentFilter"] ?? "")" />
+        </div>
+        <!-- Filtro Área -->
+        <div class="col-md-3">
+            <label for="areaFiltro" class="form-label">Área</label>
+            <select id="areaFiltro"
+                    name="areaFiltro"
+                    class="form-select">
+                <option value="">Todos</option>
+                <option value="MCySCP" @(ViewData["AreaFiltro"]?.ToString() == "MCySCP" ? "selected" : "")>MCySCP</option>
+                <option value="LC" @(ViewData["AreaFiltro"]?.ToString() == "LC" ? "selected" : "")>LC</option>
+                <option value="Ejecucion de Penas" @(ViewData["AreaFiltro"]?.ToString() == "Ejecucion de Penas" ? "selected" : "")>Ejecución de Penas</option>
+                <option value="Adolescente" @(ViewData["AreaFiltro"]?.ToString() == "Adolescente" ? "selected" : "")>Adolescente</option>
+            </select>
+        </div>
+        <!-- Filtro Recibido -->
+        <div class="col-md-2">
+            <label for="recibidoFiltro" class="form-label">Recibido</label>
+            <select id="recibidoFiltro"
+                    name="recibidoFiltro"
+                    class="form-select">
+                <option value="">Todos</option>
+                <option value="1" @(ViewData["RecibidoFiltro"]?.ToString() == "1" ? "selected" : "")>Sí</option>
+                <option value="0" @(ViewData["RecibidoFiltro"]?.ToString() == "0" ? "selected" : "")>No</option>
+            </select>
+        </div>
+        <!-- Filtro Revisado -->
+        <div class="col-md-2">
+            <label for="revisadoFiltro" class="form-label">Revisado</label>
+            <select id="revisadoFiltro"
+                    name="revisadoFiltro"
+                    class="form-select">
+                <option value="">Todos</option>
+                <option value="1" @(ViewData["RevisadoFiltro"]?.ToString() == "1" ? "selected" : "")>Sí</option>
+                <option value="0" @(ViewData["RevisadoFiltro"]?.ToString() == "0" ? "selected" : "")>No</option>
+            </select>
+        </div>
+        <!-- Botón Buscar -->
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-search me-1"></i> Buscar
+            </button>
+        </div>
+    </div>
+</form>
+<a style="text-align:left" asp-action="Envioarchivo">Regresar al Listado Completo </a>
+<a style="text-align:left" asp-action="createEnvioArchivo">Crear </a>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Area)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    Apellido paterno
+                </th>
+                <th>
+                    Apellido materno
+                </th>
+                <th>
+                    Causa Penal
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Delito)
+                </th>
+                <th>
+                    Tipo de Documento
+                </th>
+                <th>
+                    Situacion Juridico
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Recibido)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Revisado)
+                </th>
+                <th>
+                    Id de Archvo
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Observaciones)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Area)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apaterno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amaterno)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Causapenal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Delito)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoDocumento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SituacionJuridico)
+            </td>
+            <td>
+                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                {
+                        <input class="form-check-input" type="checkbox"  onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
+                }
+                else{
+                    @Html.DisplayFor(modelItem => item.Recibido)
+                }
+                  
+            </td>
+            <td>
+                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                {
+                    <input class="form-check-input" type="checkbox" onchange="revisado(@item.IdenvioArchivo)" @(item.Revisado == 1 ? "checked" : "") />
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Revisado)
+                }
+                    
+            </td>
+            <td>
+                <input type="text"
+                        class="form-control"
+                        id="idarchivo_@item.IdenvioArchivo"
+                        value="@item.IdArchvo"
+                        onblur="actualizarIdArchivo(@item.IdenvioArchivo)" />
+            </td>
+
+            <td>
+                <input type="text"
+                        class="form-control"
+                        id="observaciones_@item.IdenvioArchivo"
+                        value="@item.Observaciones"
+                           style="min-width: 300px;"
+                        onblur="actualizarObservaciones(@item.IdenvioArchivo)" />
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

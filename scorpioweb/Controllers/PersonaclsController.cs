@@ -421,7 +421,7 @@ namespace scorpioweb.Models
                         };
 
 
-            if (usuario == "andrea.valdez@dgepms.com" || flagMaster == true)
+            if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
             {
                 var warningPlaneacion = (where).Union
                                                (sinResolucion).Union
@@ -498,7 +498,7 @@ namespace scorpioweb.Models
                                                      tipoAdvertencia = "Se paso el tiempo de la firma"
                                                  });
                 var warnings = Enumerable.Empty<PlaneacionclWarningViewModel>();
-                if (usuario == "andrea.valdez@dgepms.com" || flagMaster == true)
+                if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
                 {
                     var filteredWarnings = from pwvm in warningPlaneacion
                                            where pwvm.personaclVM.Supervisor != null && pwvm.personaclVM.Supervisor.EndsWith("\u0040dgepms.com")
@@ -4019,7 +4019,7 @@ namespace scorpioweb.Models
                         };
 
 
-            if (usuario == "andrea.valdez@dgepms.com"/* || usuario == "janeth@nortedgepms.com"*/ || flagMaster == true)
+            if (usuario == "carmen.trujillo@dgepms.com"/* || usuario == "janeth@nortedgepms.com"*/ || flagMaster == true)
             {
                 var ViewDataAlertasVari = Enumerable.Empty<PlaneacionclWarningViewModel>();
 
@@ -4208,7 +4208,7 @@ namespace scorpioweb.Models
 
                 var warnings = Enumerable.Empty<PlaneacionclWarningViewModel>();
 
-                if (usuario == "andrea.valdez@dgepms.com" || flagMaster == true)
+                if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
                 {
                     var filteredWarnings = from pwvm in ViewDataAlertasVari
                                            where pwvm.personaclVM.Supervisor != null && pwvm.personaclVM.Supervisor.EndsWith("\u0040dgepms.com")

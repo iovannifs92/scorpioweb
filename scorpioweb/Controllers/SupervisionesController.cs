@@ -1598,9 +1598,10 @@ MetodosGenerales mg = new MetodosGenerales();
                         if (hayOficio.ToList().Count() != 0)
                         {
                             await _hubContext.Clients.Group("seCerrocaso").SendAsync("alertCierreCaso", "Realizar cancelaciones correspondientes de " + persona.NombreCompleto + " de MCYSCP.");
+
                         }
 
-                        var datos = hayOficio.First();
+                        //var datos = hayOficio.First();
                         
                         //PENDIENTES 
                         //#region -Cambiar Estado Supervision Vinculacion-
@@ -2735,7 +2736,7 @@ MetodosGenerales mg = new MetodosGenerales();
                 case "diana.ontiveros@dgepms.com":
                     supervisor = "LIC. DIANA ONTIVEROS";
                     break;
-                case "esmeralda.vargas@dgepms.com":
+                case "isabel.almora@dgepms.com":
                     supervisor = "LIC. ANA ESMERALDA VARGAS ALVARADO";
                     break;
                 case "jesumartinez@dgepms.com":

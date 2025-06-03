@@ -345,7 +345,7 @@ namespace scorpioweb.Controllers
         //    String users = user.ToString();
         //    ViewBag.RolesUsuarios = users;
         //    List<string> ListaUsuariosAdminMCSCP = new List<string>();
-        //    if (users == "esmeralda.vargas@dgepms.com")
+        //    if (users == "isabel.almora@dgepms.com")
         //    {
         //        ListaUsuariosAdminMCSCP.Add("Seleccione");
         //        ListaUsuariosAdminMCSCP.Add("Expediente Concluido para Razón de Archivo");
@@ -1001,7 +1001,7 @@ namespace scorpioweb.Controllers
                                   municipiosVM = municipio
                               };
 
-            if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
+            if (usuario == "isabel.almora@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
                 var warningPlaneacion = (where).Union
                                         (sinResolucion).Union
@@ -1100,7 +1100,7 @@ namespace scorpioweb.Controllers
 
 
                 }
-                if (usuario == "esmeralda.vargas@dgepms.com" || flagMaster == true)
+                if (usuario == "isabel.almora@dgepms.com" || flagMaster == true)
                 {
                     var filteredWarnings = from pwvm in warningPlaneacion
                                            where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040dgepms.com")
@@ -2162,7 +2162,7 @@ namespace scorpioweb.Controllers
                     if (persona.Capturista.EndsWith("\u0040nortedgepms.com") && estado == "Durango" && municipio == "Durango")
                     {
                         persona.Colaboracion = "SI";
-                        persona.Supervisor = "esmeralda.vargas@dgepms.com";
+                        persona.Supervisor = "isabel.almora@dgepms.com";
                     }
                     #endregion
 
@@ -2629,7 +2629,7 @@ namespace scorpioweb.Controllers
                     //if (personacl.Capturista.EndsWith("\u0040nortedgepms.com") && estado == "Durango" && municipio == "Durango")
                     //{
                     //    personacl.Colaboracion = "SI";
-                    //    personacl.Supervisor = "esmeralda.vargas@dgepms.com";
+                    //    personacl.Supervisor = "isabel.almora@dgepms.com";
                     //}
                     #endregion
 
@@ -5980,7 +5980,7 @@ namespace scorpioweb.Controllers
                                   municipiosVM = municipio
                               };
 
-            if (usuario == "esmeralda.vargas@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
+            if (usuario == "isabel.almora@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
             {
                 var ViewDataAlertasVari = Enumerable.Empty<PlaneacionWarningViewModel>();
                 switch (currentFilter)
@@ -6215,7 +6215,7 @@ namespace scorpioweb.Controllers
                                            select pwvm;
                     warnings = warnings.Union(filteredWarnings);
                 }
-                if (usuario == "esmeralda.vargas@dgepms.com" || flagMaster == true)
+                if (usuario == "isabel.almora@dgepms.com" || flagMaster == true)
                 {
                     var filteredWarnings = from pwvm in ViewDataAlertasVari
                                            where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040dgepms.com")
@@ -7148,7 +7148,7 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
             int ii = 0;
 
-            if (users == "esmeralda.vargas@dgepms.com")
+            if (users == "isabel.almora@dgepms.com")
             {
                 ListaUbicacion.Add(new SelectListItem { Text = "Seleccione", Value = "Seleccione" });
                 ListaUbicacion.Add(new SelectListItem { Text = "Expediente Concluido para Razón de Archivo", Value = "Expediente Concluido para Razón de Archivo" });

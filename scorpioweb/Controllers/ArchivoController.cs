@@ -195,7 +195,7 @@ namespace scorpioweb.Models
                             select a.IdArchivo);
 
             if (id != 0 && !idExiste.Any())
-            { 
+            {
                 try
                 {
                     create = true;
@@ -388,12 +388,12 @@ namespace scorpioweb.Models
 
             if (antesdel.Any())
             {
-                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar});
+                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar });
             }
             else
             {
                 borrar = true;
-                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar});
+                return Json(new { success = true, responseText = Url.Action("Index", "Archivo"), borrar });
             }
         }
         public JsonResult deletesuper(Archivo archivo, Historialeliminacion historialeliminacion, string[] datosuper)
@@ -428,8 +428,8 @@ namespace scorpioweb.Models
                                 select eu.IdexpedienteUnico).FirstOrDefault();
 
                     var queryB = (from s in _context.Expedienteunico
-                                 where s.IdexpedienteUnico == ideu
-                                 select s).FirstOrDefault();
+                                  where s.IdexpedienteUnico == ideu
+                                  select s).FirstOrDefault();
                     queryB.Archivo = null;
                     _context.SaveChanges();
                 }
@@ -463,8 +463,8 @@ namespace scorpioweb.Models
         {
             var user = User.Identity.Name;
             var warningSolicitud = from a in _context.Archivo
-                                    where a.Solucitud == 1
-                                    select a;
+                                   where a.Solucitud == 1
+                                   select a;
 
             ViewBag.Warnings = warningSolicitud.Count();
             #region -Solicitud Atendida Archivo prestamo Digital-
@@ -766,7 +766,7 @@ namespace scorpioweb.Models
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePrestamo([Bind("Entrega,Recibe,Area,FechaInicial,FechaRenovacion,Estatus,Renovaciones,Urlvale,ArcchivoIdArchivo")] Archivoprestamo archivoprestamo, int archivoIdArchivo, string usuario,  int optradio, Archivoprestamodigital archivoprestamodigital)
+        public async Task<IActionResult> CreatePrestamo([Bind("Entrega,Recibe,Area,FechaInicial,FechaRenovacion,Estatus,Renovaciones,Urlvale,ArcchivoIdArchivo")] Archivoprestamo archivoprestamo, int archivoIdArchivo, string usuario, int optradio, Archivoprestamodigital archivoprestamodigital)
         {
             if (ModelState.IsValid)
             {
@@ -927,7 +927,7 @@ namespace scorpioweb.Models
                 archivoprestamo.Estatus = mg.normaliza(archivoprestamo.Estatus);
                 archivoprestamo.Renovaciones = archivoprestamo.Renovaciones;
                 archivoprestamo.ArcchivoIdArchivo = archivoprestamo.ArcchivoIdArchivo;
-               
+
                 try
                 {
                     _context.Update(archivoprestamo);
@@ -1042,9 +1042,9 @@ namespace scorpioweb.Models
             {
                 SearchString = currentFilter;
             }
-          
+
             IQueryable<ArchivoControlPrestamo> filter;
-           
+
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.User = user.ToString();
@@ -1065,7 +1065,7 @@ namespace scorpioweb.Models
             }
             else
             {
-                
+
                 filter = from a in _context.Archivo
                          join ap in _context.Archivoprestamo on a.IdArchivo equals ap.ArcchivoIdArchivo
                          where ap.Recibe == user.ToString() && ap.Estatus == "PRESTADO"
@@ -1337,7 +1337,7 @@ namespace scorpioweb.Models
                               }).ToList();
 
                 return Json(new { success = true, responseText = Url.Action("EditArchivo", "Archivo"), update = update, nombre = nombre }); ;
-            }  
+            }
         }
         public JsonResult Reasignar(Archivoregistro archivoregistro, string datoidArchivo, string datoidArchivoregistro)
         {
@@ -1419,7 +1419,7 @@ namespace scorpioweb.Models
 
             var paraPrestamo = from p in _context.Archivo
                                where p.Solucitud == 1
-                             select p;
+                               select p;
 
             //if (!String.IsNullOrEmpty(searchString))
             //{
@@ -1454,7 +1454,7 @@ namespace scorpioweb.Models
 
             var empty = (from a in _context.Archivo
                          where archivo.IdArchivo == archivo.IdArchivo
-                         select a); 
+                         select a);
 
             if (empty.Any())
             {
@@ -1484,11 +1484,11 @@ namespace scorpioweb.Models
             {
                 borrar = true;
                 var query = (from a in _context.Archivoprestamodigital
-                                where a.IdArchivoPrestamoDigital == datoarchivo && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                             where a.IdArchivoPrestamoDigital == datoarchivo && user.ToString().ToUpper() == a.Usuario.ToUpper()
                              select a).FirstOrDefault();
                 query.EstadoPrestamo = 0;
                 _context.SaveChanges();
-               
+
                 return Json(new { success = true, responseText = Url.Action("ArchivoPrestamoDigital", "Archivo"), borrar = borrar });
             }
             catch (Exception ex)
@@ -1526,9 +1526,253 @@ namespace scorpioweb.Models
         }
 
 
-        #endregion 
+        #endregion
+
+        #region -EnvioArchivo-
+        public async Task<IActionResult> Envioarchivo(
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            string estadoSuper,
+            string figuraJudicial,
+            int? pageNumber,
+            string areaFiltro,
+            int? recibidoFiltro,
+            int? revisadoFiltro
+            )
+        {
+            // Warnings
+            var warningSolicitud = from a in _context.Archivo
+                                   where a.Solucitud == 1
+                                   select a;
+            ViewBag.Warnings = warningSolicitud.Count();
+
+            // Sorting
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+            // Paging & searchString persistence
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            // User & roles
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
+            ViewBag.Admin = false;
+            ViewBag.Masteradmin = false;
+            ViewBag.Archivo = roles.Any(r => r == "Masteradmin" || r == "Archivo" || r == "Director");
+
+            // ViewData para mantener filtros en la UI
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["EstadoS"] = estadoSuper;
+            ViewData["FiguraJ"] = figuraJudicial;
+            ViewData["AreaFiltro"] = areaFiltro;
+            ViewData["RecibidoFiltro"] = recibidoFiltro?.ToString();
+            ViewData["RevisadoFiltro"] = revisadoFiltro?.ToString();
+
+            // Query base
+            var filter = _context.Envioarchivo.AsQueryable();
+
+            // Filtro por texto de búsqueda
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                filter = filter.Where(ea =>
+                    (ea.Apaterno + " " + ea.Amaterno + " " + ea.Nombre).Contains(searchString) ||
+                    (ea.Nombre + " " + ea.Amaterno + " " + ea.Apaterno).Contains(searchString) ||
+                    (ea.Amaterno + " " + ea.Apaterno + " " + ea.Nombre).Contains(searchString) ||
+                    ea.IdArchvo.ToString().Contains(searchString)
+                );
+            }
+
+            // Filtro por Área
+            if (!String.IsNullOrWhiteSpace(areaFiltro))
+            {
+                filter = filter.Where(ea => ea.Area == areaFiltro);
+            }
+
+            // Filtro por Recibido
+            if (recibidoFiltro.HasValue)
+            {
+                filter = filter.Where(ea => ea.Recibido == recibidoFiltro.Value);
+            }
+
+            // Filtro por Revisado
+            if (revisadoFiltro.HasValue)
+            {
+                filter = filter.Where(ea => ea.Revisado == revisadoFiltro.Value);
+            }
+
+            // Ordenamiento
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    filter = filter.OrderByDescending(ea => ea.Apaterno);
+                    break;
+                case "causa_penal_desc":
+                    filter = filter.OrderByDescending(ea => ea.Apaterno);
+                    break;
+                case "estado_cumplimiento_desc":
+                    filter = filter.OrderByDescending(ea => ea.Nombre);
+                    break;
+                default:
+                    filter = filter.OrderByDescending(ea => ea.IdenvioArchivo);
+                    break;
+            }
+
+            // Paging
+            int pageSize = 10;
+            var paged = await PaginatedList<Envioarchivo>.CreateAsync(
+                filter.AsNoTracking(),
+                pageNumber ?? 1,
+                pageSize
+            );
+
+            return View(paged);
+        }
+
+        public void recibido(int id)
+        {
+            var envioarchivo = (from ea in _context.Envioarchivo
+                                where ea.IdenvioArchivo == id
+                                select ea).FirstOrDefault();
+            if (envioarchivo.Recibido == 0 || envioarchivo.Recibido == null)
+            {
+                envioarchivo.Recibido = 1;
+            }
+            else
+            {
+                envioarchivo.Recibido = 0;
+            }
+            _context.SaveChanges();
+        }
+
+        public void revisado(int id)
+        {
+            var envioarchivo = (from en in _context.Envioarchivo
+                                where en.IdenvioArchivo == id
+                                select en).FirstOrDefault();
+            if (envioarchivo.Revisado == 0 || envioarchivo.Revisado == null)
+            {
+                envioarchivo.Revisado = 1;
+            }
+            else
+            {
+                envioarchivo.Revisado = 0;
+            }
+            _context.SaveChanges();
+        }
+
+        [HttpPost]
+        public void ActualizarIdArchivo(int id, int idarchivo)
+        {
+            var envioarchivo = (from en in _context.Envioarchivo
+                                where en.IdenvioArchivo == id
+                                select en).FirstOrDefault();
+
+            if (envioarchivo != null)
+            {
+                envioarchivo.IdArchvo = idarchivo;
+                _context.SaveChanges();
+            }
+        }
+
+        [HttpPost]
+        public void ActualizarObservaciones(int id, string observaciones)
+        {
+            var envioarchivo = (from en in _context.Envioarchivo
+                                where en.IdenvioArchivo == id
+                                select en).FirstOrDefault();
+
+            if (envioarchivo != null)
+            {
+                envioarchivo.Observaciones = observaciones;
+                _context.SaveChanges();
+            }
+        }
+
+        // GET: Envioarchivo/Create
+        public async Task<IActionResult> createEnvioArchivos()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.User = user.ToString();
 
 
+
+            var roleToArea = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Uespa", "UESPA" },
+                { "Ejecucion", "Ejecución de Penas" },
+                { "AuxiliarEjecucion", "Ejecución de Penas" },
+                { "Coordinador Ejecucion", "Ejecución de Penas" },
+                { "SupervisorLC", "LC" },
+                { "AdminLC", "LC" },
+                { "AdminMCSCP", "MCySCP" },
+                { "SupervisorMCSCP", "MCySCP" },
+                { "AuxiliarMCSCP", "MCySCP" },
+            // ... puedes añadir más según tus reglas
+            };
+
+            string areaAsignada = roles
+                .Where(role => roleToArea.ContainsKey(role))
+                .Select(role => roleToArea[role])
+                .FirstOrDefault() ?? "Sin área asignada";
+
+            List<string> resultados = new List<string>();
+
+            if (areaAsignada == "Ejecución de Penas")
+            {
+                ViewBag.SituacionJuridico = _context.Eptermino
+                    .Select(e => e.Formaconclucion)
+                    .Where(e => !string.IsNullOrEmpty(e))
+                    .Distinct()
+                    .ToList();
+            }
+            else if (areaAsignada == "MCySCP")
+            {
+                ViewBag.SituacionJuridico = _context.Cierredecaso
+                    .Select(c => c.ComoConcluyo)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct()
+                    .ToList();
+            }
+            else if (areaAsignada == "CL")
+            {
+                ViewBag.SituacionJuridico = _context.Cierredecasocl
+                    .Select(c => c.ComoConcluyo)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct()
+                    .ToList();
+            }
+
+
+            return View();
+        }
+
+        // POST: Envioarchivo/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create([Bind("Nombre,Apaterno,Amaterno,Causapenal,Delito,TipoDocumento,SituacionJuridico,Recibido,Revisado,IdArchvo,Observaciones,Area,Usuario")] Envioarchivo envioarchivo)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Envioarchivo.Add(envioarchivo);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index)); // O la acción de listado
+            }
+            return View(envioarchivo);
+        }
+        #endregion
 
     }
 }
+

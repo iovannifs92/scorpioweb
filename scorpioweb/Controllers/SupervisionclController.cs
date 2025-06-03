@@ -1481,7 +1481,7 @@ namespace scorpioweb.Controllers
                             await _hubContext.Clients.Group("seCerrocaso").SendAsync("alertCierreCaso", "Realizar cancelaciones correspondientes de " + personacl.NombreCompleto + " de Libertad Condicionada.");
                         }
 
-                        var datos = hayOficio.First();
+                        //var datos = hayOficio.First();
 
                         //PENDIENTES 
                         //#region -Cambiar Estado Supervision Vinculacion-
@@ -1492,13 +1492,7 @@ namespace scorpioweb.Controllers
                         //_context.SaveChanges();
                         //#endregion
                     }
-
                     #endregion
-
-
-
-
-
                     //_context.Update(cierredecaso);
                     //await _context.SaveChangesAsync();
                 }
@@ -1534,7 +1528,7 @@ namespace scorpioweb.Controllers
 
             if (id != null && string.IsNullOrEmpty(idpersona))
                 //SOLICITUD PROVIENE DEL INDEX DE SUPERVISIONCL
-                idBusqueda = int.Parse(id);
+                idBusqueda = int.Parse(idpersona);
             
             var supervision = _context.Supervisioncl
             .SingleOrDefault(m => m.IdSupervisioncl == id);
@@ -2280,6 +2274,7 @@ namespace scorpioweb.Controllers
                 {"david.nevarez@dgepms.com", "DAVID IVAN NEVAREZ"},
                 {"amor.davalos@dgepms.com", "LIC. AMOR DAVALOS NAJERA"},
                 {"harled.ledesma@dgepms.com", "LIC. HARLE LEDESMA"},
+                {"carmen.trujillo@dgepms.com", "LIC. CARMEN TRUJILLO"},
                 {"andrea.valdez@dgepms.com", "LIC. ANDREA VALDEZ"}
 
             };
@@ -2500,7 +2495,7 @@ namespace scorpioweb.Controllers
                 { "V", "COMUNICAR A LAS AUTORIDADES DEL ÓRGANO EJECUTOR DE PENAS SUS CAMBIOS DE DOMICILIO." },
                 { "VI", "NO AUSENTARSE DEL ESTADO SIN PREVIO PERMISO DE LAS AUTORIDADES ENCARGADAS DE LA EJECUCIÓN DE PENAS Y MEDIDAS DE SEGURIDAD." }
             };
-
+ 
            string ObtenerValor(Dictionary<string, string> diccionario, string clave)
             {
                 if (diccionario.TryGetValue(clave, out string valor))
