@@ -202,23 +202,22 @@ namespace scorpioweb.Controllers
 
             ViewBag.flag = false;
 
-            //JUZGADO 1
-            if (ViewBag.User == "julissa.gonzalez@dgepms.com" || ViewBag.User == "diana.ontiveros@dgepms.com")
+            if (user != null)
             {
-                ViewBag.J = "JUZGADO 1";
+                if (roles.Contains("Juzgado 1"))
+                {
+                    ViewBag.J = "JUZGADO 1";
+                }
+                if (roles.Contains("Juzgado 2"))
+                {
+                    ViewBag.J = "JUZGADO 2";
+                }
+                if (roles.Contains("Juzgado 3"))
+                {
+                    ViewBag.J = "JUZGADO 3";
+                }
             }
-            //JUZGADO 2
-            if (ViewBag.User == "esthela.huitron@dgepms.com" || ViewBag.User == "stephany.garcia@dgepms.com")
-            {
-                ViewBag.J = "JUZGADO 2";
-            }
-            //JUZGADO 3
-            if ( ViewBag.User == "alma.gladiola@dgepms.com" || ViewBag.User == "isabel.almora@dgepms.com")
-            {
-                ViewBag.J = "JUZGADO 3";
-            }
-      
-            
+
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
                                    where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
@@ -390,11 +389,11 @@ namespace scorpioweb.Controllers
                 }
                 else if(ejecucion.Juzgado == "JUZGADO 2")
                 {
-                    ejecucion.Encargado = "stephany.garcia@dgepms.com";
+                    ejecucion.Encargado = "diana.ontiveros@dgepms.com";
                 }
                 else if(ejecucion.Juzgado == "JUZGADO 3")
                 {
-                    ejecucion.Encargado = "isabel.almora@dgepms.com";
+                    ejecucion.Encargado = "esthela.huitron@dgepms.com";
                 }
                 else
                 {
