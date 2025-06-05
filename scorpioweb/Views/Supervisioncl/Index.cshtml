@@ -219,6 +219,9 @@
                 <a asp-action="PersonaSupervisioncl" asp-route-sortOrder="@ViewData["CausaPenalSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Causa Penal</a>
             </th>
             <th>
+                <a>Carpeta de Ejecucion</a>
+            </th>
+            <th>
                 <a>Beneficio</a>
             </th>
             <th>
@@ -251,6 +254,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.causapenalVM.CausaPenal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.personaVM.Ce) - @Html.DisplayFor(modelItem => item.personaVM.Juzgado)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.beneficiosVM.FiguraJudicial)

@@ -6,44 +6,44 @@
 
 <style>
     .buttons a {
-        text-decoration: none;
-        font-size: 28px;
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        text-align: center;
-        color: #f1f1f1;
-        border-radius: 50%;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
-        transition: all .4s ease-in-out;
+    text-decoration: none;
+    font-size: 28px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    color: #f1f1f1;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+    transition: all .4s ease-in-out;
     }
 
-        .buttons a:hover {
-            transform: scale(1.2);
-        }
+    .buttons a:hover {
+    transform: scale(1.2);
+    }
 
     #agenda {
-        background: #314652;
-        margin-left: 20px;
+    background: #314652;
+    margin-left: 20px;
     }
 
     #calendario {
-        background: #00B812;
-        margin-left: 20px;
+    background: #00B812;
+    margin-left: 20px;
     }
 
     #mensajeSistema {
-        background: #0078A7;
-        margin-left: 20px;
+    background: #0078A7;
+    margin-left: 20px;
     }
 
     #libronegro {
-        background: #fff;
-        margin-left: 20px;
+    background: #fff;
+    margin-left: 20px;
     }
 
     #seccionBotones {
-        padding-top: 1em;
+    padding-top: 1em;
     }
 
 </style>
@@ -52,11 +52,17 @@
 
 <script>
     function openFullScreenWindow() {
-        const screenWidth = window.screen.availWidth;
-        const screenHeight = window.screen.availHeight;
-
-        const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+    const screenWidth = window.screen.availWidth;
+    const screenHeight = window.screen.availHeight;
+    const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
     }
+
+    function openFullScreenWindow2() {
+            const screenWidth = window.screen.availWidth;
+            const screenHeight = window.screen.availHeight;
+            const newWindow = window.open("/Archivo/createEnvioArchivo", "_blank", `fullscreen = yes, toolbar = yes, scrollbars = yes, resizable = yes, width =${ screenWidth},height =${ screenHeight}`);
+    } 
+ 
 </script>
 
 <script src="~/js/jquery-1.11.1.min.js"></script>
@@ -98,6 +104,12 @@
     <section class="buttons" style="padding-right: 1em;">
         <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
     </section>
+    @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+    {
+        <section class="buttons" style="padding-right: 1em;">
+            <a onclick="openFullScreenWindow2()" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
+        </section>
+    }
 </div>
 
 

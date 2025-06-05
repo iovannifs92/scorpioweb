@@ -113,11 +113,15 @@
 {
     <h2 class="blockquote text-center"><a href="/Personascl/Details/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.Paterno @item.personaVM.Materno @item.personaVM.Nombre</a></h2>
 
-    <div class=col-md-6>
+    <div class=col-md-4>
         <h3 style="text-align:left" class="blockquote text-center">Id Persona:</h3>
         <h3 style="text-align:center" class="blockquote text-center"><a href="/Personacls/Procesos/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.IdPersonaCl</a></h3>
     </div>
-    <div class=col-md-6>
+    <div class=col-md-4>
+        <h3 style="text-align:left" class="blockquote text-center">Carpeta de Ejecución:</h3>
+        <h3 style="text-align:center" class="blockquote text-center"><a href="/Personacls/Procesos/@item.personaVM.IdPersonaCl" target="_blank">@item.personaVM.Ce - @item.personaVM.Juzgado </a></h3>
+    </div>
+    <div class=col-md-4>
         <h3 style="text-align:center" class="blockquote text-center">Causa Penal:</h3>
         <h3 style="text-align:center" class="blockquote text-center"><a href="@("Causaspenalescl/DetailsCP/"+item.causapenalVM.IdCausaPenalcl)" target="_blank">@item.causapenalVM.CausaPenal</a></h3>
     </div>

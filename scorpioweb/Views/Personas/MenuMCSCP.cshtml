@@ -35,6 +35,12 @@
 
         const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
     }
+    function openFullScreenWindow2() {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+
+        const newWindow = window.open("/Archivo/createEnvioArchivo", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+    }
 </script>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -252,11 +258,17 @@
 <div class="bg-light clearfix" id="seccionBotones">
     
     @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") && User.Identity.Name.EndsWith("@dgepms.com"))
-        {
-            <section class="buttons" style="padding-right: 1em;">
-                <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>        
-            </section>
-        }
+    {
+        <section class="buttons" style="padding-right: 1em;">
+            <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>        
+        </section>
+    }
+    @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+    {
+        <section class="buttons" style="padding-right: 1em;">
+            <a onclick="openFullScreenWindow2()" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
+        </section>
+    }
     <section class="buttons" style="padding-right: 1em;">
         <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
     </section>

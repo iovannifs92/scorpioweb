@@ -1639,7 +1639,7 @@ namespace scorpioweb.Models
             return View(paged);
         }
 
-        public void recibido(int id)
+        public void recibido(int id, string QuienRecibe)
         {
             var envioarchivo = (from ea in _context.Envioarchivo
                                 where ea.IdenvioArchivo == id
@@ -1652,10 +1652,13 @@ namespace scorpioweb.Models
             {
                 envioarchivo.Recibido = 0;
             }
+
+            envioarchivo.QuienRecibe = QuienRecibe;
+            envioarchivo.FechaRecibido = DateTime.Now;
             _context.SaveChanges();
         }
 
-        public void revisado(int id)
+        public void revisado(int id, string QuienRevisa)
         {
             var envioarchivo = (from en in _context.Envioarchivo
                                 where en.IdenvioArchivo == id
@@ -1668,6 +1671,9 @@ namespace scorpioweb.Models
             {
                 envioarchivo.Revisado = 0;
             }
+
+            envioarchivo.QuienRevisa = QuienRevisa;
+            envioarchivo.FechaRevisado = DateTime.Now;
             _context.SaveChanges();
         }
 
@@ -1700,13 +1706,13 @@ namespace scorpioweb.Models
         }
 
         // GET: Envioarchivo/Create
-        public async Task<IActionResult> createEnvioArchivos()
+        public async Task<IActionResult> createEnvioArchivo()
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             ViewBag.User = user.ToString();
 
-
+            ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
             var roleToArea = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -1719,6 +1725,7 @@ namespace scorpioweb.Models
                 { "AdminMCSCP", "MCySCP" },
                 { "SupervisorMCSCP", "MCySCP" },
                 { "AuxiliarMCSCP", "MCySCP" },
+                { "Servicios previos", "Servicios previos" },
             // ... puedes añadir más según tus reglas
             };
 
@@ -1726,6 +1733,10 @@ namespace scorpioweb.Models
                 .Where(role => roleToArea.ContainsKey(role))
                 .Select(role => roleToArea[role])
                 .FirstOrDefault() ?? "Sin área asignada";
+
+
+            ViewBag.AreaAsignada = areaAsignada;
+
 
             List<string> resultados = new List<string>();
 
@@ -1752,7 +1763,16 @@ namespace scorpioweb.Models
                     .Where(c => !string.IsNullOrEmpty(c))
                     .Distinct()
                     .ToList();
+            }     
+            else if (areaAsignada == "Servicios previos")
+            {
+                ViewBag.SituacionJuridico = _context.Serviciospreviosjuicio
+                    .Select(c => c.Situacion)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .Distinct()
+                    .ToList();
             }
+
 
 
             return View();
@@ -1761,13 +1781,14 @@ namespace scorpioweb.Models
         // POST: Envioarchivo/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Nombre,Apaterno,Amaterno,Causapenal,Delito,TipoDocumento,SituacionJuridico,Recibido,Revisado,IdArchvo,Observaciones,Area,Usuario")] Envioarchivo envioarchivo)
+        public IActionResult createEnvioArchivo([Bind("Nombre,Apaterno,Amaterno,Causapenal,Delito,TipoDocumento,SituacionJuridico,Recibido,Revisado,IdArchvo,Observaciones,Area,Usuario,FechaRegistro")] Envioarchivo envioarchivo)
         {
             if (ModelState.IsValid)
             {
+               
                 _context.Envioarchivo.Add(envioarchivo);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Index)); // O la acción de listado
+                return RedirectToAction(nameof(createEnvioArchivo)); // O la acción de listado
             }
             return View(envioarchivo);
         }

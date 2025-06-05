@@ -19,5 +19,10 @@ namespace scorpioweb.Models
         public string Observaciones { get; set; }
         public string Area { get; set; }
         public string Usuario { get; set; }
+        public DateTime? FechaRegistro { get; set; }
+        public DateTime? FechaRecibido { get; set; }
+        public DateTime? FechaRevisado { get; set; }
+        public string QuienRecibe { get; set; }
+        public string QuienRevisa { get; set; }
     }
 }

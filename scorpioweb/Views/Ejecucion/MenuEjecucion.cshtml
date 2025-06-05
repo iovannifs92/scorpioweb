@@ -25,6 +25,11 @@
         margin-left: 20px;
     }
 
+    #envioarchivo {
+        background: #314652;
+        margin-left: 20px;
+    }
+
     #calendario {
         background: #00B812;
         margin-left: 20px;
@@ -56,6 +61,12 @@
         const screenHeight = window.screen.availHeight;
 
         const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+    }
+    function openFullScreenWindow2() {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+
+        const newWindow = window.open("/Archivo/createEnvioArchivo", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
     }
 </script>
 
@@ -135,9 +146,17 @@
     }
 </div>
 <div class="bg-light clearfix" id="seccionBotones">
+
     <section class="buttons" style="padding-right: 1em;">
         <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
     </section>
+
+    @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+    {
+        <section class="buttons" style="padding-right: 1em;">
+            <a onclick="openFullScreenWindow2()" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
+        </section>
+    }
 </div>
 
 

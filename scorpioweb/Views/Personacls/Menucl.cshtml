@@ -17,6 +17,12 @@
 
         const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
     }
+    function openFullScreenWindow2() {
+        const screenWidth = window.screen.availWidth;
+        const screenHeight = window.screen.availHeight;
+
+        const newWindow = window.open("/Archivo/createEnvioArchivo", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+    }
 </script>
 
 
@@ -134,20 +140,20 @@
 
     @*@if (User.IsInRole("AdminLC") || User.IsInRole("Masteradmin"))
     {*@
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Personacls" asp-action="Colaboraciones">
-                        <img class="card-img-bottom" src="~/images/especiales.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Casos Especiales
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Colaboraciones, Mediadas de Seguridad
-                    </p>
-            </div>
+    <div class="col-sm-3 col-md-3 card text-center">
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Personacls" asp-action="Colaboraciones">
+                    <img class="card-img-bottom" src="~/images/especiales.png" alt="Card image cap" style="padding-bottom:5%;">
+                    Casos Especiales
+                </a>
+            </h4>
+            <p class="card-text">
+                Colaboraciones, Mediadas de Seguridad
+            </p>
         </div>
-    
+    </div>
+
 
     @*@if (@ViewBag.Usuario == "isabel.almora@dgepms.com")
     {
@@ -167,9 +173,17 @@
     }*@
 </div>
 <div class="bg-light clearfix" id="seccionBotones">
-@*    <section class="buttons" style="padding-right: 1em;">
+    @*    <section class="buttons" style="padding-right: 1em;">
         <a asp-controller="Calendarios" asp-action="Index" asp-route-origen="1" class="fa fa-calendar float-right" id="calendario"></a>
     </section>*@
+    @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+    {
+        <section class="buttons" style="padding-right: 1em;">
+            <a onclick="openFullScreenWindow2()" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
+        </section>
+    }
+
+
     <section class="buttons" style="padding-right: 1em;">
 @*        @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminMCSCP"))
         {

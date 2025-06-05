@@ -6,14 +6,15 @@
 
 
 <script>
-
     function recibido(id) {
+        QuienRecibe = "@User.Identity.Name"
+       
         $.ajax({
             type: "POST",
             url: "/archivo/recibido",
             traditional: true,
             data: {
-                id,
+                id, QuienRecibe,
             },
             error: function (response) {
                 alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
@@ -23,12 +24,13 @@
     }
 
     function revisado(id) {
+        QuienRevisa = "@User.Identity.Name"
         $.ajax({
             type: "POST",
             url: "/Archivo/revisado",
             traditional: true,
             data: {
-                id,
+                id, QuienRevisa,
             },
             error: function (response) {
                 alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
@@ -102,8 +104,9 @@
                 <option value="">Todos</option>
                 <option value="MCySCP" @(ViewData["AreaFiltro"]?.ToString() == "MCySCP" ? "selected" : "")>MCySCP</option>
                 <option value="LC" @(ViewData["AreaFiltro"]?.ToString() == "LC" ? "selected" : "")>LC</option>
-                <option value="Ejecucion de Penas" @(ViewData["AreaFiltro"]?.ToString() == "Ejecucion de Penas" ? "selected" : "")>Ejecución de Penas</option>
-                <option value="Adolescente" @(ViewData["AreaFiltro"]?.ToString() == "Adolescente" ? "selected" : "")>Adolescente</option>
+                <option value="Ejecución de Penas" @(ViewData["AreaFiltro"]?.ToString() == "Ejecución de Penas" ? "selected" : "")>Ejecución de Penas</option>
+                <option value="UESPA" @(ViewData["AreaFiltro"]?.ToString() == "UESPA" ? "selected" : "")>UESPA</option>
+                <option value="Servicios previos" @(ViewData["AreaFiltro"]?.ToString() == "Servicios previos" ? "selected" : "")>Servicios previos</option>
             </select>
         </div>
         <!-- Filtro Recibido -->
@@ -213,7 +216,7 @@
             <td>
                 @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
-                        <input class="form-check-input" type="checkbox"  onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
+                        <input class="form-check-input" type="checkbox" onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
                 }
                 else{
                     @Html.DisplayFor(modelItem => item.Recibido)
@@ -223,7 +226,7 @@
             <td>
                 @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
-                    <input class="form-check-input" type="checkbox" onchange="revisado(@item.IdenvioArchivo)" @(item.Revisado == 1 ? "checked" : "") />
+                        <input class="form-check-input" type="checkbox" onchange="revisado(@item.IdenvioArchivo)" @(item.Revisado == 1 ? "checked" : "") />
                 }
                 else
                 {

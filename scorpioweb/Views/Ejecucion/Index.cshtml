@@ -174,7 +174,7 @@
                     @Html.DisplayFor(modelItem => item.ejecucionVM.EstadoActual)
                     </td>
                     <td>
-                        @if (ViewBag.J == item.ejecucionVM.Juzgado || item.ejecucionVM.Encargado.ToLower() == User.Identity.Name || User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                        @if (User.IsInRole(item.ejecucionVM.Juzgado.ToLower().Replace("juzgado", "Juzgado")) || ViewBag.J == item.ejecucionVM.Juzgado || item.ejecucionVM.Encargado.ToLower() == User.Identity.Name || User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
                         {
                         <a onclick="showModal('@Url.Action("EpCausaPenal", "Ejecucion", new {id=@item.ejecucionVM.IdEjecucion}, Context.Request.Scheme)','Causa Penal',null )" class="btn btn-primary fa fa-folder" title="Agregar Causapenal" style="margin-bottom:10px;"> Causa Penal</a>
                         <a type="button" class="btn btn-info" id="edicion" title="Menu Procesos" href="/Ejecucion/MenuProcesos/@item.ejecucionVM.IdEjecucion" style="margin-bottom:10px;">

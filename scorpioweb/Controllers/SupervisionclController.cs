@@ -344,6 +344,7 @@ namespace scorpioweb.Controllers
                                               cl.supervisionVM.EstadoSupervision.Contains(searchString) ||
                                               cl.causapenalVM.CausaPenal.Contains(searchString) ||
                                               cl.personaVM.Supervisor.Contains(searchString) ||
+                                              cl.personaVM.Ce.Contains(searchString) ||
                                               (cl.personaVM.IdPersonaCl.ToString()).Contains(searchString)
                                               );
             }
