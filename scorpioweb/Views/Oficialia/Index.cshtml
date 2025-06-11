@@ -17,9 +17,9 @@
         transition: all .4s ease-in-out;
     }
 
-        .buttons a:hover {
-            transform: scale(1.2);
-        }
+    .buttons a:hover {
+        transform: scale(1.2);
+    }
 
     #agenda {
         background: #314652;
@@ -33,6 +33,11 @@
 
     #mensajeSistema {
         background: #0078A7;
+        margin-left: 20px;
+    }
+
+    #envioarchivo {
+        background: #E9A319;
         margin-left: 20px;
     }
 
@@ -160,7 +165,7 @@ else
     @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
     {
         <section class="buttons" style="padding-right: 1em;">
-            <a onclick="openFullScreenWindow2()" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
+            <a asp-controller="Archivo" asp-action="EnvioArchivo" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
         </section>
     }
 </div>

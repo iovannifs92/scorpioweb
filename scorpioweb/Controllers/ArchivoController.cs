@@ -1538,7 +1538,9 @@ namespace scorpioweb.Models
             int? pageNumber,
             string areaFiltro,
             int? recibidoFiltro,
-            int? revisadoFiltro
+            int? revisadoFiltro,
+            DateTime? fechaDesde, 
+            DateTime? fechaHasta
             )
         {
             // Warnings
@@ -1571,6 +1573,86 @@ namespace scorpioweb.Models
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = roles.Any(r => r == "Masteradmin" || r == "Archivo" || r == "Director");
 
+
+
+            var roleToArea = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Uespa", "UESPA" },
+                { "Ejecucion", "Ejecución de Penas" },
+                { "AuxiliarEjecucion", "Ejecución de Penas" },
+                { "Coordinador Ejecucion", "Ejecución de Penas" },
+                { "SupervisorLC", "LC" },
+                { "AdminLC", "LC" },
+                { "AdminMCSCP", "MCySCP" },
+                { "SupervisorMCSCP", "MCySCP" },
+                { "AuxiliarMCSCP", "MCySCP" },
+                { "Servicios previos", "Servicios previos" },
+                { "Oficialia", "Oficialia" },
+            // ... puedes añadir más según tus reglas
+            };
+
+            string areaAsignada = roles
+                .Where(role => roleToArea.ContainsKey(role))
+                .Select(role => roleToArea[role])
+                .FirstOrDefault() ?? "Sin área asignada";
+            if (roles.Contains("Uespa"))
+            {
+                areaFiltro = "UESPA";
+            }
+
+            if (roles.Contains("Ejecucion"))
+            {
+                areaFiltro = "Ejecución de Penas";
+            }
+
+            if (roles.Contains("AuxiliarEjecucion"))
+            {
+                areaFiltro = "Ejecución de Penas";
+            }
+
+            if (roles.Contains("Coordinador Ejecucion"))
+            {
+                areaFiltro = "Ejecución de Penas";
+            }
+
+            if (roles.Contains("SupervisorLC"))
+            {
+                areaFiltro = "LC";
+            }
+
+            if (roles.Contains("AdminLC"))
+            {
+                areaFiltro = "LC";
+            }
+
+            if (roles.Contains("AdminMCSCP"))
+            {
+                areaFiltro = "MCySCP";
+            }
+
+            if (roles.Contains("SupervisorMCSCP"))
+            {
+                areaFiltro = "MCySCP";
+            }
+
+            if (roles.Contains("AuxiliarMCSCP"))
+            {
+                areaFiltro = "MCySCP";
+            }
+
+            if (roles.Contains("Servicios previos"))
+            {
+                areaFiltro = "Servicios previos";
+            }
+
+            if (roles.Contains("Oficialia"))
+            {
+                areaFiltro = "Oficialia";
+            }
+
+
+
+
             // ViewData para mantener filtros en la UI
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
@@ -1589,8 +1671,20 @@ namespace scorpioweb.Models
                     (ea.Apaterno + " " + ea.Amaterno + " " + ea.Nombre).Contains(searchString) ||
                     (ea.Nombre + " " + ea.Amaterno + " " + ea.Apaterno).Contains(searchString) ||
                     (ea.Amaterno + " " + ea.Apaterno + " " + ea.Nombre).Contains(searchString) ||
-                    ea.IdArchvo.ToString().Contains(searchString)
+                    ea.IdenvioArchivo.ToString().Contains(searchString)
                 );
+            }
+
+            // Filtro por Fecha Desde
+            if (fechaDesde.HasValue)
+            {
+                filter = filter.Where(e => e.FechaRecibido >= fechaDesde.Value);
+            }
+
+            // Filtro por Fecha Hasta
+            if (fechaHasta.HasValue)
+            {
+                filter = filter.Where(e => e.FechaRecibido <= fechaHasta.Value);
             }
 
             // Filtro por Área
@@ -1629,7 +1723,7 @@ namespace scorpioweb.Models
             }
 
             // Paging
-            int pageSize = 10;
+            int pageSize = 20;
             var paged = await PaginatedList<Envioarchivo>.CreateAsync(
                 filter.AsNoTracking(),
                 pageNumber ?? 1,
@@ -1726,6 +1820,7 @@ namespace scorpioweb.Models
                 { "SupervisorMCSCP", "MCySCP" },
                 { "AuxiliarMCSCP", "MCySCP" },
                 { "Servicios previos", "Servicios previos" },
+                { "Oficialia", "Oficialia" },
             // ... puedes añadir más según tus reglas
             };
 
@@ -1737,8 +1832,6 @@ namespace scorpioweb.Models
 
             ViewBag.AreaAsignada = areaAsignada;
 
-
-            List<string> resultados = new List<string>();
 
             if (areaAsignada == "Ejecución de Penas")
             {
@@ -1789,6 +1882,73 @@ namespace scorpioweb.Models
                 _context.Envioarchivo.Add(envioarchivo);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(createEnvioArchivo)); // O la acción de listado
+            }
+            return View(envioarchivo);
+        }
+        #endregion
+
+
+
+
+        #region -editEnvioArchivo-
+        public async Task<IActionResult> editEnvioArchivo(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var archivo = await _context.Envioarchivo.SingleOrDefaultAsync(m => m.IdenvioArchivo == id);
+            if (archivo == null)
+            {
+                return NotFound();
+            }
+            return View(archivo);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> editEnvioArchivo(int id, [Bind("IdenvioArchivo,Nombre,Apaterno,Amaterno,Causapenal,Delito,TipoDocumento,SituacionJuridico,Recibido,Revisado,IdArchvo,Observaciones,Area,Usuario,FechaRegistro,FechaRecibido,FechaRevisado,QuienRecibe,QuienRevisa")] Envioarchivo envioarchivo, int IdenvioArchivo)
+        {
+
+            if (ModelState.IsValid)
+            {
+                envioarchivo.IdenvioArchivo = id;
+                envioarchivo.Apaterno = mg.removeSpaces(mg.normaliza(envioarchivo.Apaterno));
+                envioarchivo.Amaterno = mg.removeSpaces(mg.normaliza(envioarchivo.Amaterno));
+                envioarchivo.Nombre = mg.removeSpaces(mg.normaliza(envioarchivo.Nombre));
+                envioarchivo.Causapenal = envioarchivo.Causapenal;
+                envioarchivo.Delito = mg.removeSpaces(mg.normaliza(envioarchivo.Delito));
+                envioarchivo.TipoDocumento = envioarchivo.TipoDocumento;
+                envioarchivo.SituacionJuridico = mg.removeSpaces(mg.normaliza(envioarchivo.SituacionJuridico));
+                envioarchivo.Recibido = envioarchivo.Recibido;
+                envioarchivo.Revisado = envioarchivo.Revisado;
+                envioarchivo.IdArchvo = envioarchivo.IdArchvo;
+                envioarchivo.Observaciones = envioarchivo.Observaciones;
+                envioarchivo.Area = envioarchivo.Area;
+                envioarchivo.Usuario = envioarchivo.Usuario;
+                envioarchivo.FechaRegistro = envioarchivo.FechaRegistro;
+                envioarchivo.FechaRevisado = envioarchivo.FechaRevisado;
+                envioarchivo.FechaRecibido = envioarchivo.FechaRecibido;
+                envioarchivo.QuienRecibe = envioarchivo.QuienRecibe;
+                envioarchivo.QuienRevisa = envioarchivo.QuienRevisa;
+                try
+                {
+                    _context.Update(envioarchivo);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ArchivoExists(envioarchivo.IdenvioArchivo))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Envioarchivo));
             }
             return View(envioarchivo);
         }

@@ -87,6 +87,21 @@
             </h4>
         </div>
     </div>
+
+
+    @if (User.IsInRole("ArchivoAsistente"))
+    {
+        <div class="col-sm-3 col-md-3 card text-center">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a asp-controller="Archivo" asp-action="Envioarchivo">
+                        <img class="card-img-bottom" src="~/images/sendarchivo.png" alt="Card image cap" style="padding-bottom:5%;">
+                        Envio a archivo
+                    </a>
+                </h4>
+            </div>
+        </div>
+    }
     @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">

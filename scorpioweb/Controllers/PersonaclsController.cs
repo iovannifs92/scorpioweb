@@ -734,6 +734,9 @@ namespace scorpioweb.Models
             var personas = from p in _context.Personacl
                            select p;
 
+            if (!invitado)
+                personas = personas.Where(m => m.Supervisor != null);
+
             var canalizadoIds = (from p in personas
                                  join re in _context.Reinsercion on p.IdPersonaCl equals Int32.Parse(re.IdTabla)
                                  join c in _context.Canalizacion on re.IdReinsercion equals c.ReincercionIdReincercion
@@ -744,7 +747,7 @@ namespace scorpioweb.Models
                                    join p in personas on s.PersonaclIdPersonacl equals p.IdPersonaCl
                                    select new
                                    {
-                                       idSupervisionCL = s.IdSupervisioncl,
+                                       idSupervisionCL = s.IdSupervisioncl,  
                                        idPersonaCl = s.PersonaclIdPersonacl
                                    }).ToList();
 

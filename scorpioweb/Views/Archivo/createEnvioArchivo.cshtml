@@ -143,7 +143,7 @@
         //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
 
         var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
-        autocomplete(document.getElementById("tipoD"), catalogo);
+        autocomplete(document.getElementById("Delito"), catalogo);
         
         var SituacionJuridico = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.SituacionJuridico))');
         autocomplete(document.getElementById("SituacionJuridico"), SituacionJuridico);
@@ -153,17 +153,16 @@
 
 <h2>Envio Archivo 📄</h2>
 
+<a asp-contrller="Archivo" asp-action="Envioarchivo">
+    Ver listado de Envios a Archvio
+</a>
+
 @*<h4>Envioarchivo</h4>*@
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="createEnvioArchivo">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label>Nombre</label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label>Apellido Paterno</label>
                 <input asp-for="Apaterno" class="form-control" />
@@ -175,13 +174,18 @@
                 <span asp-validation-for="Amaterno" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label>Causa penal</label>
+                <label>Nombre</label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Causa penal/Carpeta de Ejecución </label>
                 <input asp-for="Causapenal" class="form-control" />
                 <span asp-validation-for="Causapenal" class="text-danger"></span>
             </div>
             <div class="form-group autocomplete">
                 <label>Delito</label>
-                <input asp-for="Delito" class="form-control" name="tipoD" id="tipoD" />
+                <input asp-for="Delito" class="form-control" name="Delito" id="Delito" />
                 <span asp-validation-for="Delito" class="text-danger"></span>
             </div>
 @*
@@ -239,7 +243,7 @@
                 <span asp-validation-for="FechaRegistro" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Enviar" class="btn btn-default" />
+                <input type="submit" value="Enviar" class="btn btn-default fa fa-save" />
             </div>
         </form>
     </div>

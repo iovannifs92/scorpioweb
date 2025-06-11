@@ -137,9 +137,10 @@
                 error: function (response) {
                     alert("Informe Generado");
                     //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
-                    window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
+                    //window.location.href = "https://localhost:44359/Documentos/reporteSupervision.docx"
                     
                     //window.location.href = "http://10.6.60.190/Documentos/reporteSupervision.docx"
+                    window.location.href = '@Url.Action("reporteSupervision.docx", "Documentos")';
                 }
             });
 

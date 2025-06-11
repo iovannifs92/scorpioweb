@@ -26,7 +26,7 @@
     }
 
     #envioarchivo {
-        background: #314652;
+        background: #E9A319;
         margin-left: 20px;
     }
 
@@ -154,7 +154,7 @@
     @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
     {
         <section class="buttons" style="padding-right: 1em;">
-            <a onclick="openFullScreenWindow2()" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
+            <a asp-controller="Archivo" asp-action="EnvioArchivo" class="fa fa-file float-right" id="envioarchivo" title="Envio Archivo"></a>
         </section>
     }
 </div>

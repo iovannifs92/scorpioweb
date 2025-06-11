@@ -1,0 +1,160 @@
+﻿@model scorpioweb.Models.Envioarchivo
+@{
+    Layout = null;
+}
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        function autocomplete(inp, arr) {
+            var currentfocus;
+            inp.addeventlistener("input", function (e) {
+                var a, b, i, val = this.value;
+                closealllists();
+                if (!val) { return false; }
+                currentfocus = -1;
+                a = document.createelement("div");
+                a.setattribute("id", this.id + "autocomplete-list");
+                a.setattribute("class", "autocomplete-items");
+                this.parentnode.appendchild(a);
+                for (i = 0; i < arr.length; i++) {
+                    if (arr[i].touppercase().includes(val.touppercase())) {
+                        b = document.createelement("div");
+                        b.innerhtml = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                        b.innerhtml += arr[i].substr(val.length);
+                        b.innerhtml += "<input type='hidden' value='" + arr[i] + "'>"; b.addeventlistener("click", function (e) {
+                            inp.value = this.getelementsbytagname("input")[0].value;
+
+                            closealllists();
+                        });
+                        a.appendchild(b);
+                    }
+                }
+            });
+
+            inp.addeventlistener("keydown", function (e) {
+                var x = document.getelementbyid(this.id + "autocomplete-list");
+                if (x) x = x.getelementsbytagname("div");
+                if (e.keycode == 40) {
+
+                    currentfocus++;
+
+                    addactive(x);
+                } else if (e.keycode == 38) { //up
+
+                    currentfocus--;
+
+                    addactive(x);
+                } else if (e.keycode == 13) {
+
+                    e.preventdefault();
+                    if (currentfocus > -1) {
+
+                        if (x) x[currentfocus].click();
+                    }
+                }
+            });
+            function addactive(x) {
+
+                if (!x) return false;
+
+                removeactive(x);
+                if (currentfocus >= x.length) currentfocus = 0;
+                if (currentfocus < 0) currentfocus = (x.length - 1);
+
+                x[currentfocus].classlist.add("autocomplete-active");
+            }
+            function removeactive(x) {
+
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classlist.remove("autocomplete-active");
+                }
+            }
+            function closealllists(elmnt) {
+                var x = document.getelementsbyclassname("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentnode.removechild(x[i]);
+                    }
+                }
+            }
+            document.addeventlistener("click", function (e) {
+                closealllists(e.target);
+            });
+        }
+        //https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
+
+        var catalogo = json.parse('@html.raw(json.serialize(@viewbag.catalogo))');
+        autocomplete(document.getelementbyid("delito"), catalogo);
+
+        var situacionjuridico = json.parse('@html.raw(json.serialize(@viewbag.situacionjuridico))');
+        autocomplete(document.getelementbyid("situacionjuridico"), situacionjuridico);
+    });
+</script>*@
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="editEnvioArchivo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdenvioArchivo" />
+            <input type="hidden" asp-for="IdArchvo" />
+            <div class="form-group">
+                <label class="control-label">Apellido Paterno</label>
+                <input asp-for="Apaterno" class="form-control" />
+                <span asp-validation-for="Apaterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Apellido Materno</label>
+                <input asp-for="Amaterno" class="form-control" />
+                <span asp-validation-for="Amaterno" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Causa penal/Carpeta de Ejecución</label>
+                <input asp-for="Causapenal" class="form-control" />
+                <span asp-validation-for="Causapenal" class="text-danger"></span>
+            </div>
+            <div class="form-group autocomplete">
+                <label asp-for="Delito" class="control-label"></label>
+                <input asp-for="Delito" class="form-control" name="Delito" id="Delito" />
+                <span asp-validation-for="Delito" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tipo Documento</label>
+                <input asp-for="TipoDocumento" class="form-control" />
+                <span asp-validation-for="TipoDocumento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label"> Situacion Juridico</label>
+                <input asp-for="SituacionJuridico" class="form-control" />
+                <span asp-validation-for="SituacionJuridico" class="text-danger"></span>
+            </div>
+            <input readonly style="display:none" asp-for="Observaciones" class="form-control" />
+            <input readonly style="display:none" asp-for="Usuario" class="form-control" />
+            <input readonly style="display:none" asp-for="Area" class="form-control" />
+            <input readonly style="display:none" asp-for="Recibido" class="form-control" />
+            <input readonly style="display:none" asp-for="Revisado" class="form-control" />
+            <input readonly style="display:none" asp-for="FechaRegistro" class="form-control" />
+            <input readonly style="display:none" asp-for="FechaRecibido" class="form-control" />
+            <input readonly style="display:none" asp-for="FechaRevisado" class="form-control" />
+            <input readonly style="display:none" asp-for="QuienRecibe" class="form-control" />
+            <input readonly style="display:none" asp-for="QuienRevisa" class="form-control" />
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default fa fa-save" />
+            </div>
+        </form>
+    </div>
+</div>
+@*
+<div>
+    <a asp-action="EnvioArchivo">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+*@

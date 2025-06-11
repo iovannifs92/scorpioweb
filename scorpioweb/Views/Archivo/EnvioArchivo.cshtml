@@ -1,4 +1,6 @@
-﻿@model IEnumerable<scorpioweb.Models.Envioarchivo>
+﻿@*@model IEnumerable<scorpioweb.Models.Envioarchivo>*@
+@model PaginatedList<scorpioweb.Models.Envioarchivo>
+
 
 @{
     ViewData["Title"] = "EnvioArchivo";
@@ -6,9 +8,37 @@
 
 
 <script>
+    function modal(id, recibido) {
+        var url = "/Archivo/editEnvioArchivo/" + id;
+        var title = "Editar Envio Archivo";
+
+        if (recibido == "1") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "No puedes editar porque ya lo recibió el área de archivo.",
+                footer: '<a href="https://web.whatsapp.com/">Para mayor información consulte al área de sistemas</a>'
+            });
+        } else {
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (res) {
+                    $("#form-modal .modal-body").html(res);
+                    $("#form-modal .modal-title").html(title);
+                    $("#form-modal").modal('show');
+                    $("#form-modal").find(".modal-dialog").removeClass("modal-lg modal-sm").addClass("modal-lg");
+                },
+                error: function (res) {
+                    console.log("Error al cargar el modal");
+                }
+            });
+        }
+    }
+
     function recibido(id) {
+        document.getElementById("myCheckbox " + id).disabled = true;
         QuienRecibe = "@User.Identity.Name"
-       
         $.ajax({
             type: "POST",
             url: "/archivo/recibido",
@@ -87,14 +117,10 @@
     <div class="row g-3 align-items-end">
         <!-- Búsqueda por nombre o Id -->
         <div class="col-md-4">
-            <label for="SearchString" class="form-label">Nombre o Id</label>
-            <input type="text"
-                   id="SearchString"
-                   name="SearchString"
-                   class="form-control"
-                   placeholder="Buscar..."
-                   value="@(ViewData["currentFilter"] ?? "")" />
+            <label for="SearchString" class="form-label">Nombre o IdArchivo</label>
+            <input type="text" id="SearchString" name="SearchString" class="form-control" placeholder="Buscar..." value="@(ViewData["currentFilter"] ?? "")" />
         </div>
+
         <!-- Filtro Área -->
         <div class="col-md-3">
             <label for="areaFiltro" class="form-label">Área</label>
@@ -107,63 +133,78 @@
                 <option value="Ejecución de Penas" @(ViewData["AreaFiltro"]?.ToString() == "Ejecución de Penas" ? "selected" : "")>Ejecución de Penas</option>
                 <option value="UESPA" @(ViewData["AreaFiltro"]?.ToString() == "UESPA" ? "selected" : "")>UESPA</option>
                 <option value="Servicios previos" @(ViewData["AreaFiltro"]?.ToString() == "Servicios previos" ? "selected" : "")>Servicios previos</option>
+                <option value="Oficialia" @(ViewData["AreaFiltro"]?.ToString() == "Oficialia" ? "selected" : "")>Oficialia</option>
             </select>
         </div>
+
         <!-- Filtro Recibido -->
         <div class="col-md-2">
             <label for="recibidoFiltro" class="form-label">Recibido</label>
-            <select id="recibidoFiltro"
-                    name="recibidoFiltro"
-                    class="form-select">
+            <select id="recibidoFiltro" name="recibidoFiltro" class="form-select">
                 <option value="">Todos</option>
                 <option value="1" @(ViewData["RecibidoFiltro"]?.ToString() == "1" ? "selected" : "")>Sí</option>
                 <option value="0" @(ViewData["RecibidoFiltro"]?.ToString() == "0" ? "selected" : "")>No</option>
             </select>
         </div>
+
         <!-- Filtro Revisado -->
         <div class="col-md-2">
             <label for="revisadoFiltro" class="form-label">Revisado</label>
-            <select id="revisadoFiltro"
-                    name="revisadoFiltro"
-                    class="form-select">
+            <select id="revisadoFiltro" name="revisadoFiltro" class="form-select">
                 <option value="">Todos</option>
                 <option value="1" @(ViewData["RevisadoFiltro"]?.ToString() == "1" ? "selected" : "")>Sí</option>
                 <option value="0" @(ViewData["RevisadoFiltro"]?.ToString() == "0" ? "selected" : "")>No</option>
             </select>
         </div>
-        <!-- Botón Buscar -->
-        <div class="col-md-1 d-grid">
-            <button type="submit" class="btn btn-primary">
+
+        <!-- Filtro Fecha Desde -->
+        <div class="col-md-2">
+            <label for="fechaDesde" class="form-label">Fecha Desde</label>
+            <input type="date" id="fechaDesde" name="fechaDesde" class="form-control" value="@(ViewData["FechaDesde"] ?? "")" />
+        </div>
+
+        <!-- Filtro Fecha Hasta -->
+        <div class="col-md-2">
+            <label for="fechaHasta" class="form-label">Fecha Hasta</label>
+            <input type="date" id="fechaHasta" name="fechaHasta" class="form-control" value="@(ViewData["FechaHasta"] ?? "")" />
+        </div>
+
+        <!-- Botón Buscar --> 
+        <div class="col-md-2" style="text-align:right; margin-top:20px;">
+            <button  type="submit" class="btn btn-primary">
                 <i class="fa fa-search me-1"></i> Buscar
             </button>
         </div>
     </div>
 </form>
-<a style="text-align:left" asp-action="Envioarchivo">Regresar al Listado Completo </a>
-<a style="text-align:left" asp-action="createEnvioArchivo">Crear </a>
-
+<hr size="2px" color="black" />
+<div style="text-align:left" class="col-md-6">
+    <a asp-action="Envioarchivo">Regresar al Listado Completo </a>
+</div>
+<div style="text-align:right" class="col-md-6">
+    <a id="btnEditar" asp-action="createEnvioArchivo" class="btn btn-primary">
+        <i class="fa fa-plus"></i> Crear nuevo Registro
+    </a>
+</div>
 
 
 <table class="table">
     <thead>
         <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Area)
+                    Fecha de Recibido
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Nombre)
+                    Area
                 </th>
                 <th>
-                    Apellido paterno
-                </th>
-                <th>
-                    Apellido materno
+                    Nombre completo
                 </th>
                 <th>
                     Causa Penal
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Delito)
+                    Delito
                 </th>
                 <th>
                     Tipo de Documento
@@ -172,34 +213,40 @@
                     Situacion Juridico
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Recibido)
+                    Recibido
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Revisado)
-                </th>
-                <th>
-                    Id de Archvo
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Observaciones)
-                </th>
+                 @if (User.IsInRole("ArchivoAsistente") || User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                {
+                    <th>
+                        Revisado
+                    </th>
+                    <th>
+                        Id de Archvo
+                    </th>
+                    <th>
+                        Observaciones
+                    </th>
+                }
+                 @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+                {
+                    <th>
+                        Editar
+                    </th>
+                }
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaRecibido)
+            </td> 
             <td>
                 @Html.DisplayFor(modelItem => item.Area)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apaterno)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amaterno)
+                @Html.DisplayFor(modelItem => item.Nombre) @Html.DisplayFor(modelItem => item.Apaterno) @Html.DisplayFor(modelItem => item.Amaterno)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Causapenal)
@@ -214,43 +261,100 @@
                 @Html.DisplayFor(modelItem => item.SituacionJuridico)
             </td>
             <td>
-                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                @if (User.IsInRole("ArchivoAsistente") || User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
-                        <input class="form-check-input" type="checkbox" onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
+                if(item.Recibido == 0)
+                {
+                    <input class="form-check-input" type="checkbox" id="myCheckbox @item.IdenvioArchivo" onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
+                }else{
+                    <input class="form-check-input" type="checkbox" disabled id="myCheckbox @item.IdenvioArchivo " onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
                 }
-                else{
-                    @Html.DisplayFor(modelItem => item.Recibido)
+                }else{
+                    <input disabled class="form-check-input" type="checkbox" id="myCheckbox @item.IdenvioArchivo" onchange="recibido(@item.IdenvioArchivo)" @(item.Recibido == 1 ? "checked" : "") />
                 }
                   
             </td>
             <td>
-                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                 @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
                         <input class="form-check-input" type="checkbox" onchange="revisado(@item.IdenvioArchivo)" @(item.Revisado == 1 ? "checked" : "") />
                 }
-                else
+                else if (User.IsInRole("ArchivoAsistente"))
                 {
-                    @Html.DisplayFor(modelItem => item.Revisado)
+                    <input disabled class="form-check-input" type="checkbox" onchange="revisado(@item.IdenvioArchivo)" @(item.Revisado == 1 ? "checked " : "") />
+
+                }else
+                {
+                    <input style="display:none" disabled class="form-check-input" type="checkbox" onchange="revisado(@item.IdenvioArchivo)" @(item.Revisado == 1 ? "checked " : "") />
                 }
                     
             </td>
             <td>
-                <input type="text"
-                        class="form-control"
-                        id="idarchivo_@item.IdenvioArchivo"
-                        value="@item.IdArchvo"
-                        onblur="actualizarIdArchivo(@item.IdenvioArchivo)" />
+                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                {
+                    <input type="text" class="form-control" id="idarchivo_@item.IdenvioArchivo" value="@item.IdArchvo" onblur="actualizarIdArchivo(@item.IdenvioArchivo)" style="width: 100px;" />
+
+                }
+                else if (User.IsInRole("ArchivoAsistente"))
+                {
+                    <input disabled type="text" class="form-control" id="idarchivo_@item.IdenvioArchivo" value="@item.IdArchvo" onblur="actualizarIdArchivo(@item.IdenvioArchivo)" />
+                }else
+                {
+                    <input style="display:none" disabled type="text" class="form-control" id="idarchivo_@item.IdenvioArchivo" value="@item.IdArchvo" onblur="actualizarIdArchivo(@item.IdenvioArchivo)" />    
+                }
+                       
             </td>
 
             <td>
-                <input type="text"
-                        class="form-control"
-                        id="observaciones_@item.IdenvioArchivo"
-                        value="@item.Observaciones"
-                           style="min-width: 300px;"
-                        onblur="actualizarObservaciones(@item.IdenvioArchivo)" />
+                @if (User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
+                {
+                    <input type="text" class="form-control" id="observaciones_@item.IdenvioArchivo" value="@item.Observaciones" style="min-width: 300px;" onblur="actualizarObservaciones(@item.IdenvioArchivo)" />
+                }
+                else if (User.IsInRole("ArchivoAsistente"))
+                {
+                    <input disabled type="text" class="form-control" id="observaciones_@item.IdenvioArchivo" value="@item.Observaciones" style="min-width: 300px;" onblur="actualizarObservaciones(@item.IdenvioArchivo)" />
+                }else
+                {
+                    <input style="display:none" disabled type="text" class="form-control" id="observaciones_@item.IdenvioArchivo" value="@item.Observaciones" style="min-width: 300px;" onblur="actualizarObservaciones(@item.IdenvioArchivo)" />
+                }
+                    
             </td>
+                @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+                {
+                    <td>
+                        <a id="btnEditar" onclick="modal(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-success">
+                            <i class="fa fa-pencil"></i> Editar
+                        </a>
+
+                        @*<a id="btnEditar" onclick="showModal('@Url.Action("editEnvioArchivo","Archivo",null,Context.Request.Scheme)','Editar Registro', @item.IdenvioArchivo)" class="btn btn-success">*@
+
+                    </td>
+                }
         </tr>
-}
+    }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p>
+    Página @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) de @Model.TotalPages
+</p>
+<a asp-action="Envioarchivo"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Anterior
+</a>
+<a asp-action="Envioarchivo"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Siguiente
+</a>
+
