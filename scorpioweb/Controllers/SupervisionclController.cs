@@ -1521,16 +1521,20 @@ namespace scorpioweb.Controllers
             {
                 return NotFound();
             }
-            int idBusqueda;
-            if(id == null && !string.IsNullOrEmpty(idpersona))
+
+            if (id == null && !string.IsNullOrEmpty(idpersona))
+            {
                 //SOLICITUD PROVIENE DEL BOTON BITACORA EN EL INDEX
-                idBusqueda = int.Parse(idpersona);
+                var idSupervision = _context.Supervisioncl
+                    .SingleOrDefault(m => m.PersonaclIdPersonacl == int.Parse(idpersona));
+                if(idSupervision == null)
+                {
+                    return RedirectToAction("SinSupervision","Personacls");
+                }
+                id = idSupervision.IdSupervisioncl;
+            }
 
 
-            if (id != null && string.IsNullOrEmpty(idpersona))
-                //SOLICITUD PROVIENE DEL INDEX DE SUPERVISIONCL
-                idBusqueda = int.Parse(idpersona);
-            
             var supervision = _context.Supervisioncl
             .SingleOrDefault(m => m.IdSupervisioncl == id);
 

@@ -2110,9 +2110,9 @@ namespace scorpioweb.Controllers
                     persona.Edad = edad;
                     persona.Fnacimiento = fNacimiento;
                     persona.Lnpais = lnPais;
-                    persona.Lnestado = lnEstado;
-                    persona.Lnmunicipio = lnMunicipio;
-                    persona.Lnlocalidad = mg.normaliza(lnLocalidad);
+                    persona.Lnestado = string.IsNullOrWhiteSpace(lnEstado) ? "0" : mg.normaliza(lnEstado);
+                    persona.Lnmunicipio = string.IsNullOrWhiteSpace(lnMunicipio) ? "0" : mg.normaliza(lnMunicipio);
+                    persona.Lnlocalidad =string.IsNullOrWhiteSpace(lnLocalidad)? "NA" : mg.normaliza(lnLocalidad);
                     persona.EstadoCivil = estadoCivil;
                     persona.Duracion = duracion;
                     persona.OtroIdioma = mg.normaliza(otroIdioma);
@@ -2570,9 +2570,9 @@ namespace scorpioweb.Controllers
                     personacl.Edad = edad;
                     personacl.Fnacimiento = fNacimiento;
                     personacl.Lnpais = lnPais;
-                    personacl.Lnestado = lnEstado;
-                    personacl.Lnmunicipio = lnMunicipio;
-                    personacl.Lnlocalidad = mg.normaliza(lnLocalidad);
+                    personacl.Lnestado = string.IsNullOrWhiteSpace(lnEstado) ? "0" : mg.normaliza(lnEstado);
+                    personacl.Lnmunicipio = string.IsNullOrWhiteSpace(lnMunicipio) ? "0" : mg.normaliza(lnMunicipio);
+                    personacl.Lnlocalidad = string.IsNullOrWhiteSpace(lnLocalidad) ? "NA" : mg.normaliza(lnLocalidad);
                     personacl.EstadoCivil = estadoCivil;
                     personacl.Duracion = mg.normaliza(duracion);
                     personacl.OtroIdioma = mg.normaliza(otroIdioma);
