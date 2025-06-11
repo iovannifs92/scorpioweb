@@ -192,12 +192,11 @@
                                 row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";
                             }
                         }
-
+                    
                         if(result.bitacora == true){
                             row = row 
                                 row = row
-                                + "<div class=\"col-md-3\"><a  href=/Supervisioncl/ListaBitacora/?idpersona=" + result.page[i].idPersonaCl +"style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
-
+                                + "<div class=\"col-md-3\"><a  href='/Supervisioncl/ListaBitacora/?idpersona= " + result.page[i].idPersonaCl +"' style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
                         }
                          
                         //SI EL USUARIO ES INVITADO NO MUESTRA LOS CANDADOS

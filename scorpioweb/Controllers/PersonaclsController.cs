@@ -788,8 +788,8 @@ namespace scorpioweb.Models
             {
                 personas = personas.Where(p => p.Supervisor != null);
             };
-
-        
+            
+      
 
             int pageSize = 10;
             // Response.Headers.Add("Refresh", "5");
