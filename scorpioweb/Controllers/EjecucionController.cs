@@ -344,10 +344,10 @@ namespace scorpioweb.Controllers
 
             List<string> Liatajuzgado = new List<string>();
             Liatajuzgado.Add("NA");
-            Liatajuzgado.Add("JUZGADO 1");
-            Liatajuzgado.Add("JUZGADO 2");
-            Liatajuzgado.Add("JUZGADO 3");
-            Liatajuzgado.Add("JUZGADO 4");
+            Liatajuzgado.Add("Juzgado 1");
+            Liatajuzgado.Add("Juzgado 2");
+            Liatajuzgado.Add("Juzgado 3");
+            Liatajuzgado.Add("Juzgado 4");
             Liatajuzgado.Add("TURNO");
 
             ViewBag.Liatajuzgado = Liatajuzgado;
@@ -369,37 +369,52 @@ namespace scorpioweb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdEjecucion,Paterno,Materno,Nombre,Yo,Ce,Juzgado,TieneceAcumuladas,CeAcumuladas,Usuario,LugarInternamiento,EstadoActual,Encargado,FechaCarga")] Ejecucion ejecucion, Expedienteunico expedienteunico, string tabla, string idselecionado, string CURS, string datosArray)
         {
+            var random = new Random();
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            var usuariosEnRol1 = await userManager.GetUsersInRoleAsync("Juzgado 1");
+            var usuariosEnRol2 = await userManager.GetUsersInRoleAsync("Juzgado 2");
+            var usuariosEnRol3 = await userManager.GetUsersInRoleAsync("Juzgado 3");
+
             if (ModelState.IsValid)
             {
+                if (roles.Contains(ejecucion.Juzgado)) // El usuario pertenece al juzgado que captura
+                {
+                    ejecucion.Encargado = user.UserName; // El propio usuario es el encargado
+                }
+                else
+                {
+                    if (ejecucion.Juzgado == "JUZGADO 1")
+                    {
+                        ejecucion.Encargado = (usuariosEnRol1[random.Next(usuariosEnRol1.Count)]).Email;
+                    }
+                    else if (ejecucion.Juzgado == "JUZGADO 2")
+                    {
+                        ejecucion.Encargado = (usuariosEnRol2[random.Next(usuariosEnRol2.Count)]).Email;
+                    }
+                    else if (ejecucion.Juzgado == "JUZGADO 3")
+                    {
+                        ejecucion.Encargado = (usuariosEnRol3[random.Next(usuariosEnRol3.Count)]).Email;
+                    }
+                    else
+                    {
+                        ejecucion.Encargado = "uriel.ortega@dgepms.com";
+                    }
+                }
+
+
                 ejecucion.Paterno = mg.removeSpaces(mg.normaliza(ejecucion.Paterno));
                 ejecucion.Materno = mg.removeSpaces(mg.normaliza(ejecucion.Materno));
                 ejecucion.Nombre = mg.removeSpaces(mg.normaliza(ejecucion.Nombre));
                 ejecucion.Yo = mg.removeSpaces(mg.normaliza(ejecucion.Yo));
                 ejecucion.Ce = mg.removeSpaces(mg.normaliza(ejecucion.Ce));
-                ejecucion.Juzgado = mg.removeSpaces(mg.normaliza(ejecucion.Juzgado));
                 ejecucion.TieneceAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.TieneceAcumuladas));
                 ejecucion.CeAcumuladas = mg.removeSpaces(mg.normaliza(ejecucion.CeAcumuladas));
                 ejecucion.Usuario = mg.removeSpaces(mg.normaliza(ejecucion.Usuario));
                 ejecucion.LugarInternamiento = mg.removeSpaces(mg.normaliza(ejecucion.LugarInternamiento));
                 ejecucion.EstadoActual = mg.removeSpaces(mg.normaliza(ejecucion.EstadoActual));
                 ejecucion.FechaCarga = DateTime.Now;
-                if(ejecucion.Juzgado == "JUZGADO 1")
-                {
-                    ejecucion.Encargado = "julissa.gonzalez@dgepms.com";
-                }
-                else if(ejecucion.Juzgado == "JUZGADO 2")
-                {
-                    ejecucion.Encargado = "diana.ontiveros@dgepms.com";
-                }
-                else if(ejecucion.Juzgado == "JUZGADO 3")
-                {
-                    ejecucion.Encargado = "esthela.huitron@dgepms.com";
-                }
-                else
-                {
-                    ejecucion.Encargado = "uriel.ortega@dgepms.com";
-                }
-
+                ejecucion.Juzgado = mg.removeSpaces(mg.normaliza(ejecucion.Juzgado));
                 //#region -Expediente Unico-
                 //string var_tablanueva = "";
                 //string var_tablaSelect = "";

@@ -7,7 +7,72 @@
 }
 
 
-<script>
+<script type="text/javascript">
+
+    function borrarEnvioA(id, recibido) {
+        if (recibido == "1") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "No puedes borrar el registro porque ya lo recibió el área de archivo.",
+                footer: '<a href="https://web.whatsapp.com/">Para mayor información consulte al área de sistemas</a>'
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Archivo/DeleteEnvioArchivo/",
+                traditional: true,
+                data: {
+                    id: id,
+                },
+                success: function (response) {
+                    if (response.borrar == true) {
+                        Swal.fire({
+                            title: "Borrrado Con Exito!",
+                            icon: "success",
+                            draggable: true,
+                            timer: 1500
+                        });
+                        location.reload();
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "No puedes borrar " + response.mensaje,
+                            footer: '<a href="https://web.whatsapp.com/">Para mayor información consulte al área de sistemas</a>'
+                        });
+                    }
+                },
+                error: function (response) {
+
+                    alert(response.error);
+
+                }
+            });
+        }
+    }
+
+
+    //        //if (response.success == true) {
+    //        //    Swal.fire({
+    //        //        title: "Guardado",
+    //        //        text: "Tu registro se ha guardado",
+    //        //        icon: "success"
+    //        //    }).then((result) => {
+    //        //        if (result.isConfirmed) {
+    //        //            retraso(response.viewUrl, 70);
+    //        //        } else {
+    //        //            retraso(response.viewUrl, 70);
+    //        //        }
+    //        //    });
+    //        //} else {
+    //        //    Swal.fire({
+    //        //        title: "Error al Borrar",
+    //        //        text: "Contacte con el administrador del sistema " + response.error,
+    //        //        icon: "error"
+    //        //    });
+
     function modal(id, recibido) {
         var url = "/Archivo/editEnvioArchivo/" + id;
         var title = "Editar Envio Archivo";
@@ -301,8 +366,7 @@
                 }else
                 {
                     <input style="display:none" disabled type="text" class="form-control" id="idarchivo_@item.IdenvioArchivo" value="@item.IdArchvo" onblur="actualizarIdArchivo(@item.IdenvioArchivo)" />    
-                }
-                       
+                }   
             </td>
 
             <td>
@@ -328,6 +392,11 @@
 
                         @*<a id="btnEditar" onclick="showModal('@Url.Action("editEnvioArchivo","Archivo",null,Context.Request.Scheme)','Editar Registro', @item.IdenvioArchivo)" class="btn btn-success">*@
 
+                    </td> 
+                    <td>
+                        <a id="btnBorrar" onclick="borrarEnvioA(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Borrar
+                        </a>
                     </td>
                 }
         </tr>

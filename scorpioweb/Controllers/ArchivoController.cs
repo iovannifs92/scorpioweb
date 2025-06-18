@@ -1887,9 +1887,6 @@ namespace scorpioweb.Models
         }
         #endregion
 
-
-
-
         #region -editEnvioArchivo-
         public async Task<IActionResult> editEnvioArchivo(int? id)
         {
@@ -1951,6 +1948,30 @@ namespace scorpioweb.Models
                 return RedirectToAction(nameof(Envioarchivo));
             }
             return View(envioarchivo);
+        }
+        #endregion
+
+        #region -Delete-
+        public JsonResult DeleteEnvioArchivo(int id)
+        {
+            var borrar = false;
+            var envioarchivo = (from en in _context.Envioarchivo where en.IdenvioArchivo == id select en).FirstOrDefault();
+            try
+            {
+                if (envioarchivo != null)
+                {
+                    _context.Envioarchivo.Remove(envioarchivo);
+                    _context.SaveChanges();
+                    borrar = true;
+                    return Json(new { success = true, responseText = Url.Action("EnvioArchivo", "Archivo"), borrar = borrar, mensaje = "Exito" });
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, responseText = Url.Action("Envioarchivo", "Archivo"), borrar = borrar, mensaje = "Error; " + ex });
+            }
+            return Json(new { success = true, responseText = Url.Action("EnvioArchivo", "Archivo"), borrar = borrar, mensaje = "Exito" });
         }
         #endregion
 
