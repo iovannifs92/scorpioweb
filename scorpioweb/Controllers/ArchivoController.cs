@@ -1772,7 +1772,7 @@ namespace scorpioweb.Models
         }
 
         [HttpPost]
-        public void ActualizarIdArchivo(int id, int idarchivo)
+        public void ActualizarIdArchivo(int id, string idarchivo)
         {
             var envioarchivo = (from en in _context.Envioarchivo
                                 where en.IdenvioArchivo == id

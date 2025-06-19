@@ -15,7 +15,7 @@ namespace scorpioweb.Models
         public string SituacionJuridico { get; set; }
         public sbyte? Recibido { get; set; }
         public sbyte? Revisado { get; set; }
-        public int? IdArchvo { get; set; }
+        public string IdArchvo { get; set; }
         public string Observaciones { get; set; }
         public string Area { get; set; }
         public string Usuario { get; set; }
