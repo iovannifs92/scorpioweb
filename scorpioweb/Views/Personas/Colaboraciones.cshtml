@@ -67,7 +67,7 @@
         }
         else
         {
-            @if (ViewBag.Usuario.Equals("ana.valles@dgepms.com"))
+            @if (User.IsInRole("CE Resguardos"))
             {
                 @foreach (var item in Model.Where(x => x.CasoEspecial == "Resguardo Domiciliario" && (x.personaVM.Lnmunicipio == "282" || x.personaVM.Lnmunicipio == "0")))
                 {
@@ -97,7 +97,7 @@
                     </tr>
                 }
             }
-            else if (ViewBag.Usuario.Equals("yoena@dgepms.com"))
+            else if (User.IsInRole("CE TTA"))
             {
                 @foreach (var item in Model.Where(x => x.CasoEspecial == "TTA" && (x.personaVM.Lnmunicipio == "282" || x.personaVM.Lnmunicipio == "0")))
                 {
