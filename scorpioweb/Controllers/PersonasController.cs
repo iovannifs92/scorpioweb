@@ -841,6 +841,10 @@ namespace scorpioweb.Controllers
                 {
                     flagMaster = true;
                 }
+                if (rol == "CE Resguardos")
+                {
+                    flagMaster = true;
+                }
             }
 
             #region -To List databases-
@@ -5802,6 +5806,10 @@ namespace scorpioweb.Controllers
             foreach (var rol in roles)
             {
                 if (rol == "Masteradmin")
+                {
+                    flagMaster = true;
+                }
+                if (rol == "CE Resguardos")
                 {
                     flagMaster = true;
                 }

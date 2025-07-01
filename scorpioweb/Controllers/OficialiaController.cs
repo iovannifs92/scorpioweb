@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using DocumentFormat.OpenXml.Spreadsheet;
 using scorpioweb.Class;
+using scorpioweb.Migrations.ApplicationDb;
 
 namespace scorpioweb.Controllers
 {
@@ -253,10 +254,14 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Captura(Oficialia oficialia, string Recibe, string metodoNotificacion, string numOficio, string expide,
             string referenteImputado, string sexo, string paterno, string materno, string nombre, string carpetaEjecucion, string existeVictima,
             string nombreVictima, string direccionVictima, string asuntoOficio, string tieneTermino, string usuarioTurnar, string observaciones,
-            int? idCausaPenal, int IdCarpetaEjecucion, string Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, string delitoTipo, string autoVinculacion, string Juzgado, string QuienAsistira, IFormFile archivo)
+            int? idCausaPenal, int IdCarpetaEjecucion, string Entregado, DateTime? fechaRecepcion, DateTime? fechaEmision, DateTime? fechaTermino, string delitoTipo, string autoVinculacion, string Juzgado, string QuienAsistira, IFormFile archivo, Envioarchivo envioarchivo)
         {
             //if (ModelState.IsValid)
             //{
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
             int count = (from table in _context.Oficialia
                          select table.IdOficialia).Count();
             int idOficialia;
@@ -332,7 +337,34 @@ namespace scorpioweb.Controllers
                 stream.Close();
             }
             #endregion
+
+            #region -ENVIO ARCHIVO-
+            if(oficialia.UsuarioTurnar == "liliana.vargas@dgepms.com")
+            {
+                envioarchivo.Apaterno = oficialia.Paterno;
+                envioarchivo.Amaterno = oficialia.Materno;
+                envioarchivo.Nombre = oficialia.Nombre;
+                envioarchivo.Causapenal = (oficialia.CausaPenal + oficialia.CarpetaEjecucion).Replace(" ", "");
+                envioarchivo.Delito = oficialia.DelitoTipo;
+                envioarchivo.TipoDocumento = "Oficio";
+                envioarchivo.SituacionJuridico = oficialia.AsuntoOficio;
+                envioarchivo.Area = "Oficalia";
+                envioarchivo.Usuario = user.ToString();
+                envioarchivo.FechaRegistro = DateTime.Now;
+                envioarchivo.Recibido = 0;
+                envioarchivo.Revisado = 0;
+                envioarchivo.Observaciones = null;
+            }
+            
+
+
+
+            #endregion
+
+
+
             _context.Add(oficialia);
+            _context.Add(envioarchivo);
             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
             return RedirectToAction("EditRegistros", "Oficialia");
         }

@@ -729,12 +729,15 @@ namespace scorpioweb.Controllers
                                                      join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
                                                      join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
                                                      where p.IdPersona == id
+                                                     orderby pp.FechaFirma descending
                                                      select new Presentacionperiodica
                                                      {
                                                          FechaFirma = pp.FechaFirma
                                                      };
-     
- 
+
+
+
+
             string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templatePP.docx";
             string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\PresentacionesPeriodicas.docx";
 
@@ -751,7 +754,7 @@ namespace scorpioweb.Controllers
             dc.MailMerge.Execute(ppp, "firmas");
             dc.Save(resultPath);
 
-            //Response.Redirect("https://localhost:44359/Documentos/PresentacionesPeriodicas.docx");
+           //Response.Redirect("https://localhost:44359/Documentos/PresentacionesPeriodicas.docx");
             Response.Redirect("http://10.6.60.190/Documentos/PresentacionesPeriodicas.docx");
 
         }
