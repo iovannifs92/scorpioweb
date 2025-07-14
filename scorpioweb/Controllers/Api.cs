@@ -552,6 +552,7 @@ namespace scorpioweb.Controllers
             //var user = User.Identity.Name;
             //await _hubContext.Clients.All.SendAsync("sendMessage", message);
             await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", message);
+     
             return Ok();
         }
         #endregion

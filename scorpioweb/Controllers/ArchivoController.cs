@@ -1537,9 +1537,9 @@ namespace scorpioweb.Models
             string figuraJudicial,
             int? pageNumber,
             string areaFiltro,
-            int? recibidoFiltro,
-            int? revisadoFiltro,
-            DateTime? fechaDesde, 
+            string recibidoFiltro,
+            string revisadoFiltro,
+            DateTime? fechaDesde,
             DateTime? fechaHasta
             )
         {
@@ -1554,6 +1554,10 @@ namespace scorpioweb.Models
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
             ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["areaFiltro"] = areaFiltro;
+            ViewData["recibidoFiltro"] = recibidoFiltro?.ToString();
+            ViewData["revisadoFiltro"] = revisadoFiltro?.ToString();
 
             // Paging & searchString persistence
             if (searchString != null)
@@ -1572,9 +1576,8 @@ namespace scorpioweb.Models
             ViewBag.Admin = false;
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = roles.Any(r => r == "Masteradmin" || r == "Archivo" || r == "Director");
-
-
-
+           
+            #region -Sacar Roles-
             var roleToArea = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "Uespa", "UESPA" },
@@ -1591,10 +1594,12 @@ namespace scorpioweb.Models
             // ... puedes añadir más según tus reglas
             };
 
+            
             string areaAsignada = roles
                 .Where(role => roleToArea.ContainsKey(role))
                 .Select(role => roleToArea[role])
                 .FirstOrDefault() ?? "Sin área asignada";
+
             if (roles.Contains("Uespa"))
             {
                 areaFiltro = "UESPA";
@@ -1649,17 +1654,40 @@ namespace scorpioweb.Models
             {
                 areaFiltro = "Oficialia";
             }
+            #endregion
 
+            List<SelectListItem> listaAreas;
+            listaAreas = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "" },
+                new SelectListItem{ Text = "Ejecución de Penas", Value = "Ejecución de penas" },
+                new SelectListItem{ Text = "LC", Value = "LC" },
+                new SelectListItem{ Text = "MCySCP", Value = "MCySCP" },
+                new SelectListItem{ Text = "Oficialia", Value = "Oficialia" },
+                new SelectListItem{ Text = "Servicios Previos", Value = "Servicios previos" },
+                new SelectListItem{ Text = "UESPÁ", Value = "UESPA" }
+            };
+            ViewBag.ListaAreas = listaAreas;
 
+            List<SelectListItem> listaRecibido;
+            listaRecibido = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "" },
+                new SelectListItem{ Text = "Si", Value = "1" },
+                new SelectListItem{ Text = "No", Value = "0" }
 
+            };
+            ViewBag.listaFiltro1 = listaRecibido; 
+            
+            List<SelectListItem> listaRevisado;
+            listaRevisado = new List<SelectListItem>
+            {
+                new SelectListItem{ Text = "Todos", Value = "" },
+                new SelectListItem{ Text = "Si", Value = "1" },
+                new SelectListItem{ Text = "No", Value = "0" }
 
-            // ViewData para mantener filtros en la UI
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["EstadoS"] = estadoSuper;
-            ViewData["FiguraJ"] = figuraJudicial;
-            ViewData["AreaFiltro"] = areaFiltro;
-            ViewData["RecibidoFiltro"] = recibidoFiltro?.ToString();
-            ViewData["RevisadoFiltro"] = revisadoFiltro?.ToString();
+            };
+            ViewBag.listaFiltro2 = listaRevisado;
 
             // Query base
             var filter = _context.Envioarchivo.AsQueryable();
@@ -1667,12 +1695,24 @@ namespace scorpioweb.Models
             // Filtro por texto de búsqueda
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(ea =>
-                    (ea.Apaterno + " " + ea.Amaterno + " " + ea.Nombre).Contains(searchString) ||
-                    (ea.Nombre + " " + ea.Amaterno + " " + ea.Apaterno).Contains(searchString) ||
-                    (ea.Amaterno + " " + ea.Apaterno + " " + ea.Nombre).Contains(searchString) ||
-                    ea.IdenvioArchivo.ToString().Contains(searchString)
-                );
+                try
+                {
+                    filter = filter.Where(ea =>
+                                        ((ea.Apaterno ?? "") + " " + (ea.Amaterno ?? "") + " " + (ea.Nombre ?? "")).Contains(searchString) ||
+                                        ((ea.Nombre ?? "") + " " + (ea.Apaterno ?? "") + " " + (ea.Amaterno ?? "")).Contains(searchString) ||
+                                        (ea.Usuario ?? "").Contains(searchString) ||
+                                        (ea.Causapenal ?? "").Contains(searchString) ||
+                                        (ea.Area ?? "").Contains(searchString) ||
+                                        (ea.IdArchvo ?? "").Contains(searchString)
+);
+                }
+                catch (Exception ex)
+                {
+                    var error = ex.ToString();
+
+                }
+
+
             }
 
             // Filtro por Fecha Desde
@@ -1686,23 +1726,25 @@ namespace scorpioweb.Models
             {
                 filter = filter.Where(e => e.FechaRecibido <= fechaHasta.Value);
             }
+            ViewBag.fInicio = fechaDesde?.ToString("yyyy-MM-dd");
+            ViewBag.fFinal = fechaHasta?.ToString("yyyy-MM-dd");
 
             // Filtro por Área
-            if (!String.IsNullOrWhiteSpace(areaFiltro))
+            if (!String.IsNullOrWhiteSpace(areaFiltro) && areaFiltro != "Todos")
             {
                 filter = filter.Where(ea => ea.Area == areaFiltro);
             }
 
             // Filtro por Recibido
-            if (recibidoFiltro.HasValue)
+            if (!string.IsNullOrEmpty(recibidoFiltro) && recibidoFiltro != "Todos")
             {
-                filter = filter.Where(ea => ea.Recibido == recibidoFiltro.Value);
+                filter = filter.Where(ea => ea.Recibido == (recibidoFiltro == "Si" ? 1 : 0));
             }
 
             // Filtro por Revisado
-            if (revisadoFiltro.HasValue)
+            if (!string.IsNullOrEmpty(revisadoFiltro) && revisadoFiltro != "Todos")
             {
-                filter = filter.Where(ea => ea.Revisado == revisadoFiltro.Value);
+                filter = filter.Where(ea => ea.Revisado == (revisadoFiltro == "Si" ? 1 : 0));
             }
 
             // Ordenamiento

@@ -348,23 +348,20 @@ namespace scorpioweb.Controllers
                 envioarchivo.Delito = oficialia.DelitoTipo;
                 envioarchivo.TipoDocumento = "Oficio";
                 envioarchivo.SituacionJuridico = oficialia.AsuntoOficio;
-                envioarchivo.Area = "Oficalia";
+                envioarchivo.Area = "Oficialia";
                 envioarchivo.Usuario = user.ToString();
                 envioarchivo.FechaRegistro = DateTime.Now;
                 envioarchivo.Recibido = 0;
                 envioarchivo.Revisado = 0;
                 envioarchivo.Observaciones = null;
+                _context.Add(envioarchivo);
             }
             
-
-
-
             #endregion
 
 
 
             _context.Add(oficialia);
-            _context.Add(envioarchivo);
             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
             return RedirectToAction("EditRegistros", "Oficialia");
         }
@@ -704,8 +701,11 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile archivo, [Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,IdCarpetaEjecucion,CarpetaEjecucion,IdCausaPenal,CausaPenal,DelitoTipo,AutoVinculacion,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,Observaciones,Juzgado")] Oficialia oficialia)
+        public async Task<IActionResult> Edit(int id, IFormFile archivo, [Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,IdCarpetaEjecucion,CarpetaEjecucion,IdCausaPenal,CausaPenal,DelitoTipo,AutoVinculacion,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,Observaciones,Juzgado")] Oficialia oficialia, Envioarchivo envioarchivo)
         {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
             if (id != oficialia.IdOficialia)
             {
                 return NotFound();
@@ -741,6 +741,7 @@ namespace scorpioweb.Controllers
                 oficialia.UsuarioTurnar = null;
             }
 
+
             var cp = await _context.Causapenal.SingleOrDefaultAsync(m => m.IdCausaPenal == oficialia.IdCausaPenal);
             if (cp != null)
             {
@@ -775,6 +776,29 @@ namespace scorpioweb.Controllers
                     oldOficialia = await _context.Oficialia.FindAsync(id);
                     _context.Entry(oldOficialia).CurrentValues.SetValues(oficialia);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+
+
+                    #region -ENVIO ARCHIVO-
+                    if (oficialia.UsuarioTurnar == "liliana.vargas@dgepms.com")
+                    {
+                        envioarchivo.Apaterno = oficialia.Paterno;
+                        envioarchivo.Amaterno = oficialia.Materno;
+                        envioarchivo.Nombre = oficialia.Nombre;
+                        envioarchivo.Causapenal = (oficialia.CausaPenal + oficialia.CarpetaEjecucion).Replace(" ", "");
+                        envioarchivo.Delito = oficialia.DelitoTipo;
+                        envioarchivo.TipoDocumento = "Oficio";
+                        envioarchivo.SituacionJuridico = oficialia.AsuntoOficio;
+                        envioarchivo.Area = "Oficialia";
+                        envioarchivo.Usuario = user.ToString();
+                        envioarchivo.FechaRegistro = DateTime.Now;
+                        envioarchivo.Recibido = 0;
+                        envioarchivo.Revisado = 0;
+                        envioarchivo.Observaciones = null;
+                        _context.Add(envioarchivo);
+                        _context.SaveChanges();
+                    }
+                    #endregion
 
                     //_context.Entry(oldOficialia).CurrentValues.SetValues(oficialia);
                     //await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);

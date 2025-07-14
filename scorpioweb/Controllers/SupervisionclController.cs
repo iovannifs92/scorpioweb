@@ -356,7 +356,7 @@ namespace scorpioweb.Controllers
 
             if (figuraJudicial != null && figuraJudicial != "Todos")
             {
-                if (figuraJudicial == "Sin Figura Judicial")
+                if (figuraJudicial == "Sin beneficio otorgado")
                 {
                     filter = filter.Where(cl => cl.beneficiosVM.FiguraJudicial == null);
                 }

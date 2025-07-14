@@ -181,62 +181,56 @@
 <form asp-action="Envioarchivo" method="get" class="mb-4">
     <div class="row g-3 align-items-end">
         <!-- Búsqueda por nombre o Id -->
-        <div class="col-md-4">
+        <div class="col-md-2">
             <label for="SearchString" class="form-label">Nombre o IdArchivo</label>
-            <input type="text" id="SearchString" name="SearchString" class="form-control" placeholder="Buscar..." value="@(ViewData["currentFilter"] ?? "")" />
+            <input type="text" id="SearchString" name="SearchString" class="form-control" placeholder="Buscar..." value="@ViewData["currentFilter"]" />
         </div>
 
         <!-- Filtro Área -->
-        <div class="col-md-3">
-            <label for="areaFiltro" class="form-label">Área</label>
-            <select id="areaFiltro"
-                    name="areaFiltro"
-                    class="form-select">
-                <option value="">Todos</option>
-                <option value="MCySCP" @(ViewData["AreaFiltro"]?.ToString() == "MCySCP" ? "selected" : "")>MCySCP</option>
-                <option value="LC" @(ViewData["AreaFiltro"]?.ToString() == "LC" ? "selected" : "")>LC</option>
-                <option value="Ejecución de Penas" @(ViewData["AreaFiltro"]?.ToString() == "Ejecución de Penas" ? "selected" : "")>Ejecución de Penas</option>
-                <option value="UESPA" @(ViewData["AreaFiltro"]?.ToString() == "UESPA" ? "selected" : "")>UESPA</option>
-                <option value="Servicios previos" @(ViewData["AreaFiltro"]?.ToString() == "Servicios previos" ? "selected" : "")>Servicios previos</option>
-                <option value="Oficialia" @(ViewData["AreaFiltro"]?.ToString() == "Oficialia" ? "selected" : "")>Oficialia</option>
+        <div class="col-md-2">
+            <label>
+                Area
+            </label>
+            <select class="form-control" name="areaFiltro" id="areaFiltro"
+                    asp-items="@(new SelectList(ViewBag.ListaAreas, "Text", "Text", @ViewData["areaFiltro"]))">
             </select>
         </div>
 
         <!-- Filtro Recibido -->
         <div class="col-md-2">
-            <label for="recibidoFiltro" class="form-label">Recibido</label>
-            <select id="recibidoFiltro" name="recibidoFiltro" class="form-select">
-                <option value="">Todos</option>
-                <option value="1" @(ViewData["RecibidoFiltro"]?.ToString() == "1" ? "selected" : "")>Sí</option>
-                <option value="0" @(ViewData["RecibidoFiltro"]?.ToString() == "0" ? "selected" : "")>No</option>
+            <label>
+                Recibido
+            </label>
+            <select class="form-control" name="recibidoFiltro" id="recibidoFiltro"
+                    asp-items="@(new SelectList(ViewBag.listaFiltro1, "Text", "Text", @ViewData["recibidoFiltro"]))">
             </select>
         </div>
 
         <!-- Filtro Revisado -->
         <div class="col-md-2">
-            <label for="revisadoFiltro" class="form-label">Revisado</label>
-            <select id="revisadoFiltro" name="revisadoFiltro" class="form-select">
-                <option value="">Todos</option>
-                <option value="1" @(ViewData["RevisadoFiltro"]?.ToString() == "1" ? "selected" : "")>Sí</option>
-                <option value="0" @(ViewData["RevisadoFiltro"]?.ToString() == "0" ? "selected" : "")>No</option>
+            <label>
+                Revisado
+            </label>
+            <select class="form-control" name="revisadoFiltro" id="revisadoFiltro"
+                    asp-items="@(new SelectList(ViewBag.listaFiltro2, "Text", "Text", @ViewData["revisadoFiltro"]))">
             </select>
         </div>
 
         <!-- Filtro Fecha Desde -->
         <div class="col-md-2">
             <label for="fechaDesde" class="form-label">Fecha Desde</label>
-            <input type="date" id="fechaDesde" name="fechaDesde" class="form-control" value="@(ViewData["FechaDesde"] ?? "")" />
+            <input type="date" id="fechaDesde" name="fechaDesde" class="form-control" value="@ViewBag.fInicio" />
         </div>
 
         <!-- Filtro Fecha Hasta -->
         <div class="col-md-2">
             <label for="fechaHasta" class="form-label">Fecha Hasta</label>
-            <input type="date" id="fechaHasta" name="fechaHasta" class="form-control" value="@(ViewData["FechaHasta"] ?? "")" />
+            <input type="date" id="fechaHasta" name="fechaHasta" class="form-control" value="@ViewBag.fFinal" />
         </div>
 
-        <!-- Botón Buscar --> 
-        <div class="col-md-2" style="text-align:right; margin-top:20px;">
-            <button  type="submit" class="btn btn-primary">
+        <!-- Botón Buscar -->
+        <div class="col-md-2" style="margin-top:20px;">
+            <button type="submit" class="btn btn-primary">
                 <i class="fa fa-search me-1"></i> Buscar
             </button>
         </div>
@@ -251,7 +245,6 @@
         <i class="fa fa-plus"></i> Crear nuevo Registro
     </a>
 </div>
-
 
 <table class="table">
     <thead>
@@ -277,9 +270,21 @@
                 <th>
                     Situacion Juridico
                 </th>
-                <th>
-                    Recibido
-                </th>
+                @if (User.IsInRole("Coordinador"))
+                {
+                    <td>
+                        Quien Recibe
+                    </td> 
+                    <td>
+                        Fecha Recibido
+                    </td>
+                    <td>
+                        Quien Revisa
+                    </td>
+                    <td>
+                        Fecha Revisado
+                    </td>
+                }
                  @if (User.IsInRole("ArchivoAsistente") || User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
                     <th>
@@ -298,6 +303,8 @@
                         Editar
                     </th>
                 }
+
+           
             <th></th>
         </tr>
     </thead>
@@ -325,6 +332,21 @@
             <td>
                 @Html.DisplayFor(modelItem => item.SituacionJuridico)
             </td>
+            @if (User.IsInRole("Coordinador"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuienRecibe)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaRecibido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuienRevisa)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaRevisado)
+                </td>
+            }
             <td>
                 @if (User.IsInRole("ArchivoAsistente") || User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
@@ -383,22 +405,22 @@
                 }
                     
             </td>
-                @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
-                {
-                    <td>
-                        <a id="btnEditar" onclick="modal(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-success">
-                            <i class="fa fa-pencil"></i> Editar
-                        </a>
+            @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+            {
+                <td>
+                    <a id="btnEditar" onclick="modal(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-success">
+                        <i class="fa fa-pencil"></i> Editar
+                    </a>
 
-                        @*<a id="btnEditar" onclick="showModal('@Url.Action("editEnvioArchivo","Archivo",null,Context.Request.Scheme)','Editar Registro', @item.IdenvioArchivo)" class="btn btn-success">*@
+                    @*<a id="btnEditar" onclick="showModal('@Url.Action("editEnvioArchivo","Archivo",null,Context.Request.Scheme)','Editar Registro', @item.IdenvioArchivo)" class="btn btn-success">*@
 
-                    </td> 
-                    <td>
-                        <a id="btnBorrar" onclick="borrarEnvioA(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Borrar
-                        </a>
-                    </td>
-                }
+                </td> 
+                <td>
+                    <a id="btnBorrar" onclick="borrarEnvioA(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Borrar
+                    </a>
+                </td>
+            }
         </tr>
     }
     </tbody>
@@ -416,6 +438,11 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-areaFiltro="@ViewData["areaFiltro"]"
+   asp-route-recibidoFiltro="@ViewData["recibidoFiltro"]"
+   asp-route-revisadoFiltro="@ViewData["revisadoFiltro"]"
+   asp-route-fechaInicio="@ViewData["fInicio"]"
+   asp-route-fechaFinal="@ViewData["fFinal"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
@@ -423,7 +450,11 @@
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-areaFiltro="@ViewData["areaFiltro"]"
+   asp-route-recibidoFiltro="@ViewData["recibidoFiltro"]"
+   asp-route-revisadoFiltro="@ViewData["revisadoFiltro"]"
+   asp-route-fechaDesde="@ViewBag.fInicio"
+   asp-route-fechaHasta="@ViewBag.fFinal"
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
-

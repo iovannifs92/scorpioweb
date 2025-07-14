@@ -399,7 +399,7 @@ namespace scorpioweb.Models
                             supervisionclVM = supervision,
                             municipiosVM = municipio,
                             causapenalclVM = causapenal,
-                            tipoAdvertencia = "Sin figura judicial"
+                            tipoAdvertencia = "Sin beneficio otorgado"
                         };
 
             var table = from persona in personaclVM
@@ -4000,7 +4000,7 @@ namespace scorpioweb.Models
                             supervisionclVM = supervision,
                             municipiosVM = municipio,
                             causapenalclVM = causapenal,
-                            tipoAdvertencia = "Sin figura judicial"
+                            tipoAdvertencia = "Sin beneficio otorgado"
                         };
 
             var table = from persona in personaclVM
@@ -4175,7 +4175,7 @@ namespace scorpioweb.Models
                     case "SIN SUPERVISION":
                         ViewDataAlertasVari = where;
                         break;
-                    case "SIN FIGURA JUDICIAL":
+                    case "SIN beneficio otorgado":
                         ViewDataAlertasVari = joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.supervisionclVM.EstadoSupervision == "VIGENTE");
                         break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":
@@ -4374,7 +4374,7 @@ namespace scorpioweb.Models
                     case "SIN SUPERVISION":
                         ViewData["alertas"] = where2;
                         break;
-                    case "SIN FIGURA JUDICIAL":
+                    case "SIN BENEFICIO OTORGADO":
                         ViewData["alertas"] = joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.personaclVM.Supervisor == usuario && s.supervisionclVM.EstadoSupervision == "VIGENTE");
                         break;
                     case "SE PASO EL TIEMPO DE LA FIRMA":

@@ -175,7 +175,7 @@
                         + "    " + formatDate(result.query[i].personaclVM.ultimaActualización)
                         + "</td>";
                     break;
-                case "Sin figura judicial":
+                case "Sin beneficio otorgado":
                     row = row
                         + "<td>"
                         + "    " + result.query[i].tipoAdvertencia
@@ -244,7 +244,7 @@
                     + "</td>";
                 row = row + "<td></td>";
             }
-            else if (result.query[i].tipoAdvertencia == "Sin figura judicial") {
+            else if (result.query[i].tipoAdvertencia == "Sin beneficio otorgado") {
                 row = row
                     + "<td>"
                     + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisioncl/EditBeneficios/" + result.query[i].supervisionclVM.idSupervisioncl + "?nombre=" + result.query[i].personaclVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalclVM.causaPenal + "&amp;idpersona=" + result.query[i].personaclVM.idPersonaCl + "\">"
@@ -482,7 +482,7 @@
                                                 + "    " + formatDate(result.query[i].personaclVM.ultimaActualización)
                                                 + "</td>";
                                             break;
-                                        case "Sin figura judicial":
+                                        case "Sin beneficio otorgado":
                                             row = row
                                                 + "<td>"
                                                 + "    " + result.query[i].tipoAdvertencia
@@ -553,7 +553,7 @@
                                             + "</td>";
                                         row = row + "<td></td>";
                                     }
-                                    else if (result.query[i].tipoAdvertencia == "Sin figura judicial") {
+                                    else if (result.query[i].tipoAdvertencia == "Sin beneficio otorgado") {
                                         row = row
                                             + "<td>"
                                             + "    <a type=\"button\" class=\"btn btn-success\" id=\"edicion\" href=\"/Supervisioncl/EditBeneficios/" + result.query[i].supervisionclVM.idSupervisioncl + "?nombre=" + result.query[i].personaclVM.nombreCompleto + "&amp;cp=" + result.query[i].causapenalclVM.causaPenal + "&amp;idpersona=" + result.query[i].personaclVM.idPersonaCl + "\">"
@@ -625,7 +625,7 @@
             <option value="SIN FECHA DE INFORME">Sin fecha de informe/Sin control de supervisión</option>
             <option value="SIN PERIODICIDAD DE FIRMA">Sin periodicidad de firma</option>
             <option value="SIN SUPERVISION">Sin supervisión</option>
-            <option value="SIN FIGURA JUDICIAL">Sin figura judicial</option>
+            <option value="SIN BENEFICIO OTORGADO">Sin beneficio otorgado</option>
             @* <option value="ESTADO PROCESAL">Estado Procesal</option> *@
             @*<option value="SIN ESTADO DE SUPERVISION">Sin estado de supervisión</option>*@
             @if (ViewBag.norte == false)
