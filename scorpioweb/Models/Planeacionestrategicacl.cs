@@ -10,6 +10,7 @@ namespace scorpioweb.Models
         public string MotivoNoPlaneacion { get; set; }
         public DateTime? VisitaVerificacion { get; set; }
         public DateTime? InformeInicial { get; set; }
+        public sbyte? EstadoInfInicial { get; set; }
         public DateTime? InformeSeguimiento { get; set; }
         public DateTime? InformeFinal { get; set; }
         public DateTime? FechaUltimoContacto { get; set; }
