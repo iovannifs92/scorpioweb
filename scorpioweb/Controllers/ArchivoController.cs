@@ -18,6 +18,7 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using scorpioweb.Migrations.ApplicationDb;
 using Newtonsoft.Json;
+using Syncfusion.EJ2.Linq;
 
 namespace scorpioweb.Models
 {
@@ -621,14 +622,14 @@ namespace scorpioweb.Models
 
             ViewBag.ListaGeneral = listaGeneral;
 
-            ViewData["tienearchivo"] = from a in _context.Archivo
+            ViewData["tienearchivo"] = (from a in _context.Archivo
                                        join ar in _context.Archivoregistro on a.IdArchivo equals ar.ArchivoIdArchivo
                                        where a.IdArchivo == id
                                        select new ArchivoControlPrestamo
                                        {
                                            archivoregistroVM = ar,
                                            archivoVM = a,
-                                       };
+                                       }).OrderBy(x => x.archivoregistroVM.CausaPenal);
 
             return View();
         }
