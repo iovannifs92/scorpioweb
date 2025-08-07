@@ -3812,6 +3812,317 @@ namespace scorpioweb.Models
         }
         #endregion
 
+        public async Task<IActionResult> AlertasCl(int? page, string searchString, string selectSearch)
+        {
+            if (!string.IsNullOrEmpty(selectSearch) && selectSearch.Equals("TODOS"))
+                searchString = null;
+
+            //usuarios
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            bool esCoordinadorAdmin = false;
+            //filtros
+            ViewBag.CurrentSelectSearch = selectSearch;
+            ViewBag.CurrentSearchString = searchString;
+
+            //fechas
+            DateTime UnMes = DateTime.Now.AddDays(30);
+
+
+
+            if (searchString != null && (page == 0 || page == null))
+            {
+                page = 1;
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC" || rol == "Masteradmin")
+                {
+                    esCoordinadorAdmin = true;
+                    break;
+                }
+            }
+            List<PlaneacionclWarningViewModel> alertas = ObtenerAlertas();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                alertas = alertas
+                    .Where(s => s.personaclVM != null &&
+                                !string.IsNullOrEmpty(s.personaclVM.NombreCompleto) &&
+                                s.personaclVM.NombreCompleto.ToUpper().Contains(searchString.ToUpper()))
+                    .ToList();
+            }
+
+            if (!esCoordinadorAdmin)
+            {
+                alertas = alertas
+                    .Where(m => m.personaclVM != null &&
+                                !string.IsNullOrEmpty(m.personaclVM.Supervisor) &&
+                                m.personaclVM.Supervisor.Equals(user.Email, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            switch (selectSearch)
+            {
+                case "Todas":
+                    alertas = alertas
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ThenBy(x => x.tipoAdvertencia)
+                        .ToList();
+                    break;
+                case "Sin resolucion":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Sin resolucion")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Sin supervisión":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Sin supervisión")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Sin beneficio otorgado":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Sin beneficio otorgado")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Sin fecha de informe inicial":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Sin fecha de informe inicial")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Informe inicial fuera de tiempo":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Informe inicial fuera de tiempo")
+                        .OrderByDescending(m => m.planeacionestrategicaclVM?.InformeInicial)
+                        .ThenBy(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Sin fecha de informe de seguimiento":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Sin fecha de informe de seguimiento")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Informe de seguimiento fuera de tiempo":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Informe de seguimiento fuera de tiempo")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Sin periodicidad de firma":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Sin periodicidad de firma")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                case "Se paso el tiempo de la firma":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Se paso el tiempo de la firma")
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
+                default:
+                    alertas = alertas
+                        .OrderByDescending(m => m.personaclVM?.IdPersonaCl)
+                        .ThenBy(x => x.tipoAdvertencia)
+                        .ToList();
+                    break;
+            }
+
+            return View(alertas.ToList());
+        }
+
+        public List<PlaneacionclWarningViewModel> ObtenerAlertas()
+        {
+            List<Beneficios> queryBeneficios = (from b in _context.Beneficios
+                                                group b by b.SupervisionclIdSupervisioncl into grp
+                                                select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
+
+            var tables = (from persona in _context.Personacl
+                          join supervision in _context.Supervisioncl on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+                          join domicilio in _context.Domiciliocl on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                          join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
+                          join estado in _context.Estados on int.Parse(domicilio.Estado) equals estado.Id
+                          join causapenal in _context.Causapenalcl on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
+                          join planeacion in _context.Planeacionestrategicacl on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
+                          join beneficios in queryBeneficios on supervision.IdSupervisioncl equals beneficios.SupervisionclIdSupervisioncl
+                          where supervision.EstadoSupervision != "CONCLUIDO"
+                          select new PlaneacionclWarningViewModel
+                          {
+                              personaclVM = persona,
+                              supervisionclVM = supervision,
+                              causapenalclVM = causapenal,
+                              planeacionestrategicaclVM = planeacion,
+                              beneficiosclVM = beneficios,
+                              figuraJudicial = beneficios.FiguraJudicial,
+                              municipiosVM = municipio,
+                              estadosVM = estado
+                          })
+                         .ToList();
+            var sinSupervision = (from persona in _context.Personacl
+                                  join domicilio in _context.Domiciliocl
+                                      on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+                                  join municipio in _context.Municipios
+                                      on int.Parse(domicilio.Municipio) equals municipio.Id
+                                  join supervision in _context.Supervisioncl
+                                      on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl into tmp
+                                  from sinsup in tmp.DefaultIfEmpty()
+                                  where sinsup == null
+                                  select new PlaneacionclWarningViewModel
+                                  {
+                                      personaclVM = persona,
+                                      supervisionclVM = null,
+                                      municipiosVM = municipio,
+                                      tipoAdvertencia = "Sin supervisión",
+                                      nivelAlerta = "RED"
+                                  });
+
+            var sinResolucion = tables
+                .Where(t => t.personaclVM.TieneResolucion == "NO" ||
+                t.personaclVM.TieneResolucion == "NA" || t.personaclVM.TieneResolucion == null)
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    estadosVM = t.estadosVM,
+                    municipiosVM = t.municipiosVM,
+                    tipoAdvertencia = "Sin Resolucion",
+                    nivelAlerta = "#F0AD00"
+                });
+
+
+            var sinBeneficio = tables
+                .Where(t => (t.causapenalclVM == null || t.beneficiosclVM == null) || t.beneficiosclVM.FiguraJudicial == null)
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    tipoAdvertencia = "Sin beneficio otorgado",
+                    nivelAlerta = "RED"
+                });
+
+            var sinFechaInicial = tables
+                .Where(t => (t.planeacionestrategicaclVM.EstadoInfInicial == 0 || t.planeacionestrategicaclVM.EstadoInfInicial == null) &&
+                t.planeacionestrategicaclVM.InformeInicial == null)
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                    beneficiosclVM = t.beneficiosclVM,
+                    figuraJudicial = t.figuraJudicial,
+                    tipoAdvertencia = "Sin fecha de informe inicial",
+                    nivelAlerta = "#F0AD00"
+                });
+
+            var InicialFueraTiempo = tables
+                .Where(t => (t.planeacionestrategicaclVM.EstadoInfInicial == 0 || t.planeacionestrategicaclVM.EstadoInfInicial == null) &&
+                t.planeacionestrategicaclVM.InformeInicial < DateTime.Now)
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                    beneficiosclVM = t.beneficiosclVM,
+                    figuraJudicial = t.figuraJudicial,
+                    tipoAdvertencia = "Informe inicial fuera de tiempo",
+                    nivelAlerta = "RED"
+                });
+
+            var sinFechaSeguimiento = tables
+                .Where(t => t.planeacionestrategicaclVM.InformeSeguimiento == null &&
+                t.planeacionestrategicaclVM.EstadoInfInicial == 1 &&
+                t.supervisionclVM.EstadoSupervision == "VIGENTE" &&
+                t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA")
+                .OrderBy(t => t.planeacionestrategicaclVM.InformeInicial)
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                    beneficiosclVM = t.beneficiosclVM,
+                    figuraJudicial = t.figuraJudicial,
+                    tipoAdvertencia = "Sin fecha de informe de seguimiento",
+                    nivelAlerta = "#F0AD00"
+                });
+
+            var seguimientoFueraTiempo = tables
+                .Where(t => t.planeacionestrategicaclVM.InformeSeguimiento != null &&
+                t.planeacionestrategicaclVM.InformeSeguimiento < DateTime.Now.AddDays(30) &&
+                t.planeacionestrategicaclVM.EstadoInfInicial == 1 &&
+                t.supervisionclVM.EstadoSupervision == "VIGENTE" &&
+                t.beneficiosclVM.FiguraJudicial != "SUSTITUCION DE LA PENA")
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                    beneficiosclVM = t.beneficiosclVM,
+                    figuraJudicial = t.figuraJudicial,
+                    tipoAdvertencia = "Informe de seguimiento fuera de tiempo",
+                    nivelAlerta = "#F0AD00"
+                });
+
+            var sinPeriodicidadFirma = tables
+                .Where(t => t.planeacionestrategicaclVM.PeriodicidadFirma == null &&
+                t.supervisionclVM.EstadoSupervision == "VIGENTE")
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                    tipoAdvertencia = "Sin periodicidad de firma",
+                    nivelAlerta = "#F0AD00"
+                });
+
+            var firmaVencida = tables
+                .Where(t => t.personaclVM.Supervisor != null &&
+                t.personaclVM.Supervisor.EndsWith("@dgepms.com") &&
+                t.planeacionestrategicaclVM.FechaProximoContacto != null &&
+                t.planeacionestrategicaclVM.FechaProximoContacto < DateTime.Now &&
+                t.supervisionclVM.EstadoSupervision == "VIGENTE" &&
+                t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA")
+                .OrderByDescending(t => t.planeacionestrategicaclVM.FechaProximoContacto)
+                .Select(t => new PlaneacionclWarningViewModel
+                {
+                    personaclVM = t.personaclVM,
+                    supervisionclVM = t.supervisionclVM,
+                    municipiosVM = t.municipiosVM,
+                    causapenalclVM = t.causapenalclVM,
+                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                    beneficiosclVM = t.beneficiosclVM,
+                    figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+                    tipoAdvertencia = "Se paso el tiempo de la firma",
+                    nivelAlerta = "RED"
+                });
+
+
+            var alertas = sinResolucion
+                .Union(sinSupervision)
+                .Union(sinBeneficio)
+                .Union(sinFechaInicial)
+                .Union(InicialFueraTiempo)
+                .Union(sinFechaSeguimiento)
+                .Union(seguimientoFueraTiempo)
+                .Union(sinPeriodicidadFirma)
+                .Union(firmaVencida);
+            return alertas.ToList();
+        }
         #region -WarningSupervisor-
         public async Task<IActionResult> WarningSupervisor()
         {
