@@ -107,6 +107,26 @@
         var causasCierre = ["Sobreseimiento por acuerdo respiratorio", "Sobreseimiento por suspensión condicional del proceso", "Sobreseimiento por perdón", "Sobreseimiento por muerte del imputado", "Sobreseimiento la extinción de la acción penal", "Sobreseimiento por prescripción", "Sobreseimiento sin especificar", "Sentencia condenatoria en procedimiento abreviado", "Sentencia absolutoria en el procedimiento abreviado", "Sentencia condenatoria del juicio oral", "Sentencia absolutoria en el juicio oral", "No beneficio a proceso"];
         autocomplete(document.getElementById("ComoConcluyo"), causasCierre);
     });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const select = document.getElementById("ddlComoConcluyo");
+        const otraDiv = document.getElementById("otraComoConcluyoDiv");
+        const otraInput = document.getElementById("OtraComoConcluyo");
+
+        function toggleOtraInput() {
+            if (select.value === "OTRA") {
+                otraDiv.style.display = "block";
+            } else {
+                otraDiv.style.display = "none";
+                otraInput.value = ""; // Limpiar si se desactiva
+            }
+        }
+
+        select.addEventListener("change", toggleOtraInput);
+        toggleOtraInput(); // Por si ya viene seleccionado al cargar
+    });
+
 </script>
 
 
@@ -144,11 +164,21 @@
                         asp-items="@(new SelectList(ViewBag.listaSeCerroCaso, "Value", "Text", @ViewBag.idSeCerroCaso))">
                 </select>
             </div>
-            <div id="DivComoConcluyo" class="form-group">
+      @*       <div id="DivComoConcluyo" class="form-group">
                 <label class="control-label">Como Concluyó</label>
                 <select class="form-control" name="ComoConcluyo" id="ComoConcluyo"
-                        asp-items="@(new SelectList(ViewBag.CierreCaso, "Value", "Text", ViewBag.idCierreCaso))">
+                        asp-items="@(new SelectList(ViewBag.    , "Value", "Text", ViewBag.idCierreCaso))">
                 </select>
+            </div> *@
+
+            <div class="form-group">
+                <label>¿Cómo Concluyó?</label>
+                @Html.DropDownListFor(model => model.ComoConcluyo, (IEnumerable<SelectListItem>)ViewBag.CierreCaso, "Seleccione...", new { @class = "form-control", id = "ddlComoConcluyo" })
+            </div>
+
+            <div class="form-group" id="otraComoConcluyoDiv" style="display:none;">
+                <label>Especificar otra:</label>
+                <input type="text" class="form-control" name="OtraComoConcluyo" id="OtraComoConcluyo" />
             </div>
             <div class="form-group" id="DivNoArchivo">
                 <label class="control-label">Número de Archivo</label>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office.CoverPageProps;
 
 namespace scorpioweb.Models
 {
@@ -19,5 +20,6 @@ namespace scorpioweb.Models
         public string tipoAdvertencia { get; set; }
         public string figuraJudicial { get; set; }
         public DateTime? fechaCmbio { get; set; }
+        public string nivelAlerta { get; set; }
     }
 }

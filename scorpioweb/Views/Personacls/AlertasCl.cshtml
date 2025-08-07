@@ -1,0 +1,189 @@
+﻿@model IEnumerable<scorpioweb.Models.PlaneacionclWarningViewModel>
+
+@{
+	ViewData["Title"] = "Alertas CL";
+}
+<style>
+	.top-content h2 {
+		margin-left: 50px;
+	}
+
+	.row-items {
+		display: flex;
+		justify-content: space-between 2px;
+		padding: 5px 30px;
+	}
+
+	.item {
+		padding: 5px 10px;
+		margin: 0 5px;
+	}
+
+	.table th {
+		color: darkblue;
+		font-weight: 500;
+	}
+</style>
+
+<div class="text-center" style="padding-top:1%">
+	<img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+	<br />
+	<h2>Alertas</h2>
+</div>
+
+<div class="top-content">
+	@using (Html.BeginForm("AlertasCl", "Personacls", FormMethod.Get))
+	{
+		<div class="row-items">
+			<div class="item">
+				<p>
+					Buscar por nombre: @Html.TextBox("SearchString", ViewBag.CurrentSearchString as string)
+					<input type="submit" value="Search" />
+				</p>
+			</div>
+			<div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
+			<div class="item">
+				<select class="form-control form-select-lg mb-3" onchange="this.form.submit()" @Html.TextBox("selectSearch", ViewBag.CurrentSelectSearch as string)>
+					<option selected style="font-weight:600; background-color:gainsboro;" value="@ViewBag.CurrentSelectSearch">Actual: @ViewBag.CurrentSelectSearch</option>
+					<option value="Todas">Todas las alertas</option>
+					<optgroup label="-------- Informes --------">
+						<option value="Sin fecha de informe inicial">Sin fecha de informe inicial</option>
+						<option value="Informe inicial fuera de tiempo">Informe inicial fuera de tiempo</option>
+						<option value="Sin fecha de informe de seguimiento">Sin fecha de informe de seguimiento</option>
+						<option value="Informe de seguimiento fuera de tiempo">Informe de seguimiento fuera de tiempo</option>
+					</optgroup>
+					<optgroup label="-------- Firmas --------">
+						<option value="Sin periodicidad de firma">Sin periodicidad de firma</option>
+						<option value="Se paso el tiempo de la firma">Se pasó el tiempo de la firma</option>
+					</optgroup>
+					<optgroup label="-------- Otras --------">
+						<option value="Sin resolucion">Sin resolucion</option>
+						<option value="Sin supervisión">Sin supervision</option>
+						<option value="Sin beneficio otorgado">Sin beneficio otorgado</option>
+					</optgroup>
+
+				</select>
+			</div>
+			<div class="item"><a asp-action="AlertasCl">Regresar al listado completo</a></div>
+		</div>
+
+	}
+</div>
+
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>idPersona</th>
+			<th>Nombre completo</th>
+			<th>Causa penal</th>
+			<th>Tipo alerta</th>
+			<th>Informacion campo</th>
+			<th>Celular</th>
+			<th>Municipio</th>
+			<th>Supervisor</th>
+			<th>Beneficio</th>
+			<th>Acciones</th>
+		</tr>
+	</thead>
+	<tbody>
+
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>@item.personaclVM.IdPersonaCl</td>
+				<td>@item.personaclVM.NombreCompleto</td>
+				@if (!string.IsNullOrEmpty(item.causapenalclVM?.CausaPenal))
+				{
+					<td>@item.causapenalclVM.CausaPenal</td>
+				}
+				else
+				{
+					<td>NA</td>
+				}
+				<td style="color:@item.nivelAlerta">@item.tipoAdvertencia</td>
+				@if (item.tipoAdvertencia.Equals("Informe inicial fuera de tiempo"))
+				{
+					<td>@(item.planeacionestrategicaclVM?.InformeInicial?.ToString("dd/MM/yyyy"))</td>
+				}
+				else if (item.tipoAdvertencia.Equals("Informe de seguimiento fuera tiempo"))
+				{
+					<td>@item.planeacionestrategicaclVM?.InformeSeguimiento?.ToString("dd/MM/yyyy")</td>
+				}
+				else if (item.tipoAdvertencia.Equals("Se paso el tiempo de la firma"))
+				{
+					<td>@item.planeacionestrategicaclVM?.FechaProximoContacto?.ToString("dd/MM/yyyy")</td>
+				}
+				else
+				{
+					<td>NA</td>
+				}
+				@if (!string.IsNullOrEmpty(item.personaclVM?.Celular))
+				{
+					<td>@item.personaclVM.Celular</td>
+				}
+				else
+				{
+					<td>NA</td>
+				}
+				<td>@item.municipiosVM.Municipio</td>
+				<td>@item.personaclVM.Supervisor</td>
+				@if (!string.IsNullOrEmpty(item.figuraJudicial))
+				{
+					<td>@item.figuraJudicial</td>
+				}
+				else
+				{
+					<td>NA</td>
+				}
+				@{
+					var cpEscapado = !string.IsNullOrEmpty(item.causapenalclVM?.CausaPenal)
+					? Uri.EscapeDataString(item.causapenalclVM.CausaPenal)
+					: null;
+				}
+
+				@if (item.tipoAdvertencia.ToUpper().Contains("INFORME") || item.tipoAdvertencia.ToUpper().Contains("FIRMA"))
+				{
+					<td>
+						<a class="btn btn-success" id="edicion"
+						   href="/Supervisioncl/EditPlaneacionEstrategica/@item.supervisionclVM.IdSupervisioncl?nombre=@Uri.EscapeDataString(item.personaclVM.NombreCompleto)&cp=!string.IsNullOrEmpty(item.causapenalclVM?.CausaPenal):null
+							? Uri.EscapeDataString(item.causapenalclVM.CausaPenal)&idpersona=@item.personaclVM.IdPersonaCl">
+							<i class="fa fa-arrow-circle-left"></i> Planeacion
+						</a>
+					</td>
+				}
+				else if (item.tipoAdvertencia.ToUpper().Contains("BENEFICIO"))
+				{
+					<td>
+						<a class="btn btn-primary" id="edicion"
+						   href="/Supervisioncl/EditBeneficios/@item.supervisionclVM.IdSupervisioncl?nombre=@Uri.EscapeDataString(item.personaclVM.NombreCompleto)&cp=@Uri.EscapeDataString(@item.causapenalclVM.CausaPenal)&idpersona=@item.personaclVM.IdPersonaCl">
+							<i class="fa fa-arrow-circle-left"></i> Beneficios
+						</a>
+					</td>
+				}
+				else if (item.tipoAdvertencia.ToUpper().Contains("RESOLUCION"))
+				{
+					<td>
+						<a class="btn btn-info" href="/Personacls/Edit/@item.personaclVM.IdPersonaCl">
+							<i class=\"fa fa-pencil\"></i> Edicion
+						</a>
+					</td>
+				}
+				else if (item.tipoAdvertencia.ToUpper().Contains("SUPERVISIÓN"))
+				{
+					<td>
+						<a class="btn btn-warning" href="/Causaspenalescl/">
+							<i class="fa fa-arrow-circle-left"></i> Causas
+						</a>
+					</td>
+				}
+			</tr>
+		}
+	</tbody>
+</table>
+
+
+
+<div style="margin-top:20px">
+	<a asp-action="MenuCl">Regresar a Menu</a>
+</div>

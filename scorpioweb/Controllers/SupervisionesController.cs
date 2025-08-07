@@ -3069,7 +3069,9 @@ MetodosGenerales mg = new MetodosGenerales();
                             {
                                 Actividades1 = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
                                 "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
-                                "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
+                                "PROCESO A QUIEN SE LE REALIZÓ UNA ENTREVISTA DE ENCUADRE, SE TOMA UNA FOTOGRAFÍA ASÍ COMO SE LEVANTA REGISTRO EN EL "+
+                                "SISTEMA SCORPIO(SISTEMA DE CONTROL, ORGANIZACIÓN, RECOPILACIÓN Y PROCESAMIENTO DE LA INFORMACIÓN OPERATIVA) PARA SUS PRESENTACIONES PERIÓDICAS, "+
+                                "MISMAS QUE LE FUERON NOTIFICADAS Y EXPLICADAS DE MANERA MINUCIOSA CADA UNA DE ELLAS, MANIFESTANDO ENTENDER EL ALCANCE DE LAS MISMAS Y FIRMANDO DE CONFORMIDAD \n" +
                                 presentaciones;
                             }
                             foreach (var act in actividades)
@@ -3158,9 +3160,11 @@ MetodosGenerales mg = new MetodosGenerales();
                             if (presentaciones != "")
                             {
                                 Actividades9 = "CON FECHA " + inicio + " COMPARECE EL SUPERVISADO(A) ANTE LAS INSTALACIONES DE LA DIRECCIÓN GENERAL DE " +
-                                "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
-                                "PROCESO AL CUAL SE LE NOTIFICAN SUS OBLIGACIONES PROCESALES, ASÍ MISMO SE TIENE REGISTRO DE LAS SIGUIENTES PRESENTACIONES PERIÓDICAS \n" +
-                                presentaciones;
+                               "EJECUCIÓN DE PENAS, MEDIDAS DE SEGURIDAD, SUPERVISIÓN DE MEDIDAS CAUTELARES Y DE LA SUSPENSIÓN CONDICIONAL DEL " +
+                               "PROCESO A QUIEN SE LE REALIZÓ UNA ENTREVISTA DE ENCUADRE, SE TOMA UNA FOTOGRAFÍA ASÍ COMO SE LEVANTA REGISTRO EN EL " +
+                               "SISTEMA SCORPIO(SISTEMA DE CONTROL, ORGANIZACIÓN, RECOPILACIÓN Y PROCESAMIENTO DE LA INFORMACIÓN OPERATIVA) PARA SUS PRESENTACIONES PERIÓDICAS, " +
+                               "MISMAS QUE LE FUERON NOTIFICADAS Y EXPLICADAS DE MANERA MINUCIOSA CADA UNA DE ELLAS, MANIFESTANDO ENTENDER EL ALCANCE DE LAS MISMAS Y FIRMANDO DE CONFORMIDAD \n" +
+                               presentaciones;
                             }
                             foreach (var act in actividades)
                             {

@@ -164,7 +164,8 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "Orden de Aprhensión", Value = "ORDEN DE APREHENSIÓN" },
             new SelectListItem{ Text = "Resolición", Value = "RESOLUCION" },
             new SelectListItem{ Text = "Revocación", Value = "REVOCACION" },
-            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL" }
+            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL" },
+            new SelectListItem{ Text = "OTRA", Value = "OTRA" }  // 👈 esta es la nueva opción
         };
 
         private List<SelectListItem> listaMotivoAprobacion = new List<SelectListItem>
@@ -1102,6 +1103,8 @@ namespace scorpioweb.Controllers
             }
 
             var planeacionestrategicacl = await _context.Planeacionestrategicacl.SingleOrDefaultAsync(m => m.SupervisionclIdSupervisioncl == id);
+            //if (planeacionestrategicacl.EstadoInfInicial == null)
+            //    planeacionestrategicacl.EstadoInfInicial = 0;
             if (planeacionestrategicacl == null)
             {
                 return NotFound();
@@ -1122,7 +1125,7 @@ namespace scorpioweb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPlaneacionEstrategica(int id, [Bind("IdPlaneacionEstrategicacl,PlanSupervision,MotivoNoPlaneacion,VisitaVerificacion,InformeInicial,InformeSeguimiento,InformeFinal,FechaUltimoContacto,FechaProximoContacto,DiaFirma,PeriodicidadFirma,CausaPenalclIdCausaPenalcl,SupervisionclIdSupervisioncl,Tta")] Planeacionestrategicacl planeacionestrategicacl)
+        public async Task<IActionResult> EditPlaneacionEstrategica(int id, [Bind("IdPlaneacionEstrategicacl,PlanSupervision,MotivoNoPlaneacion,VisitaVerificacion,InformeInicial,InformeSeguimiento,InformeFinal,FechaUltimoContacto,EstadoInfInicial,FechaProximoContacto,DiaFirma,PeriodicidadFirma,CausaPenalclIdCausaPenalcl,SupervisionclIdSupervisioncl,Tta")] Planeacionestrategicacl planeacionestrategicacl)
         {
             if (id != planeacionestrategicacl.SupervisionclIdSupervisioncl)
             {
@@ -1385,6 +1388,16 @@ namespace scorpioweb.Controllers
                 return NotFound();
             }
 
+            if (!listaCierreCaso.Any(x => x.Value == cierre.ComoConcluyo))
+            {
+                listaCierreCaso.Add(new SelectListItem
+                {
+                    Text = cierre.ComoConcluyo,
+                    Value = cierre.ComoConcluyo,
+                    Selected = true
+                });
+            }
+
             ViewBag.CierreCaso = listaCierreCaso;
             ViewBag.idCierreCaso = mg.BuscaId(listaCierreCaso, cierre.ComoConcluyo);
             ViewBag.listaSeCerroCaso = listaSiNoNa;
@@ -1411,7 +1424,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCierreCaso(int id, [Bind("IdCierreDeCasocl,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionclIdSupervisioncl")] Cierredecasocl cierredecasocl, IFormFile archivo)
+        public async Task<IActionResult> EditCierreCaso(int id, [Bind("IdCierreDeCasocl,SeCerroCaso,ComoConcluyo,NoArchivo,FechaAprobacion,Autorizo,RuataArchivo,SupervisionclIdSupervisioncl")] Cierredecasocl cierredecasocl, IFormFile archivo, string OtraComoConcluyo)
         {
 
             var supervision = _context.Supervisioncl
@@ -1426,6 +1439,12 @@ namespace scorpioweb.Controllers
             }
             if (ModelState.IsValid)
             {
+
+                if (cierredecasocl.ComoConcluyo == "OTRA")
+                {
+                    cierredecasocl.ComoConcluyo = OtraComoConcluyo?.ToUpper()?.Trim();
+                }
+
                 try
                 {
 

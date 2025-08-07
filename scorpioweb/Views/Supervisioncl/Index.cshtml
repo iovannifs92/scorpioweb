@@ -325,7 +325,7 @@
                 <td>
                     @if (item.cierredecasoVM.RutaArchivo != null)
                     {
-                        <a style="font-size: x-large;" id="btnEditar" href="~/CierredeCasocl/@Html.DisplayFor(modelItem => item.cierredecasoVM.RutaArchivo)" target="_blank">
+                        <a style="font-size: x-large;" id="btnEditar" href="~/CierredeCasocl/@Html.DisplayFor(modelItem => item.cierredecasoVM.RutaArchivo)" target="_blank" title="@Html.DisplayFor(modelItem => item.cierredecasoVM.ComoConcluyo)">
                             <i class="fa fa-paperclip fa-9x"></i>
                         </a>
                     }
