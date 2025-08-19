@@ -4040,9 +4040,8 @@ namespace scorpioweb.Models
 
             var sinFechaSeguimiento = tables
                 .Where(t => t.planeacionestrategicaclVM.InformeSeguimiento == null &&
-                t.planeacionestrategicaclVM.EstadoInfInicial == 1 &&
-                t.supervisionclVM.EstadoSupervision == "VIGENTE" &&
-                t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA")
+                t.planeacionestrategicaclVM.EstadoInfInicial == 0 || t.planeacionestrategicaclVM.EstadoInfInicial == null &&
+                t.supervisionclVM.EstadoSupervision == "VIGENTE")
                 .OrderBy(t => t.planeacionestrategicaclVM.InformeInicial)
                 .Select(t => new PlaneacionclWarningViewModel
                 {
@@ -4061,8 +4060,7 @@ namespace scorpioweb.Models
                 .Where(t => t.planeacionestrategicaclVM.InformeSeguimiento != null &&
                 t.planeacionestrategicaclVM.InformeSeguimiento < DateTime.Now.AddDays(30) &&
                 t.planeacionestrategicaclVM.EstadoInfInicial == 1 &&
-                t.supervisionclVM.EstadoSupervision == "VIGENTE" &&
-                t.beneficiosclVM.FiguraJudicial != "SUSTITUCION DE LA PENA")
+                t.supervisionclVM.EstadoSupervision == "VIGENTE")
                 .Select(t => new PlaneacionclWarningViewModel
                 {
                     personaclVM = t.personaclVM,

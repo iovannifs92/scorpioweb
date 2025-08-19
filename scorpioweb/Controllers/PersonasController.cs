@@ -2993,6 +2993,8 @@ namespace scorpioweb.Controllers
                 if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
                 {
                     var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
+                    var referenciaf =  _context.Asientofamiliar.First(m => m.PersonaIdPersona == id);
+
                     if (persona == null)
                     {
                         ViewBag.nombreRegistrado = null;
@@ -3003,12 +3005,17 @@ namespace scorpioweb.Controllers
                         ViewBag.NombreTabla = "persona";
                         ViewBag.nombreRegistrado = persona.NombreCompleto;
                         ViewBag.idRegistrado = persona.IdPersona;
+                        ViewBag.celular = persona.Celular;
                         ViewBag.esmcyscp = esmcyscp = true;
+                        ViewBag.celularF = referenciaf.Telefono;
+                        
                     }
                 }
                 else
                 {
                     var persona = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
+                    var referenciaf = _context.Asientofamiliarcl.First(m => m.PersonaClIdPersonaCl == id);
+
                     if (persona == null)
                     {
                         ViewBag.nombreRegistrado = null;
@@ -3019,7 +3026,10 @@ namespace scorpioweb.Controllers
                         ViewBag.NombreTabla = "personacl";
                         ViewBag.nombreRegistrado = persona.NombreCompleto;
                         ViewBag.idRegistrado = persona.IdPersonaCl;
+                        ViewBag.celular = persona.Celular;
                         ViewBag.escl = escl = true;
+                        ViewBag.celularF = referenciaf.Telefono;
+
                     }
                 }
             }

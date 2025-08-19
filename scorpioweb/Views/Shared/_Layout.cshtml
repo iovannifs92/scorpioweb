@@ -48,7 +48,7 @@
         //    //para alerta en signalR
         //    alert(name + " " + area)
         //});
-
+        //Alerta de barra de tiempo en la esquina superior derecha 
         connection.on("sendMessage", (message) => {
             //console.log(message)
             var audio = new Audio('Audio/Notifiacion1.mp3');
@@ -72,6 +72,7 @@
                 title: message
             });
         });
+        
 
         connection.on("alertCierreCaso", (message) => {
             var audio = new Audio('Audio/Notifiacion1.mp3');
@@ -92,6 +93,27 @@
             });
             audio.play();
         });
+        //Alera con datos de la persona paera vista en vivulacion
+        connection.on("fichadedatos", (data) => {
+          console.log("Datos recibidos:", data); // <-- para verificar
+          var audio = new Audio('Audio/Notifiacion1.mp3');
+          audio.play();
+
+          Swal.fire({
+            title: `Proceso de canalización`,
+            html: `
+              <p><strong>Area:</strong> ${data.area ?? ''}</p>
+              <p><strong>Nombre:</strong> ${data.nombre} ${data.apellidoPaterno} ${data.apellidoMaterno}</p>
+              <p><strong>Teléfono:</strong> ${data.telefono ?? ''}</p>
+            `,
+            imageUrl: data.foto,
+            imageHeight: 300,
+            imageAlt: "Foto de la persona"
+          });
+        });
+
+        
+
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

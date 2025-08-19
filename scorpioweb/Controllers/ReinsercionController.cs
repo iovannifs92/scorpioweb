@@ -508,14 +508,58 @@ namespace scorpioweb.Controllers
 
             if (ModelState.IsValid)
             {
-                foreach (var rol in roles)
+                object personaData = null;
+
+                var tabla = (reinsercion.Tabla ?? "").ToLowerInvariant();
+                var id = int.Parse(reinsercion.IdTabla);
+
+                if (tabla == "persona")
                 {
-                    if (rol != "Vinculacion")
+                    var persona = _context.Persona.SingleOrDefault(m => m.IdPersona == id);
+                    if (persona != null)
                     {
-                        await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", "Hay una nueva canalizacion");
+                        personaData = new
+                        {
+                            Area = "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL POROCESO",
+                            Nombre = persona.Nombre,
+                            ApellidoPaterno = persona.Paterno,
+                            ApellidoMaterno = persona.Materno,
+                            Telefono = persona.Celular,
+                            Foto = Url.Content("~/Fotos/" + persona.rutaFoto) // verifica el nombre exacto del campo
+                        };
+                    }
+                }
+                else if (tabla == "personacl")
+                {
+                    var personacl = _context.Personacl.SingleOrDefault(m => m.IdPersonaCl == id);
+                    if (personacl != null)
+                    {
+                        personaData = new
+                        {
+                            Area = "LIBERTAD CONDICIONADA",
+                            Nombre = personacl.Nombre,
+                            ApellidoPaterno = personacl.Paterno,
+                            ApellidoMaterno = personacl.Materno,
+                            Telefono = personacl.Celular,
+                            Foto = Url.Content("~/Fotoscl/" + personacl.RutaFoto)
+                        };
                     }
                 }
 
+                if (personaData != null)
+                {
+                    foreach (var rol in roles)
+                    {
+                        if (rol != "Vinculacion")
+                        {
+                            await _hubContext.Clients.Group("nuevaCanalizacion")
+                                .SendAsync("fichadedatos", personaData); // <-- manda el OBJETO
+                        }
+                    }
+                }
+            
+
+                //SE MANDA LLAMAR EL METODO QUE 
                 int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
 
                 if (idReinsercionObtenido == 0)
