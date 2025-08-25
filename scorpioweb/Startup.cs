@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.EMMA;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Internal;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.WebEncoders;
+using MySql.Data.MySqlClient;
+using scorpioweb.Class;
 using scorpioweb.Data;
 using scorpioweb.Models;
 using scorpioweb.Services;
-using Microsoft.AspNetCore.Authorization;
-using MySql.Data.MySqlClient;
-using Microsoft.Extensions.WebEncoders;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
-using Microsoft.AspNetCore.Internal;
-using DocumentFormat.OpenXml.EMMA;
-using Microsoft.AspNetCore.SignalR;
-using scorpioweb.Class;
 namespace scorpioweb
 {
     public class Startup
@@ -32,6 +33,7 @@ namespace scorpioweb
         public IConfiguration Configuration { get; }
 
 
+      
         public void ConfigureServices(IServiceCollection services)
         {
             var conexion = Configuration.GetConnectionString("DefaultConnection");
@@ -65,6 +67,12 @@ namespace scorpioweb
             //    options.SlidingExpiration = true;
             //});
             services.AddSignalR();
+
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 314572800;// 300 MB
+            });
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

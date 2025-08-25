@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -25,13 +27,20 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Utilities;
+using SautinSoft.Document;
+using SautinSoft.Document.Drawing;
 using scorpioweb.Class;
 using scorpioweb.Migrations.ApplicationDb;
 using scorpioweb.Models;
 using Syncfusion.EJ2.Linq;
+using Syncfusion.Pdf.Graphics;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Picture = SautinSoft.Document.Drawing.Picture;
+using Size = SautinSoft.Document.Drawing.Size;
+
 
 
 
@@ -557,7 +566,7 @@ namespace scorpioweb.Controllers
                         }
                     }
                 }
-            
+
 
                 //SE MANDA LLAMAR EL METODO QUE 
                 int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
@@ -1189,6 +1198,320 @@ namespace scorpioweb.Controllers
             return View();
         }
 
+
+
+        #endregion
+
+        #region -Creacion de Carnet-
+
+   
+        [HttpGet]
+        public async Task<IActionResult> BuscarCarnet(int Id, string Area, string Institucion)
+        {
+            // Este metodo se accede desde el menu de reinsercion al presionar el boton de crear carnet ADULTOS
+            // aqui solo obtenemos los datos de la persona recibiendo 3 parametros el id, el area Y LA INSTITUCION
+            if (string.IsNullOrEmpty(Area) || string.IsNullOrEmpty(Id.ToString()))
+                return Json(new { success = false, message = "ERROR GENERAL: " });
+            object result;
+            switch (Area)
+            {
+                case "MCYSCP":
+                    try
+                    {
+                        //Primero obtienes a la persona
+                        var persona = await _context.Persona.Where(p => p.IdPersona == Id).
+                            Select(p => new
+                            {
+                                IdPersona = p.IdPersona,
+                                Nombre = p.NombreCompleto,
+                                Telefono = string.IsNullOrEmpty(p.Celular) ? "NA" : p.Celular,
+                                RutaFoto = $"/Fotos/{p.rutaFoto}",
+                                AreaPersona = Area,
+                                Institucion = Institucion,
+                                EsAdolescente = false
+                            }).
+                            FirstOrDefaultAsync();
+
+                        if (persona == null)
+                            result = new { error = true, message = "Error: Persona no encontrada" };
+                        else
+                        {
+                            //despues buscas posibles familiares para contacto
+                            var familiares = await _context.Asientofamiliar
+                                .Where(af => af.PersonaIdPersona == Id)
+                                .Select(af => new
+                                {
+                                    NombreFamiliar = af.Nombre,
+                                    TelefonoFamiliar = af.Telefono,
+                                    RelacionFamliar = af.Relacion
+                                }).ToListAsync();
+
+                            var familiaresForaneos = await _context.Familiaresforaneos
+                                .Where(ff => ff.PersonaIdPersona == Id)
+                                .Select(ff => new
+                                {
+                                    NombreFamiliarForaneo = ff.Nombre,
+                                    TelefonoFamliarForaneo = ff.Telefono,
+                                    RelacionFamiliarForaneo = ff.Relacion
+                                }).ToListAsync();
+
+                            result = new
+                            {
+                                success = true,
+                                datos = new
+                                {
+                                    persona.IdPersona,
+                                    persona.Nombre,
+                                    persona.Telefono,
+                                    persona.RutaFoto,
+                                    persona.Institucion,
+                                    persona.AreaPersona,
+                                    persona.EsAdolescente,
+                                    Familiares = familiares,
+                                    FamiliaresForaneos = familiaresForaneos
+                                }
+                            };
+                        }
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        result = new { error = true, message = "Consulta inválida: " + ex.Message };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        result = new { error = true, message = "Error de base de datos: " + ex.Message };
+                    }
+                    catch (SqlException ex)
+                    {
+                        result = new { error = true, message = "Error de SQL: " + ex.Message };
+                    }
+                    catch (Exception ex)
+                    {
+                        result = new { error = true, message = "Error general: " + ex.Message };
+                    }
+
+                    break;
+                case "LIBERTAD":
+                    try
+                    {
+                        var personaCL = await _context.Personacl.Where(p => p.IdPersonaCl == Id).
+                         Select(p => new
+                         {
+                             IdPersona = p.IdPersonaCl,
+                             Nombre = p.NombreCompleto,
+                             Telefono = string.IsNullOrEmpty(p.Celular) ? "NA" : p.Celular,
+                             RutaFoto = $"/Fotoscl/{p.RutaFoto}",
+                             AreaPersona = Area,
+                             Institucion = Institucion,
+                             EsAdolescente = false
+                         }).
+                         FirstOrDefaultAsync();
+
+                        if (personaCL == null)
+                            result = new { error = true, message = "Error : Persona no encontrada" };
+                        else
+                        {
+                            var familiares = await _context.Asientofamiliar
+                                .Where(af => af.PersonaIdPersona == Id)
+                                .Select(af => new
+                                {
+                                    NombreFamiliar = af.Nombre,
+                                    TelefonoFamiliar = af.Telefono,
+                                    RelacionFamliar = af.Relacion
+                                }).ToListAsync();
+
+                            var familiaresForaneos = await _context.Familiaresforaneoscl
+                                .Where(ff => ff.PersonaClIdPersonaCl == Id)
+                                .Select(ff => new
+                                {
+                                    NombreFamiliarForaneo = ff.Nombre,
+                                    TelefonoFamliarForaneo = ff.Telefono,
+                                    RelacionFamiliarForaneo = ff.Relacion
+                                }).ToListAsync();
+
+                            result = new
+                            {
+                                success = true,
+                                datos = new
+                                {
+                                    personaCL.IdPersona,
+                                    personaCL.Nombre,
+                                    personaCL.Telefono,
+                                    personaCL.RutaFoto,
+                                    personaCL.Institucion,
+                                    personaCL.AreaPersona,
+                                    personaCL.EsAdolescente,
+                                    Familiares = familiares,
+                                    FamiliaresForaneos = familiaresForaneos
+                                }
+                            };
+                        }
+
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        result = new { error = true, message = "Consulta inválida: " + ex.Message };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        result = new { error = true, message = "Error de base de datos: " + ex.Message };
+                    }
+                    catch (SqlException ex)
+                    {
+                        result = new { error = true, message = "Error de SQL: " + ex.Message };
+                    }
+                    catch (Exception ex)
+                    {
+                        result = new { error = true, message = "Error general: " + ex.Message };
+                    }
+
+                    break;
+                default:
+                    result = new { error = true, message = "Error general: No se reciben datos de id ni area" };
+                    break;
+            }
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CrearCarnet([FromForm] PersonaCarnetViewModel data)
+        {
+            //EN ESTE METODO SE RECIBEN LAS SOLICITUDES PARA CREAR UN CARNET, TANTO PARA ADULTOS Y ADOLESCENTES 
+            if (data == null)
+            {
+                return BadRequest(new { error = true, message = "No se recibieron datos" });
+            }
+            DocumentCore dc = new DocumentCore();
+            if (!data.EsAdolescente)
+            {
+
+                string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateCarnetVin.docx";
+                string resultPath = this._hostingEnvironment.WebRootPath + $"\\Documentos\\CarnetAdulto.docx";
+
+                dc = DocumentCore.Load(templatePath);
+                var primerFamiliar = data.Familiares?.FirstOrDefault();
+
+                try
+                {
+                    if (!System.IO.File.Exists(templatePath))
+                        throw new FileNotFoundException("Template no encontrado", templatePath);
+
+                    var dataSource = new[] {
+                        new {
+                            nombreCompleto = data.Nombre ?? "N/A",
+                            numTelefono = data.Telefono ?? "N/A",
+                            nombreFamiliar = primerFamiliar?.NombreFamiliar ?? "Sin familiares",
+                            numTelRF = primerFamiliar?.TelefonoFamiliar ?? "N/A",
+                            institucion = data.Institucion ?? "N/A",
+                            area = data.AreaPersona ?? "N/A"
+                        }
+                    };
+
+                    dc.MailMerge.FieldMerging += (sender, e) => {
+                        if (e.FieldName == "foto"){ 
+                            e.Inlines.Clear();
+                            e.Inlines.Add(new Picture(dc, this._hostingEnvironment.WebRootPath + data.RutaFoto) { Layout = new InlineLayout(new Size(150, 150)) });
+                            e.Cancel = false;
+                        } 
+                    };
+                    dc.MailMerge.Execute(dataSource);
+
+                    dc.Save(resultPath);
+                    //Response.Redirect($"https://localhost:44359/Documentos/CarnetAdulto.docx");
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Carnet creado exitosamente!",
+                        url = $"http://10.6.60.190//Documentos/CarnetAdulto.docx"
+                    });
+                }
+                catch (FileNotFoundException fnfEx)
+                {
+                    return Json(new { success = false, message = "Archivo no encontrado: Imagen no encontrada en el servidor "});
+                }
+                catch (ArgumentNullException argEx)
+                {
+                    return Json(new { success = false, message = "Valor nulo: " + argEx.Message });
+                }
+                catch (Exception ex)
+                {
+                    string messageError = ex.Message;
+                    if (ex.Message.Contains("Foto"))
+                        messageError = "Imagen no encontrada en el servidor";
+                    return Json(new { success = false, message = "Error general: " + messageError});
+                }
+
+            }
+            else
+            {
+                string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateCarnetAdole.docx";
+                string resultPath = this._hostingEnvironment.WebRootPath + $"\\Documentos\\CarnetAdolescente.docx";
+                dc = DocumentCore.Load(templatePath);
+                try
+                {
+                    if (!System.IO.File.Exists(templatePath))
+                        throw new FileNotFoundException("Template no encontrado", templatePath);
+
+                    dc = DocumentCore.Load(templatePath);
+                    var dataSource = new[] {
+                        new {
+                             nombreCompleto = data.Nombre,
+                             numTelefono = data.Telefono,
+                             nombreTutor = data.Tutor,
+                             Telefono = data.Telefono,
+                             institucion = data.Institucion,
+                             area = data.AreaPersona
+                        }
+                    };
+                    dc.MailMerge.FieldMerging += (sender, e) =>
+                    {
+                        if (e.FieldName == "foto")
+                        {
+                            e.Inlines.Clear();
+
+                            if (data.Foto != null && data.Foto.Length > 0)
+                            {
+                                using (var stream = data.Foto.OpenReadStream())
+                                {
+                                    var picture = new Picture(dc, stream)
+                                    {
+                                        Layout = new InlineLayout(new Size(150, 150))
+                                    
+                                    };
+
+                                    e.Inlines.Add(picture);
+                                }
+                            }
+
+                            e.Cancel = false;
+                        }
+                    };
+                    dc.MailMerge.Execute(dataSource);
+
+
+                    dc.Save(resultPath);
+                    //Response.Redirect($"https://localhost:44359/Documentos/CarnetAdolescente.docx");
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Carnet creado exitosamente!",
+                        url = $"http://10.6.60.190/Documentos/CarnetAdolescente.docx"
+                    });
+                }
+                catch (FileNotFoundException fnfEx)
+                {
+                    return Json(new { success = false, message = "Archivo no encontrado: Imagen no encontrada en el servidor " });
+                }
+                catch (ArgumentNullException argEx)
+                {
+                    return Json(new { success = false, message = "Valor nulo: " + argEx.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, message = "Error general: " + ex.Message });
+                }
+            }
+        }
         #endregion
 
         #region -Menu Supervision-
@@ -1669,10 +1992,10 @@ namespace scorpioweb.Controllers
                                        terapeutasVM = tp
                                    };
 
-            var NumeroAsistentes = from g in _context.Grupo 
+            var NumeroAsistentes = from g in _context.Grupo
                                    join t in _context.Terapia on g.IdGrupo equals t.GrupoIdGrupo into GrupoTerapia
-                                   from gt in GrupoTerapia.DefaultIfEmpty()  
-                                   where gt.Estado.Equals("ACTIVO") || gt.IdTerapia ==0
+                                   from gt in GrupoTerapia.DefaultIfEmpty()
+                                   where gt.Estado.Equals("ACTIVO") || gt.IdTerapia == 0
                                    group gt by g.IdGrupo into grouped
                                    select new
                                    {
@@ -1719,7 +2042,7 @@ namespace scorpioweb.Controllers
             {
                 ViewBag.IdPsicologoSeleccionado = IdPsicologo;
                 ViewBag.NombrePsicologoSeleccionado = Terapeutas.Where(m => m.IdTerapeutas.ToString() == IdPsicologo)
-                                                       .Select(m => m.Nombre +" "+ m.Paterno + " "+ m.Materno).FirstOrDefault();
+                                                       .Select(m => m.Nombre + " " + m.Paterno + " " + m.Materno).FirstOrDefault();
             }
 
 
@@ -1732,7 +2055,7 @@ namespace scorpioweb.Controllers
             return View();
         }
 
-        public IActionResult ListaDia(int idgrupo,string NombreGrupo)
+        public IActionResult ListaDia(int idgrupo, string NombreGrupo)
         {
 
             ViewBag.NombreGRupo = NombreGrupo;
