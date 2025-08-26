@@ -2987,13 +2987,14 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
             bool escl = false;
             bool esmcyscp = false;
-
+            List<Estados> estados = _context.Estados.ToList();
+            ViewBag.Estados = _context.Estados.Select(e => new { e.Id, e.Estado }).ToList();
             foreach (var rol in roles)
             {
                 if (rol == "AdminMCSCP" || rol == "SupervisorMCSCP" || rol == "AuxiliarMCSCP" || rol == "ArchivoMCSCP")
                 {
                     var persona = await _context.Persona.SingleOrDefaultAsync(m => m.IdPersona == id);
-                    var referenciaf =  _context.Asientofamiliar.First(m => m.PersonaIdPersona == id);
+                    var referenciaf =  _context.Asientofamiliar.FirstOrDefault(m => m.PersonaIdPersona == id);
 
                     if (persona == null)
                     {
@@ -3001,20 +3002,21 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
+                        ViewBag.Rutafoto = Url.Content("~/Fotos/" + persona.rutaFoto);
                         ViewBag.ControllerName = "Personas";
-                        ViewBag.NombreTabla = "persona";
+                        ViewBag.NombreTabla = "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL PROCESO";
                         ViewBag.nombreRegistrado = persona.NombreCompleto;
                         ViewBag.idRegistrado = persona.IdPersona;
-                        ViewBag.celular = persona.Celular;
+                        ViewBag.celular = persona?.Celular ?? "NA";
                         ViewBag.esmcyscp = esmcyscp = true;
-                        ViewBag.celularF = referenciaf.Telefono;
-                        
+                        ViewBag.celularF = referenciaf?.Telefono ?? "NA";
+                        ViewBag.CURP = persona?.Curp ?? "NA";
                     }
                 }
                 else
                 {
                     var persona = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
-                    var referenciaf = _context.Asientofamiliarcl.First(m => m.PersonaClIdPersonaCl == id);
+                    var referenciaf = _context.Asientofamiliar.FirstOrDefault(m => m.PersonaIdPersona == id);
 
                     if (persona == null)
                     {
@@ -3022,14 +3024,15 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
+                        ViewBag.Rutafoto = Url.Content("~/Fotoscl/" + persona.RutaFoto);
                         ViewBag.ControllerName = "Personascls";
-                        ViewBag.NombreTabla = "personacl";
+                        ViewBag.NombreTabla = "LIBERTAD CONDICIONADA";
                         ViewBag.nombreRegistrado = persona.NombreCompleto;
                         ViewBag.idRegistrado = persona.IdPersonaCl;
-                        ViewBag.celular = persona.Celular;
+                        ViewBag.celular = persona?.Celular ?? "NA";
                         ViewBag.escl = escl = true;
-                        ViewBag.celularF = referenciaf.Telefono;
-
+                        ViewBag.celularF = referenciaf?.Telefono ?? "NA";
+                        ViewBag.CURP = persona?.Curp ?? "NA";
                     }
                 }
             }
