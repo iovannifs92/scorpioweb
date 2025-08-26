@@ -1376,6 +1376,7 @@ namespace scorpioweb.Controllers
         [HttpPost]
         public async Task<IActionResult> CrearCarnet([FromForm] PersonaCarnetViewModel data)
         {
+            //
             //EN ESTE METODO SE RECIBEN LAS SOLICITUDES PARA CREAR UN CARNET, TANTO PARA ADULTOS Y ADOLESCENTES 
             if (data == null)
             {
