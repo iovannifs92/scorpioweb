@@ -1,178 +1,385 @@
 ﻿@{
-    ViewData["Title"] = "Menu reinsercion";
-    Layout = "/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Menu reinsercion";
+	Layout = "/Views/Shared/_Layout.cshtml";
 }
 
 
 <style>
-    .buttons a {
-        text-decoration: none;
-        font-size: 28px;
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
-        text-align: center;
-        color: #f1f1f1;
-        border-radius: 50%;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
-        transition: all .4s ease-in-out;
-    }
 
-        .buttons a:hover {
-            transform: scale(1.2);
-        }
+	#seccionBotones {
+		margin-top: 10px;
+		justify-content: flex-end;
+		display: flex;
+		gap: 15px;
+		margin-bottom: 20px;
+	}
 
-    #agenda {
-        background: #314652;
-        margin-left: 20px;
-    }
+	.button-27 {
+		appearance: none;
+		border-radius: 15px;
+		box-sizing: 8px 8px;
+		color: #FFFFFF;
+		cursor: pointer;
+		display: inline-block;
+		font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+		font-size: 20px;
+		font-weight: 500;
+		line-height: normal;
+		margin: 0;
+		min-height: 30px;
+		outline: none;
+		padding: 8px 16px;
+		text-align: center;
+		text-decoration: none;
+		transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		will-change: transform;
+	}
 
-    #calendario {
-        background: #00B812;
-        margin-left: 20px;
-    }
+		.button-27:disabled {
+			pointer-events: none;
+		}
 
-    #mensajeSistema {
-        background: #0078A7;
-        margin-left: 20px;
-    }
+		.button-27:hover {
+			box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+			transform: translateY(-2px);
+		}
 
-    #libronegro {
-        background: #fff;
-        margin-left: 20px;
-    }
+		.button-27:active {
+			box-shadow: none;
+			transform: translateY(0);
+		}
 
-    #seccionBotones {
-        padding-top: 1em;
-    }
+		.button-27.contacto {
+			background-color: #78899E;
+			border: 2px solid #93A5C2;
+		}
+
+		.button-27.carnet {
+			background-color: #1687F2;
+			border: 1px solid #64AFFA;
+		}
 
 </style>
-
-<script>
-    function openFullScreenWindow() {
-        const screenWidth = window.screen.availWidth;
-        const screenHeight = window.screen.availHeight;
-
-        const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
-    }
-</script>
-
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-@*@if (ViewBag.WarningsUser > 0)
-{
-    <a href="/Archivo/ArchivoPrestamoDigital" class="link-archivo">
-        <h3 style="text-align:right; color:blue">Tu solicitud fue atendida</h3>
-    </a>
-
-}*@
-
-@*<script src="~/lib/Microsoft/dist/browser/signalr.js"></script>*@
-@*#region "SIGNALR"*@
-@*<script>
-
-   var cone = new signalR.HubConnectionBuilder().withUrl("/HubNotificacion").build();
-
-    cone.start().then(function () {
-        console.log("Conexion exitosa");
-    }).catch(function (err) {
-        console.log(err)
-    });
-
-    cone.on("Recive", function (Nombre, Materno) {
-        let divname = documet.createElement("div")
-        divname.textContent = Nombre + " " + Materno;
-        documen.getElementById("divnames").appendChild(divname)
-    })
-
-</script>*@
-@*#endregion*@
 <div>
-    <h1 style="font-family: cursive; text-align:center;">🤗 Vinculación 🤗</h1>
+	<h1 style="font-family: cursive; text-align:center;">🤗 Vinculación 🤗</h1>
 </div>
 <div class="card-group" style="padding-top:2%">
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
-    {
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Reinsercion" asp-action="Reinsercion">
-                        <img class="card-img-top" src="~/images/care.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas que ya cuentan con algun servicio de canalizacion" />
-                        Personas canalizadas
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Personas que ya cuentan con algun servicio de canalizacion
-                </p>
-            </div>
-        </div>
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Reinsercion" asp-action="Index">
-                        <img class="card-img-top" src="~/images/book.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas registradas en las áreas de Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada">
-                        Personas por canalizar
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Canalizar personas registradas en las áreas de Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada.
-                </p>
-            </div>
-        </div>
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Reinsercion" asp-action="AgregarExternado">
-                        <img class="card-img-top" src="~/images/externo.png" alt="Card image cap" style="padding-bottom:5%;" title="Agregar externados">
-                        Agregar externado
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Agregar y canalizar personas ajenas a algun proceso las cuales acuden para solicitar un servicio por su cuenta.
-                </p>
-            </div>
-        </div>
-    }
+	@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
+	{
+		<div class="col-sm-3 col-md-3 card text-center">
+			<div class="card-body">
+				<h4 class="card-title">
+					<a asp-controller="Reinsercion" asp-action="Reinsercion">
+						<img class="card-img-top" src="~/images/care.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas que ya cuentan con algun servicio de canalizacion" />
+						Personas canalizadas
+					</a>
+				</h4>
+				<p class="card-text">
+					Personas que ya cuentan con algun servicio de canalizacion
+				</p>
+			</div>
+		</div>
+		<div class="col-sm-3 col-md-3 card text-center">
+			<div class="card-body">
+				<h4 class="card-title">
+					<a asp-controller="Reinsercion" asp-action="Index">
+						<img class="card-img-top" src="~/images/book.png" alt="Card image cap" style="padding-bottom:5%;" title="Personas registradas en las áreas de Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada">
+						Personas por canalizar
+					</a>
+				</h4>
+				<p class="card-text">
+					Canalizar personas registradas en las áreas de Medidas Cautelares, Suspensión Condicional del Proceso y Libertad Condicionada.
+				</p>
+			</div>
+		</div>
+		<div class="col-sm-3 col-md-3 card text-center">
+			<div class="card-body">
+				<h4 class="card-title">
+					<a asp-controller="Reinsercion" asp-action="AgregarExternado">
+						<img class="card-img-top" src="~/images/externo.png" alt="Card image cap" style="padding-bottom:5%;" title="Agregar externados">
+						Agregar externado
+					</a>
+				</h4>
+				<p class="card-text">
+					Agregar y canalizar personas ajenas a algun proceso las cuales acuden para solicitar un servicio por su cuenta.
+				</p>
+			</div>
+		</div>
+	}
 
 
-    @if (ViewBag.AlertasCount != 0)
-    {
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Reinsercion" asp-action="AlertasReinsercion">
-                        <img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" style="padding-bottom:5%;">
-                        Alertas <span class="badge" style="background-color:red"> @ViewBag.AlertasCount</span>
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Usuarios que terminaron su supervision hace no mas de un mes.
-                </p>
-            </div>
-        </div>
-    }
+	@if (ViewBag.AlertasCount != 0)
+	{
+		<div class="col-sm-3 col-md-3 card text-center">
+			<div class="card-body">
+				<h4 class="card-title">
+					<a asp-controller="Reinsercion" asp-action="AlertasReinsercion">
+						<img class="card-img-bottom" src="~/images/warning.png" alt="Card image cap" style="padding-bottom:5%;">
+						Alertas <span class="badge" style="background-color:red"> @ViewBag.AlertasCount</span>
+					</a>
+				</h4>
+				<p class="card-text">
+					Usuarios que terminaron su supervision hace no mas de un mes.
+				</p>
+			</div>
+		</div>
+	}
 
-    @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
-    {
-        <div class="col-sm-3 col-md-3 card text-center">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a asp-controller="Reinsercion" asp-action="MenuPsicologia">
-                        <img class="card-img-top" src="~/images/MenuPsicologia.png" alt="Card image cap" style="padding-bottom:5%;" title="Psicologia. Grupos, listas y asistencias" />
-                        Menu Psicologia
-                    </a>
-                </h4>
-                <p class="card-text">
-                    Dirigirse al menu de psicologia
-                </p>
-            </div>
-        </div>
-    }
+	@if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
+	{
+		<div class="col-sm-3 col-md-3 card text-center">
+			<div class="card-body">
+				<h4 class="card-title">
+					<a asp-controller="Reinsercion" asp-action="MenuPsicologia">
+						<img class="card-img-top" src="~/images/MenuPsicologia.png" alt="Card image cap" style="padding-bottom:5%;" title="Psicologia. Grupos, listas y asistencias" />
+						Menu Psicologia
+					</a>
+				</h4>
+				<p class="card-text">
+					Dirigirse al menu de psicologia
+				</p>
+			</div>
+		</div>
+	}
 </div>
-<div class="bg-light clearfix" id="seccionBotones">
-    <section class="buttons" style="padding-right: 1em;">
-        <a onclick="openFullScreenWindow()" class="fa fa-address-book float-right" id="agenda" title="Contactos"></a>
-    </section>
+<div id="seccionBotones">
+	<section>
+		<a onclick="openFullScreenWindow();" class="button-27 contacto" id="agenda" title="Contactos"><i class="fa fa-address-book float-right">&nbsp;Contactos</i></a>
+	</section>
+	<section>
+		<a onclick="BuscarCarnet();" class="button-27 carnet" id="CarnetServicio" title="Carnet de servicios"><i class="fa fa-book float-right">&nbsp;Carnet adultos</i></a>
+	</section>
+	<section>
+		<a onclick="CarnetAdolescente();" class="button-27 carnet" id="CarnetAdolescente" title="Carnet de adolescentes"><i class="fa fa-book float-right">&nbsp;Carnet adolescentes</i></a>
+	</section>
 </div>
 
+<script>
+	function openFullScreenWindow() {
+		const screenWidth = window.screen.availWidth;
+		const screenHeight = window.screen.availHeight;
 
+		const newWindow = window.open("/Personas/Contacto", "_blank", `fullscreen=yes,toolbar=yes,scrollbars=yes,resizable=yes,width=${screenWidth},height=${screenHeight}`);
+	}
+	function BuscarCarnet() {
+
+		//PRIMERO SOLICITAMOS LOS DATOS  PARA BUSCAR A LA PERSONA ADULTA
+		Swal.fire({
+			title: "Buscar persona",
+			html: `
+				<div>
+					<label class="control-label">Id</label>
+					<input required id="Id" type="text" class="form-control"/>
+					<label class="control-label">Institución de canalización</label>
+					<input required id="Institucion" type="text" class="form-control"/>
+					<label class="control-label">Area</label>
+					<select class="form-control" id="Area">
+						<option value="MCYSCP">MC y SCP</option>
+						<option value="LIBERTAD">Libertad Condicionada</option>
+					</select>
+				</div>
+				<div id="swal-validation-area" style="margin-top:10px;"></div>
+			`,
+			showCancelButton: true,
+			confirmButtonText: "Buscar",
+			cancelButtonText: "Cancelar",
+			cancelButtonColor: "#d33",
+			focusConfirm: false,
+			preConfirm: () => {
+				//AQUI SE ACCEDE ANTES DE CONTINUAR CON LA FUNCION AJAX
+				const Id = document.getElementById('Id').value;
+				const Area = document.getElementById('Area').value;
+				const Institucion = document.getElementById('Institucion').value;
+
+				//SI NO ESTAN COMPLETOS SE RETORNA LA FUNCION SOLICITANDO QUE LOS LLENEN
+				if (!Id || !Area || !Institucion) {
+					Swal.showValidationMessage('Llena los campos para continuar!');
+					return false;
+				}
+				//ANIMACION DE BUSCANDO
+				Swal.showValidationMessage(`
+					<div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+						<div class="swal2-loader"></div> Buscando...
+					</div>
+				`);
+				//SI TODO ES CORRECTO Y NO FALTA NINGUN DATO LLEGA AQUI PARA BUSCAR Y SE VA AL CONTROLADOR
+				return $.ajax({
+					url: '/Reinsercion/BuscarCarnet',
+					type: 'GET',
+					data: { Id: Id, Area: Area, Institucion : Institucion },
+					success: function(response) {
+						//SI HAY UN ERROR EN EL CONTROLADOR
+						if (response.error) {
+							Swal.fire('Error', response.message, 'error');
+							return;
+						}
+
+						//SI TODO ESTA BIEN SE CIERRA ESTE MODAL
+						Swal.close();
+						//LOS DATOS DE LA RESPUESTA SE VAN AL SIGUIENTE METODO PARA CREAR EL CARNET
+						ConfirmacionCarnet(response.datos);
+					},
+					error: function(message) {
+						Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+					}
+				});
+			}
+		});
+	}
+	function ConfirmacionCarnet(data) {
+		Swal.fire({
+			title: 'Confirmación de Carnet',
+			html: `
+				<img src="${data.rutaFoto}" style="width:150px;height:150px;border-radius:8px;margin-bottom:10px;" />
+				<p>ID Persona: ${data.idPersona}</p>
+				<p>Nombre: ${data.nombre}</p>
+				<p>Teléfono: ${data.telefono}</p>
+				<p>Institución de canalización: ${data.institucion}</p>
+				<p>Area: ${data.areaPersona}</p>
+				<p>Familiares: ${data.familiares.length}</p>
+				<p>Familiares Foráneos: ${data.familiaresForaneos.length}</p>
+			`,
+			showCancelButton: true,
+			confirmButtonText: 'Crear',
+			confirmButtonColor: '#02bd05',
+			cancelButtonText: 'Cancelar',
+			cancelButtonColor: "#d33",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				//SI LOS DATOS SON CONFIRMADOS POR EL USUARIO SE TRANSFORMAN LOS DATOS A LA FORMA CORRECTA PARA EL METODO
+				//ESTO SE HACE POR QUE EN EL METODO CrearCarnet SE ESPERA UN MODELO DEL TIPO [FromForm]
+				const formData = new FormData();
+
+				//NOTA LAS COSAS ENTRE COMILLAS DEBEN DE SER IGUAL QUE LOS NOMBRE DEL MODELO PersonaCarnetViewModel SI NO VAN A ESTAR VACIOS
+				formData.append("IdPersona", data.idPersona);
+				formData.append("Nombre", data.nombre);
+				formData.append("Telefono", data.telefono);
+				formData.append("Institucion", data.institucion);
+				formData.append("AreaPersona", data.areaPersona);
+				formData.append("RutaFoto",data.rutaFoto);
+				formData.append("EsAdolescente", data.esAdolescente || false);
+
+				// Listas (Familiares)
+				if (Array.isArray(data.familiares)) {
+					data.familiares.forEach((familiar, index) => {
+						formData.append(`Familiares[${index}].NombreFamiliar`, familiar.nombreFamiliar);
+						formData.append(`Familiares[${index}].TelefonoFamiliar`, familiar.telefonoFamiliar);
+						formData.append(`Familiares[${index}].RelacionFamliar`, familiar.relacionFamliar);
+					});
+				}
+
+				// Listas (FamiliaresForaneos)
+				if (Array.isArray(data.familiaresForaneos)) {
+					data.familiaresForaneos.forEach((familiar, index) => {
+						formData.append(`FamiliaresForaneos[${index}].NombreFamiliarForaneo`, familiar.nombreFamiliarForaneo);
+						formData.append(`FamiliaresForaneos[${index}].TelefonoFamliarForaneo`, familiar.telefonoFamliarForaneo);
+						formData.append(`FamiliaresForaneos[${index}].RelacionFamiliarForaneo`, familiar.relacionFamiliarForaneo);
+					});
+				}
+
+				$.ajax({
+					url: '/Reinsercion/CrearCarnet',
+					type: 'POST',
+					data: formData,                // send FormData directly
+					contentType: false,            //son necesarios para manda la informacion correctamente // let browser set multipart/form-data
+					processData: false,            // do not stringify FormData
+					success: function(response) {
+						if (!response.success) {
+							Swal.fire('Error', response.message || 'Ocurrió un error', 'error');
+						} else {
+							Swal.fire('Éxito', response.message, 'success').then(() => {
+								window.open(response.url, '_blank');
+							});
+						}
+					},
+					error: function(xhr, status, error) {
+						Swal.fire('Error', 'No se pudo crear el carnet: ' + error, 'error');
+					}
+				});
+			}
+		});
+	}
+
+	function CarnetAdolescente(){
+			Swal.fire({
+			title: "Datos del adolescente",
+			html: `
+				<div>
+					<label for="foto">Fotografía</label>
+					<input type="file" id="FotoAdol" name="foto" accept="image/*" />
+					<label class="control-label">Nombre</label>
+					<input required id="NombreAdol" type="text" class="form-control"/>
+					<label class="control-label">Institución de canalización</label>
+					<input required id="InstitucionAdol" type="text" class="form-control"/>
+					<label class="control-label">Tutor</label>
+					<input required id="NombreTutor" type="text" class="form-control"/>
+					<label class="control-label">Teléfono de referencia</label>
+					<input required id="TelefonoAdol" type="text" class="form-control"/>
+				</div>
+				<div id="swal-validation-area" style="margin-top:10px;"></div>
+			`,
+			showCancelButton: true,
+			confirmButtonText: "Crear",
+			confirmButtonColor: "#02bd05",
+			cancelButtonText: "Cancelar",
+			cancelButtonColor: "#d33",
+			focusConfirm: false,
+			preConfirm: () => {
+				const fotoAdol = document.getElementById('FotoAdol').files[0];
+				const nombreAdol = document.getElementById('NombreAdol').value.trim();
+				const institucionAdol = document.getElementById('InstitucionAdol').value.trim();
+				const nombreTutor = document.getElementById('NombreTutor').value.trim();
+				const telefonoAdol = document.getElementById('TelefonoAdol').value.trim();
+
+				if (!fotoAdol || !nombreAdol || !institucionAdol || !nombreTutor || !telefonoAdol) {
+					Swal.showValidationMessage('Llena todos los campos para continuar!');
+					return false;
+				}
+				//NOTA LAS COSAS ENTRE COMILLAS DEBEN DE SER IGUAL QUE LOS NOMBRE DEL MODELO PersonaCarnetViewModel
+				//SI NO SE LLAMAN IGUAL, VAN A LLEGAR VACIOS
+				//ESTO SE HACE POR QUE EN EL METODO CrearCarnet SE ESPERA UN MODELO DEL TIPO [FromForm]
+				const formData = new FormData();
+				formData.append("Foto", document.getElementById("FotoAdol").files[0]);
+				formData.append("Nombre", document.getElementById("NombreAdol").value);
+				formData.append("Institucion", document.getElementById("InstitucionAdol").value);
+				formData.append("Tutor", document.getElementById("NombreTutor").value);
+				formData.append("Telefono", document.getElementById("TelefonoAdol").value);
+				formData.append("AreaPersona","ADOLESCENTE");
+				formData.append("EsAdolescente",true);
+
+
+				return formData;// lo lleva al then de abajo como result
+			}
+		}).then((result) => {
+
+			console.log(result.value);
+			if (result.isConfirmed) {
+					$.ajax({
+					url: '/Reinsercion/CrearCarnet',
+					type: 'POST',
+					data: result.value,        // send FormData directly
+					contentType: false,        // let browser set multipart/form-data
+					processData: false,        // do not stringify FormData
+					success: function(response) {
+						if (!response.success) {
+							Swal.fire('Error', response.message || 'Ocurrió un error', 'error');
+						} else {
+							Swal.fire('Éxito', response.message, 'success').then(() => {
+								window.open(response.url, '_blank');
+							});
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error("XHR:", xhr.responseText);
+						Swal.fire('Error', 'No se pudo crear el carnet: ' + error, 'error');
+					}
+				});
+			}
+		});
+	}
+
+</script>

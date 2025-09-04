@@ -2736,7 +2736,7 @@ MetodosGenerales mg = new MetodosGenerales();
                 case "diana.ontiveros@dgepms.com":
                     supervisor = "LIC. DIANA ONTIVEROS";
                     break;
-                case "isabel.almora@dgepms.com":
+                case "esmeralda.vargas@dgepms.com":
                     supervisor = "LIC. ANA ESMERALDA VARGAS ALVARADO";
                     break;
                 case "jesumartinez@dgepms.com":

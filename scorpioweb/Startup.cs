@@ -1,4 +1,10 @@
-﻿using DocumentFormat.OpenXml.EMMA;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
+using System.Threading.Tasks;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +41,7 @@ namespace scorpioweb
         public IConfiguration Configuration { get; }
 
 
+      
         public void ConfigureServices(IServiceCollection services)
         {
             var conexion = Configuration.GetConnectionString("DefaultConnection");

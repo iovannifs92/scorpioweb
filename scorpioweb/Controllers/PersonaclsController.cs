@@ -285,8 +285,16 @@ namespace scorpioweb.Models
             DateTime fechaInformeCoordinador = (DateTime.Today).AddDays(30);
             DateTime fechaHoy = DateTime.Today;
             var fechaProcesal = DateTime.Now.AddMonths(-6);
+            bool esCoordinadorAdmin = false;
             ViewBag.Warnings = 0;
-
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminLC" || rol == "Masteradmin")
+                {
+                    esCoordinadorAdmin = true;
+                    break;
+                }
+            }
 
             foreach (var rol in roles)
             {
@@ -295,281 +303,291 @@ namespace scorpioweb.Models
                     flagMaster = true;
                 }
             }
-
-
-            #region -To List databases-
-
-            List<Personacl> personaclVM = _context.Personacl.ToList();
-            List<Supervisioncl> supervisionclVM = _context.Supervisioncl.ToList();
-            List<Causapenalcl> causapenalclVM = _context.Causapenalcl.ToList();
-            List<Planeacionestrategicacl> planeacionestrategicaclVM = _context.Planeacionestrategicacl.ToList();
-            List<Beneficios> beneficiosclVM = _context.Beneficios.ToList();
-            List<Domiciliocl> domicilioclVM = _context.Domiciliocl.ToList();
-            List<Municipios> municipiosVM = _context.Municipios.ToList();
-            List<Estados> estadosVM = _context.Estados.ToList();
-            List<Personaclcausapenalcl> personacausapenalclVM = _context.Personaclcausapenalcl.ToList();
-
-
-
-            List<Beneficios> queryBeneficios = (from b in beneficiosclVM
-                                                group b by b.SupervisionclIdSupervisioncl into grp
-                                                select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
-            #endregion
-
-            #region -Jointables-
-
-            var sinResolucion = from p in personaclVM
-                                join d in domicilioclVM on p.IdPersonaCl equals d.PersonaclIdPersonacl
-                                join e in estadosVM on int.Parse(d.Estado) equals e.Id
-                                join m in municipiosVM on int.Parse(d.Municipio) equals m.Id
-                                where p.TieneResolucion == "NO" || p.TieneResolucion == "NA" || p.TieneResolucion is null
-                                select new PlaneacionclWarningViewModel
-                                {
-                                    personaclVM = p,
-                                    estadosVM = e,
-                                    municipiosVM = m,
-                                    tipoAdvertencia = "Sin Resolución"
-                                };
-
-            var leftJoin = from persona in personaclVM
-                           join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                           join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                           join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl into tmp
-                           from sinsupervision in tmp.DefaultIfEmpty()
-                           select new PlaneacionclWarningViewModel
-                           {
-                               personaclVM = persona,
-                               supervisionclVM = sinsupervision,
-                               municipiosVM = municipio,
-                               tipoAdvertencia = "Sin supervisión"
-                           };
-
-            var where = from ss in leftJoin
-                        where ss.supervisionclVM == null
-                        select new PlaneacionclWarningViewModel
-                        {
-                            personaclVM = ss.personaclVM,
-                            supervisionclVM = ss.supervisionclVM,
-                            municipiosVM = ss.municipiosVM,
-                            tipoAdvertencia = "Sin supervisión"
-                        };
-
-
-            var personasConSupervision = from persona in personaclVM
-                                         join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                                         join Beneficios in beneficiosclVM on supervision.IdSupervisioncl equals Beneficios.SupervisionclIdSupervisioncl
-                                         select new Supervisioncl
-                                         {
-                                             IdSupervisioncl = supervision.IdSupervisioncl
-                                         };
-
-
-            List<int> idSupervisiones = personasConSupervision.Select(x => x.IdSupervisioncl).Distinct().ToList();
-
-            var joins = from persona in personaclVM
-                        join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                        join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                        join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                        join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
-                        select new PlaneacionclWarningViewModel
-                        {
-                            personaclVM = persona,
-                            supervisionclVM = supervision,
-                            municipiosVM = municipio,
-                            causapenalclVM = causapenal,
-                            tipoAdvertencia = "Sin beneficio otorgado"
-                        };
-
-            var table = from persona in personaclVM
-                        join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                        join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                        join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                        join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
-                        join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
-                        join Beneficios in queryBeneficios on supervision.IdSupervisioncl equals Beneficios.SupervisionclIdSupervisioncl
-                        select new PlaneacionclWarningViewModel
-                        {
-                            personaclVM = persona,
-                            supervisionclVM = supervision,
-                            causapenalclVM = causapenal,
-                            planeacionestrategicaclVM = planeacion,
-                            beneficiosclVM = Beneficios,
-                            figuraJudicial = Beneficios.FiguraJudicial,
-                            municipiosVM = municipio
-                        };
-
-
-            if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
+          
+            List<PlaneacionclWarningViewModel> alertas = ObtenerAlertas();
+            if (!esCoordinadorAdmin)
             {
-                var warningPlaneacion = (where).Union
-                                        (sinResolucion).Union
-                                        (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
-                                        (from t in table
-                                        where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE"
-                                        orderby t.planeacionestrategicaclVM.InformeInicial
-                                        select new PlaneacionclWarningViewModel
-                                        {
-                                            personaclVM = t.personaclVM,
-                                            supervisionclVM = t.supervisionclVM,
-                                            municipiosVM = t.municipiosVM,
-                                            causapenalclVM = t.causapenalclVM,
-                                            planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                            beneficiosclVM = t.beneficiosclVM,
-                                            figuraJudicial = t.figuraJudicial,
-                                            tipoAdvertencia = "Informe fuera de tiempo"
-                                        }).Union
-                                        (from t in table
-                                            where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaControl && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA"
-                                            select new PlaneacionclWarningViewModel
-                                            {
-                                                personaclVM = t.personaclVM,
-                                                supervisionclVM = t.supervisionclVM,
-                                                municipiosVM = t.municipiosVM,
-                                                causapenalclVM = t.causapenalclVM,
-                                                planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                beneficiosclVM = t.beneficiosclVM,
-                                                figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                            }).Union
-                                        (from t in table
-                                            where t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE"
-                                            orderby t.beneficiosclVM.FiguraJudicial
-                                            select new PlaneacionclWarningViewModel
-                                            {
-                                                personaclVM = t.personaclVM,
-                                                supervisionclVM = t.supervisionclVM,
-                                                municipiosVM = t.municipiosVM,
-                                                causapenalclVM = t.causapenalclVM,
-                                                planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                beneficiosclVM = t.beneficiosclVM,
-                                                figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                tipoAdvertencia = "Sin fecha de informe"
-                                            }).Union
-                                        (from persona in personaclVM
-                                            join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                                            join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                                            join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                            join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
-                                            join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
-                                            where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                            select new PlaneacionclWarningViewModel
-                                            {
-                                                personaclVM = persona,
-                                                supervisionclVM = supervision,
-                                                municipiosVM = municipio,
-                                                causapenalclVM = causapenal,
-                                                planeacionestrategicaclVM = planeacion,
-                                                tipoAdvertencia = "Sin periodicidad de firma"
-                                            }).Union
-                                        (from t in table
-                                            where t.personaclVM.Supervisor != null && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaclVM.FechaProximoContacto != null && t.planeacionestrategicaclVM.FechaProximoContacto < fechaHoy && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA"
-                                            orderby t.planeacionestrategicaclVM.FechaProximoContacto descending
-                                            select new PlaneacionclWarningViewModel
-                                            {
-                                                personaclVM = t.personaclVM,
-                                                supervisionclVM = t.supervisionclVM,
-                                                municipiosVM = t.municipiosVM,
-                                                causapenalclVM = t.causapenalclVM,
-                                                planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                beneficiosclVM = t.beneficiosclVM,
-                                                figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                tipoAdvertencia = "Se paso el tiempo de la firma"
-                                            });
-                var warnings = Enumerable.Empty<PlaneacionclWarningViewModel>();
-                if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
-                {
-                    var filteredWarnings = from pwvm in warningPlaneacion
-                                           where pwvm.personaclVM.Supervisor != null && pwvm.personaclVM.Supervisor.EndsWith("\u0040dgepms.com")
-                                           select pwvm;
-                    warnings = warnings.Union(filteredWarnings);
-                }
-
-                ViewBag.Warnings = warnings.Count();
+                alertas = alertas
+                    .Where(m => m.personaclVM != null &&
+                                !string.IsNullOrEmpty(m.personaclVM.Supervisor) &&
+                                m.personaclVM.Supervisor.Equals(user.Email, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
-            else
-            {
-                var warningPlaneacion = (where.Where(s => s.personaclVM.Supervisor == usuario)).Union
-                                              (sinResolucion.Where(s => s.personaclVM.Supervisor == usuario)).Union
-                                              //(archivo).Union
-                                              (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.personaclVM.Supervisor == usuario && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
-                                                (from t in table
-                                                 where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE"
-                                                 orderby t.planeacionestrategicaclVM.InformeInicial
-                                                 select new PlaneacionclWarningViewModel
-                                                 {
-                                                     personaclVM = t.personaclVM,
-                                                     supervisionclVM = t.supervisionclVM,
-                                                     municipiosVM = t.municipiosVM,
-                                                     causapenalclVM = t.causapenalclVM,
-                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                     beneficiosclVM = t.beneficiosclVM,
-                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                     tipoAdvertencia = "Informe fuera de tiempo"
-                                                 }).Union
-                                                (from t in table
-                                                 where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaControl && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA"
-                                                 select new PlaneacionclWarningViewModel
-                                                 {
-                                                     personaclVM = t.personaclVM,
-                                                     supervisionclVM = t.supervisionclVM,
-                                                     municipiosVM = t.municipiosVM,
-                                                     causapenalclVM = t.causapenalclVM,
-                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                     beneficiosclVM = t.beneficiosclVM,
-                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                     tipoAdvertencia = "Control de supervisión a 3 días o menos"
-                                                 }).Union
-                                                (from t in table
-                                                 where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE"
-                                                 orderby t.beneficiosclVM.FiguraJudicial
-                                                 select new PlaneacionclWarningViewModel
-                                                 {
-                                                     personaclVM = t.personaclVM,
-                                                     supervisionclVM = t.supervisionclVM,
-                                                     municipiosVM = t.municipiosVM,
-                                                     causapenalclVM = t.causapenalclVM,
-                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                     beneficiosclVM = t.beneficiosclVM,
-                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                     tipoAdvertencia = "Sin fecha de informe"
-                                                 }).Union
-                                                (from persona in personaclVM
-                                                 join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
-                                                 join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
-                                                 join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
-                                                 join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
-                                                 join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
-                                                 where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
-                                                 select new PlaneacionclWarningViewModel
-                                                 {
-                                                     personaclVM = persona,
-                                                     supervisionclVM = supervision,
-                                                     municipiosVM = municipio,
-                                                     causapenalclVM = causapenal,
-                                                     planeacionestrategicaclVM = planeacion,
-                                                     tipoAdvertencia = "Sin periodicidad de firma"
-                                                 }).Union
-                                                (from t in table
-                                                 where t.personaclVM.Supervisor == usuario && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaclVM.FechaProximoContacto != null && t.planeacionestrategicaclVM.FechaProximoContacto < fechaHoy && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA"
-                                                 orderby t.planeacionestrategicaclVM.FechaProximoContacto descending
-                                                 select new PlaneacionclWarningViewModel
-                                                 {
-                                                     personaclVM = t.personaclVM,
-                                                     supervisionclVM = t.supervisionclVM,
-                                                     municipiosVM = t.municipiosVM,
-                                                     causapenalclVM = t.causapenalclVM,
-                                                     planeacionestrategicaclVM = t.planeacionestrategicaclVM,
-                                                     beneficiosclVM = t.beneficiosclVM,
-                                                     figuraJudicial = t.beneficiosclVM.FiguraJudicial,
-                                                     tipoAdvertencia = "Se paso el tiempo de la firma"
-                                                 });
-
-                ViewBag.Warnings = warningPlaneacion.Count();
-            }
-
-            #endregion
-
+            ViewBag.Warnings = alertas.Count();
             return View();
+
+            //#region -To List databases-
+
+            //List<Personacl> personaclVM = _context.Personacl.ToList();
+            //List<Supervisioncl> supervisionclVM = _context.Supervisioncl.ToList();
+            //List<Causapenalcl> causapenalclVM = _context.Causapenalcl.ToList();
+            //List<Planeacionestrategicacl> planeacionestrategicaclVM = _context.Planeacionestrategicacl.ToList();
+            //List<Beneficios> beneficiosclVM = _context.Beneficios.ToList();
+            //List<Domiciliocl> domicilioclVM = _context.Domiciliocl.ToList();
+            //List<Municipios> municipiosVM = _context.Municipios.ToList();
+            //List<Estados> estadosVM = _context.Estados.ToList();
+            //List<Personaclcausapenalcl> personacausapenalclVM = _context.Personaclcausapenalcl.ToList();
+
+
+
+            //List<Beneficios> queryBeneficios = (from b in beneficiosclVM
+            //                                    group b by b.SupervisionclIdSupervisioncl into grp
+            //                                    select grp.OrderByDescending(b => b.IdBeneficios).FirstOrDefault()).ToList();
+            //#endregion
+
+            //#region -Jointables-
+
+            //var sinResolucion = from p in personaclVM
+            //                    join d in domicilioclVM on p.IdPersonaCl equals d.PersonaclIdPersonacl
+            //                    join e in estadosVM on int.Parse(d.Estado) equals e.Id
+            //                    join m in municipiosVM on int.Parse(d.Municipio) equals m.Id
+            //                    where p.TieneResolucion == "NO" || p.TieneResolucion == "NA" || p.TieneResolucion is null
+            //                    select new PlaneacionclWarningViewModel
+            //                    {
+            //                        personaclVM = p,
+            //                        estadosVM = e,
+            //                        municipiosVM = m,
+            //                        tipoAdvertencia = "Sin Resolución"
+            //                    };
+
+            //var leftJoin = from persona in personaclVM
+            //               join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+            //               join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //               join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl into tmp
+            //               from sinsupervision in tmp.DefaultIfEmpty()
+            //               select new PlaneacionclWarningViewModel
+            //               {
+            //                   personaclVM = persona,
+            //                   supervisionclVM = sinsupervision,
+            //                   municipiosVM = municipio,
+            //                   tipoAdvertencia = "Sin supervisión"
+            //               };
+
+            //var where = from ss in leftJoin
+            //            where ss.supervisionclVM == null
+            //            select new PlaneacionclWarningViewModel
+            //            {
+            //                personaclVM = ss.personaclVM,
+            //                supervisionclVM = ss.supervisionclVM,
+            //                municipiosVM = ss.municipiosVM,
+            //                tipoAdvertencia = "Sin supervisión"
+            //            };
+
+
+            //var personasConSupervision = from persona in personaclVM
+            //                             join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+            //                             join Beneficios in beneficiosclVM on supervision.IdSupervisioncl equals Beneficios.SupervisionclIdSupervisioncl
+            //                             select new Supervisioncl
+            //                             {
+            //                                 IdSupervisioncl = supervision.IdSupervisioncl
+            //                             };
+
+
+            //List<int> idSupervisiones = personasConSupervision.Select(x => x.IdSupervisioncl).Distinct().ToList();
+
+            //var joins = from persona in personaclVM
+            //            join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+            //            join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+            //            join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //            join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
+            //            select new PlaneacionclWarningViewModel
+            //            {
+            //                personaclVM = persona,
+            //                supervisionclVM = supervision,
+            //                municipiosVM = municipio,
+            //                causapenalclVM = causapenal,
+            //                tipoAdvertencia = "Sin beneficio otorgado"
+            //            };
+
+            //var table = from persona in personaclVM
+            //            join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+            //            join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+            //            join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //            join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
+            //            join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
+            //            join Beneficios in queryBeneficios on supervision.IdSupervisioncl equals Beneficios.SupervisionclIdSupervisioncl
+            //            select new PlaneacionclWarningViewModel
+            //            {
+            //                personaclVM = persona,
+            //                supervisionclVM = supervision,
+            //                causapenalclVM = causapenal,
+            //                planeacionestrategicaclVM = planeacion,
+            //                beneficiosclVM = Beneficios,
+            //                figuraJudicial = Beneficios.FiguraJudicial,
+            //                municipiosVM = municipio
+            //            };
+
+
+            //if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
+            //{
+            //    var warningPlaneacion = (where).Union
+            //                            (sinResolucion).Union
+            //                            (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
+            //                            (from t in table
+            //                            where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE"
+            //                            orderby t.planeacionestrategicaclVM.InformeInicial
+            //                            select new PlaneacionclWarningViewModel
+            //                            {
+            //                                personaclVM = t.personaclVM,
+            //                                supervisionclVM = t.supervisionclVM,
+            //                                municipiosVM = t.municipiosVM,
+            //                                causapenalclVM = t.causapenalclVM,
+            //                                planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                beneficiosclVM = t.beneficiosclVM,
+            //                                figuraJudicial = t.figuraJudicial,
+            //                                tipoAdvertencia = "Informe fuera de tiempo"
+            //                            }).Union
+            //                            (from t in table
+            //                                where t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaControl && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA"
+            //                                select new PlaneacionclWarningViewModel
+            //                                {
+            //                                    personaclVM = t.personaclVM,
+            //                                    supervisionclVM = t.supervisionclVM,
+            //                                    municipiosVM = t.municipiosVM,
+            //                                    causapenalclVM = t.causapenalclVM,
+            //                                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                    beneficiosclVM = t.beneficiosclVM,
+            //                                    figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                    tipoAdvertencia = "Control de supervisión a 3 días o menos"
+            //                                }).Union
+            //                            (from t in table
+            //                                where t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE"
+            //                                orderby t.beneficiosclVM.FiguraJudicial
+            //                                select new PlaneacionclWarningViewModel
+            //                                {
+            //                                    personaclVM = t.personaclVM,
+            //                                    supervisionclVM = t.supervisionclVM,
+            //                                    municipiosVM = t.municipiosVM,
+            //                                    causapenalclVM = t.causapenalclVM,
+            //                                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                    beneficiosclVM = t.beneficiosclVM,
+            //                                    figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                    tipoAdvertencia = "Sin fecha de informe"
+            //                                }).Union
+            //                            (from persona in personaclVM
+            //                                join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+            //                                join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+            //                                join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //                                join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
+            //                                join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
+            //                                where planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+            //                                select new PlaneacionclWarningViewModel
+            //                                {
+            //                                    personaclVM = persona,
+            //                                    supervisionclVM = supervision,
+            //                                    municipiosVM = municipio,
+            //                                    causapenalclVM = causapenal,
+            //                                    planeacionestrategicaclVM = planeacion,
+            //                                    tipoAdvertencia = "Sin periodicidad de firma"
+            //                                }).Union
+            //                            (from t in table
+            //                                where t.personaclVM.Supervisor != null && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaclVM.FechaProximoContacto != null && t.planeacionestrategicaclVM.FechaProximoContacto < fechaHoy && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA"
+            //                                orderby t.planeacionestrategicaclVM.FechaProximoContacto descending
+            //                                select new PlaneacionclWarningViewModel
+            //                                {
+            //                                    personaclVM = t.personaclVM,
+            //                                    supervisionclVM = t.supervisionclVM,
+            //                                    municipiosVM = t.municipiosVM,
+            //                                    causapenalclVM = t.causapenalclVM,
+            //                                    planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                    beneficiosclVM = t.beneficiosclVM,
+            //                                    figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                    tipoAdvertencia = "Se paso el tiempo de la firma"
+            //                                });
+            //    var warnings = Enumerable.Empty<PlaneacionclWarningViewModel>();
+            //    if (usuario == "carmen.trujillo@dgepms.com" || flagMaster == true)
+            //    {
+            //        var filteredWarnings = from pwvm in warningPlaneacion
+            //                               where pwvm.personaclVM.Supervisor != null && pwvm.personaclVM.Supervisor.EndsWith("\u0040dgepms.com")
+            //                               select pwvm;
+            //        warnings = warnings.Union(filteredWarnings);
+            //    }
+
+            //    ViewBag.Warnings = warnings.Count();
+            //}
+            //else
+            //{
+            //    var warningPlaneacion = (where.Where(s => s.personaclVM.Supervisor == usuario)).Union
+            //                                  (sinResolucion.Where(s => s.personaclVM.Supervisor == usuario)).Union
+            //                                  //(archivo).Union
+            //                                  (joins.Where(s => !idSupervisiones.Any(x => x == s.supervisionclVM.IdSupervisioncl) && s.personaclVM.Supervisor == usuario && s.supervisionclVM.EstadoSupervision == "VIGENTE")).Union
+            //                                    (from t in table
+            //                                     where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaInformeCoordinador && t.supervisionclVM.EstadoSupervision == "VIGENTE"
+            //                                     orderby t.planeacionestrategicaclVM.InformeInicial
+            //                                     select new PlaneacionclWarningViewModel
+            //                                     {
+            //                                         personaclVM = t.personaclVM,
+            //                                         supervisionclVM = t.supervisionclVM,
+            //                                         municipiosVM = t.municipiosVM,
+            //                                         causapenalclVM = t.causapenalclVM,
+            //                                         planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                         beneficiosclVM = t.beneficiosclVM,
+            //                                         figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                         tipoAdvertencia = "Informe fuera de tiempo"
+            //                                     }).Union
+            //                                    (from t in table
+            //                                     where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial != null && t.planeacionestrategicaclVM.InformeInicial < fechaControl && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.beneficiosclVM.FiguraJudicial != "SUSTITUCIÓN DE LA PENA"
+            //                                     select new PlaneacionclWarningViewModel
+            //                                     {
+            //                                         personaclVM = t.personaclVM,
+            //                                         supervisionclVM = t.supervisionclVM,
+            //                                         municipiosVM = t.municipiosVM,
+            //                                         causapenalclVM = t.causapenalclVM,
+            //                                         planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                         beneficiosclVM = t.beneficiosclVM,
+            //                                         figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                         tipoAdvertencia = "Control de supervisión a 3 días o menos"
+            //                                     }).Union
+            //                                    (from t in table
+            //                                     where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE"
+            //                                     orderby t.beneficiosclVM.FiguraJudicial
+            //                                     select new PlaneacionclWarningViewModel
+            //                                     {
+            //                                         personaclVM = t.personaclVM,
+            //                                         supervisionclVM = t.supervisionclVM,
+            //                                         municipiosVM = t.municipiosVM,
+            //                                         causapenalclVM = t.causapenalclVM,
+            //                                         planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                         beneficiosclVM = t.beneficiosclVM,
+            //                                         figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                         tipoAdvertencia = "Sin fecha de informe"
+            //                                     }).Union
+            //                                    (from persona in personaclVM
+            //                                     join supervision in supervisionclVM on persona.IdPersonaCl equals supervision.PersonaclIdPersonacl
+            //                                     join domicilio in domicilioclVM on persona.IdPersonaCl equals domicilio.PersonaclIdPersonacl
+            //                                     join municipio in municipiosVM on int.Parse(domicilio.Municipio) equals municipio.Id
+            //                                     join causapenal in causapenalclVM on supervision.CausaPenalclIdCausaPenalcl equals causapenal.IdCausaPenalcl
+            //                                     join planeacion in planeacionestrategicaclVM on supervision.IdSupervisioncl equals planeacion.SupervisionclIdSupervisioncl
+            //                                     where persona.Supervisor == usuario && planeacion.PeriodicidadFirma == null && supervision.EstadoSupervision == "VIGENTE"
+            //                                     select new PlaneacionclWarningViewModel
+            //                                     {
+            //                                         personaclVM = persona,
+            //                                         supervisionclVM = supervision,
+            //                                         municipiosVM = municipio,
+            //                                         causapenalclVM = causapenal,
+            //                                         planeacionestrategicaclVM = planeacion,
+            //                                         tipoAdvertencia = "Sin periodicidad de firma"
+            //                                     }).Union
+            //                                    (from t in table
+            //                                     where t.personaclVM.Supervisor == usuario && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor != null && t.personaclVM.Supervisor.EndsWith("\u0040dgepms.com") && t.planeacionestrategicaclVM.FechaProximoContacto != null && t.planeacionestrategicaclVM.FechaProximoContacto < fechaHoy && t.supervisionclVM.EstadoSupervision == "VIGENTE" && t.planeacionestrategicaclVM.PeriodicidadFirma != "NO APLICA"
+            //                                     orderby t.planeacionestrategicaclVM.FechaProximoContacto descending
+            //                                     select new PlaneacionclWarningViewModel
+            //                                     {
+            //                                         personaclVM = t.personaclVM,
+            //                                         supervisionclVM = t.supervisionclVM,
+            //                                         municipiosVM = t.municipiosVM,
+            //                                         causapenalclVM = t.causapenalclVM,
+            //                                         planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+            //                                         beneficiosclVM = t.beneficiosclVM,
+            //                                         figuraJudicial = t.beneficiosclVM.FiguraJudicial,
+            //                                         tipoAdvertencia = "Se paso el tiempo de la firma"
+            //                                     });
+
+            //    ViewBag.Warnings = warningPlaneacion.Count();
+            //}
+
+            //#endregion
+
         }
         public async Task<IActionResult> MenuEdicion(int? id)
         {

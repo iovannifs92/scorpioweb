@@ -1696,7 +1696,9 @@ namespace scorpioweb.Models
             // Filtro por texto de búsqueda
             if (!String.IsNullOrEmpty(searchString))
             {
-                try
+
+                foreach (var item in searchString.Split(new char[] { ' ' },
+                    StringSplitOptions.RemoveEmptyEntries))
                 {
                     filter = filter.Where(ea =>
                                         ((ea.Apaterno ?? "") + " " + (ea.Amaterno ?? "") + " " + (ea.Nombre ?? "")).Contains(searchString) ||
@@ -1705,14 +1707,8 @@ namespace scorpioweb.Models
                                         (ea.Causapenal ?? "").Contains(searchString) ||
                                         (ea.Area ?? "").Contains(searchString) ||
                                         (ea.IdArchvo ?? "").Contains(searchString)
-);
+                    );
                 }
-                catch (Exception ex)
-                {
-                    var error = ex.ToString();
-
-                }
-
 
             }
 

@@ -1,51 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
+﻿using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Office.Word;
+using F23.StringSimilarity;
+using Google.DataTable.Net.Wrapper;
+using Google.DataTable.Net.Wrapper.Extension;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using scorpioweb.Models;
-using Microsoft.AspNetCore.Http;
-using System.Globalization;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using SautinSoft.Document;
-using SautinSoft.Document.Drawing;
-using QRCoder;
-using System.Drawing;
-using Size = SautinSoft.Document.Drawing.Size;
-using System.Security.Claims;
-using System.Data;
-using Google.DataTable.Net.Wrapper.Extension;
-using Google.DataTable.Net.Wrapper;
-using F23.StringSimilarity;
-using System.Threading;
-using Newtonsoft.Json.Linq;
-using System.Configuration;
-using System.Text;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using SautinSoft.Document.MailMerging;
-using DocumentFormat.OpenXml.Office.Word;
-using System.Data.SqlClient;
-using scorpioweb.Data;
-using DocumentFormat.OpenXml.EMMA;
-using scorpioweb.Class;
-using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Microsoft.AspNetCore.Rewrite.Internal;
-using ZXing.OneD;
-using System.ComponentModel.DataAnnotations;
-using Syncfusion.EJ2.Navigations;
-using Syncfusion.EJ2.Linq;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using QRCoder;
+using SautinSoft.Document;
+using SautinSoft.Document.Drawing;
+using SautinSoft.Document.MailMerging;
+using scorpioweb.Class;
+using scorpioweb.Data;
+using scorpioweb.Migrations.ApplicationDb;
+using scorpioweb.Models;
+using Syncfusion.EJ2.Linq;
+using Syncfusion.EJ2.Navigations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Configuration;
+using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
+using ZXing.OneD;
+using Size = SautinSoft.Document.Drawing.Size;
 
 
 
@@ -782,6 +783,7 @@ namespace scorpioweb.Controllers
             DateTime fechahoy = DateTime.Today;
             var fechaProcesal = DateTime.Now.AddMonths(-6);
             Boolean flagMaster = false;
+            Boolean flagCoordinador = false;
 
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
@@ -844,6 +846,14 @@ namespace scorpioweb.Controllers
                 if (rol == "CE Resguardos")
                 {
                     flagMaster = true;
+                }
+       
+            }
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    flagCoordinador = true;
                 }
             }
 
@@ -1005,7 +1015,7 @@ namespace scorpioweb.Controllers
                                   municipiosVM = municipio
                               };
 
-            if (usuario == "isabel.almora@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
+            if (flagCoordinador == true)
             {
                 var warningPlaneacion = (where).Union
                                         (sinResolucion).Union
@@ -1095,7 +1105,7 @@ namespace scorpioweb.Controllers
                                              tipoAdvertencia = "Estado Procesal"
                                          });
                 var warnings = Enumerable.Empty<PlaneacionWarningViewModel>();
-                if (usuario == "janeth@nortedgepms.com" || flagMaster == true)
+                if (usuario.EndsWith("nortedgepms.com") && flagCoordinador == true)
                 {
                     var filteredWarnings = from pwvm in warningPlaneacion
                                            where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040nortedgepms.com")
@@ -1104,7 +1114,7 @@ namespace scorpioweb.Controllers
 
 
                 }
-                if (usuario == "isabel.almora@dgepms.com" || flagMaster == true)
+                if (usuario.EndsWith("@dgepms.com") && flagCoordinador == true)
                 {
                     var filteredWarnings = from pwvm in warningPlaneacion
                                            where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040dgepms.com")
@@ -2166,7 +2176,7 @@ namespace scorpioweb.Controllers
                     if (persona.Capturista.EndsWith("\u0040nortedgepms.com") && estado == "Durango" && municipio == "Durango")
                     {
                         persona.Colaboracion = "SI";
-                        persona.Supervisor = "isabel.almora@dgepms.com";
+                        persona.Supervisor = "esmeralda.vargas@dgepms.com";
                     }
                     #endregion
 
@@ -3009,7 +3019,9 @@ namespace scorpioweb.Controllers
                         ViewBag.idRegistrado = persona.IdPersona;
                         ViewBag.celular = persona?.Celular ?? "NA";
                         ViewBag.esmcyscp = esmcyscp = true;
+                        ViewBag.nombreF = referenciaf?.Nombre ?? "NA";
                         ViewBag.celularF = referenciaf?.Telefono ?? "NA";
+                        ViewBag.parentescoF = referenciaf?.Relacion ?? "NA";
                         ViewBag.CURP = persona?.Curp ?? "NA";
                     }
                 }
@@ -3031,7 +3043,9 @@ namespace scorpioweb.Controllers
                         ViewBag.idRegistrado = persona.IdPersonaCl;
                         ViewBag.celular = persona?.Celular ?? "NA";
                         ViewBag.escl = escl = true;
+                        ViewBag.nombreF = referenciaf?.Nombre ?? "NA";
                         ViewBag.celularF = referenciaf?.Telefono ?? "NA";
+                        ViewBag.parentescoF = referenciaf?.Relacion ?? "NA";
                         ViewBag.CURP = persona?.Curp ?? "NA";
                     }
                 }
@@ -6001,7 +6015,7 @@ namespace scorpioweb.Controllers
                                   municipiosVM = municipio
                               };
 
-            if (usuario == "isabel.almora@dgepms.com" || usuario == "janeth@nortedgepms.com" || flagMaster == true)
+            if (flagCoordinador == true)
             {
                 var ViewDataAlertasVari = Enumerable.Empty<PlaneacionWarningViewModel>();
                 switch (currentFilter)
@@ -6229,14 +6243,14 @@ namespace scorpioweb.Controllers
                 }
 
                 var warnings = Enumerable.Empty<PlaneacionWarningViewModel>();
-                if (usuario == "janeth@nortedgepms.com" || flagMaster == true)
+                if (usuario.EndsWith("nortedgepms.com") && flagCoordinador == true)
                 {
                     var filteredWarnings = from pwvm in ViewDataAlertasVari
                                            where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040nortedgepms.com")
                                            select pwvm;
                     warnings = warnings.Union(filteredWarnings);
                 }
-                if (usuario == "isabel.almora@dgepms.com" || flagMaster == true)
+                if (usuario.EndsWith("\u0040dgepms.com") && flagCoordinador == true)
                 {
                     var filteredWarnings = from pwvm in ViewDataAlertasVari
                                            where pwvm.personaVM.Supervisor != null && pwvm.personaVM.Supervisor.EndsWith("\u0040dgepms.com")
@@ -7104,9 +7118,20 @@ namespace scorpioweb.Controllers
            int? pageNumber
            )
         {
-            var usuario = await userManager.FindByNameAsync(User.Identity.Name);
-            ViewBag.user = usuario;
-            String users = usuario.ToString();
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            ViewBag.user = user;
+            String users = user.ToString();
+            Boolean flagCoordinador = false;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "AdminMCSCP")
+                {
+                    flagCoordinador = true;
+                }
+            }
+
 
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -7169,11 +7194,11 @@ namespace scorpioweb.Controllers
             List<SelectListItem> ListaUbicacion = new List<SelectListItem>();
             int ii = 0;
 
-            if (users == "isabel.almora@dgepms.com")
+            if (flagCoordinador == true)
             {
                 ListaUbicacion.Add(new SelectListItem { Text = "Seleccione", Value = "Seleccione" });
                 ListaUbicacion.Add(new SelectListItem { Text = "Expediente Concluido para Razón de Archivo", Value = "Expediente Concluido para Razón de Archivo" });
-                foreach (var user in userManager.Users)
+                foreach (var usersuper in userManager.Users)
                 {
                     if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
                     {

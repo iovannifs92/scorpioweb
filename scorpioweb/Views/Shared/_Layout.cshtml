@@ -232,9 +232,9 @@
                         }
 
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC"))
                     {
-                        if (User.IsInRole("Oficialia") || User.IsInRole("OficialiaAsistente"))
+                        if (User.IsInRole("Oficialia") || User.IsInRole("OficialiaAsistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC"))
                         {
                             <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecucion</a></li>
                         }
