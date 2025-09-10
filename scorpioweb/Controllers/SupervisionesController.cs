@@ -72,6 +72,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
+
         private List<SelectListItem> listaFracciones = new List<SelectListItem>
         {
             new SelectListItem{ Text="I", Value="I"},
@@ -146,16 +147,12 @@ namespace scorpioweb.Controllers
             new SelectListItem { Text = "Semestral", Value = "SEMESTRAL" },
             new SelectListItem { Text = "Anual", Value = "ANUAL", },
             new SelectListItem { Text = "No aplica", Value = "NO APLICA" }
-            };
-
-
-
-
+        };
 
 #endregion
 
-#region -Metodos Generales-
-MetodosGenerales mg = new MetodosGenerales();
+        #region -Metodos Generales-
+        MetodosGenerales mg = new MetodosGenerales();
         #region -Crea QR-
         public void creaQR(int? id)
         {
@@ -1492,6 +1489,7 @@ MetodosGenerales mg = new MetodosGenerales();
             ViewBag.nombre = nombre;
             ViewBag.cp = cp;
             ViewBag.idpersona = idpersona;
+            ViewBag.idsupervision = id;
 
             if (id == null)
             {
@@ -3558,5 +3556,90 @@ MetodosGenerales mg = new MetodosGenerales();
             return View();
         }
         #endregion
+
+        #region -Descargar Razon de Archivo-
+        public void DesracgaRA(int idsupervision, int idpersona)
+        {
+            var user = userManager.FindByNameAsync(User.Identity.Name);
+
+            var nombre = (from p in _context.Persona
+                          where p.IdPersona == idpersona
+                          select new
+                          {
+                              personasVM = p,
+                          }).ToList();
+
+            var supervsorname = nombre.First().personasVM.Supervisor.ToString();
+
+            var supervision = (from s in _context.Supervision
+                               join fj in _context.Fraccionesimpuestas on s.IdSupervision equals fj.SupervisionIdSupervision
+                               join cc in _context.Cierredecaso on s.IdSupervision equals cc.SupervisionIdSupervision 
+                               join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                               where s.IdSupervision == idsupervision
+                             select new
+                             {
+                                 supervisionVM = s,
+                                 fraccionesimpuestasVM = fj,
+                                 cierrecasoVM = cc,
+                                 causapenalVM = cp
+                             }).ToList();
+
+            var delito = (from d in _context.Delito
+                          where d.CausaPenalIdCausaPenal == supervision[0].causapenalVM.IdCausaPenal
+                          select new
+                          {
+                              delitoVM = d
+                          }).ToList();
+
+
+
+            var delitos = (from cp in _context.Causapenal
+                           join d in _context.Delito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal
+                           where cp.IdCausaPenal == supervision[0].causapenalVM.IdCausaPenal
+                           select d.Tipo).ToList(); // o el campo que sea el nombre del delito
+
+
+            var delitosConcatenados = string.Join(", ", delitos);
+
+
+
+            var getUser = mg.nombresegunUsuario(supervsorname);
+
+            DateTime now = DateTime.Now;
+            string fecha = now.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
+
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templeteRazonArchivo.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\RazondeArchivo.docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            var dataSource = new[] { new {
+                fechaActual = fecha?.ToUpper() ?? "NA",
+                ID = nombre[0].personasVM.IdPersona,
+                nombre = nombre[0].personasVM.NombreCompleto?.ToUpper() ?? "NA",
+                cp = supervision[0].causapenalVM.CausaPenal?.ToUpper() ?? "NA",
+                delito = delitosConcatenados?.ToUpper() ?? "NA",
+                figurajudicial = supervision[0].fraccionesimpuestasVM.FiguraJudicial == null ? "NA" :
+                                 supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper() == "MC" ? "MEDIDAS CAUTELARES" :
+                                 supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper() == "SCP" ? "SUSPENSION CONDICIONAL DEL PROCESO" :
+                                 supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper(),
+                supervisor = getUser?.ToUpper() ?? "NA",
+                comoconcluyo = supervision[0].cierrecasoVM.ComoConcluyo?.ToUpper() ?? "NA",
+                Juez = supervision[0].causapenalVM.Juez?.ToUpper() ?? "NA",
+            } };
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+            dc.MailMerge.Execute(dataSource);
+            dc.Save(resultPath);
+
+            Response.Redirect("/Documentos/RazondeArchivo.docx");
+        }
+        #endregion
+
+
+
+
+
+
     }
 }

@@ -1,19 +1,20 @@
 ﻿using F23.StringSimilarity;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using scorpioweb.Migrations.ApplicationDb;
 using scorpioweb.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace scorpioweb.Class
@@ -344,7 +345,7 @@ namespace scorpioweb.Class
 
         Dictionary<string, string> remplazoBases = new Dictionary<string, string>
         {
-             { "MCYSCP", "persona" },
+            { "MCYSCP", "persona" },
             { "Archivo", "archivo" },
             { "Ejecucion", "ejecucion" },
             { "ServiciosPrevios", "serviciospreviosjuicio" },
@@ -391,6 +392,94 @@ namespace scorpioweb.Class
 
             return edad;
         }
+
+        #region -Sacar Roles- 
+        public string areaSegunRol(IEnumerable<string> roles)
+        {
+            Dictionary<string, string> roleToArea = new Dictionary<string, string>
+            {
+                { "Uespa", "UESPA" },
+                { "Ejecucion", "Ejecución de Penas" },
+                { "AuxiliarEjecucion", "Ejecución de Penas" },
+                { "Coordinador Ejecucion", "Ejecución de Penas" },
+                { "SupervisorLC", "LC" },
+                { "AdminLC", "LC" },
+                { "AdminMCSCP", "MCySCP" },
+                { "SupervisorMCSCP", "MCySCP" },
+                { "AuxiliarMCSCP", "MCySCP" },
+                { "Servicios previos", "Servicios previos" },
+                { "Oficialia", "Oficialia" }
+            };
+
+            foreach (var role in roles)
+            {
+                if (roleToArea.ContainsKey(role))
+                {
+                    return roleToArea[role]; // en cuanto encuentre, devuelve
+                }
+            }
+
+            return "Sin área asignada"; // si ninguno coincide
+        }
+        #endregion
+        #region -Sacar nombres segun correos- 
+        public string nombresegunUsuario(string usuario)
+        {
+            Dictionary<string, string> correoANombre = new Dictionary<string, string>
+            {
+                { "esmeralda.vargas@dgepms.com", "ANA ESMERALDA VARGAS ALVARADO" },
+                { "ana.valles@dgepms.com", "ANA ISABEL VALLES FLORES" },
+                { "carmen.gonzalez@dgepms.com", "MARIA DEL CARMEN GONZALEZ CORRALES" },
+                { "maria.martinez@dgepms.com", "MARIA DE JESUS MARTINEZ SANCHEZ" },
+                { "mayra.gonzalez@dgepms.com", "MAYRA YUDITH GONZÁLEZ MARTÍNEZ" },
+                { "stephany.garcia@dgepms.com", "GLORIA STEPHANY GARCIA GONZALEZ" },
+                { "david.nevarez@dgepms.com", "DAVID IVAN NEVAREZ RODRIGUEZ" },
+                { "maricela.lozano@dgepms.com", "MARICELA LOZANO LOPEZ" },
+                { "amor.davalos@dgepms.com", "AMOR DÁVALOS NÁJERA" },
+                { "alma.gaxiola@dgepms.com", "ALMA CAROLINA GAXIOLA ROCHA" },
+                { "victor.hernandez@dgepms.com", "VÍCTOR HERNÁNDEZ SALAS" },
+                { "diana.ontiveros@dgepms.com", "DIANA ALEJANDRINA ONTIVEROS PACHECO" },
+                { "uriel.ortega@dgepms.com", "URIEL ORTEGA GARIBAY" },
+                { "leobardo.gonzalez@dgepms.com", "LEOBARDO GONZALEZ CALZADA" },
+                { "isabel.almora@dgepms.com", "ISABEL ALMORA DE LA CRUZ" },
+                { "claudia.armendariz@dgepms.com", "CLAUDIA MAYTHEL ARMENDÁRIZ LEAL" },
+                { "emiliano.munoz@dgepms.com", "EMILIANO MUÑOZ HERNÁNDEZ" },
+                { "liliana.vargas@dgepms.com", "LILIANA VARGAS SALCIDO" },
+                { "juan.lerma@dgepms.com", "JUAN JOSE LERMA GONZALEZ" },
+                { "alma.gladiola@dgepms.com", "ALMA GLADIOLA RUIZ SAPIEN" },
+                { "carmen.trujillo@dgepms.com", "MARÍA DEL CARMEN TRUJILLO SOTO" },
+                { "daniela.ruiz@dgepms.com", "DANIELA RUIZ ALVARADO" },
+                { "yuridia.quinones@dgepms.com", "YURIDIA QUIÑONES ESPARZA" },
+                { "alba.rodriguez@dgepms.com", "ALBA MARIELA RODRIGUEZ MORENO" },
+                { "rosybet.gaytan@dgepms.com", "ANA ROSYBET GAYTÁN LERMA" },
+                { "leticia.avila@dgepms.com", "LETICIA ÁVILA SÁNCHEZ" },
+                { "cecilia.rojas@dgepms.com", "MARTHA CECILIA ROJAS GARCIA" },
+                { "esthela.huitron@dgepms.com", "MARIA ESTHELA HUITRON TAVIZON" },
+                { "julissa.gonzalez@dgepms.com", "JULISSA VALERIA GONZALEZ SILVA" },
+                { "carolina.prieto@dgepms.com", "CAROLINA PRIETO CISNEROS" },
+                { "ana.quinonez@dgepms.com", "ANA MARÍA GPE. QUIÑONES TINOCO" },
+                { "victor.morales@dgepms.com", "VÍCTOR MANUEL MORALES PEREZ" },
+                { "rafa.luna@dgepms.com", "RAFAEL LUNA AVILA" },
+                { "francisco.valero@dgepms.com", "FRANCISCO VALERO" },
+                { "mitzy.Robles@dgepms.com", "MITZI CITLALLI ROBLES ALVARADO" },
+                { "carlos.flores@dgepms.com", "CARLOS HUMBERTO FLORES MARTINEZ" },
+                { "edna.lara@dgepms.com", "EDNA MARIA LARA GARCIA" },
+                { "Rosa.villarreal@dgepms.com", "ROSA ELBA VILLARREAL CHAIREZ" },
+                { "zuleyka.rodriguez@dgepms.com", "ZULEYKA RODRIGUEZ VAZQUEZ" }
+            };
+
+
+            if (correoANombre.ContainsKey(usuario))
+            {
+                return correoANombre[usuario];
+            }
+
+            return "Sin área asignada";
+
+        }
+        #endregion
+
+
 
         //public async Task expedienteUnico(
         //   string var_tablanueva,

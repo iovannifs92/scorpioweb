@@ -168,7 +168,6 @@
                         <input type="file" class="custom-file-input" id="archivo" name="archivo" lang="es">
                     </div>
                 }
-
             }
             @if (ViewBag.cierre == null || ViewBag.cierre == "NO" || ViewBag.cierre == "NA")
             {
@@ -200,6 +199,12 @@
                 </div>
             }
             <input type="hidden" asp-for="SupervisionIdSupervision" />
+            <div class="custom-file" style="padding-bottom:5px" id="DivDescargaRA">
+                <label class="control-label">Descargar Razon de Archivo</label>
+            </div>
+            <div style="padding-bottom:10px">
+                <a asp-action="DesracgaRA" asp-route-idsupervision="@ViewBag.idsupervision" asp-route-idpersona="@ViewBag.idpersona" class="btn btn-success fa fa-download"> Descargar Razon de Archivo </a>
+            </div>
             @if (ViewBag.usuario)
             {
                 <div class="form-group">

@@ -544,7 +544,7 @@ namespace scorpioweb.Models
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,Otro,ArcchivoIdArchivo")] Archivoregistro archivoregistro, Archivo archivo, int archivoIdArchivo, IFormFile archivoFile)
+        public async Task<IActionResult> CreateArchivo([Bind("CausaPenal,Delito,Situacion,Sentencia,FechaAcuerdo,Observaciones,CarpetaEjecucion,Envia,Reasignacion,Otro,ArchivoIdArchivo")] Archivoregistro archivoregistro, Archivo archivo, int archivoIdArchivo, IFormFile archivoFile)
         {
             if (ModelState.IsValid)
             {
@@ -1573,88 +1573,14 @@ namespace scorpioweb.Models
             // User & roles
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
+
             ViewBag.User = user.ToString();
             ViewBag.Admin = false;
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = roles.Any(r => r == "Masteradmin" || r == "Archivo" || r == "Director");
-           
+
             #region -Sacar Roles-
-            var roleToArea = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "Uespa", "UESPA" },
-                { "Ejecucion", "Ejecución de Penas" },
-                { "AuxiliarEjecucion", "Ejecución de Penas" },
-                { "Coordinador Ejecucion", "Ejecución de Penas" },
-                { "SupervisorLC", "LC" },
-                { "AdminLC", "LC" },
-                { "AdminMCSCP", "MCySCP" },
-                { "SupervisorMCSCP", "MCySCP" },
-                { "AuxiliarMCSCP", "MCySCP" },
-                { "Servicios previos", "Servicios previos" },
-                { "Oficialia", "Oficialia" },
-            // ... puedes añadir más según tus reglas
-            };
-
-            
-            string areaAsignada = roles
-                .Where(role => roleToArea.ContainsKey(role))
-                .Select(role => roleToArea[role])
-                .FirstOrDefault() ?? "Sin área asignada";
-
-            if (roles.Contains("Uespa"))
-            {
-                areaFiltro = "UESPA";
-            }
-
-            if (roles.Contains("Ejecucion"))
-            {
-                areaFiltro = "Ejecución de Penas";
-            }
-
-            if (roles.Contains("AuxiliarEjecucion"))
-            {
-                areaFiltro = "Ejecución de Penas";
-            }
-
-            if (roles.Contains("Coordinador Ejecucion"))
-            {
-                areaFiltro = "Ejecución de Penas";
-            }
-
-            if (roles.Contains("SupervisorLC"))
-            {
-                areaFiltro = "LC";
-            }
-
-            if (roles.Contains("AdminLC"))
-            {
-                areaFiltro = "LC";
-            }
-
-            if (roles.Contains("AdminMCSCP"))
-            {
-                areaFiltro = "MCySCP";
-            }
-
-            if (roles.Contains("SupervisorMCSCP"))
-            {
-                areaFiltro = "MCySCP";
-            }
-
-            if (roles.Contains("AuxiliarMCSCP"))
-            {
-                areaFiltro = "MCySCP";
-            }
-
-            if (roles.Contains("Servicios previos"))
-            {
-                areaFiltro = "Servicios previos";
-            }
-
-            if (roles.Contains("Oficialia"))
-            {
-                areaFiltro = "Oficialia";
-            }
+            areaFiltro = mg.areaSegunRol(roles);
             #endregion
 
             List<SelectListItem> listaAreas;
