@@ -1,0 +1,344 @@
+﻿@model IEnumerable<scorpioweb.Models.Enviocorrespondencia>
+@{
+	Layout = "/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Correspondencia";
+}
+
+<style>
+	.top-content h2 {
+		margin-left: 50px;
+	}
+
+	.row-items {
+		display: flex;
+		justify-content: space-between 2px;
+		padding: 5px 30px;
+	}
+
+	.item {
+		padding: 5px 10px;
+		margin: 0 5px;
+	}
+
+	.table th {
+		color: darkblue;
+		font-weight: 500;
+	}
+
+	.button-27 {
+		appearance: none;
+		border-radius: 15px;
+		box-sizing: 8px 8px;
+		color: #FFFFFF;
+		cursor: pointer;
+		display: inline-block;
+		font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+		font-size: 20px;
+		font-weight: 500;
+		float: right;
+		line-height: normal;
+		margin-left: 10px;
+		min-height: 30px;
+		outline: none;
+		padding: 5px 13px;
+		text-align: center;
+		text-decoration: none;
+		transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		will-change: transform;
+	}
+
+		.button-27:disabled {
+			pointer-events: none;
+		}
+
+		.button-27:hover {
+			box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+			transform: translateY(-2px);
+		}
+
+		.button-27.buscar {
+			background-color: #78899E;
+			border: 2px solid #93A5C2;
+		}
+
+		.button-27.enviar {
+			background-color: #1687F2;
+			border: 1px solid #64AFFA;
+		}
+
+	.text-center-select {
+		text-align: center;
+		text-align-last: center;
+		font-weight: 800;
+	}
+</style>
+
+@if (User.IsInRole("EnvioCorrespondencia"))
+{
+	<div class="text-center" style="padding-top:1%">
+		<img src="~/images/Enviar Correspondencia.png" class="rounded" alt="..." style="max-width:10%">
+		<br />
+		<h2>Enviar Correspondencia</h2>
+	</div>
+	<form asp-controller="ServiciosPreviosJuicio" asp-action="EnviarCorrespondencia" id="formCorrespondencia" enctype="multipart/form-data">
+		<div class="form-group col-lg-12 text-center">
+			<label class="control-label">Area</label>
+			<select name="Area" id="Area" class="form-control text-center-select" disabled>
+				<option value="@ViewBag.Area">@ViewBag.Area</option>
+			</select>
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Nombre</label>
+			<input required name="Nombre" id="Nombre" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Apellido paterno</label>
+			<input required name="Apaterno" id="Apaterno" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Apellido materno</label>
+			<input required name="Amaterno" id="Amaterno" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">No° oficio</label>
+			<input required name="NoOficio" id="NoOficio" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Figura judicial</label>
+			<input name="FiguraJudicial" id="FiguraJudicial" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Genero</label>
+			<select name="Genero" id="Genero" class="form-control">
+				<option value="M">Masculino</option>
+				<option value="F">Femenino</option>
+			</select>
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Asunto</label>
+			<input required name="Asunto" id="Asunto" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Autoridad</label>
+			<input name="Autoridad" id="Autoridad" type="text" class="form-control" />
+		</div>
+		<div class="form-group col-md-4">
+			<label class="control-label">Observaciones</label>
+			<input name="Observaciones" id="Observaciones" type="text" class="form-control" />
+		</div>
+		<button type="submit" class="button-27 enviar">Enviar</button>
+		<button type="submit" class="button-27 buscar id="BuscarId">Buscar por id</button>
+	</form>
+
+}
+
+@if (User.IsInRole("RecibirCorrespondencia"))
+{
+
+	<div class="text-center" style="padding-top:1%">
+		<img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
+		<br />
+		<h2>Recibir Correspondencia</h2>
+	</div>
+
+	<div class="top-content">
+		@using (Html.BeginForm("FiltrarCorrespondencia", "ServiciosPrevios", FormMethod.Get))
+		{
+			<div class="row-items">
+				<div class="item">
+					<p>
+						Buscar por nombre: @Html.TextBox("SearchString", ViewBag.CurrentSearchString as string)
+						<input type="submit" value="Search" />
+					</p>
+				</div>
+				<div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
+				<div class="item">
+					<select class="form-control form-select-lg mb-3" onchange="this.form.submit()" @Html.TextBox("selectSearch", ViewBag.CurrentSelectSearch as string)>
+						<option selected style="font-weight:600; background-color:gainsboro;" value="@ViewBag.CurrentSelectSearch">Actual: @ViewBag.CurrentSelectSearch</option>
+						<option value="Todas">Todas las alertas</option>
+						<optgroup label="-------- Area --------">
+							<option value="UESPA">Adolescentes</option>
+							<option value="DIRECCION">Direccion</option>
+							<option value="COORDINACION OPERATIVA">Coordinacion operativa</option>
+							<option value="EJECUCION">Ejecucion</option>
+							<option value="LIBERTAD CONDICIONADA">Libertad Condicionada</option>
+							<option value="MCYSCP">MC y SCP</option>
+							<option value="SERVICIOS LEGALES">Servicios legales</option>
+							<option value="SERVICIOS PREVIOS">Servicios previos</option>
+							<option value="SISTEMAS">Sistemas</option>
+							<option value="VINCULACION">Vinculacion</option>
+						</optgroup>
+						<optgroup label="-------- Estado --------">
+							<option value="ENTREGADO">Oficio entregado</option>
+							<option value="RECIBIDO">Acuse recibido</option>
+						</optgroup>
+						<optgroup label="-------- Otros --------">
+							<option value="TODOS">Todos</option>
+						</optgroup>
+					</select>
+				</div>
+			</div>
+		}
+	</div>
+
+	@if (Model != null && Model.Any())
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>IdCorrespondencia</th>
+					<th>Area</th>
+					<th>Nombre</th>
+					<th>No° Oficio</th>
+					<th>Figura Judicial</th>
+					<th>Genero</th>
+					<th>Asunto</th>
+					<th>Observaciones</th>
+					<th>FechaRegistro</th>
+					<th>Fecha de entrega</th>
+					<th>Fecha de recibido</th>
+					<th>Entregado</th>
+					<th>Recibido</th>
+					<th>Quien entrega</th>
+					<th>Quien recibe</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>@item.IdenvioCorrespondencia</td>
+						<td>@item.Nombre @item.Apaterno @item.Amaterno</td>
+						<td>@item.NoOficio</td>
+						<td>@item.FiguraJudicial</td>
+						<td>@item.Genero</td>
+						<td>@item.Asunto</td>
+						<td>@item.Autoridad</td>
+						<td>@item.Observaciones</td>
+						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy")</td>
+						<td>@item.FechaEntrega?.ToString("dd/MM/yyyy")</td>
+						<td>@item.FechaRecibido?.ToString("dd/MM/yyyy")</td>
+						<td>@item.Entregado</td>
+						<td>@item.Recibido</td>
+						<td>@item.QuienEntrega</td>
+						<td>@item.QuienRecibe</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<p>Seleccion un filtro para continuar</p>
+	}
+}
+<div style="margin-top:20px">
+	<a asp-action="MenuCl">Regresar a Menu</a>
+</div>
+
+<script>
+		$('#formCorrespondencia').on('submit', function(e) {
+		e.preventDefault(); 
+
+		const form = this; 
+		const formData = new FormData(form); 
+		const selectedArea = $('#Area').val();
+		$.ajax({
+			url: $(form).attr('action'), // use the form's action attribute
+			type: 'POST',
+			data: formData,
+			contentType: false, // necessary for FormData
+			processData: false, // necessary for FormData
+			success: function(response) {
+				if (response.success) {
+					  // Show success toast
+					Swal.fire({
+						icon: "success",
+						title: "Correspondencia enviada correctamente",
+						showConfirmButton: false,
+						timer: 800,
+						timerProgressBar: true,
+						width: '400px',          // Make it bigger
+						padding: '2em',          // Add some padding
+						position: 'center',      // Center on screen
+						background: '#f0f9ff',   // Optional: change background color
+						customClass: {
+							title: 'swal-title-large', // You can add custom CSS classes
+							popup: 'swal-popup-large'
+						}
+					});
+					form.reset();
+					$('#Area').val(selectedArea);
+				} else {
+					console.error('Error from controller:', response.message);
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error('AJAX error:', error);
+			}
+		});
+	});
+
+	$('#BuscarId').on('click', function(e) {
+		let area = document.getElementById('Area').value;
+		
+			Swal.fire({
+			title: "Buscar persona en" + area,
+			html: `
+				<div>
+					<label class="control-label">Id</label>
+					<input required id="IdBuscar" type="text" class="form-control"/>	
+				</div>
+				<div id="swal-validation-area" style="margin-top:10px;"></div>
+			`,
+			showCancelButton: true,
+			confirmButtonText: "Buscar",
+			cancelButtonText: "Cancelar",
+			cancelButtonColor: "#d33",
+			focusConfirm: false,
+			preConfirm: () => {
+				//AQUI SE ACCEDE ANTES DE CONTINUAR CON LA FUNCION AJAX
+				const Id = document.getElementById('IdBuscar').value;	
+				//a esta variable hay que quitarle los espacios para mandarla al metodo api sacar datos
+				const AreaSinEspacios = area.replace(/\s+/g, "");
+				//SI NO ESTAN COMPLETOS SE RETORNA LA FUNCION SOLICITANDO QUE LOS LLENEN
+				if (!Id || !Area || !Institucion) {
+					Swal.showValidationMessage('Llena los campos para continuar!');
+					return false;
+				}
+				//ANIMACION DE BUSCANDO
+				Swal.showValidationMessage(`
+					<div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+						<div class="swal2-loader"></div> Buscando...
+					</div>
+				`);
+				//SI TODO ES CORRECTO Y NO FALTA NINGUN DATO LLEGA AQUI PARA BUSCAR Y SE VA AL CONTROLADOR
+				return $.ajax({
+					url: '/Api/Savcardatos',
+					type: 'GET',
+					data: { Id: Id, tabla: AreaSinEspacios },
+					success: function(response) {
+						//SI HAY UN ERROR EN EL CONTROLADOR
+						if (response.error) {
+							Swal.fire('Error', response.message, 'error');
+							return;
+						}
+
+						//SI TODO ESTA BIEN SE CIERRA ESTE MODAL
+						Swal.close();
+						//LOS DATOS DE LA RESPUESTA SE VAN AL SIGUIENTE METODO PARA CREAR EL CARNET
+						ConfirmacionCarnet(response.datos);
+					},
+					error: function(message) {
+						Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+					}
+				});
+			}
+		});
+	});
+
+</script>

@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Spreadsheet;
+using F23.StringSimilarity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using scorpioweb.Models;
-using Microsoft.AspNetCore.Http;
-using SautinSoft.Document;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using QRCoder;
-using System.Drawing;
-using System.IO;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using scorpioweb.Class;
-using F23.StringSimilarity;
 using Newtonsoft.Json;
+using QRCoder;
+using SautinSoft.Document;
+using scorpioweb.Class;
+using scorpioweb.Models;
 
 namespace scorpioweb.Controllers
 {
@@ -48,7 +50,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="Si", Value="SI"},
             new SelectListItem{ Text="No", Value="NO"}
         };
-        
+
         private List<SelectListItem> listaSexo = new List<SelectListItem>
         {
             new SelectListItem{ Text="Masculino", Value="M"},
@@ -67,7 +69,7 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "C. Región Norte", Value = "C. REGIÓN NORTE" },
             new SelectListItem{ Text = "Archivo", Value = "ARCHIVO" },
             new SelectListItem{ Text = "C. Ejecución de Penas", Value = "C. EJECUCION PENAS" },
-            new SelectListItem{ Text = "Adolescentes", Value = "ADOLESCENTES" }            
+            new SelectListItem{ Text = "Adolescentes", Value = "ADOLESCENTES" }
         };
 
         private List<SelectListItem> ListaUnidadInvestigación = new List<SelectListItem>
@@ -218,16 +220,17 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> MenuSPJ()
         {
+
             return View();
         }
 
 
-            #region -Index-
-            public async Task<IActionResult> Index(
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageNumber)
+        #region -Index-
+        public async Task<IActionResult> Index(
+        string sortOrder,
+        string currentFilter,
+        string searchString,
+        int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -256,7 +259,7 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             var serviciospreviosjuicios = from p in _context.Serviciospreviosjuicio
-                           select p;
+                                          select p;
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -420,20 +423,20 @@ namespace scorpioweb.Controllers
             if (cont != 0)
             {
                 idAER = ((from table in _context.Serviciospreviosjuicio
-                              select table.IdserviciosPreviosJuicio).Max()) + 1;
+                          select table.IdserviciosPreviosJuicio).Max()) + 1;
             }
             else
             {
                 idAER = 1;
             }
-            
+
 
             serviciospreviosjuicio.IdserviciosPreviosJuicio = idAER;
 
             #region -Guardar archivo-
             if (evidencia != null)
             {
-                string file_name = idAER +"_"+ serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
+                string file_name = idAER + "_" + serviciospreviosjuicio.Paterno + "_" + serviciospreviosjuicio.Materno + "_" + serviciospreviosjuicio.Nombre + Path.GetExtension(evidencia.FileName);
                 file_name = mg.replaceSlashes(file_name);
                 serviciospreviosjuicio.RutaAer = file_name;
                 var uploads = Path.Combine(this._hostingEnvironment.WebRootPath, "AER");
@@ -448,7 +451,7 @@ namespace scorpioweb.Controllers
             #endregion
 
             _context.Add(serviciospreviosjuicio);
-         
+
             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
             return RedirectToAction(nameof(Index));
         }
@@ -523,7 +526,7 @@ namespace scorpioweb.Controllers
             ViewBag.idUbicacion = mg.BuscaId(listaUbicacion, serviciospreviosjuicio.Ubicacion);
 
             ViewBag.listaUnidadI = ListaUnidadInvestigación;
-            ViewBag.idUnidad= mg.BuscaId(ListaUnidadInvestigación, serviciospreviosjuicio.UnidadInvestigacion);
+            ViewBag.idUnidad = mg.BuscaId(ListaUnidadInvestigación, serviciospreviosjuicio.UnidadInvestigacion);
 
             ViewBag.listaSituacionJuridica = listaSituacionJuridica;
             ViewBag.idSituacionJuridica = mg.BuscaId(listaSituacionJuridica, serviciospreviosjuicio.Situacion);
@@ -707,9 +710,9 @@ namespace scorpioweb.Controllers
                 _context.SaveChanges();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
+
             }
             #endregion
 
@@ -724,6 +727,145 @@ namespace scorpioweb.Controllers
         private bool ServiciospreviosjuicioExists(int id)
         {
             return _context.Serviciospreviosjuicio.Any(e => e.IdserviciosPreviosJuicio == id);
+        }
+        #endregion
+
+        #region -Envio a correspondencia - 
+        public async Task<IActionResult> Correspondencia()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+           //Un  diccionario para determinar el area en la vista
+            var roleToAreaMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                 { "Uespa", "UESPA" },
+                 { "SupervisorLC", "Libertad Condicionada" },
+                 { "AdminLC", "Libertad Condicionada" },
+                 { "AdminMCSCP", "MCYSCP" },
+                 { "supervisorMCSCP", "MCYSCP" },
+                 { "Coordinador Ejecucion", "Ejecucion" },
+                 { "Ejecucion", "Ejecucion" },
+                 { "Servicios previos", "Servicios Previos" }, 
+                 { "Servicios Legales", "Servicios Legales" },
+                 { "Director", "Direccion" },
+                 { "Vinculacion", "Vinculacion" },
+                 { "Operativo", "Coordinacion Operativa" }
+            };
+
+            // Busca el rol distintivo
+            var userAreas = roles
+                .Where(r => roleToAreaMap.ContainsKey(r))
+                .Select(r => roleToAreaMap[r])
+                .Distinct()
+                .ToList();
+            //aqui se asigna el area del usuario
+            ViewBag.Area = userAreas.First();    
+            
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> EnviarCorrespondencia(Enviocorrespondencia datos)
+        {
+            if (datos == null)
+                return BadRequest(new { success = false, message = "No se recibieron datos" });
+
+            return Json(new { success = true, datos });
+        }
+        [HttpGet]
+        public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch)
+        {
+
+            if (string.IsNullOrEmpty(selectSearch))
+                return BadRequest();
+            if (string.IsNullOrEmpty(searchString))
+                return BadRequest();
+
+            List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
+            // SE ENTRA A ESTE SWITCH CON EL DATO QUE VIENE DEL SELECT EN LA VISTA CORRESPONDENCIA
+            //SOLO VA A ENTRAR AQUI SI EL SELECTSEARCH NO ESTA VACIO Y EL SEARCHSTRING ESTA VACIO
+            if (!string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString))
+            {
+                //PONER AQUI EL VIEW BAG ASEGURA QUE CUANDO SE ACTUALIZE LA PAGINA, SOLO EL FILTRO SELECCIONADO SE QUEDE Y NO EL DE NOMBRE SI ES QUE ESCRIBIO ALGO 
+                ViewBag.CurrentSelectSearch = selectSearch;
+                switch (selectSearch)
+                {
+
+                    case "UESPA":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "UESPA").ToListAsync();
+                        break;
+
+                    case "DIRECCION":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "DIRECCION").ToListAsync();
+                        break;
+
+                    case "EJECUCION":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "EJECUCION").ToListAsync();
+                        break;
+
+                    case "LIBERTAD CONDICIONADA":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "LIBERTAD").ToListAsync();
+                        break;
+
+                    case "MC Y SCP":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "MCYSCP").ToListAsync();
+                        break;
+
+                    case "COORDINACION OPERATIVA":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OPERATIVO").ToListAsync();
+                        break;
+
+                    case "SERVICIOS LEGALES":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOSLEGALES").ToListAsync();
+                        break;
+
+                    case "SERVICIOS PREVIOS":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOSPREVIOS").ToListAsync();
+                        break;
+
+                    case "SISTEMAS":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SISTEMAS").ToListAsync();
+                        break;
+                    case "VINCULACION":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "VINCULACION").ToListAsync();
+                        break;
+
+                    case "ENTREGADO":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 0).ToListAsync();
+                        break;
+
+                    case "RECIBIDO":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 1).ToListAsync();
+                        break;
+
+                    case "TODOS":
+                        correspondencia = await _context.Enviocorrespondencia.ToListAsync();
+                        break;
+
+                    default:
+                        return BadRequest();
+                }
+            }
+            //SOLO VA A ENTRAR AQUI SI EL SELECTSEARCH ESTA VACIO Y EL SEARCHSTRING NO ESTA VACIO
+            else if (string.IsNullOrEmpty(selectSearch) && !string.IsNullOrEmpty(searchString))
+            {
+                //PONER AQUI EL VIEW BAG ASEGURA QUE CUANDO SE ACTUALIZE LA PAGINA, SOLO EL FILTRO SELECCIONADO SE QUEDE Y NO EL DE NOMBRE SI ES QUE ESCRIBIO ALGO 
+                ViewBag.CurrentSearchString = searchString;
+                var words = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                var query = _context.Enviocorrespondencia.AsQueryable();
+
+                foreach (var word in words)
+                {
+                    query = query.Where(m =>
+                        m.Nombre.Contains(word) ||
+                        m.Apaterno.Contains(word) ||
+                        m.Amaterno.Contains(word));
+                }
+
+                correspondencia = await query.ToListAsync();
+            }
+            return View(correspondencia);
         }
         #endregion
 
