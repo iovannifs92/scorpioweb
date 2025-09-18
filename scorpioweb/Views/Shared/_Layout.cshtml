@@ -187,7 +187,8 @@
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE CONDICIONES EN LIBERTAD*@
-                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Oficialia"))
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Oficialia")
+                      || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Index">Condiciones en Libertad</a></li>
                     }
@@ -197,7 +198,8 @@
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
                     @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE MC Y SCP*@
-                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("Oficialia"))
+                    @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") ||
+                                        User.IsInRole("Oficialia") || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Index">MC y SCP</a></li>
                     }
@@ -222,7 +224,7 @@
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("OficialiaAsistente"))
                     {
-                        if (User.IsInRole("OficialiaAsistente"))
+                        if (User.IsInRole("OficialiaAsistente") || User.IsInRole("Servicios Legales"))
                         {
                             <li><a asp-area="" asp-controller="Oficialia" asp-action="EditRegistros">Oficialia</a></li>
                         }
@@ -234,7 +236,7 @@
                     }
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion") || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC"))
                     {
-                        if (User.IsInRole("Oficialia") || User.IsInRole("OficialiaAsistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC"))
+                        if (User.IsInRole("Oficialia") || User.IsInRole("OficialiaAsistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC") || User.IsInRole("Servicios Legales"))
                         {
                             <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecucion</a></li>
                         }
@@ -256,6 +258,10 @@
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
                     {
                         <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicologia</a></li>
+                    }
+                    @if (User.IsInRole("EnvioCorrespondencia") || User.IsInRole("RecibirCorrespondencia"))
+                    {
+                        <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Correspondencia">Correspondencia</a></li>
                     }
                     <li class="nav-item dropdown more-dropdown" id="dropdownLI" style="display:none;">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Más <span class="caret"></span></a>

@@ -437,6 +437,8 @@ namespace scorpioweb.Controllers
                                  from ae in abandonoestadoJoin.DefaultIfEmpty()
                                  join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
                                  from s in saludfisicaJoin.DefaultIfEmpty()
+                                 join supervision in _context.Supervision on p.IdPersona equals supervision.PersonaIdPersona into supervisionJoin
+                                 from supervision in supervisionJoin.DefaultIfEmpty()
                                  where p.IdPersona == id
                                  select new
                                  {
@@ -446,7 +448,8 @@ namespace scorpioweb.Controllers
                                      t,
                                      a,
                                      ae,
-                                     s
+                                     s,
+                                     supervision
                                  }).ToList();
                     listaDatos.AddRange(query);
                     break;
@@ -1098,7 +1101,6 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
-
 
     }
 }
