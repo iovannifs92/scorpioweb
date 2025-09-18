@@ -257,7 +257,6 @@ namespace scorpioweb.Class
             //    }
             //}
 
-
             var anexoDos = anexoDosCurp(curs.ToString().Substring(0, 4));
             curs.Insert(0, anexoDos);
             curs.Insert(4, fnacimiento.Value.ToString("yyMMdd"));

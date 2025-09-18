@@ -293,7 +293,7 @@ namespace scorpioweb.Controllers
             oficialia.Juzgado = mg.normaliza(Juzgado);
             if (oficialia.AsuntoOficio == "AUDIENCIA")
             {
-                oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
+                oficialia.QuienAsistira = "isabel.almora@dgepms.com";
             }
             oficialia.TieneTermino = tieneTermino;
             oficialia.Observaciones = mg.normaliza(observaciones);
@@ -724,7 +724,7 @@ namespace scorpioweb.Controllers
             oficialia.AsuntoOficio = mg.normaliza(oficialia.AsuntoOficio);
             if (oficialia.AsuntoOficio == "AUDIENCIA")
             {
-                oficialia.QuienAsistira = "uriel.ortega@dgepms.com";
+                oficialia.QuienAsistira = "isabel.almora@dgepms.com";
             }
             oficialia.Juzgado = mg.normaliza(oficialia.Juzgado);
             oficialia.FechaTermino = oficialia.FechaTermino;

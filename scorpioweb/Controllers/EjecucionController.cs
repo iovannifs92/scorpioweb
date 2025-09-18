@@ -398,7 +398,7 @@ namespace scorpioweb.Controllers
                     }
                     else
                     {
-                        ejecucion.Encargado = "uriel.ortega@dgepms.com";
+                        ejecucion.Encargado = "isabel.almora@dgepms.com";
                     }
                 }
 
@@ -2011,7 +2011,7 @@ namespace scorpioweb.Controllers
             //                                               select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
 
             var filter = from o in _context.Oficialia
-                         where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar != "uriel.ortega@dgepms.com"
+                         where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar != "isabel.almora@dgepms.com"
                          select o;
 
             ViewData["CurrentFilter"] = searchString;
@@ -2098,8 +2098,8 @@ namespace scorpioweb.Controllers
 
             return View();
         }
-        // POST: Ejecucion/CreateEpCrearAudiencia
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //POST: Ejecucion/CreateEpCrearAudiencia
+        //To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
@@ -2262,7 +2262,7 @@ namespace scorpioweb.Controllers
                     oficialiaAudiencia.FechaTermino = oficialiaAudiencia.FechaTermino;
                     oficialiaAudiencia.FechaRecepcion = oficialiaAudiencia.FechaRecepcion;
                     oficialiaAudiencia.Juzgado = oficialiaAudiencia.Juzgado;
-                    oficialiaAudiencia.QuienAsistira = "uriel.ortega@dgepms.com";
+                    oficialiaAudiencia.QuienAsistira = "isabel.almora@dgepms.com";
                     oficialiaAudiencia.CarpetaEjecucion = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.CarpetaEjecucion));
                     oficialiaAudiencia.Paterno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Paterno));
                     oficialiaAudiencia.Materno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Materno));
@@ -2469,7 +2469,7 @@ namespace scorpioweb.Controllers
             {
                 case "TODOS":
                     ViewDataAlertasVari = from o in oficialiaVM
-                                          where  o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "uriel.ortega@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                          where  o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "isabel.almora@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
                                           orderby o.FechaTermino
                                           select new EjecucionWarningViewModel
                                           {
@@ -2479,7 +2479,7 @@ namespace scorpioweb.Controllers
                     break;
                 case "AUDIENCIAS":
                     ViewDataAlertasVari = from o in oficialiaVM
-                                          where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "uriel.ortega@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                          where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "isabel.almora@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
                                           orderby o.FechaTermino
                                           select new EjecucionWarningViewModel
                                           {
@@ -2545,7 +2545,7 @@ namespace scorpioweb.Controllers
             List<Oficialia> oficialiaVM = _context.Oficialia.ToList();
 
             var warningPlaneacion = from o in oficialiaVM
-                                    where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "uriel.ortega@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                    where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "isabel.almora@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
                                     select new EjecucionWarningViewModel
                                     {
                                         oficialiaVM = o,

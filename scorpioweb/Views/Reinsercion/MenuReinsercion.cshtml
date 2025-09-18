@@ -212,7 +212,15 @@
 					type: 'GET',
 					data: { Id: Id, Area: Area, Institucion : Institucion },
 					success: function(response) {
+						alert(response.nombre)
 						//SI HAY UN ERROR EN EL CONTROLADOR
+						// document.getElementById("nombre").value = response.lista[0].nombre;
+						// document.getElementById("paterno").value = response.lista[0].paterno;
+						// document.getElementById("materno").value = response.lista[0].materno;
+						// document.getElementById("edad").value = response.lista[0].edad;
+						// document.getElementById("tabla").value = tabla;
+						// document.getElementById("idselecionado").value = id;
+
 						if (response.error) {
 							Swal.fire('Error', response.message, 'error');
 							return;

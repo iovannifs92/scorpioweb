@@ -1581,6 +1581,14 @@ namespace scorpioweb.Models
 
             #region -Sacar Roles-
             areaFiltro = mg.areaSegunRol(roles);
+
+            ViewBag.AreaAsignada = areaFiltro == "CL" ? "LibertadCondicionada" :
+                      areaFiltro == "Ejecución de Penas" ? "Ejecucion" :
+                      areaFiltro == "MCySCP" ? "MCYSCP" :
+                      areaFiltro == "Servicios previos" ? "ServiciosPrevios" :
+                      areaFiltro;
+
+         
             #endregion
 
             List<SelectListItem> listaAreas;
@@ -1773,30 +1781,7 @@ namespace scorpioweb.Models
 
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
-            var roleToArea = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "Uespa", "UESPA" },
-                { "Ejecucion", "Ejecución de Penas" },
-                { "AuxiliarEjecucion", "Ejecución de Penas" },
-                { "Coordinador Ejecucion", "Ejecución de Penas" },
-                { "SupervisorLC", "LC" },
-                { "AdminLC", "LC" },
-                { "AdminMCSCP", "MCySCP" },
-                { "SupervisorMCSCP", "MCySCP" },
-                { "AuxiliarMCSCP", "MCySCP" },
-                { "Servicios previos", "Servicios previos" },
-                { "Oficialia", "Oficialia" },
-            // ... puedes añadir más según tus reglas
-            };
-
-            string areaAsignada = roles
-                .Where(role => roleToArea.ContainsKey(role))
-                .Select(role => roleToArea[role])
-                .FirstOrDefault() ?? "Sin área asignada";
-
-
-            ViewBag.AreaAsignada = areaAsignada;
-
+            string areaAsignada = mg.areaSegunRol(roles);
 
             if (areaAsignada == "Ejecución de Penas")
             {
@@ -1831,7 +1816,10 @@ namespace scorpioweb.Models
                     .ToList();
             }
 
-
+            ViewBag.AreaAsignada = areaAsignada == "CL" ? "LibertadCondicionada" :
+                       areaAsignada == "Ejecución de Penas" ? "Ejecucion" :
+                       areaAsignada == "Servicios previos" ? "ServiciosPrevios" :
+                       areaAsignada;
 
             return View();
         }

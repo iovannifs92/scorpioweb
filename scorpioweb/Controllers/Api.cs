@@ -417,7 +417,7 @@ namespace scorpioweb.Controllers
         }
 
 
-        public JsonResult Savcardatos(int id, string tabla)
+        public JsonResult Sacardatos(int id, string tabla)
         {
             List<object> listaDatos = new List<object>();
 
@@ -535,9 +535,78 @@ namespace scorpioweb.Controllers
             }
             return Json(new { success = true, lista = listaDatos });
         }
+
         #endregion
 
-        #region -SACAR CURP-
+        #region
+        //public JsonResult SacardatosSupervision(int id, string tabla)
+        //{
+        //    List<object> listaDatos = new List<object>();
+        //    switch (tabla)
+        //    {
+        //        case "MCYSCP":
+        //            var query = (from s in _context.Supervision
+        //                         join d in _context.Domicilio on p.IdPersona equals d.PersonaIdPersona into domicilioJoin
+        //                         from d in domicilioJoin.DefaultIfEmpty()
+        //                         join e in _context.Estudios on p.IdPersona equals e.PersonaIdPersona into estudiosJoin
+        //                         from e in estudiosJoin.DefaultIfEmpty()
+        //                         join t in _context.Trabajo on p.IdPersona equals t.PersonaIdPersona into trabajoJoin
+        //                         from t in trabajoJoin.DefaultIfEmpty()
+        //                         join a in _context.Actividadsocial on p.IdPersona equals a.PersonaIdPersona into actividadessocialesJoin
+        //                         from a in actividadessocialesJoin.DefaultIfEmpty()
+        //                         join ae in _context.Abandonoestado on p.IdPersona equals ae.PersonaIdPersona into abandonoestadoJoin
+        //                         from ae in abandonoestadoJoin.DefaultIfEmpty()
+        //                         join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
+        //                         from s in saludfisicaJoin.DefaultIfEmpty()
+        //                         where p.IdPersona == id
+        //                         select new
+        //                         {
+        //                             p,
+        //                             d,
+        //                             e,
+        //                             t,
+        //                             a,
+        //                             ae,
+        //                             s
+        //                         }).ToList();
+        //            listaDatos.AddRange(query);
+        //            break;
+        //        case "LibertadCondicionada":
+        //            var queryCL = (from p in _context.Personacl
+        //                           join d in _context.Domiciliocl on p.IdPersonaCl equals d.PersonaclIdPersonacl into domicilioJoin
+        //                           from d in domicilioJoin.DefaultIfEmpty()
+        //                           join e in _context.Estudioscl on p.IdPersonaCl equals e.PersonaClIdPersonaCl into estudiosJoin
+        //                           from e in estudiosJoin.DefaultIfEmpty()
+        //                           join t in _context.Trabajocl on p.IdPersonaCl equals t.PersonaClIdPersonaCl into trabajoJoin
+        //                           from t in trabajoJoin.DefaultIfEmpty()
+        //                           join a in _context.Actividadsocialcl on p.IdPersonaCl equals a.PersonaClIdPersonaCl into actividadessocialesJoin
+        //                           from a in actividadessocialesJoin.DefaultIfEmpty()
+        //                           join ae in _context.Abandonoestadocl on p.IdPersonaCl equals ae.PersonaclIdPersonacl into abandonoestadoJoin
+        //                           from ae in abandonoestadoJoin.DefaultIfEmpty()
+        //                           join s in _context.Saludfisicacl on p.IdPersonaCl equals s.PersonaClIdPersonaCl into saludfisicaJoin
+        //                           from s in saludfisicaJoin.DefaultIfEmpty()
+        //                           where p.IdPersonaCl == id
+        //                           select new
+        //                           {
+        //                               p,
+        //                               d,
+        //                               e,
+        //                               t,
+        //                               a,
+        //                               ae,
+        //                               s
+        //                           }).ToList();
+        //            listaDatos.AddRange(queryCL);
+        //        break;
+
+        //    }
+        //    return Json(new { success = true, lista = listaDatos });
+        //}
+        #endregion  
+
+
+
+            #region -SACAR CURP-
         public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
         {
             var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);

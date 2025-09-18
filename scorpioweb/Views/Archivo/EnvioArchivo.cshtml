@@ -167,6 +167,122 @@
             }
         });
     }
+
+
+    function createEnvioArchivo() {
+        //PRIMERO SOLICITAMOS LOS DATOS  PARA BUSCAR A LA PERSONA ADULTA
+        Swal.fire({
+            title: "Buscar persona",
+            html: `
+                <div>
+                    <label class="control-label">Area: @ViewBag.AreaAsignada</label>
+                    <br/>
+                    <label class="control-label">Coloque el Id</label>
+                    <input required id="Id" type="text" class="form-control"/>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Buscar",
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "#d33",
+            focusConfirm: false,
+            preConfirm: () => {
+                //AQUI SE ACCEDE ANTES DE CONTINUAR CON LA FUNCION AJAX
+                const tabla = "@ViewBag.AreaAsignada";
+                const id = document.getElementById('Id').value;
+               
+                //SI NO ESTAN COMPLETOS SE RETORNA LA FUNCION SOLICITANDO QUE LOS LLENEN
+                if (!id || !tabla) {
+                    Swal.showValidationMessage('Llena los campos para continuar!');
+                    return false;
+                }
+                //ANIMACION DE BUSCANDO
+                Swal.showValidationMessage(`
+                    <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+                        <div class="swal2-loader"></div> Buscando...
+                    </div>
+                `);
+                //SI TODO ES CORRECTO Y NO FALTA NINGUN DATO LLEGA AQUI PARA BUSCAR Y SE VA AL CONTROLADOR
+                return $.ajax({
+                    url: '/Api/Sacardatos',
+                    type: 'GET',
+                    data: { id: id, tabla: tabla },
+                    success: function(response) {
+                        //SI HAY UN ERROR EN EL CONTROLADOR
+                        // alert(response.lista[0].p.nombre)
+                        // alert(response.lista[0].p.paterno)
+                        // alert(response.lista[0].p.materno)
+                        if (response.error) {
+                            Swal.fire('Error', response.message, 'error');
+                            return;
+                        }
+                        //SI TODO ESTA BIEN SE CIERRA ESTE MODAL
+                        Swal.close();
+                        //LOS DATOS DE LA RESPUESTA SE VAN AL SIGUIENTE METODO PARA CREAR EL CARNET
+                        alert(1)
+                        ConfirmacionEnvioArchivo(response.lista[0]);
+                    },
+                    error: function(message) {
+                        Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+                    }
+                });
+            }
+        });
+    }
+
+
+    function ConfirmacionEnvioArchivo(data) {
+        Swal.fire({
+            title: 'Datos de persona encontrados',
+            html: `
+                <img src="${data.p.rutaFoto}" style="width:150px;height:150px;border-radius:8px;margin-bottom:10px;" />
+                <p>ID Persona: ${data.p.idPersona}</p>
+                <p>Nombre: ${data.p.nombre} ${data.p.paterno} ${data.p.materno}</p>
+                `,
+            showCancelButton: true,
+            confirmButtonText: 'Siguente',
+            confirmButtonColor: '#02bd05',
+            cancelButtonText: 'Cancelar',
+            cancelButtonColor: "#d33",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/Envioarchivo/BuscarSupervision',
+                    type: 'POST',
+                    data:  { id,tabla },                // send FormData directly
+                    contentType: false,            //son necesarios para manda la informacion correctamente // let browser set multipart/form-data
+                    processData: false,            // do not stringify FormData
+                    success: function(response) {
+                        if (!response.success) {
+                            Swal.fire('Error', response.message || 'Ocurrió un error', 'error');
+                        } else {
+                            Swal.fire('Éxito', response.message, 'success').then(() => {
+                                window.open(response.url, '_blank');
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error', 'No se pudo crear el carnet: ' + error, 'error');
+                    }
+                });
+
+                //SI LOS DATOS SON CONFIRMADOS POR EL USUARIO SE TRANSFORMAN LOS DATOS A LA FORMA CORRECTA PARA EL METODO
+                //ESTO SE HACE POR QUE EN EL METODO CrearCarnet SE ESPERA UN MODELO DEL TIPO [FromForm]
+                //const formData = new FormData();
+
+                //NOTA LAS COSAS ENTRE COMILLAS DEBEN DE SER IGUAL QUE LOS NOMBRE DEL MODELO PersonaCarnetViewModel SI NO VAN A ESTAR VACIOS
+                // formData.append("IdPersona", data.idPersona);
+                // formData.append("Nombre", data.nombre);
+                // formData.append("Telefono", data.telefono);
+
+                //alert(data.p.idPersona)
+
+
+       
+            }
+        });
+    }
+
     
 </script>
 
@@ -241,8 +357,8 @@
     <a asp-action="Envioarchivo">Regresar al Listado Completo </a>
 </div>
 <div style="text-align:right" class="col-md-6">
-    <a id="btnEditar" asp-action="createEnvioArchivo" class="btn btn-primary">
-        <i class="fa fa-plus"></i> Crear nuevo Registro
+    <a onclick="createEnvioArchivo();" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
+        <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
     </a>
 </div>
 
