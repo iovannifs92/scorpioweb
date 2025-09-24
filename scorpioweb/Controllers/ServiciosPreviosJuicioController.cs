@@ -735,33 +735,60 @@ namespace scorpioweb.Controllers
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
-
-           //Un  diccionario para determinar el area en la vista
-            var roleToAreaMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            int count = 0; // SI AL FINAL ESTA VARIABLE VALE 2, EL USUARIO TIENE LOS DOS ROLES Y VA A PODER LAS ACCIONES DE ENVIAR Y RECIBIR
+            ViewBag.Area = mg.areaSegunRol(roles);
+            ViewBag.BotonId = true;
+            ViewBag.EnviarRecibir = false;
+            switch (ViewBag.Area)
             {
-                 { "Uespa", "UESPA" },
-                 { "SupervisorLC", "Libertad Condicionada" },
-                 { "AdminLC", "Libertad Condicionada" },
-                 { "AdminMCSCP", "MCYSCP" },
-                 { "supervisorMCSCP", "MCYSCP" },
-                 { "Coordinador Ejecucion", "Ejecucion" },
-                 { "Ejecucion", "Ejecucion" },
-                 { "Servicios previos", "Servicios Previos" }, 
-                 { "Servicios Legales", "Servicios Legales" },
-                 { "Director", "Direccion" },
-                 { "Vinculacion", "Vinculacion" },
-                 { "Operativo", "Coordinacion Operativa" }
-            };
+                case "MCySCP": ViewBag.Area = "MCYSCP";//esto se modifica para que al momento de buscar por id no halla problema en el metodo sacar datos de la api
+                break; 
+              
+                case "LC":ViewBag.Area = "Libertad Condicionada";//esto se modifica para que al momento de buscar por id no halla problema en el metodo sacar datos de la api  
+                    break;
+                
+                case "UESPA":ViewBag.BotonId = false;//NO ES NECESARIO POR QUE NO HAY BD DE ADOLESCENTES
+                    break;
+                
+                case "Direccion":ViewBag.BotonId = false;//NO ES NECESARIO POR QUE NO HAY BD DE DIRECCION
+                    break;
+                
+                case "Vinculacion":ViewBag.BotonId = false;//NO ES NECESARIO POR QUE NO HAY BD DE VINCULACION
+                    break;
+                
+                case "Ejecución de Penas": ViewBag.Area = "Ejecucion";
+                    break;
+                
+                case "Servicios previos": ViewBag.Area = "Servicios Previos";
+                    break;
+                
+                case "Servicios legales":
+                    ViewBag.BotonId = false;
+                    break;
+                
+                case "Sistemas":
+                    ViewBag.BotonId = false;//NO ES NECESARIO POR QUE NO HAY BD DE SISTEMAS
+                    break;
+                
+                case "Oficialia": 
+                    break;// SOLO PARA QUE NO SE VAYA AL DEFAULT
+                
+                case "Coordinacion Operativa":
+                    break;// SOLO PARA QUE NO SE VAYA AL DEFAULT
+                
+                default:
+                    ViewBag.Area = ViewBag.Area ?? "SIN AREA";
+                    ViewBag.BotonId = false;
+                    break;
+            }
+            foreach(var rol in roles)
+            {
+                if (rol.ToString().Equals("EnviarCorrespondencia") || rol.ToString().Equals("RecibirCorrespondencia"))
+                    count++;
+            }
+            if (count == 2)
+                ViewBag.EnviarRecibir = true;// EL USUARIO PUEDE ENVIAR Y RECIBIR DOCUMENTOS
 
-            // Busca el rol distintivo
-            var userAreas = roles
-                .Where(r => roleToAreaMap.ContainsKey(r))
-                .Select(r => roleToAreaMap[r])
-                .Distinct()
-                .ToList();
-            //aqui se asigna el area del usuario
-            ViewBag.Area = userAreas.First();    
-            
             return View();
         }
         [HttpPost]
@@ -770,76 +797,151 @@ namespace scorpioweb.Controllers
             if (datos == null)
                 return BadRequest(new { success = false, message = "No se recibieron datos" });
 
-            return Json(new { success = true, datos });
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            datos.Nombre = mg.normaliza(datos.Nombre);
+            datos.Apaterno = mg.normaliza(datos.Apaterno);
+            datos.Amaterno = mg.normaliza(datos.Amaterno);
+            datos.Nombre = mg.normaliza(datos.Nombre);
+            datos.QuienEntrega = user.UserName; 
+            datos.FechaRegistro = DateTime.Now;
+            datos.Entregado = 0;
+            datos.Recibido = 0;
+            datos.FiguraJudicial = mg.normaliza(datos.FiguraJudicial) ?? "NA";
+            datos.Area = mg.normaliza(datos.Area) ?? "NA";
+            datos.Asunto = mg.normaliza(datos.Asunto) ?? "NA";
+            datos.Autoridad = mg.normaliza(datos.Autoridad) ?? "NA";
+            datos.Observaciones = datos.Observaciones ?? "NA";
+
+            try
+            {
+                // Assuming _context is your DbContext injected in the controller
+                await _context.Enviocorrespondencia.AddAsync(datos);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, datos });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
         [HttpGet]
         public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch)
         {
 
-            if (string.IsNullOrEmpty(selectSearch))
-                return BadRequest();
-            if (string.IsNullOrEmpty(searchString))
+            if (string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString))
                 return BadRequest();
 
             List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
+            var officialAreas = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { 
+                { "UESPA", "UESPA" }, 
+                { "Ejecución de Penas", "EJECUCION" },
+                { "LC", "LIBERTAD CONDICIONADA" },
+                { "MCySCP", "MCYSCP" },
+                { "Servicios legales", "SERVICIOS LEGALES" }, 
+                { "Servicios previos", "SERVICIOS PREVIOS" }, 
+                { "Sistemas", "SISTEMAS" }, { "Oficialia", "OFICIALIA" }, 
+                { "Coordinacion Operativa", "COORDINACION OPERATIVA" },
+                { "Direccion", "DIRECCION" }, 
+                { "Vinculacion", "VINCULACION" } 
+            };
+
+            // Get all users and their roles
+            var users = await userManager.Users.ToListAsync();
+            var userAreas = new Dictionary<string, string>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+
+                // Skip users who only have "usuario" as their single role
+                if (roles.Count == 1 && roles.Contains("usuario", StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var internalArea = mg.areaSegunRol(roles); // your existing method
+
+                // Map internal area to official display area
+                if (officialAreas.ContainsKey(internalArea))
+                {
+                    userAreas[user.UserName] = officialAreas[internalArea];
+                }
+                else
+                {
+                    userAreas[user.UserName] = "Sin área asignada";
+                }
+            }
+
+            ViewBag.UserAreas = userAreas;
+
             // SE ENTRA A ESTE SWITCH CON EL DATO QUE VIENE DEL SELECT EN LA VISTA CORRESPONDENCIA
             //SOLO VA A ENTRAR AQUI SI EL SELECTSEARCH NO ESTA VACIO Y EL SEARCHSTRING ESTA VACIO
             if (!string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString))
             {
                 //PONER AQUI EL VIEW BAG ASEGURA QUE CUANDO SE ACTUALIZE LA PAGINA, SOLO EL FILTRO SELECCIONADO SE QUEDE Y NO EL DE NOMBRE SI ES QUE ESCRIBIO ALGO 
                 ViewBag.CurrentSelectSearch = selectSearch;
+                selectSearch = selectSearch.ToUpper();
                 switch (selectSearch)
                 {
 
                     case "UESPA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "UESPA").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "UESPA").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "DIRECCION":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "DIRECCION").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "DIRECCION").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "EJECUCION":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "EJECUCION").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "EJECUCION").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "LIBERTAD CONDICIONADA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "LIBERTAD").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "LIBERTAD CONDICIONADA").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
-                    case "MC Y SCP":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "MCYSCP").ToListAsync();
+                    case "MCYSCP":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "MCYSCP").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "COORDINACION OPERATIVA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OPERATIVO").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OPERATIVO").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "SERVICIOS LEGALES":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOSLEGALES").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOS LEGALES").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "SERVICIOS PREVIOS":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOSPREVIOS").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOS PREVIOS").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "SISTEMAS":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SISTEMAS").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SISTEMAS").OrderBy(m => m.Entregado).ToListAsync();
+                        break;
+
+                    case "OFICIALIA":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OFICIALIA").OrderBy(m => m.Entregado).ToListAsync();
                         break;
                     case "VINCULACION":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "VINCULACION").ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "VINCULACION").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
-                    case "ENTREGADO":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 0).ToListAsync();
+                    case "OFICIO NO ENTREGADO-ACUSE NO RECIBIDO":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 0 && m.Recibido == 0).OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
-                    case "RECIBIDO":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 1).ToListAsync();
+                    case "OFICIO ENTREGADO-ACUSE NO RECIBIDO":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 0).OrderBy(m => m.Recibido).ToListAsync();
                         break;
 
+                    case "OFICIO ENTREGADO-ACUSE RECIBIDO":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 1).OrderBy(m => m.Entregado).ToListAsync();
+                        break;
+                  
                     case "TODOS":
-                        correspondencia = await _context.Enviocorrespondencia.ToListAsync();
+                        correspondencia = await _context.Enviocorrespondencia.OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     default:
@@ -850,22 +952,57 @@ namespace scorpioweb.Controllers
             else if (string.IsNullOrEmpty(selectSearch) && !string.IsNullOrEmpty(searchString))
             {
                 //PONER AQUI EL VIEW BAG ASEGURA QUE CUANDO SE ACTUALIZE LA PAGINA, SOLO EL FILTRO SELECCIONADO SE QUEDE Y NO EL DE NOMBRE SI ES QUE ESCRIBIO ALGO 
+                searchString = searchString.ToUpper();
                 ViewBag.CurrentSearchString = searchString;
-                var words = searchString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                var query = _context.Enviocorrespondencia.AsQueryable();
-
-                foreach (var word in words)
-                {
-                    query = query.Where(m =>
-                        m.Nombre.Contains(word) ||
-                        m.Apaterno.Contains(word) ||
-                        m.Amaterno.Contains(word));
-                }
-
-                correspondencia = await query.ToListAsync();
+                correspondencia = await _context.Enviocorrespondencia
+                    .Where(m => m.Nombre.Contains(searchString)
+                             || m.Apaterno.Contains(searchString)
+                             || m.Amaterno.Contains(searchString))
+                    .OrderBy(m => m.Entregado)
+                    .ToListAsync();
             }
-            return View(correspondencia);
+            //SE RETORNA UNA VISTA PARCIAL PARA QUE NO SE ACTUALIZE TODA LA PAGINA, ADEMAS MANDAMOS EL MODELO PARA LA TABLA
+            return PartialView("_RecibirCorrespondencia", correspondencia);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ModificarCorrespondencia(int id, string tipo,string usuario)
+        {
+            var correspondencia = await _context.Enviocorrespondencia.FindAsync(id);
+            if (correspondencia == null)
+                return Json(new { success = false, message = "Registro no encontrado" });
+
+            switch (tipo)
+            {
+                case "entregado":
+                    correspondencia.Entregado = 1;
+                    correspondencia.FechaEntrega = DateTime.Now;
+                    break;
+                case "recibido":
+                    correspondencia.Recibido = 1;
+                    correspondencia.FechaRecibido = DateTime.Now;
+                    break;
+                case "select-usuario":
+                    correspondencia.QuienRecibe = usuario;
+                    break;
+            }
+            try
+            {
+                
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+
+                return Json(new { success = false, message ="Error al actualizar el registro" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error al actualizar el registro" });
+            }
+
+
+            return Json(new { success = true });
         }
         #endregion
 

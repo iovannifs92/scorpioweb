@@ -437,8 +437,6 @@ namespace scorpioweb.Controllers
                                  from ae in abandonoestadoJoin.DefaultIfEmpty()
                                  join s in _context.Saludfisica on p.IdPersona equals s.PersonaIdPersona into saludfisicaJoin
                                  from s in saludfisicaJoin.DefaultIfEmpty()
-                                 join supervision in _context.Supervision on p.IdPersona equals supervision.PersonaIdPersona into supervisionJoin
-                                 from supervision in supervisionJoin.DefaultIfEmpty()
                                  where p.IdPersona == id
                                  select new
                                  {
@@ -448,8 +446,7 @@ namespace scorpioweb.Controllers
                                      t,
                                      a,
                                      ae,
-                                     s,
-                                     supervision
+                                     s
                                  }).ToList();
                     listaDatos.AddRange(query);
                     break;
@@ -1098,6 +1095,72 @@ namespace scorpioweb.Controllers
             string folio = $"{numeroConsecutivo:D3}-{ahora.Month:D2}-{ahora.Day:D2}";
 
             return folio;
+        }
+
+        #endregion
+
+
+        #region -Sacar Supervision MC Y LC-
+        [HttpGet]
+        public JsonResult SupervisionCompletaMCLC(int idPersona, string area)
+        {
+            List<object> listaDatos = new List<object>();
+
+            try
+            {
+                switch (area)
+                {
+                    case "MCYSCP":
+                        var query = (from p in _context.Persona
+                                     join scl in _context.Supervision on p.IdPersona equals scl.PersonaIdPersona
+                                     join cp in _context.Causapenal on scl.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                                     join f in _context.Fraccionesimpuestas on scl.IdSupervision equals f.SupervisionIdSupervision
+                                     where p.IdPersona == idPersona
+                                     group new { p, scl, cp, f } by scl.IdSupervision into g
+                                     select new
+                                     {
+                                         //SE OBTIENE LOS DATOS DE LA PERSONA, SUPERVISION, CAUSA PENAL Y CON EL PRIMER BENEFICIO DONDDE LA FIGURA JUDICIAL NO SEA NULL
+                                         Persona = g.First().p,
+                                         Supervision = g.First().scl,
+                                         CausaPenal = g.First().cp,
+                                         //SE LLAMA FRACCIONES PARA QUE TODO SE RETORNE IGUAL
+                                         //SELECCIONAMOS UNA FRACCION POR SUPERVISION DONDE LA FRACCION NO SEA NULA O VACIA
+                                         Fracciones = g.Where(x => x.f.FiguraJudicial != null).FirstOrDefault()
+                                     }).ToList();
+                        listaDatos.AddRange(query);
+
+                        break;
+                    case "LibertadCondicionada":
+                        var queryCL = (from p in _context.Personacl
+                                       join scl in _context.Supervisioncl on p.IdPersonaCl equals scl.PersonaclIdPersonacl
+                                       join cp in _context.Causapenalcl on scl.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl
+                                       join b in _context.Beneficios on scl.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
+                                       where p.IdPersonaCl == idPersona
+                                       group new { p, scl, cp, b } by scl.IdSupervisioncl into g
+                                       select new
+                                       {
+                                           //SE OBTIENE LOS DATOS DE LA PERSONA, SUPERVISION, CAUSA PENAL Y CON EL PRIMER BENEFICIO DONDDE LA FIGURA JUDICIAL NO SEA NULL
+                                           Persona = g.First().p,
+                                           Supervision = g.First().scl,
+                                           CausaPenal = g.First().cp,
+                                           //SE LLAMA FRACCIONES PARA QUE TODO SE RETORNE IGUAL
+                                           //SELECCIONAMOS UN BENEFICIO POR SUPERVISION DONDE LA FRACCION NO SEA NULA O VACIA
+                                           Fracciones = g.Where(x => !string.IsNullOrEmpty(x.b.FiguraJudicial)).Select(x => x.b) 
+                                             .FirstOrDefault()
+                }).ToList();
+                        listaDatos.AddRange(queryCL);
+                        break;
+                    default:
+                        return Json(new { success = false, message = "Error al consultar" });
+                   
+                }
+            }
+            catch (Exception ex) {
+
+                return Json(new { success = false, message = "Error al consultar: " + ex });
+            }
+            return Json(new { success = true, lista = listaDatos });
+
         }
 
         #endregion
