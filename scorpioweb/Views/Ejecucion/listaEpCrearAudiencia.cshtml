@@ -1,4 +1,4 @@
-﻿@model PaginatedList<scorpioweb.Models.Oficialia>
+﻿@model PaginatedList<scorpioweb.Models.OficialiaAudienciaVM>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 @{
@@ -24,53 +24,149 @@
         })
     }
 
-    function DeleteCrearAudiencia(id) {
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Ejecucion/DeleteCrearAudiencia",
-                traditional: true,
-                data: {
-                    dato: id,
-                },
-                success: function (response) {
-                    if (response.borrar == true) {
-                        alert("El Registro ha sido borrado");
-                        location.reload();
-                    } else {
-                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                    }
-                },
-                error: function (response) {
-                    alert(response.error);
+    function DeleteCrearAudienciaEp(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
 
-                }
-            });
-        } else {
-            return;
-        }
-        return;
-    };
+        swalWithBootstrapButtons.fire({
+            title: "¿Estas seguro que quieres borrar el registro?",
+            text: "Ya no se podrá revertir el cambio",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, borrar!",
+            cancelButtonText: "No, cancelar!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Ejecucion/DeleteCrearAudienciaEp",
+                    traditional: true,
+                    data: { dato: id },
+                    success: function (response) {
+                        if (response.borrar === true) {
+                            Swal.fire({
+                                title: "Borrado!",
+                                text: "El registro ha sido borradoqqq.",
+                                icon: "success",
+                                timer: 4500
+                            });
+
+                            location.reload();
+                        } else {
+                            swalWithBootstrapButtons.fire({
+                                title: "Error",
+                                text: "No se pudieron guardar los datos, contacte con el administrador del sistema.",
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function () {
+                        swalWithBootstrapButtons.fire({
+                            title: "Error",
+                            text: "Hubo un problema con la petición AJAX.",
+                            icon: "error"
+                        });
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelado",
+                    text: "El registro está seguro :)",
+                    icon: "error"
+                });
+            }
+        });
+    }
+    function DeleteCrearAudiencia(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: "¿Estas seguro que quieres borrar el registro?",
+            text: "Ya no se podrá revertir el cambio",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, borrar!",
+            cancelButtonText: "No, cancelar!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Ejecucion/DeleteCrearAudiencia",
+                    traditional: true,
+                    data: { dato: id },
+                    success: function (response) {
+                        if (response.borrar === true) {
+                            Swal.fire({
+                                title: "Borrado!",
+                                text: "El registro ha sido borradoqqq.",
+                                icon: "success",
+                                timer: 4500
+                            });
+
+                            location.reload();
+                        } else {
+                            swalWithBootstrapButtons.fire({
+                                title: "Error",
+                                text: "No se pudieron guardar los datos, contacte con el administrador del sistema.",
+                                icon: "error"
+                            });
+                        }
+                    },
+                    error: function () {
+                        swalWithBootstrapButtons.fire({
+                            title: "Error",
+                            text: "Hubo un problema con la petición AJAX.",
+                            icon: "error"
+                        });
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelado",
+                    text: "El registro está seguro :)",
+                    icon: "error"
+                });
+            }
+        });
+    }
 
     var arr = [];
-    function myFunction(id) {
+
+    function myFunction(id, area) {
         var encontro = false;
-        var doble;
+        var index;
+        alert(id)
+        alert(area)
         for (var i = 0; i < arr.length; i++) {
-            if (arr[i] === id) {
+            if (arr[i].id === id && arr[i].area === area) {
                 encontro = true;
-                doble = i;
+                index = i;
                 break;
             }
         }
-        if (encontro == false) {
-            arr.push(id);
+
+        if (!encontro) {
+            arr.push({ id: id, area: area }); // objeto con id y area
         } else {
-            arr.splice(doble, 1);
+            arr.splice(index, 1); // quita el elemento
         }
     }
+
 
 
     $(document).ready(function () {
@@ -101,6 +197,8 @@
 
         });
     });
+
+
 </script>
 
 <h2>Audiencias</h2>
@@ -161,14 +259,14 @@
         {
             <tr>
                 <td>
-                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.IdOficialia)">
+                    <input type="checkbox" id="myCheck" onclick="myFunction(@item.Id, '@item.Area')">
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdOficialia)
+                    @Html.DisplayFor(modelItem => item.Id)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FechaTermino)
-                </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.FechaAudiencia)
+                </th>
                 <td>
                     @Html.DisplayFor(modelItem => item.QuienAsistira)
                 </td>
@@ -182,19 +280,38 @@
                     @Html.DisplayFor(modelItem => item.CarpetaEjecucion)
                 </td>
                 <td>
-                    @item.Paterno  @item.Materno @item.Nombre
+                    @item.Nomcom
                 </td>
-                <td>
-                    <a onclick="showModal('@Url.Action("EditEpCreateAudiencia", "Ejecucion", new {id=@item.IdOficialia}, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
+                @if (item.Area == "Oficialia")
+                {
+                    <td>
+                        <a onclick="showModal('@Url.Action("EditEpCreateAudiencia", "Ejecucion", new { id = @item.Id }, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
-                    {
-                        <button onclick="DeleteCrearAudiencia(@item.IdOficialia)" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Borrar
-                        </button>
-                    }                        
+                        @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                        {
+                            <button onclick="DeleteCrearAudiencia(@item.Id)" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Borrar
+                            </button>
+                        }
 
-                </td>
+                    </td>
+
+                }
+                else
+                {
+                    <td>
+                        <a onclick="showModal('@Url.Action("editAudienciaEp", "Ejecucion", new { id = @item.Id }, Context.Request.Scheme)','Editar Audiencia',null )" class="btn btn-success fa fa-pencil" style="margin-bottom:10px;"> Editar Audiencia</a>
+
+                        @if (User.IsInRole("Masteradmin") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Director"))
+                        {
+                            <button onclick="DeleteCrearAudienciaEp(@item.Id)" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Borrar
+                            </button>
+                        }
+
+                    </td>
+                }
+                
             </tr>
         }
     </tbody>
@@ -205,7 +322,7 @@
     <a onclick="showModal('@Url.Action("CreateEpCrearAudiencia", "Ejecucion", Context.Request.Scheme)','Crear audiencia',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
 *@
     <a id="btnImprimirR" name="btnImprimirR"  class="btn btn-info"><i class="fa fa-file-text-o"></i> Imprimir Reporte</a>
-<a onclick="showModal('@Url.Action("CreateEpCrearAudiencia", "Ejecucion", Context.Request.Scheme)','Crear audiencia',null )"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
+<a asp-action ="createAudienciaEp" asp-controller="Ejecucion"><img src="~/images/addArchivo.png" height="60" width="60" /></a>
 
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";

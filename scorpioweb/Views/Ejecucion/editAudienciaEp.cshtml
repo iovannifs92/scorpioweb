@@ -1,0 +1,54 @@
+﻿@model scorpioweb.Models.Audienciaep
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="editAudienciaEp" asp-controller="Ejecucion">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="IdaudienciaEp" />
+            <div class="form-group">
+                <label asp-for="Sentenciado" class="control-label"></label>
+                <input asp-for="Sentenciado" class="form-control" />
+                <span asp-validation-for="Sentenciado" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaNotificacion" class="control-label"></label>
+                <input asp-for="FechaNotificacion" class="form-control" />
+                <span asp-validation-for="FechaNotificacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaAudiencia" class="control-label"></label>
+                <input asp-for="FechaAudiencia" class="form-control" />
+                <span asp-validation-for="FechaAudiencia" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="padding-top:1%;">
+                <label class="control-label">Juzgado</label>
+                <select class="form-control" name="Juzgado" id="Juzgado"
+                        asp-items="@(new SelectList(ViewBag.Liatajuzgado, ViewBag.Selectturno))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CarpetaEjecucion" class="control-label"></label>
+                <input asp-for="CarpetaEjecucion" class="form-control" />
+                <span asp-validation-for="CarpetaEjecucion" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="padding-top:1%;">
+                <label class="control-label">Quien Asistira</label>
+                <select class="form-control" name="Usuario" id="Usuario"
+                        asp-items="@(new SelectList(ViewBag.ListaUser, ViewBag.UserEdit))">
+                    <option value="NA">NA</option>
+                </select>
+            </div>
+
+            <input disabled type="hidden" asp-for="IdejecucionEjecucion" class="form-control" />
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="btnSave" name="btnSave"><i class="fa fa-save"></i> Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

@@ -407,7 +407,11 @@ namespace scorpioweb.Class
                 { "SupervisorMCSCP", "MCySCP" },
                 { "AuxiliarMCSCP", "MCySCP" },
                 { "Servicios previos", "Servicios previos" },
-                { "Oficialia", "Oficialia" }
+                { "Oficialia", "Oficialia" },
+                { "Archivo", "Archivo"},
+                { "ArchivoAsistente", "Archivo"},
+                { "ArchivoMCSCP", "MCySCP" },
+
             };
 
             foreach (var role in roles)

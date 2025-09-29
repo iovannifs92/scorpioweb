@@ -1,0 +1,132 @@
+﻿@model scorpioweb.Models.Audienciaep
+
+@{
+    ViewData["Title"] = "createAudienciaEp";
+}
+
+<script>
+    $(document).ready(function () {
+        $("#Sentenciado").on("keyup", function () {
+            var term = $(this).val();
+            if (term.length < 2) {
+                $("#resultados").empty();
+                return;
+            }
+            $.ajax({
+                url: '@Url.Action("BuscarPersonasej", "Ejecucion")', // 🔹 cambia "TuControlador"
+                data: { term: term },
+                success: function (data) {
+                    $("#resultados").empty();
+                    if (data.length === 0) {
+                        $("#resultados").append('<li class="list-group-item">Sin resultados</li>');
+                    } else {
+                        $.each(data, function (i, persona) {
+                            $("#resultados").append(
+                                '<li class="list-group-item" style="cursor:pointer;" ' +
+                                    'data-id="' + persona.idEjecucion + '" ' +
+                                    'data-nombre="' + persona.nombreCompleto + '" ' +
+                                    'data-ce="' + persona.ce + '" ' +
+                                    'data-juzgado="' + persona.juzgado + '">' +
+                                    '<strong>' + persona.nombreCompleto + '</strong><br/>' +
+                                    'Usuario: ' + persona.usuario + '<br/>' +
+                                    'Carpeta de Ejecución: ' + persona.ce + '<br/>' +
+                                    'Juzgado: ' + persona.juzgado + '<br/>' +
+                                    'Estado: ' + persona.estadoActual +
+                                '</li>'
+                            );
+                        });
+                    }
+                }
+            });
+        });
+
+        // evento al dar clic en un resultado
+        $("#resultados").on("click", "li", function () {
+            var id = $(this).data("id");
+            var ce = $(this).data("ce");
+            var juzgado = $(this).data("juzgado");
+            var nombre = $(this).data("nombre");
+            document.getElementById("CarpetaEjecucion").value = ce;
+            document.getElementById("IdejecucionEjecucion").value = id;
+            document.getElementById("Juzgado").value = juzgado;
+            $("#Sentenciado").val(nombre);
+            // limpiar la lista
+            $("#resultados").empty();
+        });
+    });
+</script>
+
+<h2>Crear Audiencia</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="createAudienciaEp">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group" hidden style="display:none">
+                <label asp-for="IdaudienciaEp" class="control-label"></label>
+                <input asp-for="IdaudienciaEp" class="form-control" />
+                <span asp-validation-for="IdaudienciaEp" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="buscar">Sentenciado</label>
+                <input type="text" id="Sentenciado" name="Sentenciado" class="form-control" autocomplete="off" placeholder="Escribe un nombre..." />
+            </div>
+
+            <ul id="resultados" class="list-group"></ul>
+           @*<div class="form-group">
+                <label asp-for="Juzgado" class="control-label"></label>
+                <input asp-for="Juzgado" class="form-control" />
+                <span asp-validation-for="Juzgado" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label class="control-label">Juzgado</label>
+                <select class="form-control" name="Juzgado" id="Juzgado"
+                        asp-items="@(new SelectList(ViewBag.Liatajuzgado, "Value"))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Carpeta de Ejecucion</label>
+                <input asp-for="CarpetaEjecucion" id="CarpetaEjecucion" name="CarpetaEjecucion" class="form-control" />
+                <span asp-validation-for="CarpetaEjecucion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Quien Asistira</label>
+            </div>
+            <select id="Usuario" name="Usuario" class="form-control" style="margin-bottom: 10px">
+                <option value="">-- Selecciona un usuario --</option>
+                @foreach (var usuario in (List<string>)ViewBag.LiataTurno)
+                {
+                    <option value="@usuario">@usuario</option>
+                }
+            </select>
+
+            <div class="form-group">
+                <label asp-for="FechaNotificacion" class="control-label"></label>
+                <input asp-for="FechaNotificacion" class="form-control" />
+                <span asp-validation-for="FechaNotificacion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaAudiencia" class="control-label"></label>
+                <input asp-for="FechaAudiencia" class="form-control" />
+                <span asp-validation-for="FechaAudiencia" class="text-danger"></span>
+            </div>
+            <div class="form-group" hidden style="display:none">
+                <label asp-for="IdejecucionEjecucion" class="control-label"></label>
+                <input asp-for="IdejecucionEjecucion" id="IdejecucionEjecucion" name="IdejecucionEjecucion" class="form-control" />
+                <span asp-validation-for="IdejecucionEjecucion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button value="Guardar" class="btn btn-primary" id="btnSave" name="btnSave"><i class="fa fa-save"></i> Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="listaEpCrearAudiencia">Regresar a Listado</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -357,7 +357,10 @@
     <a asp-action="Envioarchivo">Regresar al Listado Completo </a>
 </div>
 <div style="text-align:right" class="col-md-6">
-    <a onclick="createEnvioArchivo();" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
+ @*    <a onclick="createEnvioArchivo();" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
+        <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
+    </a> *@
+    <a asp-action="createEnvioArchivo" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
         <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
     </a>
 </div>

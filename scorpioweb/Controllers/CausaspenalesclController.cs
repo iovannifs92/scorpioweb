@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -610,6 +611,7 @@ namespace scorpioweb.Controllers
                 #region agregar 1 entrada a Planeacionestrategica
                 int idPlaneacionestrategica = ((from table in _context.Planeacionestrategicacl
                                                 select table.IdPlaneacionEstrategicacl).Max()) + 1;
+                planeacionestrategicacl.EstadoInfInicial = 0;
                 planeacionestrategicacl.IdPlaneacionEstrategicacl = idPlaneacionestrategica;
                 planeacionestrategicacl.SupervisionclIdSupervisioncl = idSupervision;
                 #endregion
@@ -635,17 +637,24 @@ namespace scorpioweb.Controllers
                 revocacioncl.SupervisionclIdSupervisioncl = idSupervision;
                 #endregion
 
-
-                _context.Add(supervisioncl);
-                await _context.SaveChangesAsync(null, 1);
-                //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
-                _context.Add(suspensionseguimientocl);
-                _context.Add(planeacionestrategicacl);
-                _context.Add(cierredecasocl);
-                _context.Add(cambiodeobligacionescl);
-                _context.Add(revocacioncl);
-                await _context.SaveChangesAsync(null, 1);
-                return RedirectToAction("Supervision", "Supervisioncl", new { @id = idSupervision });
+                try
+                {
+                    _context.Add(supervisioncl);
+                    await _context.SaveChangesAsync(null, 1);
+                    //Guardar en 2 partes para satisfacer la restriccion de las llaves foraneas
+                    _context.Add(suspensionseguimientocl);
+                    _context.Add(planeacionestrategicacl);
+                    _context.Add(cierredecasocl);
+                    _context.Add(cambiodeobligacionescl);
+                    _context.Add(revocacioncl);
+                    await _context.SaveChangesAsync(null, 1);
+                    return RedirectToAction("Supervision", "Supervisioncl", new { @id = idSupervision });
+                }
+                catch (Exception ex)
+                {
+                    var error = ex;
+                }
+                
             }
             return View(personaclcausapenalcl);
         }

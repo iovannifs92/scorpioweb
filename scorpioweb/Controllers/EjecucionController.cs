@@ -1965,7 +1965,7 @@ namespace scorpioweb.Controllers
 
         #endregion
 
-        #region -CrearAudiencia-
+        #region - ZONA DE AUDIENCIAS -
         public async Task<IActionResult> listaEpCrearAudiencia(
            string sortOrder,
            string currentFilter,
@@ -1998,6 +1998,16 @@ namespace scorpioweb.Controllers
             ViewBag.Masteradmin = false;
             ViewBag.Archivo = false;
 
+            var CoordinadorEjecucion = "";
+            foreach (var rol in roles)
+            {
+                if (rol == "Coordinador Ejecucion")
+                {
+                    CoordinadorEjecucion = user.ToString();
+                }
+            }
+
+
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
                                    where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
@@ -2005,14 +2015,32 @@ namespace scorpioweb.Controllers
             ViewBag.WarningsUser = warningRespuesta.Count();
             #endregion
 
+            var filter = (from a in _context.Audienciaep
+                            select new OficialiaAudienciaVM
+                            {
+                                Id = a.IdaudienciaEp,
+                                Nomcom = a.Sentenciado,
+                                FechaAudiencia = a.FechaAudiencia,
+                                QuienAsistira = a.Usuario,
+                                FechaRecepcion = a.FechaNotificacion,
+                                Juzgado = a.Juzgado,
+                                CarpetaEjecucion = a.CarpetaEjecucion,
+                                Area = "Audienciaep"
+                            }).Union
+                            (from o in _context.Oficialia
+                                where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar != "isabel.almora@dgepms.com"
+                                select new OficialiaAudienciaVM
+                                {
+                                    Id = o.IdOficialia,
+                                    Nomcom = o.Paterno + " " + o.Materno + " " + o.Nombre,
+                                    FechaAudiencia = o.FechaTermino,
+                                    QuienAsistira = o.QuienAsistira,
+                                    FechaRecepcion = o.FechaRecepcion,
+                                    Juzgado = o.Juzgado,
+                                    CarpetaEjecucion = o.CarpetaEjecucion,
+                                    Area = "Oficialia"
+                            });
 
-            //List<Archivoprestamo> queryArchivoHistorial = (from a in _context.Archivoprestamo
-            //                                               group a by a.ArcchivoIdArchivo into grp
-            //                                               select grp.OrderByDescending(a => a.IdArchivoPrestamo).FirstOrDefault()).ToList();
-
-            var filter = from o in _context.Oficialia
-                         where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar != "isabel.almora@dgepms.com"
-                         select o;
 
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
@@ -2020,40 +2048,21 @@ namespace scorpioweb.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(acp => (acp.Paterno + " " + acp.Materno + " " + acp.Nombre).Contains(searchString.ToUpper()) ||
-                                             (acp.Nombre + " " + acp.Paterno + " " + acp.Materno).Contains(searchString.ToUpper()) ||
-                                             (acp.CarpetaEjecucion).Contains(searchString.ToUpper()) ||
-                                             (acp.IdCarpetaEjecucion.ToString()).Contains(searchString));
+                filter = filter.Where(acp => (acp.Nomcom).Contains(searchString.ToUpper()) ||
+                                             (acp.CarpetaEjecucion).Contains(searchString.ToUpper()));
             }
 
 
-            filter = filter.OrderByDescending(o => o.FechaTermino);
+            filter = filter.OrderByDescending(o => o.FechaAudiencia);
 
-            //a.personaVM.Paterno + " " + a.personaVM.Materno + " " + a.personaVM.Nombre).Contains(SearchString.ToUpper()) ||
-            //                                  (a.personaVM.Nombre + " " + a.personaVM.Paterno + " " + a.personaVM.Materno).Contains(SearchString.ToUpper()) ||
-
-
-            //switch (sortOrder)
-            //{
-            //    case "name_desc":
-            //        filter = filter.OrderByDescending(acp => acp.ejecucionVM.Paterno);
-            //        break;
-            //    case "causa_penal_desc":
-            //        filter = filter.OrderByDescending(acp => acp.ejecucionVM.Materno);
-            //        break;
-            //    case "estado_cumplimiento_desc":
-            //        filter = filter.OrderByDescending(acp => acp.ejecucionVM.Nombre);
-            //        break;
-
-            //}
             int pageSize = 10;
-            return View(await PaginatedList<Oficialia>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<OficialiaAudienciaVM>.CreateAsync(filter.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        public async Task<IActionResult> CreateEpCrearAudiencia()
-        {
-            ViewBag.centrosPenitenciarios = _context.Centrospenitenciarios.Select(Centrospenitenciarios => Centrospenitenciarios.Nombrecentro).ToList();
 
+        #region -AUDIENCIAEP-
+        public async Task<IActionResult> createAudienciaEp()
+        {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             ViewBag.User = user.ToString();
 
@@ -2071,7 +2080,19 @@ namespace scorpioweb.Controllers
                 }
             }
 
-            ViewBag.LiataTurno = ViewBag.ListaGeneral = ListaUserEjecucion.Where(r => ListaUserEjecucion.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
+            ViewBag.LiataTurno = ListaUserEjecucion.Where(r => ListaUserEjecucion.Any(f => !r.EndsWith("\u0040nortedgepms.com"))).Distinct().ToList();
+
+            ViewBag.LiataTurno = ListaUserEjecucion
+                                .Where(r => !r.EndsWith("@nortedgepms.com")) // quita dominio
+                                .Select(r => new {
+                                    Usuario = r.Split('@')[0],  // usuario antes del @
+                                    Correo = r
+                                })
+                                .Where(x => x.Usuario.ToLower() != "ejecucion") // excluye ejecucion
+                                .GroupBy(x => x.Usuario) // agrupa por usuario
+                                .Select(g => g.First().Correo) // te quedas con un correo por usuario
+                                .ToList();
+
             #endregion
 
             #region -Lista Juzgado-
@@ -2080,74 +2101,186 @@ namespace scorpioweb.Controllers
             Liatajuzgado.Add("JUZGADO 1");
             Liatajuzgado.Add("JUZGADO 2");
             Liatajuzgado.Add("JUZGADO 3");
-            Liatajuzgado.Add("TURNO");
-
             ViewBag.Liatajuzgado = Liatajuzgado;
-            #endregion
-
-            #region -lista de ce-
-            List<string> ListaCE = new List<string>();
-            var ce = (from ep in _context.Ejecucion
-                      select new EjecucionCP
-                      {
-                          ejecucionVM = ep,
-                      }).ToList();
-
-            ViewBag.lista = ce;
             #endregion
 
             return View();
         }
+
+        [HttpGet]
+        public JsonResult BuscarPersonasej(string term)
+        {
+            var resultados = _context.Ejecucion
+                .Where(p => (p.Paterno + " " + p.Materno + " " + p.Nombre).Contains(term) ||
+                            (p.Nombre + " " + p.Paterno + " " + p.Materno).Contains(term) )
+                .Select(p => new
+                {
+                    p.IdEjecucion,
+                    NombreCompleto = p.Paterno + " " + p.Materno + " " + p.Nombre,
+                    p.Usuario,
+                    p.LugarInternamiento,
+                    p.EstadoActual,
+                    p.Juzgado,
+                    p.Ce
+                })
+                .Take(10)
+                .ToList();
+
+            return Json(resultados);
+        }
+
         //POST: Ejecucion/CreateEpCrearAudiencia
         //To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> CreateEpCrearAudiencia([Bind("IdOficialia,Capturista,Recibe,MetodoNotificacion,NumOficio,FechaRecepcion,FechaEmision,Expide,ReferenteImputado,Sexo,Paterno,Materno,Nombre,IdCarpetaEjecucion,CarpetaEjecucion,Juzgado,QuienAsistira,IdCausaPenal,CausaPenal,DelitoTipo,AutoVinculacion,ExisteVictima,NombreVictima,DireccionVictima,AsuntoOficio,TieneTermino,FechaTermino,UsuarioTurnar,Entregado,FechaSeguimiento,RutaArchivo,Seguimiento,Observaciones")] Oficialia oficialiaAudiencia)
-        //{
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> createAudienciaEp([Bind("IdaudienciaEp,FechaNotificacion,Sentenciado,FechaAudiencia,Juzgado,CarpetaEjecucion,Usuario,IdejecucionEjecucion")] Audienciaep audienciaep)
+        {
+            audienciaep.FechaNotificacion = audienciaep.FechaNotificacion;
+            audienciaep.Sentenciado = audienciaep.Sentenciado;
+            audienciaep.FechaAudiencia = audienciaep.FechaAudiencia;
+            audienciaep.Juzgado = audienciaep.Juzgado;
+            audienciaep.CarpetaEjecucion = audienciaep.CarpetaEjecucion;
+            audienciaep.Usuario = audienciaep.Usuario;
+            audienciaep.IdejecucionEjecucion = audienciaep.IdejecucionEjecucion;
 
-        //    oficialiaAudiencia.Capturista = oficialiaAudiencia.Capturista;
-        //    oficialiaAudiencia.Recibe = oficialiaAudiencia.Recibe;
-        //    oficialiaAudiencia.MetodoNotificacion = oficialiaAudiencia.MetodoNotificacion;
-        //    oficialiaAudiencia.NumOficio = oficialiaAudiencia.NumOficio;
-        //    oficialiaAudiencia.FechaEmision = oficialiaAudiencia.FechaEmision;
-        //    oficialiaAudiencia.Expide = oficialiaAudiencia.Expide;
-        //    oficialiaAudiencia.ReferenteImputado = oficialiaAudiencia.ReferenteImputado;
-        //    oficialiaAudiencia.Sexo = oficialiaAudiencia.Sexo;
-        //    oficialiaAudiencia.IdCausaPenal = oficialiaAudiencia.IdCausaPenal;
-        //    oficialiaAudiencia.CausaPenal = oficialiaAudiencia.CausaPenal;
-        //    oficialiaAudiencia.DelitoTipo = oficialiaAudiencia.DelitoTipo;
-        //    oficialiaAudiencia.AutoVinculacion = oficialiaAudiencia.AutoVinculacion;
-        //    oficialiaAudiencia.ExisteVictima = oficialiaAudiencia.ExisteVictima;
-        //    oficialiaAudiencia.DireccionVictima = oficialiaAudiencia.DireccionVictima;
-        //    oficialiaAudiencia.AsuntoOficio = oficialiaAudiencia.AsuntoOficio;
-        //    oficialiaAudiencia.TieneTermino = oficialiaAudiencia.TieneTermino;
-        //    oficialiaAudiencia.UsuarioTurnar = oficialiaAudiencia.UsuarioTurnar;
-        //    oficialiaAudiencia.Entregado = oficialiaAudiencia.Entregado;
-        //    oficialiaAudiencia.Observaciones = oficialiaAudiencia.Observaciones;
-        //    oficialiaAudiencia.FechaSeguimiento = oficialiaAudiencia.FechaSeguimiento;
-        //    oficialiaAudiencia.RutaArchivo = oficialiaAudiencia.RutaArchivo;
-        //    oficialiaAudiencia.Seguimiento = oficialiaAudiencia.Seguimiento;
+            _context.Add(audienciaep);
+            await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return RedirectToAction(nameof(listaEpCrearAudiencia));
+        }
+
+        public async Task<IActionResult> editAudienciaEp(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var audienciaEjecucionEp = await _context.Audienciaep.SingleOrDefaultAsync(m => m.IdaudienciaEp == id);
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            #region -Solicitud Atendida Archivo prestamo Digital-
+            var warningRespuesta = from a in _context.Archivoprestamodigital
+                                   where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()
+                                   select a;
+            ViewBag.WarningsUser = warningRespuesta.Count();
+            #endregion
+
+            #region -Lista Quien atiende-
+            List<string> ListaUser = new List<string>();
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "Ejecucion"))
+                {
+                    ListaUser.Add(u.ToString().ToUpper());
+                }
+                if (await userManager.IsInRoleAsync(u, "Coordinador Ejecucion"))
+                {
+                    ListaUser.Add(u.ToString().ToUpper());
+                }
+            }
+
+            var tagged = ListaUser.Select((item, i) => new { Item = item, Index = (int?)i });
+
+            var index = tagged.FirstOrDefault(pair => pair.Item == audienciaEjecucionEp.Usuario?.ToUpper())?.Item;
+
+            ViewBag.ListaUser = ListaUser.Where(r => ListaUser.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
+            ViewBag.UserEdit = index;
+            #endregion
+
+            #region -JUZGADO-
+            List<string> Liatajuzgado = new List<string>();
+            Liatajuzgado.Add("NA");
+            Liatajuzgado.Add("JUZGADO 1");
+            Liatajuzgado.Add("JUZGADO 2");
+            Liatajuzgado.Add("JUZGADO 3");
+            Liatajuzgado.Add("JUZGADO 4");
+
+            ViewBag.Liatajuzgado = Liatajuzgado;
+
+            var turno = Liatajuzgado.Select((item, i) => new { Item = item, Index = (int?)i });
+            var selectturno = (from pair in turno
+                               where pair.Item == audienciaEjecucionEp.Juzgado
+                               select pair.Item).FirstOrDefault();
+
+            ViewBag.Selectturno = selectturno;
+
+            #endregion
+
+            if (audienciaEjecucionEp == null)
+            {
+                return NotFound();
+            }
+            return View(audienciaEjecucionEp);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> editAudienciaEp(int id, [Bind("IdaudienciaEp,FechaNotificacion,Sentenciado,FechaAudiencia,Juzgado,CarpetaEjecucion,Usuario,IdejecucionEjecucion")] Audienciaep audienciaep)
+        {
+
+            if (id != audienciaep.IdaudienciaEp)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    audienciaep.FechaNotificacion = audienciaep.FechaNotificacion;
+                    audienciaep.Sentenciado = audienciaep.Sentenciado;
+                    audienciaep.FechaAudiencia = audienciaep.FechaAudiencia;
+                    audienciaep.Juzgado = audienciaep.Juzgado;
+                    audienciaep.CarpetaEjecucion = audienciaep.CarpetaEjecucion;
+                    audienciaep.Usuario = audienciaep.Usuario;
+                    audienciaep.IdejecucionEjecucion = audienciaep.IdejecucionEjecucion;
+
+                    _context.Update(audienciaep);
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!oficialiaAudienciaExists(audienciaep.IdaudienciaEp))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(listaEpCrearAudiencia));
+            }
+            return View(audienciaep);
+        }
+
+        public async Task<JsonResult> DeleteCrearAudienciaep(Audienciaep audienciaep, Historialeliminacion historialeliminacion, int dato)
+        {
+            var borrar = false;
+            try
+            {
+                borrar = true;
+
+                var epa = _context.Audienciaep.FirstOrDefault(m => m.IdaudienciaEp == dato);
+                _context.Audienciaep.Remove(epa);
+                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                return Json(new { success = true, borrar });
+            }
+            catch (Exception ex)
+            {
+                var error = ex;
+                borrar = false;
+                return Json(new { success = true, borrar });
+            }
+        }
+
+        #endregion
 
 
-        //    oficialiaAudiencia.FechaTermino = oficialiaAudiencia.FechaTermino;
-        //    oficialiaAudiencia.FechaRecepcion = oficialiaAudiencia.FechaRecepcion;
-        //    oficialiaAudiencia.Juzgado = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Juzgado));
-        //    oficialiaAudiencia.QuienAsistira = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.QuienAsistira));
-        //    oficialiaAudiencia.CarpetaEjecucion = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.CarpetaEjecucion));
-        //    oficialiaAudiencia.Paterno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Paterno));
-        //    oficialiaAudiencia.Materno = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Materno));
-        //    oficialiaAudiencia.Nombre = mg.removeSpaces(mg.normaliza(oficialiaAudiencia.Nombre));
-        //    oficialiaAudiencia.IdOficialia = id;
-        //    oficialiaAudiencia.IdCarpetaEjecucion = oficialiaAudiencia.IdCarpetaEjecucion;
-
-        //    _context.Add(epcrearaudiencia);
-        //    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-        //    return RedirectToAction(nameof(listaEpCrearAudiencia));
-
-        //    return View(epcrearaudiencia);
-        //}
-
+        #region -AUDIENCIA OFICIALIA-
         public async Task<IActionResult> EditEpCreateAudiencia(int? id)
         {
 
@@ -2181,13 +2314,8 @@ namespace scorpioweb.Controllers
             }
 
             var tagged = ListaUser.Select((item, i) => new { Item = item, Index = (int?)i });
-            //var index = (from pair in tagged
-                         //where pair.Item == audienciaOficailia.QuienAsistira.ToUpper()
-                         //select pair.Item).FirstOrDefault();
-            var index = tagged.FirstOrDefault(pair => pair.Item == audienciaOficailia.QuienAsistira?.ToUpper())?.Item;
-            //var index = tagged.FirstOrDefault(pair => pair.Item == audienciaOficailia.QuienAsistira.ToUpper())?.Item ?;
 
-            //_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Juzgado ?? string.Empty,
+            var index = tagged.FirstOrDefault(pair => pair.Item == audienciaOficailia.QuienAsistira?.ToUpper())?.Item;
 
             ViewBag.ListaUser = ListaUser.Where(r => ListaUser.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
             ViewBag.UserEdit = index;
@@ -2311,14 +2439,120 @@ namespace scorpioweb.Controllers
                 return Json(new { success = true, responseText = Url.Action("listaEpCrearAudiencia", "Ejecucion"), borrar = borrar });
             }
         }
-
         #endregion
+        #endregion
+
         #region -Imprimir Audiencias Selecionadas -
-        public void ImprimirAudiencias(string[] datosidAudiencia)
+        public class SeleccionDto
         {
-            if (datosidAudiencia.Length == 0)
+            public int Id { get; set; }
+            public string Area { get; set; }
+        }
+        public class SeleccionRequest
+        {
+            public  new List<SeleccionDto> Datos { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult ProcesarSeleccion([FromBody] List<SeleccionDto> datos)
+        {
+            if (datos == null || !datos.Any())
             {
-                return;
+                return Json(new { success = false, responseText = "No se recibieron datos." });
+            }
+
+            DateTime now = DateTime.Now;
+            int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            DateTime startOfWeek = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
+            DateTime endOfWeek = startOfWeek.AddDays(4);
+
+
+            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateAudiencia.docx";
+            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\AudienciasEP.docx";
+
+            DocumentCore dc = DocumentCore.Load(templatePath);
+
+            var dataSource = new
+            {
+                fechaElavoracion = DateTime.Now.ToString("dd/MM/yyyy"),
+                semana = startOfWeek.ToString("dd/MM/yyyy") + " Al " + endOfWeek.ToString("dd/MM/yyyy"),
+                Audiencia = new object[datos.Count()]
+            };
+            List<OficialiaAudienciaVM> filter = new List<OficialiaAudienciaVM>();
+
+            foreach (var item in datos)
+            {
+                if (item.Area == "Audiencia")
+                {
+                    var query = (from a in _context.Audienciaep
+                                 where a.IdaudienciaEp == item.Id
+                                 select new OficialiaAudienciaVM
+                                 {
+                                     Id = a.IdaudienciaEp,
+                                     Nomcom = a.Sentenciado,
+                                     FechaAudiencia = a.FechaAudiencia,
+                                     QuienAsistira = a.Usuario,
+                                     FechaRecepcion = a.FechaNotificacion,
+                                     Juzgado = a.Juzgado,
+                                     CarpetaEjecucion = a.CarpetaEjecucion,
+                                     Area = "Audienciaep"
+                                 }).ToList();
+
+                    filter.AddRange(query);
+                }
+                else if (item.Area == "Oficialia")
+                {
+                    var query = (from o in _context.Oficialia
+                                 where o.AsuntoOficio == "AUDIENCIA"
+                                       && o.UsuarioTurnar != "isabel.almora@dgepms.com"
+                                       && o.IdOficialia == item.Id
+                                 select new OficialiaAudienciaVM
+                                 {
+                                     Id = o.IdOficialia,
+                                     Nomcom = o.Paterno + " " + o.Materno + " " + o.Nombre,
+                                     FechaAudiencia = o.FechaTermino,
+                                     QuienAsistira = o.QuienAsistira,
+                                     FechaRecepcion = o.FechaRecepcion,
+                                     Juzgado = o.Juzgado,
+                                     CarpetaEjecucion = o.CarpetaEjecucion,
+                                     Area = "Oficialia"
+                                 }).ToList();
+
+                    filter.AddRange(query);
+                }
+            }
+
+            // Ahora ya no necesitas más ifs, solo mapear filter -> dataSource
+            foreach (var item in filter)
+            {
+                dataSource.Audiencia.Append(new
+                {
+                    IdepcrearAudiencia = item.Id,
+                    FechaAudiencia = (item.FechaAudiencia ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
+                    FechaNotificacion = (item.FechaRecepcion ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
+                    Juzgado = item.Juzgado ?? string.Empty,
+                    Usuario = item.QuienAsistira ?? string.Empty,
+                    Ce = item.CarpetaEjecucion ?? string.Empty,
+                    Sentenciado = item.Nomcom ?? string.Empty
+                });
+            }
+
+            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+            dc.MailMerge.Execute(dataSource);
+            dc.Save(resultPath);
+
+            return Json(new { ok = true });
+        }
+
+
+
+
+        [HttpPost]
+        public IActionResult ImprimirAudiencias(string[] datosidAudiencia)
+        {
+            if (datosidAudiencia == null || !datosidAudiencia.Any())
+            {
+                return Json(new { success = false, responseText = "No se recibieron datos." });
             }
 
             DateTime now = DateTime.Now;
@@ -2339,31 +2573,49 @@ namespace scorpioweb.Controllers
                 Audiencia = new object[datosidAudiencia.Length]
             };
 
-            for (int i = 0; i < datosidAudiencia.Length; i++)
+
+            for (int i = 0; i < datosidAudiencia.Length ; i++)
             {
-                dataSource.Audiencia[i] = new
-                {
-                    IdepcrearAudiencia = datosidAudiencia[i],
-                    FechaAudiencia = (_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.FechaTermino ?? DateTime.MinValue).ToString(),
+                var item = datosidAudiencia[i];
 
-                    FechaNotificacion = (_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.FechaRecepcion ?? DateTime.MinValue).ToString(),
+                //if (item. == "Oficialia")
+                //{
+                //    var ofi = _context.Oficialia.FirstOrDefault(o => o.IdOficialia == item.Id);
 
-                    Juzgado = _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Juzgado ?? string.Empty,
+                //    dataSource.Audiencia[i] = new
+                //    {
+                //        IdepcrearAudiencia = item.Id,
+                //        FechaAudiencia = (ofi?.FechaTermino ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
+                //        FechaNotificacion = (ofi?.FechaRecepcion ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
+                //        Juzgado = ofi?.Juzgado ?? string.Empty,
+                //        Usuario = ofi?.QuienAsistira ?? string.Empty,
+                //        Ce = ofi?.CarpetaEjecucion ?? string.Empty,
+                //        Sentenciado = $"{ofi?.Paterno} {ofi?.Materno} {ofi?.Nombre}"
+                //    };
+                //}
+                //else if (item.Area == "Audienciaep")
+                //{
+                //    var aud = _context.Audienciaep.FirstOrDefault(a => a.IdaudienciaEp == item.Id);
 
-                    Usuario = _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.QuienAsistira ?? string.Empty,
-
-                    Ce = _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.CarpetaEjecucion ?? string.Empty,
-
-                    Sentenciado = (_context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Paterno + " " +
-                                   _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Materno + " " +
-                                   _context.Oficialia.FirstOrDefault(table => table.IdOficialia == (Convert.ToInt32(datosidAudiencia[i])))?.Nombre) ?? string.Empty
-
-            };
+                //    dataSource.Audiencia[i] = new
+                //    {
+                //        IdepcrearAudiencia = item.Id,
+                //        FechaAudiencia = (aud?.FechaAudiencia ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
+                //        FechaNotificacion = (aud?.FechaNotificacion ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
+                //        Juzgado = aud?.Juzgado ?? string.Empty,
+                //        Usuario = aud?.Usuario ?? string.Empty,
+                //        Ce = aud?.CarpetaEjecucion ?? string.Empty,
+                //        Sentenciado = aud?.Sentenciado ?? string.Empty
+                //    };
+                //}
             }
+
+
 
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
             dc.MailMerge.Execute(dataSource);
             dc.Save(resultPath);
+            return Json(new { success = true });
 
         }
         #endregion
@@ -2380,8 +2632,6 @@ namespace scorpioweb.Controllers
                                    select a;
             ViewBag.WarningsUser = warningRespuesta.Count();
             #endregion
-
-
 
             foreach (var rol in roles)
             {
@@ -2443,7 +2693,7 @@ namespace scorpioweb.Controllers
                     flagEjecucion = true;
                 }
             }
-            
+
             foreach (var rol in roles)
             {
                 if (rol == "Operativo")
@@ -2461,36 +2711,80 @@ namespace scorpioweb.Controllers
             }
 
             List<Ejecucion> ejecucionVM = _context.Ejecucion.ToList();
-            List <Oficialia>  oficialiaVM  = _context.Oficialia.ToList();
+            List<Oficialia> oficialiaVM = _context.Oficialia.ToList();
 
 
-            var ViewDataAlertasVari = Enumerable.Empty<EjecucionWarningViewModel>();
+            var ViewDataAlertasVari = Enumerable.Empty < OficialiaAudienciaVM>();
             switch (currentFilter)
             {
                 case "TODOS":
-                    ViewDataAlertasVari = from o in oficialiaVM
-                                          where  o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "isabel.almora@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                          orderby o.FechaTermino
-                                          select new EjecucionWarningViewModel
+                    ViewDataAlertasVari = (from o in _context.Oficialia
+                                           where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                           orderby o.FechaTermino
+                                           select new OficialiaAudienciaVM
+                                           { 
+                                               Id = o.IdOficialia,
+                                               Nomcom = o.Paterno + " " + o.Materno + " " + o.Nombre,
+                                               FechaAudiencia = o.FechaTermino,
+                                               QuienAsistira = o.QuienAsistira,
+                                               FechaRecepcion = o.FechaRecepcion,
+                                               Juzgado = o.Juzgado,
+                                               CarpetaEjecucion = o.CarpetaEjecucion,
+                                               Area = "Oficialia",
+                                               tipoAdvertencia = "Audiencia"
+                                           }).Union(
+                                          from a in _context.Audienciaep
+                                          where a.FechaAudiencia != null && a.FechaAudiencia < fechaAudiencia && a.FechaAudiencia > terminoAlerta
+                                          orderby a.FechaAudiencia
+                                          select new OficialiaAudienciaVM
                                           {
-                                              oficialiaVM = o,
+                                              Id = a.IdaudienciaEp,
+                                              Nomcom = a.Sentenciado,
+                                              FechaAudiencia = a.FechaAudiencia,
+                                              QuienAsistira = a.Usuario,
+                                              FechaRecepcion = a.FechaNotificacion,
+                                              Juzgado = a.Juzgado,
+                                              CarpetaEjecucion = a.CarpetaEjecucion,
+                                              Area = "Audienciaep",
                                               tipoAdvertencia = "Audiencia"
-                                          };
+                                          });
                     break;
                 case "AUDIENCIAS":
-                    ViewDataAlertasVari = from o in oficialiaVM
-                                          where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "isabel.almora@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                          orderby o.FechaTermino
-                                          select new EjecucionWarningViewModel
+                    ViewDataAlertasVari = (from o in _context.Oficialia
+                                           where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                           orderby o.FechaTermino
+                                           select new OficialiaAudienciaVM
+                                           {
+                                               Id = o.IdOficialia,
+                                               Nomcom = o.Paterno + " " + o.Materno + " " + o.Nombre,
+                                               FechaAudiencia = o.FechaTermino,
+                                               QuienAsistira = o.QuienAsistira,
+                                               FechaRecepcion = o.FechaRecepcion,
+                                               Juzgado = o.Juzgado,
+                                               CarpetaEjecucion = o.CarpetaEjecucion,
+                                               Area = "Oficialia",
+                                               tipoAdvertencia = "Audiencia"
+                                           }).Union(
+                                          from a in _context.Audienciaep
+                                          where a.FechaAudiencia != null && a.FechaAudiencia < fechaAudiencia && a.FechaAudiencia > terminoAlerta
+                                          orderby a.FechaAudiencia
+                                          select new OficialiaAudienciaVM
                                           {
-                                              oficialiaVM = o,
+                                              Id = a.IdaudienciaEp,
+                                              Nomcom = a.Sentenciado,
+                                              FechaAudiencia = a.FechaAudiencia,
+                                              QuienAsistira = a.Usuario,
+                                              FechaRecepcion = a.FechaNotificacion,
+                                              Juzgado = a.Juzgado,
+                                              CarpetaEjecucion = a.CarpetaEjecucion,
+                                              Area = "Audienciaep",
                                               tipoAdvertencia = "Audiencia"
-                                          };
+                                          });
                     break;
             }
-            var warnings = Enumerable.Empty<EjecucionWarningViewModel>();
+            var warnings = Enumerable.Empty<Audienciaep>();
 
-            ViewData["alertas"] = ViewDataAlertasVari;
+            ViewData["alertas"] = ViewDataAlertasVari.OrderBy(x => x.FechaAudiencia);
 
             return Json(new
             {
@@ -2538,25 +2832,50 @@ namespace scorpioweb.Controllers
 
 
         #region -MenuEjecucion-
-        public IActionResult MenuEjecucion()
+        public async Task<IActionResult> MenuEjecucion()
         {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
             DateTime fechaAudiencia = (DateTime.Today).AddDays(7);
             DateTime terminoAlerta = (DateTime.Today).AddDays(-1);
             List<Oficialia> oficialiaVM = _context.Oficialia.ToList();
 
-            var warningPlaneacion = from o in oficialiaVM
-                                    where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar.ToLower() == "isabel.almora@dgepms.com" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                    select new EjecucionWarningViewModel
-                                    {
-                                        oficialiaVM = o,
-                                        tipoAdvertencia = "Audiencia"
-                                    };
-
-            ViewBag.Warnings = warningPlaneacion.Count();
+            Boolean flagCoordinador = false;
 
 
 
-            var user = User.Identity.Name;
+
+            foreach (var rol in roles)
+            {
+                if (rol == "Coordinador" || rol == "Masteradmin" || rol == "Administrador" || rol == "Director" || rol == "Coordinador Ejecucion")
+                {
+                    flagCoordinador = true;
+                }
+            }
+            if(flagCoordinador == true)
+            {
+                var warningPlaneacion = from o in oficialiaVM
+                                        where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                        select new EjecucionWarningViewModel
+                                        {
+                                            oficialiaVM = o,
+                                            tipoAdvertencia = "Audiencia"
+                                        };
+                ViewBag.Warnings = warningPlaneacion.Count();
+            }
+            else
+            {
+                var warningPlaneacion = from o in oficialiaVM
+                                        where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar == user.ToString() && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+                                        select new EjecucionWarningViewModel
+                                        {
+                                            oficialiaVM = o,
+                                            tipoAdvertencia = "Audiencia"
+                                        };
+                ViewBag.Warnings = warningPlaneacion.Count();
+            }
+
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
                                    where a.EstadoPrestamo == 1 && user.ToString().ToUpper() == a.Usuario.ToUpper()

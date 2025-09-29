@@ -4,13 +4,9 @@
     {
         public Ejecucion ejecucionVM { get; set; }
         public Oficialia oficialiaVM { get; set; }
-        public string NombreCompleto
-        {
-            get
-            {
-                return oficialiaVM.Paterno + " " + oficialiaVM.Materno + " " + oficialiaVM.Nombre;
-            }
-        }
+        public Audienciaep audienciaep { get; set; }
+        
         public string tipoAdvertencia { get; set; }
+        public string Area { get; set; }
     }
 }

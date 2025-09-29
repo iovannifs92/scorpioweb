@@ -1538,6 +1538,7 @@ namespace scorpioweb.Models
             string figuraJudicial,
             int? pageNumber,
             string areaFiltro,
+            string area,
             string recibidoFiltro,
             string revisadoFiltro,
             DateTime? fechaDesde,
@@ -1580,13 +1581,16 @@ namespace scorpioweb.Models
             ViewBag.Archivo = roles.Any(r => r == "Masteradmin" || r == "Archivo" || r == "Director");
 
             #region -Sacar Roles-
-            areaFiltro = mg.areaSegunRol(roles);
+            area = mg.areaSegunRol(roles);
 
-            ViewBag.AreaAsignada = areaFiltro == "CL" ? "LibertadCondicionada" :
-                      areaFiltro == "Ejecución de Penas" ? "Ejecucion" :
-                      areaFiltro == "MCySCP" ? "MCYSCP" :
-                      areaFiltro == "Servicios previos" ? "ServiciosPrevios" :
-                      areaFiltro;
+            ViewBag.AreaAsignada = area;
+                
+                //== "CL" ? "LibertadCondicionada" :
+                //      areaFiltroInicial == "Ejecución de Penas" ? "Ejecucion" :
+                //      areaFiltroInicial == "MCySCP" ? "MCYSCP" :
+                //      areaFiltroInicial == "Servicios previos" ? "ServiciosPrevios" :
+                //      areaFiltroInicial == "Servicios previos" ? "ServiciosPrevios" :
+                //      areaFiltroInicial;
 
          
             #endregion
@@ -1645,6 +1649,17 @@ namespace scorpioweb.Models
                 }
 
             }
+            // === Filtro por Rol ===
+            if (area != "Archivo") // Solo restringe si no es archivo
+            {
+                filter = filter.Where(ea => ea.Area == area);
+            }
+
+            // === Filtro por Dropdown (vista) ===
+            if (!String.IsNullOrWhiteSpace(areaFiltro) && areaFiltro != "Todos")
+            {
+                filter = filter.Where(ea => ea.Area == areaFiltro);
+            }
 
             // Filtro por Fecha Desde
             if (fechaDesde.HasValue)
@@ -1659,12 +1674,6 @@ namespace scorpioweb.Models
             }
             ViewBag.fInicio = fechaDesde?.ToString("yyyy-MM-dd");
             ViewBag.fFinal = fechaHasta?.ToString("yyyy-MM-dd");
-
-            // Filtro por Área
-            if (!String.IsNullOrWhiteSpace(areaFiltro) && areaFiltro != "Todos")
-            {
-                filter = filter.Where(ea => ea.Area == areaFiltro);
-            }
 
             // Filtro por Recibido
             if (!string.IsNullOrEmpty(recibidoFiltro) && recibidoFiltro != "Todos")
@@ -1799,7 +1808,7 @@ namespace scorpioweb.Models
                     .Distinct()
                     .ToList();
             }
-            else if (areaAsignada == "CL")
+            else if (areaAsignada == "LC")
             {
                 ViewBag.SituacionJuridico = _context.Cierredecasocl
                     .Select(c => c.ComoConcluyo)
@@ -1816,10 +1825,7 @@ namespace scorpioweb.Models
                     .ToList();
             }
 
-            ViewBag.AreaAsignada = areaAsignada == "CL" ? "LibertadCondicionada" :
-                       areaAsignada == "Ejecución de Penas" ? "Ejecucion" :
-                       areaAsignada == "Servicios previos" ? "ServiciosPrevios" :
-                       areaAsignada;
+            ViewBag.AreaAsignada = areaAsignada;
 
             return View();
         }

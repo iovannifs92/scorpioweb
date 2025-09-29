@@ -607,9 +607,7 @@ namespace scorpioweb.Controllers
         //}
         #endregion  
 
-
-
-            #region -SACAR CURP-
+        #region -SACAR CURP-
         public JsonResult cursJson(string paterno, string materno, DateTime? fnacimiento, string genero, string lnestado, string nombre)
         {
             var curs = mg.sacaCurs(paterno, materno, fnacimiento, genero, lnestado, nombre);
