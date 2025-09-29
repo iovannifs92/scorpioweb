@@ -407,6 +407,12 @@ namespace scorpioweb.Class
                 { "SupervisorMCSCP", "MCySCP" },
                 { "AuxiliarMCSCP", "MCySCP" },
                 { "Servicios previos", "Servicios previos" },
+                { "Servicios Legales", "Servicios legales" },
+                { "Sistemas", "Sistemas" },
+                { "Oficialia", "Oficialia" },
+                { "Operativo", "Coordinacion Operativa" },
+                { "Director", "Direccion" },
+                { "Vinculacion", "Vinculacion" }
                 { "Oficialia", "Oficialia" },
                 { "Archivo", "Archivo"},
                 { "ArchivoAsistente", "Archivo"},

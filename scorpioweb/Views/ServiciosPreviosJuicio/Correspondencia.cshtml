@@ -2,6 +2,7 @@
 @{
 	Layout = "/Views/Shared/_Layout.cshtml";
 	ViewData["Title"] = "Correspondencia";
+
 }
 
 <style>
@@ -35,9 +36,7 @@
 		font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 		font-size: 20px;
 		font-weight: 500;
-		float: right;
 		line-height: normal;
-		margin-left: 10px;
 		min-height: 30px;
 		outline: none;
 		padding: 5px 13px;
@@ -62,11 +61,27 @@
 		.button-27.buscar {
 			background-color: #78899E;
 			border: 2px solid #93A5C2;
+			margin-left: 10px;
+			float: right;
 		}
 
 		.button-27.enviar {
 			background-color: #1687F2;
 			border: 1px solid #64AFFA;
+			margin-left: 10px;
+			float: right;
+		}
+
+		.button-27.VistaEnviar {
+			background-color: #78899E;
+			border: 2px solid #93A5C2;
+			margin-top: 20px;
+		}
+
+		.button-27.VistaRecibir {
+			background-color: #1687F2;
+			border: 1px solid #64AFFA;
+			margin-top: 20px;
 		}
 
 	.text-center-select {
@@ -76,202 +91,91 @@
 	}
 </style>
 
-@if (User.IsInRole("EnvioCorrespondencia"))
-{
-	<div class="text-center" style="padding-top:1%">
-		<img src="~/images/Enviar Correspondencia.png" class="rounded" alt="..." style="max-width:10%">
-		<br />
-		<h2>Enviar Correspondencia</h2>
-	</div>
-	<form asp-controller="ServiciosPreviosJuicio" asp-action="EnviarCorrespondencia" id="formCorrespondencia" enctype="multipart/form-data">
-		<div class="form-group col-lg-12 text-center">
-			<label class="control-label">Area</label>
-			<select name="Area" id="Area" class="form-control text-center-select" disabled>
-				<option value="@ViewBag.Area">@ViewBag.Area</option>
-			</select>
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Nombre</label>
-			<input required name="Nombre" id="Nombre" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Apellido paterno</label>
-			<input required name="Apaterno" id="Apaterno" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Apellido materno</label>
-			<input required name="Amaterno" id="Amaterno" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">No° oficio</label>
-			<input required name="NoOficio" id="NoOficio" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Figura judicial</label>
-			<input name="FiguraJudicial" id="FiguraJudicial" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Genero</label>
-			<select name="Genero" id="Genero" class="form-control">
-				<option value="M">Masculino</option>
-				<option value="F">Femenino</option>
-			</select>
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Asunto</label>
-			<input required name="Asunto" id="Asunto" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Autoridad</label>
-			<input name="Autoridad" id="Autoridad" type="text" class="form-control" />
-		</div>
-		<div class="form-group col-md-4">
-			<label class="control-label">Observaciones</label>
-			<input name="Observaciones" id="Observaciones" type="text" class="form-control" />
-		</div>
-		<button type="submit" class="button-27 enviar">Enviar</button>
-		<button type="submit" class="button-27 buscar id="BuscarId">Buscar por id</button>
-	</form>
-
-}
-
-@if (User.IsInRole("RecibirCorrespondencia"))
-{
-
-	<div class="text-center" style="padding-top:1%">
-		<img src="~/images/warning.png" class="rounded" alt="..." style="max-width:10%">
-		<br />
-		<h2>Recibir Correspondencia</h2>
-	</div>
-
-	<div class="top-content">
-		@using (Html.BeginForm("FiltrarCorrespondencia", "ServiciosPrevios", FormMethod.Get))
-		{
-			<div class="row-items">
-				<div class="item">
-					<p>
-						Buscar por nombre: @Html.TextBox("SearchString", ViewBag.CurrentSearchString as string)
-						<input type="submit" value="Search" />
-					</p>
-				</div>
-				<div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
-				<div class="item">
-					<select class="form-control form-select-lg mb-3" onchange="this.form.submit()" @Html.TextBox("selectSearch", ViewBag.CurrentSelectSearch as string)>
-						<option selected style="font-weight:600; background-color:gainsboro;" value="@ViewBag.CurrentSelectSearch">Actual: @ViewBag.CurrentSelectSearch</option>
-						<option value="Todas">Todas las alertas</option>
-						<optgroup label="-------- Area --------">
-							<option value="UESPA">Adolescentes</option>
-							<option value="DIRECCION">Direccion</option>
-							<option value="COORDINACION OPERATIVA">Coordinacion operativa</option>
-							<option value="EJECUCION">Ejecucion</option>
-							<option value="LIBERTAD CONDICIONADA">Libertad Condicionada</option>
-							<option value="MCYSCP">MC y SCP</option>
-							<option value="SERVICIOS LEGALES">Servicios legales</option>
-							<option value="SERVICIOS PREVIOS">Servicios previos</option>
-							<option value="SISTEMAS">Sistemas</option>
-							<option value="VINCULACION">Vinculacion</option>
-						</optgroup>
-						<optgroup label="-------- Estado --------">
-							<option value="ENTREGADO">Oficio entregado</option>
-							<option value="RECIBIDO">Acuse recibido</option>
-						</optgroup>
-						<optgroup label="-------- Otros --------">
-							<option value="TODOS">Todos</option>
-						</optgroup>
-					</select>
-				</div>
-			</div>
-		}
-	</div>
-
-	@if (Model != null && Model.Any())
+<div class="text-center" style="margin-bottom:20px;">
+	@if (ViewBag.EnviarRecibir)
 	{
-		<table class="table">
-			<thead>
-				<tr>
-					<th>IdCorrespondencia</th>
-					<th>Area</th>
-					<th>Nombre</th>
-					<th>No° Oficio</th>
-					<th>Figura Judicial</th>
-					<th>Genero</th>
-					<th>Asunto</th>
-					<th>Observaciones</th>
-					<th>FechaRegistro</th>
-					<th>Fecha de entrega</th>
-					<th>Fecha de recibido</th>
-					<th>Entregado</th>
-					<th>Recibido</th>
-					<th>Quien entrega</th>
-					<th>Quien recibe</th>
-				</tr>
-			</thead>
-			<tbody>
+		//ESTA PARTE SOLO SE VE SI EL USUARIO PUEDE ENVIAR Y RECIBIR DOCUMENTOS, AL PRESIONAR ALGUN BOTON SE HABILITAN LAS VISTAS PARCIALES CORERSPONDIENTES
+		<button type="button" class="button-27 VistaEnviar" onclick="mostrarParcial('enviar')">Enviar Correspondencia</button>
+		<button type="button" class="button-27 VistaRecibir" onclick="mostrarParcial('recibir')">Recibir Correspondencia</button>
+		<div id="contenedor-enviar" style="display:none;">
+			@Html.Partial("_EnviarCorrespondencia")
+		</div>
 
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>@item.IdenvioCorrespondencia</td>
-						<td>@item.Nombre @item.Apaterno @item.Amaterno</td>
-						<td>@item.NoOficio</td>
-						<td>@item.FiguraJudicial</td>
-						<td>@item.Genero</td>
-						<td>@item.Asunto</td>
-						<td>@item.Autoridad</td>
-						<td>@item.Observaciones</td>
-						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy")</td>
-						<td>@item.FechaEntrega?.ToString("dd/MM/yyyy")</td>
-						<td>@item.FechaRecibido?.ToString("dd/MM/yyyy")</td>
-						<td>@item.Entregado</td>
-						<td>@item.Recibido</td>
-						<td>@item.QuienEntrega</td>
-						<td>@item.QuienRecibe</td>
-					</tr>
-				}
-			</tbody>
-		</table>
+		<div id="contenedor-recibir" style="display:none;">
+			@Html.Partial("_RecibirCorrespondencia", Model)
+		</div>
 	}
-	else
+	else if (User.IsInRole("EnviarCorrespondencia") && !User.IsInRole("RecibirCorrespondencia"))
 	{
-		<p>Seleccion un filtro para continuar</p>
+		//SE HABILITA DIRECTAMENTE SI EL USUARIO SOLO TIENE EL ROL ENVIAR CORRESPONDENCIA
+		@Html.Partial("_EnviarCorrespondencia")
 	}
-}
-<div style="margin-top:20px">
-	<a asp-action="MenuCl">Regresar a Menu</a>
+	else if (User.IsInRole("RecibirCorrespondencia") && !User.IsInRole("EnvioCorrespondencia"))
+	{
+		//ESTA DENTRO DE UN CONTENEDOR PARA QUE SE SOBRESCRIBAN LAS BSQUEDAS VIEJAS DEPENDENDIENDO EL FILTRO
+		<div id="contenedor-recibir">
+			@Html.Partial("_RecibirCorrespondencia", Model)
+		</div>
+	}
 </div>
 
-<script>
-		$('#formCorrespondencia').on('submit', function(e) {
-		e.preventDefault(); 
+<div style="margin-top:20px">
+	<a asp-action="MenuCl">Regresar a Menu Pincipal</a>
+</div>
 
-		const form = this; 
-		const formData = new FormData(form); 
-		const selectedArea = $('#Area').val();
+@* TODAS LAS FUNCIONES DE JAVASCRIPT ESTAN AQUI, NO HAY NINGUNA EN LAS VISTAS _PARCIALES ENVIARCORRESPONDENCIA Y _RECIBIRCORRESPONDENCIA *@
+<script>
+
+	//FUNCION PARA MOSTRAR LAS VISTAS PARCIALES
+	//LOS CONTENEDORES SE ENCUENTRAR EN EL HTML DE ESTA VISTA
+	function mostrarParcial(tipo) {
+		var enviarDiv = document.getElementById("contenedor-enviar");
+		var recibirDiv = document.getElementById("contenedor-recibir");
+
+		if (tipo === "enviar") {
+			enviarDiv.style.display = "block";
+			recibirDiv.style.display = "none";
+		} else if (tipo === "recibir") {
+			enviarDiv.style.display = "none";
+			recibirDiv.style.display = "block";
+		}
+	}
+
+	//$$$$$$$$$$$$$$$$$$$$$$$ FUNCIONES PARA VISTA PARCIAL _ENVIARCORRESPONDENCIA $$$$$$$$$$$$$$$$$$$$$$$
+
+	//ESTE METODO ENVIA EL FORMULARIO DE CORRESPONDENCIA
+	$('#formCorrespondencia').on('submit', function(e) {
+		e.preventDefault();
+
+		const form = this;
+		const formData = new FormData(form);
+		const selectedArea = document.getElementById('Area').value;
+
 		$.ajax({
-			url: $(form).attr('action'), // use the form's action attribute
+			url: $(form).attr('action'),// SE VA AL METODO ENVIARCORRESPONDENCIA EN EL CONTROLADOR DE SERVICIOSPREVIOSJUICIO (SI SE QUIERE CAMBIAR IR AL FORMULARIO DE LA VISTA PARCIAL _ENVIARCORREPSONDENCIA)
 			type: 'POST',
 			data: formData,
-			contentType: false, // necessary for FormData
-			processData: false, // necessary for FormData
+			contentType: false, // NECESARIO PONER PARA EL METODO, POR QUE ESPERA UN FormData
+			processData: false,  // NECESARIO PONER PARA EL METODO, POR QUE ESPERA UN FormData
 			success: function(response) {
 				if (response.success) {
-					  // Show success toast
+					  // LA RESPUESTA FUE EXITOSA
 					Swal.fire({
 						icon: "success",
 						title: "Correspondencia enviada correctamente",
 						showConfirmButton: false,
 						timer: 800,
 						timerProgressBar: true,
-						width: '400px',          // Make it bigger
-						padding: '2em',          // Add some padding
-						position: 'center',      // Center on screen
-						background: '#f0f9ff',   // Optional: change background color
+						width: '400px',
+						padding: '2em',
+						position: 'center',
+						background: '#f0f9ff',
 						customClass: {
-							title: 'swal-title-large', // You can add custom CSS classes
+							title: 'swal-title-large',
 							popup: 'swal-popup-large'
 						}
 					});
-					form.reset();
+					form.reset();//PARA RESETEAR LOS DATOS DEL FORMULARIO EXCEPTO EL AREA
 					$('#Area').val(selectedArea);
 				} else {
 					console.error('Error from controller:', response.message);
@@ -283,15 +187,17 @@
 		});
 	});
 
-	$('#BuscarId').on('click', function(e) {
+	//PARA EL BOTON DE BUSCAR id SOLO ACCESIBLE A CIERTAS AREAS COMO MC Y SCP, LIBERTAD, EJECUCION, SERVICIOS PREVIOS
+	function botonBuscarID() {
+
 		let area = document.getElementById('Area').value;
-		
-			Swal.fire({
-			title: "Buscar persona en" + area,
+
+		Swal.fire({
+			title: "Buscar persona en " + area,
 			html: `
 				<div>
 					<label class="control-label">Id</label>
-					<input required id="IdBuscar" type="text" class="form-control"/>	
+					<input required id="IdBuscar" type="text" class="form-control"/>
 				</div>
 				<div id="swal-validation-area" style="margin-top:10px;"></div>
 			`,
@@ -301,44 +207,386 @@
 			cancelButtonColor: "#d33",
 			focusConfirm: false,
 			preConfirm: () => {
-				//AQUI SE ACCEDE ANTES DE CONTINUAR CON LA FUNCION AJAX
-				const Id = document.getElementById('IdBuscar').value;	
-				//a esta variable hay que quitarle los espacios para mandarla al metodo api sacar datos
-				const AreaSinEspacios = area.replace(/\s+/g, "");
-				//SI NO ESTAN COMPLETOS SE RETORNA LA FUNCION SOLICITANDO QUE LOS LLENEN
-				if (!Id || !Area || !Institucion) {
-					Swal.showValidationMessage('Llena los campos para continuar!');
+				// AQUI SE ACCEDE ANTES DE CONTINUAR CON LA FUNCION AJAX
+				const Id = document.getElementById('IdBuscar').value;
+				let AreaSinEspacios = area.replace(/\s+/g, "");
+
+				// SI NO ESTAN COMPLETOS SE RETORNA LA FUNCION SOLICITANDO QUE LOS LLENEN
+				if (!Id) {
+					Swal.showValidationMessage('Llena el campo para continuar!');
 					return false;
 				}
-				//ANIMACION DE BUSCANDO
+
+				// ANIMACION DE BUSCANDO
 				Swal.showValidationMessage(`
 					<div style="display:flex;align-items:center;gap:8px;justify-content:center;">
 						<div class="swal2-loader"></div> Buscando...
 					</div>
 				`);
-				//SI TODO ES CORRECTO Y NO FALTA NINGUN DATO LLEGA AQUI PARA BUSCAR Y SE VA AL CONTROLADOR
-				return $.ajax({
-					url: '/Api/Savcardatos',
-					type: 'GET',
-					data: { Id: Id, tabla: AreaSinEspacios },
-					success: function(response) {
-						//SI HAY UN ERROR EN EL CONTROLADOR
-						if (response.error) {
-							Swal.fire('Error', response.message, 'error');
-							return;
-						}
 
-						//SI TODO ESTA BIEN SE CIERRA ESTE MODAL
-						Swal.close();
-						//LOS DATOS DE LA RESPUESTA SE VAN AL SIGUIENTE METODO PARA CREAR EL CARNET
-						ConfirmacionCarnet(response.datos);
-					},
-					error: function(message) {
-						Swal.showValidationMessage(`Request failed: ${message.statusText}`);
-					}
-				});
+				// SI TODO ES CORRECTO LLEGA AQUI PARA BUSCAR
+
+				if (area != "MCYSCP" && area != "Libertad Condicionada")
+				{
+					//METODO DIFERENTE PARA TRAER DATOS DE OTRAS AREAS QUE NO SEAN MCSCP Y LIBERTAD
+					buscarDatosOtrasAreas(Id,AreaSinEspacios);
+				}
+				else{
+
+					//SE OPTO POR USAR UN METODO DIFERENTE PARA LAS AREAS DE MC Y SCP O LIBERTAD CONDICIONADA
+					//POR QUE METODO SACAR DATOS EN API NO TRAE LOS DATOS NECESARIOS PARA ESTAS AREAS
+					buscarDatosMCYLC(Id,AreaSinEspacios);
+				}
+
 			}
 		});
+	}
+
+	function buscarDatosOtrasAreas(Id,AreaSinEspacios){
+		return $.ajax({
+			url: '/Api/Savcardatos',
+			type: 'GET',
+			data: { Id: Id, tabla: AreaSinEspacios },
+			success: function(response) {
+				// SI HAY UN ERROR EN EL CONTROLADOR
+				if (response.error) {
+					Swal.fire('Error', response.message, 'error');
+					return;
+				}
+				//SI LA LISTA ESTA VACIA RETORNA UN MENSAJE DE PERSONA NO ENCONTRADA
+				if(response.lista.length == 0){
+					Swal.fire({
+					  title: 'Error',
+					  text: 'Persona no encontrada',
+					  icon: 'error',
+					  timer: 1200, // 1.2 SEGUNDOS PARA QUE SE CIERRE SOLO
+					  showConfirmButton: true
+					});
+					return;
+				}
+				//SI NO HAY ERRORES SE CONTINUA CON UN MENSAJE DE EXITO
+				personaEncontrada();
+
+
+				//SE VA A LA FUNCION DE ABAJO PARA CONTINUAR CON EL LLENADO AUTOMATICO DEL FORMULARIO
+				llenarElementosFormulario(response.lista);
+
+			},
+			error: function(message) {
+				Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+			}
+		});
+	}
+
+	//PARA LLENAR DATOS DE MC Y SCP Y LIBERTAD
+	function buscarDatosMCYLC(Id,AreaSinEspacios){
+		//SE OPTO POR USAR UN METODO DIFERENTE PARA LAS AREAS DE MC Y SCP O LIBERTAD CONDICIONADA
+		//POR QUE METODO SACAR DATOS EN API NO TRAE LOS DATOS NECESARIOS PARA ESTAS AREAS
+			return $.ajax({
+			url: '/Api/SupervisionCompletaMCLC',
+			type: 'GET',
+			data: { idPersona: Id, area: AreaSinEspacios },
+			success: function(response) {
+				// SI HAY UN ERROR EN EL CONTROLADOR
+				if (!response.success) {
+					Swal.fire('Error', response.message, 'error');
+					return;
+				}
+				//SI LA LISTA ESTA VACIA RETORNA UN MENSAJE DE PERSONA NO ENCONTRADA
+				if(response.lista.length == 0){
+					Swal.fire({
+					  title: 'Error',
+					  text: 'Persona no encontrada',
+					  icon: 'error',
+					  timer: 1200, // 1.2 SEGUNDOS PARA QUE SE CIERRE SOLO
+					  showConfirmButton: true
+					});
+					return;
+				}
+
+
+
+				if(response.lista.length > 1){
+					//SI LA PERSONA TIENE MAS DE UNA SUPERVISION
+					//FUNCION PARA QUE EL USUARIO SELECCION CUAL SUPERVISION QUIERE UTILIZAR
+					seleccionarSupervision(response.lista);
+					return;
+				}
+				else{
+					//LA PERSONA SOLO TIENE UNA SUPERVISION SE VA DIRECTO A LLENAR LOS DATOS
+					personaEncontrada();
+					llenarElementosFormulario(response.lista);
+					return;
+				}
+
+			},
+			error: function(message) {
+				Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+			}
+		});
+
+	}
+
+
+
+	//PARA LLENAR EL FORMULARIO DE ENVIARCORRESPONDENCIA CUANDO SE BUSCA POR ID Y SE ENCUENTRA UN DATO
+	function llenarElementosFormulario(lista){
+		//PARA SABER QUE AREA ES PARA FILTRAR LOS DATOSEN EL SWITCH DE ABAJO
+		const area = document.getElementById('Area').value;
+		// INPUTS PARA EL FORMULARIO
+		let inputNombre = document.getElementById('Nombre');
+		let inputApaterno = document.getElementById('Apaterno');
+		let inputAmaterno = document.getElementById('Amaterno');
+		let selectGenero = document.getElementById("Genero");
+		let inputFiguraJudicial = document.getElementById('FiguraJudicial');
+		let inputAutoridad = document.getElementById('Autoridad');
+
+
+
+		switch(area) {
+			case "Ejecucion":
+				const item1 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+				inputNombre.value = item1.p?.nombre || "NA";
+				inputApaterno.value = item1.p?.paterno || "NA";
+				inputAmaterno.value = item1.p?.materno || "NA";
+				selectGenero.value = "";
+				inputFiguraJudicial.value = "NA";
+				inputAutoridad.value = item1.p?.juzgado || "NA";
+				break;
+
+			case "MCYSCP":
+			case "Libertad Condicionada":
+				const item2 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+				inputNombre.value = item2.persona?.nombre || "NA";
+				inputApaterno.value = item2.persona?.paterno || "NA";
+				inputAmaterno.value = item2.persona?.materno || "NA";
+				selectGenero.value = item2.persona?.genero || "";
+				inputFiguraJudicial.value = item2.fracciones?.figuraJudicial || "NA";
+				inputAutoridad.value = item2.causaPenal?.juez|| "NA";
+
+				break;
+			case "Servicios Previos":
+				const item3 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+				inputNombre.value = item3.p?.nombre || "NA";
+				inputApaterno.value = item3.p?.paterno || "NA";
+				inputAmaterno.value = item3.p?.materno || "NA";
+				selectGenero.value = item3.p?.sexo || "";
+				inputFiguraJudicial.value = "NA";
+				inputAutoridad.value = "NA";
+
+				break;
+			case "Oficialia":
+				const item4 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+				inputNombre.value = item4.p?.nombre || "NA";
+				inputApaterno.value = item4.p?.paterno || "NA";
+				inputAmaterno.value = item4.p?.materno || "NA";
+				selectGenero.value = "";
+				inputFiguraJudicial.value = "NA";
+				inputAutoridad.value = item4.p?.juzgado || "NA";
+				break;
+			default:
+
+		}
+	}
+
+	//FUNCION EXCLUSIVA PARA MCSCP Y LC CUANDO SE ENCUENTRA MAS DE UNA SUPERVISION CUANDO BUSCAMOS POR ID
+	function seleccionarSupervision(lista) {
+		if (!lista || lista.length === 0) {
+			Swal.fire({
+				icon: "error",
+				title: "Sin supervisiones",
+				text: "No hay supervisiones disponibles para esta persona."
+			});
+			return;
+		}
+
+		let options = "";
+		//PRIMERO LLENAMOS UNA VARIABLE CON LAS SUPERVISIONES
+		const area = document.getElementById('Area').value;
+		const persona = lista[0].persona;
+		const nombrePersona = `${persona.nombre}  ${persona.materno} ${persona.paterno}`;
+		if(area == "MCYSCP"){
+			lista.forEach((item, index) => {
+
+				const supervision = item.supervision;
+				const fracciones = item.fracciones;
+
+				options += `<option value="${supervision.idSupervision}">
+								IdSuper ${supervision.idSupervision}
+								-Estado: ${supervision.estadoSupervision}
+								- Figura: ${fracciones?.figuraJudicial || "Sin figura"}
+								- CP: ${item.causaPenal?.causaPenal || ""}
+							</option>`;
+			});
+		}
+		else if (area == "Libertad Condicionada"){
+			lista.forEach((item, index) => {
+				const supervision = item.supervision;
+				const fracciones = item.fracciones;
+
+				options += `<option value="${supervision.idSupervisioncl}">
+								IdSuper ${supervision.idSupervisioncl}
+								-Estado: ${supervision.estadoSupervision}
+								- Figura: ${fracciones?.figuraJudicial || "Sin figura"}
+								- CP: ${item.causaPenal?.causaPenal || ""}
+							</option>`;
+			});
+		}
+
+		//DESPUES DE QUE SE LLENA LAS MOSTRAMOS CON LA OPCION HTML DE ABAJO
+		Swal.fire({
+			title: "Selecciona una supervisión de " + nombrePersona,
+			html: `
+				<select id="supervisionSelect" class="swal2-select">
+					${options}
+				</select>
+			`,
+			showCancelButton: true,
+			confirmButtonText: "Seleccionar",
+			cancelButtonText: "Cancelar",
+			preConfirm: () => {
+				//CUANDO EL USUARIO ESCOGE UNA Y LE DA A SELECCIONAR LLEGA AQUI
+				const selectedId = document.getElementById("supervisionSelect").value;
+
+				if (!selectedId) {
+					Swal.showValidationMessage("Debes seleccionar una supervisión");
+					return false;
+				}
+				return selectedId;//DESPUES VA A RETORNAR EL ID SUPERVISION SELECCIONADO
+			}
+		}).then((result) => {
+			 if (result.isConfirmed) {
+				const idSupervision = result.value;
+				let itemSeleccionado;
+				//AQUI SE SELECCIONAN TODOS LOS DATOS DE LA SUPERVISION, INCLUYE PERSONA, CAUSA PENAL, SUPERVISION Y FRACCIONES
+				if(area == "MCYSCP"){
+					itemSeleccionado = lista.filter(item => item.supervision.idSupervision == idSupervision)
+				}
+				else if (area == "Libertad Condicionada"){
+					itemSeleccionado = lista.filter(item => item.supervision.idSupervisioncl == idSupervision);
+				}
+				Swal.fire({
+					icon: "success",
+					title: "Supervisión seleccionada",
+					text: `Elegiste la supervisión con ID: ${idSupervision}`,
+					timer: 1000,
+					showConfirmButton: false
+				});
+				//DESPUES DE MOSTRAR LA ALERTA DE SELECCIONADO MANDAMOS LOS ELEMENTO DEL ID SUPERVISION SELECCIONADO AL LLENADO AUTOMATICO DEL FORMULARIO
+				llenarElementosFormulario(itemSeleccionado);
+
+			}
+		});
+	}
+
+	function personaEncontrada(){
+		Swal.fire({
+		  title: 'Éxito',
+		  text: 'Persona encontrada',
+		  icon: 'success',
+		  timer: 800, // DURA 0.8 SEGUNDOS
+		  showConfirmButton: false
+		});
+	}
+
+
+	//$$$$$$$$$$$$$$$$$$$$$$$ AREA DE RECIBIR CORRESPONDENCIA $$$$$$$$$$$$$$$$$$$$$$$
+
+	//ESTA FUNCION SE ACCEDE DESDE LA VISTA PARCIAL _RECIBIRCORRESPONDENCIA
+	function FiltrarCorrespondencia() {
+		//ESTAS VARIABLES SE LLENAN CON LOS VALORES DESDE LAS VISTA PARCIAL _RECIBIRCORRESPONDENCIA
+		let searchString = $("#SearchString").val();
+		let selectSearch = $("#selectSearch").val();
+		//SE LLAMA LA FUNCION Y SE SUSTITUYEN LOS DATOS EN EL CONTENEDOR RECIBIR QUE ESTA EN EL HTML DE ESTA VISTA
+		$.get("/ServiciosPreviosJuicio/FiltrarCorrespondencia", { searchString, selectSearch })
+			.done(function (data) {
+				$("#contenedor-recibir").html(data);
+				$("#SearchString").val("");
+			});
+	}
+
+	//PARA MARCAR LA CASILLA DE ENTREGADO EN LA VISTA PARCIAL _RECIBIRCORRESPONDENCIA
+	// (FUNCIONA CON LA CLASE DE LOS CHECK BOXES EN _RECIBIRCORRESPONDENCIA)
+	$(document).on('change', '.checkbox-entregadoRecibido', function() {
+		const id = $(this).data('id');
+		const tipo = $(this).data('tipo');
+
+		modificarCorrespondencia(id, tipo, this);
+
 	});
+	//PARA SELECCIONAR EL USUARIO QUE RECIBE
+	function quienRecibeChanged(idCorrespondencia, tipo, usuarioSeleccionado) {
+		const selectedUser = usuarioSeleccionado.value;
+		modificarCorrespondencia(idCorrespondencia, tipo, selectedUser, usuarioSeleccionado);
+	}
+
+	//FUNCION PARA MODIFICAR UNA CORRESPONDENCIA
+	function modificarCorrespondencia(id, tipo, element){
+	
+		let usuario = '';
+		if (typeof element === 'string') {
+			usuario = element; 
+		} else {
+			usuario = $(element).val();
+		}
+
+		$.ajax({
+			url: '/ServiciosPreviosJuicio/ModificarCorrespondencia',
+			type: 'POST',
+			data: { id: id, tipo: tipo, usuario: usuario },
+			success: function(response){
+				if(response.success){
+					// Disable element if it's a DOM element
+					if(typeof element !== 'string'){
+						$(element).prop('disabled', true);
+					}
+
+					// If it's a checkbox and checked, update the corresponding date
+					if (typeof element !== 'string' && $(element).is(':checked'))
+					{
+						const now = new Date();
+
+						// Format the date as "dd/MM/yyyy HH:mm"
+						const day = String(now.getDate()).padStart(2, '0');
+						const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+						const year = now.getFullYear();
+						const hours = String(now.getHours()).padStart(2, '0');
+						const minutes = String(now.getMinutes()).padStart(2, '0');
+
+						const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+						const row = $(element).closest('tr');
+						if (tipo === 'recibido') {
+							row.find('.fecha-recibido').text(formattedDate);
+						} else if (tipo === 'entregado') {
+							row.find('.fecha-entregado').text(formattedDate);
+						}
+					}
+						const Toast = Swal.mixin({
+							toast: true,
+							position: "top-end",
+							showConfirmButton: false,
+							timer: 3000,
+							timerProgressBar: true,
+							didOpen: (toast) => {
+								toast.onmouseenter = Swal.stopTimer;
+								toast.onmouseleave = Swal.resumeTimer;
+							}
+							});
+							Toast.fire({
+								icon: "success",
+								title: "Registro actualizado!"
+							});
+					} 
+					else
+					{
+						Swal.fire('Error', response.message, 'error');
+					}
+			},
+			error: function(xhr, status, error){
+				Swal.fire('Error', 'No se pudo actualizar', 'error');
+			}
+		});
+	}
 
 </script>

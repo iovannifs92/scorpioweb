@@ -1,0 +1,140 @@
+﻿@* //TODAS LAS FUNCIONES DE JAVASCRIPT Y ESTILOS ESTAN EN LA VISTA CORRESPONDENCIA, NO HAY NINGUNA EN LAS VISTAS _PARCIALES
+EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
+//LOS VIEWBAGS SE OBTINEN DEL CONTROLADOR PRINCIPAL DE LA VISTA CORRESPONDENCIA *@
+<div class="text-center" style="padding-top:1%">
+	<img src="~/images/Recibir Correspondencia.png" class="rounded" alt="..." style="max-width:10%">
+	<br />
+	<h2>Recibir Correspondencia</h2>
+</div>
+
+<div class="top-content">
+	<div class="row-items">
+		<div class="item">
+			<p>
+				Buscar por nombre: @Html.TextBox("SearchString", null, new { id = "SearchString" })
+				<input type="button" class="btn-success" onclick="FiltrarCorrespondencia();" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
+			</p>
+		</div>
+		<div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
+		<div class="item">
+			<select class="form-control form-select-lg mb-3" id="selectSearch" onchange="FiltrarCorrespondencia();">
+				<option value="">Actual: @ViewBag.CurrentSelectSearch</option>
+				<optgroup label="-------- Area --------">
+					<option value="UESPA" @(ViewBag.CurrentSelectSearch == "UESPA" ? "selected" : "")>UESPA</option>
+					<option value="DIRECCION" @(ViewBag.CurrentSelectSearch == "DIRECCION" ? "selected" : "")>DIRECCION</option>
+					<option value="COORDINACION OPERATIVA" @(ViewBag.CurrentSelectSearch == "COORDINACION OPERATIVA" ? "selected" : "")>COORDINADION OPERATIVA</option>
+					<option value="EJECUCION" @(ViewBag.CurrentSelectSearch == "EJECUCION" ? "selected" : "")>EJECUCION</option>
+					<option value="LIBERTAD CONDICIONADA" @(ViewBag.CurrentSelectSearch == "LIBERTAD CONDICIONADA" ? "selected" : "")>LIBERTAD CONDICIONADA</option>
+					<option value="MCYSCP" @(ViewBag.CurrentSelectSearch == "MCYSCP" ? "selected" : "")>MCYSCP</option>
+					<option value="SERVICIOS LEGALES" @(ViewBag.CurrentSelectSearch == "SERVICIOS LEGALES" ? "selected" : "")>SERVICIOS LEGALES</option>
+					<option value="SERVICIOS PREVIOS" @(ViewBag.CurrentSelectSearch == "SERVICIOS PREVIOS" ? "selected" : "")>SERVICIOS PREVIOS</option>
+					<option value="SISTEMAS" @(ViewBag.CurrentSelectSearch == "SISTEMAS" ? "selected" : "")>SISTEMAS</option>
+					<option value="OFICIALIA" @(ViewBag.CurrentSelectSearch == "OFICIALIA" ? "selected" : "")>OFICIALIA</option>
+					<option value="VINCULACION" @(ViewBag.CurrentSelectSearch == "VINCULACION" ? "selected" : "")>VINCULACION</option>
+				</optgroup>
+				<optgroup label="-------- Estado --------">
+					<option value="OFICIO NO ENTREGADO-ACUSE NO RECIBIDO" @(ViewBag.CurrentSelectSearch == "ENTREGADORECIBIDO" ? "selected" : "")>OFICIO NO ENTREGADO-ACUSE NO RECIBIDO</option>
+					<option value="OFICIO ENTREGADO-ACUSE NO RECIBIDO" @(ViewBag.CurrentSelectSearch == "ENTREGADO" ? "selected" : "")>OFICIO ENTREGADO-ACUSE NO RECIBIDO</option>
+					<option value="OFICIO ENTREGADO-ACUSE RECIBIDO" @(ViewBag.CurrentSelectSearch == "RECIBIDO" ? "selected" : "")>OFICIO ENTREGADO-ACUSE RECIBIDO</option>
+				</optgroup>
+				<optgroup label="-------- Otros --------">
+					<option value="TODOS" @(ViewBag.CurrentSelectSearch == "TODOS" ? "selected" : "")>TODOS</option>
+				</optgroup>
+			</select>
+		</div>
+	</div>
+</div>
+
+@if (Model != null && Model.Count > 0)
+{
+	@if (!string.IsNullOrEmpty(ViewBag.CurrentSearchString as string))
+	{
+		<h4 style="font-weight:600;">Resultados de la búsqueda: @ViewBag.CurrentSearchString</h4>
+	}
+
+	<div style="width: 150%; right:250px;position:relative; overflow-x: scroll;">
+		<table class="table table-bordered" style="width: 100%; min-width: 1500px;">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Area</th>
+					<th>Nombre</th>
+					<th>No° Oficio</th>
+					<th>Figura Judicial</th>
+					<th>Genero</th>
+					<th>Asunto</th>
+					<th>Autoridad</th>
+					<th>Observaciones</th>
+					<th>FechaRegistro</th>	
+					<th>Quien entrega oficio</th>
+					<th>Oficio entregado</th>
+					<th>Fecha de entrega</th>
+					<th style="width: 250px;">Quien recibe acuse</th>
+					<th>Acuse Recibido</th>
+					<th>Fecha de recibido</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>@item.IdenvioCorrespondencia</td>
+						<td>@item.Area</td>
+						<td>@item.Nombre @item.Apaterno @item.Amaterno</td>
+						<td>@item.NoOficio</td>
+						<td>@item.FiguraJudicial</td>
+						<td>@item.Genero</td>
+						<td>@item.Asunto</td>
+						<td>@item.Autoridad</td>
+						<td>@item.Observaciones</td>
+						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy HH:mm")</td>
+						<td>@item.QuienEntrega</td>
+						<td>
+							<input class="checkbox-entregadoRecibido"
+								   data-id="@item.IdenvioCorrespondencia"
+								   data-tipo="entregado"
+								   type="checkbox"
+								   @(item.Entregado == 1 ? "checked disabled" : "") />
+						</td>
+						<td class="fecha-entregado">@item.FechaEntrega?.ToString("dd/MM/yyyy HH:mm")</td>
+						<td>
+							@if (string.IsNullOrEmpty(item.QuienRecibe))
+							{
+								<select class="form-control"
+										name="QuienRecibe_@item.IdenvioCorrespondencia"
+										onchange="quienRecibeChanged(@item.IdenvioCorrespondencia,'select-usuario',this)">
+									<option value=""></option>
+									@foreach (var kvp in ViewBag.UserAreas as Dictionary<string, string>)
+									{
+										if (!string.IsNullOrEmpty(kvp.Value) &&
+										item.Area?.IndexOf(kvp.Value, StringComparison.OrdinalIgnoreCase) >= 0)
+										{
+											<option value="@kvp.Key">@kvp.Key</option>
+										}
+									}
+								</select>
+							}
+							else
+							{
+								@item.QuienRecibe
+							}
+						</td>
+						<td>
+							<input class="checkbox-entregadoRecibido"
+								   data-id="@item.IdenvioCorrespondencia"
+								   data-tipo="recibido"
+								   type="checkbox"
+								   @(item.Recibido == 1 ? "checked disabled" : "") />
+						</td>
+						<td class ="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+
+}
+else
+{
+	<h2>Sin resultados, selecciona un filtro para buscar</h2>
+}
