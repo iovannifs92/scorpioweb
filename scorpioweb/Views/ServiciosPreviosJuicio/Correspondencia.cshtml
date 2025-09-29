@@ -244,7 +244,7 @@
 
 	function buscarDatosOtrasAreas(Id,AreaSinEspacios){
 		return $.ajax({
-			url: '/Api/Savcardatos',
+			url: '/Api/Sacardatos',
 			type: 'GET',
 			data: { Id: Id, tabla: AreaSinEspacios },
 			success: function(response) {
