@@ -770,10 +770,12 @@ namespace scorpioweb.Controllers
                     ViewBag.BotonId = false;//NO ES NECESARIO POR QUE NO HAY BD DE SISTEMAS
                     break;
                 
-                case "Oficialia": 
+                case "Oficialia":
+                    ViewBag.BotonId = false;
                     break;// SOLO PARA QUE NO SE VAYA AL DEFAULT
                 
                 case "Coordinacion Operativa":
+                    ViewBag.BotonId = false;
                     break;// SOLO PARA QUE NO SE VAYA AL DEFAULT
                 
                 default:
@@ -825,7 +827,57 @@ namespace scorpioweb.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
         [HttpGet]
+        public async Task<IActionResult> VerCorrespondenciaEnviada(string area)
+        {
+            if (area == "SIN AREA")
+                return BadRequest("SIN AREA");
+
+            List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
+            switch (area)
+            {
+                case "MCYSCP":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "MCYSCP").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Libertad Condicionada":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "LIBERTAD CONDICIONADA").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Direccion":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "DIRECCION").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "UESPA":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "UESPA").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Vinculacion":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "VINCULACION").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Ejecucion":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "EJECUCION").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Servicios Previos":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOS PREVIOS").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Servicios legales":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOS LEGALES").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Sistemas":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SISTEMAS").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Oficialia":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OFICIALIA").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                case "Coordinacion Operativa":
+                    correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OPERATIVO").OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                    break;
+                default:
+                    return BadRequest("SIN AREA");
+            }
+
+            return PartialView("_VerCorrespondenciaEnviada",correspondencia);
+        }
+
+            [HttpGet]
         public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch)
         {
 
