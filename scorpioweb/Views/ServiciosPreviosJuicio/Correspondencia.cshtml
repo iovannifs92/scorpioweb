@@ -95,8 +95,9 @@
 	@if (ViewBag.EnviarRecibir)
 	{
 		//ESTA PARTE SOLO SE VE SI EL USUARIO PUEDE ENVIAR Y RECIBIR DOCUMENTOS, AL PRESIONAR ALGUN BOTON SE HABILITAN LAS VISTAS PARCIALES CORERSPONDIENTES
-		<button type="button" class="button-27 VistaEnviar" onclick="mostrarParcial('enviar')">Enviar Correspondencia</button>
-		<button type="button" class="button-27 VistaRecibir" onclick="mostrarParcial('recibir')">Recibir Correspondencia</button>
+		<button type="button" class="button-27 VistaEnviar" onclick="mostrarParcialEnviarRecibir('enviar')">Enviar Correspondencia</button>
+		<button type="button" class="button-27 VistaRecibir" onclick="mostrarParcialEnviarRecibir('recibir')">Recibir Correspondencia</button>
+
 		<div id="contenedor-enviar" style="display:none;">
 			@Html.Partial("_EnviarCorrespondencia")
 		</div>
@@ -107,8 +108,18 @@
 	}
 	else if (User.IsInRole("EnviarCorrespondencia") && !User.IsInRole("RecibirCorrespondencia"))
 	{
-		//SE HABILITA DIRECTAMENTE SI EL USUARIO SOLO TIENE EL ROL ENVIAR CORRESPONDENCIA
-		@Html.Partial("_EnviarCorrespondencia")
+
+		<input style="display:none;" id="areaVerEnviados" value="@ViewBag.Area" />
+		<button type="button" class="button-27 VistaEnviar" onclick="mostrarParcialEnviarVerEnviados('enviar')">Crear correspondencia</button>
+		<button type="button" class="button-27 VistaRecibir" onclick="mostrarParcialEnviarVerEnviados('verEnviados')">Ver enviados</button>
+		<div id="contenedor-enviar" style="display:none;">
+			@Html.Partial("_EnviarCorrespondencia")
+		</div>
+
+		<div id="contenedor-verEnviados" style="display:none;">
+		
+			@Html.Partial("_VerCorrespondenciaEnviada", Model)
+		</div>
 	}
 	else if (User.IsInRole("RecibirCorrespondencia") && !User.IsInRole("EnvioCorrespondencia"))
 	{
@@ -119,25 +130,34 @@
 	}
 </div>
 
-<div style="margin-top:20px">
-	<a asp-action="MenuCl">Regresar a Menu Pincipal</a>
-</div>
-
 @* TODAS LAS FUNCIONES DE JAVASCRIPT ESTAN AQUI, NO HAY NINGUNA EN LAS VISTAS _PARCIALES ENVIARCORRESPONDENCIA Y _RECIBIRCORRESPONDENCIA *@
 <script>
 
 	//FUNCION PARA MOSTRAR LAS VISTAS PARCIALES
 	//LOS CONTENEDORES SE ENCUENTRAR EN EL HTML DE ESTA VISTA
-	function mostrarParcial(tipo) {
-		var enviarDiv = document.getElementById("contenedor-enviar");
-		var recibirDiv = document.getElementById("contenedor-recibir");
-
+	function mostrarParcialEnviarRecibir(tipo) {
+		let enviarDiv = document.getElementById("contenedor-enviar");
+		let recibirDiv = document.getElementById("contenedor-recibir");
 		if (tipo === "enviar") {
 			enviarDiv.style.display = "block";
 			recibirDiv.style.display = "none";
+
 		} else if (tipo === "recibir") {
 			enviarDiv.style.display = "none";
 			recibirDiv.style.display = "block";
+		} 
+	}
+	function mostrarParcialEnviarVerEnviados(tipo) {
+		let enviarDiv = document.getElementById("contenedor-enviar");
+		let verEnviadosDiv = document.getElementById("contenedor-verEnviados");
+		if (tipo === "enviar") {
+			enviarDiv.style.display = "block";
+			verEnviadosDiv.style.display = "none";
+
+		} else if (tipo === "verEnviados") {
+			enviarDiv.style.display = "none";
+			verEnviadosDiv.style.display = "block";
+			verCorrespondenciaEnviada();
 		}
 	}
 
@@ -487,6 +507,18 @@
 		  timer: 800, // DURA 0.8 SEGUNDOS
 		  showConfirmButton: false
 		});
+	}
+
+
+	//$$$$$$$$$$$$$$$$$$$$$$$ VER CORRESPONDENCIA ENVIADA $$$$$$$$$$$$$$$$$$$$$$$
+	function verCorrespondenciaEnviada() {
+
+		let area = $("#areaVerEnviados").val();
+		//SE LLAMA LA FUNCION Y SE SUSTITUYEN LOS DATOS EN EL CONTENEDOR RECIBIR QUE ESTA EN EL HTML DE ESTA VISTA
+		$.get("/ServiciosPreviosJuicio/VerCorrespondenciaEnviada", { area})
+			.done(function (data) {
+				$("#contenedor-verEnviados").html(data);
+			});
 	}
 
 

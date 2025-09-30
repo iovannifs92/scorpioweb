@@ -1,0 +1,74 @@
+﻿@if (Model != null && Model.Count > 0)
+{
+	@if (!string.IsNullOrEmpty(ViewBag.CurrentSearchString as string))
+	{
+		<h4 style="font-weight:600;">Resultados de la búsqueda: @ViewBag.CurrentSearchString</h4>
+	}
+
+	<div style="width: 150%; right:250px;position:relative; overflow-x: scroll; padding-top:20px;">
+		<table class="table table-bordered" style="width: 100%; min-width: 1500px;">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Area</th>
+					<th>Nombre</th>
+					<th>No° Oficio</th>
+					<th>Figura Judicial</th>
+					<th>Genero</th>
+					<th>Asunto</th>
+					<th>Autoridad</th>
+					<th>Observaciones</th>
+					<th>FechaRegistro</th>
+					<th>Quien entrega oficio</th>
+					<th>Oficio entregado</th>
+					<th>Fecha de entrega</th>
+					<th style="width: 250px;">Quien recibe acuse</th>
+					<th>Acuse Recibido</th>
+					<th>Fecha de recibido</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>@item.IdenvioCorrespondencia</td>
+						<td>@item.Area</td>
+						<td>@item.Nombre @item.Apaterno @item.Amaterno</td>
+						<td>@item.NoOficio</td>
+						<td>@item.FiguraJudicial</td>
+						<td>@item.Genero</td>
+						<td>@item.Asunto</td>
+						<td>@item.Autoridad</td>
+						<td>@item.Observaciones</td>
+						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy HH:mm")</td>
+						<td>@item.QuienEntrega</td>
+						<td>
+							<input class="checkbox-entregadoRecibido"
+								   data-id="@item.IdenvioCorrespondencia"
+								   data-tipo="entregado"
+								   type="checkbox"
+								   @(item.Entregado == 1 ? "checked" : "")
+									 disabled />
+						</td>
+						<td class="fecha-entregado">@item.FechaEntrega?.ToString("dd/MM/yyyy HH:mm")</td>
+						<td>@item.QuienRecibe</td>
+						<td>
+							<input class="checkbox-entregadoRecibido"
+								   data-id="@item.IdenvioCorrespondencia"
+								   data-tipo="recibido"
+								   type="checkbox"
+								   @(item.Recibido == 1 ? "checked" : "")
+								   disabled />
+						</td>
+						<td class="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+
+}
+else
+{
+	<h2>No hay enviados</h2>
+}
