@@ -149,25 +149,20 @@
 
     function myFunction(id, area) {
         var encontro = false;
-        var index;
-        alert(id)
-        alert(area)
+        var doble;
         for (var i = 0; i < arr.length; i++) {
-            if (arr[i].id === id && arr[i].area === area) {
+            if (arr[i] === id && arr[i] === area) {
                 encontro = true;
-                index = i;
+                doble = i;
                 break;
             }
         }
-
-        if (!encontro) {
-            arr.push({ id: id, area: area }); // objeto con id y area
+        if (encontro == false) {
+            arr.push("Id: "+ id+", Area: "+ area);
         } else {
-            arr.splice(index, 1); // quita el elemento
+            arr.splice(doble, 1);
         }
     }
-
-
 
     $(document).ready(function () {
         $('#btnImprimirR').on("click", function (e) {
@@ -197,8 +192,6 @@
 
         });
     });
-
-
 </script>
 
 <h2>Audiencias</h2>

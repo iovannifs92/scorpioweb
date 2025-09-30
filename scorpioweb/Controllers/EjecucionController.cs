@@ -2443,22 +2443,19 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Imprimir Audiencias Selecionadas -
-        public class SeleccionDto
+        public class AudienciaSeleccionada
         {
             public int Id { get; set; }
             public string Area { get; set; }
         }
-        public class SeleccionRequest
-        {
-            public  new List<SeleccionDto> Datos { get; set; }
-        }
 
-        [HttpPost]
-        public IActionResult ProcesarSeleccion([FromBody] List<SeleccionDto> datos)
+
+        #region -Imprimir Audiencias Selecionadas -
+        public void ImprimirAudiencias(string[] datosidAudiencia)
         {
-            if (datos == null || !datos.Any())
+            if (datosidAudiencia.Length == 0)
             {
-                return Json(new { success = false, responseText = "No se recibieron datos." });
+                return;
             }
 
             DateTime now = DateTime.Now;
@@ -2466,23 +2463,29 @@ namespace scorpioweb.Controllers
             DateTime startOfWeek = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
             DateTime endOfWeek = startOfWeek.AddDays(4);
 
-
             string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateAudiencia.docx";
             string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\AudienciasEP.docx";
 
             DocumentCore dc = DocumentCore.Load(templatePath);
 
-            var dataSource = new
+            var lista = datosidAudiencia.Select(dato =>
             {
-                fechaElavoracion = DateTime.Now.ToString("dd/MM/yyyy"),
-                semana = startOfWeek.ToString("dd/MM/yyyy") + " Al " + endOfWeek.ToString("dd/MM/yyyy"),
-                Audiencia = new object[datos.Count()]
-            };
-            List<OficialiaAudienciaVM> filter = new List<OficialiaAudienciaVM>();
+                var partes = dato.Split(',');
+                var idParte = partes[0].Split(':')[1].Trim();
+                var areaParte = partes[1].Split(':')[1].Trim();
 
-            foreach (var item in datos)
+                return new AudienciaSeleccionada
+                {
+                    Id = int.Parse(idParte),
+                    Area = areaParte
+                };
+            }).ToList();
+
+            var filter = new List<OficialiaAudienciaVM>();
+
+            foreach (var item in lista)
             {
-                if (item.Area == "Audiencia")
+                if (item.Area == "Audienciaep")
                 {
                     var query = (from a in _context.Audienciaep
                                  where a.IdaudienciaEp == item.Id
@@ -2522,10 +2525,11 @@ namespace scorpioweb.Controllers
                 }
             }
 
-            // Ahora ya no necesitas más ifs, solo mapear filter -> dataSource
-            foreach (var item in filter)
+            var dataSource = new
             {
-                dataSource.Audiencia.Append(new
+                fechaElavoracion = DateTime.Now.ToString("dd/MM/yyyy"),
+                semana = startOfWeek.ToString("dd/MM/yyyy") + " Al " + endOfWeek.ToString("dd/MM/yyyy"),
+                Audiencia = filter.Select(item => new
                 {
                     IdepcrearAudiencia = item.Id,
                     FechaAudiencia = (item.FechaAudiencia ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
@@ -2534,90 +2538,15 @@ namespace scorpioweb.Controllers
                     Usuario = item.QuienAsistira ?? string.Empty,
                     Ce = item.CarpetaEjecucion ?? string.Empty,
                     Sentenciado = item.Nomcom ?? string.Empty
-                });
-            }
-
-            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
-            dc.MailMerge.Execute(dataSource);
-            dc.Save(resultPath);
-
-            return Json(new { ok = true });
-        }
-
-
-
-
-        [HttpPost]
-        public IActionResult ImprimirAudiencias(string[] datosidAudiencia)
-        {
-            if (datosidAudiencia == null || !datosidAudiencia.Any())
-            {
-                return Json(new { success = false, responseText = "No se recibieron datos." });
-            }
-
-            DateTime now = DateTime.Now;
-            int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-            DateTime startOfWeek = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
-            DateTime endOfWeek = startOfWeek.AddDays(4);
-
-
-            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templateAudiencia.docx";
-            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\AudienciasEP.docx";
-
-            DocumentCore dc = DocumentCore.Load(templatePath);
-
-            var dataSource = new
-            {
-                fechaElavoracion = DateTime.Now.ToString("dd/MM/yyyy"),
-                semana = startOfWeek.ToString("dd/MM/yyyy") + " Al " + endOfWeek.ToString("dd/MM/yyyy"),
-                Audiencia = new object[datosidAudiencia.Length]
+                }).ToArray()
             };
 
-
-            for (int i = 0; i < datosidAudiencia.Length ; i++)
-            {
-                var item = datosidAudiencia[i];
-
-                //if (item. == "Oficialia")
-                //{
-                //    var ofi = _context.Oficialia.FirstOrDefault(o => o.IdOficialia == item.Id);
-
-                //    dataSource.Audiencia[i] = new
-                //    {
-                //        IdepcrearAudiencia = item.Id,
-                //        FechaAudiencia = (ofi?.FechaTermino ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
-                //        FechaNotificacion = (ofi?.FechaRecepcion ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
-                //        Juzgado = ofi?.Juzgado ?? string.Empty,
-                //        Usuario = ofi?.QuienAsistira ?? string.Empty,
-                //        Ce = ofi?.CarpetaEjecucion ?? string.Empty,
-                //        Sentenciado = $"{ofi?.Paterno} {ofi?.Materno} {ofi?.Nombre}"
-                //    };
-                //}
-                //else if (item.Area == "Audienciaep")
-                //{
-                //    var aud = _context.Audienciaep.FirstOrDefault(a => a.IdaudienciaEp == item.Id);
-
-                //    dataSource.Audiencia[i] = new
-                //    {
-                //        IdepcrearAudiencia = item.Id,
-                //        FechaAudiencia = (aud?.FechaAudiencia ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
-                //        FechaNotificacion = (aud?.FechaNotificacion ?? DateTime.MinValue).ToString("dd/MM/yyyy"),
-                //        Juzgado = aud?.Juzgado ?? string.Empty,
-                //        Usuario = aud?.Usuario ?? string.Empty,
-                //        Ce = aud?.CarpetaEjecucion ?? string.Empty,
-                //        Sentenciado = aud?.Sentenciado ?? string.Empty
-                //    };
-                //}
-            }
-
-
-
             dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
             dc.MailMerge.Execute(dataSource);
             dc.Save(resultPath);
-            return Json(new { success = true });
 
         }
+        #endregion
         #endregion
 
         public async Task<IActionResult> WarningEjecucion()

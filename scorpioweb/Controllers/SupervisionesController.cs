@@ -3558,7 +3558,7 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -Descargar Razon de Archivo-
-        public void DesracgaRA(int idsupervision, int idpersona)
+        public void DescargarRA(int idsupervision, int idpersona)
         {
             var user = userManager.FindByNameAsync(User.Identity.Name);
 
