@@ -204,7 +204,7 @@
                         <li><a asp-area="" asp-controller="Personas" asp-action="Index">MC y SCP</a></li>
                     }
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
                     }
@@ -214,11 +214,14 @@
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
                     }
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Operativo") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC") || User.IsInRole("Coordinador Ejecucion"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Archivo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Operativo") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("SupervisorLC"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") ||
+                    User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") || 
+                    User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos") || 
+                                        User.IsInRole("Operativo") || User.IsInRole("SupervisorLC") || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }
