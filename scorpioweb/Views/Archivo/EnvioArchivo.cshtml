@@ -8,7 +8,7 @@
 
 
 <script type="text/javascript">
-
+    var area = "";
     function borrarEnvioA(id, recibido) {
         if (recibido == "1") {
             Swal.fire({
@@ -18,60 +18,55 @@
                 footer: '<a href="https://web.whatsapp.com/">Para mayor información consulte al área de sistemas</a>'
             });
         } else {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Archivo/DeleteEnvioArchivo/",
-                traditional: true,
-                data: {
-                    id: id,
-                },
-                success: function (response) {
-                    if (response.borrar == true) {
-                        Swal.fire({
-                            title: "Borrrado Con Exito!",
-                            icon: "success",
-                            draggable: true,
-                            timer: 1500
-                        });
-                        location.reload();
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "No puedes borrar " + response.mensaje,
-                            footer: '<a href="https://web.whatsapp.com/">Para mayor información consulte al área de sistemas</a>'
-                        });
-                    }
-                },
-                error: function (response) {
-
-                    alert(response.error);
-
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "Esta acción eliminará el registro de forma permanente.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, borrar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/Archivo/DeleteEnvioArchivo/",
+                        traditional: true,
+                        data: { id: id },
+                        success: function (response) {
+                            if (response.borrar == true) {
+                                Swal.fire({
+                                    title: "¡Borrado con éxito!",
+                                    icon: "success",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops...",
+                                    text: "No puedes borrar " + response.mensaje,
+                                    footer: '<a href="https://web.whatsapp.com/">Para mayor información consulte al área de sistemas</a>'
+                                });
+                            }
+                        },
+                        error: function (response) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Ocurrió un problema al intentar borrar el registro."
+                            });
+                        }
+                    });
                 }
             });
         }
     }
 
-
-    //        //if (response.success == true) {
-    //        //    Swal.fire({
-    //        //        title: "Guardado",
-    //        //        text: "Tu registro se ha guardado",
-    //        //        icon: "success"
-    //        //    }).then((result) => {
-    //        //        if (result.isConfirmed) {
-    //        //            retraso(response.viewUrl, 70);
-    //        //        } else {
-    //        //            retraso(response.viewUrl, 70);
-    //        //        }
-    //        //    });
-    //        //} else {
-    //        //    Swal.fire({
-    //        //        title: "Error al Borrar",
-    //        //        text: "Contacte con el administrador del sistema " + response.error,
-    //        //        icon: "error"
-    //        //    });
 
     function modal(id, recibido) {
         var url = "/Archivo/editEnvioArchivo/" + id;
@@ -179,6 +174,8 @@
                     <br/>
                     <label class="control-label">Coloque el Id</label>
                     <input required id="Id" type="text" class="form-control"/>
+                    <br />
+                    <a href="/Archivo/CreateEnvioArchivo">O Registre Manulmente</a>
                 </div>
             `,
             showCancelButton: true,
@@ -188,11 +185,13 @@
             focusConfirm: false,
             preConfirm: () => {
                 //AQUI SE ACCEDE ANTES DE CONTINUAR CON LA FUNCION AJAX
-                const tabla = "@ViewBag.AreaAsignada";
-                const id = document.getElementById('Id').value;
-               
+                area = '@ViewBag.AreaAsignada';
+                let areaFinal = (area === "Servicios previos") ? "ServiciosPrevios" :(area === "MCySCP") ? "MCYSCP" : (area === "LC") ? "LibertadCondicionada": (area === "Ejecución de Penas") ? "Ejecucion": area;
+                let AreaSinEspacios = area.replace(/\s+/g, "");
+                var Id = document.getElementById('Id').value;
+                        
                 //SI NO ESTAN COMPLETOS SE RETORNA LA FUNCION SOLICITANDO QUE LOS LLENEN
-                if (!id || !tabla) {
+                if (!Id || !areaFinal) {
                     Swal.showValidationMessage('Llena los campos para continuar!');
                     return false;
                 }
@@ -202,87 +201,335 @@
                         <div class="swal2-loader"></div> Buscando...
                     </div>
                 `);
-                //SI TODO ES CORRECTO Y NO FALTA NINGUN DATO LLEGA AQUI PARA BUSCAR Y SE VA AL CONTROLADOR
-                return $.ajax({
-                    url: '/Api/Sacardatos',
-                    type: 'GET',
-                    data: { id: id, tabla: tabla },
-                    success: function(response) {
-                        //SI HAY UN ERROR EN EL CONTROLADOR
-                        // alert(response.lista[0].p.nombre)
-                        // alert(response.lista[0].p.paterno)
-                        // alert(response.lista[0].p.materno)
-                        if (response.error) {
-                            Swal.fire('Error', response.message, 'error');
-                            return;
-                        }
-                        //SI TODO ESTA BIEN SE CIERRA ESTE MODAL
-                        Swal.close();
-                        //LOS DATOS DE LA RESPUESTA SE VAN AL SIGUIENTE METODO PARA CREAR EL CARNET
-                        alert(1)
-                        ConfirmacionEnvioArchivo(response.lista[0]);
-                    },
-                    error: function(message) {
-                        Swal.showValidationMessage(`Request failed: ${message.statusText}`);
-                    }
-                });
+                // SI TODO ES CORRECTO LLEGA AQUI PARA BUSCAR
+
+                if (area != "MCySCP" && area != "LC")
+                {
+                    //METODO DIFERENTE PARA TRAER DATOS DE OTRAS AREAS QUE NO SEAN MCSCP Y LIBERTAD
+                    buscarDatosOtrasAreas(Id,areaFinal);
+                }
+                else{
+                    //SE OPTO POR USAR UN METODO DIFERENTE PARA LAS AREAS DE MC Y SCP O LIBERTAD CONDICIONADA
+                    //POR QUE METODO SACAR DATOS EN API NO TRAE LOS DATOS NECESARIOS PARA ESTAS AREAS
+                    buscarDatosMCYLC(Id,areaFinal);
+                }
             }
         });
     }
 
+    function buscarDatosOtrasAreas(Id,areaFinal){
+        return $.ajax({
+            url: '/Api/Sacardatos',
+            type: 'GET',
+            data: { Id: Id, tabla: areaFinal },
+            success: function(response) {
+                // SI HAY UN ERROR EN EL CONTROLADOR
+                if (response.error) {
+                    Swal.fire('Error', response.message, 'error');
+                    return;
+                }
+                //SI LA LISTA ESTA VACIA RETORNA UN MENSAJE DE PERSONA NO ENCONTRADA
+                if(response.lista.length == 0){
+                    Swal.fire({
+                      title: 'Error',
+                      text: 'Persona no encontrada',
+                      icon: 'error',
+                      timer: 1200, // 1.2 SEGUNDOS PARA QUE SE CIERRE SOLO
+                      showConfirmButton: true
+                    });
+                    return;
+                }
+                //SI NO HAY ERRORES SE CONTINUA CON UN MENSAJE DE EXITO
+                personaEncontrada();
+                //SE VA A LA FUNCION DE ABAJO PARA CONTINUAR CON EL LLENADO AUTOMATICO DEL FORMULARIO
+                llenarElementosFormulario(response.lista);
 
-    function ConfirmacionEnvioArchivo(data) {
+            },
+            error: function(message) {
+                Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+            }
+        });
+    }
+
+    //PARA LLENAR DATOS DE MC Y SCP Y LIBERTAD
+    function buscarDatosMCYLC(Id,areaFinal){
+        //SE OPTO POR USAR UN METODO DIFERENTE PARA LAS AREAS DE MC Y SCP O LIBERTAD CONDICIONADA
+        //POR QUE METODO SACAR DATOS EN API NO TRAE LOS DATOS NECESARIOS PARA ESTAS AREAS
+            return $.ajax({
+            url: '/Api/SupervisionCompletaMCLC',
+            type: 'GET',
+            data: { idPersona: Id, area: areaFinal },
+            success: function(response) {
+                // SI HAY UN ERROR EN EL CONTROLADOR
+                if (!response.success) {
+                    Swal.fire('Error', response.message, 'error');
+                    return;
+                }
+                //SI LA LISTA ESTA VACIA RETORNA UN MENSAJE DE PERSONA NO ENCONTRADA
+                if(response.lista.length == 0){
+                    Swal.fire({
+                      title: 'Error',
+                      text: 'Persona no encontrada',
+                      icon: 'error',
+                      timer: 1200, // 1.2 SEGUNDOS PARA QUE SE CIERRE SOLO
+                      showConfirmButton: true
+                    });
+                    return;
+                }
+
+                if(response.lista.length > 1){
+                    //SI LA PERSONA TIENE MAS DE UNA SUPERVISION
+                    //FUNCION PARA QUE EL USUARIO SELECCION CUAL SUPERVISION QUIERE UTILIZAR
+                    seleccionarSupervision(response.lista);
+                    return;
+                }
+                else{
+                    //LA PERSONA SOLO TIENE UNA SUPERVISION SE VA DIRECTO A LLENAR LOS DATOS
+                    personaEncontrada();
+                    llenarElementosFormulario(response.lista);
+                    return;
+                }
+
+            },
+            error: function(message) {
+                Swal.showValidationMessage(`Request failed: ${message.statusText}`);
+            }
+        });
+    }
+
+    function personaEncontrada(){
         Swal.fire({
-            title: 'Datos de persona encontrados',
+          title: 'Éxito',
+          text: 'Persona encontrada',
+          icon: 'success',
+          timer: 800, // DURA 0.8 SEGUNDOS
+          showConfirmButton: false
+        });
+    }
+
+    function seleccionarSupervision(lista) {
+        if (!lista || lista.length === 0) {
+            Swal.fire({
+                icon: "error",
+                title: "Sin supervisiones",
+                text: "No hay supervisiones disponibles para esta persona."
+            });
+            return;
+        }
+
+        let options = "";
+        //PRIMERO LLENAMOS UNA VARIABLE CON LAS SUPERVISIONES
+         area = '@ViewBag.AreaAsignada';
+         let areaFinal =  (area === "MCySCP") ? "MCYSCP" : (area === "LC") ? "Libertad Condicionada": (area === "Ejecución de Penas") ? "Ejecucion": area;
+        const persona = lista[0].persona;
+        const nombrePersona = `${persona.nombre}  ${persona.materno} ${persona.paterno}`;
+        if(areaFinal == "MCYSCP"){
+            lista.forEach((item, index) => {
+                const supervision = item.supervision;
+                const fracciones = item.fracciones;
+
+                options += `<option value="${supervision.idSupervision}">
+                                IdSuper ${supervision.idSupervision}
+                                -Estado: ${supervision.estadoSupervision}
+                                - Figura: ${fracciones?.figuraJudicial || "Sin figura"}
+                                - CP: ${item.causaPenal?.causaPenal || ""}
+                            </option>`;
+            });
+        }
+        else if (areaFinal == "Libertad Condicionada"){
+            lista.forEach((item, index) => {
+                const supervision = item.supervision;
+                const fracciones = item.fracciones;
+
+                options += `<option value="${supervision.idSupervisioncl}">
+                                IdSuper ${supervision.idSupervisioncl}
+                                -Estado: ${supervision.estadoSupervision}
+                                - Figura: ${fracciones?.figuraJudicial || "Sin figura"}
+                                - CP: ${item.causaPenal?.causaPenal || ""}
+                            </option>`;
+            });
+        }
+
+
+        //DESPUES DE QUE SE LLENA LAS MOSTRAMOS CON LA OPCION HTML DE ABAJO
+        Swal.fire({
+            title: "Selecciona una supervisión de " + nombrePersona,
             html: `
-                <img src="${data.p.rutaFoto}" style="width:150px;height:150px;border-radius:8px;margin-bottom:10px;" />
-                <p>ID Persona: ${data.p.idPersona}</p>
-                <p>Nombre: ${data.p.nombre} ${data.p.paterno} ${data.p.materno}</p>
-                `,
+                <select id="supervisionSelect" class="swal2-select">
+                    ${options}
+                </select>
+            `,
             showCancelButton: true,
-            confirmButtonText: 'Siguente',
+            confirmButtonText: "Seleccionar",
+            cancelButtonText: "Cancelar",
+            preConfirm: () => {
+                //CUANDO EL USUARIO ESCOGE UNA Y LE DA A SELECCIONAR LLEGA AQUI
+                const selectedId = document.getElementById("supervisionSelect").value;
+
+                if (!selectedId) {
+                    Swal.showValidationMessage("Debes seleccionar una supervisión");
+                    return false;
+                }
+                return selectedId;//DESPUES VA A RETORNAR EL ID SUPERVISION SELECCIONADO
+            }
+        }).then((result) => {
+             if (result.isConfirmed) {
+                const idSupervision = result.value;
+                let itemSeleccionado;
+                //AQUI SE SELECCIONAN TODOS LOS DATOS DE LA SUPERVISION, INCLUYE PERSONA, CAUSA PENAL, SUPERVISION Y FRACCIONES
+                if(areaFinal == "MCYSCP"){
+                    itemSeleccionado = lista.filter(item => item.supervision.idSupervision == idSupervision)
+                }
+                else if (areaFinal == "Libertad Condicionada"){
+                    itemSeleccionado = lista.filter(item => item.supervision.idSupervisioncl == idSupervision);
+                }
+                Swal.fire({
+                    icon: "success",
+                    title: "Supervisión seleccionada",
+                    text: `Elegiste la supervisión con ID: ${idSupervision}`,
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+                //DESPUES DE MOSTRAR LA ALERTA DE SELECCIONADO MANDAMOS LOS ELEMENTO DEL ID SUPERVISION SELECCIONADO AL LLENADO AUTOMATICO DEL FORMULARIO
+                llenarElementosFormulario(itemSeleccionado);
+
+            }
+        });
+    }
+
+    function llenarElementosFormulario(lista){
+        let inputNombre ="";
+        let inputApaterno ="";
+        let inputAmaterno ="";
+        let selectGenero ="";
+        let inputCausaPenal ="";
+        let inputDelito ="";
+        let inputEstadoSupervision ="";
+        area = '@ViewBag.AreaAsignada';
+        let areaFinal = (area === "Servicios previos") ? "Servicios Previos" : (area === "MCySCP") ? "MCYSCP" : (area === "LC") ? "Libertad Condicionada": (area === "Ejecución de Penas") ? "Ejecucion": area;
+        switch(areaFinal) {
+            case "Ejecucion":
+                const item1 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+                inputNombre = item1.p?.nombre || "NA";
+                inputApaterno = item1.p?.paterno || "NA";
+                inputAmaterno = item1.p?.materno || "NA";
+                selectGenero = "";
+                inputCausaPenal = item1.p?.ce || "NA";
+                inputDelito = "";
+                inputEstadoSupervision = item1.p?.estadoActual|| "NA";
+                break;
+
+            case "MCYSCP":
+            case "Libertad Condicionada":
+                const item2 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+                inputNombre = item2.persona.nombre || "NA";
+                inputApaterno = item2.persona.paterno || "NA";
+                inputAmaterno = item2.persona.materno || "NA";
+                selectGenero = item2.persona.genero || "";
+                inputCausaPenal = item2.causaPenal.causaPenal|| "NA";
+                inputDelito = item2.delito.tipo|| "NA";
+                inputEstadoSupervision = item2.supervision.estadoSupervision|| "NA";
+                break;
+            case "Servicios Previos":
+                const item3 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+                inputNombre = item3.p?.nombre || "NA";
+                inputApaterno = item3.p?.paterno || "NA";
+                inputAmaterno = item3.p?.materno || "NA";
+                selectGenero = "";
+                inputCausaPenal = "NA";
+                inputDelito = item3.p?.delito || "NA";;
+                inputEstadoSupervision = item3.p?.situacion|| "NA";
+                break;
+            case "Oficialia":
+                const item4 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
+                inputNombre.value = item4.p?.nombre || "NA";
+                inputApaterno.value = item4.p?.paterno || "NA";
+                inputAmaterno.value = item4.p?.materno || "NA";
+                selectGenero.value = "";
+                inputFiguraJudicial.value = "NA";
+                inputAutoridad.value = item4.p?.juzgado || "NA";
+                break;
+            default:
+
+        }
+
+        Swal.fire({
+            title: 'Registrar Envío de Archivo',
+            width: '60%', // hazlo más ancho para que quepa bien el form
+            html: `
+                <form id="formEnvioArchivo" asp-action="createEnvioArchivo">
+                    <div class="form-group">
+                        <label>Apellido Paterno</label>
+                        <input name="Apaterno" value="${inputApaterno}" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido Materno</label>
+                        <input name="Amaterno" value="${inputAmaterno}" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input name="Nombre" value="${inputNombre}" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Causa penal/Carpeta de Ejecución</label>
+                        <input name="Causapenal" value="${inputCausaPenal}" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Delito</label>
+                        <input name="Delito" id="Delito" value="${inputDelito}" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="TipoDocumento">Tipo de Documento</label>
+                        <select id="TipoDocumento" name="TipoDocumento" class="form-control">
+                            <option value="Expediente">Expediente</option>
+                            <option value="Oficio">Oficio</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Situación Jurídico</label>
+                        <input name="SituacionJuridico" value="${inputEstadoSupervision}"  id="SituacionJuridico" class="form-control" />
+                    </div>
+                    <input type="hidden" name="Recibido" value="0"/>
+                    <input type="hidden" name="Revisado" value="0"/>
+                    <input type="hidden" name="IdArchvo"/>
+                    <input type="hidden" name="Observaciones"/>
+                    <input type="hidden" name="Area" value="@ViewBag.AreaAsignada"/>
+                    <input type="hidden" name="Usuario" value="@User.Identity.Name"/>
+                    <input type="hidden" name="FechaRegistro" value="@DateTime.Now"/>
+                </form>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Enviar',
             confirmButtonColor: '#02bd05',
             cancelButtonText: 'Cancelar',
             cancelButtonColor: "#d33",
+            preConfirm: () => {
+                let form = document.getElementById("formEnvioArchivo");
+                let formData = new FormData(form);
+                return fetch("/Archivo/NuevoCreateEnvioArchivo", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(`Error: ${error}`);
+                });
+            }
         }).then((result) => {
             if (result.isConfirmed) {
-                $.ajax({
-                    url: '/Envioarchivo/BuscarSupervision',
-                    type: 'POST',
-                    data:  { id,tabla },                // send FormData directly
-                    contentType: false,            //son necesarios para manda la informacion correctamente // let browser set multipart/form-data
-                    processData: false,            // do not stringify FormData
-                    success: function(response) {
-                        if (!response.success) {
-                            Swal.fire('Error', response.message || 'Ocurrió un error', 'error');
-                        } else {
-                            Swal.fire('Éxito', response.message, 'success').then(() => {
-                                window.open(response.url, '_blank');
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire('Error', 'No se pudo crear el carnet: ' + error, 'error');
-                    }
-                });
-
-                //SI LOS DATOS SON CONFIRMADOS POR EL USUARIO SE TRANSFORMAN LOS DATOS A LA FORMA CORRECTA PARA EL METODO
-                //ESTO SE HACE POR QUE EN EL METODO CrearCarnet SE ESPERA UN MODELO DEL TIPO [FromForm]
-                //const formData = new FormData();
-
-                //NOTA LAS COSAS ENTRE COMILLAS DEBEN DE SER IGUAL QUE LOS NOMBRE DEL MODELO PersonaCarnetViewModel SI NO VAN A ESTAR VACIOS
-                // formData.append("IdPersona", data.idPersona);
-                // formData.append("Nombre", data.nombre);
-                // formData.append("Telefono", data.telefono);
-
-                //alert(data.p.idPersona)
-
-
-       
+                Swal.fire('Éxito', 'Formulario enviado correctamente', 'success');
+                location.reload();
             }
         });
-    }
 
+
+        
+    }
     
 </script>
 
@@ -357,12 +604,17 @@
     <a asp-action="Envioarchivo">Regresar al Listado Completo </a>
 </div>
 <div style="text-align:right" class="col-md-6">
- @*    <a onclick="createEnvioArchivo();" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
-        <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
-    </a> *@
-    <a asp-action="createEnvioArchivo" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
-        <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
-    </a>
+    @if (User.IsInRole("Oficialia") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos"))
+    {
+        <a asp-action="createEnvioArchivo" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
+            <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
+        </a>
+    }else{
+        <a onclick="createEnvioArchivo();" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
+            <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>
+        </a> 
+    }
+    
 </div>
 
 <table class="table">

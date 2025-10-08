@@ -257,13 +257,13 @@ namespace scorpioweb.Controllers
                          from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                          join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal into causapenalJoin
                          from cp in causapenalJoin.DefaultIfEmpty()
-                         group new { cp.CausaPenal } by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.rutaFoto, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, claveunica = eu.ClaveUnicaScorpio, p.Edad } into g
+                         group new { cp.CausaPenal } by new { p.IdPersona, p.Paterno, p.Materno, p.Nombre, p.rutaFoto, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, claveunica = eu.ClaveUnicaScorpio, p.Edad, p.Supervisor } into g
                          select new
                          {
                              id = g.Key.IdPersona,
                              nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                              NomTabla = "MCYSCP",
-                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n",
+                             datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Supervisor: {g.Key.Supervisor};\n Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n  Causa(s) Penal(es): {string.Join(", ", g.Select(x => x.CausaPenal))};\n",
                              claveUnica = g.Key.claveunica,
                              foto = "Fotos/" + g.Key.rutaFoto
                          }).Union
@@ -286,13 +286,13 @@ namespace scorpioweb.Controllers
                           from epcp in epcausapenalJoin.DefaultIfEmpty()
                           join eu in _context.Expedienteunico on e.ClaveUnicaScorpio equals eu.ClaveUnicaScorpio into ExpedienteunicoJoin
                           from eu in ExpedienteunicoJoin.DefaultIfEmpty()
-                          group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce, e.ClaveUnicaScorpio, epcp.Causapenal, claveunica = eu.ClaveUnicaScorpio } into g
+                          group epcp.Causapenal by new { e.IdEjecucion, e.Paterno, e.Materno, e.Nombre, e.Ce, e.ClaveUnicaScorpio, epcp.Causapenal, claveunica = eu.ClaveUnicaScorpio, e.Encargado, e.EstadoActual } into g
                           select new
                           {
                               id = g.Key.IdEjecucion,
                               nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                               NomTabla = "Ejecucion",
-                              datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio};Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g.Key.Causapenal)};\n",
+                              datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Encargado:{ g.Key.Encargado};\n  Carpeta de Ejecucion: {g.Key.Ce};\n Causa(s) Penal(es): {string.Join(", ", g.Key.Causapenal)};\n",
                               claveUnica = g.Key.claveunica,
                               foto = "NA"
                           }).Union
@@ -328,10 +328,10 @@ namespace scorpioweb.Controllers
                                 id = pp.IdOficialia,
                                 nomcom = pp.Paterno + " " + pp.Materno + " " + pp.Nombre,
                                 NomTabla = "Oficialia",
-                                datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n",
+                                datoExtra = $"CLAVE UNICA SCORPIO: {pp.ClaveUnicaScorpio}; Causa penal: {pp.CausaPenal};\n Carpeta de Ejecucion: {pp.CarpetaEjecucion};\n Quien expide: {pp.Expide};\n Fecha de recepcion: {pp.FechaRecepcion};\n  Asunto de oficio: {pp.AsuntoOficio};\n  Fecha termino: {pp.FechaTermino};\n Usuario a turnar: {pp.UsuarioTurnar};\n",
                                 claveUnica = eu.ClaveUnicaScorpio,
                                 foto = "NA"
-                            }).Union
+                            }).OrderByDescending(x => x.id).Union
                            (from p in _context.Personacl
                             join d in _context.Domiciliocl on p.IdPersonaCl equals d.IdDomiciliocl into domicilioJoin
                             from d in domicilioJoin.DefaultIfEmpty()
@@ -341,13 +341,13 @@ namespace scorpioweb.Controllers
                             from eu in ExpedienteunicoJoin.DefaultIfEmpty()
                             join cp in _context.Causapenalcl on s.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl into causapenalJoin
                             from cp in causapenalJoin.DefaultIfEmpty()
-                            group cp.CausaPenal by new { p.IdPersonaCl, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, cp.CausaPenal, claveunica = eu.ClaveUnicaScorpio, p.RutaFoto } into g
+                            group cp.CausaPenal by new { p.IdPersonaCl, p.Paterno, p.Materno, p.Nombre, p.Edad, d.Calle, d.No, d.NombreCf, p.ClaveUnicaScorpio, cp.CausaPenal, claveunica = eu.ClaveUnicaScorpio, p.RutaFoto, p.Supervisor, s.EstadoSupervision } into g
                             select new
                             {
                                 id = g.Key.IdPersonaCl,
                                 nomcom = g.Key.Paterno + " " + g.Key.Materno + " " + g.Key.Nombre,
                                 NomTabla = "LibertadCondicionada",
-                                datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
+                                datoExtra = $"CLAVE UNICA SCORPIO: {g.Key.ClaveUnicaScorpio}; Supervisor: {g.Key.Supervisor};\n Estado de supervision: {g.Key.EstadoSupervision};\n Edad: {g.Key.Edad};\n Domicilio: {g.Key.Calle}, {g.Key.No}, {g.Key.NombreCf};\n Causa(s) penal(es): {string.Join(", ", g.Key.CausaPenal)};\n",
                                 claveUnica = g.Key.claveunica,
                                 foto = "Fotoscl/" + g.Key.RutaFoto
                             }).Union
@@ -361,7 +361,6 @@ namespace scorpioweb.Controllers
                                 claveUnica = e.Curp,
                                 foto = "NA"
                             }); 
-
 
 
             var result = query.OrderBy(o => o.claveUnica);
@@ -1112,15 +1111,17 @@ namespace scorpioweb.Controllers
                         var query = (from p in _context.Persona
                                      join scl in _context.Supervision on p.IdPersona equals scl.PersonaIdPersona
                                      join cp in _context.Causapenal on scl.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+                                     join d in _context.Delito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal
                                      join f in _context.Fraccionesimpuestas on scl.IdSupervision equals f.SupervisionIdSupervision
                                      where p.IdPersona == idPersona
-                                     group new { p, scl, cp, f } by scl.IdSupervision into g
+                                     group new { p, scl, cp, f, d } by scl.IdSupervision into g
                                      select new
                                      {
                                          //SE OBTIENE LOS DATOS DE LA PERSONA, SUPERVISION, CAUSA PENAL Y CON EL PRIMER BENEFICIO DONDDE LA FIGURA JUDICIAL NO SEA NULL
                                          Persona = g.First().p,
                                          Supervision = g.First().scl,
                                          CausaPenal = g.First().cp,
+                                         Delito = g.First().d,
                                          //SE LLAMA FRACCIONES PARA QUE TODO SE RETORNE IGUAL
                                          //SELECCIONAMOS UNA FRACCION POR SUPERVISION DONDE LA FRACCION NO SEA NULA O VACIA
                                          Fracciones = g.Where(x => x.f.FiguraJudicial != null).FirstOrDefault()
@@ -1132,15 +1133,17 @@ namespace scorpioweb.Controllers
                         var queryCL = (from p in _context.Personacl
                                        join scl in _context.Supervisioncl on p.IdPersonaCl equals scl.PersonaclIdPersonacl
                                        join cp in _context.Causapenalcl on scl.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl
+                                       join d in _context.Delitocl on cp.IdCausaPenalcl equals d.CausaPenalclIdCausaPenalcl
                                        join b in _context.Beneficios on scl.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
                                        where p.IdPersonaCl == idPersona
-                                       group new { p, scl, cp, b } by scl.IdSupervisioncl into g
+                                       group new { p, scl, cp, b, d } by scl.IdSupervisioncl into g
                                        select new
                                        {
                                            //SE OBTIENE LOS DATOS DE LA PERSONA, SUPERVISION, CAUSA PENAL Y CON EL PRIMER BENEFICIO DONDDE LA FIGURA JUDICIAL NO SEA NULL
                                            Persona = g.First().p,
                                            Supervision = g.First().scl,
                                            CausaPenal = g.First().cp,
+                                           Delito = g.First().d,
                                            //SE LLAMA FRACCIONES PARA QUE TODO SE RETORNE IGUAL
                                            //SELECCIONAMOS UN BENEFICIO POR SUPERVISION DONDE LA FRACCION NO SEA NULA O VACIA
                                            Fracciones = g.Where(x => !string.IsNullOrEmpty(x.b.FiguraJudicial)).Select(x => x.b) 

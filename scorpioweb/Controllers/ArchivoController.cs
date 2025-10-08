@@ -1583,6 +1583,8 @@ namespace scorpioweb.Models
             #region -Sacar Roles-
             area = mg.areaSegunRol(roles);
 
+            area = (area == "Coordinacion Operativa") ? "Servicios Previos" : area;
+
             ViewBag.AreaAsignada = area;
                 
                 //== "CL" ? "LibertadCondicionada" :
@@ -1844,6 +1846,42 @@ namespace scorpioweb.Models
             }
             return View(envioarchivo);
         }
+
+
+
+        [HttpPost]
+        public IActionResult NuevoCreateEnvioArchivo(string Apaterno,string Amaterno,string Nombre,string Causapenal,string Delito,string TipoDocumento,string SituacionJuridico,sbyte Recibido,sbyte Revisado,string IdArchvo,string Observaciones,string Area,string Usuario,DateTime FechaRegistro, Envioarchivo envioarchivo)
+        {
+            envioarchivo.Apaterno = mg.removeSpaces(mg.normaliza(Apaterno));
+            envioarchivo.Amaterno = mg.removeSpaces(mg.normaliza(Amaterno));
+            envioarchivo.Nombre = mg.removeSpaces(mg.normaliza(Nombre));
+            envioarchivo.Causapenal = Causapenal;
+            envioarchivo.Delito = mg.removeSpaces(mg.normaliza(Delito));
+            envioarchivo.TipoDocumento = envioarchivo.TipoDocumento;
+            envioarchivo.SituacionJuridico = mg.removeSpaces(mg.normaliza(SituacionJuridico));
+            envioarchivo.Recibido = Recibido;
+            envioarchivo.Revisado = Revisado;
+            envioarchivo.IdArchvo = IdArchvo;
+            envioarchivo.Observaciones = Observaciones;
+            envioarchivo.Area = Area;
+            envioarchivo.Usuario = Usuario;
+            envioarchivo.FechaRegistro = FechaRegistro;
+
+            try
+            {
+                _context.Envioarchivo.Add(envioarchivo);
+                _context.SaveChanges();
+                // Retornar éxito en JSON
+                return Json(new { success = true, message = "Formulario recibido correctamente", data = envioarchivo });
+            }
+            catch (Exception ex)
+            {
+                // Retornar error
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
         #endregion
 
         #region -editEnvioArchivo-
@@ -1908,6 +1946,8 @@ namespace scorpioweb.Models
             }
             return View(envioarchivo);
         }
+
+
         #endregion
 
         #region -Delete-

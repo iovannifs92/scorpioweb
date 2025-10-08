@@ -266,6 +266,79 @@
                 $("#otroInput").css("display", "none");
             }
         };
+
+
+        function myFunction(materno) {
+            var nombre = document.getElementById("nombre").value;
+            var paterno = document.getElementById("paterno").value;
+            var materno = document.getElementById("materno").value;
+            //var materno = materno;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/Api/testSimilitud",
+                traditional: true,
+                data: {
+                        nombre, paterno, materno,
+                },
+                success: function (response) {
+                    $('#tblSimilitud').html('');
+                    var row = '';
+                    if (response.lista.length == 0) {
+                        return;
+                    }
+                    for (let i = 0; i < response.lista.length; i++) {
+                        if (response.lista[i].clave != null) {
+                            row = row + "<tr style='background-color: #F7F2E7'>"
+                        } else {
+                            row = row + "<tr style='background-color: #FFF'>"
+                        }
+                        row = row
+                            // + "<td><input type='checkbox' onclick='unirCURS(\"" + response.lista[i].tabla + "\", " + response.lista[i].id + ")'></td>"
+                            + "<td>" + response.lista[i].id + "</td>"
+                            + "<th>" + response.lista[i].nombre + "</th>"
+                            + "<td>" + response.lista[i].tabla + "</td>"
+                            + "<th>" + response.lista[i].dato + "</th>"
+                            if(response.lista[i].foto != "NA"){
+                                row = row + "<td><img src='/" + response.lista[i].foto + "' class='img-thumbnail' width='200' height='200'></td>"
+                            }else{
+                            row = row + "<td width='200' height='200'></td>"
+                            }
+
+                        // row = row + "<td>";
+                        // if (@Html.Raw(Json.Serialize(ViewBag.UserMCYSCP)) == true && response.lista[i].tabla == "MCYSCP") {
+                        // row = row
+                        //         + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' href=/Personas/Details/" + response.lista[i].id + " class='btn btn-success' > <i class='fa fa-eye'></i> Ver</a ></div>";
+                        // } else if (@Html.Raw(Json.Serialize(ViewBag.UserCL)) == true && response.lista[i].tabla == "LibertadCondicionada") {
+                        // row = row
+                        // }
+                        // else{
+                        //     row = row
+                        //         + "<div class=\"col-md-3\"><a style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' onclick='usarDatos(\"" + response.lista[i].id + "\", \"" + response.lista[i].tabla + "\")' class='btn btn-primary' > <i class='fa fa-exchange'></i> Usar</a ></div>";
+                        // }
+                        // row = row + "</td>";
+                        row = row + "</tr>";
+                    };
+                    if (row != '') {
+                        $('#tblSimilitud').append(row);
+                    }
+                    $("#similitudModal").modal();
+                },
+                error: function (response) {
+                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema" + response.error);
+                    console.log(response);
+                }
+            });
+        }
+
+        function btnclose(){
+
+                $('#similitudModal').modal('hide');
+
+        }
+
+
+
     </script>
 </head>
 <body>
@@ -361,21 +434,21 @@
                         <label asp-for="Nombre" class="control-label">
                             Nombre del Imputado
                         </label>
-                        <input asp-for="Nombre" class="form-control" />
+                        <input asp-for="Nombre" class="form-control" name="nombre" id="nombre" />
                         <span asp-validation-for="Nombre" class="text-danger"></span>
                     </div>
                     <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="Paterno" class="control-label">
                             Apellido Paterno
                         </label>
-                        <input asp-for="Paterno" class="form-control" />
+                        <input asp-for="Paterno" class="form-control" name="paterno" id="paterno"/>
                         <span asp-validation-for="Paterno" class="text-danger"></span>
                     </div>
                     <div class="form-group col-md-12 col-sm-12">
                         <label asp-for="Materno" class="control-label">
                             Apellido Materno
                         </label>
-                        <input asp-for="Materno" class="form-control" />
+                        <input asp-for="Materno" class="form-control" name="materno" id="materno" onblur="myFunction(value)" />
                         <span asp-validation-for="Materno" class="text-danger"></span>
                     </div>
 
@@ -618,5 +691,44 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL DE TEST SIMILITUD -->
+    <div id="similitudModal" class="modal fade" tabindex="1" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:900px; background-color:#fff">
+            <div class="modal-content">
+                @*            <div class="text-right"  style="background-color:#0078a7">
+                <button type="button" hrf data-dismiss="modal">x</button>
+            </div>*@
+                <div class="modal-header float-center" style="background-color:#0078a7">
+                    <button type="button" style="background-color:#0078a7;border: none; text-align: left;" aria-label="Close" onclick="btnclose()">
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <h3 id="modal_body" style="text-align:center; color:#000">Similitud </h3>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table class="table" name="" id="">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Nombre</th>
+                                    <th>Tabla</th>
+                                    <th>Dato Extra</th>
+                                    <th>Foto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblSimilitud">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary fa fa-close" onclick="btnclose()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </body>
 </html>
