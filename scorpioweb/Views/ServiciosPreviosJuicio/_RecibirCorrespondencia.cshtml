@@ -11,9 +11,10 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 	<div class="row-items">
 		<div class="item">
 			<p>
-				Buscar por nombre: @Html.TextBox("SearchString", null, new { id = "SearchString" })
+				Buscar por nombre o num. de oficio: @Html.TextBox("SearchString", null, new { id = "SearchString" })
 				<input type="button" class="btn-success" onclick="FiltrarCorrespondencia();" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
 			</p>
+			<a style="font-size:16px;cursor: pointer;" onclick="FiltrarCorrespondencia(true);">Ver todos los resultados</a>
 		</div>
 		<div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
 		<div class="item">

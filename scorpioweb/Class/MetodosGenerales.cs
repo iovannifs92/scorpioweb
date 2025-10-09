@@ -485,8 +485,55 @@ namespace scorpioweb.Class
 
         }
         #endregion
+        #region -obtener usuarios por areas -
+        public async Task<Dictionary<string, string>> ObtenerAreasUsuariosAsync(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            var officialAreas = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
+                { "UESPA", "UESPA" },
+                { "Ejecución de Penas", "EJECUCION" },
+                { "LC", "LIBERTAD CONDICIONADA" },
+                { "MCySCP", "MCYSCP" },
+                { "Servicios legales", "SERVICIOS LEGALES" },
+                { "Servicios previos", "SERVICIOS PREVIOS" },
+                { "Sistemas", "SISTEMAS" },
+                { "Oficialia", "OFICIALIA" },
+                { "Coordinacion Operativa", "COORDINACION OPERATIVA" },
+                { "Direccion", "DIRECCION" },
+                { "Vinculacion", "VINCULACION" }
+            };
+
+            // Get all users and their roles
+            var users = await userManager.Users.Where(u => !u.Email.Contains("@nortedgepms.com")).ToListAsync();
+            var userAreas = new Dictionary<string, string>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+
+                // Skip users who only have "usuario" as their single role
+                if (roles.Count == 1 && roles.Contains("usuario", StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                var internalArea = areaSegunRol(roles);
 
 
+                if (officialAreas.ContainsKey(internalArea))
+                {
+                    userAreas[user.UserName] = officialAreas[internalArea];
+                }
+                else
+                {
+                    userAreas[user.UserName] = "Sin área asignada";
+                }
+            }
+            return userAreas;
+
+        }
+
+        #endregion
 
         //public async Task expedienteUnico(
         //   string var_tablanueva,

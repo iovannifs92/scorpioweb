@@ -89,6 +89,52 @@
 		text-align-last: center;
 		font-weight: 800;
 	}
+
+	.editable-cell {
+		font-size: 14px;
+		padding: 5px 10px;
+		width: 100%;
+		background: #EBEBEB;
+		color: #000000;
+		border: 4px solid #678ACF;
+		border-radius: 5px;
+		box-sizing: border-box;
+	}
+
+		.editable-cell:focus-within {
+			background: #FFFFFF;
+			border: 1px solid #5A7EC7;
+			border-radius: 10px;
+		}
+
+	.nombre-completo-cell {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.name-part {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		gap: 5px;
+	}
+
+	.labelEnvio {
+		font-size:15px;
+		font-weight: bold;
+		color: #555;
+		user-select: none;
+		pointer-events: none;
+	}
+
+		.name-part .value {
+			flex: 1 1 auto;
+			background: transparent;
+			outline: none;
+		}
 </style>
 
 <div class="text-center" style="margin-bottom:20px;">
@@ -101,10 +147,11 @@
 		<div id="contenedor-enviar" style="display:none;">
 			@Html.Partial("_EnviarCorrespondencia")
 		</div>
-
+	
 		<div id="contenedor-recibir" style="display:none;">
 			@Html.Partial("_RecibirCorrespondencia", Model)
 		</div>
+		
 	}
 	else if (User.IsInRole("EnviarCorrespondencia") && !User.IsInRole("RecibirCorrespondencia"))
 	{
@@ -117,16 +164,21 @@
 		</div>
 
 		<div id="contenedor-verEnviados" style="display:none;">
-		
-			@Html.Partial("_VerCorrespondenciaEnviada", Model)
+			@if (Model != null)
+			{
+				@Html.Partial("_VerCorrespondenciaEnviada", Model)
+			}
 		</div>
 	}
 	else if (User.IsInRole("RecibirCorrespondencia") && !User.IsInRole("EnvioCorrespondencia"))
 	{
 		//ESTA DENTRO DE UN CONTENEDOR PARA QUE SE SOBRESCRIBAN LAS BSQUEDAS VIEJAS DEPENDENDIENDO EL FILTRO
-		<div id="contenedor-recibir">
-			@Html.Partial("_RecibirCorrespondencia", Model)
-		</div>
+		
+			<div id="contenedor-recibir">
+				@Html.Partial("_RecibirCorrespondencia", Model)			
+			</div>
+		
+		
 	}
 </div>
 
@@ -158,7 +210,7 @@
 			enviarDiv.style.display = "none";
 			verEnviadosDiv.style.display = "block";
 			verCorrespondenciaEnviada();
-		}
+		} 
 	}
 
 	//$$$$$$$$$$$$$$$$$$$$$$$ FUNCIONES PARA VISTA PARCIAL _ENVIARCORRESPONDENCIA $$$$$$$$$$$$$$$$$$$$$$$
@@ -512,28 +564,160 @@
 
 	//$$$$$$$$$$$$$$$$$$$$$$$ VER CORRESPONDENCIA ENVIADA $$$$$$$$$$$$$$$$$$$$$$$
 	function verCorrespondenciaEnviada() {
-
 		let area = $("#areaVerEnviados").val();
-		//SE LLAMA LA FUNCION Y SE SUSTITUYEN LOS DATOS EN EL CONTENEDOR RECIBIR QUE ESTA EN EL HTML DE ESTA VISTA
-		$.get("/ServiciosPreviosJuicio/VerCorrespondenciaEnviada", { area})
-			.done(function (data) {
-				$("#contenedor-verEnviados").html(data);
+		let searchVerEnviados = $("#SearchVerEnviados").val();
+		let selectQuienEnvia = $("#selectQuienEnvia").val();
+		let selectQuienRecibe = $("#selectQuienRecibe").val();
+
+		let tipoFiltro = "";
+		// Determinar tipo de filtro
+		if (searchVerEnviados && !selectQuienEnvia && !selectQuienRecibe) {
+			tipoFiltro = "inputNombreId";
+		} else if (selectQuienEnvia && !searchVerEnviados && !selectQuienRecibe) {
+			tipoFiltro = "selectQuienEnvia";
+		} else if (selectQuienRecibe && !searchVerEnviados && !selectQuienEnvia) {
+			tipoFiltro = "selectQuienRecibe";
+		}
+
+		// Mostrar pantalla de carga con SweetAlert2
+		Swal.fire({
+			title: 'Cargando...',
+			text: 'Por favor espera un momento',
+			allowOutsideClick: false,
+			  showConfirmButton: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
+
+		// Llamada AJAX
+		$.get("/ServiciosPreviosJuicio/VerCorrespondenciaEnviada", {
+			area,
+			searchVerEnviados,
+			selectQuienEnvia,
+			selectQuienRecibe,
+			tipoFiltro
+		})
+		.done(function (data) {
+			$("#contenedor-verEnviados").html(data);
+			$("#SearchVerEnviados").val("");
+		})
+		.fail(function () {
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Ocurrió un problema al cargar los datos.'
 			});
+		})
+		.always(function () {
+			Swal.close(); // Cierra el alert al terminar (éxito o error)
+		});
 	}
 
 
+	//ESCUHA LOS INPUT EDITABLES DE VER CORRESPONENDICIA ENVIADA DESPUES DE QUE PIERDA EL FOCO
+	document.addEventListener("DOMContentLoaded", function () {
+		document.addEventListener("focusin", function (e) {
+			if (e.target instanceof Element && e.target.matches('.editable-cell[contenteditable="true"], .value[contenteditable="true"]')) {//SOLO SE AGREGA EL LISTENER SI LA TD TIENE LA CLASE EDITABLECELL O ES UN SUBSPAN
+				e.target.dataset.originalValue = e.target.innerText.trim();// SE ALMACENA EL VALOR ORIGINAL DE LA CELDA
+			}
+		});
+
+		document.addEventListener("blur", function (e) {
+			if (!(e.target instanceof Element)) return;
+
+			// Trigger only for editable td or editable span
+			 if (e.target.matches('.editable-cell[contenteditable="true"]') || e.target.matches('.value[contenteditable="true"]')) {
+
+				const cell = e.target; // the element that lost focus (td or span)
+				const newValue = cell.innerText.trim(); // new value of the element
+				const originalValue = cell.dataset.originalValue || ""; // original value stored on focus
+				const row = cell.closest("tr");
+				const idInput = row ? row.querySelector('input[name="idCorrespondencia"]') : null;
+				if (!idInput) return;
+
+				const id = idInput.value;
+
+				if (newValue === originalValue) return; // no change
+
+				// Only take the element that was edited
+				const field = cell.dataset.field; // data-field of the td or span
+			
+				modificarCorrespondenciaEnviada(id, field, newValue);
+			}
+		}, true);
+	});
+
+
+
+	function modificarCorrespondenciaEnviada(id, tipo,valor){
+			$.ajax({
+			url: '/ServiciosPreviosJuicio/ModificarCorrespondencia',
+			type: 'POST',
+			data: { id: id, tipo: tipo, valor: valor },
+			success: function(response){
+				if(response.success){
+						
+					const Toast = Swal.mixin({
+						toast: true,
+						position: "top-end",
+						showConfirmButton: false,
+						timer: 3000,
+						timerProgressBar: true,
+						didOpen: (toast) => {
+							toast.onmouseenter = Swal.stopTimer;
+							toast.onmouseleave = Swal.resumeTimer;
+						}
+					});
+					Toast.fire({
+						icon: "success",
+						title: "Registro actualizado!"
+					});
+				}
+				else
+				{
+					Swal.fire('Error', response.message, 'error');
+				}
+			},
+			error: function(xhr, status, error){
+				Swal.fire('Error', 'No se pudo actualizar', 'error');
+			}
+		});
+
+
+	}
 	//$$$$$$$$$$$$$$$$$$$$$$$ AREA DE RECIBIR CORRESPONDENCIA $$$$$$$$$$$$$$$$$$$$$$$
 
 	//ESTA FUNCION SE ACCEDE DESDE LA VISTA PARCIAL _RECIBIRCORRESPONDENCIA
-	function FiltrarCorrespondencia() {
-		//ESTAS VARIABLES SE LLENAN CON LOS VALORES DESDE LAS VISTA PARCIAL _RECIBIRCORRESPONDENCIA
+	function FiltrarCorrespondencia(LinkVerTodos) {
 		let searchString = $("#SearchString").val();
 		let selectSearch = $("#selectSearch").val();
-		//SE LLAMA LA FUNCION Y SE SUSTITUYEN LOS DATOS EN EL CONTENEDOR RECIBIR QUE ESTA EN EL HTML DE ESTA VISTA
-		$.get("/ServiciosPreviosJuicio/FiltrarCorrespondencia", { searchString, selectSearch })
+
+		// SWEETALERT LOADING SCREEN (no OK button)
+		Swal.fire({
+			title: 'Cargando...',
+			text: 'Por favor espera un momento',
+			allowOutsideClick: false,
+			showConfirmButton: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
+
+		$.get("/ServiciosPreviosJuicio/FiltrarCorrespondencia", { searchString, selectSearch, LinkVerTodos })
 			.done(function (data) {
 				$("#contenedor-recibir").html(data);
 				$("#SearchString").val("");
+			})
+			.fail(function () {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'Ocurrió un problema al cargar los datos.'
+				});
+			})
+			.always(function () {
+				Swal.close();
 			});
 	}
 
@@ -620,5 +804,7 @@
 			}
 		});
 	}
+	
+	
 
 </script>
