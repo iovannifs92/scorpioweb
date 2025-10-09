@@ -839,8 +839,8 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> VerCorrespondenciaEnviada(string area, string searchVerEnviados, string selectQuienEnvia, string selectQuienRecibe, string tipoFiltro)
         {
             //EL AREA SIEMPRE VA A IR LLENO
-            if (area == "SIN AREA")
-                return BadRequest("SIN AREA");
+            if (string.IsNullOrEmpty(area))
+                return BadRequest();
 
             List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
 
@@ -950,8 +950,13 @@ namespace scorpioweb.Controllers
                     case "OFICIALIA":
                         correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OFICIALIA").OrderBy(m => m.Entregado).ToListAsync();
                         break;
+                    
                     case "VINCULACION":
                         correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "VINCULACION").OrderBy(m => m.Entregado).ToListAsync();
+                        break;
+                    
+                    case "SIN ÁREA ASIGNADA":
+                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SIN ÁREA ASIGNADA").OrderBy(m => m.Entregado).ToListAsync();
                         break;
 
                     case "OFICIO NO ENTREGADO-ACUSE NO RECIBIDO":
