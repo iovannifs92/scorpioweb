@@ -510,90 +510,90 @@ namespace scorpioweb.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> CrearReinsercionPorSupervisor([FromBody] Reinsercion reinsercion)
+        public async Task<JsonResult> CrearReinsercionPorSupervisor([FromBody] ReinsercionTemp reinserciontemp)
         {
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
 
-            // Campos adicionales que solo quieres recibir
-            //var Lugar = reinsercion.Lugar;
-            //var Estado = reinsercion.Estado;
-            //var Delito = reinsercion.Delito;
-            //var CausaPenal = reinsercion.CausaPenal;
-            //var TipoServ = reinsercion.TipoServ;
-            //var TipoTerapia = reinsercion.TipoTerapia;
-            //var TipoVinculacion = reinsercion.TipoVinculacion;
-            //var PeriodoTerapia = reinsercion.PeriodoTerapia;
-            //var CURP = reinsercion.CURP;
-            //var NumJornadas = reinsercion.NumJornadas;
-            //var FechaConclusion = reinsercion.FechaConclusion;
-            //var NivelEstudios = reinsercion.NivelEstudios;
-            //var LugarNcimiento = reinsercion.LugarNcimiento;
-            //var FechaNacimiento = reinsercion.FechaNacimiento;
+            //// Campos adicionales que solo quieres recibir
+            ////var Lugar = reinsercion.Lugar;
+            ////var Estado = reinsercion.Estado;
+            ////var Delito = reinsercion.Delito;
+            ////var CausaPenal = reinsercion.CausaPenal;
+            ////var TipoServ = reinsercion.TipoServ;
+            ////var TipoTerapia = reinsercion.TipoTerapia;
+            ////var TipoVinculacion = reinsercion.TipoVinculacion;
+            ////var PeriodoTerapia = reinsercion.PeriodoTerapia;
+            ////var CURP = reinsercion.CURP;
+            ////var NumJornadas = reinsercion.NumJornadas;
+            ////var FechaConclusion = reinsercion.FechaConclusion;
+            ////var NivelEstudios = reinsercion.NivelEstudios;
+            ////var LugarNcimiento = reinsercion.LugarNcimiento;
+            ////var FechaNacimiento = reinsercion.FechaNacimiento;
 
-            if (ModelState.IsValid)
-            {
-                object personaData = null;
+            //if (ModelState.IsValid)
+            //{
+            //    object personaData = null;
 
-                var tabla = (reinsercion.Tabla ?? "").ToLowerInvariant();
-                var id = int.Parse(reinsercion.IdTabla);
+            //    var tabla = (reinsercion.Tabla ?? "").ToLowerInvariant();
+            //    var id = int.Parse(reinsercion.IdTabla);
 
-                if (tabla == "persona")
-                {
-                    var persona = _context.Persona.SingleOrDefault(m => m.IdPersona == id);
-                    if (persona != null)
-                    {
-                        personaData = new
-                        {
-                            Area = "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL POROCESO",
-                            Nombre = persona.Nombre,
-                            ApellidoPaterno = persona.Paterno,
-                            ApellidoMaterno = persona.Materno,
-                            Telefono = persona.Celular,
-                            Foto = Url.Content("~/Fotos/" + persona.rutaFoto) 
-                        };
-                    }
-                }
-                else if (tabla == "personacl")
-                {
-                    var personacl = _context.Personacl.SingleOrDefault(m => m.IdPersonaCl == id);
-                    if (personacl != null)
-                    {
-                        personaData = new
-                        {
-                            Area = "LIBERTAD CONDICIONADA",
-                            Nombre = personacl.Nombre,
-                            ApellidoPaterno = personacl.Paterno,
-                            ApellidoMaterno = personacl.Materno,
-                            Telefono = personacl.Celular,
-                            Foto = Url.Content("~/Fotoscl/" + personacl.RutaFoto)
-                        };
-                    }
-                }
+            //    if (tabla.ToUpper() == "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL PROCESO")
+            //    {
+            //        var persona = _context.Persona.SingleOrDefault(m => m.IdPersona == id);
+            //        if (persona != null)
+            //        {
+            //            personaData = new
+            //            {
+            //                Area = "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL POROCESO",
+            //                Nombre = persona.Nombre,
+            //                ApellidoPaterno = persona.Paterno,
+            //                ApellidoMaterno = persona.Materno,
+            //                Telefono = persona.Celular,
+            //                Foto = Url.Content("~/Fotos/" + persona.rutaFoto) 
+            //            };
+            //        }
+            //    }
+            //    else if (tabla.ToUpper() == "LIBERTAD CONDICIONADA")
+            //    {
+            //        var personacl = _context.Personacl.SingleOrDefault(m => m.IdPersonaCl == id);
+            //        if (personacl != null)
+            //        {
+            //            personaData = new
+            //            {
+            //                Area = "LIBERTAD CONDICIONADA",
+            //                Nombre = personacl.Nombre,
+            //                ApellidoPaterno = personacl.Paterno,
+            //                ApellidoMaterno = personacl.Materno,
+            //                Telefono = personacl.Celular,
+            //                Foto = Url.Content("~/Fotoscl/" + personacl.RutaFoto)
+            //            };
+            //        }
+            //    }
 
-                if (personaData != null)
-                {
-                    foreach (var rol in roles)
-                    {
-                        if (rol != "Vinculacion")
-                        {
-                            await _hubContext.Clients.Group("nuevaCanalizacion")
-                                .SendAsync("fichadedatos", personaData); // <-- manda el OBJETO
-                        }
-                    }
-                }
-
-
-                //SE MANDA LLAMAR EL METODO QUE 
-                int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
-
-                if (idReinsercionObtenido == 0)
-                    idReinsercionObtenido = await CrearIdReinsercionAsync(reinsercion);
+            //    if (personaData != null)
+            //    {
+            //        foreach (var rol in roles)
+            //        {
+            //            if (rol != "Vinculacion")
+            //            {
+            //                await _hubContext.Clients.Group("nuevaCanalizacion")
+            //                    .SendAsync("fichadedatos", personaData); // <-- manda el OBJETO
+            //            }
+            //        }
+            //    }
 
 
+            //    //SE MANDA LLAMAR EL METODO QUE 
+            //    int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
 
-                return Json(new { success = true, responseText = "Datos creado exitosamente! ", viewUrl = Url.Action("FichaCanalizacion", "Reinsercion", new { idReinsercion = idReinsercionObtenido }) });
-            }
+            //    if (idReinsercionObtenido == 0)
+            //        idReinsercionObtenido = await CrearIdReinsercionAsync(reinsercion);
+
+
+
+            //    return Json(new { success = true, responseText = "Datos creado exitosamente! ", viewUrl = Url.Action("FichaCanalizacion", "Reinsercion", new { idReinsercion = idReinsercionObtenido }) });
+            //}
             return Json(new { success = false, responseText = "Error en la validación de datos" });
         }
 

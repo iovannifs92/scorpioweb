@@ -190,7 +190,7 @@
                 <td>
                     <form onsubmit="return confirm('¿Deseas borrar este registro?');" asp-action="Delete" asp-route-id="@item.IdserviciosPreviosJuicio">
 
-                        @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo"))
+                        @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Servicios Legales"))
                         {
                             <a id="btnEditar" onclick="showModal('@Url.Action("Edit","ServiciosPreviosJuicio",null,Context.Request.Scheme)','Editar Registro',@item.IdserviciosPreviosJuicio)" class="btn btn-success">
                                 <i class="fa fa-pencil"></i> Editar
@@ -236,7 +236,7 @@
     Siguiente
 </a>
 
-@if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo"))
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Servicios Legales"))
 {
     <div style="padding-top:1%">
         @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@

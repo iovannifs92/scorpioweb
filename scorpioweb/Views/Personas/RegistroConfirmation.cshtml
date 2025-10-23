@@ -91,7 +91,6 @@ else
                     cancelButtonColor: '#dc3545'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        alert("en confirm")
                         // Recuperar valores SOLO después de confirmar
                         delito = document.getElementById("delito")?.value || "NA";
                         causapenal = document.getElementById("causapenal")?.value || "NA";
@@ -247,7 +246,6 @@ else
 
 
     // <!-- #endregion -->
-
     function AjaxCrearReinsercion(datos) {
         alert(datos)
         alert(datos.TipoServ)
