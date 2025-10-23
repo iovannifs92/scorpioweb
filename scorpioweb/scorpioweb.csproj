@@ -76,6 +76,7 @@
     <Folder Include="wwwroot\Cierredecaso\" />
     <Folder Include="wwwroot\Expedientes\" />
     <Folder Include="wwwroot\Logs\" />
+    <Folder Include="wwwroot\Fotoscl\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" bundleconfig_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

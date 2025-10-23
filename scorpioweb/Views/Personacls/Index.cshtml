@@ -12,331 +12,401 @@
 
 
 @{
-    ViewBag.Title = "Supervisados Libertad Condicionada";
+	ViewBag.Title = "Supervisados Libertad Condicionada";
 }
 
 <script>
-    var page = 1;
-    var currentFilter = "";
-    $(document).ready(function () {
-        get();
-    });
-    function AlertCanalizacion(IdPersona) {
-        Swal.fire({
-            title: "¿Deseas canalizar a la persona?",            
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Si"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var datos = {
-                    IdTabla : IdPersona, 
-                    Tabla : "personacl",
-                    Lugar : "DGEPMS",
-                    Estado : "ACTIVO"
-                };
-                AjaxCrearReinsercion(datos);
-            }
-        });
-    }
-    function AjaxCrearReinsercion(datos){
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            async: true,
-            url: "/Reinsercion/CrearReinsercionPorSupervisor",
-            traditional: true,
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(datos),
-            success: function (response) {
-                console.log('Respuesta del controlador:', response);
-                sweetAlertAjax(true, response.responseText);
-               
-                setTimeout(function () {
-                    window.location.href = response.viewUrl;
-                }, 1700);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error al enviar datos al controlador:', status, error);
-                sweetAlertAjax(false, error);
-            }
-        });
-    }
-    function sweetAlertAjax(isSuccess,respuestaAjax,callback) {
-        if (isSuccess) {
-            Swal.fire({
-                icon: "success",
-                title: "Persona canalizada!",
-                text: respuestaAjax,
-                showConfirmButton: false,
-                timer: 1500               
-            });
-        }
-        else
-        {
-            Swal.fire({
-                icon: "error",
-                title: "la persona no ha sido canalizada!",
-                text: "Comuniquese con el administrador del sistema, Error: " + respuestaAjax
-            });
-        }
-    }
+	var page = 1;
+	var currentFilter = "";
+	$(document).ready(function () {
+		get();
+	});
+	function AlertCanalizacion(IdPersona) {
+		Swal.fire({
+			title: "¿Deseas canalizar a la persona?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Si"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				var datos = {
+					IdTabla : IdPersona,
+					Tabla : "personacl",
+					Lugar : "DGEPMS",
+					Estado : "ACTIVO"
+				};
+				AjaxCrearReinsercion(datos);
+			}
+		});
+	}
+	function AjaxCrearReinsercion(datos){
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			async: true,
+			url: "/Reinsercion/CrearReinsercionPorSupervisor",
+			traditional: true,
+			contentType: 'application/json; charset=utf-8',
+			data: JSON.stringify(datos),
+			success: function (response) {
+				console.log('Respuesta del controlador:', response);
+				sweetAlertAjax(true, response.responseText);
 
-    function cambiarPagina(incremento) {
-        page += incremento;
-        get();
-    }
-    function buscarNombre() {
-        page = 1;
-        get();
-    }
-    function todos() {
-        document.getElementById("Search").value = "";
-        currentFilter = "";
-        page = 1;
-        get();
-    }
-    function filtroSupervisor() {
-        currentFilter = "@ViewBag.RolesUsuarios";
-        page = 1;
-        get();
-    }
-    function get() {
-        document.getElementById("btnNext").disabled = false;
-        page = page;
-        var searchValue = document.getElementById("Search").value;
+				setTimeout(function () {
+					window.location.href = response.viewUrl;
+				}, 1700);
+			},
+			error: function (xhr, status, error) {
+				console.error('Error al enviar datos al controlador:', status, error);
+				sweetAlertAjax(false, error);
+			}
+		});
+	}
+	function sweetAlertAjax(isSuccess,respuestaAjax,callback) {
+		if (isSuccess) {
+			Swal.fire({
+				icon: "success",
+				title: "Persona canalizada!",
+				text: respuestaAjax,
+				showConfirmButton: false,
+				timer: 1500
+			});
+		}
+		else
+		{
+			Swal.fire({
+				icon: "error",
+				title: "la persona no ha sido canalizada!",
+				text: "Comuniquese con el administrador del sistema, Error: " + respuestaAjax
+			});
+		}
+	}
 
-        //if (page == 1) {
-        //    alert("page en  get")
-        //    alert(page)
-        //    document.getElementById("btnPrev").disabled = true;
-        //}
-        if (page == 1) {
-            document.getElementById("btnPrev").disabled = true;
-            document.getElementById("btnNext").disabled = false;
-        }
-        if (page > 1) {
-            document.getElementById("btnPrev").disabled = false;
-        }
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            url: "/Personacls/Get?pageNumber=" + page + " &currentFilter=" + currentFilter + "&Search=" + searchValue,
-            //Get?pageNumber=" + page + " & currentFilter=" + searchValue + "& Search=" + searchValue,
-            data: {
-                pagelimit: 10
-            },
-            traditional: true,
-            success: function (result) {
-                if (result.page.length < 10) {
-                    document.getElementById("btnNext").disabled = true;
-                }
-                $('#tblPersona').html('');
-                var row = '';
-                for (let i = 0; i < result.page.length; i++) {
-                    var dateString = result.page[i].ultimaActualización;
-                    var d = new Date(dateString);
-                    var hours = d.getHours();
-                    var minutes = d.getMinutes();
-                    var ampm = hours >= 12 ? 'PM' : 'AM';
-                    hours = hours % 12;
-                    hours = hours ? hours : 12; // the hour '0' should be '12'
-                    minutes = minutes < 10 ? '0' + minutes : minutes;
-                    var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
-                    if (dateString == null) {
-                        date = "";
-                    }
-                    if (result.super == true || result.admin == true || result.invitado == true) {
-                        row = row
-                            + "<tr valign='middle'>"
-                            + "<td><p onclick='alertaa(\"" + result.page[i].rutaFoto + "\")' class='btn'>" + result.page[i].idPersonaCl + "</p></td>"
-                            + "<td>" + result.page[i].nombreCompleto + "</td>"
-                            + "<td>" + result.page[i].supervisor + "</td>"
-                            + "<th>" + date + "</th>";
-                        row = row + "<div class=\"col-xs-12\">";
-                        row = row + "<td>";
-                        if (result.nomsuper == result.page[i].supervisor || result.admin == true) {
-                            //PARA MODIFICAR DATOS DE PERSONA SOLO SI USUARIO ES SU SUPERVISOR O USUARIO ES ADMIN
-                            row = row
-                                + "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
-                            row = row
-                                + "<div class=\"col-md-3\"><a href=/Personacls/Procesos/" + result.page[i].idPersonaCl + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
-                            row = row
-                                + "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
-                            row = row
-                                + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersonaCl + ")'><i class='fa fa-trash'></i></button></div>"
-                            row = row
-                                + "<div class=\"col-md-3\"><a href=/Personacls/MenuEdicion/" + result.page[i].idPersonaCl + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
-                            row = row
-                                + "<div class=\"col-md-3\"><button onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: -20px; margin-right: 5px;' class='btn btn-warning fa fa-users' disabled> Canalizar</button></div>";
-                      
-                            if (result.canalizados.includes(result.page[i].idPersonaCl)) {                        
-                                row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";
-                            }
-                        }
-                        else {
-                            //SI USUARIO NO ES SUPERVISOR DE PERSONA NO DEJA MODIFICAR
-                            row = row
-                                + "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
-                            row = row
-                                + "<div class=\"col-md-3\"><a href=/Personacls/Procesos/" + result.page[i].idPersonaCl + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
-                            row = row
-                                + "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
-                            row = row
-                                + "<div class=\"col-md-3\"><button onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: 5px; margin-right: 20em;' class='btn btn-warning fa fa-users' disabled> Canalizar</button></div>";
+	function cambiarPagina(incremento) {
+		page += incremento;
+		get();
+	}
+	function buscarNombre() {
+		page = 1;
+		get();
+	}
+	function todos() {
+		document.getElementById("Search").value = "";
+		currentFilter = "";
+		page = 1;
+		get();
+	}
+	function filtroSupervisor() {
+		currentFilter = "@ViewBag.RolesUsuarios";
+		page = 1;
+		get();
+	}
+	function get() {
+		document.getElementById("btnNext").disabled = false;
+		page = page;
+		var searchValue = document.getElementById("Search").value;
 
-                            if (result.canalizados.includes(result.page[i].idPersonaCl)) {
-                                row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";
-                            }
-                        }
-                    
-                        if(result.bitacora == true){
-                            row = row 
-                                row = row
-                                + "<div class=\"col-md-3\"><a  href='/Supervisioncl/ListaBitacora/?idpersona= " + result.page[i].idPersonaCl +"' style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
-                        }
-                         
-                        //SI EL USUARIO ES INVITADO NO MUESTRA LOS CANDADOS
-                        if (result.invitado == false) {
-                            switch (result.page[i].candado) {
-                                case 0:
-                                    row = row
-                                        + "<div class=\"col-md-1\"><button style='margin-top: 10px; margin-left: 5px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                                        + "</tr>";
-                                    row = row + "</td>";
-                                    row = row + "</div>";
-                                    break;
-                                case 1:
-                                    row = row
-                                        + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px; margin-left: 5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                                        + "</tr>";
-                                    break;
-                            }
-                        }
-                        // if (result.page[i].candado == 0) {
-                        //     row = row
-                        //         + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
-                        //         + "</tr>";
-                        //     row = row + "</td>";
-                        //     row = row + "</div>";
-                        // }
-                        // else {
-                        //     row = row
-                        //         + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
-                        //         + "</tr>";
-                        // }
-                        row = row + "</td>"
-                    }
-                }
-                if (row != '') {
-                    $('#tblPersona').append(row);
-                }
-                document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
-            },
-            error: function (msg) {
-                alert(msg);
-            }
-        });
-    }
-    function candado(id, candado) {
-        var personaidpersona = id;
-        let text;
+		//if (page == 1) {
+		//    alert("page en  get")
+		//    alert(page)
+		//    document.getElementById("btnPrev").disabled = true;
+		//}
+		if (page == 1) {
+			document.getElementById("btnPrev").disabled = true;
+			document.getElementById("btnNext").disabled = false;
+		}
+		if (page > 1) {
+			document.getElementById("btnPrev").disabled = false;
+		}
+		$.ajax({
+			type: "GET",
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			url: "/Personacls/Get?pageNumber=" + page + " &currentFilter=" + currentFilter + "&Search=" + searchValue,
+			//Get?pageNumber=" + page + " & currentFilter=" + searchValue + "& Search=" + searchValue,
+			data: {
+				pagelimit: 10
+			},
+			traditional: true,
+			success: function (result) {
+				if (result.page.length < 10) {
+					document.getElementById("btnNext").disabled = true;
+				}
+				$('#tblPersona').html('');
+				var row = '';
+				for (let i = 0; i < result.page.length; i++) {
+					var dateString = result.page[i].ultimaActualización;
+					var d = new Date(dateString);
+					var hours = d.getHours();
+					var minutes = d.getMinutes();
+					var ampm = hours >= 12 ? 'PM' : 'AM';
+					hours = hours % 12;
+					hours = hours ? hours : 12; // the hour '0' should be '12'
+					minutes = minutes < 10 ? '0' + minutes : minutes;
+					var date = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + hours + ':' + minutes + ' ' + ampm;
+					if (dateString == null) {
+						date = "";
+					}
+					if (result.super == true || result.admin == true || result.invitado == true) {
+						row = row
+							+ "<tr valign='middle'>"
+							+ "<td><p onclick='alertaa(\"" + result.page[i].rutaFoto + "\")' class='btn'>" + result.page[i].idPersonaCl + "</p></td>"
+							+ "<td>" + result.page[i].nombreCompleto + "</td>"
+							+ "<td>" + result.page[i].supervisor + "</td>"
+							+ "<th>" + date + "</th>";
+						row = row + "<div class=\"col-xs-12\">";
+						row = row + "<td>";
+						if (result.nomsuper == result.page[i].supervisor || result.admin == true) {
+							//PARA MODIFICAR DATOS DE PERSONA SOLO SI USUARIO ES SU SUPERVISOR O USUARIO ES ADMIN
+							row = row
+								+ "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+							row = row
+								+ "<div class=\"col-md-3\"><a href=/Personacls/Procesos/" + result.page[i].idPersonaCl + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+							row = row
+								+ "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+							row = row
+								+ "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-danger' onclick='borrarPersona(" + result.page[i].idPersonaCl + ")'><i class='fa fa-trash'></i></button></div>"
+							row = row
+								+ "<div class=\"col-md-3\"><a href=/Personacls/MenuEdicion/" + result.page[i].idPersonaCl + " style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-success'><i class='fa fa-pencil'></i> Editar</a></div>";
+							row = row
+								+ "<div class=\"col-md-3\"><button onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: -20px; margin-right: 5px;' class='btn btn-warning fa fa-users' disabled> Canalizar</button></div>";
 
-        if (candado == true) {
-            let razon = prompt("Razón de Bloqueo", "");
-            if (razon == null) {
-                //usuario presiono cancel
-                return;
-            } else {
-                text = razon;
-            }
-        } else {
-            text = "NA";
-        }
+							if (result.canalizados.includes(result.page[i].idPersonaCl)) {
+								row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";
+							}
+						}
+						else {
+							//SI USUARIO NO ES SUPERVISOR DE PERSONA NO DEJA MODIFICAR
+							row = row
+								+ "<div class=\"col-md-3\"><a  href=/Personacls/Details/" + result.page[i].idPersonaCl + "  style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-info' > <i class='fa fa-eye'></i> Detalles</a ></div>";
+							row = row
+								+ "<div class=\"col-md-3\"><a href=/Personacls/Procesos/" + result.page[i].idPersonaCl + "  style='margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-primary'><i class='fa fa-cogs'></i> Procesos</a></div>";
+							row = row
+								+ "<div class=\"col-md-6\"><a href=/Personacls/PresentacionPeriodicaPersona/" + result.page[i].idPersonaCl + " style='margin-top:10px; margin-left:5px; margin-rigth:5px;' class='btn btn-default'><i class='fa fa-calendar'></i> Presentaciónes</a></div>";
+							row = row
+								+ "<div class=\"col-md-3\"><button onclick=\"AlertCanalizacion(" + result.page[i].idPersonaCl + ")\" style='margin-top: 10px; margin-left: 5px; margin-right: 20em;' class='btn btn-warning fa fa-users' disabled> Canalizar</button></div>";
 
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Personacls/LoockCandado",
-            traditional: true,
-            data: {
-                datoCandado: [candado, personaidpersona, text],
-            },
-            success: function (response) {
-                if (response.success) {
-                    get();
-                } else {
-                    alert(response.responseText);
-                }
-            },
-            error: function (response) {
-                location.reload();
-            }
-        });
-    };
+							if (result.canalizados.includes(result.page[i].idPersonaCl)) {
+								row += "<div class=\"col-md-3\"><a  style='margin-top: 10px; margin-left: -30px; margin-right: 0px;' class='btn btn-info'><i class='fa fa-users'></i> Ver canalizaciones</a></div>";
+							}
+						}
 
-    function borrarPersona(id) {
-        var personaidpersona = id;
-        var usuario = '@ViewBag.user';
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Personacls/antesdelete",
-                traditional: true,
-                data: {
-                    datoPersona: [personaidpersona],
-                },
-                success: function (response) {
-                    if (response.borrar == false) {
-                        alert("El registro no puede ser borrado ya que tiene supervisiones y/o huella asignada");
-                    } else {
-                        function borrarPersonas(id) {
-                            var usuario = '@ViewBag.user';
-                            let razon = prompt("Describa la razón para borrar el registro", "");
-                            if (razon == null || razon == "") {
-                                return;
-                                text = "NA";
-                            } else {
-                                text = razon;
-                            }
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/Personacls/deletePersona",
-                                traditional: true,
-                                data: {
-                                    datoPersona: [id, razon, usuario],
-                                },
-                                success: function (response) {
-                                    if (response.borrar == true) {
-                                        alert("El Registro ha sido borrado");
-                                        location.reload();
-                                    } else {
-                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                                    }
-                                },
-                                error: function (response) {
-                                    alert(response.error);
+						if(result.bitacora == true){
+							row = row
+								row = row
+								+ "<div class=\"col-md-3\"><a  href='/Supervisioncl/ListaBitacora/?idpersona= " + result.page[i].idPersonaCl +"' style = 'margin-top: 10px; margin-left:5px; margin-rigth:5px;' class='btn btn-danger' > <i class='fa fa-book'></i> Bitacora</a ></div>";
+						}
 
-                                }
-                            });
-                        };
-                        borrarPersonas(id);
-                    }
-                },
-                error: function (response) {
-                    alert(response.error);
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
-        }
-        return innerFunc;
-    }
+						//SI EL USUARIO ES INVITADO NO MUESTRA LOS CANDADOS
+						if (result.invitado == false) {
+							switch (result.page[i].candado) {
+								case 0:
+									row = row
+										+ "<div class=\"col-md-1\"><button style='margin-top: 10px; margin-left: 5px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+										+ "</tr>";
+									row = row + "</td>";
+									row = row + "</div>";
+									break;
+								case 1:
+									row = row
+										+ "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px; margin-left: 5px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+										+ "</tr>";
+									break;
+							}
+						}
+						// if (result.page[i].candado == 0) {
+						//     row = row
+						//         + "<div class=\"col-md-1\"><button style='margin-top: 10px;' class='btn btn-primary' onclick='candado(" + result.page[i].idPersonaCl + ",true)'><i id='des' name='des' class='fa fa-unlock'></i></button></div>"
+						//         + "</tr>";
+						//     row = row + "</td>";
+						//     row = row + "</div>";
+						// }
+						// else {
+						//     row = row
+						//         + "<div class=\"col-md-1\"><button title='" + result.page[i].motivoCandado + "' style='margin-top: 10px;' class='btn btn-danger' onclick='candado(" + result.page[i].idPersonaCl + ",false)'><i id='des' name='des' class='fa fa-lock'></i></button></div>"
+						//         + "</tr>";
+						// }
+						row = row + "</td>"
+					}
+				}
+				if (row != '') {
+					$('#tblPersona').append(row);
+				}
+				document.getElementById("page").innerHTML = "Página " + page + " de " + result.totalPages;
+			},
+			error: function (msg) {
+				alert(msg);
+			}
+		});
+	}
+	function candado(id, candado) {
+		// Guardamos el ID de la persona recibida como parámetro
+		var personaidpersona = id;
+		let text;
+
+		// Si el valor de candado es true (bloquear persona)
+		if (candado == true) {
+			// Mostramos una alerta tipo SweetAlert2 solicitando la razón del bloqueo
+			Swal.fire({
+				title: 'Razón de Bloqueo',
+				input: 'text', // Se muestra un campo de texto
+				inputPlaceholder: 'Escriba la razón...',
+				showCancelButton: true, // Muestra el botón de cancelar
+				confirmButtonText: 'Aceptar',
+				cancelButtonText: 'Cancelar',
+				inputValidator: (value) => {
+					// Validación: no permitir continuar si el campo está vacío
+					if (!value) {
+						return 'Debe ingresar una razón para el bloqueo';
+					}
+				}
+			}).then((result) => {
+				// Si el usuario confirma y escribe la razón
+				if (result.isConfirmed) {
+					text = result.value; // Guardamos la razón escrita
+					// Llamamos a la función que realiza la solicitud AJAX al servidor
+					ejecutarAjax(personaidpersona, candado, text);
+				}
+			});
+
+		// Si el valor de candado es false (desbloquear persona)
+		} else {
+			text = "NA"; // No se requiere razón, se asigna "NA"
+			// Llamamos directamente a la función AJAX
+			ejecutarAjax(personaidpersona, candado, text);
+		}
+	}
+
+	// Función que ejecuta la solicitud AJAX para bloquear o desbloquear la persona
+	function ejecutarAjax(personaidpersona, candado, text) {
+		$.ajax({
+			type: "POST", // Método HTTP
+			dataType: "json", // Se espera respuesta JSON
+			url: "/Personacls/LoockCandado", // Ruta al método del controlador
+			traditional: true,
+			data: {
+			// Enviamos los datos al servidor
+			datoCandado: [candado, personaidpersona, text],
+			},
+			success: function (response) {
+				// Si la operación fue exitosa
+				if (response.success) {
+				get(); // Refrescamos los datos o interfaz
+				} else {
+				// Si hubo un error controlado, mostramos el mensaje
+				Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: response.responseText || 'Hubo un problema al ejecutar la acción'
+				});
+				}
+			},
+			error: function (response) {
+				// Si ocurre un error inesperado, informamos y recargamos la página
+				Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Ocurrió un error inesperado. Se recargará la página.'
+				}).then(() => {
+				location.reload();
+				});
+			}
+		});
+	}
+
+	function borrarPersona(id) {
+	  var personaidpersona = id;
+	  var usuario = '@ViewBag.user';
+		Swal.fire({
+			title: '¿Desea borrar el registro?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Sí, borrar',
+			cancelButtonText: 'Cancelar'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					type: "POST",
+					dataType: "json",
+					url: "/Personacls/antesdelete",
+					traditional: true,
+					data: {
+						datoPersona: [personaidpersona],
+					},
+					success: function (response) {
+						if (response.borrar == false) {
+							Swal.fire({
+								icon: 'error',
+								title: 'No se puede borrar',
+								text: 'El registro no puede ser borrado ya que tiene supervisiones y/o huella asignada'
+							});
+						} else {
+							Swal.fire({
+								title: 'Describa la razón para borrar el registro',
+								input: 'text',
+								inputPlaceholder: 'Razón...',
+								showCancelButton: true,
+								confirmButtonText: 'Aceptar',
+								cancelButtonText: 'Cancelar',
+								inputValidator: (value) => {
+									if (!value) {
+										return 'Debe proporcionar una razón para borrar el registro';
+									}
+								}
+							}).then((result) => {
+								if (result.isConfirmed) {
+									let razon = result.value || "NA";
+									$.ajax({
+										type: "POST",
+										dataType: "json",
+										url: "/Personacls/deletePersona",
+										traditional: true,
+										data: {
+											datoPersona: [id, razon, usuario],
+										},
+										success: function (response) {
+											if (response.borrar == true) {
+												Swal.fire({
+													icon: 'success',
+													title: 'Registro borrado',
+													timer: 800,
+													text: 'El registro ha sido borrado exitosamente'
+												}).then(() => {
+													location.reload();
+												});
+											} else {
+												Swal.fire({
+													icon: 'error',
+													title: 'Error',
+													text: 'Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema'
+												});
+											}
+										},
+										error: function (response) {
+											Swal.fire({
+												icon: 'error',
+												title: 'Error',
+												text: response.error || 'Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema'
+											});
+										}
+									});
+								}
+							});
+						}
+					},
+					error: function (response) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: response.error || 'Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema'
+						});
+					}
+				});
+			}
+		});
+	}
 
 </script>
 
@@ -350,98 +420,98 @@
 }*@
 
 <p>
-    <a asp-controller="Personas" asp-action="Create">
-        Nueva entrevista encuadre
-    </a>
-    @if (ViewBag.Admin == true)
-    {
-        <a asp-action="Reasignacioncl">
-            &ensp;Reasignación
-        </a>
-    }
+	<a asp-controller="Personas" asp-action="Create">
+		Nueva entrevista encuadre
+	</a>
+	@if (ViewBag.Admin == true)
+	{
+		<a asp-action="Reasignacioncl">
+			&ensp;Reasignación
+		</a>
+	}
 </p>
 <div class="form-group col-md-12" id="divbuscar">
-    Búsqueda:
-    <input type="text" name="Search" id="Search" />
-    <button id="myBtn" class="btn btn-default" onclick="buscarNombre()">
-        <i class="fa fa-search"></i>
-        Buscar
-    </button>
-    <a onclick="todos()" class="btn btn-link">
-        Regresar al listado completo
-    </a> |
-    <a onclick="filtroSupervisor(true)" class="btn btn-link">
-        Ver solo mis Supervisados
-    </a>
+	Búsqueda:
+	<input type="text" name="Search" id="Search" />
+	<button id="myBtn" class="btn btn-default" onclick="buscarNombre()">
+		<i class="fa fa-search"></i>
+		Buscar
+	</button>
+	<a onclick="todos()" class="btn btn-link">
+		Regresar al listado completo
+	</a> |
+	<a onclick="filtroSupervisor(true)" class="btn btn-link">
+		Ver solo mis Supervisados
+	</a>
 
 </div>
 <br />
 <div class="row">
-    <table class="table table-striped table-responsive">
-        <thead>
-            <tr>
-                <th>
-                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ID</a>
-                </th>
-                <th><a>Nombre</a></th>
-                <th>Supervisor</th>
-                <th><a>Ultima Actualización</a></th>
-            </tr>
-        </thead>
-        <tbody id="tblPersona">
-        </tbody>
-    </table>
+	<table class="table table-striped table-responsive">
+		<thead>
+			<tr>
+				<th>
+					<a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">ID</a>
+				</th>
+				<th><a>Nombre</a></th>
+				<th>Supervisor</th>
+				<th><a>Ultima Actualización</a></th>
+			</tr>
+		</thead>
+		<tbody id="tblPersona">
+		</tbody>
+	</table>
 </div>
 
 
 <script>
-    var input = document.getElementById("Search");
-    input.addEventListener("keyup", function (event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            document.getElementById("myBtn").click();
-        }
-    });
-    var input2 = document.getElementById("SearchS");
-    input2.addEventListener("keyup", function (event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            document.getElementById("myBtn2").click();
+	var input = document.getElementById("Search");
+	input.addEventListener("keyup", function (event) {
+		if (event.keyCode === 13) {
+			event.preventDefault();
+			document.getElementById("myBtn").click();
+		}
+	});
+	var input2 = document.getElementById("SearchS");
+	input2.addEventListener("keyup", function (event) {
+		if (event.keyCode === 13) {
+			event.preventDefault();
+			document.getElementById("myBtn2").click();
 
-        }
-    });
+		}
+	});
 </script>
 
 
 <p id="page"></p>
 <div id="AllBunton" name="AllBunton">
-    <button onclick="cambiarPagina(-1)" id="btnPrev" name="btnPrev" class="btn btn-default">Anterior</button>
-    <button onclick="cambiarPagina(+1)" id="btnNext" name="btnNext" class="btn btn-default">Siguiente</button>
+	<button onclick="cambiarPagina(-1)" id="btnPrev" name="btnPrev" class="btn btn-default">Anterior</button>
+	<button onclick="cambiarPagina(+1)" id="btnNext" name="btnNext" class="btn btn-default">Siguiente</button>
 </div>
 <div class="modal fade" id="modalfoto" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-body" style="text-align:center; padding-left:250px">
-                <img id="myImg" src="" class="img-responsive" alt="Snow" style="width:100%;max-width:300px;">
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-default" data-dismiss="modal">
-                    <i class="fa fa-close"></i>
-                    Cerrar
-                </a>
-            </div>
-        </div>
-    </div>
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-body" style="text-align:center; padding-left:250px">
+				<img id="myImg" src="" class="img-responsive" alt="Snow" style="width:100%;max-width:300px;">
+			</div>
+			<div class="modal-footer">
+				<a class="btn btn-default" data-dismiss="modal">
+					<i class="fa fa-close"></i>
+					Cerrar
+				</a>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 <script>
-    function alertaa(ruta) {
-        $("#myImg").attr("src", "/Fotoscl/" + ruta);
-        $('#modalfoto').modal('show')
-    }
+	function alertaa(ruta) {
+		$("#myImg").attr("src", "/Fotoscl/" + ruta);
+		$('#modalfoto').modal('show')
+	}
 
-        //function closeAlert(ruta){
-        //    $('#modalfoto').modal('hide')
-        //}
+		//function closeAlert(ruta){
+		//    $('#modalfoto').modal('hide')
+		//}
 </script>

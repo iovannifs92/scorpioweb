@@ -1,12 +1,55 @@
-﻿@if (Model != null && Model.Count > 0)
+﻿<div class="text-center" style="padding-top:1%">
+	<img src="~/images/Recibir Correspondencia.png" class="rounded" alt="..." style="max-width:10%">
+	<br />
+	<h2>Correspondencia enviada</h2>
+</div>
+
+<div class="top-content">
+	<div class="row-items">
+		<div class="item">
+			<p>
+				Buscar por nombre o num. de oficio: @Html.TextBox("SearchVerEnviados", null, new { id = "SearchVerEnviados" })
+				<input type="button" class="btn-success" onclick="verCorrespondenciaEnviada();" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
+			</p>	
+			<a style="font-size:16px;cursor: pointer;" onclick="verCorrespondenciaEnviada();">Ver todos los resultados</a>
+		</div>
+		<div class="item"><h5 style="font-weight:600;">¿Quien entrega?:</h5></div>
+		<div class="item">
+			<select class="form-control form-select-lg mb-3" id="selectQuienEnvia" onchange="verCorrespondenciaEnviada();">
+				<option value="">Seleccione un usuario...</option>
+				@foreach (var usuario in ViewBag.usuariosEnArea as List<string>)
+				{
+					<option value="@usuario">@usuario</option>
+				}
+			</select>
+		</div>
+		<div class="item"><h5 style="font-weight:600;">¿Quien recibe?:</h5></div>
+		<div class="item">
+			<select class="form-control form-select-lg mb-3" id="selectQuienRecibe" onchange="verCorrespondenciaEnviada();">
+				<option value="">Seleccione un usuario...</option>
+	
+			
+					@foreach (var usuario in ViewBag.usuariosEnArea as List<string>)
+					{
+						<option value="@usuario">@usuario</option>
+					}
+				
+			</select>
+		</div>
+		
+	</div>
+</div>
+
+
+@if (Model != null && Model.Count > 0)
 {
-	@if (!string.IsNullOrEmpty(ViewBag.CurrentSearchString as string))
+	@if (!string.IsNullOrEmpty(ViewBag.filtroActual as string))
 	{
-		<h4 style="font-weight:600;">Resultados de la búsqueda: @ViewBag.CurrentSearchString</h4>
+		<h4 style="font-weight:600;">@ViewBag.filtroActual</h4>
 	}
 
 	<div style="width: 150%; right:250px;position:relative; overflow-x: scroll; padding-top:20px;">
-		<table class="table table-bordered" style="width: 100%; min-width: 1500px;">
+		<table class="table table-bordered" style="width: 100%; min-width: 1500px; border-collapse: separate; border-spacing: 0; ">
 			<thead>
 				<tr>
 					<th>Id</th>
@@ -31,27 +74,88 @@
 				@foreach (var item in Model)
 				{
 					<tr>
+						@{
+							@*esta variable habilita la clase editable cell en las celdas que se pueden modificar*@
+							bool editable = item.Entregado == 0;
+						}
+						<input type="hidden" name="idCorrespondencia" value="@item.IdenvioCorrespondencia" />
+						
 						<td>@item.IdenvioCorrespondencia</td>
+						
 						<td>@item.Area</td>
-						<td>@item.Nombre @item.Apaterno @item.Amaterno</td>
-						<td>@item.NoOficio</td>
-						<td>@item.FiguraJudicial</td>
-						<td>@item.Genero</td>
-						<td>@item.Asunto</td>
-						<td>@item.Autoridad</td>
-						<td>@item.Observaciones</td>
+
+						@* DATA FIELD ES PARA SABER QUE CAMPO SE MODIFICA *@
+
+						
+						@if (editable)
+						{
+							<td class="editable-cell">
+								<span class="name-part">
+									<label class="label labelEnvio">Nombre:</label>
+									<span class="value" contenteditable="@(editable ? "true" : "false")" data-field="Nombre">@item.Nombre</span>
+								</span>
+								<span class="name-part">
+									<label class="label labelEnvio">Apaterno:</label>
+									<span class="value" contenteditable="@(editable ? "true" : "false")" data-field="Apaterno">@item.Apaterno</span>
+								</span>
+								<span class="name-part">
+									<label class="label labelEnvio">Amaterno:</label>
+									<span class="value" contenteditable="@(editable ? "true" : "false")" data-field="Amaterno">@item.Amaterno</span>
+								</span>
+							</td>
+
+						}
+						else
+						{
+							<td>@($"{item.Nombre} {item.Apaterno} {item.Amaterno}")</td>
+						}
+						
+					@* 	<td contenteditable="@(editable ? "true" : "false")" data-field="NombreCompleto" class=" @(editable ? "editable-cell" : "")">
+							@($"{item.Nombre} {item.Apaterno} {item.Amaterno}")
+						</td>
+
+						<td contenteditable ="@(editable ? "true" : "false")" class="editable-cell nombre-completo-cell">
+							<span contenteditable="@(editable ? "true" : "false")" data-field="Nombre">@item.Nombre</span>
+							<span contenteditable="@(editable ? "true" : "false")" data-field="Apaterno">@item.Apaterno</span>
+							<span contenteditable="@(editable ? "true" : "false")" data-field="Amaterno">@item.Amaterno</span>
+						</td> *@
+						<td contenteditable="@(editable ? "true" : "false")" data-field="NoOficio" class=" @(editable ? "editable-cell" : "")">
+							@item.NoOficio
+						</td>
+
+						<td contenteditable="@(editable ? "true" : "false")" data-field="FiguraJudicial" class=" @(editable ? "editable-cell" : "")">
+							@item.FiguraJudicial
+						</td>
+
+						<td >@item.Genero</td>
+
+						<td contenteditable="@(editable ? "true" : "false")" data-field="Asunto" class=" @(editable ? "editable-cell" : "")">
+							@item.Asunto
+						</td>
+
+						<td contenteditable="@(editable ? "true" : "false")" data-field="Autoridad" class=" @(editable ? "editable-cell" : "")">
+							@item.Autoridad
+						</td>
+
+						<td contenteditable="@(editable ? "true" : "false")" data-field="Observaciones" class="@(editable ? "editable-cell" : "")">
+							@item.Observaciones
+						</td>
+
 						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy HH:mm")</td>
 						<td>@item.QuienEntrega</td>
+
 						<td>
 							<input class="checkbox-entregadoRecibido"
 								   data-id="@item.IdenvioCorrespondencia"
 								   data-tipo="entregado"
 								   type="checkbox"
 								   @(item.Entregado == 1 ? "checked" : "")
-									 disabled />
+								   disabled />
 						</td>
+
 						<td class="fecha-entregado">@item.FechaEntrega?.ToString("dd/MM/yyyy HH:mm")</td>
 						<td>@item.QuienRecibe</td>
+
 						<td>
 							<input class="checkbox-entregadoRecibido"
 								   data-id="@item.IdenvioCorrespondencia"
@@ -60,6 +164,7 @@
 								   @(item.Recibido == 1 ? "checked" : "")
 								   disabled />
 						</td>
+
 						<td class="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>
 					</tr>
 				}
@@ -70,5 +175,5 @@
 }
 else
 {
-	<h2>No hay enviados</h2>
+	<h2>Sin resultados</h2>
 }

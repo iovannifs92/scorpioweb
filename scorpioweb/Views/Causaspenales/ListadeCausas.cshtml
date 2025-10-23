@@ -12,61 +12,101 @@
     function borrarCp(id) {
         var idcp = id;
         var usuario = '@ViewBag.user';
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: "/Causaspenales/antesdelete",
-            traditional: true,
-            data: {
-                datocp: [idcp],
-            },
-            success: function (response) {
-                if (response.borrar == false) {
-                    alert("No se ha borrado porque ya esta asignada a una persona");
-                } else {
-                    function borrarcp(id) {
-                        var usuario = '@ViewBag.user';
-                        let razon = prompt("Porque desea borrar el registro?", "");
-                        if (razon == null || razon == "") {
-                            return;
-                            text = "NA";
-                        } else {
-                            text = razon;
-                        }
-                        $.ajax({
-                            type: "POST",
-                            dataType: "json",
-                            url: "/Causaspenales/deletecp",
-                            traditional: true,
-                            data: {
-                                datocp: [id, razon, usuario],
-                            },
-                            success: function (response) {
-                                if (response.borrar == true) {
-                                    alert("El Registro ha sido borrado");
-                                    location.reload();
-                                } else {
-                                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                                }
-                            },
-                            error: function (response) {
-                                alert(response.error);
 
+        Swal.fire({
+            title: "¿Desea borrar el registro?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, borrar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Causaspenales/antesdelete",
+                    traditional: true,
+                    data: {
+                        datocp: [idcp],
+                    },
+                    success: function (response) {
+                        if (response.borrar == false) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "No se puede borrar",
+                                text: "No se ha borrado porque ya está asignada a una persona.",
+                            });
+                        } else {
+                            function borrarcp(id) {
+                                var usuario = '@ViewBag.user';
+
+                                Swal.fire({
+                                    title: "¿Por qué desea borrar el registro?",
+                                    input: "text",
+                                    inputPlaceholder: "Ingrese una razón...",
+                                    showCancelButton: true,
+                                    confirmButtonText: "Aceptar",
+                                    cancelButtonText: "Cancelar",
+                                    inputValidator: (value) => {
+                                        if (!value) {
+                                            return "Debe ingresar una razón.";
+                                        }
+                                    }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        let razon = result.value;
+                                        let text = razon;
+
+                                        $.ajax({
+                                            type: "POST",
+                                            dataType: "json",
+                                            url: "/Causaspenales/deletecp",
+                                            traditional: true,
+                                            data: {
+                                                datocp: [id, razon, usuario],
+                                            },
+                                            success: function (response) {
+                                                if (response.borrar == true) {
+                                                    Swal.fire({
+                                                        icon: "success",
+                                                        title: "Registro borrado",
+                                                        timer: 800,
+                                                        text: "El Registro ha sido borrado correctamente.",
+                                                    }).then(() => {
+                                                        location.reload();
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        icon: "error",
+                                                        title: "Error",
+                                                        text: "Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema.",
+                                                    });
+                                                }
+                                            },
+                                            error: function (response) {
+                                                Swal.fire({
+                                                    icon: "error",
+                                                    title: "Error",
+                                                    text: response.error || "Ocurrió un error inesperado.",
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
                             }
+                            borrarcp(id);
+                        }
+                    },
+                    error: function (response) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: response.error || "Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema.",
                         });
-                    };
-                    borrarcp(id);
-                }
-            },
-            error: function (response) {
-                alert(response.error);
-                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+                    }
+                });
             }
         });
-        }
-        return innerFunc;
     }
 </script>
 

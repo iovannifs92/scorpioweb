@@ -6,63 +6,109 @@
 
 <script type="text/javascript">
     function borrarCp(id) {
+        // Guardamos el ID de la causa penal seleccionada
         var idcp = id;
         var usuario = '@ViewBag.user';
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Causaspenalescl/antesdelete",
-                traditional: true,
-                data: {
-                    datocp: [idcp],
-                },
-                success: function (response) {
-                    if (response.borrar == false) {
-                        alert("No se ha borrado porque ya esta asignada a una persona");
-                    } else {
-                        function borrarcp(id) {
-                            var usuario = '@ViewBag.user';
-                            let razon = prompt("Porque desea borrar el registro?", "");
-                            if (razon == null || razon == "") {
-                                return;
-                                text = "NA";
-                            } else {
-                                text = razon;
-                            }
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/Causaspenalescl/deletecp",
-                                traditional: true,
-                                data: {
-                                    datocp: [id, razon, usuario],
-                                },
-                                success: function (response) {
-                                    if (response.borrar == true) {
-                                        alert("El Registro ha sido borrado");
-                                        location.reload();
-                                    } else {
-                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                                    }
-                                },
-                                error: function (response) {
-                                    alert(response.error);
 
+        // Mostramos confirmación con SweetAlert2 antes de proceder con el borrado
+        Swal.fire({
+            title: '¿Desea borrar el registro?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, borrar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            // Si el usuario confirma que desea borrar
+            if (result.isConfirmed) {
+                // Primera llamada AJAX: verificar si el registro se puede borrar
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Causaspenalescl/antesdelete",
+                    traditional: true,
+                    data: {
+                        datocp: [idcp],
+                    },
+                    success: function (response) {
+                        // Si el registro no se puede borrar porque está asignado
+                        if (response.borrar == false) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'No se puede borrar',
+                                text: 'No se ha borrado porque ya está asignada a una persona'
+                            });
+                        } else {
+                            // Si se puede borrar, pedimos la razón del borrado
+                            Swal.fire({
+                                title: '¿Por qué desea borrar el registro?',
+                                input: 'text',
+                                inputPlaceholder: 'Escriba la razón...',
+                                showCancelButton: true,
+                                confirmButtonText: 'Aceptar',
+                                cancelButtonText: 'Cancelar',
+                                inputValidator: (value) => {
+                                    if (!value) {
+                                        return 'Debe ingresar una razón para continuar';
+                                    }
+                                }
+                            }).then((result) => {
+                                // Si el usuario confirma y escribe una razón
+                                if (result.isConfirmed) {
+                                    let razon = result.value || "NA";
+
+                                    // Segunda llamada AJAX: borrar definitivamente el registro
+                                    $.ajax({
+                                        type: "POST",
+                                        dataType: "json",
+                                        url: "/Causaspenalescl/deletecp",
+                                        traditional: true,
+                                        data: {
+                                            datocp: [id, razon, usuario],
+                                        },
+                                        success: function (response) {
+                                            // Si el borrado fue exitoso
+                                            if (response.borrar == true) {
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Registro borrado',
+                                                    timer: 800,
+                                                    text: 'El registro ha sido borrado correctamente'
+                                                }).then(() => {
+                                                    location.reload(); // Recargamos la página para reflejar los cambios
+                                                });
+                                            } else {
+                                                // Si hubo un error controlado
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error',
+                                                    text: 'Hubo un error, no se pudieron guardar los datos. Contacte con el administrador del sistema.'
+                                                });
+                                            }
+                                        },
+                                        error: function (response) {
+                                            // Si ocurre un error inesperado
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: response.error || 'Hubo un error inesperado. Contacte con el administrador del sistema.'
+                                            });
+                                        }
+                                    });
                                 }
                             });
-                        };
-                        borrarcp(id);
+                        }
+                    },
+                    error: function (response) {
+                        // Si la primera solicitud falla
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.error || 'Hubo un error inesperado. Contacte con el administrador del sistema.'
+                        });
                     }
-                },
-                error: function (response) {
-                    alert(response.error);
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
-        }
-        return innerFunc;
+                });
+            }
+        });
     }
 </script>
 
