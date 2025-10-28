@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -1061,6 +1062,49 @@ namespace scorpioweb.Controllers
 
 
             return Json(new { success = true });
+        }
+
+
+
+        [HttpDelete]
+
+        public async Task<IActionResult> BorrarCorrespondencia(int idCorrespondencia)
+        {
+            if(idCorrespondencia == 0 )
+                return Json(new { success = false,message ="SIN ID CORRESPONDENCIA" });
+
+
+            var correspondencia = await _context.Enviocorrespondencia.FindAsync(idCorrespondencia);
+
+            if(correspondencia == null)
+                return Json(new { success = false, message = "Id Correspondencia no encontrado" });
+
+            try
+            {
+                _context.Enviocorrespondencia.Remove(correspondencia);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Correspondencia eliminada" });
+
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+ 
+                return Json(new { success = false, message = "Error de concurrencia: la correspondencia ya no existe o fue modificada." });
+            }
+            catch (DbUpdateException ex)
+            {
+             
+                return Json(new { success = false, message = "No se pudo eliminar la correspondencia. Verifique si está relacionada con otros registros.", error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+  
+                return Json(new { success = false, message = "Ocurrió un error inesperado al eliminar la correspondencia.", error = ex.Message });
+            }
+
+
         }
         #endregion
 
