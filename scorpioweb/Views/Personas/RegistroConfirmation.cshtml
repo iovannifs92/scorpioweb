@@ -11,7 +11,7 @@
         Registro exitoso de:<br />
         @ViewBag.nombreRegistrado<br />
         @ViewBag.idRegistrado<br />
-        <a href="#" onclick="AlertCanalizacion('@ViewBag.idRegistrado','@ViewBag.NombreTabla')"><u>Canalizar algun servicio post penal</u></a>
+       @*  <a href="#" onclick="AlertCanalizacion('@ViewBag.idRegistrado','@ViewBag.NombreTabla')"><u>Canalizar algun servicio post penal</u></a> *@
     </h2>
 
 }
@@ -114,24 +114,24 @@ else
                         lnEstado = document.getElementById("lnEstado")?.value || "NA";
                         fechaNacimiento = document.getElementById("fechaNacimiento")?.value || "NA";
 
-                        var datos = {
-                            IdTabla: IdPersona,
-                            Tabla: tabla,
-                            Lugar: lugar,
-                            Estado: "EN ESPERA",
-                            Delito: delito,
-                            CausaPenal: causapenal,
-                            TipoServ: tipo,
-                            TipoTerapia: terapia,
-                            TipoVinculacion: vinculacion,
-                            PeriodoTerapia: periodo,
-                            CURP: curp,
-                            NumJornadas: jornadas,
-                            FechaConclusion: fechaConclusion,
-                            NivelEstudios: nivelEstudios,
-                            LugarNcimiento: lnEstado,
-                            FechaNacimiento: fechaNacimiento
-                        };
+                        // var datos = {
+                        //     IdTabla: IdPersona,
+                        //     Tabla: tabla,
+                        //     Lugar: lugar,
+                        //     Estado: "EN ESPERA",
+                        //     Delito: delito,
+                        //     CausaPenal: causapenal,
+                        //     TipoServ: tipo,
+                        //     TipoTerapia: terapia,
+                        //     TipoVinculacion: vinculacion,
+                        //     PeriodoTerapia: periodo,
+                        //     CURP: curp,
+                        //     NumJornadas: jornadas,
+                        //     FechaConclusion: fechaConclusion,
+                        //     NivelEstudios: nivelEstudios,
+                        //     LugarNcimiento: lnEstado,
+                        //     FechaNacimiento: fechaNacimiento
+                        // };
                         //ALERTA 3: Confirmar datos
                         Swal.fire({
                             title: "¿Estas seguro que los datos son correctos?",
@@ -142,7 +142,44 @@ else
                             confirmButtonText: "Si"
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                AjaxCrearReinsercion(datos);
+                                $.ajax({
+                                   type: "POST",
+                                   dataType: "json",
+                                   async: true,
+                                   url: "/Reinsercion/CrearReinsercionPorSupervisor",
+                                   traditional: true,
+                                   data: {
+                                    IdTabla: IdPersona,
+                                    Tabla: tabla,
+                                    Lugar: lugar,
+                                    Estado: "EN ESPERA",
+                                    Delito: delito,
+                                    CausaPenal: causapenal,
+                                    TipoServ: tipo,
+                                    TipoTerapia: terapia,
+                                    TipoVinculacion: vinculacion,
+                                    PeriodoTerapia: periodo,
+                                    CURP: curp,
+                                    NumJornadas: jornadas,
+                                    FechaConclusion: fechaConclusion,
+                                    NivelEstudios: nivelEstudios,
+                                    LugarNcimiento: lnEstado,
+                                    FechaNacimiento: fechaNacimiento
+                                    },
+                                   success: function (response) {
+                                       console.log('Respuesta del controlador:', response);
+                                       sweetAlertAjax(true, response.responseText);
+
+                                       setTimeout(function () {
+                                           window.location.href = response.viewUrl;
+                                       }, 1700);
+                                   },
+                                   error: function (xhr, status, error) {
+                                       console.error('Error al enviar datos al controlador:', status, error);
+                                       sweetAlertAjax(false, error);
+                                   }
+                                });
+                                // AjaxCrearReinsercion(datos);
                             }
                         });
                     }
@@ -155,7 +192,6 @@ else
     document.addEventListener("change", function (e) {
         if (e.target.name === "tipo") {
             const tipo = e.target.value;
-            alert(tipo)
             const cont = document.getElementById("opcionesExtra");
             cont.innerHTML = "";
             if (tipo === "terapeutico") {
@@ -163,9 +199,9 @@ else
                   <label><strong>Tipo de terapia:</strong></label>
                   <select id="terapia" class="swal2-input">
                       <option value="">Seleccione...</option>
-                      <option value="violencia">Violencia</option>
-                      <option value="adicciones">Adicciones</option>
-                      <option value="vivir sin golpes">Vivir sin golpes</option>
+                      <option value="VIOLENCIA">Violencia</option>
+                      <option value="ADICCIONES">Adicciones</option>
+                      <option value="VIVIR SIN GOLPES">Vivir sin golpes</option>
                       <option value="otro">Otro</option>
                   </select>
                   <div id="otroTerapia"></div>
@@ -246,39 +282,39 @@ else
 
 
     // <!-- #endregion -->
-    function AjaxCrearReinsercion(datos) {
-        alert(datos)
-        alert(datos.TipoServ)
-        alert(datos.PeriodoTerapia)
-        alert(datos.CURP)
-        alert(datos.NumJornadas)
-        alert(datos.FechaConclusion)
-        alert(datos.NivelEstudios)
-        alert(datos.LugarNcimiento)
-        alert(datos.FechaNacimiento)
+    // function AjaxCrearReinsercion(datos) {
+    //     alert(datos)
+    //     alert(datos.TipoServ)
+    //     alert(datos.PeriodoTerapia)
+    //     alert(datos.CURP)
+    //     alert(datos.NumJornadas)
+    //     alert(datos.FechaConclusion)
+    //     alert(datos.NivelEstudios)
+    //     alert(datos.LugarNcimiento)
+    //     alert(datos.FechaNacimiento)
 
-       $.ajax({
-           type: "POST",
-           dataType: "json",
-           async: true,
-           url: "/Reinsercion/CrearReinsercionPorSupervisor",
-           traditional: true,
-           contentType: 'application/json; charset=utf-8',
-           data: JSON.stringify(datos),
-           success: function (response) {
-               console.log('Respuesta del controlador:', response);
-               sweetAlertAjax(true, response.responseText);
+    //    $.ajax({
+    //        type: "POST",
+    //        dataType: "json",
+    //        async: true,
+    //        url: "/Reinsercion/CrearReinsercionPorSupervisor",
+    //        traditional: true,
+    //        contentType: 'application/json; charset=utf-8',
+    //        data: JSON.stringify(datos),
+    //        success: function (response) {
+    //            console.log('Respuesta del controlador:', response);
+    //            sweetAlertAjax(true, response.responseText);
 
-               setTimeout(function () {
-                   window.location.href = response.viewUrl;
-               }, 1700);
-           },
-           error: function (xhr, status, error) {
-               console.error('Error al enviar datos al controlador:', status, error);
-               sweetAlertAjax(false, error);
-           }
-       });
-    }
+    //            setTimeout(function () {
+    //                window.location.href = response.viewUrl;
+    //            }, 1700);
+    //        },
+    //        error: function (xhr, status, error) {
+    //            console.error('Error al enviar datos al controlador:', status, error);
+    //            sweetAlertAjax(false, error);
+    //        }
+    //    });
+    // }
 
     function sweetAlertAjax(isSuccess, respuestaAjax, callback) {
        if (isSuccess) {

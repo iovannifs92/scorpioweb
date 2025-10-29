@@ -264,8 +264,8 @@
                     {
                         <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicologia</a></li>
                     }
-                    @* User.IsInRole("EnviarCorrespondencia") ||  User.IsInRole("RecibirCorrespondencia") *@
-                    @if (User.IsInRole("Masteradmin"))
+                    
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("EnviarCorrespondencia") || User.IsInRole("RecibirCorrespondencia"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Correspondencia">Correspondencia</a></li>
                     }
