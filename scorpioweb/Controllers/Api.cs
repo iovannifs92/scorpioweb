@@ -1108,47 +1108,52 @@ namespace scorpioweb.Controllers
                 switch (area)
                 {
                     case "MCYSCP":
-                        var query = (from p in _context.Persona
-                                     join scl in _context.Supervision on p.IdPersona equals scl.PersonaIdPersona
-                                     join cp in _context.Causapenal on scl.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                                     join d in _context.Delito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal
-                                     join f in _context.Fraccionesimpuestas on scl.IdSupervision equals f.SupervisionIdSupervision
-                                     where p.IdPersona == idPersona
-                                     group new { p, scl, cp, f, d } by scl.IdSupervision into g
-                                     select new
-                                     {
-                                         //SE OBTIENE LOS DATOS DE LA PERSONA, SUPERVISION, CAUSA PENAL Y CON EL PRIMER BENEFICIO DONDDE LA FIGURA JUDICIAL NO SEA NULL
-                                         Persona = g.First().p,
-                                         Supervision = g.First().scl,
-                                         CausaPenal = g.First().cp,
-                                         Delito = g.First().d,
-                                         //SE LLAMA FRACCIONES PARA QUE TODO SE RETORNE IGUAL
-                                         //SELECCIONAMOS UNA FRACCION POR SUPERVISION DONDE LA FRACCION NO SEA NULA O VACIA
-                                         Fracciones = g.Where(x => x.f.FiguraJudicial != null).FirstOrDefault()
-                                     }).ToList();
+                        var query = ( from p in _context.Persona
+                                      join scl in _context.Supervision on p.IdPersona equals scl.PersonaIdPersona
+                                      join cpTemp in _context.Causapenal on scl.CausaPenalIdCausaPenal equals cpTemp.IdCausaPenal into cpGroup
+                                      from cp in cpGroup.DefaultIfEmpty()
+                                      join dTemp in _context.Delito on cp.IdCausaPenal equals dTemp.CausaPenalIdCausaPenal into dGroup
+                                      from d in dGroup.DefaultIfEmpty()
+                                      join fTemp in _context.Fraccionesimpuestas on scl.IdSupervision equals fTemp.SupervisionIdSupervision into fGroup
+                                      from f in fGroup.DefaultIfEmpty()
+                                      where p.IdPersona == idPersona
+                                      group new { p, scl, cp, f, d } by scl.IdSupervision into g
+                                      select g).AsEnumerable() // ← Aquí movemos la evaluación a memoria
+                                      .Select(g => new
+                                      {
+                                          Persona = g.First().p,
+                                          Supervision = g.First().scl,
+                                          CausaPenal = g.FirstOrDefault(x => x.cp != null)?.cp,
+                                          Delito = g.FirstOrDefault(x => x.d != null)?.d,
+                                          Fracciones = g.FirstOrDefault(x => x.f != null && !string.IsNullOrEmpty(x.f.FiguraJudicial))?.f
+                                      })
+                                      .ToList();
+
                         listaDatos.AddRange(query);
 
                         break;
                     case "LibertadCondicionada":
                         var queryCL = (from p in _context.Personacl
                                        join scl in _context.Supervisioncl on p.IdPersonaCl equals scl.PersonaclIdPersonacl
-                                       join cp in _context.Causapenalcl on scl.CausaPenalclIdCausaPenalcl equals cp.IdCausaPenalcl
-                                       join d in _context.Delitocl on cp.IdCausaPenalcl equals d.CausaPenalclIdCausaPenalcl
-                                       join b in _context.Beneficios on scl.IdSupervisioncl equals b.SupervisionclIdSupervisioncl
+                                       join cpTemp in _context.Causapenalcl on scl.CausaPenalclIdCausaPenalcl equals cpTemp.IdCausaPenalcl into cpGroup
+                                       from cp in cpGroup.DefaultIfEmpty() // LEFT JOIN Causapenalcl
+                                       join dTemp in _context.Delitocl on cp.IdCausaPenalcl equals dTemp.CausaPenalclIdCausaPenalcl into dGroup
+                                       from d in dGroup.DefaultIfEmpty() // LEFT JOIN Delitocl
+                                       join bTemp in _context.Beneficios on scl.IdSupervisioncl equals bTemp.SupervisionclIdSupervisioncl into bGroup
+                                       from b in bGroup.DefaultIfEmpty() // LEFT JOIN Beneficios
                                        where p.IdPersonaCl == idPersona
                                        group new { p, scl, cp, b, d } by scl.IdSupervisioncl into g
-                                       select new
+                                       select g).AsEnumerable() // mover la evaluación a memoria
+                                       .Select(g => new
                                        {
-                                           //SE OBTIENE LOS DATOS DE LA PERSONA, SUPERVISION, CAUSA PENAL Y CON EL PRIMER BENEFICIO DONDDE LA FIGURA JUDICIAL NO SEA NULL
                                            Persona = g.First().p,
                                            Supervision = g.First().scl,
-                                           CausaPenal = g.First().cp,
-                                           Delito = g.First().d,
-                                           //SE LLAMA FRACCIONES PARA QUE TODO SE RETORNE IGUAL
-                                           //SELECCIONAMOS UN BENEFICIO POR SUPERVISION DONDE LA FRACCION NO SEA NULA O VACIA
-                                           Fracciones = g.Where(x => !string.IsNullOrEmpty(x.b.FiguraJudicial)).Select(x => x.b) 
-                                             .FirstOrDefault()
-                }).ToList();
+                                           CausaPenal = g.FirstOrDefault(x => x.cp != null)?.cp,
+                                           Delito = g.FirstOrDefault(x => x.d != null)?.d,
+                                           Fracciones = g.FirstOrDefault(x => x.b != null && !string.IsNullOrEmpty(x.b.FiguraJudicial))?.b
+                                       })
+                                       .ToList();
+
                         listaDatos.AddRange(queryCL);
                         break;
                     default:

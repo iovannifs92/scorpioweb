@@ -137,6 +137,7 @@
 		}
 </style>
 
+
 <div class="text-center" style="margin-bottom:20px;">
 	@if (ViewBag.EnviarRecibir)
 	{
@@ -170,17 +171,35 @@
 			}
 		</div>
 	}
-	else if (User.IsInRole("RecibirCorrespondencia") && !User.IsInRole("EnvioCorrespondencia"))
+	else if (User.IsInRole("RecibirCorrespondencia") && !User.IsInRole("EnviarCorrespondencia"))
 	{
 		//ESTA DENTRO DE UN CONTENEDOR PARA QUE SE SOBRESCRIBAN LAS BSQUEDAS VIEJAS DEPENDENDIENDO EL FILTRO
 		
-			<div id="contenedor-recibir">
-				@Html.Partial("_RecibirCorrespondencia", Model)			
-			</div>
+		<div id="contenedor-recibir">
+			@Html.Partial("_RecibirCorrespondencia", Model)			
+		</div>
 		
 		
 	}
-</div>
+	else if (User.IsInRole("VerCorrespondencia") && !(User.IsInRole("RecibirCorrespondencia") || User.IsInRole("EnviarCorrespondencia")))
+{
+
+		<input style="display:none;" id="areaVerEnviados" value="@ViewBag.Area" />
+		<div id="contenedor-verEnviados">
+			@if (Model != null)
+			{
+				@Html.Partial("_VerCorrespondenciaEnviada", Model)
+			}
+		</div>
+		@section Scripts {
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					// Trigger the function only for allowed users
+					verCorrespondenciaEnviada();
+				});
+			</script>
+		}
+	}
 
 @* TODAS LAS FUNCIONES DE JAVASCRIPT ESTAN AQUI, NO HAY NINGUNA EN LAS VISTAS _PARCIALES ENVIARCORRESPONDENCIA Y _RECIBIRCORRESPONDENCIA *@
 <script>
@@ -646,7 +665,10 @@
 				modificarCorrespondenciaEnviada(id, field, newValue);
 			}
 		}, true);
+
+	
 	});
+
 
 
 
@@ -686,6 +708,55 @@
 
 
 	}
+
+
+	function BorrarCorrespondencia(idCorrespondencia) {
+		  	
+		  Swal.fire({
+			  title: "¿Desea borrar el registro?",
+			  icon: "warning",
+			  showCancelButton: true,
+			  confirmButtonText: "Sí, borrar",
+			  cancelButtonText: "Cancelar"
+		  }).then((result) => {
+			  if (result.isConfirmed) {
+				  $.ajax({
+					  type: "DELETE",
+					  url: "/ServiciosPreviosJuicio/BorrarCorrespondencia",
+					  data: { idCorrespondencia: idCorrespondencia }, 
+					  dataType: "json",
+					  success: function (response) {
+						  if (response.success) {
+							  Swal.fire({
+								  icon: "success",
+								  title: "Registro eliminado!",
+								  timer: 1000,
+								  confirmButtonText: "Ok",
+
+							  }).then(() => {
+				
+							  	verCorrespondenciaEnviada();
+							  });
+						  } else {
+							 
+							  Swal.fire({
+								  icon: "error",
+								  title: "No se puede borrar",
+								  text: "El registro no puede ser borrado: " + response.message,
+							  });
+						  }
+					  },
+					  error: function (response) {
+						  Swal.fire({
+							  icon: "error",
+							  title: "Error",
+							  text: response.error || "Hubo un error, no se pudieron borrar los datos, contacte con el administrador del sistema",
+						  });
+					  }
+				  });
+			  }
+		  });
+	  }
 	//$$$$$$$$$$$$$$$$$$$$$$$ AREA DE RECIBIR CORRESPONDENCIA $$$$$$$$$$$$$$$$$$$$$$$
 
 	//ESTA FUNCION SE ACCEDE DESDE LA VISTA PARCIAL _RECIBIRCORRESPONDENCIA

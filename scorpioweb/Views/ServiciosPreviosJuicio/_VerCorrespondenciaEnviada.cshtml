@@ -166,6 +166,17 @@
 						</td>
 
 						<td class="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>
+						@if (editable && !User.IsInRole("VerCorrespondencia"))
+						{
+							<td>
+								<div class="col-md-1">
+									<button style="margin-top: 10px;" class="btn btn-danger" onclick="BorrarCorrespondencia(@item.IdenvioCorrespondencia)">
+										<i class='fa fa-trash'></i>
+									</button>
+								</div>
+							</td>
+						}
+						
 					</tr>
 				}
 			</tbody>
