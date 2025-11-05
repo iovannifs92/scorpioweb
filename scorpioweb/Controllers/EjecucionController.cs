@@ -2815,5 +2815,47 @@ namespace scorpioweb.Controllers
             return View(); 
         }
         #endregion
+
+
+        #region -Update fechacompurga-
+        public async Task<JsonResult> UpdateFechaCompurga(Ejecucion ejecucion,int idejecucion, DateTime fechacompurrga)
+        {
+            #region -actualizacion de estado de fecah compurga-
+            var emptype = (from e in _context.Ejecucion
+                           where e.IdEjecucion == idejecucion
+                           select e);
+            if (emptype.Any())
+            {
+                var query = (from e in _context.Ejecucion
+                             where e.IdEjecucion == idejecucion
+                             select e).FirstOrDefault();
+                query.FechaCompurga = fechacompurrga;
+                _context.SaveChanges();
+            }
+            #endregion
+
+            return Json(new { success = true, responseText = "Registro Exitoso", idPersonas = Convert.ToString(idejecucion) });
+        }
+        #endregion -Update Update Persona supervision-     
+        #region -Update beneficio-
+        public async Task<JsonResult> UpdateFechaBeneficio(Ejecucion ejecucion,int idejecucion, DateTime fechabeneficio)
+        {
+            #region -actualizacion de estado de fecah posible beneficio-
+            var emptype = (from e in _context.Ejecucion
+                           where e.IdEjecucion == idejecucion
+                           select e);
+            if (emptype.Any())
+            {
+                var query = (from e in _context.Ejecucion
+                             where e.IdEjecucion == idejecucion
+                             select e).FirstOrDefault();
+                query.FechaPbeneficio = fechabeneficio;
+                _context.SaveChanges();
+            }
+            #endregion
+
+            return Json(new { success = true, responseText = "Registro Exitoso", idPersonas = Convert.ToString(idejecucion) });
+        }
+        #endregion -Update Update Persona supervision-     
     }
 }

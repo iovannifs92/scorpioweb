@@ -356,6 +356,7 @@ namespace scorpioweb.Controllers
             ViewData["EstadoS"] = estadoSuper;
             ViewData["FiguraJ"] = figuraJudicial;
 
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 query = query.Where(x => (x.Nombre).Contains(searchString.ToUpper()) ||
@@ -524,57 +525,109 @@ namespace scorpioweb.Controllers
             Tabla = reinsercion.Tabla;
             Lugar = reinsercion.Lugar;
             Estado = reinsercion.Estado;
+            //SE MANDA LLAMAR EL METODO QUE 
+            int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
 
-            Delito = reinserciontemp.Delito;
-            CausaPenal = reinserciontemp.CausaPenal;
-            TipoServ = reinserciontemp.TipoServ;
-            TipoTerapia = reinserciontemp.TipoTerapia;
-            TipoVinculacion = reinserciontemp.TipoVinculacion;
-            PeriodoTerapia = reinserciontemp.PeriodoTerapia;
-            CURP = reinserciontemp.Curp;
-            NumJornadas = reinserciontemp.NumJornadas;
-            FechaConclusion = reinserciontemp.FechaConclusion;
-            NivelEstudios = reinserciontemp.NivelEstudios;
-            LugarNcimiento = reinserciontemp.LugarNacimiento;
-            FechaNacimiento = reinserciontemp.FechaNacimiento;
+            if (idReinsercionObtenido == 0)
+                idReinsercionObtenido = await CrearIdReinsercionAsync(reinsercion);
 
-            if (ModelState.IsValid)
+            try
             {
+                reinserciontemp.IdReinsercion = idReinsercionObtenido;
+                reinserciontemp.Delito = Delito;
+                reinserciontemp.CausaPenal = CausaPenal;
+                reinserciontemp.TipoServ = TipoServ;
+                reinserciontemp.TipoTerapia = TipoTerapia;
+                reinserciontemp.TipoVinculacion = TipoVinculacion;
+                reinserciontemp.PeriodoTerapia = PeriodoTerapia;
+                reinserciontemp.Curp = CURP;
+                reinserciontemp.NumJornadas = NumJornadas;
+                reinserciontemp.FechaConclusion = FechaConclusion;
+                reinserciontemp.NivelEstudios = NivelEstudios;
+                reinserciontemp.LugarNacimiento = LugarNcimiento;
+                reinserciontemp.FechaNacimiento = FechaNacimiento;
+                reinserciontemp.FechaRegistro = DateTime.Now;
+
+                _context.Add(reinserciontemp);
+                await _context.SaveChangesAsync();
+
                 object personaData = null;
 
                 var tabla = (reinsercion.Tabla ?? "").ToLowerInvariant();
                 var id = int.Parse(reinsercion.IdTabla);
 
-                if (tabla.ToUpper() == "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL PROCESO")
+                if (!string.IsNullOrEmpty(tabla))
                 {
-                    var persona = _context.Persona.SingleOrDefault(m => m.IdPersona == id);
+                    string area = tabla.ToUpper();
+                    object persona = null;
+                    string rutaFoto = "";
+
+                    if (area == "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL PROCESO")
+                    {
+                        persona = _context.Persona.SingleOrDefault(m => m.IdPersona == id);
+                        rutaFoto = persona != null ? Url.Content("~/Fotos/" + ((Persona)persona).rutaFoto) : "";
+                    }
+                    else if (area == "LIBERTAD CONDICIONADA")
+                    {
+                        persona = _context.Personacl.SingleOrDefault(m => m.IdPersonaCl == id);
+                        rutaFoto = persona != null ? Url.Content("~/Fotoscl/" + ((Personacl)persona).RutaFoto) : "";
+                    }
+
                     if (persona != null)
                     {
-                        personaData = new
+                        // Datos comunes de persona
+                        var baseData = new
                         {
-                            Area = "MEDIDAS CAUTELARES Y SUSPENCION CONDICIONAL DEL POROCESO",
-                            Nombre = persona.Nombre,
-                            ApellidoPaterno = persona.Paterno,
-                            ApellidoMaterno = persona.Materno,
-                            Telefono = persona.Celular,
-                            Foto = Url.Content("~/Fotos/" + persona.rutaFoto)
+                            Area = mg.normaliza(area),
+                            Lugar = mg.normaliza(Lugar),
+                            Nombre = (string)persona.GetType().GetProperty("Nombre")?.GetValue(persona),
+                            ApellidoPaterno = (string)persona.GetType().GetProperty("Paterno")?.GetValue(persona),
+                            ApellidoMaterno = (string)persona.GetType().GetProperty("Materno")?.GetValue(persona),
+                            Telefono = (string)persona.GetType().GetProperty("Celular")?.GetValue(persona),
+                            Foto = rutaFoto
                         };
-                    }
-                }
-                else if (tabla.ToUpper() == "LIBERTAD CONDICIONADA")
-                {
-                    var personacl = _context.Personacl.SingleOrDefault(m => m.IdPersonaCl == id);
-                    if (personacl != null)
-                    {
-                        personaData = new
+
+                        // Datos adicionales según tipo de servicio
+                        if (reinserciontemp.TipoServ?.ToUpper() == "VINCULACION")
                         {
-                            Area = "LIBERTAD CONDICIONADA",
-                            Nombre = personacl.Nombre,
-                            ApellidoPaterno = personacl.Paterno,
-                            ApellidoMaterno = personacl.Materno,
-                            Telefono = personacl.Celular,
-                            Foto = Url.Content("~/Fotoscl/" + personacl.RutaFoto)
-                        };
+                            personaData = new
+                            {
+                                baseData.Area,
+                                baseData.Lugar,
+                                baseData.Nombre,
+                                baseData.ApellidoPaterno,
+                                baseData.ApellidoMaterno,
+                                baseData.Telefono,
+                                baseData.Foto,
+                                TipoServ = mg.normaliza(reinserciontemp.TipoServ),
+                                TipoVinculacion = mg.normaliza(reinserciontemp.TipoVinculacion),
+                                Curp = mg.normaliza(reinserciontemp.Curp),
+                                NumJornadas = reinserciontemp.NumJornadas,
+                                FechaConclusion = reinserciontemp.FechaConclusion?.ToString("dd/MM/yyyy"),
+                                NivelEstudios = mg.normaliza(reinserciontemp.NivelEstudios),
+                                LugarNacimiento = mg.normaliza(reinserciontemp.LugarNacimiento),
+                                FechaNacimiento = reinserciontemp.FechaNacimiento?.ToString("dd/MM/yyyy"),
+                                FechaRegistro = reinserciontemp.FechaRegistro?.ToString("dd/MM/yyyy")
+                            };
+                        }
+                        else
+                        {
+                            personaData = new
+                            {
+                                baseData.Area,
+                                baseData.Lugar,
+                                baseData.Nombre,
+                                baseData.ApellidoPaterno,
+                                baseData.ApellidoMaterno,
+                                baseData.Telefono,
+                                baseData.Foto,
+                                TipoServ = mg.normaliza(reinserciontemp.TipoServ),
+                                TipoTerapia = mg.normaliza(reinserciontemp.TipoTerapia),
+                                PeriodoTerapia = mg.normaliza(reinserciontemp.PeriodoTerapia),
+                                FechaConclusion = reinserciontemp.FechaConclusion?.ToString("dd/MM/yyyy"),
+                                FechaRegistro = reinserciontemp.FechaRegistro?.ToString("dd/MM/yyyy")
+                            };
+                        }
                     }
                 }
 
@@ -590,18 +643,15 @@ namespace scorpioweb.Controllers
                     }
                 }
 
+                return Json(new { success = true, responseText = "Datos creado exitosamente! Espere a el area de vinculación" /*, viewUrl = Url.Action("FichaCanalizacion", "Reinsercion", new { idReinsercion = idReinsercionObtenido })*/ });
 
-                //SE MANDA LLAMAR EL METODO QUE 
-                int idReinsercionObtenido = await ObtenerIdReinsercionAsync(reinsercion.IdTabla, reinsercion.Tabla);
-
-                if (idReinsercionObtenido == 0)
-                    idReinsercionObtenido = await CrearIdReinsercionAsync(reinsercion);
-
-
-
-                return Json(new { success = true, responseText = "Datos creado exitosamente! ", viewUrl = Url.Action("FichaCanalizacion", "Reinsercion", new { idReinsercion = idReinsercionObtenido }) });
             }
-            return Json(new { success = false, responseText = "Error en la validación de datos" });
+            catch(Exception ex)
+            {
+                return Json(new { success = false, responseText = "Error al guardar datos " + ex   });
+            }
+          
+            
         }
 
         #region - ID Reinsercion -
@@ -2485,5 +2535,82 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
+
+        #region -Soicitudes de canalizacion-
+        public async Task<IActionResult> SolicuitudCanalizacion(
+            string sortOrder,
+           string currentFilter,
+           string searchString,
+           string estadoSuper,
+           string figuraJudicial,
+           int? pageNumber)
+        {
+
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["CausaPenalSortParm"] = String.IsNullOrEmpty(sortOrder) ? "causa_penal_desc" : "";
+            ViewData["EstadoCumplimientoSortParm"] = String.IsNullOrEmpty(sortOrder) ? "estado_cumplimiento_desc" : "";
+
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
+
+            var query = (from r in _context.Reinsercion
+                         join rt in _context.ReinsercionTemp on r.IdReinsercion equals rt.IdReinsercion
+                         where r.Estado == "EN ESPERA"
+                         select new ReinsercionReinsercionTempViewModel
+                         {
+                             reinsercion = r,
+                             reinsercionTemp = rt   
+                         });
+
+
+
+
+
+            var result = query.ToList();
+
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["EstadoS"] = estadoSuper;
+            ViewData["FiguraJ"] = figuraJudicial;
+
+
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    query = query.Where(x => (x.reinsercion.).Contains(searchString.ToUpper()) ||
+            //                                  (x.IdTabla).ToString().Contains(searchString));
+            //}
+
+            //query.OrderBy(x => x.IdTabla);
+
+            //switch (sortOrder)
+            //{
+            //    case "name_desc":
+            //        query = query.OrderByDescending(x => x.Nombre);
+            //        break;
+            //    case "causa_penal_desc":
+            //        query = query.OrderByDescending(x => x.Nombre);
+            //        break;
+            //    case "estado_cumplimiento_desc":
+            //        query = query.OrderByDescending(x => x.Nombre);
+            //        break;
+            //    default:
+            //        query = query.OrderByDescending(x => x.Nombre);
+            //        break;
+            //}
+            int pageSize = 15;
+            return View(await PaginatedList<ReinsercionReinsercionTempViewModel>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+        #endregion
     }
 }

@@ -11,7 +11,7 @@
         Registro exitoso de:<br />
         @ViewBag.nombreRegistrado<br />
         @ViewBag.idRegistrado<br />
-       @*  <a href="#" onclick="AlertCanalizacion('@ViewBag.idRegistrado','@ViewBag.NombreTabla')"><u>Canalizar algun servicio post penal</u></a> *@
+       <a href="#" onclick="AlertCanalizacion('@ViewBag.idRegistrado','@ViewBag.NombreTabla')"><u>Canalizar algun servicio post penal</u></a>  
     </h2>
 
 }
@@ -113,25 +113,6 @@ else
                         nivelEstudios = document.getElementById("nivelEstudios")?.value || "NA";
                         lnEstado = document.getElementById("lnEstado")?.value || "NA";
                         fechaNacimiento = document.getElementById("fechaNacimiento")?.value || "NA";
-
-                        // var datos = {
-                        //     IdTabla: IdPersona,
-                        //     Tabla: tabla,
-                        //     Lugar: lugar,
-                        //     Estado: "EN ESPERA",
-                        //     Delito: delito,
-                        //     CausaPenal: causapenal,
-                        //     TipoServ: tipo,
-                        //     TipoTerapia: terapia,
-                        //     TipoVinculacion: vinculacion,
-                        //     PeriodoTerapia: periodo,
-                        //     CURP: curp,
-                        //     NumJornadas: jornadas,
-                        //     FechaConclusion: fechaConclusion,
-                        //     NivelEstudios: nivelEstudios,
-                        //     LugarNcimiento: lnEstado,
-                        //     FechaNacimiento: fechaNacimiento
-                        // };
                         //ALERTA 3: Confirmar datos
                         Swal.fire({
                             title: "¿Estas seguro que los datos son correctos?",
@@ -170,9 +151,9 @@ else
                                        console.log('Respuesta del controlador:', response);
                                        sweetAlertAjax(true, response.responseText);
 
-                                       setTimeout(function () {
-                                           window.location.href = response.viewUrl;
-                                       }, 1700);
+                                       // setTimeout(function () {
+                                       //     window.location.href = response.viewUrl;
+                                       // }, 1700);
                                    },
                                    error: function (xhr, status, error) {
                                        console.error('Error al enviar datos al controlador:', status, error);
@@ -259,7 +240,7 @@ else
                                             <input type="text" id="nivelEstudios" class="swal2-input" placeholder="Nivel de estudios"/>`;
                     }
                     if (this.value === "antidoping") {
-                        let opcionesestados = estados.map(e => `<option value="${e.Id}">${e.Estado}</option>`).join("");
+                        let opcionesestados = estados.map(e => `<option value="${e.Estado}">${e.Estado}</option>`).join("");
                         extra.innerHTML = `
                           <label><strong>Lugar de Registro:</strong></label>
                           <select class="swal2-input" name="lnEstado" id="lnEstado">

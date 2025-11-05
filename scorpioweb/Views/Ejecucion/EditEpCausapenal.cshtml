@@ -276,14 +276,64 @@
         $("#form-modal .modal-title").html(title);
     };
 
+    function UpdateFechaCompurga(ids, value) {
+        console.log(value)
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Ejecucion/UpdateFechaCompurga",
+            traditional: true,
+            data: {
+                idejecucion: ids,
+                fechacompurrga: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
+    function UpdateFechaBeneficio(ids, value) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Ejecucion/UpdateFechaBeneficio",
+            traditional: true,
+            data: {
+                idejecucion: ids,
+                fechabeneficio: value,
+            },
+            success: function (response) {
+            },
+            error: function (response) {
+                location.reload();
+            }
+        });
+    };
 </script>
 
 
 @foreach (var item in ViewData["tieneEPCP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
 {
     <a onclick="showModal('@Url.Action("CreateEpCausapenal2", "Ejecucion", new {id=@item.epcausapenalVM.EjecucionIdEjecucion}, Context.Request.Scheme)','Causa penal',@item.epcausapenalVM.EjecucionIdEjecucion )" class="btn btn-success fa fa-plus"> Agregar Causa Penal</a>
+
+    <div class="col-md-12" id="divFcompurrga" name="divFcompurrga">
+        <label class="control-label">Fecha Compurga  </label>
+        <input class="form-control" type="date" id="FechaCompurga" name="FechaCompurga" value="@item.ejecucionVM.FechaCompurga?.ToString("yyyy-MM-dd")" onchange="UpdateFechaCompurga(@item.ejecucionVM.IdEjecucion, this.value)" />
+    </div>
+    <div class="col-md-12" id="divFPbeneficio" name="divFPbeneficio">
+        <label class="control-label">Fecha posible beneficio</label>
+        <input class="form-control" type="date" id="FechaPbeneficio" name="FechaPbeneficio" value="@item.ejecucionVM.FechaPbeneficio?.ToString("yyyy-MM-dd")" onchange="UpdateFechaBeneficio(@item.ejecucionVM.IdEjecucion, this.value)" />
+    </div>
     break;
 }
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 <br />
 <br />
 @foreach (var item in ViewData["tieneEPCP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
@@ -363,7 +413,7 @@
                 <input name="Reparacion" id="Reparacion" value="@item.epcausapenalVM.Reparacion" class="form-control" />
             </div>
             <div class="form-group col-md-12">
-                <label class="control-label">Firmezaaa</label>
+                <label class="control-label">Firmeza</label>
                 <input name="Firmeza" id="Firmeza" asp-for="@item.epcausapenalVM.Firmeza" class="form-control" type="date" />
             </div>
             <div class="form-group col-md-12">

@@ -20,5 +20,7 @@ namespace scorpioweb.Models
         public string EstadoActual { get; set; }
         public string Encargado { get; set; }
         public DateTime? FechaCarga { get; set; }
+        public DateTime? FechaCompurga { get; set; }
+        public DateTime? FechaPbeneficio { get; set; }
     }
 }

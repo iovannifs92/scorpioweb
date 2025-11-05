@@ -1,0 +1,102 @@
+﻿@model scorpioweb.Models.ReinsercionTemp
+
+@{
+    ViewData["Title"] = "SolicuitudCanalizacion";
+}
+
+<h2>SolicuitudCanalizacion</h2>
+
+<div>
+    <h4>ReinsercionTemp</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.IdReinsercion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IdReinsercion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Delito)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Delito)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CausaPenal)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CausaPenal)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TipoServ)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TipoServ)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TipoTerapia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TipoTerapia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.TipoVinculacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.TipoVinculacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PeriodoTerapia)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PeriodoTerapia)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Curp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Curp)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NumJornadas)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NumJornadas)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaConclusion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaConclusion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NivelEstudios)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NivelEstudios)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LugarNacimiento)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LugarNacimiento)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaNacimiento)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaNacimiento)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaRegistro)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FechaRegistro)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.IdTemp">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

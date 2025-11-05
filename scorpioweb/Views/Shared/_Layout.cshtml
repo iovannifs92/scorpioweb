@@ -41,17 +41,9 @@
             console.log(err.message);
         });
 
-        //connection.on("Recive", function (name, area) {
-        //    //let divnames = document.createElement("div");
-        //    //divnames.textContent = name + " " + area;
-        //    //document.getElementById("divname").appendChild(divnames);
-        //    //para alerta en signalR
-        //    alert(name + " " + area)
-        //});
-        //Alerta de barra de tiempo en la esquina superior derecha 
         connection.on("sendMessage", (message) => {
             //console.log(message)
-            var audio = new Audio('Audio/Notifiacion1.mp3');
+            var audio = new Audio('Audio/Notificacion1.mp3');
             audio.play();
             const Toast = Swal.mixin({
                 toast: true,
@@ -75,7 +67,7 @@
         
 
         connection.on("alertCierreCaso", (message) => {
-            var audio = new Audio('Audio/Notifiacion1.mp3');
+            var audio = new Audio('Audio/Notificacion1.mp3');
             const Toast = Swal.mixin({
                 toast: true,
                 position: "top-end",
@@ -93,26 +85,88 @@
             });
             audio.play();
         });
-        //Alera con datos de la persona paera vista en vivulacion
-        connection.on("fichadedatos", (data) => {
-          console.log("Datos recibidos:", data); // <-- para verificar
-          var audio = new Audio('Audio/Notifiacion1.mp3');
-          audio.play();
 
-          Swal.fire({
-            title: `Proceso de canalización`,
-            html: `
-              <p><strong>Area:</strong> ${data.area ?? ''}</p>
-              <p><strong>Nombre:</strong> ${data.nombre} ${data.apellidoPaterno} ${data.apellidoMaterno}</p>
+
+
+        var miAudio = new Audio('/Audio/Notificacion3.mp3');
+        let reproduciendo = false;
+        let detener = false;
+
+        function reproducirIntermitente() {
+          if (reproduciendo) return;
+          reproduciendo = true;
+          detener = false;
+
+          // Función recursiva que reproduce el sonido y espera 30 segundos
+          const reproducirLoop = () => {
+            if (detener) return; // Si ya se pidió detener, no sigue
+            miAudio.currentTime = 0;
+            miAudio.play().catch(err => console.log("No se pudo reproducir:", err));
+
+            // Esperar 30 segundos antes de volver a llamar a la función
+            setTimeout(reproducirLoop, 2500);
+          };
+
+          reproducirLoop(); // Empieza el ciclo
+        }
+
+        function detenerReproduccion() {
+          detener = true;
+          reproduciendo = false;
+          miAudio.pause();
+          miAudio.currentTime = 0;
+        }
+
+        connection.on("fichadedatos", (data) => {
+          console.log("Datos recibidos:", data);
+          reproducirIntermitente(); // 🔊 empieza a sonar
+
+          if (data) {
+            let htmlContent = `
+              <p><strong>Área:</strong> ${data.area ?? ''}</p>
+              <p><strong>Nombre:</strong> ${data.nombre ?? ''} ${data.apellidoPaterno ?? ''} ${data.apellidoMaterno ?? ''}</p>
               <p><strong>Teléfono:</strong> ${data.telefono ?? ''}</p>
-            `,
-            imageUrl: data.foto,
-            imageHeight: 300,
-            imageAlt: "Foto de la persona"
-          });
+              <hr>
+              <p><strong>Tipo de servicio:</strong> ${data.tipoServ ?? ''}</p>
+            `;
+
+            if (data.tipoServ?.toUpperCase() === "VINCULACION") {
+              htmlContent += `
+                <p><strong>Tipo de vinculación:</strong> ${data.tipoVinculacion ?? ''}</p>
+                <p><strong>CURP:</strong> ${data.curp ?? ''}</p>
+                <p><strong>Número de jornadas:</strong> ${data.numJornadas ?? ''}</p>
+                <p><strong>Fecha de conclusión:</strong> ${data.fechaConclusion ?? ''}</p>
+                <p><strong>Nivel de estudios:</strong> ${data.nivelEstudios ?? ''}</p>
+                <p><strong>Lugar de nacimiento:</strong> ${data.lugarNacimiento ?? ''}</p>
+                <p><strong>Fecha de nacimiento:</strong> ${data.fechaNacimiento ?? ''}</p>
+                <p><strong>Fecha de registro:</strong> ${data.fechaRegistro ?? ''}</p>
+              `;
+            } else {
+              htmlContent += `
+                <p><strong>Lugar de terapia:</strong> ${data.lugar ?? ''}</p>
+                <p><strong>Tipo de terapia:</strong> ${data.tipoTerapia ?? ''}</p>
+                <p><strong>Periodo de terapia:</strong> ${data.periodoTerapia ?? ''}</p>
+                <p><strong>Fecha de registro:</strong> ${data.fechaRegistro ?? ''}</p>
+              `;
+            }
+                // <p><strong>Fecha de conclusión:</strong> ${data.fechaConclusion ?? 'NA'}</p>
+            Swal.fire({
+              title: `Proceso de canalización`,
+              html: htmlContent,
+              imageUrl: data.foto,
+              imageHeight: 300,
+              imageAlt: "Foto de la persona",
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#3085d6',
+              allowOutsideClick: false
+            }).then(() => {
+              detenerReproduccion(); // 🔇 Se apaga completamente
+              window.location.href = "/Reinsercion/SolicuitudCanalizacion";
+            });
+          }
         });
 
-        
+
 
     </script>
     <meta charset="utf-8" />
