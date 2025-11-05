@@ -837,169 +837,195 @@ namespace scorpioweb.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> VerCorrespondenciaEnviada(string area, string searchVerEnviados, string selectQuienEnvia, string selectQuienRecibe, string tipoFiltro)
+        public async Task<IActionResult> VerCorrespondenciaEnviada(int? page, string area, string searchVerEnviados, string selectQuienEnvia, string selectQuienRecibe, string tipoFiltro)
         {
-            //EL AREA SIEMPRE VA A IR LLENO
+
             if (string.IsNullOrEmpty(area))
                 return BadRequest();
 
-            List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
+            const int pageSize = 50; // show 50 records per page
+            int pageNumber = page ?? 1;
+
+            IQueryable<Enviocorrespondencia> query = _context.Enviocorrespondencia
+                .Where(m => m.Area == area.ToUpper());
 
             var usuariosAreas = await mg.ObtenerAreasUsuariosAsync(userManager, roleManager);
-            ViewBag.usuariosEnArea = usuariosAreas.Where(x => x.Value.Equals(area, StringComparison.OrdinalIgnoreCase)).Select(x => x.Key).ToList();
+            ViewBag.usuariosEnArea = usuariosAreas
+                .Where(x => x.Value.Equals(area, StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Key)
+                .ToList();
 
-
-            //NO HAY NINGUN FILTRO SELECCIONADO
-            if (string.IsNullOrEmpty(searchVerEnviados) && string.IsNullOrEmpty(selectQuienEnvia) && string.IsNullOrEmpty(selectQuienRecibe))
+            // apply filters
+            if (string.IsNullOrEmpty(searchVerEnviados) &&
+                string.IsNullOrEmpty(selectQuienEnvia) &&
+                string.IsNullOrEmpty(selectQuienRecibe))
             {
-                correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == area.ToUpper()).OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                query = query.OrderBy(m => m.Entregado).ThenBy(m => m.FechaRegistro);
             }
-            //EXISTE POR LO MENOS UN FILTRO LLENO
             else
             {
                 switch (tipoFiltro)
                 {
                     case "inputNombreId":
                         searchVerEnviados = searchVerEnviados.ToUpper();
-                        ViewBag.filtroActual = "Resultado de la busqueda de : " + searchVerEnviados;
-                        correspondencia = await _context.Enviocorrespondencia
-                        .Where(m =>
-                            (m.Nombre.Contains(searchVerEnviados)
-                            || m.Apaterno.Contains(searchVerEnviados)
-                            || m.Amaterno.Contains(searchVerEnviados)
-                            || m.NoOficio.Contains(searchVerEnviados))
-                            && m.Area == area)
-                        .OrderBy(m => m.Entregado)
-                        .ToListAsync();
+                        ViewBag.filtroActual = "Resultado de la búsqueda de : " + searchVerEnviados;
+                        query = query
+                            .Where(m =>
+                                m.IdenvioCorrespondencia.ToString().Contains(searchVerEnviados) ||
+                                m.Nombre.Contains(searchVerEnviados) ||
+                                m.Apaterno.Contains(searchVerEnviados) ||
+                                m.Amaterno.Contains(searchVerEnviados) ||
+                                m.NoOficio.Contains(searchVerEnviados))
+                            .OrderBy(m => m.Entregado)
+                            .ThenBy(m => m.FechaRegistro);
                         break;
+
                     case "selectQuienEnvia":
                         ViewBag.filtroActual = "Documentos enviados por : " + selectQuienEnvia;
-                        correspondencia = await _context.Enviocorrespondencia
-                            .Where(m => m.Area == area.ToUpper() && m.QuienEntrega == selectQuienEnvia)
-                            .OrderByDescending(m => m.FechaRegistro).ToListAsync();
+                        ViewBag.QuienEnvia = selectQuienEnvia;
+                        query = query
+                            .Where(m => m.QuienEntrega == selectQuienEnvia)
+                            .OrderBy(m => m.Entregado)
+                            .ThenByDescending(m => m.FechaRegistro);
                         break;
 
                     case "selectQuienRecibe":
                         ViewBag.filtroActual = "Documentos recibidos por : " + selectQuienRecibe;
-                        correspondencia = await _context.Enviocorrespondencia
-                            .Where(m => m.Area == area.ToUpper() && m.QuienRecibe == selectQuienRecibe)
-                            .OrderByDescending(m => m.FechaRegistro).ToListAsync();
-                        break;
-                    default: return BadRequest();
-
-                }
-            }
-            return PartialView("_VerCorrespondenciaEnviada", correspondencia);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch,bool LinkVerTodos)
-        {
-            List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
-            ViewBag.UserAreas = await mg.ObtenerAreasUsuariosAsync(userManager, roleManager);
-            if ((string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString)) && !LinkVerTodos)
-                return BadRequest();
-            else if ((string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString)) && LinkVerTodos)
-                selectSearch = "TODOS";
-
-                // SE ENTRA A ESTE SWITCH CON EL DATO QUE VIENE DEL SELECT EN LA VISTA CORRESPONDENCIA
-                //SOLO VA A ENTRAR AQUI SI EL SELECTSEARCH NO ESTA VACIO Y EL SEARCHSTRING ESTA VACIO
-            if (!string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString))
-            {
-                //PONER AQUI EL VIEW BAG ASEGURA QUE CUANDO SE ACTUALIZE LA PAGINA, SOLO EL FILTRO SELECCIONADO SE QUEDE Y NO EL DE NOMBRE SI ES QUE ESCRIBIO ALGO 
-                ViewBag.CurrentSelectSearch = selectSearch;
-                selectSearch = selectSearch.ToUpper();
-                switch (selectSearch)
-                {
-
-                    case "UESPA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "UESPA").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "DIRECCION":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "DIRECCION").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "EJECUCION":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "EJECUCION").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "LIBERTAD CONDICIONADA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "LIBERTAD CONDICIONADA").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "MCYSCP":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "MCYSCP").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "COORDINACION OPERATIVA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "COORDINACION OPERATIVA").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "SERVICIOS LEGALES":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOS LEGALES").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "SERVICIOS PREVIOS":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SERVICIOS PREVIOS").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "SISTEMAS":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SISTEMAS").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "OFICIALIA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "OFICIALIA").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-                    
-                    case "VINCULACION":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "VINCULACION").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-                    
-                    case "SIN ÁREA ASIGNADA":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Area == "SIN ÁREA ASIGNADA").OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "OFICIO NO ENTREGADO-ACUSE NO RECIBIDO":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 0 && m.Recibido == 0).OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "OFICIO ENTREGADO-ACUSE NO RECIBIDO":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 0).OrderBy(m => m.Recibido).ToListAsync();
-                        break;
-
-                    case "OFICIO ENTREGADO-ACUSE RECIBIDO":
-                        correspondencia = await _context.Enviocorrespondencia.Where(m => m.Entregado == 1 && m.Recibido == 1).OrderBy(m => m.Entregado).ToListAsync();
-                        break;
-
-                    case "TODOS":
-                        correspondencia = await _context.Enviocorrespondencia.OrderBy(m => m.Entregado).ToListAsync();
+                        ViewBag.QuienRecibe = selectQuienRecibe;
+                        query = query
+                            .Where(m => m.QuienRecibe == selectQuienRecibe)
+                            .OrderBy(m => m.Entregado)
+                            .ThenByDescending(m => m.FechaRegistro);
                         break;
 
                     default:
                         return BadRequest();
                 }
             }
-            //SOLO VA A ENTRAR AQUI SI EL SELECTSEARCH ESTA VACIO Y EL SEARCHSTRING NO ESTA VACIO
+
+            var correspondencia = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+            int totalRegistros = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalRegistros / (double)pageSize);
+
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalPages = totalPages;
+
+            return PartialView("_VerCorrespondenciaEnviada", correspondencia);
+        }
+            [HttpGet]
+        public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch, bool LinkVerTodos)
+        {
+            const int pageSize = 50; // 🔹 show 50 records per page
+            int pageNumber = page ?? 1; // if null, start on page 1
+
+            List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
+            ViewBag.UserAreas = await mg.ObtenerAreasUsuariosAsync(userManager, roleManager);
+
+            if ((string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString)) && !LinkVerTodos)
+                return BadRequest();
+            else if (LinkVerTodos)
+            {
+                selectSearch = "TODOS";
+                searchString = string.Empty;
+            }
+
+            IQueryable<Enviocorrespondencia> query = _context.Enviocorrespondencia;
+
+            if (!string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString))
+            {
+                ViewBag.CurrentSelectSearch = selectSearch;
+                selectSearch = selectSearch.ToUpper();
+
+                switch (selectSearch)
+                {
+                    case "UESPA":
+                        query = query.Where(m => m.Area == "UESPA");
+                        break;
+                    case "DIRECCION":
+                        query = query.Where(m => m.Area == "DIRECCION");
+                        break;
+                    case "EJECUCION":
+                        query = query.Where(m => m.Area == "EJECUCION");
+                        break;
+                    case "LIBERTAD CONDICIONADA":
+                        query = query.Where(m => m.Area == "LIBERTAD CONDICIONADA");
+                        break;
+                    case "MCYSCP":
+                        query = query.Where(m => m.Area == "MCYSCP");
+                        break;
+                    case "COORDINACION OPERATIVA":
+                        query = query.Where(m => m.Area == "COORDINACION OPERATIVA");
+                        break;
+                    case "SERVICIOS LEGALES":
+                        query = query.Where(m => m.Area == "SERVICIOS LEGALES");
+                        break;
+                    case "SERVICIOS PREVIOS":
+                        query = query.Where(m => m.Area == "SERVICIOS PREVIOS");
+                        break;
+                    case "SISTEMAS":
+                        query = query.Where(m => m.Area == "SISTEMAS");
+                        break;
+                    case "OFICIALIA":
+                        query = query.Where(m => m.Area == "OFICIALIA");
+                        break;
+                    case "VINCULACION":
+                        query = query.Where(m => m.Area == "VINCULACION");
+                        break;
+                    case "SIN ÁREA ASIGNADA":
+                        query = query.Where(m => m.Area == "SIN ÁREA ASIGNADA");
+                        break;
+                    case "OFICIO NO ENTREGADO-ACUSE NO RECIBIDO":
+                        query = query.Where(m => m.Entregado == 0 && m.Recibido == 0);
+                        break;
+                    case "OFICIO ENTREGADO-ACUSE NO RECIBIDO":
+                        query = query.Where(m => m.Entregado == 1 && m.Recibido == 0);
+                        break;
+                    case "OFICIO ENTREGADO-ACUSE RECIBIDO":
+                        query = query.Where(m => m.Entregado == 1 && m.Recibido == 1);
+                        break;
+                    case "TODOS":
+                        // no extra filter
+                        break;
+                    default:
+                        return BadRequest();
+                }
+            }
             else if (string.IsNullOrEmpty(selectSearch) && !string.IsNullOrEmpty(searchString))
             {
-                //PONER AQUI EL VIEW BAG ASEGURA QUE CUANDO SE ACTUALIZE LA PAGINA, SOLO EL FILTRO SELECCIONADO SE QUEDE Y NO EL DE NOMBRE SI ES QUE ESCRIBIO ALGO 
                 searchString = searchString.ToUpper();
                 ViewBag.CurrentSearchString = searchString;
-                correspondencia = await _context.Enviocorrespondencia
-                    .Where(m => m.Nombre.Contains(searchString)
-                             || m.Apaterno.Contains(searchString)
-                             || m.Amaterno.Contains(searchString)
-                             || m.NoOficio.Contains(searchString))
-                    .OrderBy(m => m.Entregado)
-                    .ToListAsync();
+
+                query = query.Where(m =>
+                    m.IdenvioCorrespondencia.ToString().Contains(searchString) ||
+                    m.Nombre.Contains(searchString) ||
+                    m.Apaterno.Contains(searchString) ||
+                    m.Amaterno.Contains(searchString) ||
+                    m.NoOficio.Contains(searchString));
             }
-            //SE RETORNA UNA VISTA PARCIAL PARA QUE NO SE ACTUALIZE TODA LA PAGINA, ADEMAS MANDAMOS EL MODELO PARA LA TABLA
+
+            // 🔹 Apply order and pagination
+            correspondencia = await query
+                .OrderBy(m => m.Entregado)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // 🔹 Optionally send pagination info to the view
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalCount = await query.CountAsync();
+            ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / pageSize);
+
             return PartialView("_RecibirCorrespondencia", correspondencia);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ModificarCorrespondencia(int id, string tipo, string usuario,string valor)
+        public async Task<IActionResult> ModificarCorrespondencia(int id, string tipo, string usuario,string valor,string quienRecibe)
         {
             var correspondencia = await _context.Enviocorrespondencia.FindAsync(id);
             if (correspondencia == null)
@@ -1014,10 +1040,12 @@ namespace scorpioweb.Controllers
                 case "recibido":
                     correspondencia.Recibido = 1;
                     correspondencia.FechaRecibido = DateTime.Now;
+                    correspondencia.QuienRecibe = quienRecibe;
                     break;
-                case "select-usuario":
-                    correspondencia.QuienRecibe = usuario;
-                    break;
+              
+                    //case "select-usuario":
+                //    correspondencia.QuienRecibe = usuario;
+                //    break;
 
                 //ESTOS CASE SON DE LA VISTA VER CORRESPONDENCIA ENVIADA
                 case "Nombre":

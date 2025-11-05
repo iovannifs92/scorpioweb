@@ -582,22 +582,79 @@
 
 
 	//$$$$$$$$$$$$$$$$$$$$$$$ VER CORRESPONDENCIA ENVIADA $$$$$$$$$$$$$$$$$$$$$$$
-	function verCorrespondenciaEnviada() {
+	function loadPageVerEnviados(page) {
+		let area = $("#areaVerEnviados").val();
+
+		let searchVerEnviados = $("#SearchVerEnviados").val();
+		let selectQuienEnvia = $("#selectQuienEnvia").val();
+		let selectQuienRecibe = $("#selectQuienRecibe").val();
+		let tipoFiltro = "";
+			// 🔹 Determine which filter type applies
+		if (searchVerEnviados && !selectQuienEnvia && !selectQuienRecibe) {
+			tipoFiltro = "inputNombreId";
+		}
+		else if (selectQuienEnvia && !searchVerEnviados && !selectQuienRecibe) {
+			tipoFiltro = "selectQuienEnvia";
+		}
+		else if (selectQuienRecibe && !searchVerEnviados && !selectQuienEnvia) {
+			tipoFiltro = "selectQuienRecibe";
+		}
+
+		$.get("/ServiciosPreviosJuicio/VerCorrespondenciaEnviada", {
+			page,
+			area,
+			searchVerEnviados,
+			selectQuienEnvia,
+			selectQuienRecibe,
+			tipoFiltro
+		})
+		.done(function (data) {
+			$("#contenedor-verEnviados").html(data);
+		})
+		.fail(function () {
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Ocurrió un problema al cargar los datos.'
+			});
+		})
+		.always(function () {
+			Swal.close(); // Cierra el alert al terminar (éxito o error)
+		});
+	}
+	function verCorrespondenciaEnviada(tipo) {
 		let area = $("#areaVerEnviados").val();
 		let searchVerEnviados = $("#SearchVerEnviados").val();
 		let selectQuienEnvia = $("#selectQuienEnvia").val();
 		let selectQuienRecibe = $("#selectQuienRecibe").val();
-
 		let tipoFiltro = "";
 		// Determinar tipo de filtro
-		if (searchVerEnviados && !selectQuienEnvia && !selectQuienRecibe) {
+		if (tipo === "inputEnviados") 
+		{
 			tipoFiltro = "inputNombreId";
-		} else if (selectQuienEnvia && !searchVerEnviados && !selectQuienRecibe) {
-			tipoFiltro = "selectQuienEnvia";
-		} else if (selectQuienRecibe && !searchVerEnviados && !selectQuienEnvia) {
-			tipoFiltro = "selectQuienRecibe";
+			selectQuienEnvia = "";
+			selectQuienRecibe = "";
 		}
+		else if(tipo === "linkTodos")
+		{
+			searchVerEnviados = "";
+			selectQuienEnvia = "";
+			selectQuienRecibe = "";
+		}
+		else if (tipo ==="selectQuienEnvia")
+		{
+			tipoFiltro = "selectQuienEnvia";
+			searchVerEnviados = "";
+			selectQuienRecibe = "";
+		}
+		else if (tipo ==="selectQuienRecibe")
+		{
+			tipoFiltro = "selectQuienRecibe";
+			searchVerEnviados = "";
+			selectQuienEnvia = "";
 
+		}
+													
 		// Mostrar pantalla de carga con SweetAlert2
 		Swal.fire({
 			title: 'Cargando...',
@@ -619,7 +676,6 @@
 		})
 		.done(function (data) {
 			$("#contenedor-verEnviados").html(data);
-			$("#SearchVerEnviados").val("");
 		})
 		.fail(function () {
 			Swal.fire({
@@ -666,13 +722,47 @@
 			}
 		}, true);
 
-	
+
+		//esto es para la la vista parcial recibir correspondencia
+				function syncRecibidoStateFor(id) {
+					const entregadoEl = document.querySelector('.checkbox-entregadoRecibido[data-id="' + id + '"][data-tipo="entregado"]');
+					const recibidoEl  = document.querySelector('.checkbox-entregadoRecibido[data-id="' + id + '"][data-tipo="recibido"]');
+
+					
+					if (!entregadoEl || !recibidoEl) return;
+
+					// enable "recibido" only if "entregado" is checked
+					recibidoEl.disabled = !entregadoEl.checked;
+
+					// if "entregado" is unchecked, uncheck "recibido" too
+					if (!entregadoEl.checked) {
+						recibidoEl.checked = false;
+					}
+				}
+
+				// initialize all rows when page loads
+				document.querySelectorAll('.checkbox-entregadoRecibido[data-tipo="entregado"]').forEach(function(el) {
+					const id = el.dataset.id;
+					if (id) syncRecibidoStateFor(id);
+				});
+
+				// when an "entregado" checkbox changes, update its "recibido"
+				document.addEventListener('change', function(e) {
+					const target = e.target;
+					if (target && target.classList.contains('checkbox-entregadoRecibido') && target.dataset.tipo === 'entregado') {
+						const id = target.dataset.id;
+						if (id) syncRecibidoStateFor(id);
+					}
+				});
 	});
 
 
 
 
 	function modificarCorrespondenciaEnviada(id, tipo,valor){
+
+
+
 			$.ajax({
 			url: '/ServiciosPreviosJuicio/ModificarCorrespondencia',
 			type: 'POST',
@@ -759,11 +849,52 @@
 	  }
 	//$$$$$$$$$$$$$$$$$$$$$$$ AREA DE RECIBIR CORRESPONDENCIA $$$$$$$$$$$$$$$$$$$$$$$
 
+
+		function loadPage(pageNumber) {
+			// 🔹 Get current search string
+			const searchString = $('#SearchString').val() || '';
+
+			// 🔹 Get current select filter
+			const selectSearch = $('#selectSearch').val() || '';
+
+
+
+			const linkVerTodos = false; // adjust if needed
+
+			$.ajax({
+				url: '/ServiciosPreviosJuicio/FiltrarCorrespondencia',
+				type: 'GET',
+				data: {
+					page: pageNumber,
+					searchString: searchString,
+					selectSearch: selectSearch,
+					LinkVerTodos: linkVerTodos
+				},
+				success: function (partialViewResult) {
+					// Replace table container with new results
+						$('#contenedor-recibir').html(partialViewResult);
+				},
+				error: function () {
+						Swal.fire('Error', 'No se pudo cargar la pagina', 'error');
+				}
+			});
+	}
+
 	//ESTA FUNCION SE ACCEDE DESDE LA VISTA PARCIAL _RECIBIRCORRESPONDENCIA
-	function FiltrarCorrespondencia(LinkVerTodos) {
+	function FiltrarCorrespondencia(LinkVerTodos,tipo) {
 		let searchString = $("#SearchString").val();
 		let selectSearch = $("#selectSearch").val();
-
+		console.log(tipo);
+		if(tipo=== 'select'){
+			searchString = "";
+		}
+		else if( tipo ==='buscador'){
+			selectSearch = "";
+		}
+		else if(tipo === 'link'){
+			searchString = "";
+			selectSearch = "";
+		}
 		// SWEETALERT LOADING SCREEN (no OK button)
 		Swal.fire({
 			title: 'Cargando...',
@@ -778,7 +909,7 @@
 		$.get("/ServiciosPreviosJuicio/FiltrarCorrespondencia", { searchString, selectSearch, LinkVerTodos })
 			.done(function (data) {
 				$("#contenedor-recibir").html(data);
-				$("#SearchString").val("");
+				
 			})
 			.fail(function () {
 				Swal.fire({
@@ -794,21 +925,99 @@
 
 	//PARA MARCAR LA CASILLA DE ENTREGADO EN LA VISTA PARCIAL _RECIBIRCORRESPONDENCIA
 	// (FUNCIONA CON LA CLASE DE LOS CHECK BOXES EN _RECIBIRCORRESPONDENCIA)
-	$(document).on('change', '.checkbox-entregadoRecibido', function() {
-		const id = $(this).data('id');
-		const tipo = $(this).data('tipo');
+		$(document).on('change', '.checkbox-entregadoRecibido', function() {
+			const $checkbox = $(this);
+			const id = $checkbox.data('id');
+			const tipo = $checkbox.data('tipo');
 
-		modificarCorrespondencia(id, tipo, this);
+			//si se selecciona el check de recibido tenemos que verificar si primero ya se selecciono la persona que recibe
+			if (tipo === 'recibido')
+			{
 
+				const $select = $(`select[name="QuienRecibe_${id}"]`);//obtiene el valor del select del id del checkbox
+				let quienRecibe = '';
+
+				if ($select.length) { //si no esta vacio entra aqui			
+					quienRecibe = ($select.val() || '').toString().trim();
+				} else {
+					//se hace como medida en caso de que si tenga algo
+					const $cell = $checkbox.closest('tr').find('.quien-recibe-cell');
+					
+					if ($cell.length) {
+						quienRecibe = $cell.text().trim();
+					} else {
+				     		quienRecibe = $checkbox.closest('tr').find('td').filter(function() {
+							return $(this).find('select').length === 0 && $(this).text().trim().length > 0;
+						}).first().text().trim();
+					}
+				}
+
+				console.log(quienRecibe)
+
+
+				if (!quienRecibe) {
+					//si llega AQUI ES POR QUE NO SE SELECCIONO A NADIE
+					Swal.fire({
+						icon: "error",
+						title: "Quien recibe?",
+						text: 'Selecciona la persona que va a recibir',
+						timer: 1000,
+						showConfirmButton: true
+					});
+					// Always force checkbox back to unchecked state (DOM property + jQuery)
+					$checkbox.prop('checked', false);
+					if ($checkbox[0]) $checkbox[0].checked = false;
+
+					// Ensure the UI updates reliably (use next tick)
+					setTimeout(function () {
+						$checkbox.prop('checked', false);
+						if ($checkbox[0]) $checkbox[0].checked = false;
+					}, 0);
+
+					// Update stored previous state as unchecked
+					$checkbox.data('previousChecked', false);
+					return;
+				}
+				//si llega hasta aqui si se tiene seleccionado a alguine
+				$checkbox.prop('disabled', true); // se desactiva mientras guarda	
+				
+				modificarCorrespondencia(id, tipo, this, quienRecibe);
+				
+			} 
+			else
+			{
+	
+
+				modificarCorrespondencia(id, tipo, this);
+			}
+		});
+
+	document.addEventListener("keydown", function (event) {
+				// Check if the focused element is the search box
+				if (event.target.id === "SearchString" && event.key === "Enter") {
+					event.preventDefault();
+					FiltrarCorrespondencia(false,'buscador');
+				}
+					if (event.target.id === "SearchVerEnviados" && event.key === "Enter") {
+					event.preventDefault();
+					verCorrespondenciaEnviada('inputEnviados');
+				}
 	});
 	//PARA SELECCIONAR EL USUARIO QUE RECIBE
-	function quienRecibeChanged(idCorrespondencia, tipo, usuarioSeleccionado) {
-		const selectedUser = usuarioSeleccionado.value;
-		modificarCorrespondencia(idCorrespondencia, tipo, selectedUser, usuarioSeleccionado);
-	}
+		function quienRecibeChanged(id, tipo, selectElement) {
+			const selectedValue = selectElement.value;
+			const area = selectElement.getAttribute("data-area");
+
+			document.querySelectorAll(`select.quien-recibe-select[data-area='${area}']`).forEach(sel => {
+				if (sel !== selectElement) {
+					// Change their value silently, without firing onchange
+					sel.value = selectedValue;
+				}
+			});
+		}
 
 	//FUNCION PARA MODIFICAR UNA CORRESPONDENCIA
-	function modificarCorrespondencia(id, tipo, element){
+	function modificarCorrespondencia(id, tipo, element,quienRecibe){
 	
 		let usuario = '';
 		if (typeof element === 'string') {
@@ -820,7 +1029,7 @@
 		$.ajax({
 			url: '/ServiciosPreviosJuicio/ModificarCorrespondencia',
 			type: 'POST',
-			data: { id: id, tipo: tipo, usuario: usuario },
+			data: { id: id, tipo: tipo, usuario: usuario,quienRecibe: quienRecibe },
 			success: function(response){
 				if(response.success){
 					// Disable element if it's a DOM element

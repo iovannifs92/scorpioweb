@@ -8,15 +8,15 @@
 	<div class="row-items">
 		<div class="item">
 			<p>
-				Buscar por nombre o num. de oficio: @Html.TextBox("SearchVerEnviados", null, new { id = "SearchVerEnviados" })
-				<input type="button" class="btn-success" onclick="verCorrespondenciaEnviada();" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
+				Buscar por Id de envio, nombre o num. de oficio: @Html.TextBox("SearchVerEnviados", null, new { id = "SearchVerEnviados" })
+				<input type="button" class="btn-success" onclick="verCorrespondenciaEnviada('inputEnviados');" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
 			</p>	
-			<a style="font-size:16px;cursor: pointer;" onclick="verCorrespondenciaEnviada();">Ver todos los resultados</a>
+			<a style="font-size:16px;cursor: pointer;" onclick="verCorrespondenciaEnviada('linkTodos');">Ver todos los resultados</a>
 		</div>
 		<div class="item"><h5 style="font-weight:600;">¿Quien entrega?:</h5></div>
 		<div class="item">
-			<select class="form-control form-select-lg mb-3" id="selectQuienEnvia" onchange="verCorrespondenciaEnviada();">
-				<option value="">Seleccione un usuario...</option>
+			<select class="form-control form-select-lg mb-3" id="selectQuienEnvia" onchange="verCorrespondenciaEnviada('selectQuienEnvia');">
+				<option value="@ViewBag.QuienEnvia">@ViewBag.QuienEnvia</option>
 				@foreach (var usuario in ViewBag.usuariosEnArea as List<string>)
 				{
 					<option value="@usuario">@usuario</option>
@@ -25,8 +25,8 @@
 		</div>
 		<div class="item"><h5 style="font-weight:600;">¿Quien recibe?:</h5></div>
 		<div class="item">
-			<select class="form-control form-select-lg mb-3" id="selectQuienRecibe" onchange="verCorrespondenciaEnviada();">
-				<option value="">Seleccione un usuario...</option>
+			<select class="form-control form-select-lg mb-3" id="selectQuienRecibe" onchange="verCorrespondenciaEnviada('selectQuienRecibe');">
+				<option value="@ViewBag.QuienRecibe">@ViewBag.QuienRecibe</option>
 	
 			
 					@foreach (var usuario in ViewBag.usuariosEnArea as List<string>)
@@ -53,14 +53,11 @@
 			<thead>
 				<tr>
 					<th>Id</th>
-					<th>Area</th>
 					<th>Nombre</th>
 					<th>No° Oficio</th>
 					<th>Figura Judicial</th>
-					<th>Genero</th>
 					<th>Asunto</th>
 					<th>Autoridad</th>
-					<th>Observaciones</th>
 					<th>FechaRegistro</th>
 					<th>Quien entrega oficio</th>
 					<th>Oficio entregado</th>
@@ -68,6 +65,7 @@
 					<th style="width: 250px;">Quien recibe acuse</th>
 					<th>Acuse Recibido</th>
 					<th>Fecha de recibido</th>
+					<th>Acciones</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -82,7 +80,6 @@
 						
 						<td>@item.IdenvioCorrespondencia</td>
 						
-						<td>@item.Area</td>
 
 						@* DATA FIELD ES PARA SABER QUE CAMPO SE MODIFICA *@
 
@@ -127,7 +124,6 @@
 							@item.FiguraJudicial
 						</td>
 
-						<td >@item.Genero</td>
 
 						<td contenteditable="@(editable ? "true" : "false")" data-field="Asunto" class=" @(editable ? "editable-cell" : "")">
 							@item.Asunto
@@ -137,9 +133,6 @@
 							@item.Autoridad
 						</td>
 
-						<td contenteditable="@(editable ? "true" : "false")" data-field="Observaciones" class="@(editable ? "editable-cell" : "")">
-							@item.Observaciones
-						</td>
 
 						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy HH:mm")</td>
 						<td>@item.QuienEntrega</td>
@@ -181,6 +174,23 @@
 				}
 			</tbody>
 		</table>
+	</div>
+	<div class="pagination-controls mt-2">
+		@if (ViewBag.PageNumber > 1)
+		{
+			<button class="btn btn-secondary" onclick="loadPageVerEnviados(@(ViewBag.PageNumber - 1))">
+				Anterior
+			</button>
+		}
+
+		<span>Página @ViewBag.PageNumber de @ViewBag.TotalPages</span>
+
+		@if (ViewBag.PageNumber < ViewBag.TotalPages)
+		{
+			<button class="btn btn-secondary" onclick="loadPageVerEnviados(@(ViewBag.PageNumber + 1))">
+				Siguiente
+			</button>
+		}
 	</div>
 
 }

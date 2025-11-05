@@ -10,16 +10,17 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 <div class="top-content">
 	<div class="row-items">
 		<div class="item">
-			<p>
-				Buscar por nombre o num. de oficio: @Html.TextBox("SearchString", null, new { id = "SearchString" })
-				<input type="button" class="btn-success" onclick="FiltrarCorrespondencia();" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
+			<p style="font-size:14px; font-weight:600;">
+				Buscar por Id de envio, nombre o num. de oficio:
+				@Html.TextBox("SearchString", null, new { id = "SearchString" })
+				<input type="button" class="btn-success" onclick="FiltrarCorrespondencia(false,'buscador');" value="Buscar" />
 			</p>
-			<a style="font-size:16px;cursor: pointer;" onclick="FiltrarCorrespondencia(true);">Ver todos los resultados</a>
+			<a style="font-size:16px;cursor: pointer;" onclick="FiltrarCorrespondencia(true,'link');">Ver todos los resultados</a>
 		</div>
 		<div class="item"><h5 style="font-weight:600;">Filtros:</h5></div>
 		<div class="item">
-			<select class="form-control form-select-lg mb-3" id="selectSearch" onchange="FiltrarCorrespondencia();">
-				<option value="">Actual: @ViewBag.CurrentSelectSearch</option>
+			<select class="form-control form-select-lg mb-3" id="selectSearch" onchange="FiltrarCorrespondencia(false,'select');">
+				<option value="@ViewBag.CurrentSelectSearch">Actual: @ViewBag.CurrentSelectSearch</option>
 				<optgroup label="-------- Area --------">
 					<option value="UESPA" @(ViewBag.CurrentSelectSearch == "UESPA" ? "selected" : "")>UESPA</option>
 					<option value="DIRECCION" @(ViewBag.CurrentSelectSearch == "DIRECCION" ? "selected" : "")>DIRECCION</option>
@@ -102,8 +103,9 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 						<td>
 							@if (string.IsNullOrEmpty(item.QuienRecibe))
 							{
-								<select class="form-control"
+								<select class="form-control quien-recibe-select"
 										name="QuienRecibe_@item.IdenvioCorrespondencia"
+										data-area="@item.Area"
 										onchange="quienRecibeChanged(@item.IdenvioCorrespondencia,'select-usuario',this)">
 									<option value=""></option>
 									@foreach (var kvp in ViewBag.UserAreas as Dictionary<string, string>)
@@ -126,7 +128,8 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 								   data-id="@item.IdenvioCorrespondencia"
 								   data-tipo="recibido"
 								   type="checkbox"
-								   @(item.Recibido == 1 ? "checked disabled" : "") />
+								   @(item.Recibido == 1 ? "checked" : "")
+								   @(item.Entregado == 1 ? "" : "disabled") />
 						</td>
 						<td class ="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>
 					</tr>
@@ -134,7 +137,23 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 			</tbody>
 		</table>
 	</div>
+	<div class="pagination-controls mt-2">
+		@if (ViewBag.PageNumber > 1)
+		{
+			<button class="btn btn-secondary" onclick="loadPage(@(ViewBag.PageNumber - 1))">
+				Anterior
+			</button>
+		}
 
+		<span>Página @ViewBag.PageNumber de @ViewBag.TotalPages</span>
+
+		@if (ViewBag.PageNumber < ViewBag.TotalPages)
+		{
+			<button class="btn btn-secondary" onclick="loadPage(@(ViewBag.PageNumber + 1))">
+				Siguiente
+			</button>
+		}
+	</div>
 }
 else
 {
