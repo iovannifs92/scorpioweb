@@ -1152,6 +1152,7 @@ namespace scorpioweb.Controllers
             epatencionf.Inicio = mg.validateDatetime(datosAtencionF[3]);
             epatencionf.Termino = mg.validateDatetime(datosAtencionF[4]);
             epatencionf.Observaciones = mg.removeSpaces(mg.normaliza(datosAtencionF[5]));
+            epatencionf.Atendida = mg.removeSpaces(mg.normaliza(datosAtencionF[6]));
 
 
             _context.Add(epatencionf);
@@ -1227,7 +1228,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpAtencionF(int id, [Bind("IdepAtencionF, Turno ,QuienAtiende, Inicio, Termino, Observaciones, GrupoAutoayuda, Observaciones, EjecucionIdEjecucion")] Epatencionf epatencionf, string Nombre, string Ce)
+        public async Task<IActionResult> EditEpAtencionF(int id, [Bind("IdepAtencionF, Turno ,QuienAtiende, Inicio, Termino, Observaciones, GrupoAutoayuda, Observaciones, EjecucionIdEjecucion, Atendida")] Epatencionf epatencionf, string Nombre, string Ce)
         {
     
             if (id != epatencionf.IdepAtencionF)
@@ -1239,6 +1240,7 @@ namespace scorpioweb.Controllers
             {
                 try
                 {
+                    epatencionf.Atendida = mg.removeSpaces(mg.normaliza(epatencionf.Atendida));
                     epatencionf.Turno = mg.removeSpaces(mg.normaliza(epatencionf.Turno));
                     epatencionf.QuienAtiende = mg.removeSpaces(mg.normaliza(epatencionf.QuienAtiende));
                     epatencionf.Inicio = epatencionf.Inicio;
@@ -1634,6 +1636,7 @@ namespace scorpioweb.Controllers
             epinstancia.Penaanos = Int32.Parse(datosInstancia[5]);
             epinstancia.Penameses = Int32.Parse(datosInstancia[6]);
             epinstancia.Penadias = Int32.Parse(datosInstancia[7]);
+            epinstancia.Autoridad = mg.removeSpaces(mg.normaliza(datosInstancia[8]));
 
 
             _context.Add(epinstancia);
@@ -1661,7 +1664,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEpInstancia(int id, [Bind("Idepinstancia, Fecha, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias, EpcausapenalIdepcausapenal")] Epinstancia epinstancia)
+        public async Task<IActionResult> EditEpInstancia(int id, [Bind("Idepinstancia, Fecha, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias, EpcausapenalIdepcausapenal, Autoridad")] Epinstancia epinstancia)
         {
 
             if (id != epinstancia.Idepinstancia)
@@ -1682,6 +1685,7 @@ namespace scorpioweb.Controllers
                     epinstancia.Penadias = epinstancia.Penadias;
                     epinstancia.Idepinstancia = id;
                     epinstancia.EpcausapenalIdepcausapenal = epinstancia.EpcausapenalIdepcausapenal;
+                    epinstancia.Autoridad = mg.removeSpaces(mg.normaliza(epinstancia.Autoridad));
 
                     _context.Update(epinstancia);
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -2850,6 +2854,26 @@ namespace scorpioweb.Controllers
                              where e.IdEjecucion == idejecucion
                              select e).FirstOrDefault();
                 query.FechaPbeneficio = fechabeneficio;
+                _context.SaveChanges();
+            }
+            #endregion
+
+            return Json(new { success = true, responseText = "Registro Exitoso", idPersonas = Convert.ToString(idejecucion) });
+        }
+        #endregion -Update Update Persona supervision-     
+        #region -Update Posible beneficio-
+        public async Task<JsonResult> UpdatePosibleBeneficio(Ejecucion ejecucion,int idejecucion, string PosibleBeneficio)
+        {
+            #region -actualizacion de estado de fecah posible beneficio-
+            var emptype = (from e in _context.Ejecucion
+                           where e.IdEjecucion == idejecucion
+                           select e);
+            if (emptype.Any())
+            {
+                var query = (from e in _context.Ejecucion
+                             where e.IdEjecucion == idejecucion
+                             select e).FirstOrDefault();
+                query.PosibleBeneficio = PosibleBeneficio;
                 _context.SaveChanges();
             }
             #endregion

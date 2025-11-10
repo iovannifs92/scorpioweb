@@ -175,7 +175,7 @@
                     <label class="control-label">Coloque el Id</label>
                     <input required id="Id" type="text" class="form-control"/>
                     <br />
-                    <a href="/Archivo/CreateEnvioArchivo">O Registre Manulmente</a>
+                    <a href="/Archivo/CreateEnvioArchivo">O Registre Manualmente</a>
                 </div>
             `,
             showCancelButton: true,
@@ -398,96 +398,113 @@
     }
 
     function llenarElementosFormulario(lista){
-        let inputNombre ="";
-        let inputApaterno ="";
-        let inputAmaterno ="";
-        let selectGenero ="";
-        let inputCausaPenal ="";
-        let inputDelito ="";
-        let inputEstadoSupervision ="";
-        area = '@ViewBag.AreaAsignada';
-        let areaFinal = (area === "Servicios previos") ? "Servicios Previos" : (area === "MCySCP") ? "MCYSCP" : (area === "LC") ? "Libertad Condicionada": (area === "Ejecución de Penas") ? "Ejecucion": area;
-        switch(areaFinal) {
-            case "Ejecucion":
-                const item1 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
-                inputNombre = item1.p?.nombre || "NA";
-                inputApaterno = item1.p?.paterno || "NA";
-                inputAmaterno = item1.p?.materno || "NA";
-                selectGenero = "";
-                inputCausaPenal = item1.p?.ce || "NA";
-                inputDelito = "";
-                inputEstadoSupervision = item1.p?.estadoActual|| "NA";
-                break;
+    let inputNombre ="";
+    let inputApaterno ="";
+    let inputAmaterno ="";
+    let selectGenero ="";
+    let inputCausaPenal ="";
+    let inputDelito ="";
+    let inputEstadoSupervision ="";
+    area = '@ViewBag.AreaAsignada';
+    let areaFinal = (area === "Servicios previos") ? "Servicios Previos" : (area === "MCySCP") ? "MCYSCP" : (area === "LC") ? "Libertad Condicionada": (area === "Ejecución de Penas") ? "Ejecucion": area;
+    switch(areaFinal) {
+        case "Ejecucion":
+            const item1 = lista[0];
+            inputNombre = item1.p?.nombre || "NA";
+            inputApaterno = item1.p?.paterno || "NA";
+            inputAmaterno = item1.p?.materno || "NA";
+            selectGenero = "";
+            inputCausaPenal = item1.p?.ce || "NA";
+            inputDelito = "";
+            inputEstadoSupervision = item1.p?.estadoActual|| "NA";
+            break;
 
-            case "MCYSCP":
-            case "Libertad Condicionada":
-                const item2 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
-                inputNombre = item2.persona.nombre || "NA";
-                inputApaterno = item2.persona.paterno || "NA";
-                inputAmaterno = item2.persona.materno || "NA";
-                selectGenero = item2.persona.genero || "";
-                inputCausaPenal = item2.causaPenal.causaPenal|| "NA";
-                inputDelito = item2.delito.tipo|| "NA";
-                inputEstadoSupervision = item2.supervision.estadoSupervision|| "NA";
-                break;
-            case "Servicios Previos":
-                const item3 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
-                inputNombre = item3.p?.nombre || "NA";
-                inputApaterno = item3.p?.paterno || "NA";
-                inputAmaterno = item3.p?.materno || "NA";
-                selectGenero = "";
-                inputCausaPenal = "NA";
-                inputDelito = item3.p?.delito || "NA";;
-                inputEstadoSupervision = item3.p?.situacion|| "NA";
-                break;
-            case "Oficialia":
-                const item4 = lista[0];//PRIMER OBJETO DE LA LISTA, NECESARIO AQUI POR QUE LLEGA UNA LISTA
-                inputNombre.value = item4.p?.nombre || "NA";
-                inputApaterno.value = item4.p?.paterno || "NA";
-                inputAmaterno.value = item4.p?.materno || "NA";
-                selectGenero.value = "";
-                inputFiguraJudicial.value = "NA";
-                inputAutoridad.value = item4.p?.juzgado || "NA";
-                break;
-            default:
+        case "MCYSCP":
+        case "Libertad Condicionada":
+            const item2 = lista[0];
+                inputNombre = item2.persona?.nombre || "NA";
+                inputApaterno = item2.persona?.paterno || "NA";
+                inputAmaterno = item2.persona?.materno || "NA";
+                selectGenero = item2.persona?.genero || "";
+                inputCausaPenal = (item2.causaPenal && item2.causaPenal.causaPenal) ? item2.causaPenal.causaPenal : "NA";
+                inputDelito = (item2.delito && item2.delito.tipo) ? item2.delito.tipo : "NA";
+                inputEstadoSupervision = item2.supervision?.estadoSupervision|| "NA";
+            break;
+        case "Servicios Previos":
+            const item3 = lista[0];
+            inputNombre = item3.p?.nombre || "NA";
+            inputApaterno = item3.p?.paterno || "NA";
+            inputAmaterno = item3.p?.materno || "NA";
+            selectGenero = "";
+            inputCausaPenal = "NA";
+            inputDelito = item3.p?.delito || "NA";
+            inputEstadoSupervision = item3.p?.situacion|| "NA";
+            break;
+        case "Oficialia":
+            const item4 = lista[0];
+            inputNombre = item4.p?.nombre || "NA";
+            inputApaterno = item4.p?.paterno || "NA";
+            inputAmaterno = item4.p?.materno || "NA";
+            selectGenero = "";
+            inputFiguraJudicial = "NA";
+            inputAutoridad = item4.p?.juzgado || "NA";
+            break;
+        default:
+    }
 
-        }
+        // Detectar campos faltantes (se consideran faltantes si son vacíos, null o "NA")
+        const missing = [];
+        if (!inputNombre || inputNombre === "NA") missing.push("Nombre");
+        if (!inputApaterno || inputApaterno === "NA") missing.push("Apellido paterno");
+        if (!inputAmaterno || inputAmaterno === "NA") missing.push("Apellido materno");
+        if (!inputCausaPenal || inputCausaPenal === "NA") missing.push("Causa penal / Carpeta de ejecución");
+        if (!inputDelito || inputDelito === "NA" || inputDelito.trim() === "") missing.push("Delito");
+        if (!inputEstadoSupervision || inputEstadoSupervision === "NA") missing.push("Situación jurídico / Estado de supervisión");
 
-        Swal.fire({
-            title: 'Registrar Envío de Archivo',
-            width: '60%', // hazlo más ancho para que quepa bien el form
-            html: `
-                <form id="formEnvioArchivo" asp-action="createEnvioArchivo">
-                    <div class="form-group">
-                        <label>Apellido Paterno</label>
-                        <input name="Apaterno" value="${inputApaterno}" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Apellido Materno</label>
-                        <input name="Amaterno" value="${inputAmaterno}" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre</label>
-                        <input name="Nombre" value="${inputNombre}" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Causa penal/Carpeta de Ejecución</label>
-                        <input name="Causapenal" value="${inputCausaPenal}" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label>Delito</label>
-                        <input name="Delito" id="Delito" value="${inputDelito}" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="TipoDocumento">Tipo de Documento</label>
-                        <select id="TipoDocumento" name="TipoDocumento" class="form-control">
-                            <option value="Expediente">Expediente</option>
-                            <option value="Oficio">Oficio</option>
-                        </select>
-                    </div>
+        // Construir aviso dinámico si hay campos faltantes
+        let avisoCampos = "";
+        if (missing.length > 0) {
+            const listaHtml = missing.map(f => `<li>${f}</li>`).join("");
+            avisoCampos = `
+                <div class="alert alert-warning" role="alert" style="text-align:left;">
+                    <strong>Atención:</strong> No se encontraron los siguientes datos:
+                    <ul style="margin-bottom:0;">
+                        ${listaHtml}
+                    </ul>
+                    Se recomienda completar estos campos antes de enviar.
+            </div>
+        `;
+    }
+
+    Swal.fire({
+        title: 'Registrar Envío de Archivo',
+        width: '60%',
+        html: `
+                ${avisoCampos}
+            <form id="formEnvioArchivo" asp-action="createEnvioArchivo">
+                <div class="form-group">
+                    <label>Apellido Paterno</label>
+                    <input name="Apaterno" value="${inputApaterno}" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Apellido Materno</label>
+                    <input name="Amaterno" value="${inputAmaterno}" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input name="Nombre" value="${inputNombre}" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Causa penal/Carpeta de Ejecución</label>
+                        <input name="Causapenal" id="Causapenal" value="${inputCausaPenal}" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Delito</label>
+                    <input name="Delito" id="Delito" value="${inputDelito}" class="form-control" />
+                </div>
                     <div class="form-group">
                         <label>Situación Jurídico</label>
-                        <input name="SituacionJuridico" value="${inputEstadoSupervision}"  id="SituacionJuridico" class="form-control" />
+                        <input name="SituacionJuridico" id="SituacionJuridico" value="${inputEstadoSupervision}" class="form-control" />
                     </div>
                     <input type="hidden" name="Recibido" value="0"/>
                     <input type="hidden" name="Revisado" value="0"/>
@@ -496,40 +513,70 @@
                     <input type="hidden" name="Area" value="@ViewBag.AreaAsignada"/>
                     <input type="hidden" name="Usuario" value="@User.Identity.Name"/>
                     <input type="hidden" name="FechaRegistro" value="@DateTime.Now"/>
-                </form>
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'Enviar',
-            confirmButtonColor: '#02bd05',
-            cancelButtonText: 'Cancelar',
-            cancelButtonColor: "#d33",
-            preConfirm: () => {
-                let form = document.getElementById("formEnvioArchivo");
-                let formData = new FormData(form);
-                return fetch("/Archivo/NuevoCreateEnvioArchivo", {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(`Error: ${error}`);
-                });
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire('Éxito', 'Formulario enviado correctamente', 'success');
-                location.reload();
-            }
-        });
+            </form>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Enviar',
+        confirmButtonColor: '#02bd05',
+        cancelButtonText: 'Cancelar',
+        cancelButtonColor: "#d33",
+        preConfirm: () => {
+                // Revalidar al enviar (por si el usuario modificó campos en el modal)
+                const causa = document.getElementById("Causapenal")?.value || "";
+                const delito = document.getElementById("Delito")?.value || "";
+                const faltantes = [];
+                if (!causa || causa.trim() === "" || causa === "NA") faltantes.push("Causa penal / Carpeta de ejecución");
+                if (!delito || delito.trim() === "" || delito === "NA") faltantes.push("Delito");
 
+                if (faltantes.length > 0) {
+                    // Si quieres impedir envío descomenta next line y devuelve false
+                    // Swal.showValidationMessage(`Faltan campos: ${faltantes.join(", ")}`);
+                    // return false;
 
-        
-    }
+                    // Mostrar confirmación extra si faltan campos
+                    return Swal.fire({
+                        title: 'Faltan datos importantes',
+                        html: `Los siguientes campos están vacíos:<br><strong>${faltantes.join(", ")}</strong><br>¿Deseas continuar de todos modos?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Continuar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            // continuar con el envío
+                            const form = document.getElementById("formEnvioArchivo");
+                            const formData = new FormData(form);
+                            return fetch("/Archivo/NuevoCreateEnvioArchivo", { method: 'POST', body: formData })
+                                .then(response => {
+                                    if (!response.ok) throw new Error(response.statusText);
+                                    return response.json();
+                                })
+                                .catch(error => { Swal.showValidationMessage(`Error: ${error}`); });
+                        } else {
+                            // cancelar el envío (preConfirm fallará)
+                            Swal.showValidationMessage('Envio cancelado. Completa los campos y vuelve a intentar.');
+                            return false;
+                        }
+                    });
+                }
+
+                // Si no faltan campos, enviar directamente
+                const form = document.getElementById("formEnvioArchivo");
+                const formData = new FormData(form);
+                return fetch("/Archivo/NuevoCreateEnvioArchivo", { method: 'POST', body: formData })
+                    .then(response => {
+                        if (!response.ok) throw new Error(response.statusText);
+                        return response.json();
+                    })
+                    .catch(error => { Swal.showValidationMessage(`Error: ${error}`); });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire('Éxito', 'Formulario enviado correctamente', 'success');
+            location.reload();
+        }
+    });
+}
     
 </script>
 

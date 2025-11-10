@@ -231,27 +231,85 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav" id="navbar-items">
+                    @{
+                        string menuPrincipal = "";
+
+                        if (User.IsInRole("Ejecucion") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("AuxiliarEjecucion"))
+                        {
+                            menuPrincipal = "Ejecucion";
+                        }
+                        else if (User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AuxiliarMCSCP"))
+                        {
+                            menuPrincipal = "MCySCP";
+                        }
+                        else if (User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC"))
+                        {
+                            menuPrincipal = "CL";
+                        }
+                        else if (User.IsInRole("Servicios previos") || User.IsInRole("Operativo"))
+                        {
+                            menuPrincipal = "SPJ";
+                        }
+                        else if (User.IsInRole("Vinculacion") || User.IsInRole("Psicologia") || User.IsInRole("AdminVinculacion"))
+                        {
+                            menuPrincipal = "Reinsercion";
+                        }
+                        else if (User.IsInRole("Masteradmin"))
+                        {
+                            menuPrincipal = "Admin";
+                        }
+                    }
+
+                    @* --- MOSTRAR PRIMERO EL MENU PRINCIPAL SEGÚN ROL --- *@
+                    @if (menuPrincipal == "Ejecucion")
+                    {
+                        <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecución</a></li>
+                    }
+                    else if (menuPrincipal == "MCySCP")
+                    {
+                        <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
+                    }
+                    else if (menuPrincipal == "CL")
+                    {
+                        <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
+                    }
+                    else if (menuPrincipal == "SPJ")
+                    {
+                        <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
+                    }
+                    else if (menuPrincipal == "Reinsercion")
+                    {
+                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuReinsercion">Vinculación</a></li>
+                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicología</a></li>
+                    }
+                    else if (menuPrincipal == "Admin")
+                    {
+                        <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administración</a></li>
+                    }
+
+                    @* --- RESTO DEL MENÚ ORIGINAL --- *@
 
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminCL") || User.IsInRole("SupervisorLC") || User.IsInRole("Coordinador Ejecucion"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="Create">Entrevista</a></li>
                     }
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorLC"))
+                     
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Menucl">Condiciones en Libertad</a></li>
                     }
-                    @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE CONDICIONES EN LIBERTAD*@
+
                     @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Oficialia")
-                    || User.IsInRole("Servicios Legales") || User.IsInRole("Coordinador Ejecucion"))
+                                        || User.IsInRole("Servicios Legales") || User.IsInRole("Coordinador Ejecucion"))
                     {
                         <li><a asp-area="" asp-controller="Personacls" asp-action="Index">Condiciones en Libertad</a></li>
                     }
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("AuxiliarMCSCP"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("AuxiliarMCSCP"))
                     {
                         <li><a asp-area="" asp-controller="Personas" asp-action="MenuMCSCP">MC y SCP</a></li>
                     }
-                    @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE MC Y SCP*@
+
                     @if (User.IsInRole("Asistente") || User.IsInRole("AdminLC") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("Coordinador Ejecucion") ||
                                         User.IsInRole("Oficialia") || User.IsInRole("Servicios Legales"))
                     {
@@ -262,7 +320,7 @@
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
                     }
-                    @* USUARIOS INVITADOS SOLO ACCEDEN A INDEX DE SERVICIOS PREVIOS AL JUICIO*@
+
                     @if (User.IsInRole("Asistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Coordinador Ejecucion"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Index">Servicios Previos</a></li>
@@ -272,17 +330,19 @@
                     {
                         <li><a asp-area="" asp-controller="Prisionespreventivas" asp-action="Index">Prisiones Preventivas</a></li>
                     }
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") ||
-                    User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") || 
-                    User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos") || 
+                                        User.IsInRole("Oficialia") || User.IsInRole("Coordinador") || User.IsInRole("Archivo") || User.IsInRole("ArchivoAsistente") ||
+                                        User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos") ||
                                         User.IsInRole("Operativo") || User.IsInRole("SupervisorLC") || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="Archivo" asp-action="ArchivoMenu">Archivo</a></li>
                     }
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("AdminMCSCP") || User.IsInRole("Oficialia") || User.IsInRole("Coordinador")
                                         || User.IsInRole("OficialiaAsistente") || User.IsInRole("Servicios Legales") || User.IsInRole("Servicios previos"))
                     {
-                        if (User.IsInRole("OficialiaAsistente") || User.IsInRole("Servicios Legales") || User.IsInRole("Servicios previos"))
+                        if (User.IsInRole("OficialiaAsistente") || User.IsInRole("Servicios Legales") || User.IsInRole("Servicios previos") || User.IsInRole("Masteradmin"))
                         {
                             <li><a asp-area="" asp-controller="Oficialia" asp-action="EditRegistros">Oficialia</a></li>
                         }
@@ -290,44 +350,43 @@
                         {
                             <li><a asp-area="" asp-controller="Oficialia" asp-action="Index">Oficialia</a></li>
                         }
-
                     }
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("Coordinador Ejecucion") || User.IsInRole("Ejecucion") || User.IsInRole("AuxiliarEjecucion")
                                         || User.IsInRole("Operativo") || User.IsInRole("Director") || User.IsInRole("Oficialia") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC") || User.IsInRole("Servicios Legales"))
                     {
                         if (User.IsInRole("Oficialia") || User.IsInRole("OficialiaAsistente") || User.IsInRole("AdminMCSCP") || User.IsInRole("AdminLC") || User.IsInRole("Servicios Legales"))
                         {
-                            <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecucion</a></li>
+                            <li><a asp-area="" asp-controller="Ejecucion" asp-action="Index">Ejecución</a></li>
                         }
-                        else
-                        {
-                            <li><a asp-area="" asp-controller="Ejecucion" asp-action="MenuEjecucion">Ejecucion</a></li>
-                        }
-
                     }
+
                     @if (User.IsInRole("Masteradmin"))
                     {
-                        <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administracion</a></li>
+                        <li><a asp-area="" asp-controller="Administration" asp-action="MenuAdmin">Administración</a></li>
                     }
 
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("AdminVinculacion") || User.IsInRole("Vinculacion"))
                     {
                         <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuReinsercion">Vinculación</a></li>
                     }
+
                     @if (User.IsInRole("Masteradmin") || User.IsInRole("Vinculacion") || User.IsInRole("Psicologia"))
                     {
-                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicologia</a></li>
+                        <li><a asp-area="" asp-controller="Reinsercion" asp-action="MenuPsicologia">Psicología</a></li>
                     }
+
                     @if (User.IsInRole("EnviarCorrespondencia") || User.IsInRole("RecibirCorrespondencia") || User.IsInRole("VerCorrespondencia"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="Correspondencia">Correspondencia</a></li>
                     }
+
                     <li class="nav-item dropdown more-dropdown" id="dropdownLI" style="display:none;">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Más <span class="caret"></span></a>
-                        <ul class="dropdown-menu" id="dropdown-menu">
-                        </ul>
+                        <ul class="dropdown-menu" id="dropdown-menu"></ul>
                     </li>
                 </ul>
+
 
                 @await Html.PartialAsync("_LoginPartial")
 
@@ -335,6 +394,41 @@
         </div>
     </nav>
 
+@*     <button id="abrirVentana"
+            style="position:fixed; top:60px; right:20px; background:#3085d6; color:white;
+               border:none; padding:10px 20px; border-radius:8px; font-size:15px;
+               cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); transition:0.3s;
+               z-index:10000;">
+        Abrir Ventana
+    </button> *@
+
+    <!-- Ventana flotante estilo SweetAlert -->
+    <div id="ventanaFlotante"
+         style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+            background:white; padding:25px; border-radius:15px; width:320px;
+            box-shadow:0 0 25px rgba(0,0,0,0.4); cursor:move; text-align:center;
+            z-index:9999;">
+        <h2 style="margin-top:0; color:#3085d6;">Seleccione area a notificar</h2>
+
+        <div id="checkboxContainer" style="text-align:left; margin-top:15px;">
+            <label><input type="checkbox" class="chkArea" value="MCySCP"> MCySCP</label><br>
+            <label><input type="checkbox" class="chkArea" value="Archivo"> Archivo</label><br>
+            <label><input type="checkbox" class="chkArea" value="Ejecucion"> Ejecución de Penas</label><br>
+            <label><input type="checkbox" class="chkArea" value="ServiciosPrevios"> Servicios Previos</label><br>
+            <label><input type="checkbox" class="chkArea" value="PrisionPreventiva"> Prisión Preventiva</label><br>
+            <label><input type="checkbox" class="chkArea" value="Vinculacion"> Vinculación</label><br>
+            <label><input type="checkbox" class="chkArea" value="Oficialia"> Oficialía</label><br>
+            <label><input type="checkbox" class="chkArea" value="LibertadCondicionada"> Libertad Condicionada</label><br>
+            <label><input type="checkbox" class="chkArea" value="Adolecentes"> Adolescentes</label><br>
+        </div>
+
+        <br>
+        <button id="cerrarVentana"
+                style="background:#3085d6; color:white; border:none; padding:10px 20px;
+                   border-radius:8px; cursor:pointer; transition:0.3s;">
+            Cerrar
+        </button>
+    </div>
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -354,8 +448,8 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Nombre</th>
-                                        <th>Dato Extra</th>
                                         <th>Area a la que pertenece</th>
+                                        <th>Dato Extra</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -414,7 +508,7 @@
                 @*<p>&copy; 2019 - SCORPIO</p>*@
             </div>
 
-            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia") || User.IsInRole("Operativo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Coordinador"))
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Oficialia") || User.IsInRole("Operativo") || User.IsInRole("AdminMCSCP") || User.IsInRole("SupervisorMCSCP") || User.IsInRole("Director") || User.IsInRole("Ejecucion") || User.IsInRole("Coordinador"))
             {
                 <div class="col-1 col-md-1" style="float:right">
                     <label for="victima" title="Buscar Nombre en victimas">Otro</label>
@@ -535,7 +629,7 @@
                 if (row != '') {
                     $('#tblBusquedaConcat').append(row);
                 }
-                $("#myModal2").modal();
+                $("#myModal").modal();
             },
             error: function (response) {
                 //alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
@@ -655,4 +749,66 @@
             return false;
         }
     }
+
+
+
+
+      const abrirBtn = document.getElementById('abrirVentana');
+    const cerrarBtn = document.getElementById('cerrarVentana');
+    const ventana = document.getElementById('ventanaFlotante');
+
+    // Mostrar y ocultar ventana
+    abrirBtn.addEventListener('click', () => ventana.style.display = 'block');
+    cerrarBtn.addEventListener('click', () => ventana.style.display = 'none');
+
+    // --- Hacer la ventana movible ---
+    let offsetX = 0, offsetY = 0, isDragging = false;
+
+    ventana.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+        isDragging = true;
+        offsetX = e.clientX - ventana.offsetLeft;
+        offsetY = e.clientY - ventana.offsetTop;
+        ventana.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        ventana.style.left = e.clientX - offsetX + 'px';
+        ventana.style.top = e.clientY - offsetY + 'px';
+        ventana.style.transform = 'none';
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        ventana.style.cursor = 'move';
+    });
+
+    // Efectos de hover
+    abrirBtn.addEventListener('mouseenter', () => abrirBtn.style.background = '#2563eb');
+    abrirBtn.addEventListener('mouseleave', () => abrirBtn.style.background = '#3085d6');
+    cerrarBtn.addEventListener('mouseenter', () => cerrarBtn.style.background = '#2563eb');
+    cerrarBtn.addEventListener('mouseleave', () => cerrarBtn.style.background = '#3085d6');
+
+
+    // --- Evento change en cada checkbox ---
+    document.querySelectorAll('.chkArea').forEach(chk => {
+        chk.addEventListener('change', function () {
+            const area = this.value;
+            const estado = this.checked; // true o false
+
+            $.ajax({
+                url: '/Api/NotificacionAcuse',
+                type: 'POST',
+                data: { area: area, estado: estado },
+                success: function () {
+                    console.log(`Notificación enviada para ${area}`);
+                },
+                error: function (xhr) {
+                    console.error("Error al notificar:", xhr);
+                }
+            });
+        });
+    });
+
 </script>

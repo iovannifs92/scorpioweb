@@ -14,11 +14,11 @@
             <input id="Ce" name="Ce" type="hidden" value="@ViewBag.Ce" />
             @* <input type="hidden" asp-for="Ce" value="@ViewBag.Ce" />*@
           
-            @* <div class="form-group">
-            <label asp-for="Turno" class="control-label"></label>
-            <input asp-for="Turno" class="form-control" />
-            <span asp-validation-for="Turno" class="text-danger"></span>
-        </div>*@
+            <div class="form-group">
+                <label class="control-label">Persona Atendida</label>
+                <input asp-for="Atendida" class="form-control" />
+                <span asp-validation-for="Atendida" class="text-danger"></span>
+            </div>
             @*  <div class="form-group">
             <label asp-for="QuienAtiende" class="control-label"></label>
             <input asp-for="QuienAtiende" class="form-control" />

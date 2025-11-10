@@ -216,6 +216,8 @@
         var Penaanos = document.getElementById("Penaanos" + i).value;
         var Penameses = document.getElementById("Penameses" + i).value;
         var Penadias = document.getElementById("Penadias" + i).value;
+        var Autoridad = document.getElementById("Autoridad" + i).value;
+
 
         $.ajax({
             type: "POST",
@@ -223,7 +225,7 @@
             url: "/Ejecucion/CrearEpCpInstancia",
             traditional: true,
             data: {
-                datosInstancia: [idCausapenal, Fecha, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias],
+                datosInstancia: [idCausapenal, Fecha, Multa, Reparacion, Firmeza, Penaanos, Penameses, Penadias, Autoridad],
             },
             success: function(response) {
                 if (response.success) {
@@ -311,16 +313,63 @@
             }
         });
     };
+
+
+        function cambioBeneficio(idEjecucion, valor) {
+            mostrarFechaBeneficio(valor);
+            UpdatePosibleBeneficio(idEjecucion, valor);
+        }
+
+  
+        function mostrarFechaBeneficio(valor) {
+            if (valor === "SI") {
+                $("#divFPbeneficio").show();
+            } else {
+                $("#divFPbeneficio").hide();
+            }
+        }
+
+        function UpdatePosibleBeneficio(idEjecucion, valor) {
+            $.ajax({
+                type: "POST",
+                url: "/Ejecucion/UpdatePosibleBeneficio",
+                data: { idejecucion: idEjecucion, posibleBeneficio: valor },
+                success: function (response) {
+                    console.log("Posible beneficio actualizado:", response);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error al actualizar beneficio:", error);
+                }
+            });
+        }
+
+      
+        $(document).ready(function () {
+            var valorActual = $("#PosibleBeneficio").val();
+            mostrarFechaBeneficio(valorActual);
+        });
+
+
 </script>
 
 
 @foreach (var item in ViewData["tieneEPCP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
 {
     <a onclick="showModal('@Url.Action("CreateEpCausapenal2", "Ejecucion", new {id=@item.epcausapenalVM.EjecucionIdEjecucion}, Context.Request.Scheme)','Causa penal',@item.epcausapenalVM.EjecucionIdEjecucion )" class="btn btn-success fa fa-plus"> Agregar Causa Penal</a>
-
     <div class="col-md-12" id="divFcompurrga" name="divFcompurrga">
         <label class="control-label">Fecha Compurga  </label>
         <input class="form-control" type="date" id="FechaCompurga" name="FechaCompurga" value="@item.ejecucionVM.FechaCompurga?.ToString("yyyy-MM-dd")" onchange="UpdateFechaCompurga(@item.ejecucionVM.IdEjecucion, this.value)" />
+    </div>
+    <div class="col-md-12" id="divTieneBeneficio">
+        <label class="control-label">¿La persona tiene beneficio?</label>
+        <select class="form-control"
+                id="PosibleBeneficio"
+                name="PosibleBeneficio"
+                onchange="cambioBeneficio(@item.ejecucionVM.IdEjecucion, this.value)" value="@item.ejecucionVM.PosibleBeneficio">
+                <option selected="item.ejecucionVM.PosibleBeneficio">@item.ejecucionVM.PosibleBeneficio</option>
+                <option value="SI">Si</option>
+                <option value="NO">No</option>
+        </select>
     </div>
     <div class="col-md-12" id="divFPbeneficio" name="divFPbeneficio">
         <label class="control-label">Fecha posible beneficio</label>
@@ -328,6 +377,9 @@
     </div>
     break;
 }
+<br />
+<br />
+<br />
 <br />
 <br />
 <br />
@@ -466,7 +518,7 @@
             }
             <div class="card card-body">
                 <button type="button" class="btn btn-success fa fa-bank btn-block" data-toggle="modal" style="margin-bottom:10px" data-target="#exampleModalCenter@(i)" onclick="cambioTitle(@(i))">
-                    Instancia
+                    Segunda Instancia
                 </button>
                 <button type="button" class="btn btn-warning fa fa-share btn-calender-date" data-toggle="modal" data-target="#exampleModalCenter2@(i)" onclick="cambioTitle2(@(i))">
                     Terminio
@@ -513,6 +565,10 @@
                     <div class="form-group">
                         <label class="control-label">Pena en dias</label>
                         <input name="Penadias@(i)" id="Penadias@(i)" class="form-control" type="number"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Autoridad</label>
+                        <input name="Autoridad@(i)" id="Autoridad@(i)" class="form-control" />
                     </div>
                 </div>
                 <div class="modal-footer">

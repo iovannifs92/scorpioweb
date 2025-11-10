@@ -22,5 +22,6 @@ namespace scorpioweb.Models
         public DateTime? FechaCarga { get; set; }
         public DateTime? FechaCompurga { get; set; }
         public DateTime? FechaPbeneficio { get; set; }
+        public string PosibleBeneficio { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace scorpioweb.Models
         public DateTime? Termino { get; set; }
         public string Observaciones { get; set; }
         public int? EjecucionIdEjecucion { get; set; }
+        public string Atendida { get; set; }
     }
 }

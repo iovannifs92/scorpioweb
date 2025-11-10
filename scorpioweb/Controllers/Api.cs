@@ -18,6 +18,7 @@ using QRCoder;
 using SautinSoft.Document;
 using SautinSoft.Document.MailMerging;
 using scorpioweb.Class;
+using scorpioweb.Migrations.ApplicationDb;
 using scorpioweb.Models;
 using Syncfusion.EJ2.Linq;
 using System;
@@ -1169,6 +1170,31 @@ namespace scorpioweb.Controllers
 
         }
 
+        #endregion
+
+        #region - Alerta de Acuses -
+
+        [HttpPost]
+        public IActionResult NotificacionAcuse(string area, bool estado)
+        {
+            string mensaje = estado
+                ? $"El área {area} ha sido activada."
+                : $"El área {area} ha sido desactivada.";
+
+            // Envía notificación a todos los clientes conectados
+            //_hubContext.Clients.All.SendAsync("MostrarNotificacion", mensaje);
+
+
+            foreach (var rol in roles)
+            {
+                if (rol != "Vinculacion")
+                {
+                    _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
+                }
+            }
+
+            return Json(new { success = true });
+        }
         #endregion
 
     }

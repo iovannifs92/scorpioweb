@@ -18,13 +18,14 @@
             var Inicio = document.getElementById("Inicio").value;
             var Termino = document.getElementById("Termino").value;
             var Observaciones = document.getElementById("Observaciones").value;        
+            var Atendida = document.getElementById("Atendida").value;
             $.ajax({
                 type: "POST",
                 dataType: "json",
                 url: "/Ejecucion/CrearEpAtencionF",
                 traditional: true,
                 data: {
-                    datosAtencionF: [EjecucionIdEjecucion,Turno,QuienAtiende,Inicio,Termino,Observaciones],
+                    datosAtencionF: [EjecucionIdEjecucion,Turno,QuienAtiende,Inicio,Termino,Observaciones,Atendida],
                 },
                 success: function (response) {
                     if (response.success) {
@@ -119,6 +120,9 @@
     <thead style="text-align:center">
         <tr>
             <th>
+                Persona Atendida 
+            </th>
+            <th>
                 Turno
             </th>
             <th>
@@ -139,6 +143,9 @@
         @foreach (var item in ViewData["AtencionFEP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
         {
             <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epatencionfVM.Atendida)
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.epatencionfVM.Turno)
                 </td>
@@ -216,6 +223,10 @@
                         <option value="JUZGADO 3">Juzgado 3 </option>
                         <option value="TURNO">Turno </option>
                     </select>
+                </div>
+                <div>
+                    <label class="control-label">Persona Atendida</label>
+                    <input name="Atendida" id="Atendida" class="form-control" maxlength="450" />
                 </div>
                 <div class="form-group" style="padding-top:1%;">
                     <label class="control-label">Quien Atiende</label>

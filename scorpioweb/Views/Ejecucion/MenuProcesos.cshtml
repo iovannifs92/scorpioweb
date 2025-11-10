@@ -211,6 +211,9 @@
             <th>
                 Pena en Dias
             </th>
+            <th>
+                Autoridad
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -240,6 +243,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.epinstanciaVM.Penadias)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.epinstanciaVM.Autoridad)
                 </td>
                 <td>
                     <a id="btnEditar" onclick="showModal('@Url.Action("EditEpInstancia","Ejecucion",new {id=@item.epinstanciaVM.Idepinstancia}, Context.Request.Scheme)','Editar Instancia',null)" class="btn btn-success">

@@ -13,6 +13,7 @@ namespace scorpioweb.Models
         public int? Penaanos { get; set; }
         public int? Penameses { get; set; }
         public int? Penadias { get; set; }
+        public string Autoridad { get; set; }
         public int? EpcausapenalIdepcausapenal { get; set; }
     }
 }
