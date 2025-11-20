@@ -7,10 +7,17 @@
 <div class="top-content">
 	<div class="row-items">
 		<div class="item">
-			<p>
-				Buscar por Id de envio, nombre o num. de oficio: @Html.TextBox("SearchVerEnviados", null, new { id = "SearchVerEnviados" })
+			<h6 style="font-weight:600;">Id envio, nombre o num. oficio:</h6>
+		</div>
+		<div class="row-items item">
+			<div class="item">
+				<p>
+					@Html.TextBox("SearchVerEnviados", null, new { id = "SearchVerEnviados" })
+				</p>
+			</div>
+			<div class="item">
 				<input type="button" class="btn-success" onclick="verCorrespondenciaEnviada('inputEnviados');" value="Buscar" />@* //LA FUNCION DE JAVASCRIPT ESTA EN LA VISTA PRINCIPAL CORRESPONDENCIA *@
-			</p>	
+			</div>
 			<a style="font-size:16px;cursor: pointer;" onclick="verCorrespondenciaEnviada('linkTodos');">Ver todos los resultados</a>
 		</div>
 		<div class="item"><h5 style="font-weight:600;">¿Quien entrega?:</h5></div>
@@ -27,16 +34,23 @@
 		<div class="item">
 			<select class="form-control form-select-lg mb-3" id="selectQuienRecibe" onchange="verCorrespondenciaEnviada('selectQuienRecibe');">
 				<option value="@ViewBag.QuienRecibe">@ViewBag.QuienRecibe</option>
-	
-			
-					@foreach (var usuario in ViewBag.usuariosEnArea as List<string>)
-					{
-						<option value="@usuario">@usuario</option>
-					}
-				
+				@foreach (var usuario in ViewBag.usuariosEnArea as List<string>)
+				{
+					<option value="@usuario">@usuario</option>
+				}
+
 			</select>
 		</div>
-		
+		<div class="item"><h5 style="font-weight:600;">Fecha entrega</h5></div>
+		<div class="item">
+			<input type="date" name="FechaEntrega" id="FechaEntrega" style="font-size: 9px" class="form-control" asp-format="{0:yyyy-MM-ddTHH:mm}"
+				   onchange="verCorrespondenciaEnviada('fechaEntrega');" />
+		</div>
+		<div class="item"><h5 style="font-weight:600;">Fecha recibido</h5></div>
+		<div class="item">
+			<input type="date" name="FechaRecibido" id="FechaRecibido" style="font-size: 9px" class="form-control" asp-format="{0:yyyy-MM-ddTHH:mm}"
+				   onchange="verCorrespondenciaEnviada('fechaRecibido');" />
+		</div>
 	</div>
 </div>
 
@@ -58,6 +72,7 @@
 					<th>Figura Judicial</th>
 					<th>Asunto</th>
 					<th>Autoridad</th>
+					<th>Observaciones</th>
 					<th>FechaRegistro</th>
 					<th>Quien entrega oficio</th>
 					<th>Oficio entregado</th>
@@ -71,19 +86,19 @@
 			<tbody>
 				@foreach (var item in Model)
 				{
-					<tr>
+					<tr id="renglon_@item.IdenvioCorrespondencia" style="background-color:@(item.Confirmado == 1 ? "#DCFFD2" : "transparent");">
 						@{
 							@*esta variable habilita la clase editable cell en las celdas que se pueden modificar*@
 							bool editable = item.Entregado == 0;
 						}
 						<input type="hidden" name="idCorrespondencia" value="@item.IdenvioCorrespondencia" />
-						
+
 						<td>@item.IdenvioCorrespondencia</td>
-						
+
 
 						@* DATA FIELD ES PARA SABER QUE CAMPO SE MODIFICA *@
 
-						
+
 						@if (editable)
 						{
 							<td class="editable-cell">
@@ -106,8 +121,8 @@
 						{
 							<td>@($"{item.Nombre} {item.Apaterno} {item.Amaterno}")</td>
 						}
-						
-					@* 	<td contenteditable="@(editable ? "true" : "false")" data-field="NombreCompleto" class=" @(editable ? "editable-cell" : "")">
+
+						@* 	<td contenteditable="@(editable ? "true" : "false")" data-field="NombreCompleto" class=" @(editable ? "editable-cell" : "")">
 							@($"{item.Nombre} {item.Apaterno} {item.Amaterno}")
 						</td>
 
@@ -132,7 +147,9 @@
 						<td contenteditable="@(editable ? "true" : "false")" data-field="Autoridad" class=" @(editable ? "editable-cell" : "")">
 							@item.Autoridad
 						</td>
-
+						<td contenteditable="@(editable ? "true" : "false")" data-field="Observaciones" class=" @(editable ? "editable-cell" : "")">
+							@item.Observaciones
+						</td>
 
 						<td>@item.FechaRegistro?.ToString("dd/MM/yyyy HH:mm")</td>
 						<td>@item.QuienEntrega</td>
@@ -159,17 +176,31 @@
 						</td>
 
 						<td class="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>
-						@if (editable && !User.IsInRole("VerCorrespondencia"))
-						{
-							<td>
-								<div class="col-md-1">
+						<td>
+							<div class="col-md-1">
+								@if (editable && !User.IsInRole("VerCorrespondencia"))
+								{
+
+
 									<button style="margin-top: 10px;" class="btn btn-danger" onclick="BorrarCorrespondencia(@item.IdenvioCorrespondencia)">
 										<i class='fa fa-trash'></i>
 									</button>
-								</div>
-							</td>
-						}
-						
+
+
+
+								}
+								@if (!editable && item.Recibido == 1 && (item.Confirmado == null || item.Confirmado == 0))
+								{
+									<button style="margin-top: 10px;"
+											id="btnConfirmacion_@item.IdenvioCorrespondencia"
+ 										class="btn btn-success"
+											onclick="modificarCorrespondenciaEnviada(@item.IdenvioCorrespondencia, 'botonConfirmacion')">
+										<i class="fa fa-arrow-left"></i>
+									</button>
+								}
+							</div>
+						</td>
+
 					</tr>
 				}
 			</tbody>

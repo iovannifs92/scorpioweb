@@ -45,6 +45,16 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 				</optgroup>
 			</select>
 		</div>
+		<div class="item"><h5 style="font-weight:600;">Fecha entrega</h5></div>
+		<div class="item">
+			<input type="date" name="FechaEntrega" id="FechaEntrega" style="font-size: 9px" class="form-control" asp-format="{0:yyyy-MM-ddTHH:mm}"
+				   onchange="FiltrarCorrespondencia(false,'fechaEntrega');" />
+		</div>
+		<div class="item"><h5 style="font-weight:600;">Fecha recibido</h5></div>
+		<div class="item">
+			<input type="date" name="FechaRecibido" id="FechaRecibido" style="font-size: 9px" class="form-control" asp-format="{0:yyyy-MM-ddTHH:mm}"
+				   onchange="FiltrarCorrespondencia(false,'fechaRecibido');" />
+		</div>
 	</div>
 </div>
 
@@ -78,6 +88,8 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 				</tr>
 			</thead>
 			<tbody>
+				
+				
 				@foreach (var item in Model)
 				{
 					<tr>
@@ -128,7 +140,7 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 								   data-id="@item.IdenvioCorrespondencia"
 								   data-tipo="recibido"
 								   type="checkbox"
-								   @(item.Recibido == 1 ? "checked" : "")
+								   @(item.Recibido == 1 ? "checked disabled" : "")
 								   @(item.Entregado == 1 ? "" : "disabled") />
 						</td>
 						<td class ="fecha-recibido">@item.FechaRecibido?.ToString("dd/MM/yyyy HH:mm")</td>

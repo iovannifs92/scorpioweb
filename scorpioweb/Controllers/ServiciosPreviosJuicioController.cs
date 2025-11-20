@@ -809,10 +809,9 @@ namespace scorpioweb.Controllers
                 return BadRequest(new { success = false, message = "No se recibieron datos" });
 
             var user = await userManager.FindByNameAsync(User.Identity.Name);
-            datos.Nombre = mg.normaliza(datos.Nombre);
-            datos.Apaterno = mg.normaliza(datos.Apaterno);
-            datos.Amaterno = mg.normaliza(datos.Amaterno);
-            datos.Nombre = mg.normaliza(datos.Nombre);
+            datos.Nombre = mg.normaliza(datos.Nombre) ?? "NA";
+            datos.Apaterno = mg.normaliza(datos.Apaterno) ?? "NA";
+            datos.Amaterno = mg.normaliza(datos.Amaterno) ?? "NA";
             datos.QuienEntrega = user.UserName;
             datos.FechaRegistro = DateTime.Now;
             datos.Entregado = 0;
@@ -838,7 +837,8 @@ namespace scorpioweb.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> VerCorrespondenciaEnviada(int? page, string area, string searchVerEnviados, string selectQuienEnvia, string selectQuienRecibe, string tipoFiltro)
+        public async Task<IActionResult> VerCorrespondenciaEnviada(int? page, string area, string searchVerEnviados, string selectQuienEnvia, string selectQuienRecibe,
+            DateTime fechaEntrega, DateTime fechaRecibido, string tipoFiltro)
         {
 
             if (string.IsNullOrEmpty(area))
@@ -859,7 +859,9 @@ namespace scorpioweb.Controllers
             // apply filters
             if (string.IsNullOrEmpty(searchVerEnviados) &&
                 string.IsNullOrEmpty(selectQuienEnvia) &&
-                string.IsNullOrEmpty(selectQuienRecibe))
+                string.IsNullOrEmpty(selectQuienRecibe) &&
+                fechaEntrega == DateTime.MinValue &&
+                fechaRecibido == DateTime.MinValue)
             {
                 query = query.OrderBy(m => m.Entregado).ThenBy(m => m.FechaRegistro);
             }
@@ -898,7 +900,18 @@ namespace scorpioweb.Controllers
                             .OrderBy(m => m.Entregado)
                             .ThenByDescending(m => m.FechaRegistro);
                         break;
-
+                    case "fechaEntrega":
+                        ViewBag.filtroActual = "Documentos enviados el " + fechaEntrega.ToString("dd-MM-yyyy");       
+                        query = query
+                            .Where(m => m.FechaEntrega > fechaEntrega && m.FechaEntrega < fechaEntrega.AddDays(1))
+                            .OrderBy(m => m.FechaEntrega);
+                        break;
+                    case "fechaRecibido":
+                        ViewBag.filtroActual = "Documentos recibidos el " + fechaRecibido.ToString("dd-MM-yyyy");
+                        query = query
+                            .Where(m => m.FechaRecibido > fechaRecibido && m.FechaRecibido < fechaRecibido.AddDays(1))
+                            .OrderBy(m => m.FechaRecibido);
+                        break;
                     default:
                         return BadRequest();
                 }
@@ -918,8 +931,8 @@ namespace scorpioweb.Controllers
 
             return PartialView("_VerCorrespondenciaEnviada", correspondencia);
         }
-            [HttpGet]
-        public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch, bool LinkVerTodos)
+        [HttpGet]
+        public async Task<IActionResult> FiltrarCorrespondencia(int? page, string searchString, string selectSearch,DateTime fechaEntrega,DateTime fechaRecibido, bool LinkVerTodos)
         {
             const int pageSize = 50; // 🔹 show 50 records per page
             int pageNumber = page ?? 1; // if null, start on page 1
@@ -927,7 +940,11 @@ namespace scorpioweb.Controllers
             List<Enviocorrespondencia> correspondencia = new List<Enviocorrespondencia>();
             ViewBag.UserAreas = await mg.ObtenerAreasUsuariosAsync(userManager, roleManager);
 
-            if ((string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString)) && !LinkVerTodos)
+            if ((string.IsNullOrEmpty(selectSearch) &&
+                string.IsNullOrEmpty(searchString)) &&
+                fechaEntrega == DateTime.MinValue &&
+                fechaRecibido == DateTime.MinValue &&
+                !LinkVerTodos)
                 return BadRequest();
             else if (LinkVerTodos)
             {
@@ -937,7 +954,11 @@ namespace scorpioweb.Controllers
 
             IQueryable<Enviocorrespondencia> query = _context.Enviocorrespondencia;
 
-            if (!string.IsNullOrEmpty(selectSearch) && string.IsNullOrEmpty(searchString))
+            //CUANDO SE SELECCIONA UN CAMPO DEL SELECT
+            if (!string.IsNullOrEmpty(selectSearch) &&
+                string.IsNullOrEmpty(searchString) &&
+                fechaEntrega == DateTime.MinValue &&
+                fechaRecibido == DateTime.MinValue)
             {
                 ViewBag.CurrentSelectSearch = selectSearch;
                 selectSearch = selectSearch.ToUpper();
@@ -996,7 +1017,11 @@ namespace scorpioweb.Controllers
                         return BadRequest();
                 }
             }
-            else if (string.IsNullOrEmpty(selectSearch) && !string.IsNullOrEmpty(searchString))
+            //CUANDO SE BUSCA POR SEARCH STRING
+            else if (!string.IsNullOrEmpty(searchString) &&
+                string.IsNullOrEmpty(selectSearch) &&
+                fechaEntrega == DateTime.MinValue &&
+                fechaRecibido == DateTime.MinValue)
             {
                 searchString = searchString.ToUpper();
                 ViewBag.CurrentSearchString = searchString;
@@ -1007,6 +1032,30 @@ namespace scorpioweb.Controllers
                     m.Apaterno.Contains(searchString) ||
                     m.Amaterno.Contains(searchString) ||
                     m.NoOficio.Contains(searchString));
+            }
+            //CUANDO SE SELECCIONA UNA FECHA DE ENTREGA
+            else if (fechaEntrega != DateTime.MinValue &&
+                string.IsNullOrEmpty(searchString) &&
+                string.IsNullOrEmpty(selectSearch) &&
+                fechaRecibido == DateTime.MinValue)
+            {
+                ViewBag.CurrentSearchString = "fecha de entrega " + fechaEntrega.ToString("dd-MM-yyyy");
+
+                query = query
+                            .Where(m => m.FechaEntrega > fechaEntrega && m.FechaEntrega < fechaEntrega.AddDays(1))
+                            .OrderBy(m => m.FechaEntrega);
+            }
+            //CUANDO SE SELECCIONA UNA FECHA DE RECIBIDO
+            else if (fechaRecibido != DateTime.MinValue &&
+                string.IsNullOrEmpty(searchString) &&
+                string.IsNullOrEmpty(selectSearch) &&
+                fechaEntrega == DateTime.MinValue)
+            {
+                ViewBag.CurrentSearchString = "fecha de recibido " + fechaRecibido.ToString("dd-MM-yyyy");
+
+                query = query
+                              .Where(m => m.FechaRecibido > fechaRecibido && m.FechaRecibido < fechaRecibido.AddDays(1))
+                              .OrderBy(m => m.FechaRecibido);
             }
 
             // 🔹 Apply order and pagination
@@ -1032,6 +1081,7 @@ namespace scorpioweb.Controllers
             if (correspondencia == null)
                 return Json(new { success = false, message = "Registro no encontrado" });
             valor = mg.normaliza(valor);
+            bool botonConfirmacion = false;
             switch (tipo)
             {
                 case "entregado":
@@ -1043,10 +1093,14 @@ namespace scorpioweb.Controllers
                     correspondencia.FechaRecibido = DateTime.Now;
                     correspondencia.QuienRecibe = quienRecibe;
                     break;
-              
+                case "botonConfirmacion":
+                    correspondencia.Confirmado = 1;
+                    botonConfirmacion = true;
+                    break;
+
                     //case "select-usuario":
-                //    correspondencia.QuienRecibe = usuario;
-                //    break;
+                    //    correspondencia.QuienRecibe = usuario;
+                    //    break;
 
                 //ESTOS CASE SON DE LA VISTA VER CORRESPONDENCIA ENVIADA
                 case "Nombre":
@@ -1090,7 +1144,7 @@ namespace scorpioweb.Controllers
             }
 
 
-            return Json(new { success = true });
+            return Json(new { success = true ,botonConfirmacion = botonConfirmacion});
         }
 
 
