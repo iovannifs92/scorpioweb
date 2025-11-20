@@ -709,6 +709,9 @@
                  @if (User.IsInRole("ArchivoAsistente") || User.IsInRole("Archivo") || User.IsInRole("Masteradmin"))
                 {
                     <th>
+                        Recibido
+                    </th>
+                    <th>
                         Revisado
                     </th>
                     <th>
@@ -724,8 +727,6 @@
                         Editar
                     </th>
                 }
-
-           
             <th></th>
         </tr>
     </thead>
@@ -826,7 +827,7 @@
                 }
                     
             </td>
-            @if (User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
+            @if (User.IsInRole("CoordinadorArchivo") || User.IsInRole("EnvioArchivo") || User.IsInRole("Masteradmin"))
             {
                 <td>
                     <a id="btnEditar" onclick="modal(@item.IdenvioArchivo, @item.Recibido)" class="btn btn-success">

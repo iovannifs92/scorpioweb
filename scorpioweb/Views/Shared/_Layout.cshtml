@@ -393,14 +393,17 @@
             </div>
         </div>
     </nav>
-
-@*     <button id="abrirVentana"
-            style="position:fixed; top:60px; right:20px; background:#3085d6; color:white;
-               border:none; padding:10px 20px; border-radius:8px; font-size:15px;
-               cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); transition:0.3s;
-               z-index:10000;">
-        Abrir Ventana
-    </button> *@
+    @if (User.IsInRole("RecibirCorrespondencia"))
+    {
+        <button id="abrirVentana"
+                style="position:fixed; top:60px; right:20px; background:#3085d6; color:white;
+                    border:none; padding:10px 20px; border-radius:8px; font-size:15px;
+                    cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); transition:0.3s;
+                    z-index:10000;">
+            Abrir Ventana
+        </button>
+    }
+ 
 
     <!-- Ventana flotante estilo SweetAlert -->
     <div id="ventanaFlotante"
@@ -413,13 +416,13 @@
         <div id="checkboxContainer" style="text-align:left; margin-top:15px;">
             <label><input type="checkbox" class="chkArea" value="MCySCP"> MCySCP</label><br>
             <label><input type="checkbox" class="chkArea" value="Archivo"> Archivo</label><br>
-            <label><input type="checkbox" class="chkArea" value="Ejecucion"> Ejecución de Penas</label><br>
-            <label><input type="checkbox" class="chkArea" value="ServiciosPrevios"> Servicios Previos</label><br>
+            <label><input type="checkbox" class="chkArea" value="Ejecucion de Penas"> Ejecución de Penas</label><br>
+            <label><input type="checkbox" class="chkArea" value="Servicios previos"> Servicios previos</label><br>
             <label><input type="checkbox" class="chkArea" value="PrisionPreventiva"> Prisión Preventiva</label><br>
             <label><input type="checkbox" class="chkArea" value="Vinculacion"> Vinculación</label><br>
             <label><input type="checkbox" class="chkArea" value="Oficialia"> Oficialía</label><br>
-            <label><input type="checkbox" class="chkArea" value="LibertadCondicionada"> Libertad Condicionada</label><br>
-            <label><input type="checkbox" class="chkArea" value="Adolecentes"> Adolescentes</label><br>
+            <label><input type="checkbox" class="chkArea" value="LC"> LC</label><br>
+            <label><input type="checkbox" class="chkArea" value="UESPA"> UESPA</label><br>
         </div>
 
         <br>
@@ -750,10 +753,7 @@
         }
     }
 
-
-
-
-      const abrirBtn = document.getElementById('abrirVentana');
+    const abrirBtn = document.getElementById('abrirVentana');
     const cerrarBtn = document.getElementById('cerrarVentana');
     const ventana = document.getElementById('ventanaFlotante');
 
@@ -811,4 +811,24 @@
         });
     });
 
+    // --- Mostrar alerta cuando llegue notificación ---
+       connection.on("EnviarCorrespondencia", (mensaje) => {
+        // Creamos el objeto de audio
+        var audio = new Audio('/Audio/Notificacion1.mp3'); // Asegúrate de que la ruta sea correcta
+        // Intentamos reproducirlo
+        audio.play().catch(error => {
+            console.log("⚠️ El navegador bloqueó el audio. Se reproducirá al mostrar la alerta.");
+        });
+
+        // Mostrar alerta con SweetAlert
+        Swal.fire({
+            icon: 'info',
+            title: 'Notificación de acuse',
+            text: mensaje,
+            confirmButtonColor: '#3085d6'
+        }).then(() => {
+            // Reproducir el audio después de interacción del usuario (si fue bloqueado)
+            audio.play().catch(() => {});
+        });
+    });
 </script>

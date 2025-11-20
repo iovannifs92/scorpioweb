@@ -1073,7 +1073,7 @@ namespace scorpioweb.Controllers
                     causa.Juez = mg.normaliza(juez);
                     causa.Distrito = distrito;
                     causa.Cambio = cambio;
-                    causa.CausaPenal = mg.normaliza(cp);
+                    causa.CausaPenal = cp;
                     //causa.CausaPenalCompleta = mg.normaliza(cp) + ", Distrito " + distrito + ", " + juez;
 
                     #region -Delitos-

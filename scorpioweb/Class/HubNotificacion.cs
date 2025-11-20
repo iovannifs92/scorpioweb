@@ -23,6 +23,12 @@ namespace scorpioweb.Class
             var user = Context.User;
             var roles = user.FindAll(ClaimTypes.Role);
 
+            Console.WriteLine($"Usuario conectado: {user.Identity.Name}");
+            foreach (var r in roles)
+            {
+                Console.WriteLine($"Rol detectado: {r.Value}");
+            }
+
             foreach (var roleClaim in roles)
             {
                 string userRole = roleClaim.Value;
@@ -37,53 +43,42 @@ namespace scorpioweb.Class
             switch (role)
             {
                 case "Masteradmin":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Administradores");
                     break;
                 case "Uespa":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Adolecentes ");
                     break;
                 case "Ejecucion":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Ejecucion");
                     break;
                 case "AdminLC":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "LiberdadCondicionada");
                     break;
                 case "Coordinador":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Administradores");
                     break;
                 case "SupervisorLC":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "LiberdadCondicionada");
                     break;
                 case "Archivo":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Archivo");
                     break;
                 case "Director":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Administradores");
                     break;
                 case "AuxiliarEjecucion":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Ejecucion");
+                    break;
+                case "AdminMCSCP":
+                    break;
+                case "SupervisorMCSCP":
                     break;
                 case "AuxiliarMCSCP":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "MCYSCP");
                     break;
                 case "Vinculacion":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "seCerrocaso");
                     await Groups.AddToGroupAsync(Context.ConnectionId, "nuevaCanalizacion");
                     break;
                 case "Administrador":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Administradores");
                     break;
                 case "AdminVinculacion":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "Canalizacion");
                     break;
-                case "AdminMCSCP":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "MCYSCP");
-                    break;
                 case "Coordinador Ejecucion":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "Ejecucion");
                     break;
-                case "SupervisorMCSCP":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "MCYSCP");
+                case "EnviarCorrespondencia":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviarCorrespondencia");
                     break;
                 default:
                     Console.WriteLine("Rol no reconocido");

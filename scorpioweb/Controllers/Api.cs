@@ -20,8 +20,11 @@ using SautinSoft.Document.MailMerging;
 using scorpioweb.Class;
 using scorpioweb.Migrations.ApplicationDb;
 using scorpioweb.Models;
+using Syncfusion.EJ2.FileManager;
 using Syncfusion.EJ2.Linq;
 using System;
+using System;
+
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -46,17 +49,21 @@ namespace scorpioweb.Controllers
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         public IHubContext<HubNotificacion> _hubContext;
+        private RoleManager<IdentityRole> roleManager;
+        private UserManager<ApplicationUser> userManager;
         private readonly penas2Context _context;
 
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
         #endregion
 
-        public Api(penas2Context context, IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext)
+        public Api(penas2Context context, IHostingEnvironment hostingEnvironment, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, IHubContext<HubNotificacion> hubContext)
         {
             _hostingEnvironment = hostingEnvironment;
             _context = context;
             _hubContext = hubContext;
+            this.roleManager = roleManager;
+            this.userManager = userManager;
         }
         #region -Imprimir evaluacion de riesgo-
         public void Imprimir(string id)
@@ -1175,23 +1182,58 @@ namespace scorpioweb.Controllers
         #region - Alerta de Acuses -
 
         [HttpPost]
-        public IActionResult NotificacionAcuse(string area, bool estado)
+        public async Task<IActionResult> NotificacionAcuse(string area, bool estado)
         {
+
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var roles = await userManager.GetRolesAsync(user);
+
             string mensaje = estado
                 ? $"El área {area} ha sido activada."
                 : $"El área {area} ha sido desactivada.";
 
-            // Envía notificación a todos los clientes conectados
-            //_hubContext.Clients.All.SendAsync("MostrarNotificacion", mensaje);
+
+            //switch (area)
+            //{
+            //    case "MCySCP":
+            //        await _hubContext.Clients.Group("alertaAcuse")
+            //              .SendAsync("alertaAcuse", mensaje);
+            //        break;
+
+            //    case "Ejecucion de Penas":
+            //        _hubContext.Clients.Group("Ejecucion").SendAsync("alertaAcuse", mensaje);
+            //        break;
+
+            //    case "Archivo":
+            //        await _hubContext.Clients.Group("Archivo")
+            //              .SendAsync("alertaAcuse", mensaje);
+            //        break;
+
+            //    case "LC":
+            //        await _hubContext.Clients.Group("LiberdadCondicionada")
+            //              .SendAsync("alertaAcuse", mensaje);
+            //        break;
+
+            //    case "Oficialia":
+            //        await _hubContext.Clients.Group("EnviarCorrespondencia")
+            //              .SendAsync("alertaAcuse", mensaje);
+            //        break;
+
+            //    default:
+            //        break;
+            //}
+
+            _hubContext.Clients.Group("EnviarCorrespondencia").SendAsync("EnviarCorrespondencia", mensaje);
+
+            //foreach (var rol in roles)
+            //{
+            //    if (rol != "Vinculacion")
+            //    {
+            //        await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
+            //    }
+            //}
 
 
-            foreach (var rol in roles)
-            {
-                if (rol != "Vinculacion")
-                {
-                    _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
-                }
-            }
 
             return Json(new { success = true });
         }
