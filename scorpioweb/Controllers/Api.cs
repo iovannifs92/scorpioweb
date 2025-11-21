@@ -1234,9 +1234,16 @@ namespace scorpioweb.Controllers
             //}
 
 
+        //    foreach (var rol in roles)
+        //    {
+        //        if (rol != "Vinculacion")
+        //        {
+        //            _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
+        //        }
+        //    }
 
-            return Json(new { success = true });
-        }
+        //    return Json(new { success = true });
+        //}
         #endregion
 
     }

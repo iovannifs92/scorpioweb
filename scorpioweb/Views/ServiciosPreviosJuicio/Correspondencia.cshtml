@@ -581,6 +581,8 @@
 	}
 
 
+
+
 	//$$$$$$$$$$$$$$$$$$$$$$$ VER CORRESPONDENCIA ENVIADA $$$$$$$$$$$$$$$$$$$$$$$
 	function loadPageVerEnviados(page) {
 		let area = $("#areaVerEnviados").val();
@@ -627,41 +629,75 @@
 		let searchVerEnviados = $("#SearchVerEnviados").val();
 		let selectQuienEnvia = $("#selectQuienEnvia").val();
 		let selectQuienRecibe = $("#selectQuienRecibe").val();
+		let fechaEntrega = $("#FechaEntrega").val();
+		let fechaRecibido = $("#FechaRecibido").val();
 		let tipoFiltro = "";
 		// Determinar tipo de filtro
-		if (tipo === "inputEnviados") 
-		{
-			tipoFiltro = "inputNombreId";
-			selectQuienEnvia = "";
-			selectQuienRecibe = "";
-		}
-		else if(tipo === "linkTodos")
-		{
-			searchVerEnviados = "";
-			selectQuienEnvia = "";
-			selectQuienRecibe = "";
-		}
-		else if (tipo ==="selectQuienEnvia")
-		{
-			tipoFiltro = "selectQuienEnvia";
-			searchVerEnviados = "";
-			selectQuienRecibe = "";
-		}
-		else if (tipo ==="selectQuienRecibe")
-		{
-			tipoFiltro = "selectQuienRecibe";
-			searchVerEnviados = "";
-			selectQuienEnvia = "";
+		switch (tipo) {
+			case "inputEnviados":
+				tipoFiltro = "inputNombreId";
+				selectQuienEnvia = "";
+				selectQuienRecibe = "";
+				fechaEntrega = "";
+				fechaRecibido = "";
+				break;
+
+			case "linkTodos":
+				searchVerEnviados = "";
+				selectQuienEnvia = "";
+				selectQuienRecibe = "";
+				fechaEntrega = "";
+				fechaRecibido = "";
+				break;
+
+			case "selectQuienEnvia":
+				tipoFiltro = "selectQuienEnvia";
+				searchVerEnviados = "";
+				selectQuienRecibe = "";
+				fechaEntrega = "";
+				fechaRecibido = "";
+				break;
+
+			case "selectQuienRecibe":
+				tipoFiltro = "selectQuienRecibe";
+				searchVerEnviados = "";
+				selectQuienEnvia = "";
+				fechaEntrega = "";
+				fechaRecibido = "";
+				break;
+
+			case "fechaEntrega":
+				tipoFiltro = "fechaEntrega";
+				searchVerEnviados = "";
+				selectQuienEnvia = "";
+				selectQuienRecibe = "";
+				fechaRecibido = "";
+				break;
+
+			case "fechaRecibido":
+				tipoFiltro = "fechaRecibido";
+				searchVerEnviados = "";
+				selectQuienEnvia = "";
+				selectQuienRecibe = "";
+				fechaEntrega = "";
+				break;
+			default:
+				searchVerEnviados = "";
+				selectQuienEnvia = "";
+				selectQuienRecibe = "";
+				fechaEntrega = "";
+				fechaRecibido = "";
+				break;
 
 		}
-													
-		// Mostrar pantalla de carga con SweetAlert2
+
+			// Mostrar pantalla de carga con SweetAlert2
 		Swal.fire({
 			title: 'Cargando...',
 			text: 'Por favor espera un momento',
 			allowOutsideClick: false,
 			  showConfirmButton: false,
-			didOpen: () => {
+				onOpen: () => {
 				Swal.showLoading();
 			}
 		});
@@ -672,6 +708,8 @@
 			searchVerEnviados,
 			selectQuienEnvia,
 			selectQuienRecibe,
+			fechaEntrega,
+			fechaRecibido,
 			tipoFiltro
 		})
 		.done(function (data) {
@@ -761,8 +799,6 @@
 
 	function modificarCorrespondenciaEnviada(id, tipo,valor){
 
-
-
 			$.ajax({
 			url: '/ServiciosPreviosJuicio/ModificarCorrespondencia',
 			type: 'POST',
@@ -776,7 +812,7 @@
 						showConfirmButton: false,
 						timer: 3000,
 						timerProgressBar: true,
-						didOpen: (toast) => {
+						onOpen: (toast) => {
 							toast.onmouseenter = Swal.stopTimer;
 							toast.onmouseleave = Swal.resumeTimer;
 						}
@@ -785,6 +821,11 @@
 						icon: "success",
 						title: "Registro actualizado!"
 					});
+					if(response.botonConfirmacion){
+
+						document.getElementById("btnConfirmacion_" + id).style.display = "none";
+						document.getElementById("renglon_" + id).style.backgroundColor = "#DCFFD2";
+					}
 				}
 				else
 				{
@@ -884,16 +925,34 @@
 	function FiltrarCorrespondencia(LinkVerTodos,tipo) {
 		let searchString = $("#SearchString").val();
 		let selectSearch = $("#selectSearch").val();
-		console.log(tipo);
-		if(tipo=== 'select'){
-			searchString = "";
-		}
-		else if( tipo ==='buscador'){
-			selectSearch = "";
-		}
-		else if(tipo === 'link'){
-			searchString = "";
-			selectSearch = "";
+		let fechaEntrega = $("#FechaEntrega").val();
+		let fechaRecibido = $("#FechaRecibido").val();
+
+		switch (tipo) {
+			case 'select':
+				searchString = "";
+				break;
+
+			case 'buscador':
+				selectSearch = "";
+				break;
+
+			case 'link':
+				searchString = "";
+				selectSearch = "";
+				break;
+
+			case 'fechaEntrega':
+				searchString = "";
+				selectSearch = "";
+				fechaRecibido = "";
+				break;
+
+			case 'fechaRecibido':
+				searchString = "";
+				selectSearch = "";
+				fechaEntrega = "";
+				break;
 		}
 		// SWEETALERT LOADING SCREEN (no OK button)
 		Swal.fire({
@@ -906,7 +965,7 @@
 			}
 		});
 
-		$.get("/ServiciosPreviosJuicio/FiltrarCorrespondencia", { searchString, selectSearch, LinkVerTodos })
+		$.get("/ServiciosPreviosJuicio/FiltrarCorrespondencia", { searchString, selectSearch,fechaEntrega,fechaRecibido, LinkVerTodos })
 			.done(function (data) {
 				$("#contenedor-recibir").html(data);
 				
@@ -952,7 +1011,6 @@
 					}
 				}
 
-				console.log(quienRecibe)
 
 
 				if (!quienRecibe) {

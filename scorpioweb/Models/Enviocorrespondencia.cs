@@ -19,6 +19,7 @@ namespace scorpioweb.Models
         public DateTime? FechaRegistro { get; set; }
         public sbyte? Entregado { get; set; }
         public sbyte? Recibido { get; set; }
+        public sbyte? Confirmado { get; set; }
         public DateTime? FechaEntrega { get; set; }
         public DateTime? FechaRecibido { get; set; }
         public string QuienEntrega { get; set; }
