@@ -1119,7 +1119,7 @@ namespace scorpioweb.Controllers
                                       from f in fGroup.DefaultIfEmpty()
                                       where p.IdPersona == idPersona
                                       group new { p, scl, cp, f, d } by scl.IdSupervision into g
-                                      select g).AsEnumerable() // ← Aquí movemos la evaluación a memoria
+                                      select g).AsEnumerable() 
                                       .Select(g => new
                                       {
                                           Persona = g.First().p,
