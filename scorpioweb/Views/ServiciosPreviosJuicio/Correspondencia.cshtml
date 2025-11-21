@@ -431,7 +431,7 @@
 		let selectGenero = document.getElementById("Genero");
 		let inputFiguraJudicial = document.getElementById('FiguraJudicial');
 		let inputAutoridad = document.getElementById('Autoridad');
-
+		let inputCURS = document.getElementById('CURS');
 
 
 		switch(area) {
@@ -453,7 +453,9 @@
 				inputAmaterno.value = item2.persona?.materno || "NA";
 				selectGenero.value = item2.persona?.genero || "";
 				inputFiguraJudicial.value = item2.fracciones?.figuraJudicial || "NA";
-				inputAutoridad.value = item2.causaPenal?.juez|| "NA";
+				inputAutoridad.value = item2.causaPenal?.juez || "NA";
+				inputCURS.value = item2.persona?.claveUnicaScorpio || "NA";
+				console.log(inputCURS.value);
 
 				break;
 			case "Servicios Previos":

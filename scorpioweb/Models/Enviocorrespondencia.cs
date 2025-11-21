@@ -24,5 +24,6 @@ namespace scorpioweb.Models
         public DateTime? FechaRecibido { get; set; }
         public string QuienEntrega { get; set; }
         public string QuienRecibe { get; set; }
+        public string Curs { get; set; }
     }
 }

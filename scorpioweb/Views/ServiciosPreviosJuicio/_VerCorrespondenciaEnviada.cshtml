@@ -198,6 +198,16 @@
 										<i class="fa fa-arrow-left"></i>
 									</button>
 								}
+
+								@if (!editable && item.Recibido == 1 && item.Confirmado == 1)
+								{
+									<div class="text-center" style="padding-top:1%">
+										<img src="~/images/flecha_verde.png"
+											 class="rounded img-fluid"
+											 alt="..."
+											 style="max-width: 40px;">
+									</div>
+								}
 							</div>
 						</td>
 

@@ -92,7 +92,10 @@ EL MODELO SE PASA DESDE LA VISTA PRINCIPAL CORRESPONENCIA
 				
 				@foreach (var item in Model)
 				{
-					<tr>
+
+					var style = item.Asunto == "CORREO" ? "display:none;" : "";
+
+					<tr style="@style">
 						<td>@item.IdenvioCorrespondencia</td>
 						<td>@item.Area</td>
 						<td>@item.Nombre @item.Apaterno @item.Amaterno</td>

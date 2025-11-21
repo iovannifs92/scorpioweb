@@ -821,6 +821,7 @@ namespace scorpioweb.Controllers
             datos.Asunto = mg.normaliza(datos.Asunto) ?? "NA";
             datos.Autoridad = mg.normaliza(datos.Autoridad) ?? "NA";
             datos.Observaciones = datos.Observaciones ?? "NA";
+            datos.Curs = mg.normaliza(datos.Curs) ?? "NA";
 
             try
             {
