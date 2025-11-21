@@ -1189,61 +1189,57 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
 
             string mensaje = estado
-                ? $"El área {area} ha sido activada."
+                ? $"El área {area} tiene acuses sin recojer"
                 : $"El área {area} ha sido desactivada.";
 
 
-            //switch (area)
-            //{
-            //    case "MCySCP":
-            //        await _hubContext.Clients.Group("alertaAcuse")
-            //              .SendAsync("alertaAcuse", mensaje);
-            //        break;
+            switch (area)
+            {
+                case "MCySCP":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciamc")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            //    case "Ejecucion de Penas":
-            //        _hubContext.Clients.Group("Ejecucion").SendAsync("alertaAcuse", mensaje);
-            //        break;
+                case "Archivo":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaA")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            //    case "Archivo":
-            //        await _hubContext.Clients.Group("Archivo")
-            //              .SendAsync("alertaAcuse", mensaje);
-            //        break;
+                case "Ejecucion de Penas":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaEje")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            //    case "LC":
-            //        await _hubContext.Clients.Group("LiberdadCondicionada")
-            //              .SendAsync("alertaAcuse", mensaje);
-            //        break;
+                case "Servicios previos":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaSP")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            //    case "Oficialia":
-            //        await _hubContext.Clients.Group("EnviarCorrespondencia")
-            //              .SendAsync("alertaAcuse", mensaje);
-            //        break;
+                case "Servicios Legales":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaSL")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            //    default:
-            //        break;
-            //}
+                case "Vinculacion":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaVin")
+                          .SendAsync("Alerta", mensaje);
+                    break;
+                case "LC":
+                    await _hubContext.Clients.Group("EnviaraCorrespondencialc")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            _hubContext.Clients.Group("EnviarCorrespondencia").SendAsync("EnviarCorrespondencia", mensaje);
+                case "UESPA":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaUESPA")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
-            //foreach (var rol in roles)
-            //{
-            //    if (rol != "Vinculacion")
-            //    {
-            //        await _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
-            //    }
-            //}
+                default:
+                    break;
+            }
 
-
-        //    foreach (var rol in roles)
-        //    {
-        //        if (rol != "Vinculacion")
-        //        {
-        //            _hubContext.Clients.Group("nuevaCanalizacion").SendAsync("sendMessage", persona.IdPersona + " " + persona.NombreCompleto);
-        //        }
-        //    }
-
-        //    return Json(new { success = true });
-        //}
+            return Json(new { success = true });
+        }
         #endregion
 
     }

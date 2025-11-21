@@ -45,30 +45,36 @@ namespace scorpioweb.Class
                 case "Masteradmin":
                     break;
                 case "Uespa":
-                    break;
-                case "Ejecucion":
-                    break;
-                case "AdminLC":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaUESPA");
                     break;
                 case "Coordinador":
                     break;
                 case "SupervisorLC":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondencialc");
+                    break;
+                case "AdminLC":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondencialc");
                     break;
                 case "Archivo":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaA");
                     break;
                 case "Director":
                     break;
                 case "AuxiliarEjecucion":
                     break;
                 case "AdminMCSCP":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciamc");
                     break;
                 case "SupervisorMCSCP":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciamc");
                     break;
                 case "AuxiliarMCSCP":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciamc");
                     break;
                 case "Vinculacion":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "seCerrocaso");
                     await Groups.AddToGroupAsync(Context.ConnectionId, "nuevaCanalizacion");
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaVin");
                     break;
                 case "Administrador":
                     break;
@@ -76,10 +82,21 @@ namespace scorpioweb.Class
                     await Groups.AddToGroupAsync(Context.ConnectionId, "Canalizacion");
                     break;
                 case "Coordinador Ejecucion":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaEje");
+                    break;
+                case "Ejecucion":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaEje");
                     break;
                 case "EnviarCorrespondencia":
-                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviarCorrespondencia");
+                    //await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondencia");
                     break;
+                case "Servicios previos":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaSP");
+                    break;
+                case "Servicios Legales":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaSL");
+                    break;
+       
                 default:
                     Console.WriteLine("Rol no reconocido");
                     break;
