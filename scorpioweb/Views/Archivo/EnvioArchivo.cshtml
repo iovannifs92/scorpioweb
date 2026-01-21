@@ -527,7 +527,8 @@
                 const faltantes = [];
                 if (!causa || causa.trim() === "" || causa === "NA") faltantes.push("Causa penal / Carpeta de ejecución");
                 if (!delito || delito.trim() === "" || delito === "NA") faltantes.push("Delito");
-
+                    const form = document.getElementById("formEnvioArchivo");
+                    const formData = new FormData(form);
                 if (faltantes.length > 0) {
                     // Si quieres impedir envío descomenta next line y devuelve false
                     // Swal.showValidationMessage(`Faltan campos: ${faltantes.join(", ")}`);
@@ -544,15 +545,15 @@
                     }).then(res => {
                         if (res.isConfirmed) {
                             // continuar con el envío
-                            const form = document.getElementById("formEnvioArchivo");
-                            const formData = new FormData(form);
                             return fetch("/Archivo/NuevoCreateEnvioArchivo", { method: 'POST', body: formData })
                                 .then(response => {
                                     if (!response.ok) throw new Error(response.statusText);
-                                    return response.json();
+                                        Swal.fire('Éxito', 'Formulario enviado correctamente', 'success');
+                                        location.reload();
                                 })
                                 .catch(error => { Swal.showValidationMessage(`Error: ${error}`); });
                         } else {
+                            alert(1)
                             // cancelar el envío (preConfirm fallará)
                             Swal.showValidationMessage('Envio cancelado. Completa los campos y vuelve a intentar.');
                             return false;
@@ -561,12 +562,11 @@
                 }
 
                 // Si no faltan campos, enviar directamente
-                const form = document.getElementById("formEnvioArchivo");
-                const formData = new FormData(form);
                 return fetch("/Archivo/NuevoCreateEnvioArchivo", { method: 'POST', body: formData })
                     .then(response => {
                         if (!response.ok) throw new Error(response.statusText);
-                        return response.json();
+                            Swal.fire('Éxito', 'Formulario enviado correctamente', 'success');
+                            location.reload();
                     })
                     .catch(error => { Swal.showValidationMessage(`Error: ${error}`); });
         }
@@ -651,7 +651,7 @@
     <a asp-action="Envioarchivo">Regresar al Listado Completo </a>
 </div>
 <div style="text-align:right" class="col-md-6">
-    @if (User.IsInRole("Oficialia") || User.IsInRole("Uespa") || User.IsInRole("Servicios previos"))
+    @if (User.IsInRole("Oficialia") || User.IsInRole("Uespa"))
     {
         <a asp-action="createEnvioArchivo" class="button-27 carnet" id="createEnvioArchivo" title="Envio Archivo">
             <i class=" btn btn-primary fa fa-book float-right">&nbsp;Crear nuevo Registro</i>

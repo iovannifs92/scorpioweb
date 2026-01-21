@@ -60,6 +60,7 @@ namespace scorpioweb.Controllers
         //To get content root path of the project
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly penas2Context _context;
+        public IHubContext<HubNotificacion> _hubContext;
         public static int contadorSustancia;
         public static int contadorFamiliares;
         public static int contadorReferencias;
@@ -182,25 +183,25 @@ namespace scorpioweb.Controllers
         #region -Constructor-
 
 
-        public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment,
+        public PersonasController(penas2Context context, IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager
             )
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
-
+            _hubContext = hubContext;
             this.roleManager = roleManager;
             this.userManager = userManager;
 
         }
         #endregion
 
-
-
-
-
         #region -Metodos Generales-
         MetodosGenerales mg = new MetodosGenerales();
+        private readonly Api api;
+
+
+
         #endregion
 
         #region -contarFalsos-
@@ -487,6 +488,8 @@ namespace scorpioweb.Controllers
         public async Task<IActionResult> Index()
         {
 
+            nombresiguentes();
+
             var nomsuper = User.Identity.Name.ToString();
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
@@ -521,9 +524,83 @@ namespace scorpioweb.Controllers
 
 
 
+        public (string primero, string segundo) nombresiguentes()
+        {
+            #region -Siguiente supervisoras-
+
+            var excluidos = new List<string>
+            {
+                "administrador@dgepms.com",
+                "zuleyka.rodriguez@dgepms.com",
+                "carmen.gonzalez@dgepms.com",
+                "victor.hernandez@dgepms.com",
+                "stephany.garcia@dgepms.com",
+                "carlos.serrano@dgepms.com",
+                "jorge.gonzalez@dgepms.com",
+                "esthela.huitron@dgepms.com"
+            };
+
+            List<string> supervisores = _context.Persona
+                .Where(p =>
+                    p.Supervisor.Contains("@dgepms.com") &&
+                    !excluidos.Contains(p.Supervisor))
+                .Select(p => p.Supervisor)
+                .Distinct()
+                .OrderBy(p => p)
+                .ToList();
+
+            if (!supervisores.Any())
+                return (null, null);
+
+            var ultimoSupervisor = _context.Persona
+                .Where(p => !string.IsNullOrEmpty(p.Supervisor)
+                            && !p.Supervisor.EndsWith("@nortedgepms.com")
+                            && !p.Supervisor.Contains("esthela.huitron@dgepms.com"))
+                .OrderByDescending(p => p.IdPersona)
+                .Select(p => p.Supervisor)
+                .FirstOrDefault();
+
+            int index = supervisores.IndexOf(ultimoSupervisor);
+
+            // Índices circulares
+            int indexPrimero = (index + 1) % supervisores.Count;
+            int indexSegundo = (index + 2) % supervisores.Count;
+
+            string primero = supervisores[indexPrimero];
+            string segundo = supervisores.Count > 1
+                ? supervisores[indexSegundo]
+                : null;
+
+            ViewBag.SiguientePersona = primero;
+            ViewBag.SegundaPersona = segundo;
+
+            return (primero, segundo);
+
+            #endregion
+        }
+
+
+
+        public async Task<IActionResult> FinalizarTurno()
+        {
+            var turnos = nombresiguentes();
+
+            await _hubContext.Clients.All.SendAsync(
+                "RecibirSiguientesPersonas",
+                turnos.primero,
+                turnos.segundo
+            );
+
+            return Ok();
+        }
+
         public async Task<IActionResult> GetPrueba(string sortOrder, string currentFilter, string Search, int? pageNumber, bool usuario)
         {
+
             #region -ListaUsuarios-            
+
+
+            nombresiguentes();
 
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var nomsuper = User.Identity.Name.ToString();
@@ -561,7 +638,7 @@ namespace scorpioweb.Controllers
 
             foreach (var rol in roles)
             {
-                if (rol == "Servicios previos" || rol == "Operativo")
+                if (rol == "Servicios previos" || rol == "Servicios Legales" || rol == "Operativo")
                 {
                     bitacora = true;
                 }
@@ -735,12 +812,12 @@ namespace scorpioweb.Controllers
                                   join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
                                   join municipio in _context.Municipios on int.Parse(domicilio.Municipio) equals municipio.Id
                                   join supervision in _context.Supervision on persona.IdPersona equals supervision.PersonaIdPersona
-                                  where supervision.EstadoSupervision == "VIGENTE" && supervision.Tta == "SI"
+                                  where supervision.EstadoSupervision == "VIGENTE" && (supervision.Tta != "NA" || supervision.Tta == null)
                                   select new PersonaViewModel
                                   {
                                       personaVM = persona,
                                       municipiosVMDomicilio = municipio,
-                                      CasoEspecial = "TTA"
+                                      CasoEspecial = supervision.Tta
                                   }).Union
                             (from persona in _context.Persona
                              join domicilio in _context.Domicilio on persona.IdPersona equals domicilio.PersonaIdPersona
@@ -773,6 +850,8 @@ namespace scorpioweb.Controllers
         #region -MenuMCSCP-
         public async Task<IActionResult> MenuMCSCP()
         {
+
+            nombresiguentes();
             var user = await userManager.FindByNameAsync(User.Identity.Name);
             var roles = await userManager.GetRolesAsync(user);
             string usuario = user.ToString();
@@ -1339,6 +1418,10 @@ namespace scorpioweb.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                //llama al signalr y cambia la nueva supervisor
+                FinalizarTurno();
+
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -2486,8 +2569,15 @@ namespace scorpioweb.Controllers
                     #endregion
 
                     // SE USABA PARA ASIGNAR UN SUPERVISADADO DE MANERA AUTOMATICA (DESDE EL PRINCIPIO PENSE QUE NO SERIA RENTBLE )
-                    //#region -ASIGNAR SUPERVISOR-
-                    ////Obtén el último supervisor
+                    #region -ASIGNAR SUPERVISOR-
+                    //Obtén el último supervisor
+
+                   
+                  
+                    
+
+
+
                     //if (User.Identity.Name.EndsWith("@dgepms.com"))
                     //{
                     //    var ultimoSupervisor = _context.Persona
@@ -2544,11 +2634,12 @@ namespace scorpioweb.Controllers
                     //        }
                     //    }
                     //}
-                    //#endregion
+                    #endregion
 
                     #region -Expediente Unico-
                     //TODO QUEDO EN API =)
                     #endregion
+
 
                     #region -Añadir a contexto-
 
@@ -2560,6 +2651,8 @@ namespace scorpioweb.Controllers
                     _context.Add(actividadsocial);
                     _context.Add(abandonoEstado);
                     _context.Add(saludfisica);
+
+
                     await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
 
                     return RedirectToAction("RegistroConfirmation/" + persona.IdPersona, "Personas");
@@ -3025,7 +3118,7 @@ namespace scorpioweb.Controllers
                         ViewBag.CURP = persona?.Curp ?? "NA";
                     }
                 }
-                else
+                else if(rol == "AdminLC" || rol == "SupervisorLC")
                 {
                     var persona = await _context.Personacl.SingleOrDefaultAsync(m => m.IdPersonaCl == id);
                     var referenciaf = _context.Asientofamiliar.FirstOrDefault(m => m.PersonaIdPersona == id);
@@ -3048,6 +3141,14 @@ namespace scorpioweb.Controllers
                         ViewBag.parentescoF = referenciaf?.Relacion ?? "NA";
                         ViewBag.CURP = persona?.Curp ?? "NA";
                     }
+                }
+                else if(rol == "Servicios previos")
+                {
+                    var spj = await _context.Serviciospreviosjuicio.SingleOrDefaultAsync(sp => sp.IdserviciosPreviosJuicio == id);
+                    ViewBag.ControllerName = "ServiciosPreviosJuicio";
+                    ViewBag.nombreRegistrado = spj.NombreCompleto;
+                    ViewBag.idRegistrado = spj.IdserviciosPreviosJuicio;
+
                 }
             }
             return View();
@@ -3334,6 +3435,8 @@ namespace scorpioweb.Controllers
         #region -Procesos-
         public async Task<IActionResult> Procesos(int? id)
         {
+
+            nombresiguentes();
             if (id == null)
             {
                 return NotFound();
@@ -3381,6 +3484,8 @@ namespace scorpioweb.Controllers
         #region -Presentaciones periodicas-
         public async Task<IActionResult> PresentacionPeriodicaPersona(int? id)
         {
+
+            nombresiguentes();
             if (id == null)
             {
                 return NotFound();
@@ -3520,6 +3625,8 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> MenuEdicion(int? id)
         {
+
+            nombresiguentes();
 
             if (id == null)
             {
@@ -8130,6 +8237,18 @@ namespace scorpioweb.Controllers
             libronegro.Supervisor = value;
 
             _context.SaveChanges();
+        }
+
+        #endregion
+
+
+        #region -MENSAJES PRIVADOS-
+        public async Task<IActionResult> AccionQueNotifica(string destinatarioEmail, string texto)
+        {
+            // 'destinatarioEmail' debe coincidir con Context.User.Identity.Name de la sesión destino
+            await _hubContext.Clients.User(destinatarioEmail)
+                .SendAsync("RecibirMensajePrivado", User.Identity.Name, texto);
+            return Ok();
         }
 
         #endregion

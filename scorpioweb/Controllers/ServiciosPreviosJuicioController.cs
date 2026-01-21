@@ -260,8 +260,8 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var serviciospreviosjuicios = from p in _context.Serviciospreviosjuicio
-                                          select p;
+            var serviciospreviosjuicios = (from p in _context.Serviciospreviosjuicio
+                                          select p);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -269,9 +269,11 @@ namespace scorpioweb.Controllers
                     StringSplitOptions.RemoveEmptyEntries))
                 {
                     serviciospreviosjuicios = serviciospreviosjuicios.Where(p => (mg.removeSpaces(p.Paterno) + " " + mg.removeSpaces(p.Materno) + " " + mg.removeSpaces(p.Nombre)).Contains(mg.normaliza(searchString)) ||
-                                                   (mg.removeSpaces(p.Nombre) + " " + mg.removeSpaces(p.Paterno) + " " + mg.removeSpaces(p.Materno)).Contains(mg.normaliza(searchString)));
+                                                                                (mg.removeSpaces(p.Nombre) + " " + mg.removeSpaces(p.Paterno) + " " + mg.removeSpaces(p.Materno)).Contains(mg.normaliza(searchString)) || 
+                                                                                (p.IdserviciosPreviosJuicio.ToString()).Contains(searchString));
                 }
             }
+            serviciospreviosjuicios.OrderByDescending(s => s.IdserviciosPreviosJuicio);
 
             switch (sortOrder)
             {
@@ -279,7 +281,7 @@ namespace scorpioweb.Controllers
                     serviciospreviosjuicios = serviciospreviosjuicios.OrderByDescending(p => p.Paterno);
                     break;
                 default:
-                    serviciospreviosjuicios = serviciospreviosjuicios.OrderBy(p => p.Paterno);
+                    serviciospreviosjuicios = serviciospreviosjuicios.OrderByDescending(p => p.IdserviciosPreviosJuicio);
                     break;
             }
 
@@ -453,9 +455,9 @@ namespace scorpioweb.Controllers
             #endregion
 
             _context.Add(serviciospreviosjuicio);
-
             await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value, 1);
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("RegistroConfirmation/" + serviciospreviosjuicio.IdserviciosPreviosJuicio, "Personas");
         }
         #endregion
 
@@ -518,6 +520,7 @@ namespace scorpioweb.Controllers
             ViewBag.idMunicipio = serviciospreviosjuicio.LnEstado;
             #endregion
 
+
             ViewBag.listaSexo = listaSexo;
             ViewBag.idGenero = mg.BuscaId(listaSexo, serviciospreviosjuicio.Sexo);
 
@@ -564,6 +567,8 @@ namespace scorpioweb.Controllers
             ViewBag.TipoDetenido = serviciospreviosjuicio.TipoDetenido;
             ViewBag.RealizoEntrevista = serviciospreviosjuicio.RealizoEntrevista;
             ViewBag.TieneAntecedentes = serviciospreviosjuicio.Antecedentes;
+
+            ViewBag.evidencia = serviciospreviosjuicio.RutaAer;
 
             var serviciospreviosjuici = await _context.Serviciospreviosjuicio.SingleOrDefaultAsync(m => m.IdserviciosPreviosJuicio == id);
             if (serviciospreviosjuici == null)

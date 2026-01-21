@@ -57,6 +57,7 @@ namespace scorpioweb.Class
                     break;
                 case "Archivo":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaA");
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "SolicitudPretamoo");
                     break;
                 case "Director":
                     break;
@@ -103,10 +104,26 @@ namespace scorpioweb.Class
             }
         }
 
-        //public async Task nuevaCanalizacion(string group, string name, string area)
-        //{
-        //    await Clients.Group(group).SendAsync("Canalizar", name, area);
-        //}
+        public async Task ActualizarSiguientes(string primero, string segundo)
+        {
+            await Clients.All.SendAsync(
+                "RecibirSiguientesPersonas",
+                primero,
+                segundo
+            );
+        }
 
+        public async Task EnviarMensajeUsuario(string usuarioDestino, string mensaje)
+        {
+            var usuarioOrigen = Context.User.Identity.Name;
+
+            await Clients.User(usuarioDestino)
+                .SendAsync("RecibirMensajePrivado", usuarioOrigen, mensaje);
+        }
+
+        public string GetUserId(HubConnectionContext connection)
+        {
+            return connection?.User?.Identity?.Name;
+        }
     }
 }

@@ -1189,7 +1189,7 @@ namespace scorpioweb.Controllers
             var roles = await userManager.GetRolesAsync(user);
 
             string mensaje = estado
-                ? $"El área {area} tiene acuses sin recojer"
+                ? $"El área {area} tiene acuses sin recoger"
                 : $"El área {area} ha sido desactivada.";
 
 
@@ -1241,6 +1241,5 @@ namespace scorpioweb.Controllers
             return Json(new { success = true });
         }
         #endregion
-
     }
 }

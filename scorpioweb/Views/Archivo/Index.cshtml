@@ -121,31 +121,77 @@
         });
     };
 
-    function solicitud(id, estado, user) {
-        var idArchivo = id;
-        let text;
+    function presolicitud(id, estado, user, escaneado) {
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: "Solicitud de Prestamo Archivo",
+            text: "Seleccione la opcion de solicitud",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText:"Digital",
+            cancelButtonText: "Fisico",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if(escaneado == ""){
+                    swalWithBootstrapButtons.fire({
+                        title: "Lo sentimos, el archivo aun no está escaneado",
+                        text: "Solicita el archivo en físico",
+                        icon: "error"
+                    });
+                }else{
+                    swalWithBootstrapButtons.fire({
+                        title: "Solicitud hecha exitosamente!",
+                        text: "Espera a que la solicitud sea atendida",
+                        icon: "success"
+                    });
+                    solicitud(id, user, "Digital");
+                }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+                if(estado == "PRESTADO"){
+                    swalWithBootstrapButtons.fire({
+                        title: "Lo sentimos, el expediente está en préstamo",
+                        text: "Para más información dirígete al área de archivo",
+                        icon: "error"
+                    });
+                }else{
+                     swalWithBootstrapButtons.fire({
+                        title: "Solicitud hecha exitosamente!",
+                        text: "Dirígete al área de archivo para recogerlo",
+                        icon: "success"
+                    });
+                    solicitud(id, user, "Fisico");
+                }
+            }
+        });
+    }
+
+    function solicitud(id, user, tipo){
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "/Archivo/solicitud",
             traditional: true,
             data: {
-                datosoli: [estado, idArchivo, user],
+                datosoli: [id, user, tipo]
             },
             success: function (response) {
-                if (estado == true) {
-                    alert("Solicitud hecha con exito, Espere a que se atienda");
-                } else {
-                    alert("Solicitud Cancelada!");
-                }
-
-                location.reload();
+                console.log("Solicitud enviada correctamente");
             },
             error: function (response) {
-                location.reload();
+                console.log("Error al enviar solicitud");
             }
         });
-    };
+    }
+
 
 
      function miFuncionEnPaginaPrincipal(nombre) {
@@ -213,9 +259,6 @@
                 Area
             </th>
             <th>
-                Expediente
-            </th>
-            <th>
                 Y/O
             </th>
             <th>
@@ -233,7 +276,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.archivoVM.Paterno) @Html.DisplayFor(modelItem => item.archivoVM.Materno) @Html.DisplayFor(modelItem => item.archivoVM.Nombre)
                 </td>
-                @if (item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO"))
+                @if(item.archivoprestamoVM == null || (item.archivoprestamoVM != null && item.archivoprestamoVM.Estatus != "PRESTADO"))
                 {
                     <td style="color:black">
                         @Html.DisplayFor(modelItem => item.archivoprestamoVM.Estatus)
@@ -248,19 +291,6 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.archivoprestamoVM.Area)
                     </td>
-                }
-
-                @if (item.archivoVM.Urldocumento != null)
-                {
-                    <td>
-                        <a style="font-size: x-large;" id="btnEditar" href="~/Expedientes/@Html.DisplayFor(modelItem => item.archivoVM.Urldocumento)" target="_blank">
-                            <i class="fa fa-paperclip fa-9x"></i>
-                        </a>
-                    </td>
-                }
-                else
-                {
-                    <td></td>
                 }
                 <td>
                     @Html.DisplayFor(modelItem => item.archivoVM.Yo)
@@ -286,15 +316,12 @@
                 @if (!User.IsInRole("Archivo"))
                 {
                     <td>
-                        @if (item.archivoVM.Solucitud == 0)
-                        {
-                            <a onclick="solicitud(@item.archivoVM.IdArchivo, true, '@ViewBag.User')" class="btn btn-danger fa fa-file-pdf-o"> Solicitar </a>
-                        }
-                        else
-                        {
-                            <a onclick="solicitud(@item.archivoVM.IdArchivo, true,  '@ViewBag.User')" class="btn btn-primary fa fa-file-pdf-o" title="Solicitado Por @item.archivoVM.QuienSolicita">  En Solicitud </a>
-                            <a onclick="solicitud(@item.archivoVM.IdArchivo, false,'')" class="btn btn-warning fa fa-close" style="margin-left:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
-                        }
+                        <button onclick="presolicitud(@item.archivoVM.IdArchivo,'@item.archivoprestamoVM?.Estatus', '@ViewBag.User', '@item.archivoregistroVM?.Urldocumento', )"
+                                class="btn btn-success"
+                                style="margin-left:10px"
+                                title="Solicitud">
+                            Solicitar expediente
+                        </button>
                     </td>
                 }
             </tr>

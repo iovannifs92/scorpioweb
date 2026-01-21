@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Security.Claims;
-using scorpioweb.Class;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using scorpioweb.Migrations.ApplicationDb;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using Newtonsoft.Json;
+using scorpioweb.Class;
+using scorpioweb.Migrations.ApplicationDb;
 using Syncfusion.EJ2.Linq;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace scorpioweb.Models
 {
@@ -29,6 +31,7 @@ namespace scorpioweb.Models
         #region -Variables Globales-
         private readonly penas2Context _context;
         private readonly UserManager<ApplicationUser> userManager;
+        public IHubContext<HubNotificacion> _hubContext;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _hostingEnvironment;
         #endregion
@@ -38,11 +41,12 @@ namespace scorpioweb.Models
         #endregion
 
         #region -Constructor-
-        public ArchivoController(penas2Context context, Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment,
+        public ArchivoController(penas2Context context, Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment, IHubContext<HubNotificacion> hubContext,
                                   RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _hubContext = hubContext;
             this.roleManager = roleManager;
             this.userManager = userManager;
 
@@ -104,12 +108,25 @@ namespace scorpioweb.Models
                                                                     select gtp.OrderByDescending(a => a.IdArchivoPrestamoDigital).FirstOrDefault()).ToList();
 
             var filter = from a in _context.Archivo
-                         join ap in queryArchivoHistorial on a.IdArchivo equals ap.ArcchivoIdArchivo into tmp
-                         from left in tmp.DefaultIfEmpty()
+                         join ap in queryArchivoHistorial
+                             on a.IdArchivo equals ap.ArcchivoIdArchivo
+                             into tmpPrestamo
+                         from prestamo in tmpPrestamo.DefaultIfEmpty()
+                             // join con archivoregistro (LEFT JOIN)
+                         join ar in _context.Archivoregistro
+                             on a.IdArchivo equals ar.ArchivoIdArchivo
+                             into tmpRegistro
+                         // OBTENER SOLO EL REGISTRO QUE CUMPLE LA LÓGICA
+                         let registro = tmpRegistro
+                             .Where(x => x.Urldocumento != null)
+                             .OrderBy(x => x.IdArchivoRegistro)
+                             .FirstOrDefault()
+                             ?? tmpRegistro.OrderBy(x => x.IdArchivoRegistro).FirstOrDefault()
                          select new ArchivoControlPrestamo
                          {
                              archivoVM = a,
-                             archivoprestamoVM = left,
+                             archivoprestamoVM = prestamo,
+                             archivoregistroVM = registro   // ← Aquí el resultado final
                          };
 
 
@@ -120,11 +137,20 @@ namespace scorpioweb.Models
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                filter = filter.Where(acp => (acp.archivoVM.Paterno + " " + acp.archivoVM.Materno + " " + acp.archivoVM.Nombre).Contains(searchString) ||
-                                             (acp.archivoVM.Nombre + " " + acp.archivoVM.Materno + " " + acp.archivoVM.Paterno).Contains(searchString) ||
-                                             (acp.archivoVM.Materno + " " + acp.archivoVM.Paterno + " " + acp.archivoVM.Nombre).Contains(searchString) ||
-                                             (acp.archivoVM.Yo).Contains(searchString) ||
-                                             (acp.archivoVM.IdArchivo.ToString()).Contains(searchString));
+                filter = filter.Where(acp =>
+                    ((acp.archivoVM.Paterno ?? "") + " " + (acp.archivoVM.Materno ?? "") + " " + (acp.archivoVM.Nombre ?? ""))
+                        .Contains(searchString) ||
+
+                    ((acp.archivoVM.Nombre ?? "") + " " + (acp.archivoVM.Materno ?? "") + " " + (acp.archivoVM.Paterno ?? ""))
+                        .Contains(searchString) ||
+
+                    ((acp.archivoVM.Materno ?? "") + " " + (acp.archivoVM.Paterno ?? "") + " " + (acp.archivoVM.Nombre ?? ""))
+                        .Contains(searchString) ||
+
+                    ((acp.archivoVM.Yo ?? "")).Contains(searchString) ||
+
+                    acp.archivoVM.IdArchivo.ToString().Contains(searchString)
+                );
             }
 
             switch (sortOrder)
@@ -1447,32 +1473,60 @@ namespace scorpioweb.Models
             int pageSize = 100;
             return View(await PaginatedList<Archivo>.CreateAsync(paraPrestamo.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
-        public JsonResult solicitud(Archivo archivo, string[] datosoli)
+        public async Task<JsonResult> solicitud(Archivo archivo, string[] datosoli)
         {
-            archivo.Solucitud = Convert.ToSByte(datosoli[0] == "true");
-            archivo.IdArchivo = Int32.Parse(datosoli[1]);
-            archivo.QuienSolicita = mg.normaliza(datosoli[2]);
-
-            var empty = (from a in _context.Archivo
-                         where archivo.IdArchivo == archivo.IdArchivo
-                         select a);
-
-            if (empty.Any())
+            int idArchivo = Int32.Parse(datosoli[0]);
+            try
             {
                 var query = (from a in _context.Archivo
-                             where a.IdArchivo == archivo.IdArchivo
-                             select a).FirstOrDefault();
-                query.Solucitud = archivo.Solucitud;
-                query.QuienSolicita = archivo.QuienSolicita;
+                                where a.IdArchivo == idArchivo
+                                select a).FirstOrDefault();
+                query.Solucitud = 1;
+                query.QuienSolicita = mg.normaliza(datosoli[1]);
+                query.Urldocumento = mg.normaliza(datosoli[2]);
                 _context.SaveChanges();
-            }
-            var stadoc = (from p in _context.Archivo
-                          where p.IdArchivo == archivo.IdArchivo
-                          select p.Solucitud).FirstOrDefault();
-            //return View();
+               
+                var stadoc = (from p in _context.Archivo
+                              where p.IdArchivo == archivo.IdArchivo
+                              select p.Solucitud).FirstOrDefault();
 
-            return Json(new { success = true, responseText = Convert.ToString(stadoc), idarchivo = Convert.ToString(archivo.IdArchivo) });
+                string mensaje =  $"El usuario {mg.normaliza(datosoli[1])} a sulicitado el expediente {mg.normaliza(datosoli[2])} de {query.Nombre.ToUpper()} {query.Paterno.ToUpper()} {query.Materno.ToUpper()} con el id:{idArchivo}";
+
+                // Enviar alerta a archivo 
+                await _hubContext.Clients.Group("SolicitudPretamoo").SendAsync("Alertaprestamo", mensaje);
+
+                //return View();
+
+                return Json(new { success = true, responseText = "Realizado con exito", idarchivo = Convert.ToString(archivo.IdArchivo) });
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, responseText = ex, idarchivo = Convert.ToString(archivo.IdArchivo) });
+            }
         }
+
+
+        public async Task<JsonResult> cancelarSolicitud(Archivo archivo, string[] datosoli)
+        {
+            int idArchivo = Int32.Parse(datosoli[0]);
+            try
+            {
+                var query = (from a in _context.Archivo
+                             where a.IdArchivo == idArchivo
+                             select a).FirstOrDefault();
+                query.Solucitud = 0;
+                query.QuienSolicita = null;
+                query.Urldocumento = null;
+                _context.SaveChanges();
+
+                return Json(new { success = true, responseText = "Solicitud Cancelada", idarchivo = Convert.ToString(archivo.IdArchivo) });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = ex, idarchivo = Convert.ToString(archivo.IdArchivo) });
+            }
+        }
+
 
 
         public JsonResult verDocumento(int datoarchivo)

@@ -335,14 +335,30 @@
                 <span asp-validation-for="PersonaIdPersona" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="IdserviciosPreviosJuicio" />
-            @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo"))
+            @if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos"))
             {
-                <div class="custom-file form-group col-lg-12" style="padding-bottom:20px">
-                    <label class="control-label">Reporte Técnico</label>
-                    <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
-                </div>
+                @if (ViewBag.evidencia != null)
+                {
+                    <div>
+                        <a id="btneditdocument" href="~/AER/@(ViewBag.evidencia)" target="_blank" style="padding-bottom:20px">
+                            Ver Reporte Técnico
+                            <i class="fa fa-paperclip fa-6"></i>
+                        </a>
+                    </div>
+                    <div class="custom-file" style="padding-bottom:20px">
+                        <label class="control-label">Editar Reporte Técnico</label>
+                        <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+                    </div>
+                }
+                else
+                {
+                    <div class="custom-file" style="padding-bottom:20px" id="DivArchivo">
+                        <label class="control-label">Agregar Reporte Técnico</label>
+                        <input type="file" class="custom-file-input" id="evidencia" name="evidencia" lang="es">
+                    </div>
+                }
                 <div class="input-group" style="padding-top:1%">
-                    <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i>Guardar</button>
+                    <button type="submit" value="Guardar" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
                 </div>
             }            
         </form>

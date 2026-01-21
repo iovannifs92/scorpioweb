@@ -697,7 +697,7 @@ namespace scorpioweb.Models
 
             foreach (var rol in roles)
             {
-                if (rol == "Servicios previos" || rol == "Operativo")
+                if (rol == "Servicios previos" || rol == "Servicios Legales" || rol == "Operativo")
                 {
                     bitacora = true;
                 }

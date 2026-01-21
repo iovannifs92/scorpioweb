@@ -11,7 +11,9 @@
         Registro exitoso de:<br />
         @ViewBag.nombreRegistrado<br />
         @ViewBag.idRegistrado<br />
-       <a href="#" onclick="AlertCanalizacion('@ViewBag.idRegistrado','@ViewBag.NombreTabla')"><u>Canalizar algun servicio post penal</u></a>  
+        @if (!User.IsInRole("Servicios previos")){
+            <a href="#" onclick="AlertCanalizacion('@ViewBag.idRegistrado','@ViewBag.NombreTabla')"><u>Canalizar algun servicio post penal</u></a>  
+        }
     </h2>
 
 }

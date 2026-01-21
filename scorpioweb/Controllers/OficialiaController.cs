@@ -208,6 +208,7 @@ namespace scorpioweb.Controllers
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
+            
             List<SelectListItem> ListaUsuariosOficialia = new List<SelectListItem>();
             int i = 0;
             i++;
@@ -663,7 +664,25 @@ namespace scorpioweb.Controllers
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
             ViewBag.expide = _context.Expide.Select(Expide => Expide.Nombre).ToList();
             ViewBag.asunto = _context.Asuntooficio.Select(Asuntooficio => Asuntooficio.Asunto).ToList();
-            ViewBag.recibe = ListaRecibe;
+            
+            List<SelectListItem> ListaUsuariosOficialia = new List<SelectListItem>();
+            int j = 0;
+            j++;
+            var usersOficialia = userManager.Users.OrderBy(r => r.UserName);
+            foreach (var u in usersOficialia)
+            {
+                if (await userManager.IsInRoleAsync(u, "Oficialia"))
+                {
+                    ListaUsuariosOficialia.Add(new SelectListItem
+                    {
+                        Text = u.ToString(),
+                        Value = j.ToString()
+                    });
+                    j++;
+                }
+            }
+            ViewBag.recibe = ListaUsuariosOficialia;
+
             List<string> coordinadores = await ObtenerListaCoordinadores();
             List<string> coordinadoresrn = await ObtenerListaCoordinadoresRN();
 
@@ -941,16 +960,18 @@ namespace scorpioweb.Controllers
 
             IQueryable<Oficialia> oficios;
 
+            var fechaInicio = DateTime.Now.AddMonths(-4);
+
             if (User.Identity.Name.EndsWith("@nortedgepms.com"))
             {
                 oficios = from oficialia in _context.Oficialia
-                          where oficialia.Capturista.EndsWith("@nortedgepms.com")
+                          where oficialia.Capturista.EndsWith("@nortedgepms.com") && oficialia.FechaRecepcion >= fechaInicio
                           select oficialia;
             }
             else
             {
                 oficios = from oficialia in _context.Oficialia
-                          where !oficialia.Capturista.EndsWith("@nortedgepms.com")
+                          where !oficialia.Capturista.EndsWith("@nortedgepms.com") && oficialia.FechaRecepcion >= fechaInicio
                           select oficialia;
             }
 

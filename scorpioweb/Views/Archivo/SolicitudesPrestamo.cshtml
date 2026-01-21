@@ -22,14 +22,48 @@
             }
         })
     }
-    function Prestar(archivoIdArchivo, usuario) {
+    function Prestar(archivoIdArchivo, usuario, tiporestamo) {
+        // alert(archivoIdArchivo);
+        // alert(usuario);
+        // alert(tiporestamo);
+        // if (tiporestamo === "FISICO") {
+
+        //     // showModal(
+        //     //     '/Archivo/CreatePrestamo?id=' + archivoIdArchivo,
+        //     //     'Prestamo de Archivo',
+        //     //     null
+        //     // );
+        //     alert(1);
+        // showModal = (url, title, archivoIdArchivo) => {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/Archivo/CreatePrestamo?id=" + archivoIdArchivo,
+        //         success: function (res) {
+        //             $("#form-modal .modal-body").html(res);
+        //             $("#form-modal .modal-title").html(title);
+        //             $("#form-modal").modal('show');
+        //         },
+        //         //data: {
+        //         //    datosBitacora: [IdFracciones],
+        //         //},
+        //         error: function (res) {
+
+        //         }
+        //     })
+        // }
+
+        //     return;
+        // }
+
+        // Préstamo digital → continúa con AJAX
         $.ajax({
             type: "POST",
             dataType: "json",
             url: "/Archivo/Prestar",
             traditional: true,
             data: {
-                archivoIdArchivo, usuario
+                archivoIdArchivo: archivoIdArchivo,
+                usuario: usuario
             },
             success: function (response) {
                 location.reload();
@@ -38,23 +72,27 @@
                 location.reload();
             }
         });
-    };
+    }
 
-
-    function solicitud(id, estado) {
+    function cancelarSolicitud(id) {
         var idArchivo = id;
-        var user = ''
-        let text;
         $.ajax({
             type: "POST",
             dataType: "json",
-            url: "/Archivo/solicitud",
+            url: "/Archivo/cancelarSolicitud",
             traditional: true,
             data: {
-                datosoli: [estado, idArchivo, user],
+                datosoli: [idArchivo],
             },
             success: function (response) {
-                location.reload();
+                Swal.fire({
+                  position: "top-end",
+                  icon: "success",
+                  title: response.responseText,
+                  showConfirmButton: false,
+                  timer: 2500
+                });
+            location.reload();
             },
             error: function (response) {
                 location.reload();
@@ -87,7 +125,9 @@
                 <th>
                     Quien solicita  
                 </th>
-                <th></th>
+                <th>
+                    Tipo de solicitud
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -110,8 +150,11 @@
                         @Html.DisplayFor(modelItem => item.QuienSolicita)
                     </td>
                     <td>
-                        <a onclick="Prestar(@item.IdArchivo,'@item.QuienSolicita')" class="btn btn-success fa fa-file-pdf-o" style="margin-top:10px" title="Prestar"> Prestar</a>
-                        <a onclick="solicitud(@item.IdArchivo, false,'')" class="btn btn-warning fa fa-file-pdf-o" style="margin-top:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
+                        @Html.DisplayFor(modelItem => item.Urldocumento)
+                    </td>
+                    <td>
+                        <a onclick="Prestar(@item.IdArchivo ,'@item.QuienSolicita', '@item.Urldocumento')" class="btn btn-success fa fa-file-pdf-o" style="margin-top:10px" title="Prestar"> Prestar</a>
+                        <a onclick="cancelarSolicitud(@item.IdArchivo)" class="btn btn-warning fa fa-file-pdf-o" style="margin-top:10px" title="Cancelar Solicitud"> Cancelar Solicitud</a>
                     </td>
                 </tr>
             }

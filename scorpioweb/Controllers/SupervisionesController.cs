@@ -67,6 +67,12 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text="No", Value="NO"},
             new SelectListItem{ Text="NA", Value="NA"}
         };
+        private List<SelectListItem> listaEspecial = new List<SelectListItem>
+        {
+            new SelectListItem{ Text="NA", Value="NA"},
+            new SelectListItem{ Text="TTA", Value="TTA"},
+            new SelectListItem{ Text="RECONECTA CON LA PAZ", Value="RECONECTA CON LA PAZ"},
+        };
         private List<SelectListItem> listaSiNo = new List<SelectListItem>
         {
             new SelectListItem{ Text="Si", Value="SI"},
@@ -165,6 +171,63 @@ namespace scorpioweb.Controllers
         }
         #endregion
         #endregion
+
+        #region -SACAR NOMBRE DEL SIGUENTE SUPERVISOR-
+        public (string primero, string segundo) nombresiguentes()
+        {
+            #region -Siguiente supervisoras-
+
+            var excluidos = new List<string>
+            {
+                "administrador@dgepms.com",
+                "zuleyka.rodriguez@dgepms.com",
+                "carmen.gonzalez@dgepms.com",
+                "victor.hernandez@dgepms.com",
+                "stephany.garcia@dgepms.com",
+                "carlos.serrano@dgepms.com",
+                "jorge.gonzalez@dgepms.com",
+                "esthela.huitron@dgepms.com"
+            };
+
+            List<string> supervisores = _context.Persona
+                .Where(p =>
+                    p.Supervisor.Contains("@dgepms.com") &&
+                    !excluidos.Contains(p.Supervisor))
+                .Select(p => p.Supervisor)
+                .Distinct()
+                .OrderBy(p => p)
+                .ToList();
+
+            if (!supervisores.Any())
+                return (null, null);
+
+            var ultimoSupervisor = _context.Persona
+                .Where(p => !string.IsNullOrEmpty(p.Supervisor)
+                            && !p.Supervisor.EndsWith("@nortedgepms.com")
+                            && !p.Supervisor.Contains("esthela.huitron@dgepms.com"))
+                .OrderByDescending(p => p.IdPersona)
+                .Select(p => p.Supervisor)
+                .FirstOrDefault();
+
+            int index = supervisores.IndexOf(ultimoSupervisor);
+
+            // Índices circulares
+            int indexPrimero = (index + 1) % supervisores.Count;
+            int indexSegundo = (index + 2) % supervisores.Count;
+
+            string primero = supervisores[indexPrimero];
+            string segundo = supervisores.Count > 1
+                ? supervisores[indexSegundo]
+                : null;
+
+            ViewBag.SiguientePersona = primero;
+            ViewBag.SegundaPersona = segundo;
+
+            return (primero, segundo);
+
+            #endregion
+        }
+        #endregion 
 
         #region -CrearDocumento-
         public void crearDocumento(int id)
@@ -333,8 +396,8 @@ namespace scorpioweb.Controllers
             ViewBag.idEstadoCumplimiento = mg.BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
             #endregion
 
-            ViewBag.listaTTA = listaSiNo;
-            ViewBag.idTTA = mg.BuscaId(listaSiNo, supervision.Tta);
+            ViewBag.listaTTA = listaEspecial;
+            ViewBag.idTTA = mg.BuscaId(listaEspecial, supervision.Tta);
 
             return View(supervision);
         }
@@ -845,6 +908,8 @@ namespace scorpioweb.Controllers
            )
 
         {
+
+            nombresiguentes();
             #region
             #endregion
             ViewData["CurrentSort"] = sortOrder;
@@ -1192,6 +1257,9 @@ namespace scorpioweb.Controllers
         #region -Supervision-
         public async Task<IActionResult> Supervision(int? id, int idpersona)
         {
+
+            nombresiguentes();
+
             if (id == null)
             {
                 return NotFound();

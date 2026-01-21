@@ -5,7 +5,6 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-
 @foreach (var item in ViewData["joinTbalasProceso1"] as IEnumerable<scorpioweb.Models.Procesos>)
 {
     <h3>Nombre: @Html.DisplayFor(modelItem => item.personaVM.NombreCompleto) </h3>

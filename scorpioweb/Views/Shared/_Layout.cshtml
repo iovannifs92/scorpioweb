@@ -165,7 +165,7 @@
             });
           }
         });
-
+        // Alerta de AcusesPor Recoger
         connection.on("Alerta", (mensaje) => {
              var audio = new Audio('/Audio/notificacion1.mp3'); // Asegúrate de que la ruta sea correcta
              audio.play().catch(error => {
@@ -181,6 +181,61 @@
             });
         });
 
+        //alerta nueva solicitud de prestamo
+        connection.on("Alertaprestamo", (mensaje) => {
+             var audio = new Audio('/Audio/notificacion1.mp3'); // Asegúrate de que la ruta sea correcta
+             audio.play().catch(error => {
+                 console.log("⚠️ El navegador bloqueó el audio. Se reproducirá al mostrar la alerta.");
+             });
+            Swal.fire({
+                icon: 'success',
+                title: 'Hay una nueva solicitud de prestamo',
+                text: mensaje,
+                confirmButtonColor: '#3085d6'
+            }).then(() => {
+                audio.play().catch(() => {});
+            });
+        });
+
+
+        // connection.on("RecibirSiguientePersona", function (siguiente) {
+        //     const label = document.getElementById("siguientePersonaLabel");
+        //     if (label) {
+        //         label.innerText = siguiente;
+        //     }
+        // });
+
+        connection.on("RecibirSiguientesPersonas", function (primero, segundo) {
+
+            const label1 = document.getElementById("siguientePersonaLabel");
+            const label2 = document.getElementById("segundaPersonaLabel");
+
+            if (label1) label1.innerText = primero ?? "";
+            if (label2) label2.innerText = segundo ?? "";
+        });
+
+
+        connection.on("RecibirMensajePrivado", function (usuarioOrigen, mensaje) {
+            alert("Mensaje de " + usuarioOrigen + ": " + mensaje);
+        });
+
+        // function enviarPrivado() {
+        //     var destino = document.getElementById("usuarioDestino").value;
+        //     var mensaje = document.getElementById("mensajePrivado").value;
+
+        //     if (!destino || !mensaje) {
+        //         alert("Selecciona destinatario y escribe mensaje.");
+        //         return;
+        //     }
+
+        //     connection.invoke("EnviarMensajeUsuario", destino, mensaje)
+        //         .then(function () {
+        //             console.log("Solicitud de envío enviada al hub");
+        //         })
+        //         .catch(function (err) {
+        //             console.error(err.toString());
+        //         });
+        // }
 
 
     </script>
@@ -263,6 +318,20 @@
 </style>
 
 <body>
+
+
+@*     <select id="usuarioDestino">
+        <option value="">-- Seleccione usuario --</option>
+        <option value="juan.lerma@dgepms.com">Juan Pérez</option>
+        <option value="emiliano.munoz@dgepms.com">María López</option>
+    </select>
+
+    <input type="text" id="mensajePrivado" placeholder="Escriba el mensaje" />
+
+    <button type="button" onclick="enviarPrivado()">Enviar</button>
+
+ *@
+
 
     <nav class="navbar navbar-inverse navbar-fixed-top" , id="header">
         <div class="container">
@@ -362,7 +431,7 @@
                         <li><a asp-area="" asp-controller="Personas" asp-action="Index">MC y SCP</a></li>
                     }
 
-                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("Servicios previos") || User.IsInRole("Operativo") || User.IsInRole("Servicios Legales"))
+                    @if (User.IsInRole("Masteradmin") || User.IsInRole("Director") || User.IsInRole("Operativo") || User.IsInRole("Servicios Legales"))
                     {
                         <li><a asp-area="" asp-controller="ServiciosPreviosJuicio" asp-action="MenuSPJ">Servicios Previos</a></li>
                     }
@@ -439,16 +508,41 @@
             </div>
         </div>
     </nav>
-    @if (User.IsInRole("RecibirCorrespondencia"))
-    {
-         <button id="abrirVentana"
-                style="position:fixed; top:60px; right:20px; background:#3085d6; color:white;
-                    border:none; padding:10px 20px; border-radius:8px; font-size:15px;
-                    cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); transition:0.3s;
-                    z-index:10000;">
-            Acusar a Area
-        </button> 
-    }
+        @if (User.IsInRole("RecibirCorrespondencia"))
+        {
+             <button id="abrirVentana"
+                    style="position:fixed; top:60px; right:20px; background:#3085d6; color:white;
+                        border:none; padding:10px 20px; border-radius:8px; font-size:15px;
+                        cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2); transition:0.3s;
+                        z-index:10000;">
+                Acusar a Area
+            </button> 
+        }
+
+        @if (!string.IsNullOrWhiteSpace(ViewBag.SiguientePersona as string) &&
+            (User.IsInRole("AdminMCSCP") ||
+            User.IsInRole("SupervisorMCSCP") ||
+            User.IsInRole("AuxiliarMCSCP")))
+        {
+            <div class="alert alert-info text-center">
+                <strong>Siguiente persona a turnar:</strong><br />
+
+                <!-- Primero -->
+                <div id="siguientePersonaLabel"
+                     style="font-size:20px;font-weight:bold;">
+                    @ViewBag.SiguientePersona
+                </div>
+
+                <!-- Segundo -->
+                @if (!string.IsNullOrWhiteSpace(ViewBag.SegundaPersona as string))
+                {
+                    <div id="segundaPersonaLabel"
+                         style="font-size:15px; opacity:0.8;">
+                        @ViewBag.SegundaPersona
+                    </div>
+                }
+            </div>
+        }
 
 
     <!-- Ventana flotante estilo SweetAlert -->

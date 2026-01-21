@@ -119,9 +119,23 @@
     </div>
 </form>
 
+@if (User.IsInRole("Masteradmin") || User.IsInRole("Operativo") || User.IsInRole("Servicios previos") || User.IsInRole("Servicios Legales"))
+{
+    <div style="padding-top:1%">
+        @*<a asp-action="crearDocumento" asp-route-id="@ViewBag.IdSupervisionGuardar" id="crearOficio" class="btn btn-info"><i class="fa fa-file-text-o"></i> Genera oficio de cumplimiento/incumplimiento</a>*@
+        <a id="btnNuevoRegistro" name="btnNuevoRegistro" onclick="showModal('@Url.Action("Create", "ServiciosPreviosJuicio", null, Context.Request.Scheme)','Nuevo Registro')" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Nuevo Registro
+        </a>
+    </div>
+}
+
+
 <table class="table">
     <thead>
         <tr>
+            <th>
+                Id SPJ
+            </th>
             <th>
                 Nombre
             </th>
@@ -150,6 +164,9 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdserviciosPreviosJuicio)
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.NombreCompleto)
                 </td>
