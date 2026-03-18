@@ -219,23 +219,23 @@
             alert("Mensaje de " + usuarioOrigen + ": " + mensaje);
         });
 
-        // function enviarPrivado() {
-        //     var destino = document.getElementById("usuarioDestino").value;
-        //     var mensaje = document.getElementById("mensajePrivado").value;
+        function enviarPrivado() {
+            var destino = document.getElementById("usuarioDestino").value;
+            var mensaje = document.getElementById("mensajePrivado").value;
 
-        //     if (!destino || !mensaje) {
-        //         alert("Selecciona destinatario y escribe mensaje.");
-        //         return;
-        //     }
+            if (!destino || !mensaje) {
+                alert("Selecciona destinatario y escribe mensaje.");
+                return;
+            }
 
-        //     connection.invoke("EnviarMensajeUsuario", destino, mensaje)
-        //         .then(function () {
-        //             console.log("Solicitud de envío enviada al hub");
-        //         })
-        //         .catch(function (err) {
-        //             console.error(err.toString());
-        //         });
-        // }
+            connection.invoke("EnviarMensajeUsuario", destino, mensaje)
+                .then(function () {
+                    console.log("Solicitud de envío enviada al hub");
+                })
+                .catch(function (err) {
+                    console.error(err.toString());
+                });
+        }
 
 
     </script>
@@ -319,10 +319,9 @@
 
 <body>
 
-
 @*     <select id="usuarioDestino">
         <option value="">-- Seleccione usuario --</option>
-        <option value="juan.lerma@dgepms.com">Juan Pérez</option>
+        <option value="juan.lerma@dgepms.com">Juan </option>
         <option value="emiliano.munoz@dgepms.com">María López</option>
     </select>
 
@@ -332,8 +331,7 @@
 
  *@
 
-
-    <nav class="navbar navbar-inverse navbar-fixed-top" , id="header">
+    <nav class="     navbar-inverse navbar-fixed-top" , id="header">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -631,6 +629,12 @@
                 Oficialía
                 <div class="checkbox-wrapper-25">
                     <input type="checkbox" class="chkArea" value="Oficialia">
+                </div>
+            </label><br>
+            <label>
+                Sistemas
+                <div class="checkbox-wrapper-25">
+                    <input type="checkbox" class="chkArea" value="PlaneacionSistemas">
                 </div>
             </label><br>
         </div>

@@ -49,6 +49,7 @@
 					<optgroup label="-------- Informes --------">
 						<option value="Sin fecha de informe inicial">Sin fecha de informe inicial</option>
 						<option value="Informe inicial fuera de tiempo">Informe inicial fuera de tiempo</option>
+						<option value="Informe final fuera de tiempo">Informe final fuera de tiempo</option>
 						<option value="Sin fecha de informe de seguimiento">Sin fecha de informe de seguimiento</option>
 						<option value="Informe de seguimiento fuera de tiempo">Informe de seguimiento fuera de tiempo</option>
 					</optgroup>
@@ -101,12 +102,21 @@
 				{
 					<td>NA</td>
 				}
-				<td style="color:@item.nivelAlerta">@item.tipoAdvertencia</td>
+
+				@if (item.tipoAdvertencia.Equals("Informe de seguimiento fuera de tiempo") || item.tipoAdvertencia.Equals("Informe final fuera de tiempo")){
+					<td style="color:@item.nivelAlerta">@item.mensajeAdvertencia</td>
+				}else{
+					<td style="color:@item.nivelAlerta">@item.tipoAdvertencia</td>
+				}
 				@if (item.tipoAdvertencia.Equals("Informe inicial fuera de tiempo"))
 				{
 					<td>@(item.planeacionestrategicaclVM?.InformeInicial?.ToString("dd/MM/yyyy"))</td>
 				}
-				else if (item.tipoAdvertencia.Equals("Informe de seguimiento fuera tiempo"))
+				else if (item.tipoAdvertencia.Equals("Informe final fuera de tiempo"))
+				{
+					<td>@(item.planeacionestrategicaclVM?.InformeFinal?.ToString("dd/MM/yyyy"))</td>
+				}
+					else if (item.tipoAdvertencia.Equals("Informe de seguimiento fuera de tiempo"))
 				{
 					<td>@item.planeacionestrategicaclVM?.InformeSeguimiento?.ToString("dd/MM/yyyy")</td>
 				}

@@ -116,8 +116,8 @@ namespace scorpioweb.Controllers
             new SelectListItem{ Text = "Sobreseimiento por suspensión condicional del proceso", Value = "SOBRESEIMIENTO POR SUSPENSION CONDICIONAL DEL PROCESO" },
             new SelectListItem{ Text = "Sobreseimiento por perdón", Value = "SOBRESEIMIENTO POR PERDON" },
             new SelectListItem{ Text = "Sobreseimiento por muerte del imputado", Value = "SOBRESEIMIENTO POR MUERTE DEL IMPUTADO" },
-            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL" },
-            new SelectListItem{ Text = "Sobreseimiento por prescripción", Value = "SOBRESEIMIENTO POR PRESCRIPCION" },
+            new SelectListItem{ Text = "Sobreseimiento por extinción de la acción penal", Value = "SOBRESEIMIENTO POR EXTINCIÓN DE LA ACCION PENAL"},
+            new SelectListItem{ Text = "Sobreseimiento por prescripción (Sustraido)", Value = "SOBRESEIMIENTO POR PRESCRIPCION (SUSTRAIDO)"},
             new SelectListItem{ Text = "Criterio de oportunidad", Value = "CRITERIO DE OPORTUNIDAD" },
             new SelectListItem{ Text = "Sentencia condenatoria en procedimiento abreviado", Value = "SENTENCIA CONDENATORIA EN PROCEDIMIENTO ABREVIADO" },
             new SelectListItem{ Text = "Sentencia absolutoria en procedimiento abreviado", Value = "SENTENCIA ABSOLUTORIA EN PROCEDIMIENTO ABREVIADO" },
@@ -186,7 +186,11 @@ namespace scorpioweb.Controllers
                 "stephany.garcia@dgepms.com",
                 "carlos.serrano@dgepms.com",
                 "jorge.gonzalez@dgepms.com",
-                "esthela.huitron@dgepms.com"
+                "carmen.trujillo@dgepms.com",
+                "esmeralda.vargas@dgepms.com",
+                "andrea.cortez@dgepms.com",
+                "Rosa.villarreal@dgepms.com",
+                "mayra.gonzalez@dgepms.com"
             };
 
             List<string> supervisores = _context.Persona

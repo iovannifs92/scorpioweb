@@ -527,7 +527,6 @@ namespace scorpioweb.Controllers
         public (string primero, string segundo) nombresiguentes()
         {
             #region -Siguiente supervisoras-
-
             var excluidos = new List<string>
             {
                 "administrador@dgepms.com",
@@ -537,7 +536,11 @@ namespace scorpioweb.Controllers
                 "stephany.garcia@dgepms.com",
                 "carlos.serrano@dgepms.com",
                 "jorge.gonzalez@dgepms.com",
-                "esthela.huitron@dgepms.com"
+                "carmen.trujillo@dgepms.com",
+                "esmeralda.vargas@dgepms.com",
+                "andrea.cortez@dgepms.com",
+                "Rosa.villarreal@dgepms.com",
+                "mayra.gonzalez@dgepms.com"
             };
 
             List<string> supervisores = _context.Persona
@@ -554,8 +557,7 @@ namespace scorpioweb.Controllers
 
             var ultimoSupervisor = _context.Persona
                 .Where(p => !string.IsNullOrEmpty(p.Supervisor)
-                            && !p.Supervisor.EndsWith("@nortedgepms.com")
-                            && !p.Supervisor.Contains("esthela.huitron@dgepms.com"))
+                            && !p.Supervisor.EndsWith("@nortedgepms.com"))
                 .OrderByDescending(p => p.IdPersona)
                 .Select(p => p.Supervisor)
                 .FirstOrDefault();
@@ -1335,6 +1337,8 @@ namespace scorpioweb.Controllers
 
         public async Task<IActionResult> AsignacionSupervision()
         {
+            nombresiguentes(); 
+
             var usu = await userManager.FindByNameAsync(User.Identity.Name);
 
             #region -Solicitud Atendida Archivo prestamo Digital-
@@ -1347,13 +1351,17 @@ namespace scorpioweb.Controllers
 
             List<SelectListItem> ListaUsuarios = new List<SelectListItem>();
             int i = 0;
+
             foreach (var user in userManager.Users)
             {
+                if (user.Email != null && user.Email.EndsWith("@nortedgepms.com"))
+                    continue;
+
                 if (await userManager.IsInRoleAsync(user, "SupervisorMCSCP"))
                 {
                     ListaUsuarios.Add(new SelectListItem
                     {
-                        Text = user.ToString(),
+                        Text = user.Email,
                         Value = i.ToString()
                     });
                     i++;
@@ -1371,29 +1379,22 @@ namespace scorpioweb.Controllers
                                           Count = grup.Count()
                                       };
 
-            var supervisoresBD = from c in _context.Controlsupervisiones
-                                 select new
-                                 {
-                                     c.Supervisor,
-                                     c.Supervisados
-                                 };
-
             var result = (from s in supervisoresScorpio
-                          join b in supervisoresBD on s.Key equals b.Supervisor
+                          join b in ListaUsuarios on s.Key equals b.Text
                           select new
                           {
-                              b.Supervisor,
-                              Supervisados = s.Count + b.Supervisados
+                              b.Text,
+                              Supervisados = s.Count + b.Text
                           }).ToList();
 
             var recomendar = (((from r in result
                                 orderby r.Supervisados ascending
                                 select new
                                 {
-                                    r.Supervisor
+                                    r.Text
                                 }).Take(1))).ToArray();
 
-            string recomendacion = (recomendar[0].Supervisor).ToString();
+            string recomendacion = (recomendar[0].Text).ToString();
 
             ViewBag.Recomendacion = recomendacion;
 
@@ -6843,31 +6844,42 @@ namespace scorpioweb.Controllers
         #endregion
 
         #region -obtenerDatos-
-        public ActionResult OnGetChartData()
+        public async Task<ActionResult> OnGetChartData()
         {
+            // Obtén la lista de usuarios y ordénala alfabéticamente
+            List<SelectListItem> ListaSuper = new List<SelectListItem>();
+            int j = 0;
+            foreach (var users in userManager.Users)
+            {
+                if(users.Email != null && users.Email.EndsWith("nortedgepms.com"))
+                    continue;
+                if (await userManager.IsInRoleAsync(users, "SupervisorMCSCP"))
+                {
+                    ListaSuper.Add(new SelectListItem
+                    {
+                        Text = users.ToString(),
+                        Value = j.ToString()
+                    });
+                    j++;
+                }
+            }
 
-            var supervisoresScorpio = from p in _context.Persona
+            var supervisoresScorpio = from s in _context.Supervision
+                                      join p in _context.Persona on s.PersonaIdPersona equals p.IdPersona
+                                      where s.EstadoSupervision != "CONCLUIDO"
                                       group p by p.Supervisor into grup
                                       select new
                                       {
                                           grup.Key,
                                           Count = grup.Count()
-                                      }
-                          ;
-
-            var supervisoresBD = from c in _context.Controlsupervisiones
-                                 select new
-                                 {
-                                     c.Supervisor,
-                                     c.Supervisados
-                                 };
+                                      };
 
             var result = (from s in supervisoresScorpio
-                          join b in supervisoresBD on s.Key equals b.Supervisor
+                          join b in ListaSuper on s.Key equals b.Text
                           select new
                           {
-                              Supervisor = ((b.Supervisor).ToString()).Substring(0, ((b.Supervisor).ToString()).IndexOf("@")),
-                              Supervisados = s.Count + b.Supervisados
+                              Supervisor = ((b.Text).ToString()).Substring(0, ((b.Text).ToString()).IndexOf("@")),
+                              Supervisados = s.Count
                           }).ToList();
 
             var json = result.ToGoogleDataTable()

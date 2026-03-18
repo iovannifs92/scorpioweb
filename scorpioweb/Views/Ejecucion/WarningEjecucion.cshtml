@@ -15,6 +15,7 @@
         return date;
     };
 
+
     $(document).ready(function () {
         function formatDate(dateString) {
             if (!dateString) return "";
@@ -36,29 +37,49 @@
                         var row = '';
                         for (let i = 0; i < result.query.length; i++) {
                              var item = result.query[i];
-                             // alert(item.id)
-                             // alert(item.quienAsistira)
-                             // alert(result.user)
-                            if (item.quienAsistira == result.user || result.admin == true) {
+                             // alert(item.idTabla)
+                            // if (item.usuario == result.user || result.admin == true) {
                                 row = row
                                     + "<tr>"
-                                    + "<td>" + item.id + "</td>"
-                                    + "<td>" + item.nomcom + "</td>"
+                                    + "<td>" + item.idTabla + "</td>"
+                                    + "<td>" + item.nombre + "</td>"
                                     + "<td>" + item.carpetaEjecucion + "</td>";
-
                                 switch (item.tipoAdvertencia) {
                                     case "Audiencia":
                                         row = row
                                             + "<td style=\"color:red\">"
-                                            + "    " + item.tipoAdvertencia
+                                            + "    " + item.mensajeAdvertencia
                                             + "</td>";
                                         row = row
                                             + "<td>"
-                                            + "    " + formatDate(item.fechaAudiencia)
+                                            + "    " + formatDate(item.fechaAlerta)
                                             + "</td>"
-                                        + "<td>" + item.quienAsistira + "</td>";
+                                        + "<td>" + item.juzgado + "</td>";
+                                        break;
+                                    case "Sin Fecha de Compurga":
+                                        row = row
+                                            + "<td style=\"color:red\">"
+                                            + "    " + item.mensajeAdvertencia
+                                            + "</td>";
+                                        row = row
+                                            + "<td>"
+                                            + "    " + (item.fechaAlerta ? formatDate(item.fechaAlerta) : "Sin dato")
+                                            + "</td>"
+                                        + "<td>" + item.juzgado + "</td>";
+                                        break;
+                                    case "Proxima fecha de Compurga":
+                                        row = row
+                                            + "<td style=\"color:red\">"
+                                            + "    " + item.mensajeAdvertencia
+                                            + "</td>";
+                                        row = row
+                                            + "<td>"
+                                            + "    " + formatDate(item.fechaAlerta)
+                                            + "</td>"
+                                        + "<td>" + item.juzgado + "</td>";
                                         break;
                                 }
+                                row = row
                                 if (item.tipoAdvertencia == "Audiencia" && result.ejecucion == true) {
                                     row = row
                                         + "<td>"
@@ -69,7 +90,7 @@
                                     row = row + "<td></td>";
                                 }
                                 row = row + "</tr>";
-                            }
+                            // }
                         }
                         if (row != '') {
                             $('#tblAlertas').append(row);
@@ -107,8 +128,14 @@
         <select class="form-control" name="currentFilter" id="currentFilter">
             <option value="TODOS">Todos</option>
             <option value="AUDIENCIAS">Audiencia</option>
+            <option value="SIN FECHA DE COMPURGA">Sin fecha de Compurga</option>
+            <option value="FECHA DE COMPURGA">Fecha de Compurga</option>
 
         </select>
+    </div>
+    <div class="form-group col-xs-4">
+        <p>Total de alertas</p>
+        <p>@ViewBag.totalalertas</p>
     </div>
 </form>
 
@@ -131,7 +158,7 @@
                 <a>Informacion del Campo </a>
             </th>
             <th>
-                <a>Usuario </a>
+                <a>Juzgado </a>
             </th>
         </tr>
     </thead>

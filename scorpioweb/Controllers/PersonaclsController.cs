@@ -541,7 +541,9 @@ namespace scorpioweb.Models
             //                                    (from t in table
             //                                     where t.personaclVM.Supervisor == usuario && t.planeacionestrategicaclVM.InformeInicial == null && t.supervisionclVM.EstadoSupervision == "VIGENTE"
             //                                     orderby t.beneficiosclVM.FiguraJudicial
-            //                                     select new PlaneacionclWarningViewModel
+            //                                     select new Planeacioncl
+            //
+            //                                     gViewModel
             //                                     {
             //                                         personaclVM = t.personaclVM,
             //                                         supervisionclVM = t.supervisionclVM,
@@ -3919,6 +3921,13 @@ namespace scorpioweb.Models
                         .ThenBy(m => m.personaclVM?.IdPersonaCl)
                         .ToList();
                     break;
+                case "Informe final fuera de tiempo":
+                    alertas = alertas
+                        .Where(m => m.tipoAdvertencia == "Informe final fuera de tiempo")
+                        .OrderByDescending(m => m.planeacionestrategicaclVM?.InformeFinal)
+                        .ThenBy(m => m.personaclVM?.IdPersonaCl)
+                        .ToList();
+                    break;
                 case "Sin fecha de informe de seguimiento":
                     alertas = alertas
                         .Where(m => m.tipoAdvertencia == "Sin fecha de informe de seguimiento")
@@ -4089,8 +4098,32 @@ namespace scorpioweb.Models
                     beneficiosclVM = t.beneficiosclVM,
                     figuraJudicial = t.figuraJudicial,
                     tipoAdvertencia = "Informe de seguimiento fuera de tiempo",
-                    nivelAlerta = "#F0AD00"
+                    mensajeAdvertencia = (t.planeacionestrategicaclVM.InformeSeguimiento < DateTime.Now)
+                    ? $"Informe de seguimiento vencido hace {(t.planeacionestrategicaclVM.InformeSeguimiento - DateTime.Now).Value.Days} días"
+                    : $"Informe de seguimiento en {(t.planeacionestrategicaclVM.InformeSeguimiento - DateTime.Now).Value.Days} días",
+                    nivelAlerta = "RED"
                 });
+
+
+            var FinalFueraTiempo = tables
+               .Where(t => t.planeacionestrategicaclVM.InformeFinal != null && 
+               t.planeacionestrategicaclVM.InformeFinal < DateTime.Now.AddDays(30) && 
+               t.supervisionclVM.EstadoSupervision != "EN ESPERA DE RESPUESTA")
+               .Select(t => new PlaneacionclWarningViewModel
+               {
+                   personaclVM = t.personaclVM,
+                   supervisionclVM = t.supervisionclVM,
+                   municipiosVM = t.municipiosVM,
+                   causapenalclVM = t.causapenalclVM,
+                   planeacionestrategicaclVM = t.planeacionestrategicaclVM,
+                   beneficiosclVM = t.beneficiosclVM,
+                   figuraJudicial = t.figuraJudicial,
+                   tipoAdvertencia = "Informe final fuera de tiempo",
+                   mensajeAdvertencia = (t.planeacionestrategicaclVM.InformeFinal < DateTime.Now)
+                    ? $"Informe final vencido hace {(t.planeacionestrategicaclVM.InformeFinal - DateTime.Now).Value.Days} días"
+                    : $"Informe final en {(t.planeacionestrategicaclVM.InformeFinal - DateTime.Now).Value.Days} días",
+                   nivelAlerta = "RED"
+               });
 
             var sinPeriodicidadFirma = tables
                 .Where(t => t.planeacionestrategicaclVM.PeriodicidadFirma == null &&
@@ -4133,6 +4166,7 @@ namespace scorpioweb.Models
                 .Union(sinBeneficio)
                 .Union(sinFechaInicial)
                 .Union(InicialFueraTiempo)
+                .Union(FinalFueraTiempo)
                 .Union(sinFechaSeguimiento)
                 .Union(seguimientoFueraTiempo)
                 .Union(sinPeriodicidadFirma)

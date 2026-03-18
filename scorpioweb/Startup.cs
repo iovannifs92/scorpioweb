@@ -77,6 +77,7 @@ namespace scorpioweb
 
             //Se agrega el servicio de SgnalR
             services.AddSignalR();
+            services.AddSingleton<IUserIdProvider, scorpioweb.Class.CustomUserIdProvider>();
             //Se aumenta el limite de archivos a 300MB
             services.Configure<FormOptions>(options =>
             {

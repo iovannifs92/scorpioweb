@@ -781,7 +781,7 @@ namespace scorpioweb.Controllers
                     break;
 
                 case "Sistemas":
-                    ViewBag.BotonId = false;//NO ES NECESARIO POR QUE NO HAY BD DE SISTEMAS
+                    ViewBag.Area = "Sistemas";
                     break;
 
                 case "Oficialia":
@@ -869,7 +869,7 @@ namespace scorpioweb.Controllers
                 fechaEntrega == DateTime.MinValue &&
                 fechaRecibido == DateTime.MinValue)
             {
-                query = query.OrderBy(m => m.Entregado).ThenBy(m => m.FechaRegistro);
+                query = query.OrderBy(m => m.Entregado).ThenByDescending(m => m.FechaRegistro);
             }
             else
             {

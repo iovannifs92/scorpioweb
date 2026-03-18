@@ -1233,6 +1233,10 @@ namespace scorpioweb.Controllers
                     await _hubContext.Clients.Group("EnviaraCorrespondenciaUESPA")
                           .SendAsync("Alerta", mensaje);
                     break;
+                case "PlaneacionSistemas":
+                    await _hubContext.Clients.Group("EnviaraCorrespondenciaPlaneacionSistemas")
+                          .SendAsync("Alerta", mensaje);
+                    break;
 
                 default:
                     break;

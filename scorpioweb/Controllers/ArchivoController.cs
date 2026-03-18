@@ -511,24 +511,7 @@ namespace scorpioweb.Models
             ViewBag.idArchivo = id;
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
-            List<string> ListaCoordinadores = new List<string>();
-            foreach (var u in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(u, "Oficialia"))
-                {
-                    ListaCoordinadores.Add(u.ToString());
-                }
-                if (await userManager.IsInRoleAsync(u, "Director"))
-                {
-                    ListaCoordinadores.Add(u.ToString());
-                }
-                if (await userManager.IsInRoleAsync(u, "Coordinador"))
-                {
-                    ListaCoordinadores.Add(u.ToString());
-                }
-            }
-
-            ViewBag.ListaGeneral = ViewBag.ListaGeneral = ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
+            ViewBag.ListaGeneral = await ObtenerUsuariosPorRoles(userManager);
 
             var snArchivos = await _context.Archivoregistro.Where(m => m.ArchivoIdArchivo == id).ToListAsync();
             if (snArchivos.Count != 0)
@@ -543,27 +526,7 @@ namespace scorpioweb.Models
             ViewBag.idArchivo = id;
             ViewBag.catalogo = _context.Catalogodelitos.Select(Catalogodelitos => Catalogodelitos.Delito).ToList();
 
-            List<string> ListaCoordinadores = new List<string>();
-            foreach (var u in userManager.Users)
-            {
-                if (await userManager.IsInRoleAsync(u, "Oficialia"))
-                {
-                    ListaCoordinadores.Add(u.ToString());
-                }
-                if (await userManager.IsInRoleAsync(u, "Director"))
-                {
-                    ListaCoordinadores.Add(u.ToString());
-                }
-                if (await userManager.IsInRoleAsync(u, "Coordinador"))
-                {
-                    ListaCoordinadores.Add(u.ToString());
-                }
-            }
-
-            //!table.Area.EndsWith("\u0040nortedgepms.com")
-
-
-            ViewBag.ListaGeneral = ListaCoordinadores.Where(r => ListaCoordinadores.Any(f => !r.EndsWith("\u0040nortedgepms.com")));
+            ViewBag.ListaGeneral = await ObtenerUsuariosPorRoles(userManager);
 
             return View();
         }
@@ -755,6 +718,38 @@ namespace scorpioweb.Models
         }
         #endregion 
 
+
+        private async Task<List<string>> ObtenerUsuariosPorRoles(UserManager<ApplicationUser> userManager)
+        {
+            var rolesToCheck = new List<string>
+            {
+                "Oficialia", "Director", "Coordinador",
+                "Juzgado 1", "Juzgado 2", "Juzgado 3",
+                "SupervisorMCSCP", "SupervisorLC", "Servicios previos"
+            };
+
+            var listaUsuarios = new List<string>();
+
+            foreach (var u in userManager.Users)
+            {
+                foreach (var role in rolesToCheck)
+                {
+                    if (await userManager.IsInRoleAsync(u, role))
+                    {
+                        listaUsuarios.Add(u.UserName);
+                        break; // evita revisar más roles del mismo usuario
+                    }
+                }
+            }
+
+            return listaUsuarios
+                    .Where(r => !r.EndsWith("@nortedgepms.com"))
+                    .OrderBy(r => r)
+                    .Distinct()
+                    .ToList();
+        }
+
+
         #region -Prestamo-
         public async Task<IActionResult> CreatePrestamo(int? id, Archivoprestamo archivoprestamo, Archivo archivo, Areas areas)
         {
@@ -772,18 +767,22 @@ namespace scorpioweb.Models
             List<Archivo> archivos = _context.Archivo.ToList();
             List<Archivoprestamo> archivoprestamos = _context.Archivoprestamo.ToList();
 
-            List<Areas> listausuarios = new List<Areas>();
-            listausuarios = (from table in _context.Areas
-                             where table.Area == "ARCHIVO"
-                             select table).ToList();
-            ViewBag.ListaUsuarios = listausuarios;
+            //List<Areas> listausuarios = new List<Areas>();
+            //listausuarios = (from table in _context.Areas
+            //                 where table.Area == "ARCHIVO"
+            //                 select table).ToList();
+            //ViewBag.ListaUsuarios = listausuarios;
 
+            List<string>ListaUsuariosarchivo = new List<string>();
+            foreach (var u in userManager.Users)
+            {
+                if (await userManager.IsInRoleAsync(u, "Archivo"))
+                {
+                    ListaUsuariosarchivo.Add(u.ToString());
+                }
+            }
 
-            List<Areas> listaGeneral = new List<Areas>();
-            listaGeneral = (from table in _context.Areas
-                            where !table.Area.EndsWith("\u0040nortedgepms.com")
-                            select table).ToList();
-            ViewBag.ListaGeneral = listaGeneral;
+            ViewBag.ListaGeneral = await ObtenerUsuariosPorRoles(userManager);
 
             return View();
         }
@@ -797,22 +796,21 @@ namespace scorpioweb.Models
         {
             if (ModelState.IsValid)
             {
+                var lista = await mg.ObtenerAreasUsuariosAsync(userManager, roleManager);
+                string areaUsuario = "";
+
+                if (lista.TryGetValue(archivoprestamo.Recibe, out var area))
+                {
+                    areaUsuario = area;
+                }
 
                 if (optradio == 1)
                 {
                     try
                     {
-                        var sacarnomRecibe = (from a in _context.Areas
-                                              where a.IdArea == int.Parse(archivoprestamo.Recibe)
-                                              select a.UserName).First();
-
-                        var sacarnomArea = (from a in _context.Areas
-                                            where a.IdArea == int.Parse(archivoprestamo.Recibe)
-                                            select a.Area).First();
-
                         archivoprestamo.Entrega = mg.normaliza(archivoprestamo.Entrega);
-                        archivoprestamo.Recibe = mg.normaliza(sacarnomRecibe.ToString());
-                        archivoprestamo.Area = mg.normaliza(sacarnomArea.ToString());
+                        archivoprestamo.Recibe = mg.normaliza(archivoprestamo.Recibe);
+                        archivoprestamo.Area = mg.normaliza(areaUsuario);
                         archivoprestamo.FechaInicial = DateTime.Now;
                         archivoprestamo.FechaRenovacion = DateTime.Now.AddMonths(1);
                         archivoprestamo.Estatus = "PRESTADO";
@@ -834,16 +832,9 @@ namespace scorpioweb.Models
 
                     try
                     {
-                        var sacarnomRecibe = (from a in _context.Areas
-                                              where a.IdArea == int.Parse(archivoprestamo.Recibe)
-                                              select a.UserName).First();
-
-                        var sacarnomArea = (from a in _context.Areas
-                                            where a.IdArea == int.Parse(archivoprestamo.Recibe)
-                                            select a.Area).First();
-
                         archivoprestamodigital.ArchivoIdArchivo = archivoIdArchivo;
-                        archivoprestamodigital.Usuario = mg.normaliza(sacarnomRecibe.ToString());
+                        archivoprestamodigital.Usuario = mg.normaliza(archivoprestamo.Recibe);
+                        archivoprestamo.Area = mg.normaliza(areaUsuario);
                         archivoprestamodigital.UsuarioOtorgaPermiso = mg.normaliza(archivoprestamo.Entrega);
                         archivoprestamodigital.FechaPrestamo = DateTime.Now;
                         archivoprestamodigital.FechaCierre = DateTime.Now.AddDays(7);
@@ -1893,7 +1884,18 @@ namespace scorpioweb.Models
         {
             if (ModelState.IsValid)
             {
-               
+
+                envioarchivo.Nombre = mg.normaliza(envioarchivo.Nombre);
+                envioarchivo.Apaterno = mg.normaliza(envioarchivo.Apaterno);
+                envioarchivo.Amaterno = mg.normaliza(envioarchivo.Amaterno);
+                envioarchivo.Causapenal = mg.normaliza(envioarchivo.Causapenal);
+                envioarchivo.Delito = mg.normaliza(envioarchivo.Delito);
+                envioarchivo.TipoDocumento = mg.normaliza(envioarchivo.TipoDocumento);
+                envioarchivo.SituacionJuridico = mg.normaliza(envioarchivo.SituacionJuridico);
+                envioarchivo.Observaciones = mg.normaliza(envioarchivo.Observaciones);
+                envioarchivo.Area = mg.normaliza(envioarchivo.Area);
+                envioarchivo.Usuario = mg.normaliza(envioarchivo.Usuario);
+
                 _context.Envioarchivo.Add(envioarchivo);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(createEnvioArchivo)); // O la acción de listado
@@ -1906,13 +1908,13 @@ namespace scorpioweb.Models
         [HttpPost]
         public IActionResult NuevoCreateEnvioArchivo(string Apaterno,string Amaterno,string Nombre,string Causapenal,string Delito,string TipoDocumento,string SituacionJuridico,sbyte Recibido,sbyte Revisado,string IdArchvo,string Observaciones,string Area,string Usuario,DateTime FechaRegistro, Envioarchivo envioarchivo)
         {
-            envioarchivo.Apaterno = mg.removeSpaces(mg.normaliza(Apaterno));
-            envioarchivo.Amaterno = mg.removeSpaces(mg.normaliza(Amaterno));
-            envioarchivo.Nombre = mg.removeSpaces(mg.normaliza(Nombre));
+            envioarchivo.Apaterno = mg.normaliza(Apaterno);
+            envioarchivo.Amaterno = mg.normaliza(Amaterno);
+            envioarchivo.Nombre = mg.normaliza(Nombre);
             envioarchivo.Causapenal = Causapenal;
-            envioarchivo.Delito = mg.removeSpaces(mg.normaliza(Delito));
+            envioarchivo.Delito = mg.normaliza(Delito);
             envioarchivo.TipoDocumento = envioarchivo.TipoDocumento;
-            envioarchivo.SituacionJuridico = mg.removeSpaces(mg.normaliza(SituacionJuridico));
+            envioarchivo.SituacionJuridico = mg.normaliza(SituacionJuridico);
             envioarchivo.Recibido = Recibido;
             envioarchivo.Revisado = Revisado;
             envioarchivo.IdArchvo = IdArchvo;

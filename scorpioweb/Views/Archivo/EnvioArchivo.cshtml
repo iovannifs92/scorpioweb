@@ -502,10 +502,17 @@
                     <label>Delito</label>
                     <input name="Delito" id="Delito" value="${inputDelito}" class="form-control" />
                 </div>
-                    <div class="form-group">
-                        <label>Situación Jurídico</label>
-                        <input name="SituacionJuridico" id="SituacionJuridico" value="${inputEstadoSupervision}" class="form-control" />
-                    </div>
+                <div class="form-group">
+                    <label for="TipoDocumento">Tipo de Documento</label>
+                    <select id="TipoDocumento" name="TipoDocumento" class="form-control">
+                        <option value="Expediente">Expediente</option>
+                        <option value="Oficio">Oficio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Situación Jurídico</label>
+                    <input name="SituacionJuridico" id="SituacionJuridico" value="${inputEstadoSupervision}" class="form-control" />
+                </div>
                     <input type="hidden" name="Recibido" value="0"/>
                     <input type="hidden" name="Revisado" value="0"/>
                     <input type="hidden" name="IdArchvo"/>

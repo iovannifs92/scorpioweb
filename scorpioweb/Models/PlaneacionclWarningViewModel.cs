@@ -17,6 +17,7 @@ namespace scorpioweb.Models
         public Municipios municipiosVM { get; set; }
         public Estados estadosVM { get; set; }
         
+        public string mensajeAdvertencia { get; set; }
         public string tipoAdvertencia { get; set; }
         public string figuraJudicial { get; set; }
         public DateTime? fechaCmbio { get; set; }

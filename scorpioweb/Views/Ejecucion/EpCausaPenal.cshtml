@@ -6,90 +6,93 @@
 
 <script>
 
-  $(document).ready(function () {
-        function autocomplete(inp, arr) {
-                var currentFocus;
-                inp.addEventListener("input", function (e) {
-                    var a, b, i, val = this.value;
-                    closeAllLists();
-                    if (!val) { return false; }
-                    currentFocus = -1;
-                    a = document.createElement("DIV");
-                    a.setAttribute("id", this.id + "autocomplete-list");
-                    a.setAttribute("class", "autocomplete-items");
-                    this.parentNode.appendChild(a);
-                    for (i = 0; i < arr.length; i++) {
-                        if (arr[i].toUpperCase().includes(val.toUpperCase())) {
-                            b = document.createElement("DIV");
-                            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                            b.innerHTML += arr[i].substr(val.length);
-                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
-                                inp.value = this.getElementsByTagName("input")[0].value;
+      $(document).ready(function () {
 
-                                closeAllLists();
-                            });
-                            a.appendChild(b);
+          $("#divFPbeneficio").hide();
+
+            function autocomplete(inp, arr) {
+                    var currentFocus;
+                    inp.addEventListener("input", function (e) {
+                        var a, b, i, val = this.value;
+                        closeAllLists();
+                        if (!val) { return false; }
+                        currentFocus = -1;
+                        a = document.createElement("DIV");
+                        a.setAttribute("id", this.id + "autocomplete-list");
+                        a.setAttribute("class", "autocomplete-items");
+                        this.parentNode.appendChild(a);
+                        for (i = 0; i < arr.length; i++) {
+                            if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                                b = document.createElement("DIV");
+                                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                                b.innerHTML += arr[i].substr(val.length);
+                                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>"; b.addEventListener("click", function (e) {
+                                    inp.value = this.getElementsByTagName("input")[0].value;
+
+                                    closeAllLists();
+                                });
+                                a.appendChild(b);
+                            }
+                        }
+                    });
+
+                    inp.addEventListener("keydown", function (e) {
+                        var x = document.getElementById(this.id + "autocomplete-list");
+                        if (x) x = x.getElementsByTagName("div");
+                        if (e.keyCode == 40) {
+
+                            currentFocus++;
+
+                            addActive(x);
+                        } else if (e.keyCode == 38) { //up
+
+                            currentFocus--;
+
+                            addActive(x);
+                        } else if (e.keyCode == 13) {
+
+                            e.preventDefault();
+                            if (currentFocus > -1) {
+
+                                if (x) x[currentFocus].click();
+                            }
+                        }
+                    });
+                    function addActive(x) {
+
+                        if (!x) return false;
+
+                        removeActive(x);
+                        if (currentFocus >= x.length) currentFocus = 0;
+                        if (currentFocus < 0) currentFocus = (x.length - 1);
+
+                        x[currentFocus].classList.add("autocomplete-active");
+                    }
+                    function removeActive(x) {
+
+                        for (var i = 0; i < x.length; i++) {
+                            x[i].classList.remove("autocomplete-active");
                         }
                     }
-                });
-
-                inp.addEventListener("keydown", function (e) {
-                    var x = document.getElementById(this.id + "autocomplete-list");
-                    if (x) x = x.getElementsByTagName("div");
-                    if (e.keyCode == 40) {
-
-                        currentFocus++;
-
-                        addActive(x);
-                    } else if (e.keyCode == 38) { //up
-
-                        currentFocus--;
-
-                        addActive(x);
-                    } else if (e.keyCode == 13) {
-
-                        e.preventDefault();
-                        if (currentFocus > -1) {
-
-                            if (x) x[currentFocus].click();
+                    function closeAllLists(elmnt) {
+                        var x = document.getElementsByClassName("autocomplete-items");
+                        for (var i = 0; i < x.length; i++) {
+                            if (elmnt != x[i] && elmnt != inp) {
+                                x[i].parentNode.removeChild(x[i]);
+                            }
                         }
                     }
-                });
-                function addActive(x) {
-
-                    if (!x) return false;
-
-                    removeActive(x);
-                    if (currentFocus >= x.length) currentFocus = 0;
-                    if (currentFocus < 0) currentFocus = (x.length - 1);
-
-                    x[currentFocus].classList.add("autocomplete-active");
-                }
-                function removeActive(x) {
-
-                    for (var i = 0; i < x.length; i++) {
-                        x[i].classList.remove("autocomplete-active");
-                    }
-                }
-                function closeAllLists(elmnt) {
-                    var x = document.getElementsByClassName("autocomplete-items");
-                    for (var i = 0; i < x.length; i++) {
-                        if (elmnt != x[i] && elmnt != inp) {
-                            x[i].parentNode.removeChild(x[i]);
-                        }
-                    }
-                }
-                document.addEventListener("click", function (e) {
-                    closeAllLists(e.target);
-                });
-        }
-        var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
-        autocomplete(document.getElementById("Delito"), catalogo);
+                    document.addEventListener("click", function (e) {
+                        closeAllLists(e.target);
+                    });
+            }
+            var catalogo = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.catalogo))');
+            autocomplete(document.getElementById("Delito"), catalogo);
 
 
-        var catalogojuez = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
-        autocomplete(document.getElementById("JuzgadoOrigen"), catalogojuez);
-    });
+            var catalogojuez = JSON.parse('@Html.Raw(Json.Serialize(@ViewBag.directorio))');
+            autocomplete(document.getElementById("JuzgadoOrigen"), catalogojuez);
+      });
 
     $('#TieneceAcumuladas').change(function () {
         var dat = $(this).children("option:selected").val();
@@ -100,11 +103,82 @@
             $("#CpAcumuladas").css("display", "none");
         }
     });
+
+    function cambioBeneficio(idEjecucion, valor) {
+                mostrarFechaBeneficio(valor);
+                UpdatePosibleBeneficio(idEjecucion, valor);
+            }
+
+
+    function mostrarFechaBeneficio(valor) {
+        if (valor === "SI") {
+            $("#divFPbeneficio").show();
+        } else {
+            $("#divFPbeneficio").hide();
+        }
+    }
+
+    // $("#formCausaPenal").submit(function (e) {
+
+    //     e.preventDefault();
+
+    //     var form = $(this);
+
+    //     $.ajax({
+    //         url: form.attr("action"),
+    //         type: "POST",
+    //         data: form.serialize(),
+
+    //         success: function (response) {
+
+    //             if (response.success) {
+
+    //                 Swal.fire({
+    //                     icon: 'success',
+    //                     title: 'Guardado',
+    //                     text: 'La causa penal se guardó correctamente',
+    //                     timer: 1800,
+    //                     showConfirmButton: false
+    //                 });
+
+    //                 setTimeout(function () {
+
+    //                     $('.modal').modal('hide'); // cierra el modal abierto
+
+    //                 }, 1800);
+
+    //             }
+
+    //         },
+    //         error: function () {
+
+    //             Swal.fire({
+    //                 icon: 'error',
+    //                 title: 'Error',
+    //                 text: 'No se pudo guardar'
+    //             });
+
+    //         }
+    //     });
+
+    // });
+
+     function actualizarModalEdicion(id) {
+
+        $.get('/Ejecucion/EditCausaPenal?id=' + id, function (data) {
+
+            $("#contenidoModal").html(data);
+
+        });
+
+    }
+
 </script>
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="EpCausaPenal" enctype="multipart/form-data">
+        @* <form asp-action="EpCausaPenal" enctype="multipart/form-data"> *@
+        <form id="formCausaPenal" asp-action="EpCausaPenal" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group col-md-12">
                 <label class="control-label">Causa Penal</label>
@@ -197,6 +271,23 @@
                 <label class="control-label">EjecucionIdEjecucion</label>
                 <input readonly asp-for="EjecucionIdEjecucion" value="@ViewBag.idEjecucion" class="form-control" />
                 <span asp-validation-for="EjecucionIdEjecucion"  class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-md-12" id="divFcompurrga" name="divFcompurrga">
+                <label class="control-label">Fecha Compurga  </label>
+                <input class="form-control" type="date" id="FechaCompurga" name="FechaCompurga"/>
+            </div>
+            <div class=" form-groupcol-md-12" id="divTieneBeneficio">
+                <label class="form-group control-label">¿La persona tiene beneficio?</label>
+                <select class="form-control" id="PosibleBeneficio" name="PosibleBeneficio" onchange="mostrarFechaBeneficio(value)">
+                    <option selected="NA"></option>
+                    <option value="SI">Si</option>
+                    <option value="NO">No</option>
+                </select>
+            </div>
+            <div class="form-group col-md-12" id="divFPbeneficio" name="divFPbeneficio">
+                <label class="control-label">Fecha posible beneficio</label>
+                <input class="form-control" type="date" id="FechaPbeneficio" name="FechaPbeneficio"/>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" type="submit">

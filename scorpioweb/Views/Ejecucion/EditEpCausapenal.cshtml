@@ -139,72 +139,128 @@
         autocomplete(document.getElementById("JuzgadoOrigen"), catalogojuez);
     });
 
+    // function borrarEPCP(id, idep) {
+    //     var idsuper = id;
+    //     var usuario = '@ViewBag.user';
+    //     var cambiar = confirm("¿Desea borrar el registro?");
+    //     if (cambiar == true) {
+    //         let razon = prompt("Porque desea borrar el registro?", "");
+    //         if (razon == null || razon == "") {
+    //             return;
+    //             text = "NA";
+    //         } else {
+    //             text = razon;
+    //         }
+    //         $.ajax({
+    //             type: "POST",
+    //             dataType: "json",
+    //             url: "/Ejecucion/antesdeleteCP",
+    //             traditional: true,
+    //             data: {
+    //                 datoeje: [id, idep, razon, usuario],
+    //             },
+    //             success: function (response) {
+    //                 if (response.borrar == false) {
+    //                     alert(response.mensaje)
+    //                 } else {
+    //                     alert("Registro borrado con exito!!")
+    //                 }
+    //             },
+    //             error: function (response) {
+    //                 alert(response.error);
+    //                 alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+    //             }
+    //         });
+    //     }
+    //     return innerFunc;
+    // };
 
-    //function borrarEPCP(id, idep) {
-    //    var usuario = '@ViewBag.user';
-    //    var cambiar = confirm("¿Desea borrar el registro?");
-    //    if (cambiar == true) {
-    //        $.ajax({
-    //            type: "POST",
-    //            dataType: "json",
-    //            url: "/Ejecucion/antesdeleteCP",
-    //            traditional: true,
-    //            data: {
-    //                id: id,
-    //                idep: idep,
-    //            },
-    //            success: function (response) {
-    //                if (response.borrar == false) {
-    //                    alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
-    //                } else {
-    //                    alert("Datos Borrados con exito");
-    //                }
-    //            },
-    //            error: function (response) {
-    //                alert(response.error);
-    //                alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-    //            }
-    //        });
-    //    }
-    //    return innerFunc;
-    //};
 
+    function borrarEPCP(id, idejecucion) {
 
-    function borrarEPCP(id, idep) {
-        var idsuper = id;
-        var usuario = '@ViewBag.user';
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            let razon = prompt("Porque desea borrar el registro?", "");
-            if (razon == null || razon == "") {
-                return;
-                text = "NA";
-            } else {
-                text = razon;
+        let usuario = '@ViewBag.user';
+
+        Swal.fire({
+            title: '¿Eliminar causa penal?',
+            text: 'Esta acción no se puede deshacer',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                // 🔴 Cerrar modal actual
+                $('.modal').modal('hide');
+
+                // 🔴 Esperar a que cierre bien
+                setTimeout(() => {
+
+                    Swal.fire({
+                        title: 'Motivo de eliminación',
+                        input: 'text',
+                        inputPlaceholder: 'Escribe la razón...',
+                        showCancelButton: true,
+                        confirmButtonText: 'Eliminar',
+                        cancelButtonText: 'Cancelar',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Debes escribir una razón';
+                            }
+                        }
+                    }).then((inputResult) => {
+
+                        if (inputResult.isConfirmed) {
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/Ejecucion/DeleteCausaPenal",
+                                data: {
+                                    id: id,
+                                    idejecucion: idejecucion,
+                                    razon: inputResult.value,
+                                    usuario: usuario
+                                },
+                                success: function (response) {
+
+                                    if (response.success) {
+
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Eliminado',
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        });
+
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 1500);
+
+                                    } else {
+
+                                        Swal.fire(
+                                            'No se puede eliminar',
+                                            response.mensaje,
+                                            'warning'
+                                        );
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire('Error', 'Error del servidor', 'error');
+                                }
+                            });
+
+                        }
+
+                    });
+
+                }, 300); // 🔥 tiempo clave para que cierre el modal
+
             }
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Ejecucion/antesdeleteCP",
-                traditional: true,
-                data: {
-                    datoeje: [id, idep, razon, usuario],
-                },
-                success: function (response) {
-                    if (response.borrar == false) {
-                        alert(response.mensaje)
-                    } else {
-                        alert("Registro borrado con exito!!")
-                    }
-                },
-                error: function (response) {
-                    alert(response.error);
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
-        }
-        return innerFunc;
-    };
+
+        });
+    }
 
 
     function CrearInstancia(id, i) {
@@ -349,7 +405,6 @@
             mostrarFechaBeneficio(valorActual);
         });
 
-
 </script>
 
 
@@ -391,7 +446,7 @@
 @foreach (var item in ViewData["tieneEPCP"] as IEnumerable<scorpioweb.Models.EjecucionCP>)
 {
     i++;
-    <form asp-action="EditEPCausaPenal" asp-route-id="@item.epcausapenalVM.Idepcausapenal" asp-route-archivoIdArchivo="@item.epcausapenalVM.Idepcausapenal" enctype="multipart/form-data">
+    <form class="formEditarCausaPenal" asp-action="EditEPCausaPenal" asp-route-id="@item.epcausapenalVM.Idepcausapenal">
         @if (@item.epcausapenalVM.EstadodeCausa == 1)
         {
             <p>
@@ -502,8 +557,12 @@
                     </button>
                 </div>
                 <div class="col-md-6">
-                    <button onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal, @item.epcausapenalVM.EjecucionIdEjecucion)" class="btn btn-danger btn-block" style="margin-bottom:10px">
+      @*               <button onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal, @item.epcausapenalVM.EjecucionIdEjecucion)" class="btn btn-danger btn-block" style="margin-bottom:10px">
                         <i class="fa fa-trash"></i> Borrar
+                    </button> *@
+               
+                <button type="button" onclick="borrarEPCP(@item.epcausapenalVM.Idepcausapenal, @item.epcausapenalVM.EjecucionIdEjecucion)" class="btn btn-danger btn-block" style="margin-bottom:10px">
+                    <i class="fa fa-trash"></i> Borrar
                     </button>
                 </div>
             }

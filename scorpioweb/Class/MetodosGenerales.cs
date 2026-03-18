@@ -401,6 +401,9 @@ namespace scorpioweb.Class
                 { "Ejecucion", "Ejecución de Penas" },
                 { "AuxiliarEjecucion", "Ejecución de Penas" },
                 { "Coordinador Ejecucion", "Ejecución de Penas" },
+                { "Juzgado 1", "Ejecución de Penas" },
+                { "Juzgado 2", "Ejecución de Penas" },
+                { "Juzgado 3", "Ejecución de Penas" },
                 { "SupervisorLC", "LC" },
                 { "AdminLC", "LC" },
                 { "AdminMCSCP", "MCySCP" },
@@ -409,13 +412,13 @@ namespace scorpioweb.Class
                 { "AuxiliarMCSCP", "MCySCP" },
                 { "Servicios previos", "Servicios previos" },
                 { "Servicios Legales", "Servicios legales" },
-                { "Sistemas", "Sistemas" },
                 { "Operativo", "Coordinacion Operativa" },
                 { "Director", "Direccion" },
                 { "Vinculacion", "Vinculacion" },
                 { "Oficialia", "Oficialia" },
                 { "Archivo", "Archivo"},
-                { "ArchivoAsistente", "Archivo"}
+                { "ArchivoAsistente", "Archivo"},
+                { "PlaneacionSistemas", "Sistemas"}
             };
 
             foreach (var role in roles)
@@ -485,6 +488,7 @@ namespace scorpioweb.Class
 
         }
         #endregion
+
         #region -obtener usuarios por areas -
         public async Task<Dictionary<string, string>> ObtenerAreasUsuariosAsync(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
@@ -529,11 +533,27 @@ namespace scorpioweb.Class
                     userAreas[user.UserName] = "Sin área asignada";
                 }
             }
+
             return userAreas;
 
         }
 
         #endregion
+
+        //public async Task<List<string>> ObtenerRolUsuarioAsync(string nombreUsuario, UserManager<ApplicationUser> userManager)
+        //{
+        //    var usuario = await userManager.FindByNameAsync(nombreUsuario);
+
+        //    if (usuario == null)
+        //    {
+        //        return new List<string>();
+        //    }
+
+        //    var roles = await userManager.GetRolesAsync(usuario);
+
+        //    return roles.ToList();
+        //}
+
 
         //public async Task expedienteUnico(
         //   string var_tablanueva,

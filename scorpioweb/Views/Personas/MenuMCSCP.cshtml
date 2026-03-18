@@ -156,7 +156,7 @@
         </div>
     }
 
-    @if (User.IsInRole("ArchivoMCSCP") || User.IsInRole("Masteradmin"))
+    @* @if (User.IsInRole("ArchivoMCSCP") || User.IsInRole("Masteradmin"))
     {
         <div class="col-sm-3 col-md-3 card text-center">
 
@@ -173,7 +173,7 @@
             </div>
         </div>
     }
-
+ *@
     @if (ViewBag.Warnings != 0)
     {
         <div class="col-sm-3 col-md-3 card text-center">
@@ -226,7 +226,7 @@
 
     @if (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin"))
     {
-        <div class="col-sm-3 col-md-3 card text-center">
+@*      <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">
                     <a asp-controller="Personas" asp-action="RazondeArchivo">
@@ -238,7 +238,7 @@
                     Ubicación de expedientes que se encuentran en la base
                 </p>
             </div>
-        </div>
+        </div> *@
         <div class="col-sm-3 col-md-3 card text-center">
             <div class="card-body">
                 <h4 class="card-title">

@@ -22,8 +22,9 @@ namespace scorpioweb.Class
         {
             var user = Context.User;
             var roles = user.FindAll(ClaimTypes.Role);
+            var userName = user?.Identity?.Name?.Trim();
 
-            Console.WriteLine($"Usuario conectado: {user.Identity.Name}");
+            Console.WriteLine($"Usuario conectado: {userName}");
             foreach (var r in roles)
             {
                 Console.WriteLine($"Rol detectado: {r.Value}");
@@ -33,6 +34,13 @@ namespace scorpioweb.Class
             {
                 string userRole = roleClaim.Value;
                 await AddToGroupBasedOnRole(userRole);
+            }
+
+            // Añadir al grupo personal del usuario para envío por grupo (robusto)
+            if (!string.IsNullOrEmpty(userName))
+            {
+                // Grupo con prefijo para evitar colisiones
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"user:{userName}");
             }
 
             await base.OnConnectedAsync();
@@ -97,7 +105,9 @@ namespace scorpioweb.Class
                 case "Servicios Legales":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaSL");
                     break;
-       
+                case "PlaneacionSistemas":
+                    await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaPlaneacionSistemas");
+                    break;
                 default:
                     Console.WriteLine("Rol no reconocido");
                     break;
@@ -117,13 +127,13 @@ namespace scorpioweb.Class
         {
             var usuarioOrigen = Context.User.Identity.Name;
 
+            // Intentar entrega usando Clients.User (funcionará si IUserIdProvider fue registrado)
             await Clients.User(usuarioDestino)
                 .SendAsync("RecibirMensajePrivado", usuarioOrigen, mensaje);
-        }
 
-        public string GetUserId(HubConnectionContext connection)
-        {
-            return connection?.User?.Identity?.Name;
+            // Envío alternativo por grupo personal (más robusto si agregaste al grupo en OnConnectedAsync)
+            await Clients.Group($"user:{usuarioDestino}")
+                .SendAsync("RecibirMensajePrivado", usuarioOrigen, mensaje);
         }
     }
 }

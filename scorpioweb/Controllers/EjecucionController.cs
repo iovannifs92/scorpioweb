@@ -27,6 +27,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2013.Word;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Cms;
 
 namespace scorpioweb.Controllers
 {
@@ -771,7 +772,7 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EpCausaPenal(int id, [Bind("Causapenal,CpAcumuladas,TieneceAcumuladas,Delito,Clasificaciondelito,JuzgadoOrigen,FechaSentencia,Multa,Reparacion,Firmeza,Revocacion,Penaanos,Penameses,Penadias,Apartir,EjecucionIdEjecucion")] Epcausapenal epcausapenal)
+        public async Task<IActionResult> EpCausaPenal(int id, [Bind("Causapenal,CpAcumuladas,TieneceAcumuladas,Delito,Clasificaciondelito,JuzgadoOrigen,FechaSentencia,Multa,Reparacion,Firmeza,Revocacion,Penaanos,Penameses,Penadias,Apartir,EjecucionIdEjecucion,FechaCompurga,PosibleBeneficio,FechaPbeneficio")] Epcausapenal epcausapenal, Ejecucion ejecucion)
         {
             if (ModelState.IsValid)
             {
@@ -795,13 +796,63 @@ namespace scorpioweb.Controllers
                 epcausapenal.EjecucionIdEjecucion = epcausapenal.EjecucionIdEjecucion;
 
 
+                var query = _context.Ejecucion.FirstOrDefault(e => e.IdEjecucion == epcausapenal.EjecucionIdEjecucion);
+
+                if (ejecucion.FechaCompurga != null)
+                {
+                    query.FechaCompurga = ejecucion.FechaCompurga;
+                }
+
+                if (!string.IsNullOrEmpty(ejecucion.PosibleBeneficio))
+                {
+                    query.PosibleBeneficio = ejecucion.PosibleBeneficio;
+                }
+
+                if (ejecucion.FechaPbeneficio != null)
+                {
+                    query.FechaPbeneficio = ejecucion.FechaPbeneficio;
+                }
+                _context.SaveChanges();
+
                 _context.Add(epcausapenal);
-                await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                return RedirectToAction(nameof(Index));
+
+                var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                await _context.SaveChangesAsync(userId);
+
+                return Json(new
+                {
+                    success = true,
+                    idEjecucion = epcausapenal.EjecucionIdEjecucion
+                });
             }
-            return View(epcausapenal);
+
+            return Json(new { success = false });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GuardarCausaPenal(Epcausapenal epcausapenal)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(epcausapenal);
+                await _context.SaveChangesAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Guardado correctamente"
+                });
+            }
+
+            return Json(new
+            {
+                success = false,
+                message = "Error al guardar"
+            });
         }
         #endregion
+
 
         #region -Editar EP Causa Penal-
         public async Task<IActionResult> EditEPCausaPenal(int? id)
@@ -855,11 +906,11 @@ namespace scorpioweb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEPCausaPenal(int id, [Bind("Idepcausapenal, Causapenal, TieneceAcumuladas, CpAcumuladas, Delito, Clasificaciondelito, JuzgadoOrigen, FechaSentencia, Multa, Reparacion, Firmeza, Revocacion, Penaanos, Penameses, Penadias, Apartir, EjecucionIdEjecucion")] Epcausapenal epcausapenal)
+        public async Task<IActionResult> EditEPCausaPenal(int id, Epcausapenal epcausapenal)
         {
             if (id != epcausapenal.Idepcausapenal)
             {
-                return NotFound();
+                return Json(new { success = false });
             }
 
             if (ModelState.IsValid)
@@ -870,116 +921,255 @@ namespace scorpioweb.Controllers
                     epcausapenal.Delito = mg.removeSpaces(mg.normaliza(epcausapenal.Delito));
                     epcausapenal.Clasificaciondelito = mg.removeSpaces(mg.normaliza(epcausapenal.Clasificaciondelito));
                     epcausapenal.JuzgadoOrigen = mg.removeSpaces(mg.normaliza(epcausapenal.JuzgadoOrigen));
-                    epcausapenal.FechaSentencia = epcausapenal.FechaSentencia;
                     epcausapenal.Multa = mg.removeSpaces(mg.normaliza(epcausapenal.Multa));
                     epcausapenal.Reparacion = mg.removeSpaces(mg.normaliza(epcausapenal.Reparacion));
-                    epcausapenal.Firmeza = epcausapenal.Firmeza;
                     epcausapenal.Revocacion = mg.removeSpaces(mg.normaliza(epcausapenal.Revocacion));
-                    epcausapenal.Penaanos = epcausapenal.Penaanos;
-                    epcausapenal.Penameses = epcausapenal.Penameses;
-                    epcausapenal.Penadias = epcausapenal.Penadias;
-                    epcausapenal.Apartir = epcausapenal.Apartir;
-                    epcausapenal.TieneceAcumuladas = epcausapenal.TieneceAcumuladas;
-                    epcausapenal.CpAcumuladas = epcausapenal.CpAcumuladas;
-                    epcausapenal.EjecucionIdEjecucion = epcausapenal.EjecucionIdEjecucion;
 
                     _context.Update(epcausapenal);
-                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EpcausapenalExists(epcausapenal.Idepcausapenal))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(epcausapenal);
-        }
 
+                    await _context.SaveChangesAsync(User?.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                    return Json(new { success = true });
+                }
+                catch
+                {
+                    return Json(new { success = false });
+                }
+            }
+
+            return Json(new { success = false });
+        }
         #endregion
 
         #region -Borrar Causa Penal-
-        public JsonResult antesdeleteCP(Epcausapenal epcausapenal, Causapenal causapenal,Historialeliminacion historialeliminacion, string[] datoeje)
+
+        [HttpPost]
+        public JsonResult DeleteCausaPenal(int id, int idejecucion, string razon, string usuario)
         {
-            var borrar = false;
-            var id = Int32.Parse(datoeje[0]);
-            var idep = Int32.Parse(datoeje[1]);
-            var razon = mg.normaliza(datoeje[2]);
-            var user = mg.normaliza(datoeje[3]);
-
-
-            var antesdel = from epcp in _context.Epcausapenal
-                           where epcp.Idepcausapenal == idep
-                           select epcp;
-
-            var query = (from s in _context.Ejecucion
-                         where s.IdEjecucion == idep
-                         select s).FirstOrDefault();
-
-            var tieneinstancia = from epi in _context.Epinstancia
-                                 join epcp in _context.Epcausapenal on epi.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
-                                 where epcp.Idepcausapenal == id
-                                 select epi;
-
-            var tieneTermino = from ept in _context.Eptermino
-                               join epcp in _context.Epcausapenal on ept.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
-                               where epcp.Idepcausapenal == id
-                               select ept;
-            var mensaje = "Tiene instancia y termino, borrelos primero";
-            if (tieneinstancia.Any() && !tieneTermino.Any())
-            {
-                mensaje = "Tiene Instancia, borre primero la Instancia";
-            }
-            if (!tieneinstancia.Any() && tieneTermino.Any())
-            {
-                mensaje = "Tiene Termino, borre primerio el Termino";
-            }
-
-
-            if (tieneinstancia.Any() || tieneTermino.Any())
-            {
-                return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar , mensaje});
-            }
-            else
+            using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    borrar = true;
-                    historialeliminacion.Id = id;
-                    historialeliminacion.Descripcion = "IDEJECUCION= " + query.IdEjecucion + " NOMBRE= " + query.Paterno + " " + query.Materno + " " + query.Nombre + " CE= " + query.Ce;
-                    historialeliminacion.Tipo = "EJECUCION";
-                    historialeliminacion.Razon = mg.normaliza(razon);
-                    historialeliminacion.Usuario = mg.normaliza(user);
-                    historialeliminacion.Fecha = DateTime.Now;
-                    historialeliminacion.Supervisor = mg.normaliza(query.Usuario);
-                    _context.Add(historialeliminacion);
+                    // 🔹 Validar relaciones
+                    bool tieneInstancia = _context.Epinstancia
+                        .Any(x => x.EpcausapenalIdepcausapenal == id);
+
+                    bool tieneTermino = _context.Eptermino
+                        .Any(x => x.EpcausapenalIdepcausapenal == id);
+
+                    if (tieneInstancia || tieneTermino)
+                    {
+                        string mensaje = "Tiene instancia y término, bórrelos primero";
+
+                        if (tieneInstancia && !tieneTermino)
+                            mensaje = "Tiene instancia, borre primero la instancia";
+
+                        if (!tieneInstancia && tieneTermino)
+                            mensaje = "Tiene término, borre primero el término";
+
+                        return Json(new { success = false, mensaje });
+                    }
+
+                    // 🔹 Obtener ejecución
+                    var ejecucion = _context.Ejecucion
+                        .FirstOrDefault(e => e.IdEjecucion == idejecucion);
+
+                    // 🔹 Historial
+                    var historial = new Historialeliminacion
+                    {
+                        Id = id,
+                        Descripcion = "IDEJECUCION= " + ejecucion.IdEjecucion +
+                                      " NOMBRE= " + ejecucion.Paterno + " " +
+                                      ejecucion.Materno + " " + ejecucion.Nombre +
+                                      " CE= " + ejecucion.Ce,
+                        Tipo = "CAUSA PENAL",
+                        Razon = mg.normaliza(razon),
+                        Usuario = mg.normaliza(usuario),
+                        Fecha = DateTime.Now,
+                        Supervisor = mg.normaliza(ejecucion.Usuario)
+                    };
+
+                    _context.Add(historial);
+
+                    // 🔹 Eliminar causa penal
+                    var causa = _context.Epcausapenal
+                        .FirstOrDefault(x => x.Idepcausapenal == id);
+
+                    _context.Epcausapenal.Remove(causa);
+
                     _context.SaveChanges();
 
+                    transaction.Commit();
 
-                    var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
-                    _context.Epcausapenal.Remove(epcausapenalDel);
-                    _context.SaveChanges();
-                    
-
-                    return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar });
+                    return Json(new { success = true });
 
                 }
                 catch (Exception ex)
                 {
-                    var error = ex;
-                    borrar = false;
-                    return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"),  borrar, error });
+                    transaction.Rollback();
+
+                    return Json(new
+                    {
+                        success = false,
+                        mensaje = "Error al eliminar",
+                        error = ex.Message
+                    });
                 }
             }
-
         }
-        //AJAX NO ARREGLADO 
+
+
+        //public JsonResult antesdeleteCP(Epcausapenal epcausapenal, Causapenal causapenal, Historialeliminacion historialeliminacion, string[] datoeje)
+        //{
+        //    var borrar = false;
+        //    var id = Int32.Parse(datoeje[0]);
+        //    var idep = Int32.Parse(datoeje[1]);
+        //    var razon = mg.normaliza(datoeje[2]);
+        //    var user = mg.normaliza(datoeje[3]);
+
+
+        //    var antesdel = from epcp in _context.Epcausapenal
+        //                   where epcp.Idepcausapenal == idep
+        //                   select epcp;
+
+        //    var query = (from s in _context.Ejecucion
+        //                 where s.IdEjecucion == idep
+        //                 select s).FirstOrDefault();
+
+        //    var tieneinstancia = from epi in _context.Epinstancia
+        //                         join epcp in _context.Epcausapenal on epi.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
+        //                         where epcp.Idepcausapenal == id
+        //                         select epi;
+
+        //    var tieneTermino = from ept in _context.Eptermino
+        //                       join epcp in _context.Epcausapenal on ept.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
+        //                       where epcp.Idepcausapenal == id
+        //                       select ept;
+        //    var mensaje = "Tiene instancia y termino, borrelos primero";
+        //    if (tieneinstancia.Any() && !tieneTermino.Any())
+        //    {
+        //        mensaje = "Tiene Instancia, borre primero la Instancia";
+        //    }
+        //    if (!tieneinstancia.Any() && tieneTermino.Any())
+        //    {
+        //        mensaje = "Tiene Termino, borre primerio el Termino";
+        //    }
+
+
+        //    if (tieneinstancia.Any() || tieneTermino.Any())
+        //    {
+        //        return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar, mensaje });
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            borrar = true;
+        //            historialeliminacion.Id = id;
+        //            historialeliminacion.Descripcion = "IDEJECUCION= " + query.IdEjecucion + " NOMBRE= " + query.Paterno + " " + query.Materno + " " + query.Nombre + " CE= " + query.Ce;
+        //            historialeliminacion.Tipo = "EJECUCION";
+        //            historialeliminacion.Razon = mg.normaliza(razon);
+        //            historialeliminacion.Usuario = mg.normaliza(user);
+        //            historialeliminacion.Fecha = DateTime.Now;
+        //            historialeliminacion.Supervisor = mg.normaliza(query.Usuario);
+        //            _context.Add(historialeliminacion);
+        //            _context.SaveChanges();
+
+
+        //            var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
+        //            _context.Epcausapenal.Remove(epcausapenalDel);
+        //            _context.SaveChanges();
+
+
+        //            return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar });
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            var error = ex;
+        //            borrar = false;
+        //            return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar, error });
+        //        }
+        //    }
+
+        //}
+
+
+        //public JsonResult antesdeleteCP(Epcausapenal epcausapenal, Causapenal causapenal,Historialeliminacion historialeliminacion, string[] datoeje)
+        //{
+        //    var borrar = false;
+        //    var id = Int32.Parse(datoeje[0]);
+        //    var idep = Int32.Parse(datoeje[1]);
+        //    var razon = mg.normaliza(datoeje[2]);
+        //    var user = mg.normaliza(datoeje[3]);
+
+
+        //    var antesdel = from epcp in _context.Epcausapenal
+        //                   where epcp.Idepcausapenal == idep
+        //                   select epcp;
+
+        //    var query = (from s in _context.Ejecucion
+        //                 where s.IdEjecucion == idep
+        //                 select s).FirstOrDefault();
+
+        //    var tieneinstancia = from epi in _context.Epinstancia
+        //                         join epcp in _context.Epcausapenal on epi.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
+        //                         where epcp.Idepcausapenal == id
+        //                         select epi;
+
+        //    var tieneTermino = from ept in _context.Eptermino
+        //                       join epcp in _context.Epcausapenal on ept.EpcausapenalIdepcausapenal equals epcp.Idepcausapenal
+        //                       where epcp.Idepcausapenal == id
+        //                       select ept;
+        //    var mensaje = "Tiene instancia y termino, borrelos primero";
+        //    if (tieneinstancia.Any() && !tieneTermino.Any())
+        //    {
+        //        mensaje = "Tiene Instancia, borre primero la Instancia";
+        //    }
+        //    if (!tieneinstancia.Any() && tieneTermino.Any())
+        //    {
+        //        mensaje = "Tiene Termino, borre primerio el Termino";
+        //    }
+
+
+        //    if (tieneinstancia.Any() || tieneTermino.Any())
+        //    {
+        //        return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar , mensaje});
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            borrar = true;
+        //            historialeliminacion.Id = id;
+        //            historialeliminacion.Descripcion = "IDEJECUCION= " + query.IdEjecucion + " NOMBRE= " + query.Paterno + " " + query.Materno + " " + query.Nombre + " CE= " + query.Ce;
+        //            historialeliminacion.Tipo = "EJECUCION";
+        //            historialeliminacion.Razon = mg.normaliza(razon);
+        //            historialeliminacion.Usuario = mg.normaliza(user);
+        //            historialeliminacion.Fecha = DateTime.Now;
+        //            historialeliminacion.Supervisor = mg.normaliza(query.Usuario);
+        //            _context.Add(historialeliminacion);
+        //            _context.SaveChanges();
+
+
+        //            var epcausapenalDel = _context.Epcausapenal.SingleOrDefault(m => m.Idepcausapenal == id);
+        //            _context.Epcausapenal.Remove(epcausapenalDel);
+        //            _context.SaveChanges();
+
+
+        //            return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"), borrar });
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            var error = ex;
+        //            borrar = false;
+        //            return Json(new { success = true, responseText = Url.Action("EditEpCausapenal", "Ejecucion"),  borrar, error });
+        //        }
+        //    }
+
+        //}
+        //AJAX NO ARREGLADO
         //public async Task<JsonResult> deleteEpCp(Epcausapenal epcausapenal, Historialeliminacion historialeliminacion, string[] datoEjecucion, string nombre)
         //{
         //    var borrar = false;
@@ -2598,126 +2788,42 @@ namespace scorpioweb.Controllers
             ViewBag.WarningsUser = warningRespuesta.Count();
             #endregion
 
-            if (User.Identity.Name == "jazmin.flores@dgepms.com") {
+            flagDirector = User.Identity.Name == "jazmin.flores@dgepms.com";
+
+            ViewBag.Filtro = currentFilter ?? "TODOS";
+
+            flagCoordinador = roles.Contains("Coordinador Ejecucion");
+            flagMaster = roles.Contains("Masteradmin");
+            flagOperativo = roles.Contains("Operativo");
+
+            if (roles.Contains("Director"))
+            {
                 flagDirector = true;
             }
-            if (currentFilter == null)
-            {
-                ViewBag.Filtro = "TODOS";
-            }
-            else
-            {
-                ViewBag.Filtro = currentFilter;
-            }
+            var juzgadoUsuario = roles.FirstOrDefault(r => r.StartsWith("Juzgado"));
 
-            foreach (var rol in roles)
-            {
-                if (rol == "Coordinador Ejecucion")
-                {
-                    flagCoordinador = true;
-                    flagEjecucion = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "Masteradmin")
-                {
-                    flagMaster = true;
-                    flagEjecucion = true;
-                }
-            }
+            var alertas = ObtenerAlertas();
 
-            foreach (var rol in roles)
-            {
-                if (rol == "Operativo")
-                {
-                    flagOperativo = true;
-                }
-            }
-            foreach (var rol in roles)
-            {
-                if (rol == "Director")
-                {
-                    flagDirector = true;
-                    flagEjecucion = true;
-                }
-            }
+            alertas = alertas.Where(a => a.juzgado.ToUpper() == juzgadoUsuario.ToUpper()).ToList();
 
-            List<Ejecucion> ejecucionVM = _context.Ejecucion.ToList();
-            List<Oficialia> oficialiaVM = _context.Oficialia.ToList();
-
-
-            var ViewDataAlertasVari = Enumerable.Empty < OficialiaAudienciaVM>();
             switch (currentFilter)
             {
-                case "TODOS":
-                    ViewDataAlertasVari = (from o in _context.Oficialia
-                                           where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                           orderby o.FechaTermino
-                                           select new OficialiaAudienciaVM
-                                           { 
-                                               Id = o.IdOficialia,
-                                               Nomcom = o.Paterno + " " + o.Materno + " " + o.Nombre,
-                                               FechaAudiencia = o.FechaTermino,
-                                               QuienAsistira = o.QuienAsistira,
-                                               FechaRecepcion = o.FechaRecepcion,
-                                               Juzgado = o.Juzgado,
-                                               CarpetaEjecucion = o.CarpetaEjecucion,
-                                               Area = "Oficialia",
-                                               tipoAdvertencia = "Audiencia"
-                                           }).Union(
-                                          from a in _context.Audienciaep
-                                          where a.FechaAudiencia != null && a.FechaAudiencia < fechaAudiencia && a.FechaAudiencia > terminoAlerta
-                                          orderby a.FechaAudiencia
-                                          select new OficialiaAudienciaVM
-                                          {
-                                              Id = a.IdaudienciaEp,
-                                              Nomcom = a.Sentenciado,
-                                              FechaAudiencia = a.FechaAudiencia,
-                                              QuienAsistira = a.Usuario,
-                                              FechaRecepcion = a.FechaNotificacion,
-                                              Juzgado = a.Juzgado,
-                                              CarpetaEjecucion = a.CarpetaEjecucion,
-                                              Area = "Audienciaep",
-                                              tipoAdvertencia = "Audiencia"
-                                          });
-                    break;
                 case "AUDIENCIAS":
-                    ViewDataAlertasVari = (from o in _context.Oficialia
-                                           where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                           orderby o.FechaTermino
-                                           select new OficialiaAudienciaVM
-                                           {
-                                               Id = o.IdOficialia,
-                                               Nomcom = o.Paterno + " " + o.Materno + " " + o.Nombre,
-                                               FechaAudiencia = o.FechaTermino,
-                                               QuienAsistira = o.QuienAsistira,
-                                               FechaRecepcion = o.FechaRecepcion,
-                                               Juzgado = o.Juzgado,
-                                               CarpetaEjecucion = o.CarpetaEjecucion,
-                                               Area = "Oficialia",
-                                               tipoAdvertencia = "Audiencia"
-                                           }).Union(
-                                          from a in _context.Audienciaep
-                                          where a.FechaAudiencia != null && a.FechaAudiencia < fechaAudiencia && a.FechaAudiencia > terminoAlerta
-                                          orderby a.FechaAudiencia
-                                          select new OficialiaAudienciaVM
-                                          {
-                                              Id = a.IdaudienciaEp,
-                                              Nomcom = a.Sentenciado,
-                                              FechaAudiencia = a.FechaAudiencia,
-                                              QuienAsistira = a.Usuario,
-                                              FechaRecepcion = a.FechaNotificacion,
-                                              Juzgado = a.Juzgado,
-                                              CarpetaEjecucion = a.CarpetaEjecucion,
-                                              Area = "Audienciaep",
-                                              tipoAdvertencia = "Audiencia"
-                                          });
+                    alertas = alertas.Where(x => x.tipoAdvertencia == "Audiencia").ToList();
+                    break;
+
+                case "SIN FECHA DE COMPURGA":
+                    alertas = alertas.Where(x => x.tipoAdvertencia == "Sin Fecha de Compurga").ToList();
+                    break;
+
+                case "FECHA DE COMPURGA":
+                    alertas = alertas.Where(x => x.tipoAdvertencia == "Proxima fecha de Compurga").ToList();
                     break;
             }
-            var warnings = Enumerable.Empty<Audienciaep>();
 
-            ViewData["alertas"] = ViewDataAlertasVari.OrderBy(x => x.FechaAudiencia);
+            ViewData["alertas"] = alertas.OrderBy(x => x.fechaAlerta);
+
+            ViewBag.totalalertas = alertas.Count();
 
             return Json(new
             {
@@ -2725,10 +2831,95 @@ namespace scorpioweb.Controllers
                 user = usuario,
                 admin = flagCoordinador || flagMaster || flagDirector || flagOperativo,
                 ejecucion = flagEjecucion,
-                //ViewData["alertas"] se usa como variable de esta funcion y no sirve como ViewData
                 query = ViewData["alertas"]
             });
         }
+
+        public List<AlertasEjecucionViewModel> ObtenerAlertas()
+        {
+            DateTime fechaAudiencia = DateTime.Today.AddDays(7);
+            DateTime terminoAlerta = DateTime.Today.AddDays(-1);
+
+            var ejecucionVM = _context.Ejecucion.ToList();
+            var oficialiaVM = _context.Oficialia.ToList();
+            var audienciaepVM = _context.Audienciaep.ToList();
+
+            var sinfechacompurga = ejecucionVM
+                .Where(e => e.FechaCompurga == null
+                && e.EstadoActual == "ACTIVO")
+                .Select(e => new AlertasEjecucionViewModel
+                {
+                    idTabla = e.IdEjecucion,
+                    nombre = e.Paterno + " " + e.Materno + " " + e.Nombre,
+                    fechaAlerta = e.FechaCompurga,
+                    usuario = e.Encargado ?? "sin usuario",
+                    fechaRecepcion = e.FechaCarga,
+                    juzgado = e.Juzgado,
+                    carpetaEjecucion = e.Ce,
+                    tipoAdvertencia = "Sin Fecha de Compurga",
+                    mensajeAdvertencia = "Sin Fecha de Compurga"
+                });
+
+            var fechadecompurgaproxima = ejecucionVM
+                .Where(e => e.FechaCompurga != null
+                && e.FechaCompurga < DateTime.Now.AddDays(30)
+                && e.EstadoActual == "ACTIVO")
+                .Select(e => new AlertasEjecucionViewModel
+                {
+                    idTabla = e.IdEjecucion,
+                    nombre = e.Paterno + " " + e.Materno + " " + e.Nombre,
+                    fechaAlerta = e.FechaCompurga,
+                    usuario = e.Encargado,
+                    fechaRecepcion = e.FechaCarga,
+                    juzgado = e.Juzgado,
+                    carpetaEjecucion = e.Ce,
+                    tipoAdvertencia = "Proxima fecha de Compurga",
+                    mensajeAdvertencia = (e.FechaCompurga < DateTime.Now)
+                        ? $"Fecha de Compurga vencio hace {(e.FechaCompurga - DateTime.Now).Value.Days} días"
+                        : $"Fecha de Compurga vence en {(e.FechaCompurga - DateTime.Now).Value.Days} días"
+                });
+
+            var audienciaOficialia = oficialiaVM
+                .Where(o => o.AsuntoOficio == "AUDIENCIA"
+                && o.FechaTermino != null
+                && o.FechaTermino < fechaAudiencia
+                && o.FechaTermino > terminoAlerta)
+                .Select(o => new AlertasEjecucionViewModel
+                {
+                    idTabla = o.IdOficialia,
+                    nombre = o.Paterno + " " + o.Materno + " " + o.Nombre,
+                    fechaAlerta = o.FechaTermino,
+                    usuario = o.QuienAsistira,
+                    fechaRecepcion = o.FechaRecepcion,
+                    juzgado = o.Juzgado,
+                    carpetaEjecucion = o.CarpetaEjecucion,
+                    tipoAdvertencia = "Audiencia",
+                    mensajeAdvertencia = "Audiencia"
+                });
+
+            var audienciaEjecucion = audienciaepVM
+                .Where(a => a.FechaAudiencia != null
+                && a.FechaAudiencia < fechaAudiencia
+                && a.FechaAudiencia > terminoAlerta)
+                .Select(a => new AlertasEjecucionViewModel
+                {
+                    idTabla = a.IdaudienciaEp,
+                    nombre = a.Sentenciado,
+                    fechaAlerta = a.FechaAudiencia,
+                    usuario = a.Usuario,
+                    fechaRecepcion = a.FechaNotificacion,
+                    juzgado = a.Juzgado,
+                    carpetaEjecucion = a.CarpetaEjecucion,
+                    tipoAdvertencia = "Audiencia",
+                    mensajeAdvertencia = "Audiencia"
+                });
+
+            return audienciaOficialia
+                .Union(audienciaEjecucion)
+                .Union(sinfechacompurga)
+                .Union(fechadecompurgaproxima).ToList();
+        }
+
 
         private bool EjecucionExists(int id)
         {
@@ -2776,38 +2967,56 @@ namespace scorpioweb.Controllers
 
             Boolean flagCoordinador = false;
 
+            //foreach (var rol in roles)
+            //{
+            //    if (rol == "Coordinador" || rol == "Masteradmin" || rol == "Administrador" || rol == "Director" || rol == "Coordinador Ejecucion")
+            //    {
+            //        flagCoordinador = true;
+            //    }
+            //}
+            //if(flagCoordinador == true)
+            //{
+            //    var warningPlaneacion = from o in oficialiaVM
+            //                            where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+            //                            select new EjecucionWarningViewModel
+            //                            {
+            //                                oficialiaVM = o,
+            //                                tipoAdvertencia = "Audiencia"
+            //                            };
+            //    ViewBag.Warnings = warningPlaneacion.Count();
+            //}
+            //else
+            //{
+            //    var warningPlaneacion = from o in oficialiaVM
+            //                            where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar == user.ToString() && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
+            //                            select new EjecucionWarningViewModel
+            //                            {
+            //                                oficialiaVM = o,
+            //                                tipoAdvertencia = "Audiencia"
+            //                            };
+            //    ViewBag.Warnings = warningPlaneacion.Count();
+            //}
 
 
+            //List<AlertasEjecucionViewModel> alertas = ObtenerAlertas();
+            //if (!esCoordinadorAdmin)
+            //{
+            //    alertas = alertas
+            //        .Where(m => m.personaclVM != null &&
+            //                    !string.IsNullOrEmpty(m.personaclVM.Supervisor) &&
+            //                    m.personaclVM.Supervisor.Equals(user.Email, StringComparison.OrdinalIgnoreCase))
+            //        .ToList();
+            //}
+            //ViewBag.Warnings = alertas.Count();
 
-            foreach (var rol in roles)
-            {
-                if (rol == "Coordinador" || rol == "Masteradmin" || rol == "Administrador" || rol == "Director" || rol == "Coordinador Ejecucion")
-                {
-                    flagCoordinador = true;
-                }
-            }
-            if(flagCoordinador == true)
-            {
-                var warningPlaneacion = from o in oficialiaVM
-                                        where o.AsuntoOficio == "AUDIENCIA" && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                        select new EjecucionWarningViewModel
-                                        {
-                                            oficialiaVM = o,
-                                            tipoAdvertencia = "Audiencia"
-                                        };
-                ViewBag.Warnings = warningPlaneacion.Count();
-            }
-            else
-            {
-                var warningPlaneacion = from o in oficialiaVM
-                                        where o.AsuntoOficio == "AUDIENCIA" && o.UsuarioTurnar == user.ToString() && o.FechaTermino != null && o.FechaTermino < fechaAudiencia && o.FechaTermino > terminoAlerta
-                                        select new EjecucionWarningViewModel
-                                        {
-                                            oficialiaVM = o,
-                                            tipoAdvertencia = "Audiencia"
-                                        };
-                ViewBag.Warnings = warningPlaneacion.Count();
-            }
+            var juzgadoUsuario = roles.FirstOrDefault(r => r.StartsWith("Juzgado"));
+            List<AlertasEjecucionViewModel> alertas = ObtenerAlertas();
+            alertas = alertas
+                    .Where(m => !string.IsNullOrEmpty(m.juzgado) &&
+                                m.juzgado.ToUpper() == juzgadoUsuario.ToUpper())
+                    .ToList();
+            ViewBag.Warnings = alertas.Count();
+
 
             #region -Solicitud Atendida Archivo prestamo Digital-
             var warningRespuesta = from a in _context.Archivoprestamodigital
