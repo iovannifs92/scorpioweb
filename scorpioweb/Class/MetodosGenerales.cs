@@ -484,7 +484,7 @@ namespace scorpioweb.Class
                 return correoANombre[usuario];
             }
 
-            return "Sin área asignada";
+            return usuario;
 
         }
         #endregion

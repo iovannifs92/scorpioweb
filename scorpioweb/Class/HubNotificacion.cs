@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using scorpioweb.Models;
 using System;
@@ -29,20 +30,17 @@ namespace scorpioweb.Class
             {
                 Console.WriteLine($"Rol detectado: {r.Value}");
             }
-
             foreach (var roleClaim in roles)
             {
                 string userRole = roleClaim.Value;
                 await AddToGroupBasedOnRole(userRole);
             }
-
             // Añadir al grupo personal del usuario para envío por grupo (robusto)
             if (!string.IsNullOrEmpty(userName))
             {
                 // Grupo con prefijo para evitar colisiones
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"user:{userName}");
             }
-
             await base.OnConnectedAsync();
         }
 
@@ -96,9 +94,6 @@ namespace scorpioweb.Class
                 case "Ejecucion":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaEje");
                     break;
-                case "EnviarCorrespondencia":
-                    //await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondencia");
-                    break;
                 case "Servicios previos":
                     await Groups.AddToGroupAsync(Context.ConnectionId, "EnviaraCorrespondenciaSP");
                     break;
@@ -126,14 +121,24 @@ namespace scorpioweb.Class
         public async Task EnviarMensajeUsuario(string usuarioDestino, string mensaje)
         {
             var usuarioOrigen = Context.User.Identity.Name;
-
-            // Intentar entrega usando Clients.User (funcionará si IUserIdProvider fue registrado)
-            await Clients.User(usuarioDestino)
-                .SendAsync("RecibirMensajePrivado", usuarioOrigen, mensaje);
-
             // Envío alternativo por grupo personal (más robusto si agregaste al grupo en OnConnectedAsync)
             await Clients.Group($"user:{usuarioDestino}")
                 .SendAsync("RecibirMensajePrivado", usuarioOrigen, mensaje);
+        }
+
+        public async Task EnviarArchivoUsuario(string usuarioDestino, string nombreArchivo, string url)
+        {
+            var usuarioOrigen = Context.User.Identity.Name;
+
+            await Clients.User(usuarioDestino)
+                .SendAsync("RecibirArchivo", usuarioOrigen, nombreArchivo, url);
+        }
+
+        public async Task EnviarMensajeATodos(string mensaje)
+        {
+            var usuarioOrigen = Context.User.Identity.Name;
+
+            await Clients.All.SendAsync("Difucion", usuarioOrigen, mensaje);
         }
     }
 }

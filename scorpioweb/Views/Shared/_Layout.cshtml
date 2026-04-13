@@ -1,6 +1,4 @@
-﻿
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     @*Fullcallendar*@
@@ -197,44 +195,280 @@
             });
         });
 
+        function mostrarToast(titulo, mensaje, icono = "info") {
+            Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            }).fire({
+                icon: icono,
+                title: titulo,
+                text: mensaje
+            });
+        }
 
-        // connection.on("RecibirSiguientePersona", function (siguiente) {
-        //     const label = document.getElementById("siguientePersonaLabel");
-        //     if (label) {
-        //         label.innerText = siguiente;
-        //     }
-        // });
+        function mostrarToastDifucion(titulo, mensaje, icono = "info") {
+                Swal.fire({
+                    title: titulo,
+                    text: mensaje,
+                    icon: icono
+                });
+        }
 
-        connection.on("RecibirSiguientesPersonas", function (primero, segundo) {
+        cargarUsuarios();
+        let mensajesNoLeidos = 0;
 
-            const label1 = document.getElementById("siguientePersonaLabel");
-            const label2 = document.getElementById("segundaPersonaLabel");
+        function actualizarBadge() {
+            let badge = document.getElementById("chatBadge");
 
-            if (label1) label1.innerText = primero ?? "";
-            if (label2) label2.innerText = segundo ?? "";
+            if (mensajesNoLeidos > 0) {
+                badge.style.display = "block";
+                badge.innerText = mensajesNoLeidos;
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        async function subirArchivo(file) {
+
+            let formData = new FormData();
+            formData.append("archivo", file);
+
+            let res = await fetch('/Api/SubirArchivo', {
+                method: 'POST',
+                body: formData
+            });
+
+
+            if (!res.ok) {
+                let error = await res.text();
+                throw new Error(error);
+            }
+
+            return await res.json();
+        }
+
+        connection.on("RecibirArchivo", function (usuarioOrigen, nombreArchivo, url) {
+
+            let msg = {
+                archivo: true,
+                nombre: nombreArchivo,
+                url: url,
+                esMio: false
+            };
+
+            if (!conversaciones[usuarioOrigen]) {
+                conversaciones[usuarioOrigen] = [];
+            }
+
+            conversaciones[usuarioOrigen].push(msg);
+
+            if (usuarioSeleccionado === usuarioOrigen) {
+                pintarMensaje(msg);
+            } else {
+                mensajesNoLeidos++;
+                actualizarBadge();
+                animarBoton();
+            }
+        });
+
+        connection.on("RecibirMensajePrivado", function (usuarioOrigen, mensaje) {
+            if (!conversaciones[usuarioOrigen]) {
+                conversaciones[usuarioOrigen] = [];
+            }
+            let msg = { texto: mensaje, esMio: false };
+
+            conversaciones[usuarioOrigen].push(msg);
+
+            // Si estás viendo ese chat, lo pinta
+            if (usuarioSeleccionado === usuarioOrigen) {
+                pintarMensaje(msg);
+            } else {
+                 mensajesNoLeidos++;
+                 actualizarBadge();
+            }
         });
 
 
         connection.on("RecibirMensajePrivado", function (usuarioOrigen, mensaje) {
-            alert("Mensaje de " + usuarioOrigen + ": " + mensaje);
+             animarBoton();
+            mostrarToast("Mensaje de " + usuarioOrigen, mensaje);
+        });
+        connection.on("Difucion", function (usuarioOrigen, mensaje) {
+            mostrarToastDifucion("Mensaje de Administrador", mensaje);
         });
 
-        function enviarPrivado() {
-            var destino = document.getElementById("usuarioDestino").value;
+        async function enviarPrivado() {
+            let mensaje = document.getElementById("mensajePrivado").value;
+            let archivo = document.getElementById("archivoInput").files[0];
+
+            if (archivo) {
+                try {
+                    let resp = await subirArchivo(archivo);
+
+                    connection.invoke("EnviarArchivoUsuario",
+                        usuarioSeleccionado,
+                        resp.nombreOriginal,
+                        resp.url
+                    );
+                    let msg = {
+                        archivo: true,
+                        nombre: resp.nombreOriginal,
+                        url: resp.url,
+                        esMio: true
+                    };
+
+                    if (!conversaciones[usuarioSeleccionado]) {
+                        conversaciones[usuarioSeleccionado] = [];
+                    }
+
+                    conversaciones[usuarioSeleccionado].push(msg);
+
+                    // si estás en ese chat → mostrar
+                    if (usuarioSeleccionado) {
+                        pintarMensaje(msg);
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    mostrarToast("Error", err.message, "error");
+                }
+            }
+            if (mensaje) {
+                connection.invoke("EnviarMensajeUsuario", usuarioSeleccionado, mensaje);
+
+                let msg = { texto: mensaje, esMio: true };
+                if (!conversaciones[usuarioSeleccionado]) {
+                    conversaciones[usuarioSeleccionado] = [];
+                }
+
+                conversaciones[usuarioSeleccionado].push(msg);
+                pintarMensaje(msg);
+            }
+            // limpiar
+            document.getElementById("mensajePrivado").value = "";
+            document.getElementById("archivoInput").value = "";
+        }
+
+        let usuarioSeleccionado = "";
+        let conversaciones = {};
+
+        function cargarUsuarios() {
+            fetch('/Api/ObtenerUsuarios')
+                .then(res => res.json())
+                .then(data => {
+                    let contenedor = document.getElementById("listaUsuarios");
+
+                   data.forEach(u => {
+                        let div = document.createElement("div");
+                        div.innerText = u.text;
+                        div.classList.add("usuario");
+
+                        div.onclick = () => seleccionarUsuario(u.value, div);
+
+                        contenedor.appendChild(div);
+                    });
+                });
+        }
+
+        function seleccionarUsuario(usuario, elemento) {
+            usuarioSeleccionado = usuario;
+
+            document.querySelectorAll(".usuario").forEach(u => {
+                u.classList.remove("activo");
+            });
+            elemento.classList.add("activo");
+
+            // limpiar chat
+            document.getElementById("chatMensajes").innerHTML = "";
+
+            let mensajes = conversaciones[usuario] || [];
+
+            mensajes.forEach(m => pintarMensaje(m));
+        }
+
+
+        function pintarMensaje(m) {
+            let div = document.createElement("div");
+
+            div.classList.add("msg");
+            div.classList.add(m.esMio ? "mio" : "otro");
+
+            if (m.archivo) {
+
+                let ext = m.nombre.split('.').pop().toLowerCase();
+
+                // 🖼️ IMÁGENES
+                if (["jpg", "png", "jpeg"].includes(ext)) {
+                    let img = document.createElement("img");
+                    img.src = m.url;
+                    img.style.maxWidth = "100%";
+                    img.style.borderRadius = "8px";
+                    div.appendChild(img);
+                }
+                else {
+                    let link = document.createElement("a");
+                    link.href = m.url;
+                    link.target = "_blank";
+                    link.innerText = "📎 " + m.nombre;
+                    div.appendChild(link);
+                }
+
+            } else {
+                div.innerText = m.texto;
+            }
+
+            document.getElementById("chatMensajes").appendChild(div);
+
+            let contenedor = document.getElementById("chatMensajes");
+            contenedor.scrollTop = contenedor.scrollHeight;
+        }
+
+        function enviarATodos() {
             var mensaje = document.getElementById("mensajePrivado").value;
 
-            if (!destino || !mensaje) {
-                alert("Selecciona destinatario y escribe mensaje.");
+            if (!mensaje) {
+                alert("Escribe un mensaje.");
                 return;
             }
 
-            connection.invoke("EnviarMensajeUsuario", destino, mensaje)
-                .then(function () {
-                    console.log("Solicitud de envío enviada al hub");
-                })
-                .catch(function (err) {
-                    console.error(err.toString());
-                });
+            connection.invoke("EnviarMensajeATodos", mensaje)
+                .then(() => console.log("Mensaje enviado a todos"))
+                .catch(err => console.error(err.toString()));
+
+            document.getElementById("mensajePrivado").value = "";
+        }
+
+        function toggleChat() {
+            let chat = document.getElementById("chatFlotante");
+
+            chat.style.display = chat.style.display === "flex" ? "none" : "flex";
+        }
+
+        function animarBoton() {
+            let btn = document.getElementById("btnChatFlotante");
+
+            btn.classList.add("animar");
+
+            setTimeout(() => {
+                btn.classList.remove("animar");
+            }, 600);
+        }
+        
+        function vibrarBoton() {
+            let btn = document.getElementById("btnChatFlotante");
+
+            btn.classList.add("shake");
+
+            setTimeout(() => {
+                btn.classList.remove("shake");
+            }, 400);
         }
 
 
@@ -249,6 +483,7 @@
     <link rel="stylesheet" href="~/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/css/main.css">
+    <link rel="stylesheet" href="~/css/chatstyle.css">
     <link rel="stylesheet" href="~/css/bootstraplocal.css"
           asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
           asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
@@ -298,40 +533,63 @@
         -webkit-transition: .25s;
     }
 
-        .checkbox-wrapper-25 input[type="checkbox"]:after {
-            background-color: #eee;
-            background-image: -webkit-linear-gradient(hsla(0,0%,100%,.1), hsla(0,0%,0%,.1));
-            border-radius: 25px;
-            box-shadow: inset 0 1px 1px 1px hsla(0,0%,100%,1), inset 0 -1px 1px 1px hsla(0,0%,0%,.25), 0 1px 3px 1px hsla(0,0%,0%,.5), 0 0 2px hsla(0,0%,0%,.25);
-            content: '';
-            display: block;
-            height: 25px;
-            width: 50px;
-        }
+    .checkbox-wrapper-25 input[type="checkbox"]:after {
+        background-color: #eee;
+        background-image: -webkit-linear-gradient(hsla(0,0%,100%,.1), hsla(0,0%,0%,.1));
+        border-radius: 25px;
+        box-shadow: inset 0 1px 1px 1px hsla(0,0%,100%,1), inset 0 -1px 1px 1px hsla(0,0%,0%,.25), 0 1px 3px 1px hsla(0,0%,0%,.5), 0 0 2px hsla(0,0%,0%,.25);
+        content: '';
+        display: block;
+        height: 25px;
+        width: 50px;
+    }
 
-        .checkbox-wrapper-25 input[type="checkbox"]:checked {
-            background-position: 0 0, 35px 0;
-            padding-left: 25px;
-            padding-right: 0;
-        }
+    .checkbox-wrapper-25 input[type="checkbox"]:checked {
+        background-position: 0 0, 35px 0;
+        padding-left: 25px;
+        padding-right: 0;
+    }
 
 </style>
 
 <body>
+    @if (User.Identity.IsAuthenticated && (User.IsInRole("Masteradmin") || User.IsInRole("Test")))
+    {
+        <div id="chatFlotante">
 
-@*     <select id="usuarioDestino">
-        <option value="">-- Seleccione usuario --</option>
-        <option value="juan.lerma@dgepms.com">Juan </option>
-        <option value="emiliano.munoz@dgepms.com">María López</option>
-    </select>
+            <div style="text-align:center" id="chatHeader">
+                Chat DGEPMS
+            </div>
 
-    <input type="text" id="mensajePrivado" placeholder="Escriba el mensaje" />
+            <div id="chatBody">
 
-    <button type="button" onclick="enviarPrivado()">Enviar</button>
+                <div id="listaUsuarios"></div>
 
- *@
+                <div id="chatDerecho">
+                    <div id="chatMensajes"></div>
 
-    <nav class="     navbar-inverse navbar-fixed-top" , id="header">
+                    <div id="chatInput">
+                        <input type="file" id="archivoInput" />
+                        <input type="text" id="mensajePrivado" placeholder="Mensaje..." />
+                        <button onclick="enviarPrivado()">➤</button>
+                        @if (User.IsInRole("Masteradmin")){
+                            <button onclick="enviarATodos()">➤</button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="chatContainer">
+            <button id="btnChatFlotante" onclick="toggleChat()">💬</button>
+            <span id="chatBadge">0</span>
+        </div>
+    }
+ 
+ 
+
+
+    <nav class="navbar-inverse navbar-fixed-top" , id="header">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -744,6 +1002,21 @@
     <div id="content1">
     </div>
     <div id="content2">
+    </div>
+    <div class="modal fade" id="modalArchivos" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Archivos disponibles</h4>
+                </div>
+
+                <div class="modal-body" id="listaArchivos">
+                    <!-- aquí se cargan -->
+                </div>
+
+            </div>
+        </div>
     </div>
 
 

@@ -153,6 +153,7 @@ namespace scorpioweb.Controllers
 
         private List<SelectListItem> listaCumplimiento = new List<SelectListItem>
         {
+            new SelectListItem{ Text = "Todos", Value = "" },
             new SelectListItem{ Text = "Cumplimiento", Value = "CUMPLIMIENTO" },
             new SelectListItem{ Text = "Incumplimiento", Value = "INCUMPLIMIENTO" },
         };
@@ -218,6 +219,7 @@ namespace scorpioweb.Controllers
            string currentFilter,
            string searchString,
            string estadoSuper,
+           string estadoCumplimiento,
            string figuraJudicial,
            int? pageNumber,
            DateTime FechaTermino1,
@@ -303,6 +305,7 @@ namespace scorpioweb.Controllers
             #region Listas Supervision
             ViewBag.listaEstadoSupervision = listaEstadosSupervision;
             ViewBag.listaFiltroEstadoSupervision = listaEstadosSupervision;
+            ViewBag.listaFiltroEstadoCumplimiento = listaCumplimiento;
             ViewBag.listaFiguraJudicial = listaBeneficios;
             #endregion
             var filter = from p in _context.Personacl
@@ -332,6 +335,7 @@ namespace scorpioweb.Controllers
 
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
+            ViewData["EstadoC"] = estadoCumplimiento;
             ViewData["FiguraJ"] = figuraJudicial;
 
 
@@ -365,6 +369,10 @@ namespace scorpioweb.Controllers
                 {
                     filter = filter.Where(cl => cl.beneficiosVM.FiguraJudicial == figuraJudicial);
                 }
+            }
+            if (!String.IsNullOrEmpty(estadoCumplimiento) &&  estadoCumplimiento != "Todos") // Nuevo filtro
+            {
+                filter = filter.Where(cl => cl.supervisionVM.EstadoCumplimiento == estadoCumplimiento);
             }
 
             if (FechaTermino1 != default(DateTime) && FechaTermino2 != default(DateTime))
@@ -2808,9 +2816,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-
-
-
         #region -VERIFICAR EXISTE-
         private bool SupervisionclExists(int id)
         {
@@ -2842,5 +2847,7 @@ namespace scorpioweb.Controllers
         }
 
         #endregion
+
+       
     }
 }

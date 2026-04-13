@@ -1,0 +1,146 @@
+﻿@model List<string>
+
+<ul class="list-group">
+
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item">
+            @item
+
+            <button class="btn btn-success btn-sm float-right descargarArchivo"
+                    data-tipo="@item"
+                    data-idpersona="@ViewBag.IdPersona"
+                    data-idsupervision="@ViewBag.IdSupervision">
+                Descargar
+            </button>
+        </li>
+    }
+
+</ul>
+
+
+<script>
+    $(document).on('click', '.descargarArchivo', function () {
+
+        let tipo = $(this).data('tipo');
+        let idPersona = $(this).data('idpersona');
+        let idSupervision = $(this).data('idsupervision');
+
+        // 🔥 CERRAR TODO LO ANTERIOR (clave)
+        Swal.close();
+        $('.modal').modal('hide');
+
+        // 🔥 Delay para limpiar DOM/eventos
+        setTimeout(() => {
+
+            // 👉 SI ES EL QUE NECESITA INPUTS
+            if (tipo === "Solicitud de Agregar Presentaciones Periódica") {
+
+                Swal.fire({
+                    title: 'Generar archivo',
+                    html:
+                        '<label>Fecha de la Presentacion periodica: </label>' +
+                        '<input id="fechaCubrir" type="date" class="swal2-input">' +
+                        '<label>Motivo por el cual no asistio: </label>' +
+                        '<input id="motivo" type="text" class="swal2-input" placeholder="Motivo">',
+                    confirmButtonText: 'Generar',
+                    focusConfirm: false,
+                    allowEnterKey: false,
+
+                    didOpen: () => {
+                        document.getElementById('fechaCubrir').focus();
+                    },
+
+                    preConfirm: () => {
+
+                        let fecha = document.getElementById('fechaCubrir').value;
+                        let motivo = document.getElementById('motivo').value;
+
+                        if (!fecha || !motivo) {
+                            Swal.showValidationMessage('Todos los campos son obligatorios');
+                            return false;
+                        }
+
+                        return {
+                            fechaCubrir: fecha,
+                            motivo: motivo
+                        };
+                    }
+
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        Swal.close(); // limpia antes del ajax
+
+                        $.ajax({
+                            url: '/Api/DescargarArchivo',
+                            type: 'GET',
+                            data: {
+                                tipo: tipo,
+                                idPersona: idPersona,
+                                idSupervision: idSupervision,
+                                fechaCubrir: result.value.fechaCubrir,
+                                motivo: result.value.motivo
+                            },
+                            success: function (data) {
+                                if (data.success) {
+                                    window.open(data.url, '_blank');
+                                } else {
+                                    Swal.fire('Error', data.mensaje, 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'No se pudo generar el archivo', 'error');
+                            }
+                        });
+
+                    }
+                });
+
+            } else {
+
+                // 👉 CASO NORMAL (sin inputs)
+                $.ajax({
+                    url: '/Api/DescargarArchivo',
+                    type: 'GET',
+                    data: {
+                        tipo: tipo,
+                        idPersona: idPersona,
+                        idSupervision: idSupervision
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            window.open(data.url, '_blank');
+                        } else {
+                            Swal.fire('Error', data.mensaje, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'No se pudo generar el archivo', 'error');
+                    }
+                });
+
+            }
+
+        }, 200); // 🔥 ESTE DELAY ES LA CLAVE
+
+    });
+
+
+    preConfirm: () => {
+        let fecha = document.getElementById('fechaCubrir').value;
+        let motivo = document.getElementById('motivo').value;
+
+        if (!fecha || !motivo) {
+            Swal.showValidationMessage('Todos los campos son obligatorios');
+            return false;
+        }
+
+        return {
+            fechaCubrir: fecha,
+            motivo: motivo
+        }
+    }
+
+</script>

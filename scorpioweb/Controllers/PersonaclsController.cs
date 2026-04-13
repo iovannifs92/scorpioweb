@@ -749,10 +749,6 @@ namespace scorpioweb.Models
                                        idPersonaCl = s.PersonaclIdPersonacl
                                    }).ToList();
 
-
-
-
-
             if (!String.IsNullOrEmpty(Search))
             {
                 foreach (var item in Search.Split(new char[] { ' ' },

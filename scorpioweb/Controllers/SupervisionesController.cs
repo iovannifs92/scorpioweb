@@ -99,12 +99,30 @@ namespace scorpioweb.Controllers
 
         private List<SelectListItem> listaCumplimiento = new List<SelectListItem>
         {
-            new SelectListItem{ Text = "Cumplimiento", Value = "CUMPLIMIENTO" },
-            new SelectListItem{ Text = "Incumplimiento", Value = "INCUMPLIMIENTO" },
+            new SelectListItem{ Text = "Todos", Value = "NA" },
+            new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
+            new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
+            new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
+        };
+        private List<SelectListItem> listaEstados = new List<SelectListItem>
+        {
+            new SelectListItem{ Text = "Todos", Value = "" },
+            new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
+            new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
+            new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
+            new SelectListItem{ Text = "En espera de respuesta - Incumplimiento", Value = "EN ESPERA DE RESPUESTA - INCUMPLIMIENTO" },
+            new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
+            new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
+            new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
+            new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
+            new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
+        
         };
 
         private List<SelectListItem> listaFiguraJudicial = new List<SelectListItem>
         {
+            new SelectListItem{ Text = "Todos", Value = "TODOS" },
+            new SelectListItem{ Text = "Sin Figura Judicial", Value = "SIN FIGURA JUDICIAL" },
             new SelectListItem{ Text = "MC", Value = "MC" },
             new SelectListItem{ Text = "SCP", Value = "SCP" },
         };
@@ -387,17 +405,8 @@ namespace scorpioweb.Controllers
             #endregion
 
             #region Estado Cumplimiento
-            List<SelectListItem> ListaEstadoC;
-            ListaEstadoC = new List<SelectListItem>
-            {
-                new SelectListItem{ Text = "", Value = "NA" },
-                new SelectListItem{ Text = "Cumpliendo", Value = "CUMPLIENDO" },
-                new SelectListItem{ Text = "Cumplimiento Parcial", Value = "CUMPLIMIENTO PARCIAL" },
-                new SelectListItem{ Text = "Incumplimiento Total", Value = "INCUMPLIMIENTO TOTAL" },
-            };
-
-            ViewBag.listaEstadoCumplimiento = ListaEstadoC;
-            ViewBag.idEstadoCumplimiento = mg.BuscaId(ListaEstadoC, supervision.EstadoCumplimiento);
+            ViewBag.listaEstadoCumplimiento = listaCumplimiento;
+            ViewBag.idEstadoCumplimiento = mg.BuscaId(listaCumplimiento, supervision.EstadoCumplimiento);
             #endregion
 
             ViewBag.listaTTA = listaEspecial;
@@ -903,11 +912,14 @@ namespace scorpioweb.Controllers
 
         #region -PersonaSupervision-
         public async Task<IActionResult> PersonaSupervision(
-           string sortOrder,
-           string currentFilter,
-           string searchString,
-           string estadoSuper,
-           string figuraJudicial,
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            string estadoSuper,
+            string estadoCumplimiento,   // 👈 NUEVO
+            string figuraJudicial,
+            DateTime FechaTermino1,      // 👈 NUEVO
+            DateTime FechaTermino2,
            int? pageNumber
            )
 
@@ -937,7 +949,7 @@ namespace scorpioweb.Controllers
             ViewBag.User = user.ToString();
             ViewBag.Admin = false;
             ViewBag.Masteradmin = false;
-            ViewBag.Archivo = false;
+            ViewBag.Archivo = false;    
 
 
             #region -Solicitud Atendida Archivo prestamo Digital-
@@ -1002,70 +1014,13 @@ namespace scorpioweb.Controllers
             }
 
 
-            #region Estado Supervisión
-            List<SelectListItem> ListaEstadoS;
-            ListaEstadoS = new List<SelectListItem>
-            {
-                new SelectListItem{ Text = "", Value = "" },
-                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
-                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
-                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
-                new SelectListItem{ Text = "En espera de respuesta - Incumplimiento", Value = "EN ESPERA DE RESPUESTA - INCUMPLIMIENTO" },
-                new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
-                new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
-                new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
-                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
-                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
-            };
-            ViewBag.listaEstadoSupervision = ListaEstadoS;
+            #region -Listas-
 
-            List<SelectListItem> ListaFiltroEstadoS;
-            ListaFiltroEstadoS = new List<SelectListItem>
-            {
-                new SelectListItem{ Text = "Todos", Value = "TODOS" },
-                new SelectListItem{ Text = "Concluido", Value = "CONCLUIDO" },
-                new SelectListItem{ Text = "Vigente", Value = "VIGENTE" },
-                new SelectListItem{ Text = "En espera de respuesta", Value = "EN ESPERA DE RESPUESTA" },
-                new SelectListItem{ Text = "En espera de respuesta - Incumplimiento", Value = "EN ESPERA DE RESPUESTA - INCUMPLIMIENTO" },
-                new SelectListItem{ Text = "Informado Diversa Causa", Value = "INFORMADO DIVERSA CAUSA" },
-                new SelectListItem{ Text = "Prisión Preventiva Por Diversa Causa", Value = "PRISIÓN PREVENTIVA POR DIVERSA CAUSA" },
-                new SelectListItem{ Text = "Informado Incumplimiento MC", Value = "INFORMADO INCUMPLIMIENTO MC" },
-                new SelectListItem{ Text = "Sustraido", Value = "SUSTRAIDO" },
-                new SelectListItem{ Text = "Suspendido", Value = "SUSPENDIDO" }
-            };
-            ViewBag.listaFiltroEstadoSupervision = ListaFiltroEstadoS;
-            #endregion
-
-            List<SelectListItem> listaFiguraJ = new List<SelectListItem>
-            {
-                new SelectListItem{ Text = "Todos", Value = "TODOS" },
-                new SelectListItem{ Text = "Sin Figura Judicial", Value = "SIN FIGURA JUDICIAL" },
-                new SelectListItem{ Text = "MC", Value = "MC" },
-                new SelectListItem{ Text = "SCP", Value = "SCP" },
-            };
-            ViewBag.listaFiguraJudicial = listaFiguraJ;
-
-            //var filter = from p in _context.Persona
-            //             join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
-            //             join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-            //             join d in queryDelito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal 
-            //             join pe in _context.Planeacionestrategica on s.IdSupervision equals pe.SupervisionIdSupervision
-            //             join c in _context.Cierredecaso on s.IdSupervision equals c.SupervisionIdSupervision
-            //             join fracciones in queryFracciones on s.IdSupervision equals fracciones.SupervisionIdSupervision
-            //             from fraccion in PersonaSupervisionCausaPenal.DefaultIfEmpty()
-            //             select new SupervisionPyCP
-            //             {
-            //                 cierredecasoVM = c,
-            //                 personaVM = p,
-            //                 supervisionVM = s,
-            //                 causapenalVM = cp,
-            //                 delitoVM = dj,
-            //                 planeacionestrategicaVM = pe,
-            //                 fraccionesimpuestasVM = fraccion,
-            //                 tiempoSupervision = (s.Termino != null && s.Inicio != null) ? ((int)(s.Termino - s.Inicio).Value.TotalDays) : 0
-            //             };
-
-
+            ViewBag.listaEstadoSupervision = listaEstados;
+            ViewBag.listaFiltroEstadoSupervision = listaEstados;
+            ViewBag.listaFiltroEstadoCumplimiento = listaCumplimiento;
+            ViewBag.listaFiguraJudicial = listaFiguraJudicial;
+             #endregion
             var filter = from p in _context.Persona
                          join s in _context.Supervision on p.IdPersona equals s.PersonaIdPersona
                          join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
@@ -1099,6 +1054,14 @@ namespace scorpioweb.Controllers
             ViewData["CurrentFilter"] = searchString;
             ViewData["EstadoS"] = estadoSuper;
             ViewData["FiguraJ"] = figuraJudicial;
+            ViewData["EstadoC"] = estadoCumplimiento;
+
+
+            ViewData["FechaTermino1"] = FechaTermino1.ToString().Equals(default(DateTime).ToString())
+                ? null : FechaTermino1.ToString("yyyy-MM-dd");
+
+            ViewData["FechaTermino2"] = FechaTermino2.ToString().Equals(default(DateTime).ToString())
+                ? null : FechaTermino2.ToString("yyyy-MM-dd");
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -1115,7 +1078,10 @@ namespace scorpioweb.Controllers
             {
                 filter = filter.Where(spcp => spcp.supervisionVM.EstadoSupervision == estadoSuper);
             }
-
+            if (!String.IsNullOrEmpty(estadoCumplimiento) && estadoCumplimiento != "Todos")
+            {
+                filter = filter.Where(spcp => spcp.supervisionVM.EstadoCumplimiento == estadoCumplimiento);
+            }
             if (figuraJudicial != null && figuraJudicial != "Todos")
             {
                 if (figuraJudicial == "Sin Figura Judicial")
@@ -1126,6 +1092,12 @@ namespace scorpioweb.Controllers
                 {
                     filter = filter.Where(spcp => spcp.fraccionesimpuestasVM.FiguraJudicial == figuraJudicial);
                 }
+            }
+            if (FechaTermino1 != default(DateTime) && FechaTermino2 != default(DateTime))
+            {
+                filter = filter.Where(spcp =>
+                    spcp.supervisionVM.Termino >= FechaTermino1 &&
+                    spcp.supervisionVM.Termino <= FechaTermino2);
             }
 
             switch (sortOrder)
@@ -1144,7 +1116,8 @@ namespace scorpioweb.Controllers
                     break;
             }
             //Vigente al principio, Concluido al final
-            filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoSupervision);
+            filter = filter.OrderByDescending(spcp => spcp.supervisionVM.EstadoSupervision)
+                            .ThenByDescending(spcp => spcp.personaVM.IdPersona);
 
             //var personas = _context.Persona
             //    .FromSql("CALL informeSemanal")
@@ -3632,84 +3605,84 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Descargar Razon de Archivo-
-        public void DescargarRA(int idsupervision, int idpersona)
-        {
-            var user = userManager.FindByNameAsync(User.Identity.Name);
+        //#region -Descargar Razon de Archivo (COMENTADO PORQUE YA SE HACE DESDE API CONTROLLER)-
+        //public void DescargarRA(int idsupervision, int idpersona)
+        //{
+        //    var user = userManager.FindByNameAsync(User.Identity.Name);
 
-            var nombre = (from p in _context.Persona
-                          where p.IdPersona == idpersona
-                          select new
-                          {
-                              personasVM = p,
-                          }).ToList();
+        //    var nombre = (from p in _context.Persona
+        //                  where p.IdPersona == idpersona
+        //                  select new
+        //                  {
+        //                      personasVM = p,
+        //                  }).ToList();
 
-            var supervsorname = nombre.First().personasVM.Supervisor.ToString();
+        //    var supervsorname = nombre.First().personasVM.Supervisor.ToString();
 
-            var supervision = (from s in _context.Supervision
-                               join fj in _context.Fraccionesimpuestas on s.IdSupervision equals fj.SupervisionIdSupervision
-                               join cc in _context.Cierredecaso on s.IdSupervision equals cc.SupervisionIdSupervision 
-                               join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
-                               where s.IdSupervision == idsupervision
-                             select new
-                             {
-                                 supervisionVM = s,
-                                 fraccionesimpuestasVM = fj,
-                                 cierrecasoVM = cc,
-                                 causapenalVM = cp
-                             }).ToList();
+        //    var supervision = (from s in _context.Supervision
+        //                       join fj in _context.Fraccionesimpuestas on s.IdSupervision equals fj.SupervisionIdSupervision
+        //                       join cc in _context.Cierredecaso on s.IdSupervision equals cc.SupervisionIdSupervision 
+        //                       join cp in _context.Causapenal on s.CausaPenalIdCausaPenal equals cp.IdCausaPenal
+        //                       where s.IdSupervision == idsupervision
+        //                     select new
+        //                     {
+        //                         supervisionVM = s,
+        //                         fraccionesimpuestasVM = fj,
+        //                         cierrecasoVM = cc,
+        //                         causapenalVM = cp
+        //                     }).ToList();
 
-            var delito = (from d in _context.Delito
-                          where d.CausaPenalIdCausaPenal == supervision[0].causapenalVM.IdCausaPenal
-                          select new
-                          {
-                              delitoVM = d
-                          }).ToList();
-
-
-
-            var delitos = (from cp in _context.Causapenal
-                           join d in _context.Delito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal
-                           where cp.IdCausaPenal == supervision[0].causapenalVM.IdCausaPenal
-                           select d.Tipo).ToList(); // o el campo que sea el nombre del delito
-
-
-            var delitosConcatenados = string.Join(", ", delitos);
+        //    var delito = (from d in _context.Delito
+        //                  where d.CausaPenalIdCausaPenal == supervision[0].causapenalVM.IdCausaPenal
+        //                  select new
+        //                  {
+        //                      delitoVM = d
+        //                  }).ToList();
 
 
 
-            var getUser = mg.nombresegunUsuario(supervsorname);
+        //    var delitos = (from cp in _context.Causapenal
+        //                   join d in _context.Delito on cp.IdCausaPenal equals d.CausaPenalIdCausaPenal
+        //                   where cp.IdCausaPenal == supervision[0].causapenalVM.IdCausaPenal
+        //                   select d.Tipo).ToList(); // o el campo que sea el nombre del delito
 
-            DateTime now = DateTime.Now;
-            string fecha = now.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
 
-            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templeteRazonArchivo.docx";
-            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\RazondeArchivo.docx";
+        //    var delitosConcatenados = string.Join(", ", delitos);
 
-            DocumentCore dc = DocumentCore.Load(templatePath);
 
-            var dataSource = new[] { new {
-                fechaActual = fecha?.ToUpper() ?? "NA",
-                ID = nombre[0].personasVM.IdPersona,
-                nombre = nombre[0].personasVM.NombreCompleto?.ToUpper() ?? "NA",
-                cp = supervision[0].causapenalVM.CausaPenal?.ToUpper() ?? "NA",
-                delito = delitosConcatenados?.ToUpper() ?? "NA",
-                figurajudicial = supervision[0].fraccionesimpuestasVM.FiguraJudicial == null ? "NA" :
-                                 supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper() == "MC" ? "MEDIDAS CAUTELARES" :
-                                 supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper() == "SCP" ? "SUSPENSION CONDICIONAL DEL PROCESO" :
-                                 supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper(),
-                supervisor = getUser?.ToUpper() ?? "NA",
-                comoconcluyo = supervision[0].cierrecasoVM.ComoConcluyo?.ToUpper() ?? "NA",
-                Juez = supervision[0].causapenalVM.Juez?.ToUpper() ?? "NA",
-            } };
 
-            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
-            dc.MailMerge.Execute(dataSource);
-            dc.Save(resultPath);
+        //    var getUser = mg.nombresegunUsuario(supervsorname);
 
-            Response.Redirect("/Documentos/RazondeArchivo.docx");
-        }
-        #endregion
+        //    DateTime now = DateTime.Now;
+        //    string fecha = now.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
+
+        //    string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templeteRazonArchivo.docx";
+        //    string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\RazondeArchivo.docx";
+
+        //    DocumentCore dc = DocumentCore.Load(templatePath);
+
+        //    var dataSource = new[] { new {
+        //        fechaActual = fecha?.ToUpper() ?? "NA",
+        //        ID = nombre[0].personasVM.IdPersona,
+        //        nombre = nombre[0].personasVM.NombreCompleto?.ToUpper() ?? "NA",
+        //        cp = supervision[0].causapenalVM.CausaPenal?.ToUpper() ?? "NA",
+        //        delito = delitosConcatenados?.ToUpper() ?? "NA",
+        //        figurajudicial = supervision[0].fraccionesimpuestasVM.FiguraJudicial == null ? "NA" :
+        //                         supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper() == "MC" ? "MEDIDAS CAUTELARES" :
+        //                         supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper() == "SCP" ? "SUSPENSION CONDICIONAL DEL PROCESO" :
+        //                         supervision[0].fraccionesimpuestasVM.FiguraJudicial.ToUpper(),
+        //        supervisor = getUser?.ToUpper() ?? "NA",
+        //        comoconcluyo = supervision[0].cierrecasoVM.ComoConcluyo?.ToUpper() ?? "NA",
+        //        Juez = supervision[0].causapenalVM.Juez?.ToUpper() ?? "NA",
+        //    } };
+
+        //    dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+        //    dc.MailMerge.Execute(dataSource);
+        //    dc.Save(resultPath);
+
+        //    Response.Redirect("/Documentos/RazondeArchivo.docx");
+        //}
+        //#endregion
 
 
 

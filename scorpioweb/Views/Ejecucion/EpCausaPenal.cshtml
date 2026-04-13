@@ -5,7 +5,6 @@
 }
 
 <script>
-
       $(document).ready(function () {
 
           $("#divFPbeneficio").hide();
@@ -117,52 +116,6 @@
             $("#divFPbeneficio").hide();
         }
     }
-
-    // $("#formCausaPenal").submit(function (e) {
-
-    //     e.preventDefault();
-
-    //     var form = $(this);
-
-    //     $.ajax({
-    //         url: form.attr("action"),
-    //         type: "POST",
-    //         data: form.serialize(),
-
-    //         success: function (response) {
-
-    //             if (response.success) {
-
-    //                 Swal.fire({
-    //                     icon: 'success',
-    //                     title: 'Guardado',
-    //                     text: 'La causa penal se guardó correctamente',
-    //                     timer: 1800,
-    //                     showConfirmButton: false
-    //                 });
-
-    //                 setTimeout(function () {
-
-    //                     $('.modal').modal('hide'); // cierra el modal abierto
-
-    //                 }, 1800);
-
-    //             }
-
-    //         },
-    //         error: function () {
-
-    //             Swal.fire({
-    //                 icon: 'error',
-    //                 title: 'Error',
-    //                 text: 'No se pudo guardar'
-    //             });
-
-    //         }
-    //     });
-
-    // });
-
      function actualizarModalEdicion(id) {
 
         $.get('/Ejecucion/EditCausaPenal?id=' + id, function (data) {

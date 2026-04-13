@@ -25,64 +25,117 @@
         })
     }
 
-    function borrarEjecucion(id) {
-        var idep = id;
-        var usuario = '@ViewBag.user';
-        var cambiar = confirm("¿Desea borrar el registro?");
-        if (cambiar == true) {
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/Ejecucion/antesdeleteCE",
-                traditional: true,
-                data: {
-                    id: idep,
-                },
-                success: function(response) {
-                    if (response.borrar == false) {
-                        alert("No se ha borrado porque la Carpeta de Ejecucion tiene Procesos asignados");
-                    } else {
-                        function borrarEjecucion(id) {
-                            var usuario = '@ViewBag.user';
-                            let razon = prompt("Porque desea borrar el registro?", "");
-                            if (razon == null || razon == "") {
-                                return;
-                                text = "NA";
-                            } else {
-                                text = razon;
-                            }
-                            $.ajax({
-                                type: "POST",
-                                dataType: "json",
-                                url: "/Ejecucion/deleteEjecucion",
-                                traditional: true,
-                                data: {
-                                    datoEjecucion: [id, razon, usuario],
-                                },
-                                success: function(response) {
-                                    if (response.borrar == true) {
-                                        alert("El Registro ha sido borrado");
-                                        location.reload();
-                                    } else {
-                                        alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
+     function borrarEjecucion(id) {
+
+        let usuario = '@ViewBag.user';
+
+        // 🔹 Confirmación
+        Swal.fire({
+            title: '¿Eliminar ejecución?',
+            text: 'Se validará si tiene procesos relacionados',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/Ejecucion/antesdeleteCE",
+                    data: {
+                        id: id
+                    },
+                    success: function (response) {
+
+                        if (response.borrar == false) {
+
+                            Swal.fire(
+                                'No se puede eliminar',
+                                'La Carpeta de Ejecución tiene procesos asignados',
+                                'warning'
+                            );
+
+                        } else {
+                            Swal.fire({
+                                title: 'Motivo de eliminación',
+                                input: 'textarea',
+                                inputPlaceholder: 'Escribe la razón...',
+                                showCancelButton: true,
+                                confirmButtonText: 'Eliminar',
+                                cancelButtonText: 'Cancelar',
+                                inputValidator: (value) => {
+                                    if (!value) {
+                                        return 'Debes escribir una razón';
                                     }
-                                },
-                                error: function(response) {
-                                    alert(response.error);
                                 }
+                            }).then((inputResult) => {
+
+                                if (inputResult.isConfirmed) {
+
+                                    $.ajax({
+                                        type: "POST",
+                                        dataType: "json",
+                                        url: "/Ejecucion/deleteEjecucion",
+                                        data: {
+                                            datoEjecucion: [id, inputResult.value, usuario]
+                                        },
+                                        success: function (response) {
+
+                                            if (response.borrar == true) {
+
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Eliminado',
+                                                    text: 'El registro ha sido borrado',
+                                                    timer: 1500,
+                                                    showConfirmButton: false
+                                                });
+
+                                                setTimeout(() => {
+                                                    location.reload();
+                                                }, 1500);
+
+                                            } else {
+
+                                                Swal.fire(
+                                                    'Error',
+                                                    'No se pudo eliminar el registro',
+                                                    'error'
+                                                );
+                                            }
+                                        },
+                                        error: function () {
+
+                                            Swal.fire(
+                                                'Error',
+                                                'Error del servidor',
+                                                'error'
+                                            );
+                                        }
+                                    });
+
+                                }
+
                             });
-                        };
-                        borrarEjecucion(id);
+
+                        }
+                    },
+                    error: function () {
+
+                        Swal.fire(
+                            'Error',
+                            'Error al validar la eliminación',
+                            'error'
+                        );
                     }
-                },
-                error: function(response) {
-                    alert(response.error);
-                    alert("Hubo un error, no se pudieron guardar los datos, contacte con el administrador del sistema");
-                }
-            });
-        }
-        return innerFunc;
-    };
+                });
+
+            }
+
+        });
+    }
 
     function miFuncionEnPaginaPrincipal(nombre) {
         // ACCIONES LLEGAN DESDE LA VISTA PARCIAL, LLEGA UN VALOR "nombre" SE COLOCA EN EL BUSCADOR Y SE SIMULA UN CLICK

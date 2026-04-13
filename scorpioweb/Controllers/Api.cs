@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
+﻿using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -777,64 +778,6 @@ namespace scorpioweb.Controllers
         }
         #endregion
 
-        #region -Presentaciones perdiodicas-
-
-        public void ImprimirPP(int id)
-        {
-
-            var nombre = (from p in _context.Persona
-                         where p.IdPersona == id
-                         select new{
-                             personasVM = p,
-                         }).ToList();
-
-            //var ppp = (from p in _context.Persona
-            //           join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
-            //           join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
-            //           where p.IdPersona == id
-            //           select new
-            //           { 
-            //               pp.FechaFirma
-            //           });
-
-            DateTime now = DateTime.Now;
-            string fecha = now.ToString("dddd',' dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
-
-            IEnumerable<Presentacionperiodica> ppp = from p in _context.Persona
-                                                     join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
-                                                     join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
-                                                     where p.IdPersona == id
-                                                     orderby pp.FechaFirma descending
-                                                     select new Presentacionperiodica
-                                                     {
-                                                         FechaFirma = pp.FechaFirma
-                                                     };
-
-
-
-
-            string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templatePP.docx";
-            string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\PresentacionesPeriodicas.docx";
-
-            DocumentCore dc = DocumentCore.Load(templatePath);
-
-            var dataSource = new[] { new {
-                ID = nombre[0].personasVM.IdPersona,
-                nombre = nombre[0].personasVM.NombreCompleto.ToUpper(),
-                fecha = fecha,
-            } };
-
-            dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
-            dc.MailMerge.Execute(dataSource);
-            dc.MailMerge.Execute(ppp, "firmas");
-            dc.Save(resultPath);
-
-           //Response.Redirect("https://localhost:44359/Documentos/PresentacionesPeriodicas.docx");
-            Response.Redirect("http://10.6.60.190/Documentos/PresentacionesPeriodicas.docx");
-
-        }
-        #endregion
-
         #region -Generar Informe-
         public JsonResult InformesVinculacion(int var_idCanalizacion, string tipo, string tabla, string idselect, bool ausencia, bool menor,string Observaciones, Oficioscanalizacion oficioscanalizacion)
         {
@@ -1104,7 +1047,6 @@ namespace scorpioweb.Controllers
 
         #endregion
 
-
         #region -Sacar Supervision MC Y LC-
         [HttpGet]
         public JsonResult SupervisionCompletaMCLC(int idPersona, string area)
@@ -1245,5 +1187,682 @@ namespace scorpioweb.Controllers
             return Json(new { success = true });
         }
         #endregion
+
+        #region -Descarga de Archivos-
+        public ActionResult ListaArchivos(int idPersona, int idSupervision)
+        {
+            var lista = new List<string>
+            {
+                "Presentaciones Periódica",
+                "Solicitud de Agregar Presentaciones Periódica",
+                //"Reporte",
+                "Razon a archivo"
+            };
+
+            ViewBag.IdPersona = idPersona;
+            ViewBag.IdSupervision = idSupervision;
+
+            return PartialView("~/Views/Shared/_ListaArchivos.cshtml", lista);
+        }
+
+
+        public async Task<IActionResult> DescargarArchivo(string tipo, int idPersona, int idSupervision, string fechaCubrir, string motivo)
+        {
+            string usuario = User.Identity.Name;
+
+            var lista = await mg.ObtenerAreasUsuariosAsync(userManager, roleManager);
+            string area = lista.ContainsKey(usuario) ? lista[usuario] : "SIN AREA";
+
+            var nombreusuario = mg.nombresegunUsuario(usuario);
+
+            RespuestaArchivo resultado = null;
+
+            if (tipo == "Presentaciones Periódica")
+            {
+                resultado = ImprimirPP(idPersona, area, nombreusuario);
+            }
+            else if (tipo == "Solicitud de Agregar Presentaciones Periódica")
+            {
+               resultado = ImprimirSPP(idPersona, area, nombreusuario, fechaCubrir, motivo);
+            }
+            else if (tipo == "Razon a archivo")
+            {
+                resultado = await DescargarRA(idPersona, idSupervision, area, nombreusuario);
+            }
+            else
+            {
+                resultado = new RespuestaArchivo
+                {
+                    Success = true,
+                    Url = "/Documentos/Reporte.pdf"
+                };
+            }
+
+            // 🔥 GUARDAR EN BD SOLO SI FUE EXITOSO
+            if (resultado != null && resultado.Success)
+            {
+                var registro = new Archivoscreados
+                {
+                    Area = area,
+                    Tipo = tipo,
+                    Usuario = nombreusuario,
+                    Fecha = DateTime.Now,
+                    Idpersona = idPersona.ToString(),
+                    Idsupervision = idSupervision.ToString()
+                };
+
+                _context.Archivoscreados.Add(registro);
+                await _context.SaveChangesAsync();
+            }
+
+            return Json(resultado);
+        }
+        #endregion
+
+        #region - Archivos -
+
+        public class RespuestaArchivo
+        {
+            public bool Success { get; set; }
+            public string Url { get; set; }
+            public string Mensaje { get; set; }
+        }
+        #region - Imprimir Presentaciones perdiodicas -
+
+        public RespuestaArchivo ImprimirPP(int id, string area, string nombreusuario)
+        {
+            try
+            {
+                DateTime now = DateTime.Now;
+                string fecha = now.ToString("dddd',' dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
+
+                string nombrePersona = "";
+                int idPersona = 0;
+                IEnumerable<Presentacionperiodica> ppp = null;
+
+                if (area == "MCYSCP")
+                {
+                    var persona = _context.Persona.FirstOrDefault(p => p.IdPersona == id);
+
+                    if (persona == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la persona en Medidas" };
+
+                    nombrePersona = persona.NombreCompleto.ToUpper();
+                    idPersona = persona.IdPersona;
+
+                    ppp = from p in _context.Persona
+                          join rh in _context.Registrohuella on p.IdPersona equals rh.PersonaIdPersona
+                          join pp in _context.Presentacionperiodica on rh.IdregistroHuella equals pp.RegistroidHuella
+                          where p.IdPersona == id
+                          select new Presentacionperiodica
+                          {
+                              FechaFirma = pp.FechaFirma
+                          };
+                }
+                else
+                {
+                    var persona = _context.Personacl.FirstOrDefault(p => p.IdPersonaCl == id);
+
+                    if (persona == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la persona en Libertad Condicionada" };
+
+                    nombrePersona = persona.NombreCompleto.ToUpper();
+                    idPersona = persona.IdPersonaCl;
+
+                    ppp = from p in _context.Personacl
+                          join rh in _context.Registrohuellacl on p.IdPersonaCl equals rh.PersonaclIdPersonacl
+                          join pp in _context.Presentacionperiodicacl on rh.IdregistroHuellacl equals pp.IdregistroHuellacl
+                          where p.IdPersonaCl == id
+                          select new Presentacionperiodica
+                          {
+                              FechaFirma = pp.FechaFirma
+                          };
+                }
+
+                // 🔥 VALIDACIÓN DINÁMICA
+                if (ppp == null || !ppp.Any())
+                {
+                    return new RespuestaArchivo
+                    {
+                        Success = false,
+                        Mensaje = $"No tiene presentaciones periódicas registradas en el área {area}"
+                    };
+                }
+
+                // 🔥 MISMO TEMPLATE PARA TODOS
+                string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templatePP.docx";
+                string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\PresentacionesPeriodicas.docx";
+
+                DocumentCore dc = DocumentCore.Load(templatePath);
+
+                var dataSource = new[] {
+                    new {
+                        idpersona = idPersona,
+                        nombre = nombrePersona,
+                        fecha = fecha,
+                        usuario = nombreusuario,
+                        area = area
+                    }
+                };
+
+                dc.MailMerge.Execute(dataSource);
+                dc.MailMerge.Execute(ppp, "firmas");
+                dc.Save(resultPath);
+
+                return new RespuestaArchivo
+                {
+                    Success = true,
+                    Url = "/Documentos/PresentacionesPeriodicas.docx"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RespuestaArchivo
+                {
+                    Success = false,
+                    Mensaje = "Error al generar archivo: " + ex.Message
+                };
+            }
+        }
+        #endregion
+
+        #region - Solicitu de presentacion Periodica -
+        public RespuestaArchivo ImprimirSPP(int id,string area, string nombreusuario, string fechaCubrir, string motivo)
+        {
+            try
+            {
+                string nombrePersona = "";
+                int idPersona = 0;
+                bool tieneHuella = false;
+
+                if (area == "MCYSCP") // MEDIDAS
+                {
+                    var persona = _context.Persona.FirstOrDefault(p => p.IdPersona == id);
+
+                    if (persona == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la persona" };
+
+                    nombrePersona = persona.NombreCompleto.ToUpper();
+                    idPersona = persona.IdPersona;
+
+                    // 🔥 VALIDAR HUELLA
+                    tieneHuella = _context.Registrohuella
+                                    .Any(r => r.PersonaIdPersona == id);
+                }
+                else // CL
+                {
+                    var persona = _context.Personacl.FirstOrDefault(p => p.IdPersonaCl == id);
+
+                    if (persona == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la persona" };
+
+                    nombrePersona = persona.NombreCompleto.ToUpper();
+                    idPersona = persona.IdPersonaCl;
+
+                    // 🔥 VALIDAR HUELLA
+                    tieneHuella = _context.Registrohuellacl
+                                    .Any(r => r.PersonaclIdPersonacl == id);
+                }
+
+                // 🔥 VALIDACIÓN GLOBAL
+                if (!tieneHuella)
+                {
+                    return new RespuestaArchivo
+                    {
+                        Success = false,
+                        Mensaje = $"No tiene huella registrada en el área {area} por lo  cual no se le puede registrar la presentacion periodica"
+                    };
+                }
+
+                DateTime now = DateTime.Now;
+                string fecha = now.ToString("dddd',' dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
+
+
+                string templatePath = _hostingEnvironment.WebRootPath + "\\Documentos\\templeteSPP.docx";
+                string resultPath = _hostingEnvironment.WebRootPath + "\\Documentos\\SolicitudPresentacionesPeriodicas.docx";
+
+                DocumentCore dc = DocumentCore.Load(templatePath);
+
+                var dataSource = new[] { new {
+                    idpersona = idPersona,
+                    nombre = nombrePersona,
+                    fecha = fecha,
+                    usuario = nombreusuario,
+                    area = area,
+                    fechaCubrir = fechaCubrir,
+                    motivo = mg.normaliza(motivo)
+                } };
+
+                dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+                dc.MailMerge.Execute(dataSource);
+                dc.Save(resultPath);
+
+                // 🔥 GUARDAR SOLICITUD
+                var solicitud = new Solicitudpresentacionperiodica
+                {
+                    Usuario = nombreusuario,
+                    Area = area,
+                    Idpersona = idPersona,
+                    FechaSubsanada = DateTime.Parse(fechaCubrir),
+                    Motivo = mg.normaliza(motivo.ToUpper()),
+                    Aprobada = 0,
+                    Subida = 0,
+                    Fecha = DateTime.Now
+                };
+
+                _context.Solicitudpresentacionperiodica.Add(solicitud);
+                _context.SaveChanges();
+
+                return new RespuestaArchivo
+                {
+                    Success = true,
+                    Url ="/Documentos/SolicitudPresentacionesPeriodicas.docx"
+                };
+                }
+                catch (Exception ex)
+                {
+                    return new RespuestaArchivo
+                    {
+                        Success = false,
+                        Mensaje = "Error al generar archivo: " + ex.Message
+                    };
+                }
+        }
+        #endregion
+
+        #region -Descargar Razon de Archivo-
+        public async Task<RespuestaArchivo> DescargarRA(int idpersona, int idsupervision, string area, string nombreusuario)
+        {
+            try
+            {
+                DateTime now = DateTime.Now;
+                string fecha = now.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
+
+                string nombrePersona = "";
+                int idPersonaFinal = 0;
+                string supervisor = "";
+                string cp = "";
+                string delito = "";
+                string figurajudicial = "";
+                string comoconcluyo = "";
+                string juez = "";
+                //string coordinador = await ObtenerCoordinadorPorArea(area);
+                string coordinador = "";
+                string coordinadorde = "";
+                // 🔥 DECISIÓN POR ÁREA
+                if (area == "MCYSCP") // MEDIDAS
+                {
+                    var persona = _context.Persona.FirstOrDefault(p => p.IdPersona == idpersona);
+
+                    if (persona == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la persona" };
+
+                    nombrePersona = persona.NombreCompleto?.ToUpper() ?? "NA";
+                    idPersonaFinal = persona.IdPersona;
+
+                    var supervsorname = persona.Supervisor;
+                    supervisor = mg.nombresegunUsuario(supervsorname)?.ToUpper() ?? "NA";
+
+                    var supervision = (from s in _context.Supervision
+                                       join fj in _context.Fraccionesimpuestas
+                                            on s.IdSupervision equals fj.SupervisionIdSupervision into fjJoin
+                                       from fj in fjJoin.DefaultIfEmpty() // 👈 LEFT JOIN
+                                       join cc in _context.Cierredecaso
+                                            on s.IdSupervision equals cc.SupervisionIdSupervision
+                                       join cp2 in _context.Causapenal
+                                            on s.CausaPenalIdCausaPenal equals cp2.IdCausaPenal
+                                       where s.IdSupervision == idsupervision
+                                       select new { s, fj, cc, cp2 }).FirstOrDefault();
+
+                    if (supervision.fj == null)
+                    {
+                        return new RespuestaArchivo
+                        {
+                            Success = false,
+                            Mensaje = "La supervisión no tiene fracciones impuestas registradas"
+                        };
+                    }
+
+                    if (supervision == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la supervisión" };
+
+                    // 🔥 VALIDAR CIERRE
+                    if (string.IsNullOrWhiteSpace(supervision.cc.SeCerroCaso) ||
+                        !supervision.cc.SeCerroCaso.Trim().Equals("SI", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new RespuestaArchivo
+                        {
+                            Success = false,
+                            Mensaje = "El caso no está cerrado"
+                        };
+                    }
+
+                    // 🔥 VALIDAR RAZÓN
+                    if (string.IsNullOrWhiteSpace(supervision.cc.ComoConcluyo))
+                    {
+                        return new RespuestaArchivo
+                        {
+                            Success = false,
+                            Mensaje = "El caso no tiene una razón de cierre"
+                        };
+                    }
+
+                    cp = supervision.cp2.CausaPenal?.ToUpper() ?? "NA";
+                    juez = supervision.cp2.Juez?.ToUpper() ?? "NA";
+                    comoconcluyo = supervision.cc.ComoConcluyo?.ToUpper() ?? "NA";
+
+                    figurajudicial = supervision.fj.FiguraJudicial == null ? "NA" :
+                        supervision.fj.FiguraJudicial.ToUpper() == "MC" ? "MEDIDAS CAUTELARES" :
+                        supervision.fj.FiguraJudicial.ToUpper() == "SCP" ? "SUSPENSION CONDICIONAL DEL PROCESO" :
+                        supervision.fj.FiguraJudicial.ToUpper();
+
+                    var delitos = (from d in _context.Delito
+                                   where d.CausaPenalIdCausaPenal == supervision.cp2.IdCausaPenal
+                                   select d.Tipo).ToList();
+
+                    delito = string.Join(", ", delitos).ToUpper();
+                    coordinador = "LIC MARÍA DEL CARMEN TRUJILLO SOTO";
+                    coordinadorde = "DE MEDIDAS CAUTELARES Y\r\nSUSPENSIÓN CONDICIONAL DEL PROCESO\r\n";
+
+
+                }
+                else // 🔥 LIBERTAD CONDICIONADA (CL)
+                {
+                    var persona = _context.Personacl.FirstOrDefault(p => p.IdPersonaCl == idpersona);
+
+                    if (persona == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la persona" };
+
+                    nombrePersona = persona.NombreCompleto?.ToUpper() ?? "NA";
+                    idPersonaFinal = persona.IdPersonaCl;
+
+                    var supervsorname = persona.Supervisor;
+                    supervisor = mg.nombresegunUsuario(supervsorname)?.ToUpper() ?? "NA";
+
+                    var supervision = (from s in _context.Supervisioncl
+                                       join fj in _context.Beneficios
+                                            on s.IdSupervisioncl equals fj.SupervisionclIdSupervisioncl into fjJoin
+                                       from fj in fjJoin.DefaultIfEmpty() // 👈 LEFT JOIN
+                                       join cc in _context.Cierredecasocl
+                                            on s.IdSupervisioncl equals cc.SupervisionclIdSupervisioncl
+                                       join cp2 in _context.Causapenalcl
+                                            on s.CausaPenalclIdCausaPenalcl equals cp2.IdCausaPenalcl
+                                       where s.IdSupervisioncl == idsupervision
+                                       select new { s, fj, cc, cp2 }).FirstOrDefault();
+
+                    if (supervision.fj == null)
+                    {
+                        return new RespuestaArchivo
+                        {
+                            Success = false,
+                            Mensaje = "La supervisión no tiene beneficios registrados"
+                        };
+                    }
+
+                    if (supervision == null)
+                        return new RespuestaArchivo { Success = false, Mensaje = "No se encontró la supervisión" };
+
+                    // 🔥 VALIDAR CIERRE
+                    if (string.IsNullOrWhiteSpace(supervision.cc.SeCerroCaso) ||
+                        !supervision.cc.SeCerroCaso.Trim().Equals("SI", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new RespuestaArchivo
+                        {
+                            Success = false,
+                            Mensaje = "El caso no está cerrado"
+                        };
+                    }
+
+                    // 🔥 VALIDAR RAZÓN
+                    if (string.IsNullOrWhiteSpace(supervision.cc.ComoConcluyo))
+                    {
+                        return new RespuestaArchivo
+                        {
+                            Success = false,
+                            Mensaje = "El caso no tiene una razón de cierre"
+                        };
+                    }
+
+                    cp = supervision.cp2.CausaPenal?.ToUpper() ?? "NA";
+                    juez = supervision.cp2.Juez?.ToUpper() ?? "NA";
+                    comoconcluyo = supervision.cc.ComoConcluyo?.ToUpper() ?? "NA";
+
+                    figurajudicial = supervision.fj.FiguraJudicial == null ? "NA" :
+                        supervision.fj.FiguraJudicial.ToUpper();
+
+                    var delitos = (from d in _context.Delito
+                                   where d.CausaPenalIdCausaPenal == supervision.cp2.IdCausaPenalcl
+                                   select d.Tipo).ToList();
+
+                    delito = string.Join(", ", delitos).ToUpper();
+                    coordinador = "ALBA MARIELA RODRIGUEZ MORENO";
+                    coordinadorde = "DE LIBERTAD CONDICIONADA";
+                }
+
+                string templatePath = this._hostingEnvironment.WebRootPath + "\\Documentos\\templeteRazonArchivo.docx";
+                string resultPath = this._hostingEnvironment.WebRootPath + "\\Documentos\\RazondeArchivo.docx";
+
+                DocumentCore dc = DocumentCore.Load(templatePath);
+
+                var dataSource = new[] {
+                    new {
+                        fechaActual = fecha.ToUpper(),
+                        ID = idPersonaFinal,
+                        nombre = nombrePersona,
+                        cp = cp,
+                        delito = delito,
+                        figurajudicial = figurajudicial,
+                        supervisor = supervisor,
+                        comoconcluyo = comoconcluyo,
+                        Juez = juez,
+                        area = area,
+                        COORDINADOR = coordinador,
+                        ELABORO = nombreusuario,
+                        COORDINADORDE = coordinadorde
+                    }
+                };
+
+                dc.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyRanges;
+                dc.MailMerge.Execute(dataSource);
+                dc.Save(resultPath);
+
+                return new RespuestaArchivo
+                {
+                    Success = true,
+                    Url = "/Documentos/RazondeArchivo.docx"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RespuestaArchivo
+                {
+                    Success = false,
+                    Mensaje = "Error al generar archivo: " + ex.Message
+                };
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region -Subir presentacion periodica-
+        public IActionResult Solicitudpresentacionperiodica(int id)
+        {
+            var lista = _context.Solicitudpresentacionperiodica
+        .OrderByDescending(x => x.Fecha)
+        .ToList();
+            return View("~/Views/Administration/Solicitudpresentacionperiodica.cshtml", lista);
+        }
+
+        [HttpPost]
+        public IActionResult ActualizarSolicitud(int id, string campo, int valor)
+        {
+            var solicitud = _context.Solicitudpresentacionperiodica
+                .FirstOrDefault(x => x.IdsolicitudPresentacionPeriodica == id);
+
+            if (solicitud == null)
+                return Json(new { success = false, mensaje = "Solicitud no encontrada" });
+
+            if (campo == "Aprobada")
+            {
+                solicitud.Aprobada = (sbyte)valor;
+            }
+
+            if (campo == "Subida")
+            {
+                solicitud.Subida = (sbyte)valor;
+
+                // 🔥 SOLO SI SE MARCA COMO SUBIDA
+                if (valor == 1)
+                {
+                    try
+                    {
+                        InsertarPresentacion(solicitud);
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new { success = false, mensaje = ex.Message });
+                    }
+                }
+            }
+
+            _context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+
+        private void InsertarPresentacion(Solicitudpresentacionperiodica solicitud)
+        {
+            // 🔥 necesitas el idPersona → agrégalo en tu tabla si no lo tienes
+            var idPersona = solicitud.Idpersona; // asegúrate de guardarlo antes
+
+            if (solicitud.Area == "MCYSCP")
+            {
+                // 🔥 BUSCAR HUELLA
+                var huella = _context.Registrohuella
+                    .FirstOrDefault(r => r.PersonaIdPersona == idPersona);
+
+                if (huella == null)
+                    throw new Exception("No tiene huella registrada");
+
+                // 🔥 INSERTAR PRESENTACIÓN
+                var nueva = new Presentacionperiodica
+                {
+                    RegistroidHuella = huella.IdregistroHuella,
+                    FechaFirma = solicitud.FechaSubsanada ?? DateTime.Now,
+                    ComentarioFirma = solicitud.Motivo
+                };
+
+                _context.Presentacionperiodica.Add(nueva);
+            }
+            else // 🔥 LIBERTAD CONDICIONADA
+            {
+                var huella = _context.Registrohuellacl
+                    .FirstOrDefault(r => r.PersonaclIdPersonacl == idPersona);
+
+                if (huella == null)
+                    throw new Exception("No tiene huella registrada");
+
+                var nueva = new Presentacionperiodicacl
+                {
+                    IdregistroHuellacl = huella.IdregistroHuellacl,
+                    FechaFirma = solicitud.FechaSubsanada ?? DateTime.Now,
+                    ComentarioFirma = solicitud.Motivo
+                };
+
+                _context.Presentacionperiodicacl.Add(nueva);
+            }
+        }
+
+        private async Task<string> ObtenerCoordinadorPorArea(string area)
+        {
+            foreach (var u in userManager.Users)
+            {
+                var roles = await userManager.GetRolesAsync(u);
+
+                if (area == "MCYSCP")
+                {
+                    if (roles.Contains("Coordinador") && roles.Contains("AdminMCSCP"))
+                    {
+                        return mg.nombresegunUsuario(u.UserName)?.ToUpper() ?? u.UserName;
+                    }
+                }
+                else // LIBERTAD CONDICIONADA
+                {
+                    if (roles.Contains("Coordinador") && roles.Contains("AdminLC"))
+                    {
+                        return mg.nombresegunUsuario(u.UserName)?.ToUpper() ?? u.UserName;
+                    }
+                }
+            }
+
+            return "SIN COORDINADOR";
+        }
+        #endregion
+
+
+        private List<string> ObtenerTodosLosUsuarios(UserManager<ApplicationUser> userManager)
+        {
+            return userManager.Users
+                .Select(u => u.UserName)
+                .Where(u => !u.EndsWith("@nortedgepms.com")) // opcional
+                .OrderBy(u => u)
+                .Distinct()
+                .ToList();
+        }
+
+        public JsonResult ObtenerUsuarios()
+        {
+            var usuarios = userManager.Users
+                .Select(u => new { value = u.UserName, text = u.UserName })
+                .OrderBy(u => u.text)
+                .ToList();
+
+            return Json(usuarios);
+        }
+        [HttpPost]
+        public async Task<IActionResult> SubirArchivo(IFormFile archivo)
+        {
+            if (archivo == null || archivo.Length == 0)
+                return BadRequest("Archivo inválido");
+
+            // 🔒 Validar tamaño (ej: 10MB)
+            if (archivo.Length > 10 * 1024 * 1024)
+                return BadRequest("Archivo demasiado grande");
+
+            // 🔒 Validar tipo (opcional)
+            var extensionesPermitidas = new[] { ".jpg", ".png", ".jpeg", ".pdf", ".docx", ".doc", ".xlsx"};
+            var ext = System.IO.Path.GetExtension(archivo.FileName).ToLower();
+
+            if (!extensionesPermitidas.Contains(ext))
+                return BadRequest("Tipo de archivo no permitido");
+
+            // 🔥 Nombre único
+            var nombreUnico = Guid.NewGuid().ToString() + ext;
+
+            var ruta = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Archivos", nombreUnico);
+
+            using (var stream = new FileStream(ruta, FileMode.Create))
+            {
+                await archivo.CopyToAsync(stream);
+            }
+
+            // 🕒 BORRADO AUTOMÁTICO (10 min)
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1));
+
+                if (System.IO.File.Exists(ruta))
+                    System.IO.File.Delete(ruta);
+            });
+
+            return Ok(new
+            {
+                nombreOriginal = archivo.FileName,
+                url = "/Archivos/" + nombreUnico
+            });
+        }
+
     }
 }

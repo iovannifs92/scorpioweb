@@ -125,6 +125,48 @@
         return innerFunc;
     };
 
+    $(document).on('click', '.btnArchivos', function () {
+        let idPersona = $(this).data('idpersona');
+        let idSupervision = $(this).data('idsupervision');
+
+        // guardar datos en el modal
+        $("#modalArchivos").data('idpersona', idPersona);
+        $("#modalArchivos").data('idsupervision', idSupervision);
+
+        // cargar lista de archivos
+        $.ajax({
+            url: '/Api/ListaArchivos',
+            type: 'GET',
+            data: {
+                idPersona: idPersona,
+                idSupervision: idSupervision
+            },
+            success: function (html) {
+                $('#listaArchivos').html(html);
+                $('#modalArchivos').modal('show');
+            }
+        });
+
+    });
+
+    $(document).ready(function () {
+        $('#estadoSuper').change(function () {
+            $('#formBusqueda').submit();
+        });
+    })
+
+    $(document).ready(function () {
+        $('#estadocumplimiento').change(function () {
+            $('#formBusqueda').submit();
+        });
+    })
+
+    $(document).ready(function () {
+        $('#figuraJudicial').change(function () {
+            $('#formBusqueda').submit();
+        });
+    })
+
 </script>
 
 <h2>Personas Supervisión </h2>
@@ -135,39 +177,83 @@
     </a>
 }
 
-<form asp-action="PersonaSupervision" method="get">
+<form asp-action="PersonaSupervision" method="get" id="formBusqueda">
     <div class="form-actions no-color">
-        <div class="col-xs-3">
-            <label>
-                Búsqueda por nombre o CP
-            </label>
-            <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+
+        <!-- FILA 1 -->
+        <div class="row">
+
+            <div class="col-md-4">
+                <label>Búsqueda por nombre o CP</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="SearchString" value="@ViewData["currentFilter"]" />
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <label>Estado de supervisión</label>
+                <select class="form-control" name="estadoSuper" id="estadoSuper"
+                        asp-items="@(new SelectList(ViewBag.listaFiltroEstadoSupervision, "Text", "Text", @ViewData["EstadoS"]))">
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label>Estado de Cumplimiento</label>
+                <select class="form-control" name="estadocumplimiento" id="estadocumplimiento"
+                        asp-items="@(new SelectList(ViewBag.listaFiltroEstadoCumplimiento, "Text", "Text", @ViewData["EstadoC"]))">
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label>Figura judicial</label>
+                <select class="form-control" name="figuraJudicial" id="figuraJudicial"
+                        asp-items="@(new SelectList(ViewBag.listaFiguraJudicial, "Text", "Text", @ViewData["FiguraJ"]))">
+                </select>
+            </div>
+
         </div>
-        <div class="col-xs-3">
-            <label>
-                Estado de supervisión
-            </label>
-            <select class="form-control" name="estadoSuper" id="estadoSuper"
-                asp-items="@(new SelectList(ViewBag.listaFiltroEstadoSupervision, "Text", "Text", @ViewData["EstadoS"]))">
-            </select>
+
+        <!-- FILA 2 -->
+        <div class="row" style="margin-top:15px;">
+
+            <div class="col-md-6">
+                <label>Fecha de término (entre fechas)</label>
+                <div class="row">
+                    <div class="col-md-5">
+                        <input type="date" name="FechaTermino1" id="FechaTermino1"
+                               class="form-control"
+                               value="@ViewData["FechaTermino1"]" />
+                    </div>
+
+                    <div class="col-md-2 text-center" style="margin-top:5px;">
+                        <label>y</label>
+                    </div>
+
+                    <div class="col-md-5">
+                        <input type="date" name="FechaTermino2" id="FechaTermino2"
+                               class="form-control"
+                               value="@ViewData["FechaTermino2"]" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2" style="margin-top:25px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-search"></i> Buscar
+                </button>
+            </div>
+
+            <div class="col-md-4" style="margin-top:30px;">
+                <a asp-action="PersonaSupervision">Regresar al listado completo</a>
+            </div>
+
         </div>
-        <div class="col-xs-2">
-            <label>
-                Figura judicial
-            </label>
-            <select class="form-control" name="figuraJudicial" id="figuraJudicial"
-                asp-items="@(new SelectList(ViewBag.listaFiguraJudicial, "Text", "Text", @ViewData["FiguraJ"]))">
-            </select>
-        </div>
-        <br/>
-        <div class="col-xs-2">
-            <button type="submit" class="btn btn-default" style="margin-top:5px">
-                <i class="fa fa-search"></i>
-                Buscar
-            </button>
-        </div>
-        <br/>
-        <a asp-action="PersonaSupervision">Regresar al listado completo</a>
+
     </div>
 </form>
 
@@ -288,14 +374,20 @@
                 </td>
                 <td>
                     <a type="button" class="btn btn-default" id="edicion" title="Presentaciónes" href="/Personas/PresentacionPeriodicaPersona/@item.personaVM.IdPersona">
-                        <i class="fa fa-calendar"></i> Presentaciónes
+                        <i class="fa fa-calendar"></i> 
                     </a>
                 </td>
+                <td>
+                    <a type="button" class="btn btn-primary btnArchivos" data-idpersona="@item.personaVM.IdPersona" data-idsupervision="@item.supervisionVM.IdSupervision" title="Descarga de Archivos">
+                        <i class="fa fa-file"></i>
+                    </a>
+                </td>
+
                 @if ( (User.IsInRole("AdminMCSCP") || User.IsInRole("Masteradmin")))
                 {
                  <td>
                         <a type="button" class="btn btn-warning" id="edicion" title="Presentaciónes" href="/Supervisiones/EditFraccionesimpuestas/?id=@item.supervisionVM.IdSupervision&nombre=@item.personaVM.NombreCompleto&cp=@item.causapenalVM.CausaPenal&idpersona=@item.personaVM.IdPersona&supervisor=@item.personaVM.Supervisor&idcp=@item.causapenalVM.IdCausaPenal">
-                            <i class="fa fa-check-square"></i> Fracciones
+                            <i class="fa fa-check-square"></i> 
                     </a>
                 </td>
                 }
@@ -327,7 +419,10 @@
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-estadoCumplimiento="@ViewData["EstadoC"]"
    asp-route-figuraJudicial="@ViewData["FiguraJ"]"
+   asp-route-FechaTermino1="@ViewData["FechaTermino1"]"
+   asp-route-FechaTermino2="@ViewData["FechaTermino2"]"
    class="btn btn-default @prevDisabled">
     Anterior
 </a>
@@ -336,7 +431,10 @@
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    asp-route-estadoSuper="@ViewData["EstadoS"]"
+   asp-route-estadoCumplimiento="@ViewData["EstadoC"]"
    asp-route-figuraJudicial="@ViewData["FiguraJ"]"
+   asp-route-FechaTermino1="@ViewData["FechaTermino1"]"
+   asp-route-FechaTermino2="@ViewData["FechaTermino2"]"
    class="btn btn-default @nextDisabled">
     Siguiente
 </a>
