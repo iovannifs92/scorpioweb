@@ -61,7 +61,7 @@
 	  <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="17.2.0.28-beta" />
     <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core.Windows" Version="17.2.0.28-beta" />
     <PackageReference Include="Syncfusion.HtmlToPdfConverter.QtWebKit.Net.Core" Version="18.1.0.52" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.2" />
     <PackageReference Include="TemplateEngine.Docx" Version="1.1.5" />
     <PackageReference Include="ZXing.Net" Version="0.16.5" />
   </ItemGroup>
